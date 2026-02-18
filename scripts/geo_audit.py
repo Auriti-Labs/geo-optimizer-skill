@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
 GEO Audit Script — Generative Engine Optimization
-Controlla la configurazione GEO di un sito web.
+Checks the GEO configuration of a website.
 
-Autore: Juan Auriti (juancamilo.auriti@gmail.com)
+Author: Juan Camilo Auriti (juancamilo.auriti@gmail.com)
 Skill: geo-optimizer (OpenClaw)
 
-Uso:
+Usage:
     python geo_audit.py --url https://example.com
-    python geo_audit.py --url https://calcfast.online --verbose
+    python geo_audit.py --url https://example.com --verbose
 """
 
 import argparse
@@ -20,10 +20,10 @@ try:
     import requests
     from bs4 import BeautifulSoup
 except ImportError:
-    print("❌ Dipendenze mancanti. Installa: pip install requests beautifulsoup4")
+    print("❌ Missing dependencies. Install with: pip install requests beautifulsoup4")
     sys.exit(1)
 
-# ─── AI Bots che devono essere in robots.txt ───────────────────────────────────
+# ─── AI bots that should be listed in robots.txt ──────────────────────────────
 AI_BOTS = {
     "GPTBot": "OpenAI (ChatGPT training)",
     "OAI-SearchBot": "OpenAI (ChatGPT search citations)",
@@ -40,10 +40,10 @@ AI_BOTS = {
     "Bytespider": "ByteDance/TikTok AI",
 }
 
-# Bots critici per le citazioni (search-oriented, non solo training)
+# Critical citation bots (search-oriented, not just training)
 CITATION_BOTS = {"OAI-SearchBot", "ClaudeBot", "PerplexityBot"}
 
-# ─── Schema types da cercare ───────────────────────────────────────────────────
+# ─── Schema types to look for ─────────────────────────────────────────────────
 VALUABLE_SCHEMAS = [
     "WebSite", "WebApplication", "FAQPage", "Article", "BlogPosting",
     "HowTo", "Recipe", "Product", "Organization", "Person", "BreadcrumbList"
@@ -78,20 +78,20 @@ def info(msg: str):
 
 
 def fetch_url(url: str, timeout: int = 10):
-    """Fetch URL, return (response, error_msg)."""
+    """Fetch a URL, return (response, error_msg)."""
     try:
         r = requests.get(url, headers=HEADERS, timeout=timeout, allow_redirects=True)
         return r, None
     except requests.exceptions.Timeout:
         return None, f"Timeout ({timeout}s)"
     except requests.exceptions.ConnectionError as e:
-        return None, f"Connessione fallita: {e}"
+        return None, f"Connection failed: {e}"
     except Exception as e:
         return None, str(e)
 
 
 def audit_robots_txt(base_url: str) -> dict:
-    """Controlla robots.txt per AI bots."""
+    """Check robots.txt for AI bot access."""
     print_header("1. ROBOTS.TXT — AI Bot Access")
     robots_url = urljoin(base_url, "/robots.txt")
     r, err = fetch_url(robots_url)
@@ -105,21 +105,21 @@ def audit_robots_txt(base_url: str) -> dict:
     }
 
     if err or not r:
-        fail(f"robots.txt non raggiungibile: {err}")
+        fail(f"robots.txt not reachable: {err}")
         return results
 
     if r.status_code == 404:
-        fail("robots.txt non trovato (404)")
+        fail("robots.txt not found (404)")
         return results
 
     if r.status_code != 200:
         warn(f"robots.txt status: {r.status_code}")
 
     results["found"] = True
-    ok(f"robots.txt trovato ({r.status_code})")
+    ok(f"robots.txt found ({r.status_code})")
 
     content = r.text
-    # Parse robots.txt — raccogli bots per stato
+    # Parse robots.txt — collect bots by status
     current_agents = []
     agent_rules = {}  # agent -> list of Disallow paths
 
@@ -150,39 +150,39 @@ def audit_robots_txt(base_url: str) -> dict:
         if found_agent is None:
             results["bots_missing"].append(bot)
             if bot in CITATION_BOTS:
-                fail(f"{bot} NON configurato — CRITICO per citazioni AI! ({description})")
+                fail(f"{bot} NOT configured — CRITICAL for AI citations! ({description})")
             else:
-                warn(f"{bot} non configurato ({description})")
+                warn(f"{bot} not configured ({description})")
         else:
             disallows = agent_rules[found_agent]
             if any(d in ["/", "/*"] for d in disallows):
                 results["bots_blocked"].append(bot)
                 if bot in CITATION_BOTS:
-                    fail(f"{bot} BLOCCATO — non apparirà nelle citazioni AI!")
+                    fail(f"{bot} BLOCKED — will not appear in AI citations!")
                 else:
-                    warn(f"{bot} bloccato (training disabled) — OK se intenzionale")
+                    warn(f"{bot} blocked (training disabled) — OK if intentional")
             elif disallows == [] or all(d == "" for d in disallows):
                 results["bots_allowed"].append(bot)
-                ok(f"{bot} consentito ✓ ({description})")
+                ok(f"{bot} allowed ✓ ({description})")
             else:
                 results["bots_allowed"].append(bot)
-                ok(f"{bot} parzialmente consentito: {disallows} ({description})")
+                ok(f"{bot} partially allowed: {disallows} ({description})")
 
     # Summary citation bots
     citation_ok = all(b in results["bots_allowed"] for b in CITATION_BOTS)
     results["citation_bots_ok"] = citation_ok
     print()
     if citation_ok:
-        ok("Bot di CITAZIONE critici tutti configurati correttamente")
+        ok("All critical CITATION bots are correctly configured")
     else:
         missing_cit = [b for b in CITATION_BOTS if b not in results["bots_allowed"]]
-        fail(f"Bot di CITAZIONE mancanti/bloccati: {', '.join(missing_cit)}")
+        fail(f"Missing/blocked CITATION bots: {', '.join(missing_cit)}")
 
     return results
 
 
 def audit_llms_txt(base_url: str) -> dict:
-    """Verifica presenza e qualità di llms.txt."""
+    """Check for presence and quality of llms.txt."""
     print_header("2. LLMS.TXT — AI Index File")
     llms_url = urljoin(base_url, "/llms.txt")
     r, err = fetch_url(llms_url)
@@ -197,13 +197,13 @@ def audit_llms_txt(base_url: str) -> dict:
     }
 
     if err or not r:
-        fail(f"llms.txt non raggiungibile: {err}")
-        info("Genera con: python generate_llms_txt.py --base-url " + base_url)
+        fail(f"llms.txt not reachable: {err}")
+        info("Generate with: python generate_llms_txt.py --base-url " + base_url)
         return results
 
     if r.status_code == 404:
-        fail("llms.txt non trovato — fondamentale per AI indexing!")
-        info("Genera con: python generate_llms_txt.py --base-url " + base_url)
+        fail("llms.txt not found — essential for AI indexing!")
+        info("Generate with: python generate_llms_txt.py --base-url " + base_url)
         return results
 
     results["found"] = True
@@ -211,46 +211,46 @@ def audit_llms_txt(base_url: str) -> dict:
     lines = content.splitlines()
     results["word_count"] = len(content.split())
 
-    ok(f"llms.txt trovato ({r.status_code}, {len(content)} bytes, ~{results['word_count']} parole)")
+    ok(f"llms.txt found ({r.status_code}, {len(content)} bytes, ~{results['word_count']} words)")
 
     # Check H1 (required)
     h1_lines = [l for l in lines if l.startswith("# ")]
     if h1_lines:
         results["has_h1"] = True
-        ok(f"H1 presente: {h1_lines[0]}")
+        ok(f"H1 present: {h1_lines[0]}")
     else:
-        fail("H1 mancante — la spec richiede un titolo H1 obbligatorio")
+        fail("H1 missing — the spec requires a mandatory H1 title")
 
     # Check blockquote description
     blockquotes = [l for l in lines if l.startswith("> ")]
     if blockquotes:
         results["has_description"] = True
-        ok(f"Descrizione blockquote presente")
+        ok("Blockquote description present")
     else:
-        warn("Descrizione blockquote mancante (consigliata)")
+        warn("Blockquote description missing (recommended)")
 
     # Check H2 sections
     h2_lines = [l for l in lines if l.startswith("## ")]
     if h2_lines:
         results["has_sections"] = True
-        ok(f"Sezioni H2 presenti: {len(h2_lines)} ({', '.join(l[3:] for l in h2_lines[:3])}...)")
+        ok(f"H2 sections present: {len(h2_lines)} ({', '.join(l[3:] for l in h2_lines[:3])}...)")
     else:
-        warn("Nessuna sezione H2 — aggiungi sezioni per organizzare i link")
+        warn("No H2 sections — add sections to organize links")
 
     # Check markdown links
     import re
     links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
     if links:
         results["has_links"] = True
-        ok(f"Link trovati: {len(links)} link a pagine del sito")
+        ok(f"Links found: {len(links)} links to site pages")
     else:
-        warn("Nessun link trovato — aggiungi link alle pagine principali")
+        warn("No links found — add links to main pages")
 
     return results
 
 
 def audit_schema(soup: BeautifulSoup, url: str) -> dict:
-    """Controlla schema JSON-LD nella homepage."""
+    """Check JSON-LD schema on the homepage."""
     print_header("3. SCHEMA JSON-LD — Structured Data")
 
     results = {
@@ -263,11 +263,11 @@ def audit_schema(soup: BeautifulSoup, url: str) -> dict:
 
     scripts = soup.find_all("script", attrs={"type": "application/ld+json"})
     if not scripts:
-        fail("Nessuno schema JSON-LD trovato nella homepage")
-        info("Aggiungi schema WebSite + WebApplication + FAQPage")
+        fail("No JSON-LD schema found on homepage")
+        info("Add WebSite + WebApplication + FAQPage schemas")
         return results
 
-    ok(f"Trovati {len(scripts)} blocchi JSON-LD")
+    ok(f"Found {len(scripts)} JSON-LD blocks")
 
     for i, script in enumerate(scripts):
         try:
@@ -294,25 +294,25 @@ def audit_schema(soup: BeautifulSoup, url: str) -> dict:
                     elif t == "FAQPage":
                         results["has_faq"] = True
                         entities = schema.get("mainEntity", [])
-                        ok(f"FAQPage schema ✓ ({len(entities)} domande)")
+                        ok(f"FAQPage schema ✓ ({len(entities)} questions)")
                     elif t in VALUABLE_SCHEMAS:
                         ok(f"{t} schema ✓")
                     else:
-                        info(f"Schema tipo: {t}")
+                        info(f"Schema type: {t}")
 
         except json.JSONDecodeError as e:
-            warn(f"JSON-LD #{i+1} non valido: {e}")
+            warn(f"JSON-LD #{i+1} invalid: {e}")
 
     if not results["has_website"]:
-        fail("WebSite schema mancante — fondamentale per AI understanding")
+        fail("WebSite schema missing — essential for AI entity understanding")
     if not results["has_faq"]:
-        warn("FAQPage schema mancante — molto utile per citazioni AI su domande")
+        warn("FAQPage schema missing — very useful for AI citations on questions")
 
     return results
 
 
 def audit_meta_tags(soup: BeautifulSoup, url: str) -> dict:
-    """Controlla meta tags SEO/GEO."""
+    """Check SEO/GEO meta tags."""
     print_header("4. META TAGS — SEO & Open Graph")
 
     results = {
@@ -330,11 +330,11 @@ def audit_meta_tags(soup: BeautifulSoup, url: str) -> dict:
         results["has_title"] = True
         title_text = title_tag.text.strip()
         if len(title_text) > 60:
-            warn(f"Title presente ma lungo ({len(title_text)} chars): {title_text[:60]}...")
+            warn(f"Title present but long ({len(title_text)} chars): {title_text[:60]}...")
         else:
             ok(f"Title: {title_text}")
     else:
-        fail("Title mancante")
+        fail("Title missing")
 
     # Meta description
     desc = soup.find("meta", attrs={"name": "description"})
@@ -342,13 +342,13 @@ def audit_meta_tags(soup: BeautifulSoup, url: str) -> dict:
         results["has_description"] = True
         content = desc["content"].strip()
         if len(content) < 120:
-            warn(f"Meta description breve ({len(content)} chars): {content}")
+            warn(f"Meta description short ({len(content)} chars): {content}")
         elif len(content) > 160:
-            warn(f"Meta description lunga ({len(content)} chars) — potrebbe essere troncata")
+            warn(f"Meta description long ({len(content)} chars) — may be truncated")
         else:
             ok(f"Meta description ({len(content)} chars) ✓")
     else:
-        fail("Meta description mancante — importante per snippets AI")
+        fail("Meta description missing — important for AI snippets")
 
     # Canonical
     canonical = soup.find("link", attrs={"rel": "canonical"})
@@ -356,7 +356,7 @@ def audit_meta_tags(soup: BeautifulSoup, url: str) -> dict:
         results["has_canonical"] = True
         ok(f"Canonical: {canonical['href']}")
     else:
-        warn("Canonical URL mancante")
+        warn("Canonical URL missing")
 
     # Open Graph
     og_title = soup.find("meta", attrs={"property": "og:title"})
@@ -365,27 +365,27 @@ def audit_meta_tags(soup: BeautifulSoup, url: str) -> dict:
 
     if og_title and og_title.get("content"):
         results["has_og_title"] = True
-        ok(f"og:title ✓")
+        ok("og:title ✓")
     else:
-        warn("og:title mancante")
+        warn("og:title missing")
 
     if og_desc and og_desc.get("content"):
         results["has_og_description"] = True
-        ok(f"og:description ✓")
+        ok("og:description ✓")
     else:
-        warn("og:description mancante")
+        warn("og:description missing")
 
     if og_image and og_image.get("content"):
         results["has_og_image"] = True
-        ok(f"og:image ✓")
+        ok("og:image ✓")
     else:
-        warn("og:image mancante")
+        warn("og:image missing")
 
     return results
 
 
 def audit_content_quality(soup: BeautifulSoup, url: str) -> dict:
-    """Verifica qualità dei contenuti per GEO."""
+    """Check content quality for GEO."""
     print_header("5. CONTENT QUALITY — GEO Best Practices")
 
     results = {
@@ -402,15 +402,15 @@ def audit_content_quality(soup: BeautifulSoup, url: str) -> dict:
         results["has_h1"] = True
         ok(f"H1: {h1.text.strip()[:60]}")
     else:
-        warn("H1 mancante nella homepage")
+        warn("H1 missing on homepage")
 
     # Headings
     headings = soup.find_all(["h1", "h2", "h3", "h4"])
     results["heading_count"] = len(headings)
     if len(headings) >= 3:
-        ok(f"Struttura heading buona: {len(headings)} headings (H1-H4)")
+        ok(f"Good heading structure: {len(headings)} headings (H1–H4)")
     elif len(headings) > 0:
-        warn(f"Pochi heading: {len(headings)} — aggiungi più struttura H2/H3")
+        warn(f"Few headings: {len(headings)} — add more H2/H3 structure")
 
     # Check for numbers/statistics
     import re
@@ -418,17 +418,17 @@ def audit_content_quality(soup: BeautifulSoup, url: str) -> dict:
     numbers = re.findall(r'\b\d+[%€$£]|\b\d+\.\d+|\b\d{3,}\b', body_text)
     if len(numbers) >= 3:
         results["has_numbers"] = True
-        ok(f"Dati numerici presenti: {len(numbers)} numeri/statistiche trovate ✓")
+        ok(f"Numerical data present: {len(numbers)} numbers/statistics found ✓")
     else:
-        warn("Pochi dati numerici — aggiungi statistiche concrete per +40% visibilità AI")
+        warn("Few numerical data points — add concrete statistics for +40% AI visibility")
 
     # Word count
     words = body_text.split()
     results["word_count"] = len(words)
     if len(words) >= 300:
-        ok(f"Contenuto sufficiente: ~{len(words)} parole")
+        ok(f"Sufficient content: ~{len(words)} words")
     else:
-        warn(f"Contenuto scarso: ~{len(words)} parole — aggiungi più contenuto descrittivo")
+        warn(f"Thin content: ~{len(words)} words — add more descriptive content")
 
     # External links (citations)
     parsed = urlparse(url)
@@ -437,18 +437,18 @@ def audit_content_quality(soup: BeautifulSoup, url: str) -> dict:
     external_links = [l for l in all_links if l["href"].startswith("http") and base_domain not in l["href"]]
     if external_links:
         results["has_links"] = True
-        ok(f"Link esterni (citazioni): {len(external_links)} link a fonti esterne ✓")
+        ok(f"External links (citations): {len(external_links)} links to external sources ✓")
     else:
-        warn("Nessun link a fonti esterne — cita fonti autorevoli per +40% visibilità AI")
+        warn("No external source links — cite authoritative sources for +40% AI visibility")
 
     return results
 
 
 def compute_geo_score(robots: dict, llms: dict, schema: dict, meta: dict, content: dict) -> int:
-    """Calcola un punteggio GEO da 0 a 100."""
+    """Calculate a GEO score from 0 to 100."""
     score = 0
 
-    # robots.txt (20 punti)
+    # robots.txt (20 points)
     if robots["found"]:
         score += 5
     if robots["citation_bots_ok"]:
@@ -456,25 +456,25 @@ def compute_geo_score(robots: dict, llms: dict, schema: dict, meta: dict, conten
     elif robots["bots_allowed"]:
         score += 8
 
-    # llms.txt (20 punti)
+    # llms.txt (20 points)
     if llms["found"]:
         score += 10
         if llms["has_h1"]: score += 3
         if llms["has_sections"]: score += 4
         if llms["has_links"]: score += 3
 
-    # Schema (25 punti)
+    # Schema (25 points)
     if schema["has_website"]: score += 10
     if schema["has_webapp"]: score += 8
     if schema["has_faq"]: score += 7
 
-    # Meta tags (20 punti)
+    # Meta tags (20 points)
     if meta["has_title"]: score += 5
     if meta["has_description"]: score += 8
     if meta["has_canonical"]: score += 3
     if meta["has_og_title"] and meta["has_og_description"]: score += 4
 
-    # Content (15 punti)
+    # Content (15 points)
     if content["has_h1"]: score += 4
     if content["has_numbers"]: score += 6
     if content["has_links"]: score += 5
@@ -484,33 +484,33 @@ def compute_geo_score(robots: dict, llms: dict, schema: dict, meta: dict, conten
 
 def main():
     parser = argparse.ArgumentParser(
-        description="GEO Audit — Controlla ottimizzazione AI search di un sito",
+        description="GEO Audit — Check AI search optimization of a website",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-Esempi:
-  python geo_audit.py --url https://calcfast.online
+Examples:
+  python geo_audit.py --url https://example.com
   python geo_audit.py --url https://example.com --verbose
         """
     )
-    parser.add_argument("--url", required=True, help="URL del sito da auditare (es: https://example.com)")
-    parser.add_argument("--verbose", action="store_true", help="Output verbose")
+    parser.add_argument("--url", required=True, help="URL of the site to audit (e.g. https://example.com)")
+    parser.add_argument("--verbose", action="store_true", help="Verbose output")
     args = parser.parse_args()
 
-    # Normalizza URL
+    # Normalize URL
     base_url = args.url.rstrip("/")
     if not base_url.startswith(("http://", "https://")):
         base_url = "https://" + base_url
 
     print("\n" + "🔍 " * 20)
     print(f"  GEO AUDIT — {base_url}")
-    print(f"  Skill: geo-optimizer | Autore: Juan Auriti")
+    print(f"  Skill: geo-optimizer | Author: Juan Camilo Auriti")
     print("🔍 " * 20)
 
     # Fetch homepage
-    print("\n⏳ Scarico homepage...")
+    print("\n⏳ Fetching homepage...")
     r, err = fetch_url(base_url)
     if err or not r:
-        print(f"\n❌ ERRORE: Impossibile raggiungere {base_url}: {err}")
+        print(f"\n❌ ERROR: Unable to reach {base_url}: {err}")
         sys.exit(1)
 
     soup = BeautifulSoup(r.text, "html.parser")
@@ -526,47 +526,47 @@ Esempi:
     # Final score
     score = compute_geo_score(robots_results, llms_results, schema_results, meta_results, content_results)
 
-    print_header("📊 GEO SCORE FINALE")
+    print_header("📊 FINAL GEO SCORE")
     bar_filled = int(score / 5)
     bar_empty = 20 - bar_filled
     bar = "█" * bar_filled + "░" * bar_empty
     print(f"\n  [{bar}] {score}/100")
 
     if score >= 80:
-        print(f"\n  🏆 ECCELLENTE — Sito ottimizzato per AI search engines!")
+        print(f"\n  🏆 EXCELLENT — Site is optimized for AI search engines!")
     elif score >= 60:
-        print(f"\n  ✅ BUONO — Alcune ottimizzazioni ancora possibili")
+        print(f"\n  ✅ GOOD — Some optimizations still possible")
     elif score >= 40:
-        print(f"\n  ⚠️  SUFFICIENTE — Implementa le ottimizzazioni mancanti")
+        print(f"\n  ⚠️  FAIR — Implement the missing optimizations")
     else:
-        print(f"\n  ❌ CRITICO — Il sito non è ottimizzato per AI search")
+        print(f"\n  ❌ CRITICAL — Site is not optimized for AI search")
 
-    print("\n  📋 PROSSIMI STEP PRIORITARI:")
+    print("\n  📋 NEXT PRIORITY STEPS:")
 
     actions = []
     if not robots_results["citation_bots_ok"]:
-        actions.append("1. Aggiorna robots.txt con tutti gli AI bots (spec in SKILL.md)")
+        actions.append("1. Update robots.txt with all AI bots (see SKILL.md)")
     if not llms_results["found"]:
-        actions.append("2. Crea /llms.txt (python generate_llms_txt.py --base-url " + base_url + ")")
+        actions.append("2. Create /llms.txt (python generate_llms_txt.py --base-url " + base_url + ")")
     if not schema_results["has_website"]:
-        actions.append("3. Aggiungi schema WebSite JSON-LD")
+        actions.append("3. Add WebSite JSON-LD schema")
     if not schema_results["has_faq"]:
-        actions.append("4. Aggiungi schema FAQPage con domande frequenti")
+        actions.append("4. Add FAQPage schema with frequently asked questions")
     if not meta_results["has_description"]:
-        actions.append("5. Aggiungi meta description ottimizzata")
+        actions.append("5. Add optimized meta description")
     if not content_results["has_numbers"]:
-        actions.append("6. Aggiungi statistiche numeriche concrete (+40% visibilità AI)")
+        actions.append("6. Add concrete numerical statistics (+40% AI visibility)")
     if not content_results["has_links"]:
-        actions.append("7. Cita fonti autorevoli con link esterni")
+        actions.append("7. Cite authoritative sources with external links")
 
     if not actions:
-        print("  🎉 Ottimo! Tutte le ottimizzazioni principali sono implementate.")
+        print("  🎉 Great! All main optimizations are implemented.")
     else:
         for action in actions:
             print(f"  {action}")
 
-    print("\n  Ref: SKILL.md per istruzioni dettagliate")
-    print("  Ref: references/princeton-geo-methods.md per metodi avanzati")
+    print("\n  Ref: SKILL.md for detailed instructions")
+    print("  Ref: references/princeton-geo-methods.md for advanced methods")
     print()
 
     return score

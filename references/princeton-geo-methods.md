@@ -1,230 +1,230 @@
-# Princeton GEO Methods — I 9 Metodi Ufficiali
+# Princeton GEO Methods — The 9 Official Methods
 
-> Fonte: "GEO: Generative Engine Optimization" — Aggarwal et al., KDD 2024  
+> Source: "GEO: Generative Engine Optimization" — Aggarwal et al., KDD 2024  
 > Paper: https://arxiv.org/abs/2311.09735  
 > Dataset/Code: https://generative-engines.com/GEO/  
-> Testato su: Perplexity.ai (reale), GPT-4 (simulato), 10,000 query diverse
+> Tested on: Perplexity.ai (real), GPT-4 (simulated), 10,000 diverse queries
 
-## Panoramica
+## Overview
 
-La ricerca Princeton ha identificato e testato **9 metodi GEO** su GEO-bench (10,000 query da domini diversi: scienza, storia, legge, finanza, salute...).
+Princeton research identified and tested **9 GEO methods** on GEO-bench (10,000 queries from diverse domains: science, history, law, finance, health...).
 
-**Risultato principale:** I metodi migliori aumentano la visibilità AI fino al **+40%** (con picchi fino a **+115%** per posizioni di ranking specifiche).
+**Key result:** The best methods increase AI visibility by up to **+40%** (with peaks up to **+115%** for specific ranking positions).
 
-La visibilità viene misurata attraverso metriche proprietarie per generative engines:
-- **Word Count**: quante parole del tuo contenuto appaiono nella risposta AI
-- **Rank Position**: dove viene citata la tua fonte
-- **Citation Count**: quante volte sei citato
-
----
-
-## Metodo 1 — Cite Sources (Citazione Fonti)
-
-**Impatto stimato: +30–115% per visibilità AI**
-
-### Descrizione
-Aggiungere link e riferimenti a fonti autorevoli esterne direttamente nel testo della pagina. Questo è il metodo con l'impatto **più variabile** ma potenzialmente più alto: +115% per rank-5 position.
-
-### Come implementarlo
-1. Identifica ogni claim/affermazione nel tuo contenuto
-2. Cerca e linka la fonte primaria (paper, studio, sito ufficiale)
-3. Usa formato: `Secondo [Fonte](URL), ...`
-4. Linka preferibilmente: paper accademici, siti governativi (.gov, .edu), report di settore
-
-### Esempio pratico
-**Prima:** "Il mutuo a tasso fisso è più sicuro in periodi di inflazione."  
-**Dopo:** "Secondo la [Banca d'Italia](https://bancaditalia.it), il mutuo a tasso fisso protegge meglio il debitore in periodi inflazionistici superiori al 3%."
-
-### Note
-- Particolarmente efficace per query informative e transazionali
-- Gli AI engines usano la presenza di citazioni come segnale di affidabilità
-- Effetto variabile: può essere negativo per rank-1 ma molto positivo per rank-3+
+Visibility is measured through proprietary metrics for generative engines:
+- **Word Count**: how many words from your content appear in the AI response
+- **Rank Position**: where your source is cited
+- **Citation Count**: how many times you are cited
 
 ---
 
-## Metodo 2 — Statistics (Statistiche e Dati)
+## Method 1 — Cite Sources
 
-**Impatto stimato: +40% visibilità media**
+**Estimated impact: +30–115% for AI visibility**
 
-### Descrizione
-Includere dati quantitativi specifici, percentuali, numeri concreti e metriche misurabili nel contenuto. Gli AI engines tendono a preferire contenuti con fatti verificabili.
+### Description
+Adding links and references to authoritative external sources directly in the page text. This is the method with the **most variable** but potentially highest impact: +115% for rank-5 position.
 
-### Come implementarlo
-1. Sostituisci affermazioni generiche con dati numerici specifici
-2. Includi: percentuali, valori monetari, date, dimensioni, risultati di studi
-3. Specifica sempre la fonte e l'anno del dato
-4. Usa contesti numerici comparativi ("rispetto al 2023, +15%")
+### How to implement it
+1. Identify every claim in your content
+2. Find and link the primary source (paper, study, official site)
+3. Use the format: `According to [Source](URL), ...`
+4. Prefer linking to: academic papers, government sites (.gov, .edu), industry reports
 
-### Esempio pratico
-**Prima:** "Molti italiani investono in fondi comuni."  
-**Dopo:** "Il 34,2% degli italiani possiede quote di fondi comuni di investimento (Consob, 2024), con un patrimonio totale di €1.200 miliardi gestiti da SGR."
+### Practical example
+**Before:** "Fixed-rate mortgages are safer during periods of inflation."  
+**After:** "According to the [Federal Reserve](https://federalreserve.gov), fixed-rate mortgages better protect borrowers during inflationary periods exceeding 3%."
 
-### Note
-- Funziona meglio combinato con Cite Sources
-- I numeri specifici aumentano la probabilità di essere estratti e citati
-- Evita statistiche troppo vecchie (>3 anni) o imprecise
+### Notes
+- Particularly effective for informational and transactional queries
+- AI engines use the presence of citations as a trust signal
+- Variable effect: can be negative for rank-1 but very positive for rank-3+
 
 ---
 
-## Metodo 3 — Quotation Addition (Citazioni Dirette)
+## Method 2 — Statistics
 
-**Impatto stimato: +30–40% visibilità**
+**Estimated impact: +40% average visibility**
 
-### Descrizione
-Includere citazioni testuali tra virgolette di esperti, autorità o documenti ufficiali. Le virgolette segnalano agli AI che il contenuto è attribuito e verificabile.
+### Description
+Including specific quantitative data, percentages, concrete numbers, and measurable metrics in content. AI engines tend to prefer content with verifiable facts.
 
-### Come implementarlo
-1. Cerca citazioni di esperti rilevanti (CEO, ricercatori, regolatori)
-2. Usa il formato: `"Testo citazione" — Nome Esperto, Ruolo, Anno`
-3. Includi almeno 1-2 citazioni per pagina
-4. Cita anche documenti ufficiali: leggi, normative, standard
+### How to implement it
+1. Replace generic statements with specific numerical data
+2. Include: percentages, monetary values, dates, sizes, study results
+3. Always specify the source and year of the data
+4. Use comparative numerical contexts ("compared to 2023, +15%")
 
-### Esempio pratico
+### Practical example
+**Before:** "Many Americans invest in mutual funds."  
+**After:** "34.2% of Americans hold mutual fund shares (Morningstar, 2024), with total assets under management exceeding $23 trillion."
+
+### Notes
+- Works best combined with Cite Sources
+- Specific numbers increase the likelihood of being extracted and cited
+- Avoid statistics that are too old (>3 years) or imprecise
+
+---
+
+## Method 3 — Quotation Addition
+
+**Estimated impact: +30–40% visibility**
+
+### Description
+Including quoted text from experts, authorities, or official documents. Quotation marks signal to AI that the content is attributed and verifiable.
+
+### How to implement it
+1. Find quotes from relevant experts (CEOs, researchers, regulators)
+2. Use the format: `"Quote text" — Expert Name, Role, Year`
+3. Include at least 1-2 quotes per page
+4. Also cite official documents: laws, regulations, standards
+
+### Practical example
 ```
-"Il tasso fisso è la scelta giusta quando i tassi di mercato 
-sono sotto la media storica" — Mario Rossi, Responsabile 
-Mutui Mediobanca, Sole24Ore 2024
+"A fixed rate is the right choice when market rates 
+are below the historical average" — John Smith, Head of 
+Mortgage Lending, Bloomberg 2024
 ```
 
+### Notes
+- Very effective for Finance, Health, Legal domains (YMYL)
+- AI engines prefer content with clear attribution
+- Alternate short quotes with context explanations
+
+---
+
+## Method 4 — Authoritative
+
+**Estimated impact: +6–12% average visibility**
+
+### Description
+Rewriting content with an expert sectoral tone instead of a generic one. Includes: use of precise terminology, logical structure, absence of vagueness.
+
+### How to implement it
+1. Eliminate vague phrases: "often", "generally", "might"
+2. Use correct technical terminology for the sector
+3. Structure with: definition → explanation → practical implications
+4. Add professional context: "From a financial standpoint..."
+5. Avoid commercial/promotional tone
+
+### Practical example
+**Before:** "A mortgage might be right for you if you need to buy a house."  
+**After:** "A mortgage is a long-term financing instrument (15–30 years) secured by a lien on the property. The monthly payment includes principal and interest calculated on the agreed rate (fixed or variable)."
+
+### Notes
+- More consistent impact compared to other methods
+- Particularly important for YMYL domains (finance, health, legal)
+- Combine with Technical Terms for better results
+
+---
+
+## Method 5 — Fluency Optimization
+
+**Estimated impact: +15–30% visibility**
+
+### Description
+Improving the flow and readability of text. Smooth, well-structured, and coherent text is preferred by LLM models for information extraction.
+
+### How to implement it
+1. Use medium-length sentences (15–25 words)
+2. Vary sentence structure
+3. Eliminate grammar errors and typos
+4. Use logical connectives: "therefore", "however", "consequently", "in particular"
+5. Structure paragraphs with: topic sentence → development → conclusion
+
+### Useful tools
+- Grammarly / LanguageTool for errors
+- Hemingway App for readability
+- Test with reading level score
+
+### Practical example
+**Before:** "The mortgage calculation, which is done by the bank, depends on the rate. The rate can be fixed or variable. You need to choose."  
+**After:** "The mortgage payment calculation depends primarily on the type of rate chosen. A fixed rate guarantees stable payments throughout the loan term, while a variable rate may decrease or increase based on market benchmarks like SOFR or Euribor."
+
+---
+
+## Method 6 — Easy-to-Understand
+
+**Estimated impact: +8–15% visibility**
+
+### Description
+Simplifying complex technical language without losing precision. AI engines prefer understandable text that can be easily extracted and paraphrased.
+
+### How to implement it
+1. After each technical term, add a brief explanation in parentheses
+2. Use analogies for complex concepts
+3. Create glossaries for industry terms
+4. Structure with "What is it", "How it works", "When to use it"
+
+### Practical example
+**Before:** "The loan-to-value ratio influences the LTV of collateral guarantees."  
+**After:** "The loan-to-value ratio (LTV) measures how much of the property price you are borrowing. An LTV of 80% means you are financing 80% of the value, with the remaining 20% as your down payment."
+
+### Notes
+- Do not sacrifice precision for simplicity
+- Use a two-level structure: simple explanation + technical details
+
+---
+
+## Method 7 — Unique Words
+
+**Estimated impact: +5–8% visibility**
+
+### Description
+Enriching vocabulary by avoiding excessive repetition. A varied vocabulary signals content quality.
+
+### How to implement it
+1. Identify repeated words using tools like WordCounter
+2. Use contextually appropriate synonyms
+3. Alternate between technical and common terms for the same concept
+4. Use a sector-specific thesaurus
+
 ### Note
-- Molto efficace per domini Finanza, Salute, Legale (YMYL)
-- Gli AI preferiscono contenuti con attribuzione chiara
-- Alternare citazioni brevi e spiegate nel contesto
+**Lower** impact compared to other methods. Do not prioritize.
 
 ---
 
-## Metodo 4 — Authoritative (Tono Autorevole)
+## Method 8 — Technical Terms
 
-**Impatto stimato: +6–12% visibilità media**
+**Estimated impact: +5–10% for specialized queries**
 
-### Descrizione
-Riscrivere il contenuto con un tono da esperto settoriale invece di un tono generico. Include: uso di terminologia precisa, struttura logica, assenza di vaguezza.
+### Description
+Using sector-specific technical terminology appropriately. Increases relevance for specialized queries from expert users.
 
-### Come implementarlo
-1. Elimina frasi vaghe: "spesso", "in genere", "potrebbe"
-2. Usa terminologia tecnica corretta del settore
-3. Struttura con: definizione → spiegazione → implicazioni pratiche
-4. Aggiungi contesto professionale: "Dal punto di vista finanziario..."
-5. Evita tono commerciale/promozionale
+### How to implement it
+1. Include official acronyms (APR, LTV, ROI, EBITDA)
+2. Use industry-standard terms in their correct form
+3. Do not overdo it: balance technical terms with Easy-to-Understand
 
-### Esempio pratico
-**Prima:** "Il mutuo potrebbe fare al caso vostro se avete bisogno di comprare casa."  
-**Dopo:** "Il mutuo ipotecario è uno strumento di finanziamento a lungo termine (15-30 anni) garantito da ipoteca sull'immobile. La rata comprende quota capitale e interessi calcolati sul tasso concordato (fisso o variabile)."
+### Example
+"APR (Annual Percentage Rate)", "SOFR 3M", "credit spread", "French amortization"
 
 ### Note
-- Impatto più costante rispetto agli altri metodi
-- Particolarmente importante per domini YMYL (finance, health, legal)
-- Combinare con Technical Terms per risultati migliori
+Works **in combination** with Authoritative and Cite Sources.
 
 ---
 
-## Metodo 5 — Fluency Optimization (Ottimizzazione Fluency)
+## Method 9 — Keyword Stuffing ⚠️
 
-**Impatto stimato: +15–30% visibilità**
+**Estimated impact: Neutral or NEGATIVE**
 
-### Descrizione
-Migliorare la fluidità e leggibilità del testo. Testo scorrevole, ben strutturato e coerente viene preferito dai modelli LLM per l'estrazione di informazioni.
+### Description
+Forcefully inserting keywords into text at high density. Princeton research demonstrated it is **not effective** for GEO and can be counterproductive.
 
-### Come implementarlo
-1. Usa frasi di lunghezza media (15-25 parole)
-2. Varia la struttura delle frasi
-3. Elimina errori grammaticali e refusi
-4. Usa connettivi logici: "quindi", "tuttavia", "di conseguenza", "in particolare"
-5. Struttura paragrafi con: topic sentence → sviluppo → conclusione
+### Research result
+- No significant improvement in AI visibility
+- Can worsen Fluency (net negative impact)
+- Residual technique from traditional SEO — **do not apply for GEO**
 
-### Tools utili
-- Grammarly / LanguageTool per errori
-- Hemingway App per leggibilità
-- Testare con reading level score
-
-### Esempio pratico
-**Prima:** "Il calcolo del mutuo, che è fatto dalla banca, dipende dal tasso. Il tasso può essere fisso o variabile. Bisogna scegliere."  
-**Dopo:** "Il calcolo della rata mutuo dipende principalmente dal tipo di tasso scelto. Un tasso fisso garantisce rate stabili per tutta la durata del finanziamento, mentre un tasso variabile può ridursi o aumentare in base all'Euribor."
+### What to do instead
+Use Fluency Optimization + Cite Sources + Statistics for real results.
 
 ---
 
-## Metodo 6 — Easy-to-Understand (Semplificazione)
+## Impact Summary by Domain
 
-**Impatto stimato: +8–15% visibilità**
-
-### Descrizione
-Semplificare il linguaggio tecnico complesso senza perdere precisione. Gli AI preferiscono testo comprensibile che può essere estratto e parafrasato facilmente.
-
-### Come implementarlo
-1. Dopo ogni termine tecnico, aggiungi una spiegazione breve tra parentesi
-2. Usa analogie per concetti complessi
-3. Crea glossari per termini di settore
-4. Struttura con "Cos'è", "Come funziona", "Quando usarlo"
-
-### Esempio pratico
-**Prima:** "Il loan-to-value ratio influenza l'LTV delle garanzie accessorie."  
-**Dopo:** "Il rapporto prestito/valore (LTV, Loan-To-Value) misura quanto del prezzo casa stai chiedendo in prestito. Un LTV del 80% significa che finanzi l'80% del valore, il restante 20% è il tuo anticipo."
-
-### Note
-- Non sacrificare la precisione per la semplicità
-- Usa struttura a due livelli: spiegazione semplice + dettagli tecnici
-
----
-
-## Metodo 7 — Unique Words (Vocabolario Ricco)
-
-**Impatto stimato: +5–8% visibilità**
-
-### Descrizione
-Arricchire il vocabolario evitando ripetizioni eccessive. Un vocabolario vario segnala qualità del contenuto.
-
-### Come implementarlo
-1. Identifica le parole ripetute con strumenti come WordCounter
-2. Usa sinonimi contestualmente appropriati
-3. Alterna tra termini tecnici e termini comuni per lo stesso concetto
-4. Usa un thesaurus di settore
-
-### Nota
-Impatto **minore** rispetto agli altri metodi. Non prioritizzare.
-
----
-
-## Metodo 8 — Technical Terms (Terminologia Tecnica)
-
-**Impatto stimato: +5–10% per query specializzate**
-
-### Descrizione
-Usare terminologia tecnica specifica del settore in modo appropriato. Aumenta la rilevanza per query specializzate da utenti esperti.
-
-### Come implementarlo
-1. Includi acronimi ufficiali (TAN, TAEG, LTV, ROI)
-2. Usa termini standard del settore nella loro forma corretta
-3. Non esagerare: bilanciare technical terms con Easy-to-Understand
-
-### Esempio
-"TAEG (Tasso Annuo Effettivo Globale)", "Euribor 3M", "spread creditizio", "ammortamento alla francese"
-
-### Nota
-Funziona in **combinazione** con Authoritative e Cite Sources.
-
----
-
-## Metodo 9 — Keyword Stuffing ⚠️
-
-**Impatto stimato: Neutro o NEGATIVO**
-
-### Descrizione
-Inserire forzatamente parole chiave nel testo con alta densità. La ricerca Princeton ha dimostrato che **non è efficace** per GEO e può essere controproducente.
-
-### Risultato ricerca
-- Nessun miglioramento significativo nella visibilità AI
-- Può peggiorare Fluency (−impatto netto)
-- Tecnica residua da SEO tradizionale, **non applicare per GEO**
-
-### Cosa fare invece
-Usa Fluency Optimization + Cite Sources + Statistics per risultati reali.
-
----
-
-## Riepilogo Impatto per Dominio
-
-| Metodo | Scienze | Finanza | Salute | Storia | Media |
-|--------|---------|---------|--------|--------|-------|
+| Method | Science | Finance | Health | History | Media |
+|--------|---------|---------|--------|---------|-------|
 | Cite Sources | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
 | Statistics | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
 | Quotation | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐ |
@@ -234,29 +234,29 @@ Usa Fluency Optimization + Cite Sources + Statistics per risultati reali.
 
 ---
 
-## Strategia Implementazione Consigliata
+## Recommended Implementation Strategy
 
-### Fase 1 — Quickwins (settimana 1-2)
-1. **Statistics**: aggiungi dati numerici alle pagine principali (+40%)
-2. **Cite Sources**: aggiungi 2-3 link a fonti autorevoli per pagina (+30%)
-3. **Fluency**: revisiona testo per scorrevolezza
+### Phase 1 — Quick Wins (week 1–2)
+1. **Statistics**: add numerical data to main pages (+40%)
+2. **Cite Sources**: add 2–3 links to authoritative sources per page (+30%)
+3. **Fluency**: revise text for readability
 
-### Fase 2 — Ottimizzazione (settimana 3-4)
-4. **Quotation Addition**: aggiungi citazioni di esperti
-5. **Authoritative**: riorganizza contenuto con struttura da esperto
-6. **Technical Terms**: verifica terminologia corretta
+### Phase 2 — Optimization (week 3–4)
+4. **Quotation Addition**: add expert quotes
+5. **Authoritative**: reorganize content with expert structure
+6. **Technical Terms**: verify correct terminology
 
-### Fase 3 — Fine Tuning
-7. **Easy-to-Understand**: aggiungi glossari e spiegazioni
-8. **Unique Words**: revisiona ripetizioni
+### Phase 3 — Fine Tuning
+7. **Easy-to-Understand**: add glossaries and explanations
+8. **Unique Words**: revise repetitions
 
-> ⚠️ **Non fare**: Keyword Stuffing (metodo 9) — controproducente per GEO
+> ⚠️ **Do not do**: Keyword Stuffing (method 9) — counterproductive for GEO
 
 ---
 
-## Riferimenti
+## References
 
-- Paper originale: https://arxiv.org/abs/2311.09735
+- Original paper: https://arxiv.org/abs/2311.09735
 - Princeton Collaborate: https://collaborate.princeton.edu/en/publications/geo-generative-engine-optimization/
 - GEO-bench dataset: https://generative-engines.com/GEO/
-- KDD 2024 Conference: August 25-29, 2024, Barcelona
+- KDD 2024 Conference: August 25–29, 2024, Barcelona

@@ -258,6 +258,17 @@ Web Developer | GEO Specialist
 
 ---
 
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to:
+- Open an issue for bugs or feature requests
+- Submit a pull request with improvements
+- Share results from your own GEO audits
+
+Please keep PRs focused and well-documented.
+
+---
+
 ## 📄 License
 
 MIT License — free to use, modify and distribute.

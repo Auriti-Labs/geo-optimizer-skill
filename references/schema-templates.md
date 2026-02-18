@@ -1,60 +1,60 @@
-# Schema JSON-LD Templates — Pronti all'uso
+# Schema JSON-LD Templates — Ready to Use
 
-> Per GEO (Generative Engine Optimization): gli schema JSON-LD aiutano gli AI engines a capire il contenuto e citarlo correttamente.  
+> For GEO (Generative Engine Optimization): JSON-LD schema helps AI engines understand your content and cite it correctly.  
 > Spec: https://schema.org | Validator: https://validator.schema.org
 
-## Come usare questi template
+## How to use these templates
 
-1. Copia il template appropriato
-2. Sostituisci i valori tra `<< >>`
-3. Incolla nell'`<head>` della pagina HTML
-4. Valida su https://validator.schema.org
+1. Copy the appropriate template
+2. Replace values marked with `YOUR_VALUE`
+3. Paste into the `<head>` of your HTML page
+4. Validate at https://validator.schema.org
 
 ---
 
-## 1. WebSite — Template Globale
+## 1. WebSite — Global Template
 
-Va nell'`<head>` di **tutte le pagine** del sito (tipicamente nel layout principale).
+Goes in the `<head>` of **all pages** on the site (typically in the main layout).
 
 ```html
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "<<Nome Sito>>",
-  "url": "https://<<dominio.com>>",
-  "description": "<<Descrizione breve del sito, cosa offre, a chi serve>>",
-  "inLanguage": "it",
+  "name": "YOUR_SITE_NAME",
+  "url": "https://YOUR_DOMAIN",
+  "description": "YOUR_SITE_DESCRIPTION",
+  "inLanguage": "en",
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://<<dominio.com>>/search?q={search_term_string}"
+      "urlTemplate": "https://YOUR_DOMAIN/search?q={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "<<Nome Organizzazione>>",
-    "url": "https://<<dominio.com>>"
+    "name": "YOUR_ORGANIZATION_NAME",
+    "url": "https://YOUR_DOMAIN"
   }
 }
 </script>
 ```
 
-**Esempio CalcFast:**
+**Example:**
 ```html
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "CalcFast",
-  "url": "https://calcfast.online",
-  "description": "Calcolatori online gratuiti per finanza, matematica e salute. Calcola mutui, interessi, BMI e molto altro in pochi secondi.",
-  "inLanguage": "it",
+  "name": "MySite",
+  "url": "https://example.com",
+  "description": "Free online calculators for finance, math, and health. Calculate mortgages, interest, BMI, and much more in seconds.",
+  "inLanguage": "en",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://calcfast.online/search?q={search_term_string}",
+    "target": "https://example.com/search?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 }
@@ -63,63 +63,63 @@ Va nell'`<head>` di **tutte le pagine** del sito (tipicamente nel layout princip
 
 ---
 
-## 2. WebApplication — Calcolatori e Tool
+## 2. WebApplication — Calculators and Tools
 
-Da aggiungere su ogni pagina che è un **tool/calcolatore/app**.
+Add this to every page that is a **tool/calculator/app**.
 
 ```html
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "<<Nome Calcolatore/Tool>>",
-  "url": "https://<<dominio.com>>/<<pagina>>",
-  "description": "<<Cosa calcola, come usarlo, per chi è utile>>",
+  "name": "YOUR_TOOL_NAME",
+  "url": "https://YOUR_DOMAIN/YOUR_PAGE",
+  "description": "YOUR_TOOL_DESCRIPTION",
   "applicationCategory": "UtilityApplication",
-  "applicationSubCategory": "<<Finance|Health|Math|Science>>",
+  "applicationSubCategory": "YOUR_SUBCATEGORY",
   "operatingSystem": "Web",
   "browserRequirements": "Requires JavaScript",
-  "inLanguage": "it",
+  "inLanguage": "en",
   "offers": {
     "@type": "Offer",
     "price": "0",
-    "priceCurrency": "EUR"
+    "priceCurrency": "USD"
   },
   "featureList": [
-    "<<Feature 1>>",
-    "<<Feature 2>>",
-    "<<Feature 3>>"
+    "YOUR_FEATURE_1",
+    "YOUR_FEATURE_2",
+    "YOUR_FEATURE_3"
   ],
   "author": {
     "@type": "Organization",
-    "name": "<<Nome Organizzazione>>"
+    "name": "YOUR_ORGANIZATION_NAME"
   }
 }
 </script>
 ```
 
-**Esempio Calcolatore Mutuo:**
+**Example — Mortgage Calculator:**
 ```html
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Calcolatore Mutuo",
-  "url": "https://calcfast.online/finance/mutuo",
-  "description": "Calcola la rata mensile del tuo mutuo inserendo importo, durata e tasso di interesse. Confronta mutuo a tasso fisso e variabile.",
+  "name": "Mortgage Calculator",
+  "url": "https://example.com/finance/mortgage",
+  "description": "Calculate your monthly mortgage payment by entering the amount, term, and interest rate. Compare fixed-rate and adjustable-rate mortgages.",
   "applicationCategory": "UtilityApplication",
   "applicationSubCategory": "Finance",
   "operatingSystem": "Web",
   "offers": {
     "@type": "Offer",
     "price": "0",
-    "priceCurrency": "EUR"
+    "priceCurrency": "USD"
   },
   "featureList": [
-    "Calcolo rata mutuo tasso fisso",
-    "Calcolo rata mutuo tasso variabile",
-    "Piano di ammortamento completo",
-    "Confronto tra opzioni"
+    "Fixed-rate mortgage calculation",
+    "Adjustable-rate mortgage calculation",
+    "Full amortization schedule",
+    "Comparison between options"
   ]
 }
 </script>
@@ -127,9 +127,9 @@ Da aggiungere su ogni pagina che è un **tool/calcolatore/app**.
 
 ---
 
-## 3. FAQPage — Domande e Risposte
+## 3. FAQPage — Questions and Answers
 
-**Impatto GEO: alto** — gli AI engines usano questi schema per rispondere a domande.
+**GEO impact: high** — AI engines use these schemas to answer questions.
 
 ```html
 <script type="application/ld+json">
@@ -139,26 +139,26 @@ Da aggiungere su ogni pagina che è un **tool/calcolatore/app**.
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "<<Domanda 1?>>",
+      "name": "YOUR_QUESTION_1",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "<<Risposta completa e dettagliata alla domanda 1. Includi dati numerici se possibile.>>"
+        "text": "YOUR_ANSWER_1"
       }
     },
     {
       "@type": "Question",
-      "name": "<<Domanda 2?>>",
+      "name": "YOUR_QUESTION_2",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "<<Risposta 2>>"
+        "text": "YOUR_ANSWER_2"
       }
     },
     {
       "@type": "Question",
-      "name": "<<Domanda 3?>>",
+      "name": "YOUR_QUESTION_3",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "<<Risposta 3>>"
+        "text": "YOUR_ANSWER_3"
       }
     }
   ]
@@ -166,7 +166,7 @@ Da aggiungere su ogni pagina che è un **tool/calcolatore/app**.
 </script>
 ```
 
-**Esempio Calcolatore Mutuo FAQ:**
+**Example — Mortgage Calculator FAQ:**
 ```html
 <script type="application/ld+json">
 {
@@ -175,26 +175,26 @@ Da aggiungere su ogni pagina che è un **tool/calcolatore/app**.
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Come si calcola la rata del mutuo?",
+      "name": "How is the mortgage payment calculated?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "La rata del mutuo si calcola con la formula dell'ammortamento alla francese: R = C × (i × (1+i)^n) / ((1+i)^n - 1), dove C è il capitale, i il tasso mensile, n il numero di rate. Per un mutuo da 200.000€ a 20 anni al 3%, la rata è circa 1.109€/mese."
+        "text": "The mortgage payment is calculated using the standard amortization formula: M = P × (r × (1+r)^n) / ((1+r)^n - 1), where P is the principal, r is the monthly rate, and n is the number of payments. For a $200,000 mortgage over 20 years at 3%, the monthly payment is approximately $1,109."
       }
     },
     {
       "@type": "Question",
-      "name": "Qual è la differenza tra tasso fisso e variabile?",
+      "name": "What is the difference between a fixed-rate and adjustable-rate mortgage?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Il tasso fisso rimane invariato per tutta la durata del mutuo, garantendo rate costanti e prevedibili. Il tasso variabile è collegato all'Euribor e può aumentare o diminuire nel tempo. Nel 2024, i tassi fissi si aggirano intorno al 3-4%, mentre i variabili dipendono dall'Euribor più lo spread bancario."
+        "text": "A fixed rate stays the same for the entire loan term, guaranteeing stable and predictable payments. An adjustable rate is tied to a market index (such as SOFR) and can increase or decrease over time. In 2024, fixed rates are around 6–7%, while adjustable rates depend on the index plus a bank spread."
       }
     },
     {
       "@type": "Question",
-      "name": "Quanto posso richiedere di mutuo?",
+      "name": "How much mortgage can I qualify for?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Le banche tipicamente finanziano fino all'80% del valore dell'immobile (LTV 80%). Per un immobile da 250.000€, il mutuo massimo è solitamente 200.000€. La rata non dovrebbe superare il 30-35% del reddito netto mensile per essere sostenibile."
+        "text": "Lenders typically finance up to 80% of the property value (LTV 80%). For a $300,000 home, the maximum mortgage is usually $240,000. The monthly payment should not exceed 28–36% of gross monthly income to remain affordable."
       }
     }
   ]
@@ -206,42 +206,42 @@ Da aggiungere su ogni pagina che è un **tool/calcolatore/app**.
 
 ## 4. Article / BlogPosting
 
-Per articoli del blog e contenuti informativi.
+For blog articles and informational content.
 
 ```html
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "<<Titolo articolo (max 110 chars)>>",
-  "description": "<<Descrizione breve (150-160 chars)>>",
-  "url": "https://<<dominio.com>>/blog/<<slug>>",
-  "datePublished": "<<YYYY-MM-DD>>",
-  "dateModified": "<<YYYY-MM-DD>>",
-  "inLanguage": "it",
+  "headline": "YOUR_ARTICLE_TITLE",
+  "description": "YOUR_ARTICLE_DESCRIPTION",
+  "url": "https://YOUR_DOMAIN/blog/YOUR_SLUG",
+  "datePublished": "YYYY-MM-DD",
+  "dateModified": "YYYY-MM-DD",
+  "inLanguage": "en",
   "author": {
     "@type": "Person",
-    "name": "<<Nome Autore>>",
-    "url": "https://<<dominio.com>>/author/<<slug>>"
+    "name": "YOUR_AUTHOR_NAME",
+    "url": "https://YOUR_DOMAIN/author/YOUR_AUTHOR_SLUG"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "<<Nome Sito>>",
-    "url": "https://<<dominio.com>>",
+    "name": "YOUR_SITE_NAME",
+    "url": "https://YOUR_DOMAIN",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://<<dominio.com>>/logo.png"
+      "url": "https://YOUR_DOMAIN/logo.png"
     }
   },
   "image": {
     "@type": "ImageObject",
-    "url": "https://<<dominio.com>>/images/<<articolo.jpg>>",
+    "url": "https://YOUR_DOMAIN/images/YOUR_IMAGE.jpg",
     "width": 1200,
     "height": 630
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://<<dominio.com>>/blog/<<slug>>"
+    "@id": "https://YOUR_DOMAIN/blog/YOUR_SLUG"
   }
 }
 </script>
@@ -249,37 +249,37 @@ Per articoli del blog e contenuti informativi.
 
 ---
 
-## 5. HowTo — Guide Pratiche
+## 5. HowTo — Step-by-Step Guides
 
-Per guide passo-passo. **Molto citato dagli AI engines** per query "come fare".
+For step-by-step guides. **Frequently cited by AI engines** for "how to" queries.
 
 ```html
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  "name": "Come <<fare qualcosa>>",
-  "description": "<<Descrizione della guida>>",
-  "totalTime": "PT<<N>>M",
+  "name": "How to YOUR_TASK",
+  "description": "YOUR_GUIDE_DESCRIPTION",
+  "totalTime": "PTXM",
   "tool": [
     {
       "@type": "HowToTool",
-      "name": "<<Tool necessario>>"
+      "name": "YOUR_REQUIRED_TOOL"
     }
   ],
   "step": [
     {
       "@type": "HowToStep",
       "position": 1,
-      "name": "<<Nome Step 1>>",
-      "text": "<<Descrizione dettagliata del passo 1>>",
-      "url": "https://<<dominio.com>>/guida#step1"
+      "name": "YOUR_STEP_1_NAME",
+      "text": "YOUR_STEP_1_DESCRIPTION",
+      "url": "https://YOUR_DOMAIN/guide#step1"
     },
     {
       "@type": "HowToStep",
       "position": 2,
-      "name": "<<Nome Step 2>>",
-      "text": "<<Descrizione dettagliata del passo 2>>"
+      "name": "YOUR_STEP_2_NAME",
+      "text": "YOUR_STEP_2_DESCRIPTION"
     }
   ]
 }
@@ -288,29 +288,29 @@ Per guide passo-passo. **Molto citato dagli AI engines** per query "come fare".
 
 ---
 
-## 6. Organization — Chi Siamo
+## 6. Organization — About Us
 
 ```html
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "<<Nome Organizzazione>>",
-  "url": "https://<<dominio.com>>",
-  "description": "<<Descrizione organizzazione>>",
+  "name": "YOUR_ORGANIZATION_NAME",
+  "url": "https://YOUR_DOMAIN",
+  "description": "YOUR_ORGANIZATION_DESCRIPTION",
   "logo": {
     "@type": "ImageObject",
-    "url": "https://<<dominio.com>>/logo.png"
+    "url": "https://YOUR_DOMAIN/logo.png"
   },
   "contactPoint": {
     "@type": "ContactPoint",
-    "email": "<<email@dominio.com>>",
+    "email": "YOUR_EMAIL@YOUR_DOMAIN",
     "contactType": "customer support"
   },
   "sameAs": [
-    "https://twitter.com/<<handle>>",
-    "https://linkedin.com/company/<<company>>",
-    "https://github.com/<<org>>"
+    "https://twitter.com/YOUR_HANDLE",
+    "https://linkedin.com/company/YOUR_COMPANY",
+    "https://github.com/YOUR_ORG"
   ]
 }
 </script>
@@ -318,9 +318,9 @@ Per guide passo-passo. **Molto citato dagli AI engines** per query "come fare".
 
 ---
 
-## 7. BreadcrumbList — Navigazione
+## 7. BreadcrumbList — Navigation
 
-Aiuta gli AI a capire la struttura del sito.
+Helps AI understand the site structure.
 
 ```html
 <script type="application/ld+json">
@@ -332,19 +332,19 @@ Aiuta gli AI a capire la struttura del sito.
       "@type": "ListItem",
       "position": 1,
       "name": "Home",
-      "item": "https://<<dominio.com>>"
+      "item": "https://YOUR_DOMAIN"
     },
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "<<Categoria>>",
-      "item": "https://<<dominio.com>>/<<categoria>>"
+      "name": "YOUR_CATEGORY",
+      "item": "https://YOUR_DOMAIN/YOUR_CATEGORY"
     },
     {
       "@type": "ListItem",
       "position": 3,
-      "name": "<<Pagina corrente>>",
-      "item": "https://<<dominio.com>>/<<categoria>>/<<pagina>>"
+      "name": "YOUR_CURRENT_PAGE",
+      "item": "https://YOUR_DOMAIN/YOUR_CATEGORY/YOUR_PAGE"
     }
   ]
 }
@@ -353,27 +353,27 @@ Aiuta gli AI a capire la struttura del sito.
 
 ---
 
-## 8. Product — Prodotti/Servizi
+## 8. Product — Products/Services
 
 ```html
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "<<Nome Prodotto/Servizio>>",
-  "description": "<<Descrizione>>",
-  "url": "https://<<dominio.com>>/prodotti/<<slug>>",
+  "name": "YOUR_PRODUCT_NAME",
+  "description": "YOUR_PRODUCT_DESCRIPTION",
+  "url": "https://YOUR_DOMAIN/products/YOUR_SLUG",
   "offers": {
     "@type": "Offer",
-    "price": "<<prezzo>>",
-    "priceCurrency": "EUR",
+    "price": "YOUR_PRICE",
+    "priceCurrency": "USD",
     "availability": "https://schema.org/InStock",
-    "url": "https://<<dominio.com>>/prodotti/<<slug>>"
+    "url": "https://YOUR_DOMAIN/products/YOUR_SLUG"
   },
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.8",
-    "reviewCount": "<<numero_recensioni>>"
+    "reviewCount": "YOUR_REVIEW_COUNT"
   }
 }
 </script>
@@ -381,27 +381,27 @@ Aiuta gli AI a capire la struttura del sito.
 
 ---
 
-## Multi-Schema — Combinare più tipi
+## Multi-Schema — Combining Multiple Types
 
-**Best practice**: puoi mettere più schema JSON-LD nella stessa pagina.
+**Best practice**: you can include multiple JSON-LD schemas on the same page.
 
 ```html
-<!-- Schema 1: WebSite globale -->
+<!-- Schema 1: Global WebSite -->
 <script type="application/ld+json">
 { "@context": "https://schema.org", "@type": "WebSite", ... }
 </script>
 
-<!-- Schema 2: WebApplication per questa pagina -->
+<!-- Schema 2: WebApplication for this page -->
 <script type="application/ld+json">
 { "@context": "https://schema.org", "@type": "WebApplication", ... }
 </script>
 
-<!-- Schema 3: FAQPage con domande frequenti -->
+<!-- Schema 3: FAQPage with frequently asked questions -->
 <script type="application/ld+json">
 { "@context": "https://schema.org", "@type": "FAQPage", ... }
 </script>
 
-<!-- Schema 4: BreadcrumbList per navigazione -->
+<!-- Schema 4: BreadcrumbList for navigation -->
 <script type="application/ld+json">
 { "@context": "https://schema.org", "@type": "BreadcrumbList", ... }
 </script>
@@ -409,11 +409,11 @@ Aiuta gli AI a capire la struttura del sito.
 
 ---
 
-## Implementazione Astro (TypeScript)
+## Astro Implementation (TypeScript)
 
 ```astro
 ---
-// types per schema
+// Types for schema
 interface FAQItem {
   question: string;
   answer: string;
@@ -429,19 +429,22 @@ interface LayoutProps {
 }
 
 const { title, description, url = Astro.url.href, isCalculator, faqItems = [], articleDate } = Astro.props;
+
+const SITE_NAME = "MySite";
+const SITE_URL = "https://example.com";
 ---
 
 <head>
-  <!-- WebSite (sempre) -->
+  <!-- WebSite (always) -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "CalcFast",
-    "url": "https://calcfast.online",
-    "description": "Calcolatori online gratuiti"
+    "name": SITE_NAME,
+    "url": SITE_URL,
+    "description": "Free online tools and calculators"
   })} />
 
-  <!-- WebApplication (solo calcolatori) -->
+  <!-- WebApplication (calculators only) -->
   {isCalculator && (
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
@@ -450,11 +453,11 @@ const { title, description, url = Astro.url.href, isCalculator, faqItems = [], a
       "url": url,
       "description": description,
       "applicationCategory": "UtilityApplication",
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
     })} />
   )}
 
-  <!-- FAQPage (se ci sono FAQ) -->
+  <!-- FAQPage (if FAQs are present) -->
   {faqItems.length > 0 && (
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
@@ -467,12 +470,12 @@ const { title, description, url = Astro.url.href, isCalculator, faqItems = [], a
     })} />
   )}
 
-  <!-- BreadcrumbList (sempre) -->
+  <!-- BreadcrumbList (always) -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://calcfast.online" },
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
       { "@type": "ListItem", "position": 2, "name": title, "item": url }
     ]
   })} />
@@ -481,21 +484,21 @@ const { title, description, url = Astro.url.href, isCalculator, faqItems = [], a
 
 ---
 
-## Validator e Tool Utili
+## Validators and Useful Tools
 
-| Tool | URL | Scopo |
-|------|-----|-------|
-| Schema Validator | https://validator.schema.org | Valida JSON-LD |
-| Rich Results Test | https://search.google.com/test/rich-results | Test Google |
+| Tool | URL | Purpose |
+|------|-----|---------|
+| Schema Validator | https://validator.schema.org | Validate JSON-LD |
+| Rich Results Test | https://search.google.com/test/rich-results | Google test |
 | Structured Data Testing | https://developers.google.com/search/docs/appearance/structured-data | Docs |
-| JSON-LD Playground | https://json-ld.org/playground/ | Test interattivo |
+| JSON-LD Playground | https://json-ld.org/playground/ | Interactive test |
 
 ---
 
-## Priorità per GEO
+## GEO Priority
 
-1. **FAQPage** — massima probabilità di essere estratto per domande AI
-2. **WebApplication** — identifica chiaramente i tool
-3. **WebSite** — fondamentale per entity understanding
-4. **Article** — per contenuti blog
-5. **HowTo** — per guide pratiche
+1. **FAQPage** — highest probability of being extracted for AI questions
+2. **WebApplication** — clearly identifies tools
+3. **WebSite** — fundamental for entity understanding
+4. **Article** — for blog content
+5. **HowTo** — for step-by-step guides

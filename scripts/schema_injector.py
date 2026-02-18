@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 """
-Schema Injector — Aggiunge schema JSON-LD a pagine HTML e componenti Astro
+Schema Injector — Adds JSON-LD schema to HTML pages and Astro components
 Generative Engine Optimization (GEO) Skill
 
-Autore: Juan Auriti (juancamilo.auriti@gmail.com)
+Author: Juan Camilo Auriti (juancamilo.auriti@gmail.com)
 Skill: geo-optimizer (OpenClaw)
 
-Uso:
-    # Analizza file HTML e mostra schema suggerito
+Usage:
+    # Analyze HTML file and show suggested schema
     python schema_injector.py --file index.html
 
-    # Inietta schema WebSite in un file HTML
-    python schema_injector.py --file index.html --type website --name "MioSito" --url https://example.com
+    # Inject WebSite schema into an HTML file
+    python schema_injector.py --file index.html --type website --name "MySite" --url https://example.com
 
-    # Inietta schema FAQPage
+    # Inject FAQPage schema
     python schema_injector.py --file page.html --type faq --faq-file faqs.json
 
-    # Genera snippet Astro per BaseLayout
-    python schema_injector.py --type website --name "CalcFast" --url https://calcfast.online --astro
+    # Generate Astro snippet for BaseLayout
+    python schema_injector.py --type website --name "MySite" --url https://example.com --astro
 """
 
 import argparse
@@ -122,7 +122,7 @@ SCHEMA_TEMPLATES = {
 
 ASTRO_TEMPLATES = {
     "website": '''---
-// Nel BaseLayout.astro o Layout.astro
+// In BaseLayout.astro or Layout.astro
 interface Props {
   title: string;
   description: string;
@@ -200,7 +200,7 @@ const faqSchema = faqItems.length > 0 ? {{
 
 
 def fill_template(template: dict, values: dict) -> dict:
-    """Sostituisce i placeholder nel template con i valori forniti."""
+    """Replace placeholders in the template with the provided values."""
     template_str = json.dumps(template)
     for key, value in values.items():
         template_str = template_str.replace(f"{{{{{key}}}}}", str(value) if value else "")
@@ -208,17 +208,17 @@ def fill_template(template: dict, values: dict) -> dict:
 
 
 def schema_to_html_tag(schema_dict: dict) -> str:
-    """Converte schema dict in tag HTML script."""
+    """Convert a schema dict to an HTML script tag."""
     json_str = json.dumps(schema_dict, indent=2, ensure_ascii=False)
     return f'<script type="application/ld+json">\n{json_str}\n</script>'
 
 
 def analyze_html_file(file_path: str) -> dict:
-    """Analizza un file HTML e suggerisce gli schema mancanti."""
+    """Analyze an HTML file and suggest missing schemas."""
     try:
         from bs4 import BeautifulSoup
     except ImportError:
-        print("❌ beautifulsoup4 richiesto: pip install beautifulsoup4")
+        print("❌ beautifulsoup4 required: pip install beautifulsoup4")
         sys.exit(1)
 
     with open(file_path, "r", encoding="utf-8") as f:
@@ -255,7 +255,7 @@ def analyze_html_file(file_path: str) -> dict:
 
 
 def inject_schema_into_html(file_path: str, schema_tag: str, backup: bool = True) -> bool:
-    """Inietta schema JSON-LD in un file HTML."""
+    """Inject JSON-LD schema into an HTML file."""
     with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
 
@@ -266,13 +266,13 @@ def inject_schema_into_html(file_path: str, schema_tag: str, backup: bool = True
             f.write(content)
         print(f"   Backup: {backup_path}")
 
-    # Inserisci prima di </head>
+    # Insert before </head>
     if "</head>" in content:
         new_content = content.replace("</head>", f"\n  {schema_tag}\n</head>", 1)
     elif "<head>" in content:
         new_content = content.replace("<head>", f"<head>\n  {schema_tag}", 1)
     else:
-        print("❌ Tag <head> non trovato nel file")
+        print("❌ <head> tag not found in file")
         return False
 
     with open(file_path, "w", encoding="utf-8") as f:
@@ -282,13 +282,13 @@ def inject_schema_into_html(file_path: str, schema_tag: str, backup: bool = True
 
 
 def generate_faq_schema(faq_data) -> dict:
-    """Genera schema FAQPage da lista di domande/risposte."""
+    """Generate FAQPage schema from a list of questions/answers."""
     if isinstance(faq_data, list):
         items = faq_data
     elif isinstance(faq_data, dict) and "faqs" in faq_data:
         items = faq_data["faqs"]
     else:
-        print("❌ Formato FAQ non riconosciuto. Usa: [{question, answer}, ...]")
+        print("❌ Unrecognized FAQ format. Use: [{question, answer}, ...]")
         sys.exit(1)
 
     schema = {
@@ -314,47 +314,47 @@ def generate_faq_schema(faq_data) -> dict:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Inietta schema JSON-LD in pagine HTML o genera snippet Astro",
+        description="Inject JSON-LD schema into HTML pages or generate Astro snippets",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument("--file", help="File HTML da analizzare/modificare")
+    parser.add_argument("--file", help="HTML file to analyze/modify")
     parser.add_argument("--type", choices=["website", "webapp", "faq", "article", "organization", "breadcrumb"],
-                        help="Tipo di schema da generare")
-    parser.add_argument("--name", help="Nome del sito/applicazione")
-    parser.add_argument("--url", help="URL del sito")
-    parser.add_argument("--description", default="", help="Descrizione")
-    parser.add_argument("--author", default="", help="Autore")
-    parser.add_argument("--logo-url", default="", help="URL del logo")
-    parser.add_argument("--faq-file", help="File JSON con FAQ [{question, answer}]")
-    parser.add_argument("--astro", action="store_true", help="Genera snippet per Astro")
-    parser.add_argument("--inject", action="store_true", help="Inietta direttamente nel file --file")
-    parser.add_argument("--no-backup", action="store_true", help="Non creare backup prima di modificare")
-    parser.add_argument("--analyze", action="store_true", help="Solo analizza il file, non modifica")
+                        help="Type of schema to generate")
+    parser.add_argument("--name", help="Site/application name")
+    parser.add_argument("--url", help="Site URL")
+    parser.add_argument("--description", default="", help="Description")
+    parser.add_argument("--author", default="", help="Author")
+    parser.add_argument("--logo-url", default="", help="Logo URL")
+    parser.add_argument("--faq-file", help="JSON file with FAQs [{question, answer}]")
+    parser.add_argument("--astro", action="store_true", help="Generate Astro snippet")
+    parser.add_argument("--inject", action="store_true", help="Inject directly into --file")
+    parser.add_argument("--no-backup", action="store_true", help="Do not create backup before modifying")
+    parser.add_argument("--analyze", action="store_true", help="Only analyze the file, do not modify")
 
     args = parser.parse_args()
 
-    # Solo analisi
+    # Analysis only
     if args.analyze and args.file:
-        print(f"\n🔍 Analisi: {args.file}")
+        print(f"\n🔍 Analyzing: {args.file}")
         result = analyze_html_file(args.file)
-        print(f"   Schema trovati: {', '.join(result['found']) or 'nessuno'}")
-        print(f"   Schema mancanti: {', '.join(result['missing']) or 'nessuno ✅'}")
+        print(f"   Schemas found: {', '.join(result['found']) or 'none'}")
+        print(f"   Schemas missing: {', '.join(result['missing']) or 'none ✅'}")
         if result["missing"]:
-            print("\n💡 Aggiungi questi schema:")
+            print("\n💡 Add these schemas:")
             for schema_type in result["missing"]:
                 print(f"   python schema_injector.py --file {args.file} --type {schema_type} --url URL --name NAME --inject")
         return
 
-    # Genera snippet Astro
+    # Generate Astro snippet
     if args.astro:
         template = ASTRO_TEMPLATES.get("website", "")
         template = template.replace("{site_url}", args.url or "https://example.com")
         template = template.replace("{site_name}", args.name or "SiteName")
-        print("\n─── Snippet Astro BaseLayout ───")
+        print("\n─── Astro BaseLayout Snippet ───")
         print(template)
         return
 
-    # Genera schema
+    # Generate schema
     if args.type:
         if args.type == "faq":
             if args.faq_file:
@@ -362,25 +362,25 @@ def main():
                     faq_data = json.load(f)
                 schema = generate_faq_schema(faq_data)
             else:
-                # Schema FAQ di esempio
+                # Example FAQ schema
                 schema = {
                     "@context": "https://schema.org",
                     "@type": "FAQPage",
                     "mainEntity": [
                         {
                             "@type": "Question",
-                            "name": "Come funziona questo strumento?",
+                            "name": "How does this tool work?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
-                                "text": "Inserisci i dati richiesti e ottieni il risultato istantaneamente."
+                                "text": "Enter the required data and get the result instantly."
                             }
                         },
                         {
                             "@type": "Question",
-                            "name": "Il servizio è gratuito?",
+                            "name": "Is the service free?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
-                                "text": "Sì, tutti gli strumenti sono completamente gratuiti."
+                                "text": "Yes, all tools are completely free to use."
                             }
                         }
                     ]
@@ -388,7 +388,7 @@ def main():
         else:
             template = SCHEMA_TEMPLATES.get(args.type, {})
             values = {
-                "name": args.name or "Nome Sito",
+                "name": args.name or "Site Name",
                 "url": args.url or "https://example.com",
                 "description": args.description or "",
                 "author": args.author or "",
@@ -399,30 +399,30 @@ def main():
         schema_tag = schema_to_html_tag(schema)
 
         if args.inject and args.file:
-            print(f"\n💉 Inietta {args.type} schema in: {args.file}")
+            print(f"\n💉 Injecting {args.type} schema into: {args.file}")
             success = inject_schema_into_html(args.file, schema_tag, backup=not args.no_backup)
             if success:
-                print(f"✅ Schema {args.type} iniettato con successo!")
+                print(f"✅ {args.type} schema injected successfully!")
             else:
-                print("❌ Iniezione fallita")
+                print("❌ Injection failed")
         else:
             print(f"\n─── Schema {args.type.upper()} JSON-LD ───")
             print(schema_tag)
             if args.file:
-                print(f"\n💡 Per iniettare: aggiungi --inject")
+                print(f"\n💡 To inject: add --inject")
 
         return
 
-    # Analisi file senza tipo specificato
+    # File analysis without a specified type
     if args.file:
         result = analyze_html_file(args.file)
-        print(f"\n🔍 Analisi schema in: {args.file}")
-        print(f"   ✅ Trovati: {', '.join(result['found']) or 'nessuno'}")
+        print(f"\n🔍 Schema analysis in: {args.file}")
+        print(f"   ✅ Found: {', '.join(result['found']) or 'none'}")
         if result["missing"]:
-            print(f"   ❌ Mancanti: {', '.join(result['missing'])}")
-            print("\n💡 Comandi suggeriti:")
+            print(f"   ❌ Missing: {', '.join(result['missing'])}")
+            print("\n💡 Suggested commands:")
             for t in result["missing"]:
-                print(f"   python schema_injector.py --file {args.file} --type {t} --name 'Nome' --url 'URL' --inject")
+                print(f"   python schema_injector.py --file {args.file} --type {t} --name 'Name' --url 'URL' --inject")
         return
 
     parser.print_help()

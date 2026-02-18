@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Generate llms.txt — Genera file llms.txt da sitemap XML
+Generate llms.txt — Generates llms.txt from an XML sitemap
 Generative Engine Optimization (GEO) Skill
 
-Autore: Juan Auriti (juancamilo.auriti@gmail.com)
+Author: Juan Camilo Auriti (juancamilo.auriti@gmail.com)
 Skill: geo-optimizer (OpenClaw)
 
-Uso:
-    python generate_llms_txt.py --base-url https://calcfast.online
+Usage:
+    python generate_llms_txt.py --base-url https://example.com
     python generate_llms_txt.py --base-url https://example.com --output ./public/llms.txt
     python generate_llms_txt.py --base-url https://example.com --sitemap https://example.com/sitemap-0.xml
-    python generate_llms_txt.py --base-url https://example.com --site-name "MioSito" --description "Descrizione"
+    python generate_llms_txt.py --base-url https://example.com --site-name "MySite" --description "Description"
 """
 
 import argparse
@@ -24,33 +24,33 @@ try:
     import requests
     from bs4 import BeautifulSoup
 except ImportError:
-    print("❌ Dipendenze mancanti. Installa: pip install requests beautifulsoup4")
+    print("❌ Missing dependencies. Install with: pip install requests beautifulsoup4")
     sys.exit(1)
 
 HEADERS = {
     "User-Agent": "GEO-Optimizer/1.0 (https://github.com/auriti-web-design/geo-optimizer-skill)"
 }
 
-# Mappatura categorie — pattern URL → nome sezione
+# Category mapping — URL pattern → section name
 CATEGORY_PATTERNS = [
-    (r"/blog/", "Blog & Articoli"),
-    (r"/article", "Articoli"),
-    (r"/post/", "Post"),
-    (r"/finance/", "Strumenti Finanziari"),
-    (r"/health/", "Salute & Benessere"),
-    (r"/math/", "Matematica"),
-    (r"/calcul", "Calcolatori"),
-    (r"/tool", "Strumenti"),
-    (r"/app/", "Applicazioni"),
-    (r"/docs?/", "Documentazione"),
-    (r"/guide/", "Guide"),
-    (r"/tutorial", "Tutorial"),
-    (r"/product", "Prodotti"),
-    (r"/service", "Servizi"),
-    (r"/about", "Chi Siamo"),
-    (r"/contact", "Contatti"),
+    (r"/blog/", "Blog & Articles"),
+    (r"/article", "Articles"),
+    (r"/post/", "Posts"),
+    (r"/finance/", "Finance Tools"),
+    (r"/health/", "Health & Wellness"),
+    (r"/math/", "Math"),
+    (r"/calcul", "Calculators"),
+    (r"/tool", "Tools"),
+    (r"/app/", "Applications"),
+    (r"/docs?/", "Documentation"),
+    (r"/guide/", "Guides"),
+    (r"/tutorial", "Tutorials"),
+    (r"/product", "Products"),
+    (r"/service", "Services"),
+    (r"/about", "About"),
+    (r"/contact", "Contact"),
     (r"/privacy", "Privacy & Legal"),
-    (r"/terms", "Termini"),
+    (r"/terms", "Terms"),
 ]
 
 SKIP_PATTERNS = [
@@ -62,33 +62,33 @@ SKIP_PATTERNS = [
 
 
 def fetch_sitemap(sitemap_url: str) -> list:
-    """Scarica e parsa un sitemap XML, inclusi sitemap index."""
+    """Download and parse an XML sitemap, including sitemap index files."""
     urls = []
-    print(f"⏳ Scarico sitemap: {sitemap_url}")
+    print(f"⏳ Fetching sitemap: {sitemap_url}")
 
     try:
         r = requests.get(sitemap_url, headers=HEADERS, timeout=15)
         r.raise_for_status()
     except Exception as e:
-        print(f"❌ Errore sitemap: {e}")
+        print(f"❌ Sitemap error: {e}")
         return urls
 
     soup = BeautifulSoup(r.content, "xml")
 
-    # Sitemap index (contiene altri sitemap)
+    # Sitemap index (contains other sitemaps)
     sitemap_tags = soup.find_all("sitemap")
     if sitemap_tags:
-        print(f"   Sitemap index trovato: {len(sitemap_tags)} sitemap")
-        for sitemap in sitemap_tags[:10]:  # Limita a 10 sotto-sitemap
+        print(f"   Sitemap index found: {len(sitemap_tags)} sitemaps")
+        for sitemap in sitemap_tags[:10]:  # Limit to 10 sub-sitemaps
             loc = sitemap.find("loc")
             if loc:
                 sub_urls = fetch_sitemap(loc.text.strip())
                 urls.extend(sub_urls)
         return urls
 
-    # Sitemap normale
+    # Regular sitemap
     url_tags = soup.find_all("url")
-    print(f"   URL trovati: {len(url_tags)}")
+    print(f"   URLs found: {len(url_tags)}")
 
     for url_tag in url_tags:
         loc = url_tag.find("loc")
@@ -119,7 +119,7 @@ def fetch_sitemap(sitemap_url: str) -> list:
 
 
 def should_skip(url: str) -> bool:
-    """Controlla se l'URL va saltato."""
+    """Check whether the URL should be skipped."""
     for pattern in SKIP_PATTERNS:
         if re.search(pattern, url, re.IGNORECASE):
             return True
@@ -127,7 +127,7 @@ def should_skip(url: str) -> bool:
 
 
 def categorize_url(url: str, base_domain: str) -> str:
-    """Assegna una categoria all'URL."""
+    """Assign a category to the URL."""
     path = urlparse(url).path.lower()
 
     for pattern, category in CATEGORY_PATTERNS:
@@ -138,16 +138,16 @@ def categorize_url(url: str, base_domain: str) -> str:
     if path in ["/", ""]:
         return "_homepage"
 
-    # Pagine di primo livello senza categoria
+    # Top-level pages without a matching category
     parts = [p for p in path.split("/") if p]
     if len(parts) == 1:
-        return "Pagine Principali"
+        return "Main Pages"
 
-    return "Altro"
+    return "Other"
 
 
 def fetch_page_title(url: str) -> str:
-    """Cerca di ottenere il titolo della pagina (con timeout breve)."""
+    """Attempt to fetch the page title (with short timeout)."""
     try:
         r = requests.get(url, headers=HEADERS, timeout=5)
         soup = BeautifulSoup(r.text, "html.parser")
@@ -163,18 +163,18 @@ def fetch_page_title(url: str) -> str:
 
 
 def url_to_label(url: str, base_domain: str) -> str:
-    """Genera un label leggibile dall'URL."""
+    """Generate a human-readable label from a URL."""
     path = urlparse(url).path
-    # Rimuovi slash iniziale e finale
+    # Remove leading and trailing slashes
     path = path.strip("/")
     if not path:
         return "Homepage"
-    # Prendi ultimo segmento e pulisci
+    # Take the last segment and clean it
     parts = path.split("/")
     last = parts[-1]
-    # Converti slug in titolo
+    # Convert slug to title
     label = last.replace("-", " ").replace("_", " ").title()
-    # Se è solo numeri, usa il percorso completo
+    # If it's only digits, use the full path
     if label.isdigit():
         label = "/".join(parts[-2:]).replace("-", " ").replace("_", " ").title()
     return label or path
@@ -188,7 +188,7 @@ def generate_llms_txt(
     fetch_titles: bool = False,
     max_urls_per_section: int = 20,
 ) -> str:
-    """Genera il contenuto di llms.txt."""
+    """Generate the content of llms.txt."""
     parsed = urlparse(base_url)
     domain = parsed.netloc
 
@@ -196,35 +196,35 @@ def generate_llms_txt(
         site_name = domain.replace("www.", "").split(".")[0].title()
 
     if not description:
-        description = f"Sito web {site_name} disponibile su {base_url}"
+        description = f"Website {site_name} available at {base_url}"
 
-    # Filtra e categorizza URL
+    # Filter and categorize URLs
     categorized = defaultdict(list)
     seen = set()
 
     for url_data in sorted(urls, key=lambda x: -x.get("priority", 0.5)):
         url = url_data["url"]
 
-        # Normalizza URL
+        # Normalize URL
         if not url.startswith("http"):
             url = urljoin(base_url, url)
 
-        # Salta URL esterni al dominio
+        # Skip URLs outside the domain
         if domain not in urlparse(url).netloc:
             continue
 
-        # Salta URL da ignorare
+        # Skip unwanted URLs
         if should_skip(url):
             continue
 
-        # Deduplicazione
+        # Deduplication
         if url in seen:
             continue
         seen.add(url)
 
         category = categorize_url(url, domain)
 
-        # Genera label
+        # Generate label
         label = url_data.get("title") or url_to_label(url, domain)
 
         categorized[category].append({
@@ -233,57 +233,57 @@ def generate_llms_txt(
             "priority": url_data.get("priority", 0.5),
         })
 
-    # Costruisci llms.txt
+    # Build llms.txt
     lines = []
 
-    # Header obbligatorio
+    # Required header
     lines.append(f"# {site_name}")
     lines.append("")
     lines.append(f"> {description}")
     lines.append("")
 
-    # Info aggiuntive
-    lines.append(f"Sito generato automaticamente da GEO Optimizer il {datetime.now().strftime('%Y-%m-%d')}.")
-    lines.append(f"URL base: {base_url}")
+    # Additional info
+    lines.append(f"Auto-generated by GEO Optimizer on {datetime.now().strftime('%Y-%m-%d')}.")
+    lines.append(f"Base URL: {base_url}")
     lines.append("")
 
-    # Homepage prima (se presente)
+    # Homepage first (if present)
     if "_homepage" in categorized:
         for item in categorized["_homepage"][:1]:
-            lines.append(f"La homepage principale è disponibile su: [{site_name}]({item['url']})")
+            lines.append(f"The main homepage is available at: [{site_name}]({item['url']})")
         lines.append("")
 
-    # Ordine categorie per importanza
+    # Category order by importance
     priority_order = [
-        "Strumenti", "Calcolatori", "Strumenti Finanziari", "Salute & Benessere",
-        "Matematica", "Applicazioni", "Pagine Principali",
-        "Documentazione", "Guide", "Tutorial",
-        "Blog & Articoli", "Articoli", "Post",
-        "Prodotti", "Servizi",
-        "Chi Siamo", "Contatti",
-        "Altro",
-        "Privacy & Legal", "Termini",
+        "Tools", "Calculators", "Finance Tools", "Health & Wellness",
+        "Math", "Applications", "Main Pages",
+        "Documentation", "Guides", "Tutorials",
+        "Blog & Articles", "Articles", "Posts",
+        "Products", "Services",
+        "About", "Contact",
+        "Other",
+        "Privacy & Legal", "Terms",
     ]
 
-    # Sezioni principali
+    # Main sections
     important_categories = [c for c in priority_order if c in categorized and c != "_homepage"]
     remaining = [c for c in categorized if c not in priority_order and c != "_homepage"]
 
     all_categories = important_categories + sorted(remaining)
 
-    # Separa le sezioni "Optional" (secondarie)
+    # Separate "Optional" (secondary) sections
     main_categories = []
     optional_categories = []
 
     for cat in all_categories:
         items = categorized[cat]
-        # Categorie secondarie vanno in Optional
-        if cat in ["Privacy & Legal", "Termini", "Contatti", "Altro"]:
+        # Secondary categories go to Optional
+        if cat in ["Privacy & Legal", "Terms", "Contact", "Other"]:
             optional_categories.append(cat)
         else:
             main_categories.append(cat)
 
-    # Sezioni principali
+    # Main sections
     for category in main_categories:
         items = categorized[category][:max_urls_per_section]
         if not items:
@@ -295,7 +295,7 @@ def generate_llms_txt(
             lines.append(f"- [{item['label']}]({item['url']})")
         lines.append("")
 
-    # Sezione Optional (può essere saltata da LLM con contesto breve)
+    # Optional section (can be skipped by LLMs with short context)
     if optional_categories:
         lines.append("## Optional")
         lines.append("")
@@ -309,7 +309,7 @@ def generate_llms_txt(
 
 
 def discover_sitemap(base_url: str) -> str:
-    """Cerca il sitemap del sito."""
+    """Discover the site's sitemap."""
     common_paths = [
         "/sitemap.xml",
         "/sitemap_index.xml",
@@ -319,54 +319,54 @@ def discover_sitemap(base_url: str) -> str:
         "/sitemap-0.xml",
     ]
 
-    # Prima controlla robots.txt per Sitemap:
+    # First check robots.txt for Sitemap: directive
     robots_url = urljoin(base_url, "/robots.txt")
     try:
         r = requests.get(robots_url, headers=HEADERS, timeout=5)
         for line in r.text.splitlines():
             if line.lower().startswith("sitemap:"):
                 sitemap_url = line.split(":", 1)[1].strip()
-                print(f"   Sitemap trovato in robots.txt: {sitemap_url}")
+                print(f"   Sitemap found in robots.txt: {sitemap_url}")
                 return sitemap_url
     except Exception:
         pass
 
-    # Prova i path comuni
+    # Try common paths
     for path in common_paths:
         url = urljoin(base_url, path)
         try:
             r = requests.head(url, headers=HEADERS, timeout=5)
             if r.status_code == 200:
-                print(f"   Sitemap trovato: {url}")
+                print(f"   Sitemap found: {url}")
                 return url
         except Exception:
             continue
 
-    print("   ⚠️  Nessun sitemap trovato automaticamente")
+    print("   ⚠️  No sitemap found automatically")
     return None
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Genera llms.txt da sitemap XML per GEO optimization",
+        description="Generate llms.txt from XML sitemap for GEO optimization",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-Esempi:
-  python generate_llms_txt.py --base-url https://calcfast.online
+Examples:
+  python generate_llms_txt.py --base-url https://example.com
   python generate_llms_txt.py --base-url https://example.com --output ./public/llms.txt
-  python generate_llms_txt.py --base-url https://example.com --site-name "MioSito" \\
-      --description "Calcolatori online gratuiti per finanza e matematica"
+  python generate_llms_txt.py --base-url https://example.com --site-name "MySite" \\
+      --description "Free online calculators for finance and math"
   python generate_llms_txt.py --base-url https://example.com \\
       --sitemap https://example.com/sitemap-index.xml --fetch-titles
         """
     )
-    parser.add_argument("--base-url", required=True, help="URL base del sito (es: https://example.com)")
-    parser.add_argument("--output", default=None, help="File di output (default: stdout)")
-    parser.add_argument("--sitemap", default=None, help="URL del sitemap (auto-detect se non specificato)")
-    parser.add_argument("--site-name", default=None, help="Nome del sito")
-    parser.add_argument("--description", default=None, help="Descrizione del sito (blockquote)")
-    parser.add_argument("--fetch-titles", action="store_true", help="Scarica i titoli dalle pagine (lento)")
-    parser.add_argument("--max-per-section", type=int, default=20, help="Max URL per sezione (default: 20)")
+    parser.add_argument("--base-url", required=True, help="Base URL of the site (e.g. https://example.com)")
+    parser.add_argument("--output", default=None, help="Output file (default: stdout)")
+    parser.add_argument("--sitemap", default=None, help="Sitemap URL (auto-detected if not specified)")
+    parser.add_argument("--site-name", default=None, help="Site name")
+    parser.add_argument("--description", default=None, help="Site description (blockquote)")
+    parser.add_argument("--fetch-titles", action="store_true", help="Fetch titles from pages (slow)")
+    parser.add_argument("--max-per-section", type=int, default=20, help="Max URLs per section (default: 20)")
 
     args = parser.parse_args()
 
@@ -375,42 +375,42 @@ Esempi:
         base_url = "https://" + base_url
 
     print(f"\n🌐 GEO llms.txt Generator")
-    print(f"   Sito: {base_url}")
+    print(f"   Site: {base_url}")
 
     # Auto-detect sitemap
     sitemap_url = args.sitemap
     if not sitemap_url:
-        print("\n🔍 Cerco sitemap...")
+        print("\n🔍 Searching for sitemap...")
         sitemap_url = discover_sitemap(base_url)
 
     if not sitemap_url:
-        print("❌ Nessun sitemap trovato. Specifica --sitemap manualmente.")
-        # Crea un llms.txt minimale
+        print("❌ No sitemap found. Specify --sitemap manually.")
+        # Create a minimal llms.txt
         minimal_content = f"# {args.site_name or base_url.split('//')[1].split('.')[0].title()}\n\n"
-        minimal_content += f"> {args.description or 'Sito web disponibile su ' + base_url}\n\n"
-        minimal_content += "## Pagine Principali\n\n"
+        minimal_content += f"> {args.description or 'Website available at ' + base_url}\n\n"
+        minimal_content += "## Main Pages\n\n"
         minimal_content += f"- [Homepage]({base_url})\n"
         if args.output:
             with open(args.output, "w") as f:
                 f.write(minimal_content)
-            print(f"✅ llms.txt minimale scritto su: {args.output}")
+            print(f"✅ Minimal llms.txt written to: {args.output}")
         else:
             print("\n--- llms.txt ---")
             print(minimal_content)
         return
 
-    # Fetch URLs da sitemap
-    print("\n📥 Scarico URLs dal sitemap...")
+    # Fetch URLs from sitemap
+    print("\n📥 Fetching URLs from sitemap...")
     urls = fetch_sitemap(sitemap_url)
 
     if not urls:
-        print("❌ Nessun URL trovato nel sitemap")
+        print("❌ No URLs found in sitemap")
         sys.exit(1)
 
-    print(f"   Totale URL: {len(urls)}")
+    print(f"   Total URLs: {len(urls)}")
 
-    # Genera llms.txt
-    print("\n📝 Genero llms.txt...")
+    # Generate llms.txt
+    print("\n📝 Generating llms.txt...")
     content = generate_llms_txt(
         base_url=base_url,
         urls=urls,
@@ -424,15 +424,15 @@ Esempi:
     if args.output:
         with open(args.output, "w", encoding="utf-8") as f:
             f.write(content)
-        print(f"\n✅ llms.txt scritto su: {args.output}")
-        print(f"   Dimensione: {len(content)} bytes")
-        print(f"   Righe: {len(content.splitlines())}")
-        print(f"\n   Carica il file in: {base_url}/llms.txt")
+        print(f"\n✅ llms.txt written to: {args.output}")
+        print(f"   Size: {len(content)} bytes")
+        print(f"   Lines: {len(content.splitlines())}")
+        print(f"\n   Upload the file to: {base_url}/llms.txt")
     else:
         print("\n" + "─" * 50)
         print(content)
         print("─" * 50)
-        print(f"\n✅ Salva con: --output /percorso/public/llms.txt")
+        print(f"\n✅ Save with: --output /path/to/public/llms.txt")
 
 
 if __name__ == "__main__":

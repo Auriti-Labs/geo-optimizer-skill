@@ -1,17 +1,17 @@
-# AI Bots List — User-Agents per robots.txt
+# AI Bots List — User-Agents for robots.txt
 
-> Lista aggiornata: Febbraio 2026  
-> Fonte: server logs analisi, documentazione ufficiale vendor, Momentic Marketing (Nov 2025)
+> Last updated: February 2026  
+> Source: server log analysis, official vendor documentation, Momentic Marketing (Nov 2025)
 
-## robots.txt Completo Raccomandato
+## Recommended Full robots.txt
 
-Copia questo blocco nel tuo `robots.txt` per ottimizzare l'accesso AI:
+Copy this block into your `robots.txt` to optimize AI access:
 
 ```
 # ═══════════════════════════════════════════════
 #   AI SEARCH & CITATION BOTS — Allow All
 #   GEO-Optimized robots.txt
-#   Aggiornato: 2026-02
+#   Updated: 2026-02
 # ═══════════════════════════════════════════════
 
 # ——— OpenAI ———
@@ -68,32 +68,32 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
-# ——— Accademici / Open ———
+# ——— Academic / Open ———
 User-agent: AI2Bot
 Allow: /
 User-agent: CCBot
 Allow: /
 
-# ——— Tradizionali (mantieni sempre) ———
+# ——— Traditional (always keep) ———
 User-agent: Googlebot
 Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://tuosito.com/sitemap.xml
+Sitemap: https://yoursite.com/sitemap.xml
 ```
 
 ---
 
-## Lista Completa per Categoria
+## Full List by Category
 
 ### OpenAI (ChatGPT)
 
-| User-Agent | Tipo | Scopo | Priorità GEO |
-|-----------|------|-------|--------------|
-| `GPTBot` | Training | Crawl per training modelli OpenAI | ⚠️ Training only |
-| `OAI-SearchBot` | Search | **Citazioni ChatGPT Search** — critico! | 🔴 CRITICO |
-| `ChatGPT-User` | On-demand | Fetch pagine quando utente chiede | ⭐⭐⭐ |
+| User-Agent | Type | Purpose | GEO Priority |
+|-----------|------|---------|--------------|
+| `GPTBot` | Training | Crawl for OpenAI model training | ⚠️ Training only |
+| `OAI-SearchBot` | Search | **ChatGPT Search citations** — critical! | 🔴 CRITICAL |
+| `ChatGPT-User` | On-demand | Fetch pages when user asks | ⭐⭐⭐ |
 
 **robots.txt snippet:**
 ```
@@ -105,28 +105,28 @@ User-agent: ChatGPT-User
 Allow: /
 ```
 
-**Note:**
-- `OAI-SearchBot` = il bot che decide se citarti in ChatGPT Search
-- `GPTBot` = training data. Puoi bloccare il training ma permettere citazioni:
+**Notes:**
+- `OAI-SearchBot` = the bot that decides whether to cite you in ChatGPT Search
+- `GPTBot` = training data. You can block training but allow citations:
   ```
   User-agent: GPTBot
   Disallow: /
   User-agent: OAI-SearchBot
   Allow: /
   ```
-- `ChatGPT-User` segue robots.txt ma può essere user-triggered
+- `ChatGPT-User` follows robots.txt but can be user-triggered
 
 ---
 
 ### Anthropic (Claude)
 
-| User-Agent | Tipo | Scopo | Priorità GEO |
-|-----------|------|-------|--------------|
-| `anthropic-ai` | Training | Training modelli Claude | ⚠️ Training only |
-| `ClaudeBot` | Search/Citation | **Citazioni Claude.ai** | 🔴 CRITICO |
-| `claude-web` | Crawl | Web crawling generico Claude | ⭐⭐ |
+| User-Agent | Type | Purpose | GEO Priority |
+|-----------|------|---------|--------------|
+| `anthropic-ai` | Training | Claude model training | ⚠️ Training only |
+| `ClaudeBot` | Search/Citation | **Claude.ai citations** | 🔴 CRITICAL |
+| `claude-web` | Crawl | Generic Claude web crawling | ⭐⭐ |
 
-**User-Agent completa ClaudeBot:**
+**Full ClaudeBot User-Agent:**
 ```
 Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +claudebot@anthropic.com)
 ```
@@ -141,7 +141,7 @@ User-agent: claude-web
 Allow: /
 ```
 
-**Se vuoi separare training da citazioni:**
+**If you want to separate training from citations:**
 ```
 User-agent: anthropic-ai
 Disallow: /
@@ -153,10 +153,10 @@ Allow: /
 
 ### Perplexity AI
 
-| User-Agent | Tipo | Scopo | Priorità GEO |
-|-----------|------|-------|--------------|
-| `PerplexityBot` | Index | **Costruisce indice Perplexity** | 🔴 CRITICO |
-| `Perplexity-User` | On-demand | Fetch quando utente clicca citazione | ⭐⭐⭐ |
+| User-Agent | Type | Purpose | GEO Priority |
+|-----------|------|---------|--------------|
+| `PerplexityBot` | Index | **Builds Perplexity index** | 🔴 CRITICAL |
+| `Perplexity-User` | On-demand | Fetch when user clicks citation | ⭐⭐⭐ |
 
 **robots.txt snippet:**
 ```
@@ -166,18 +166,18 @@ User-agent: Perplexity-User
 Allow: /
 ```
 
-**Note:**
-- Perplexity è uno dei motori AI che cita di più le fonti web
-- `PerplexityBot` è il più importante per la visibilità
+**Notes:**
+- Perplexity is one of the AI engines that cites web sources the most
+- `PerplexityBot` is the most important for visibility
 
 ---
 
 ### Google AI (Gemini)
 
-| User-Agent | Tipo | Scopo | Priorità GEO |
-|-----------|------|-------|--------------|
-| `Google-Extended` | Training/AI | Gemini training e AI Overviews | ⭐⭐⭐ |
-| `Googlebot` | Search | Google Search tradizionale | 🔴 CRITICO |
+| User-Agent | Type | Purpose | GEO Priority |
+|-----------|------|---------|--------------|
+| `Google-Extended` | Training/AI | Gemini training and AI Overviews | ⭐⭐⭐ |
+| `Googlebot` | Search | Traditional Google Search | 🔴 CRITICAL |
 
 **robots.txt snippet:**
 ```
@@ -187,18 +187,18 @@ User-agent: Googlebot
 Allow: /
 ```
 
-**Note:**
-- `Google-Extended` è un **token robots.txt**, non un user-agent separato
-- Controlla sia Gemini training che AI Overviews in Google Search
-- Bloccare `Google-Extended` rimuove il sito dagli AI Overviews Google
+**Notes:**
+- `Google-Extended` is a **robots.txt token**, not a separate user-agent
+- Controls both Gemini training and AI Overviews in Google Search
+- Blocking `Google-Extended` removes the site from Google AI Overviews
 
 ---
 
 ### Microsoft (Copilot/Bing)
 
-| User-Agent | Tipo | Scopo | Priorità GEO |
-|-----------|------|-------|--------------|
-| `Bingbot` | Search | Bing Search e Copilot | 🔴 CRITICO |
+| User-Agent | Type | Purpose | GEO Priority |
+|-----------|------|---------|--------------|
+| `Bingbot` | Search | Bing Search and Copilot | 🔴 CRITICAL |
 
 **robots.txt snippet:**
 ```
@@ -206,16 +206,16 @@ User-agent: Bingbot
 Allow: /
 ```
 
-**Note:**
-- Copilot usa l'indice Bing: permettere Bingbot = permettere Copilot
-- Non esiste un "CopilotBot" separato
+**Notes:**
+- Copilot uses the Bing index: allowing Bingbot = allowing Copilot
+- There is no separate "CopilotBot"
 
 ---
 
 ### Apple (Siri/AI)
 
-| User-Agent | Tipo | Scopo | Priorità GEO |
-|-----------|------|-------|--------------|
+| User-Agent | Type | Purpose | GEO Priority |
+|-----------|------|---------|--------------|
 | `Applebot` | Search | Siri, Spotlight Search | ⭐⭐ |
 | `Applebot-Extended` | Training | Apple Intelligence training | ⭐ |
 
@@ -231,10 +231,10 @@ Allow: /
 
 ### Meta (Facebook AI)
 
-| User-Agent | Tipo | Scopo | Priorità GEO |
-|-----------|------|-------|--------------|
-| `FacebookBot` | Preview | Link preview Facebook/Instagram | ⭐ |
-| `meta-externalagent` | Backup | Fetcher backup Meta | ⭐ |
+| User-Agent | Type | Purpose | GEO Priority |
+|-----------|------|---------|--------------|
+| `FacebookBot` | Preview | Facebook/Instagram link preview | ⭐ |
+| `meta-externalagent` | Backup | Meta backup fetcher | ⭐ |
 
 **robots.txt snippet:**
 ```
@@ -248,9 +248,9 @@ Allow: /
 
 ### ByteDance/TikTok
 
-| User-Agent | Tipo | Scopo | Priorità GEO |
-|-----------|------|-------|--------------|
-| `Bytespider` | AI/Rec | TikTok AI, raccomandazioni | ⭐⭐ |
+| User-Agent | Type | Purpose | GEO Priority |
+|-----------|------|---------|--------------|
+| `Bytespider` | AI/Rec | TikTok AI, recommendations | ⭐⭐ |
 
 **robots.txt snippet:**
 ```
@@ -262,46 +262,46 @@ Allow: /
 
 ### DuckDuckGo
 
-| User-Agent | Tipo | Scopo | Priorità GEO |
-|-----------|------|-------|--------------|
+| User-Agent | Type | Purpose | GEO Priority |
+|-----------|------|---------|--------------|
 | `DuckAssistBot` | AI | DuckAssist AI answers | ⭐ |
 
 ---
 
 ### Cohere
 
-| User-Agent | Tipo | Scopo | Priorità GEO |
-|-----------|------|-------|--------------|
-| `cohere-ai` | Training | Training modelli Cohere | ⭐ |
-| `cohere-training-data-crawler` | Training | Data crawler Cohere | ⭐ |
+| User-Agent | Type | Purpose | GEO Priority |
+|-----------|------|---------|--------------|
+| `cohere-ai` | Training | Cohere model training | ⭐ |
+| `cohere-training-data-crawler` | Training | Cohere data crawler | ⭐ |
 
 ---
 
-### Accademici & Open Source
+### Academic & Open Source
 
-| User-Agent | Tipo | Scopo |
-|-----------|------|-------|
+| User-Agent | Type | Purpose |
+|-----------|------|---------|
 | `AI2Bot` | Academic | Allen Institute for AI, Semantic Scholar |
-| `CCBot` | Open | Common Crawl — base per molti modelli |
+| `CCBot` | Open | Common Crawl — base for many models |
 | `Diffbot` | Data | Structured data extraction |
-| `omgili` | Forum | Forum e discussioni |
-| `LinkedInBot` | Preview | Anteprima link LinkedIn |
+| `omgili` | Forum | Forums and discussions |
+| `LinkedInBot` | Preview | LinkedIn link preview |
 | `Amazonbot` | AI | Alexa, Fire OS AI |
 
 ---
 
-## Strategie robots.txt
+## robots.txt Strategies
 
-### Strategia 1: Allow All (Massima Visibilità AI) ✅
+### Strategy 1: Allow All (Maximum AI Visibility) ✅
 ```
 User-agent: *
 Allow: /
 ```
-Semplice, permette tutto. Ideale per siti di contenuto che vogliono massima visibilità.
+Simple, allows everything. Ideal for content sites that want maximum visibility.
 
-### Strategia 2: Permetti citazioni, blocca training
+### Strategy 2: Allow citations, block training
 ```
-# Training — blocca (no AI training data)
+# Training — block (no AI training data)
 User-agent: GPTBot
 Disallow: /
 User-agent: anthropic-ai
@@ -311,7 +311,7 @@ Disallow: /
 User-agent: CCBot
 Disallow: /
 
-# Citazioni AI — permetti
+# AI citations — allow
 User-agent: OAI-SearchBot
 Allow: /
 User-agent: ClaudeBot
@@ -322,7 +322,7 @@ User-agent: Bingbot
 Allow: /
 ```
 
-### Strategia 3: Blocca tutto tranne Google
+### Strategy 3: Block everything except Google
 ```
 User-agent: Googlebot
 Allow: /
@@ -331,42 +331,42 @@ Allow: /
 User-agent: *
 Disallow: /
 ```
-⚠️ Rimuove il sito da tutte le AI search engines.
+⚠️ Removes the site from all AI search engines.
 
 ---
 
-## Verifica con curl
+## Verify with curl
 
-Testa se un bot può accedere al tuo sito:
+Test whether a bot can access your site:
 
 ```bash
-# Simula GPTBot
-curl -A "GPTBot" https://tuosito.com/robots.txt
+# Simulate GPTBot
+curl -A "GPTBot" https://yoursite.com/robots.txt
 
-# Simula ClaudeBot
-curl -A "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +claudebot@anthropic.com)" https://tuosito.com
+# Simulate ClaudeBot
+curl -A "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +claudebot@anthropic.com)" https://yoursite.com
 
-# Simula PerplexityBot
-curl -A "PerplexityBot/1.0 (+https://perplexity.ai/bot)" https://tuosito.com
+# Simulate PerplexityBot
+curl -A "PerplexityBot/1.0 (+https://perplexity.ai/bot)" https://yoursite.com
 ```
 
 ---
 
-## Monitorare i Bot nei Log
+## Monitor Bots in Logs
 
-Cerca nei server log (nginx/apache):
+Search server logs (nginx/apache):
 
 ```bash
-# Cerca tutti gli AI bots nei log nginx
+# Search all AI bots in nginx logs
 grep -E "GPTBot|OAI-SearchBot|ClaudeBot|PerplexityBot|Google-Extended|anthropic-ai|claude-web" /var/log/nginx/access.log
 
-# Conta visite per bot
+# Count visits per bot
 grep -oE "GPTBot|OAI-SearchBot|ClaudeBot|PerplexityBot" /var/log/nginx/access.log | sort | uniq -c | sort -rn
 ```
 
 ---
 
-## Risorse Ufficiali
+## Official Resources
 
 - OpenAI: https://openai.com/gptbot
 - Anthropic: https://www.anthropic.com/legal/aup
