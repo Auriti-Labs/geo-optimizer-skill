@@ -1,425 +1,341 @@
-# 🤖 GEO Optimizer — Generative Engine Optimization
+<div align="center">
 
-[![GEO Toolkit](https://img.shields.io/badge/GEO-Toolkit-blueviolet)](https://github.com/auriti-web-design/geo-optimizer-skill)
-[![GEO](https://img.shields.io/badge/GEO-Optimization-green)](https://arxiv.org/abs/2311.09735)
-[![Princeton Research](https://img.shields.io/badge/Based_on-Princeton_KDD_2024-orange)](https://arxiv.org/abs/2311.09735)
-[![Python](https://img.shields.io/badge/Python-3.8+-blue)](https://python.org)
-[![GitHub Stars](https://img.shields.io/github/stars/auriti-web-design/geo-optimizer-skill?style=social)](https://github.com/auriti-web-design/geo-optimizer-skill/stargazers)
+```
+╔═══════════════════════════════════════════════════════════╗
+║                                                           ║
+║   ██████╗ ███████╗ ██████╗                                ║
+║  ██╔════╝ ██╔════╝██╔═══██╗                               ║
+║  ██║  ███╗█████╗  ██║   ██║                               ║
+║  ██║   ██║██╔══╝  ██║   ██║                               ║
+║  ╚██████╔╝███████╗╚██████╔╝  Optimizer                    ║
+║   ╚═════╝ ╚══════╝ ╚═════╝                                ║
+║                                                           ║
+║   Make AI cite your website — not your competitor's.      ║
+║                                                           ║
+╚═══════════════════════════════════════════════════════════╝
+```
 
-> Optimize websites to be **cited** by AI search engines: ChatGPT, Perplexity, Claude, Gemini.  
-> Based on Princeton research "GEO: Generative Engine Optimization" (KDD 2024, +40% AI visibility).
+[![Python](https://img.shields.io/badge/Python-3.8+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
+[![Based on Princeton KDD 2024](https://img.shields.io/badge/Based_on-Princeton_KDD_2024-f97316?style=flat-square)](https://arxiv.org/abs/2311.09735)
+[![GitHub Stars](https://img.shields.io/github/stars/auriti-web-design/geo-optimizer-skill?style=flat-square&color=facc15&logo=github)](https://github.com/auriti-web-design/geo-optimizer-skill/stargazers)
 
----
+**Optimize any website to be cited by ChatGPT, Perplexity, Claude, and Gemini.**  
+Research-backed. Script-powered. Works in 15 minutes.
 
-## ⭐ Why Star This Repo?
+[**Quick Start**](#-quick-start) · [**How it works**](#-what-is-geo) · [**Use with AI**](#-use-skillmd-as-ai-context) · [**Changelog**](CHANGELOG.md)
 
-If you build websites, run a SaaS, or do SEO for clients — **this will matter to you in 2026**.
-
-AI search engines (ChatGPT, Perplexity, Gemini) are changing how people find information. They don't show a list of links — they give a direct answer and **cite their sources**. If your site isn't optimized for this, you're invisible to a growing share of your audience.
-
-This toolkit gives you everything to fix that in under 15 minutes:
-
-| Without GEO Optimizer | With GEO Optimizer |
-|------------------------|---------------------|
-| Read a 40-page Princeton paper | Workflow distilled into 4 clear steps |
-| Manually research which AI bots exist | Ready-to-use `robots.txt` block (15+ bots) |
-| Write `llms.txt` from scratch | Auto-generate from your sitemap with one command |
-| Build JSON-LD schema by hand | Templates + injection script included |
-| Guess what improves AI visibility | 9 research-backed methods with measured impact |
-
-**The timing advantage is real.** GEO is where SEO was in 2005. Sites that implement it now will have authority and history when everyone else catches up.
-
-If this saves you time or lands you a client — a ⭐ on GitHub goes a long way. It helps others discover the project.
+</div>
 
 ---
 
-## 🎯 What is GEO?
+## The problem nobody is talking about
 
-**GEO (Generative Engine Optimization)** is the evolution of SEO for the AI era. Instead of optimizing to rank on Google, you optimize to be **cited and referenced** by AI search engines:
+AI search engines don't show a list of links. They give a direct answer and **cite their sources**.
 
-- 💬 **ChatGPT Search** (OAI-SearchBot)
-- 🔍 **Perplexity AI** (PerplexityBot)
-- 🤖 **Claude** (ClaudeBot)
-- ✨ **Google AI Overviews / Gemini** (Google-Extended)
-- 🔵 **Microsoft Copilot** (Bingbot)
+If your site isn't optimized for this, you don't appear — even if you rank #1 on Google.
 
-**Proven results (Princeton KDD 2024):**
-- +40% average visibility in AI engines with statistics and citations
-- +115% for some rank positions with the Cite Sources method
-- +37% on real Perplexity.ai in tests
+```
+User: "What's the best mortgage calculator?"
 
----
+Perplexity: "According to [Competitor.com], the standard formula is..."
+             ↑ They appear. You don't.
+```
 
-## 🧠 Use SKILL.md as AI Context
-
-`SKILL.md` is a universal context document that turns any AI assistant into a GEO specialist. Drop it into:
-
-| Platform | How to use |
-|----------|-----------|
-| **Claude** | Create a Project → Add `SKILL.md` as Project Knowledge |
-| **ChatGPT** | Custom Instructions → paste the content |
-| **Gemini** | Gems → paste as context |
-| **Cursor** | `.cursor/rules/geo-optimizer.md` → new rule file |
-| **Windsurf** | `.windsurf/rules/geo-optimizer.md` → new rule file |
-
-Once loaded, just describe your site and ask: *"run a GEO audit"*, *"generate my llms.txt"*, *"add FAQPage schema to this page"*.
+This toolkit fixes that.
 
 ---
 
-## 📦 Structure
+## What's inside
 
 ```
 geo-optimizer/
-├── SKILL.md                          # AI context document (Claude/ChatGPT/Gemini/Cursor/Windsurf)
-├── README.md                         # This file
-├── CHANGELOG.md                      # Version history
-├── LICENSE                           # MIT License
-├── requirements.txt                  # Python dependencies
-├── install.sh                        # One-line installer
-├── update.sh                         # Updater script
-├── scripts/
-│   ├── geo_audit.py                  # Full GEO audit — score 0–100
-│   ├── generate_llms_txt.py          # Auto-generate llms.txt from sitemap
-│   └── schema_injector.py            # Generate/inject JSON-LD schema
-└── references/
-    ├── princeton-geo-methods.md      # The 9 Princeton GEO methods
-    ├── ai-bots-list.md               # 25+ AI crawlers with robots.txt snippets
-    └── schema-templates.md           # Ready-to-use JSON-LD templates (8 types)
+├── 📄 SKILL.md                     ← AI context: paste into Claude / ChatGPT / Gemini / Cursor
+│
+├── 🐍 scripts/
+│   ├── geo_audit.py                ← Score your site 0–100, find what's missing
+│   ├── generate_llms_txt.py        ← Auto-generate /llms.txt from your sitemap
+│   └── schema_injector.py          ← Generate & inject JSON-LD schema
+│
+├── 📚 references/
+│   ├── princeton-geo-methods.md    ← The 9 research-backed methods (+40% AI visibility)
+│   ├── ai-bots-list.md             ← 25+ AI crawlers — ready-to-use robots.txt block
+│   └── schema-templates.md         ← 8 JSON-LD templates (WebSite, FAQPage, WebApp...)
+│
+├── ⚙️  install.sh / update.sh      ← One-line install, one-command update
+└── 📋 requirements.txt             ← requests, beautifulsoup4, lxml
 ```
 
 ---
 
 ## ✅ Requirements
 
-- **Python 3.8+** — [python.org](https://python.org)
-- **git** — [git-scm.com](https://git-scm.com)
-- A website with a publicly accessible URL
+| | |
+|---|---|
+| **Python** | 3.8 or higher → [python.org](https://python.org) |
+| **git** | any version → [git-scm.com](https://git-scm.com) |
+| **Website** | publicly accessible URL |
 
 ---
 
-## 📥 Installation
+## ⚡ Quick Start
 
-**One-line install (recommended):**
+**1. Install**
+
 ```bash
 curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skill/main/install.sh | bash
 ```
 
-> **Prefer to inspect before running?** [View install.sh →](install.sh) — it clones this repo, creates a Python venv, and installs dependencies.
+> Installs to `~/geo-optimizer-skill`. Creates a Python venv automatically.  
+> Prefer to inspect first? [View install.sh →](install.sh)
 
-**Manual install:**
-```bash
-git clone https://github.com/auriti-web-design/geo-optimizer-skill.git
-cd geo-optimizer-skill
-pip install -r requirements.txt
-```
+**2. Audit your site**
 
----
-
-## 🔄 Updating
-
-When a new version is released, update with one command:
-
-```bash
-# From the install directory
-bash update.sh
-```
-
-Or manually:
-```bash
-cd geo-optimizer-skill
-git pull origin main
-pip install -r requirements.txt -q
-```
-
-> **Watch this repo** (top-right → Watch → Releases only) to get notified when new features or bot list updates are released.
-
----
-
-## 🚀 Quick Start
-
-### 1. Install (see above)
-```bash
-curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skill/main/install.sh | bash
-# Installs to ~/geo-optimizer-skill by default
-```
-
-### 2. Run your first audit
 ```bash
 cd ~/geo-optimizer-skill
 ./geo scripts/geo_audit.py --url https://yoursite.com
 ```
 
-> `./geo` is a wrapper that uses the bundled virtual environment automatically.  
-> Alternatively: `source .venv/bin/activate` and then use `python3` directly.
+**3. Fix what's missing**
 
-**Output:**
-```
-🔍 GEO AUDIT — https://yoursite.com
-
-1. ROBOTS.TXT — AI Bot Access
-  ✅ robots.txt found (200)
-  ❌ OAI-SearchBot NOT configured — CRITICAL for AI citations!
-  ✅ ClaudeBot allowed ✓
-  ✅ PerplexityBot allowed ✓
-  ...
-
-📊 FINAL GEO SCORE
-  [███████████░░░░░░░░░] 55/100
-  ⚠️  SUFFICIENT — Implement the missing optimizations
-```
-
-### 3. Generate llms.txt
 ```bash
-./geo scripts/generate_llms_txt.py \
-  --base-url https://yoursite.com \
-  --output ./public/llms.txt
-```
+# Generate llms.txt from your sitemap
+./geo scripts/generate_llms_txt.py --base-url https://yoursite.com --output ./public/llms.txt
 
-### 4. Generate JSON-LD schema
-```bash
-# Analyze existing HTML file
-./geo scripts/schema_injector.py --file index.html --analyze
-
-# Generate WebSite snippet
+# Generate JSON-LD schema
 ./geo scripts/schema_injector.py --type website --name "MySite" --url https://yoursite.com
+
+# Analyze an existing HTML file
+./geo scripts/schema_injector.py --file index.html --analyze
 ```
 
----
+**4. Update anytime**
 
-## 📋 GEO Workflow in 4 Steps
-
-> **Using an AI assistant?** Load `SKILL.md` as context for the full interactive workflow.
-
-### Step 1 — Audit 🔍
-Run `geo_audit.py` to discover what's missing.
-
-### Step 2 — robots.txt 🤖
-Add all AI search bots to robots.txt:
-```
-User-agent: OAI-SearchBot
-Allow: /
-User-agent: PerplexityBot
-Allow: /
-User-agent: ClaudeBot
-Allow: /
-User-agent: Google-Extended
-Allow: /
-```
-> Full list in [`references/ai-bots-list.md`](references/ai-bots-list.md)
-
-### Step 3 — llms.txt 📋
-Create `/llms.txt` at the site root (like robots.txt but for AI):
-```markdown
-# Site Name
-
-> Brief description for LLMs
-
-## Tools
-
-- [Tool 1](https://yoursite.com/tool): Description
-
-## Optional
-
-- [About](https://yoursite.com/about)
-```
-> Spec: https://llmstxt.org
-
-### Step 4 — Schema JSON-LD 🏗️
-Add structured schema in the `<head>`:
-- **WebSite** — globally on all pages
-- **WebApplication** — on every tool/calculator
-- **FAQPage** — with frequently asked questions → maximum probability of AI citation
-> Templates in [`references/schema-templates.md`](references/schema-templates.md)
-
----
-
-## 🔬 The 9 Princeton GEO Methods
-
-> **Using an AI assistant?** Load `SKILL.md` as context for the full interactive workflow.
-
-| # | Method | AI Impact | Priority |
-|---|--------|-----------|----------|
-| 1 | **Cite Sources** | +30-115% | 🔴 High |
-| 2 | **Statistics** | +40% | 🔴 High |
-| 3 | **Quotation Addition** | +30-40% | 🟠 Medium |
-| 4 | **Authoritative** | +6-12% | 🟠 Medium |
-| 5 | **Fluency Optimization** | +15-30% | 🟡 Medium |
-| 6 | **Easy-to-Understand** | +8-15% | 🟡 Low |
-| 7 | **Technical Terms** | +5-10% | 🟢 Low |
-| 8 | **Unique Words** | +5-8% | 🟢 Low |
-| 9 | **Keyword Stuffing** | ≈0% ⚠️ | ❌ Avoid |
-
-> Full detail in [`references/princeton-geo-methods.md`](references/princeton-geo-methods.md) and [`SKILL.md`](SKILL.md)
-
----
-
-## 🤖 Supported AI Bots
-
-| Bot | Vendor | Purpose |
-|-----|--------|---------|
-| `OAI-SearchBot` | OpenAI | ChatGPT Search — citations |
-| `GPTBot` | OpenAI | Model training |
-| `ClaudeBot` | Anthropic | Claude — citations |
-| `anthropic-ai` | Anthropic | Claude training |
-| `PerplexityBot` | Perplexity | AI search index |
-| `Google-Extended` | Google | Gemini + AI Overviews |
-| `Bingbot` | Microsoft | Copilot |
-| `Applebot-Extended` | Apple | Apple Intelligence |
-| `cohere-ai` | Cohere | Cohere models |
-| `DuckAssistBot` | DuckDuckGo | DuckAssist AI |
-| + 15 more... | | |
-
-> Full list in [`references/ai-bots-list.md`](references/ai-bots-list.md)
-
----
-
-## 🛠️ Script Reference
-
-### `geo_audit.py`
-```
-usage: geo_audit.py [--url URL] [--verbose]
-
-Checks:
-  - robots.txt: 13 AI bots
-  - llms.txt: presence and quality
-  - JSON-LD Schema: WebSite, WebApp, FAQPage
-  - Meta tags: description, canonical, OG
-  - Content: headings, numbers, external links
-
-Output: Report with ✅/❌/⚠️ + GEO Score /100
-```
-
-### `generate_llms_txt.py`
-```
-usage: generate_llms_txt.py --base-url URL [--output FILE]
-                             [--sitemap URL] [--site-name NAME]
-                             [--description TEXT] [--max-per-section N]
-
-Features:
-  - Auto-detect sitemap from robots.txt
-  - Supports sitemap index (multi-sitemap)
-  - Automatically groups URLs by category
-  - Generates structured markdown sections
-  - Handles "Optional" section for secondary content
-```
-
-### `schema_injector.py`
-```
-usage: schema_injector.py [--file HTML] [--type TYPE]
-                           [--name NAME] [--url URL]
-                           [--description TEXT] [--astro]
-                           [--inject] [--analyze]
-
-Types: website, webapp, faq, article, organization, breadcrumb
+```bash
+bash ~/geo-optimizer-skill/update.sh
 ```
 
 ---
 
 ## 📊 Sample Output
 
-Running `./geo scripts/geo_audit.py --url https://example.com` on a real financial calculators site:
+```
+╔══════════════════════════════════════════════════════════╗
+  GEO AUDIT — https://yoursite.com
+╚══════════════════════════════════════════════════════════╝
+
+⏳ Fetching homepage...  200 OK | 50,251 bytes
+
+▸ ROBOTS.TXT ─────────────────────────────────────────────
+  ✅ GPTBot          allowed  (OpenAI — ChatGPT training)
+  ✅ OAI-SearchBot   allowed  (OpenAI — ChatGPT citations)  ← critical
+  ✅ ClaudeBot        allowed  (Anthropic — Claude)          ← critical
+  ✅ PerplexityBot    allowed  (Perplexity AI)               ← critical
+  ✅ Google-Extended  allowed  (Gemini + AI Overviews)
+  ✅ All critical citation bots configured
+
+▸ LLMS.TXT ───────────────────────────────────────────────
+  ✅ Found  (6,517 bytes · 46 links · 6 sections)
+
+▸ SCHEMA JSON-LD ─────────────────────────────────────────
+  ✅ WebSite schema
+  ✅ Organization schema
+  ⚠️  FAQPage schema missing  ← next step
+
+▸ META TAGS ──────────────────────────────────────────────
+  ✅ Title · Meta description · Canonical · OG tags
+
+▸ CONTENT QUALITY ────────────────────────────────────────
+  ✅ 31 headings  ·  15 statistics  ·  2 external citations
+
+──────────────────────────────────────────────────────────
+  GEO SCORE   [█████████████████░░░]   85 / 100   🏆 EXCELLENT
+──────────────────────────────────────────────────────────
+```
+
+---
+
+## 🎯 What is GEO?
+
+**GEO (Generative Engine Optimization)** is the practice of optimizing web content to be **cited** by AI search engines — not just ranked by Google.
+
+| Engine | Bot | What it does |
+|--------|-----|-------------|
+| ChatGPT Search | `OAI-SearchBot` | Retrieves and cites sources in answers |
+| Perplexity AI | `PerplexityBot` | Builds an index of trusted sources |
+| Claude | `ClaudeBot` | Web citations in real-time answers |
+| Gemini / AI Overviews | `Google-Extended` | Powers Google's AI answers |
+| Microsoft Copilot | `Bingbot` | AI-assisted search |
+
+**Proven results — Princeton KDD 2024 (10,000 real queries on Perplexity.ai):**
 
 ```
-🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍
-  GEO AUDIT — https://example.com
-  github.com/auriti-web-design/geo-optimizer-skill
-🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍
-
-⏳ Fetching homepage...
-   Status: 200 | Size: 50,251 bytes
-
-============================================================
-  1. ROBOTS.TXT — AI Bot Access
-============================================================
-  ✅ robots.txt found (200)
-  ✅ GPTBot allowed ✓ (OpenAI - ChatGPT training)
-  ✅ OAI-SearchBot allowed ✓ (OpenAI - ChatGPT search citations)
-  ✅ ClaudeBot allowed ✓ (Anthropic - Claude citations)
-  ✅ PerplexityBot allowed ✓ (Perplexity AI - index builder)
-  ✅ Google-Extended allowed ✓ (Google - Gemini training)
-  ✅ All critical CITATION bots are correctly configured
-
-============================================================
-  2. LLMS.TXT — AI Index File
-============================================================
-  ✅ llms.txt found (200, 6517 bytes, ~559 words)
-  ✅ H1 present
-  ✅ Blockquote description present
-  ✅ H2 sections present: 6 sections
-  ✅ Links found: 46 links to site pages
-
-============================================================
-  3. SCHEMA JSON-LD — Structured Data
-============================================================
-  ✅ Found 5 JSON-LD blocks
-  ✅ WebSite schema ✓
-  ✅ Organization schema ✓
-  ✅ BreadcrumbList schema ✓
-  ⚠️  FAQPage schema missing — very useful for AI citations
-
-============================================================
-  4. META TAGS — SEO & Open Graph
-============================================================
-  ✅ Title (56 chars) ✓
-  ✅ Meta description (124 chars) ✓
-  ✅ Canonical URL ✓
-  ✅ og:title / og:description / og:image ✓
-
-============================================================
-  5. CONTENT QUALITY — GEO Best Practices
-============================================================
-  ✅ H1-H4 heading structure: 31 headings
-  ✅ Numerical data: 15 statistics detected ✓
-  ✅ External citations: 2 links to external sources ✓
-
-============================================================
-  📊 FINAL GEO SCORE
-============================================================
-
-  [█████████████████░░░] 85/100
-
-  🏆 EXCELLENT — Site is optimized for AI search engines!
-
-  📋 NEXT PRIORITY STEPS:
-  4. Add FAQPage schema with frequently asked questions
+Cite Sources method    →  up to +115% visibility
+Statistics method      →  +40% average
+Fluency optimization   →  +15–30%
 ```
+
+> Full paper: https://arxiv.org/abs/2311.09735
+
+---
+
+## 🧠 Use SKILL.md as AI Context
+
+`SKILL.md` is a universal context document. Drop it into any AI assistant and it becomes a GEO specialist that can run audits, generate files, and write schema for you.
+
+| Platform | How |
+|----------|-----|
+| **Claude** | Project → Add as Project Knowledge |
+| **ChatGPT** | Custom Instructions → paste content |
+| **Gemini** | Gems → paste as context |
+| **Cursor** | `.cursor/rules/geo-optimizer.md` |
+| **Windsurf** | `.windsurf/rules/geo-optimizer.md` |
+
+Then just ask:  
+*"audit my site"* · *"generate llms.txt"* · *"add FAQPage schema to this page"*
+
+---
+
+## 🔬 The 9 Princeton GEO Methods
+
+Apply in this order:
+
+| Priority | Method | Impact |
+|----------|--------|--------|
+| 🔴 **1** | **Cite Sources** — link to authoritative external sources | +30–115% |
+| 🔴 **2** | **Statistics** — add specific numbers, %, dates, measurements | +40% |
+| 🟠 **3** | **Quotation Addition** — quote experts with attribution | +30–40% |
+| 🟠 **4** | **Authoritative Tone** — expert language, precise terminology | +6–12% |
+| 🟡 **5** | **Fluency Optimization** — clear sentences, logical flow | +15–30% |
+| 🟡 **6** | **Easy-to-Understand** — define terms, use analogies | +8–15% |
+| 🟢 **7** | **Technical Terms** — correct industry terminology | +5–10% |
+| 🟢 **8** | **Unique Words** — vary vocabulary, avoid repetition | +5–8% |
+| ❌ **9** | **Keyword Stuffing** — proven ineffective for GEO | ~0% |
+
+> Full detail + domain-specific data: [`references/princeton-geo-methods.md`](references/princeton-geo-methods.md)
+
+---
+
+## 🛠️ Script Reference
+
+<details>
+<summary><strong>geo_audit.py</strong> — Full GEO audit, score 0–100</summary>
+
+```bash
+./geo scripts/geo_audit.py --url https://yoursite.com
+./geo scripts/geo_audit.py --url https://yoursite.com --verbose
+```
+
+**Checks:**
+- robots.txt — 13 AI bots configured?
+- /llms.txt — present, structured, has links?
+- JSON-LD — WebSite, WebApplication, FAQPage?
+- Meta tags — description, canonical, Open Graph?
+- Content — headings, statistics, external citations?
+
+</details>
+
+<details>
+<summary><strong>generate_llms_txt.py</strong> — Auto-generate /llms.txt from sitemap</summary>
+
+```bash
+./geo scripts/generate_llms_txt.py \
+  --base-url https://yoursite.com \
+  --site-name "MySite" \
+  --description "Free calculators for finance and math" \
+  --output ./public/llms.txt
+```
+
+**Features:** auto-detects sitemap · supports sitemap index · groups URLs by category · generates structured markdown
+
+</details>
+
+<details>
+<summary><strong>schema_injector.py</strong> — Generate & inject JSON-LD schema</summary>
+
+```bash
+# Analyze HTML file — see what's missing
+./geo scripts/schema_injector.py --file index.html --analyze
+
+# Generate WebSite schema
+./geo scripts/schema_injector.py --type website --name "MySite" --url https://yoursite.com
+
+# Inject FAQPage schema into a file
+./geo scripts/schema_injector.py --file page.html --type faq --inject
+
+# Generate Astro BaseLayout snippet
+./geo scripts/schema_injector.py --astro --name "MySite" --url https://yoursite.com
+```
+
+**Schema types:** `website` · `webapp` · `faq` · `article` · `organization` · `breadcrumb`
+
+</details>
+
+---
+
+## 🤖 GEO Checklist
+
+Before publishing any page:
+
+- [ ] `robots.txt` — all AI bots with `Allow: /` → [`references/ai-bots-list.md`](references/ai-bots-list.md)
+- [ ] `/llms.txt` — present at site root, structured, updated
+- [ ] **WebSite** schema — in global `<head>` on all pages
+- [ ] **WebApplication** schema — on every tool or calculator
+- [ ] **FAQPage** schema — on every page with Q&A content
+- [ ] At least **3 external citations** (links to authoritative sources)
+- [ ] At least **5 concrete numerical data points**
+- [ ] Meta description — accurate, 120–160 chars
+- [ ] Canonical URL — on every page
+- [ ] Open Graph tags — og:title, og:description, og:image
 
 ---
 
 ## 📚 Resources
 
-- **Princeton Paper**: https://arxiv.org/abs/2311.09735
-- **GEO-bench**: https://generative-engines.com/GEO/
-- **llms.txt spec**: https://llmstxt.org
-- **Schema.org**: https://schema.org
-- **Schema Validator**: https://validator.schema.org
+| | |
+|---|---|
+| 📄 Princeton Paper | https://arxiv.org/abs/2311.09735 |
+| 🧪 GEO-bench dataset | https://generative-engines.com/GEO/ |
+| 📋 llms.txt spec | https://llmstxt.org |
+| 🏗️ Schema.org | https://schema.org |
+| ✅ Schema Validator | https://validator.schema.org |
 
 ---
 
 ## 👤 Author
 
+<table>
+<tr>
+<td>
+
 **Juan Camilo Auriti**  
-Web Developer | GEO Specialist  
+Web Developer · GEO Researcher  
 📧 juancamilo.auriti@gmail.com  
-🐙 [@auriti-web-design](https://github.com/auriti-web-design)
+🐙 [github.com/auriti-web-design](https://github.com/auriti-web-design)
+
+</td>
+</tr>
+</table>
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Feel free to:
-- Open an issue for bugs or feature requests
-- Submit a pull request with improvements
-- Share results from your own GEO audits
-
-Please keep PRs focused and well-documented.
+Issues, PRs, and shared audit results are all welcome.  
+Keep contributions focused and documented.
 
 ---
 
 ## 📄 License
 
-MIT License — free to use, modify and distribute.
+[MIT](LICENSE) — free to use, modify, and distribute.
 
 ---
 
-*Found this useful? A ⭐ on [GitHub](https://github.com/auriti-web-design/geo-optimizer-skill) takes 2 seconds and helps others find the project. Thank you.*
+<div align="center">
+
+**If this saved you time — a ⭐ helps others find it.**
+
+[![Star on GitHub](https://img.shields.io/github/stars/auriti-web-design/geo-optimizer-skill?style=for-the-badge&color=facc15&logo=github&label=Star%20this%20repo)](https://github.com/auriti-web-design/geo-optimizer-skill/stargazers)
+
+</div>
