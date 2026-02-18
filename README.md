@@ -57,7 +57,8 @@ geo-optimizer/
 │   ├── chatgpt-custom-gpt.md       ← GPT Builder system prompt (<8k chars)
 │   ├── chatgpt-instructions.md     ← Custom Instructions (<1.5k chars)
 │   ├── cursor.mdc                  ← Cursor rules (YAML frontmatter)
-│   └── windsurf.md                 ← Windsurf rules
+│   ├── windsurf.md                 ← Windsurf rules
+│   └── kiro-steering.md            ← Kiro steering file (inclusion: fileMatch)
 │
 ├── 🐍 scripts/
 │   ├── geo_audit.py                ← Score your site 0–100, find what's missing
@@ -198,6 +199,7 @@ Fluency optimization   →  +15–30%
 | **ChatGPT Custom Instructions** | `ai-context/chatgpt-instructions.md` | 1,500 chars |
 | **Cursor** | `ai-context/cursor.mdc` → `.cursor/rules/` | No limit |
 | **Windsurf** | `ai-context/windsurf.md` → `.windsurf/rules/` | No limit |
+| **Kiro** | `ai-context/kiro-steering.md` → `.kiro/steering/` | No limit |
 
 Once loaded, just ask: *"audit my site"* · *"generate llms.txt"* · *"add FAQPage schema"*
 

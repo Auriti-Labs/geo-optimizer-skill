@@ -9,6 +9,7 @@ Choose the file for your platform:
 | ChatGPT Custom Instructions | `ai-context/chatgpt-instructions.md` | Settings → Personalization → Custom Instructions |
 | Cursor | `ai-context/cursor.mdc` | Copy to `.cursor/rules/geo-optimizer.mdc` |
 | Windsurf | `ai-context/windsurf.md` | Copy to `.windsurf/rules/geo-optimizer.md` |
+| Kiro | `ai-context/kiro-steering.md` | Copy to `.kiro/steering/geo-optimizer.md` |
 
 ## Why different files?
 
@@ -18,6 +19,7 @@ Each platform has different limits and formats:
 - **ChatGPT Custom Instructions**: 1,500 character limit per field — ultra-compressed essentials only
 - **ChatGPT Custom GPT**: 8,000 character limit (paid plan required) — compressed but complete
 - **Cursor / Windsurf**: YAML frontmatter + imperative rules format (Always/Never style)
+- **Kiro**: YAML frontmatter with `inclusion: fileMatch` + `fileMatchPattern` array; file goes in `.kiro/steering/`
 
 ## Quick copy commands
 
@@ -38,6 +40,10 @@ cp ~/geo-optimizer-skill/ai-context/cursor.mdc .cursor/rules/geo-optimizer.mdc
 # Windsurf
 mkdir -p .windsurf/rules
 cp ~/geo-optimizer-skill/ai-context/windsurf.md .windsurf/rules/geo-optimizer.md
+
+# Kiro
+mkdir -p .kiro/steering
+cp ~/geo-optimizer-skill/ai-context/kiro-steering.md .kiro/steering/geo-optimizer.md
 ```
 
 ## File sizes at a glance
@@ -49,6 +55,7 @@ cp ~/geo-optimizer-skill/ai-context/windsurf.md .windsurf/rules/geo-optimizer.md
 | `chatgpt-instructions.md` | ~800 chars | 1,500 chars/field | ✅ Fits in one field |
 | `cursor.mdc` | ~4,200 chars | No limit | ✅ Optimized format |
 | `windsurf.md` | ~4,000 chars | No limit | ✅ Optimized format |
+| `kiro-steering.md` | ~3,300 chars | No limit | ✅ fileMatch inclusion |
 
 ## About GEO Optimizer
 

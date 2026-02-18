@@ -37,6 +37,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - `chatgpt-instructions.md` — ultra-compressed for ChatGPT Custom Instructions (<1,500 chars)
 - `cursor.mdc` — Cursor rules format with YAML frontmatter (`globs`, `alwaysApply`)
 - `windsurf.md` — Windsurf rules format (same content, plain markdown)
+- `kiro-steering.md` — Kiro steering file format (`inclusion: fileMatch`, `fileMatchPattern` array)
 
 **References** (`references/`)
 - `princeton-geo-methods.md` — the 9 GEO methods with measured impact (Princeton KDD 2024)
