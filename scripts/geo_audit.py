@@ -44,12 +44,13 @@ AI_BOTS = {
     "ClaudeBot": "Anthropic (Claude citations)",
     "claude-web": "Anthropic (Claude web crawl)",
     "PerplexityBot": "Perplexity AI (index builder)",
-    "Perplexity-User": "Perplexity (citation fetch)",
+    "Perplexity-User": "Perplexity (citation fetch on-demand)",
     "Google-Extended": "Google (Gemini training)",
     "Applebot-Extended": "Apple (AI training)",
     "cohere-ai": "Cohere (language models)",
     "DuckAssistBot": "DuckDuckGo AI",
     "Bytespider": "ByteDance/TikTok AI",
+    "meta-externalagent": "Meta AI (Facebook/Instagram AI)",
 }
 
 # Critical citation bots (search-oriented, not just training)

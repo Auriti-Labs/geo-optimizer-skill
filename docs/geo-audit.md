@@ -86,19 +86,19 @@ The score is calculated from five weighted categories:
 | Category | Max Points | How it's scored |
 |----------|-----------|-----------------|
 | robots.txt | 20 | Full points if all 3 citation bots (OAI-SearchBot, ClaudeBot, PerplexityBot) are allowed; partial for other bots |
-| llms.txt | 20 | 10pt for presence, 10pt for having 5+ links and structured sections |
-| Schema JSON-LD | 25 | ~8pt per schema type found (WebSite, FAQPage, WebApplication) |
+| llms.txt | 20 | 10pt for presence, 10pt for having H1, sections, and links |
+| Schema JSON-LD | 25 | 10pt WebSite (essential), 10pt FAQPage (high value), 5pt WebApplication (bonus for tools) |
 | Meta tags | 20 | 5pt each: title, description, canonical, OG tags |
-| Content quality | 15 | 5pt for headings, 5pt for 5+ statistics, 5pt for 3+ external citations |
+| Content quality | 15 | 4pt for H1, 6pt for numerical statistics, 5pt for external citations |
 
 **Score bands:**
 
-| Score | Label |
-|-------|-------|
-| 85–100 | 🏆 Excellent |
-| 70–84 | ✅ Good |
-| 50–69 | ⚠️ Needs Work |
-| 0–49 | ❌ Poor |
+| Score | Label | Meaning |
+|-------|-------|---------|
+| 91–100 | 🏆 Excellent | Fully optimized for AI citations |
+| 71–90 | ✅ Good | Strong foundation, apply Princeton content methods |
+| 41–70 | ⚠️ Fair | Core elements present, schema/content gaps remain |
+| 0–40 | ❌ Critical | Missing essential elements — start with robots.txt and llms.txt |
 
 ---
 

@@ -96,7 +96,8 @@ curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skil
 ```
 
 > Installs to `~/geo-optimizer-skill`. Creates a Python venv automatically.  
-> Prefer to inspect first? [View install.sh →](install.sh)
+> Prefer to inspect first? [View install.sh →](install.sh)  
+> **Custom path?** Download first: `curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skill/main/install.sh -o install.sh && bash install.sh --dir /custom/path`
 
 **2. Audit your site**
 
