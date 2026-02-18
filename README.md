@@ -315,21 +315,73 @@ Types: website, webapp, faq, article, organization, breadcrumb
 
 ---
 
-## 📊 Real-World Result
+## 📊 Sample Output
 
-Audit on a financial calculators website (Feb 2026):
+Running `./geo scripts/geo_audit.py --url https://example.com` on a real financial calculators site:
 
 ```
-GEO Score: 85/100 🏆 EXCELLENT
+🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍
+  GEO AUDIT — https://example.com
+  github.com/auriti-web-design/geo-optimizer-skill
+🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍
 
-✅ robots.txt with GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended, Applebot
-✅ llms.txt present (46 links, 6 sections)
-✅ WebSite + Organization + Person + BreadcrumbList schema
-✅ Optimized meta description
-✅ Complete OG tags
-✅ H1-H4 heading structure: 31 headings
-✅ Numerical data: 15 statistics detected
-⚠️ FAQPage schema missing on homepage (next step)
+⏳ Fetching homepage...
+   Status: 200 | Size: 50,251 bytes
+
+============================================================
+  1. ROBOTS.TXT — AI Bot Access
+============================================================
+  ✅ robots.txt found (200)
+  ✅ GPTBot allowed ✓ (OpenAI - ChatGPT training)
+  ✅ OAI-SearchBot allowed ✓ (OpenAI - ChatGPT search citations)
+  ✅ ClaudeBot allowed ✓ (Anthropic - Claude citations)
+  ✅ PerplexityBot allowed ✓ (Perplexity AI - index builder)
+  ✅ Google-Extended allowed ✓ (Google - Gemini training)
+  ✅ All critical CITATION bots are correctly configured
+
+============================================================
+  2. LLMS.TXT — AI Index File
+============================================================
+  ✅ llms.txt found (200, 6517 bytes, ~559 words)
+  ✅ H1 present
+  ✅ Blockquote description present
+  ✅ H2 sections present: 6 sections
+  ✅ Links found: 46 links to site pages
+
+============================================================
+  3. SCHEMA JSON-LD — Structured Data
+============================================================
+  ✅ Found 5 JSON-LD blocks
+  ✅ WebSite schema ✓
+  ✅ Organization schema ✓
+  ✅ BreadcrumbList schema ✓
+  ⚠️  FAQPage schema missing — very useful for AI citations
+
+============================================================
+  4. META TAGS — SEO & Open Graph
+============================================================
+  ✅ Title (56 chars) ✓
+  ✅ Meta description (124 chars) ✓
+  ✅ Canonical URL ✓
+  ✅ og:title / og:description / og:image ✓
+
+============================================================
+  5. CONTENT QUALITY — GEO Best Practices
+============================================================
+  ✅ H1-H4 heading structure: 31 headings
+  ✅ Numerical data: 15 statistics detected ✓
+  ✅ External citations: 2 links to external sources ✓
+
+============================================================
+  📊 FINAL GEO SCORE
+============================================================
+
+  [█████████████████░░░] 85/100
+
+  🏆 EXCELLENT — Site is optimized for AI search engines!
+
+  📋 NEXT PRIORITY STEPS:
+  4. Add FAQPage schema with frequently asked questions
 ```
 
 ---

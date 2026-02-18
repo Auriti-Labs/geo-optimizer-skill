@@ -7,7 +7,8 @@
 
 1. Copy the appropriate template
 2. Replace values marked with `YOUR_VALUE`
-3. Paste into the `<head>` of your HTML page
+3. For `YOUR_LANGUAGE_CODE` use an [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes): `"en"`, `"it"`, `"fr"`, `"de"`, `"es"`, etc.
+4. Paste into the `<head>` of your HTML page
 4. Validate at https://validator.schema.org
 
 ---
@@ -24,7 +25,7 @@ Goes in the `<head>` of **all pages** on the site (typically in the main layout)
   "name": "YOUR_SITE_NAME",
   "url": "https://YOUR_DOMAIN",
   "description": "YOUR_SITE_DESCRIPTION",
-  "inLanguage": "en",
+  "inLanguage": "YOUR_LANGUAGE_CODE",
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
@@ -51,7 +52,7 @@ Goes in the `<head>` of **all pages** on the site (typically in the main layout)
   "name": "MySite",
   "url": "https://example.com",
   "description": "Free online calculators for finance, math, and health. Calculate mortgages, interest, BMI, and much more in seconds.",
-  "inLanguage": "en",
+  "inLanguage": "YOUR_LANGUAGE_CODE",
   "potentialAction": {
     "@type": "SearchAction",
     "target": "https://example.com/search?q={search_term_string}",
@@ -79,7 +80,7 @@ Add this to every page that is a **tool/calculator/app**.
   "applicationSubCategory": "YOUR_SUBCATEGORY",
   "operatingSystem": "Web",
   "browserRequirements": "Requires JavaScript",
-  "inLanguage": "en",
+  "inLanguage": "YOUR_LANGUAGE_CODE",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -218,7 +219,7 @@ For blog articles and informational content.
   "url": "https://YOUR_DOMAIN/blog/YOUR_SLUG",
   "datePublished": "YYYY-MM-DD",
   "dateModified": "YYYY-MM-DD",
-  "inLanguage": "en",
+  "inLanguage": "YOUR_LANGUAGE_CODE",
   "author": {
     "@type": "Person",
     "name": "YOUR_AUTHOR_NAME",

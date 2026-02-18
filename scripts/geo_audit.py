@@ -198,12 +198,12 @@ def audit_llms_txt(base_url: str) -> dict:
 
     if err or not r:
         fail(f"llms.txt not reachable: {err}")
-        info("Generate with: python generate_llms_txt.py --base-url " + base_url)
+        info("Generate with: ./geo scripts/generate_llms_txt.py --base-url " + base_url)
         return results
 
     if r.status_code == 404:
         fail("llms.txt not found — essential for AI indexing!")
-        info("Generate with: python generate_llms_txt.py --base-url " + base_url)
+        info("Generate with: ./geo scripts/generate_llms_txt.py --base-url " + base_url)
         return results
 
     results["found"] = True
@@ -547,7 +547,7 @@ Examples:
     if not robots_results["citation_bots_ok"]:
         actions.append("1. Update robots.txt with all AI bots (see SKILL.md)")
     if not llms_results["found"]:
-        actions.append("2. Create /llms.txt (python generate_llms_txt.py --base-url " + base_url + ")")
+        actions.append("2. Create /llms.txt: ./geo scripts/generate_llms_txt.py --base-url " + base_url)
     if not schema_results["has_website"]:
         actions.append("3. Add WebSite JSON-LD schema")
     if not schema_results["has_faq"]:

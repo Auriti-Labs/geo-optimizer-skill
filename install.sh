@@ -25,10 +25,11 @@ info() { echo -e "   $1"; }
 INSTALL_DIR="$DEFAULT_DIR"
 
 # Parse args
-for arg in "$@"; do
-  case $arg in
-    --dir=*) INSTALL_DIR="${arg#*=}" ;;
-    --dir)   shift; INSTALL_DIR="$1" ;;
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dir=*) INSTALL_DIR="${1#*=}"; shift ;;
+    --dir)   shift; INSTALL_DIR="$1"; shift ;;
+    *)       shift ;;
   esac
 done
 
