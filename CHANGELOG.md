@@ -21,7 +21,7 @@ Format: [SemVer](https://semver.org/) — `MAJOR.MINOR.PATCH`
 - **Critical fix**: removed all hardcoded absolute paths from SKILL.md — all commands now use relative paths (`python scripts/...`)
 - **Fix**: removed `source /home/openclaw/...` from Quick Start — now only `pip install requests beautifulsoup4` is needed
 - **Fix**: removed duplicate `PerplexityBot` entry in the robots.txt block
-- **Fix**: "Astro Implementation" section generalized — removed references to `calcfast.online`, added generic `siteUrl`/`siteName`/`isTool` props
+- **Fix**: "Astro Implementation" section generalized — removed site-specific references, added generic `siteUrl`/`siteName`/`isTool` props
 - **Fix**: GEO Score in README updated with real data from script (85/100, not 78)
 - **Improvement**: Quick Start in README includes `git clone` step
 - **Version bump**: `1.0.0` → `1.1.0`
@@ -43,10 +43,10 @@ Initial complete implementation of the GEO Optimizer skill for OpenClaw.
 - **`references/ai-bots-list.md`** — Complete list of AI crawler User-Agents (GPTBot, PerplexityBot, etc.)
 - **`references/schema-templates.md`** — Ready-to-use JSON-LD schema templates
 
-#### Proven results (tested on calcfast.online)
+#### Proven results (tested on a financial calculators website)
 - `robots.txt` updated with 8 AI crawlers
-- `llms.txt` generated with 60+ calculators and structured fiscal data
-- FAQPage + WebApplication schema on top calculators
+- `llms.txt` generated with 60+ pages and structured content
+- FAQPage + WebApplication schema on top pages
 - Google Indexing API integration (150 URL/day quota-safe)
 
 ---
@@ -55,4 +55,4 @@ Initial complete implementation of the GEO Optimizer skill for OpenClaw.
 
 - ClawHub marketplace listing
 - Automated weekly GEO score tracker cron
-- End-to-end tests on sites other than CalcFast
+- End-to-end tests on additional site types

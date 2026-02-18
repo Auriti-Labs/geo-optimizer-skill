@@ -45,7 +45,7 @@ Provide:
 ```
 You are a Senior SEO Engineer at Google.
 I need a robots.txt optimized for AI search engines
-for my site calcfast.online (Italian financial calculators).
+for my site example.com (a financial tools website).
 Provide: full AI bots list 2026, Allow/Disallow rules,
 explanatory comments, Crawl-delay handling.
 ```
