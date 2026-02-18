@@ -50,11 +50,27 @@ If this saves you time or lands you a client — a ⭐ on GitHub goes a long way
 
 ---
 
+## 🧠 Use SKILL.md as AI Context
+
+`SKILL.md` is a universal context document that turns any AI assistant into a GEO specialist. Drop it into:
+
+| Platform | How to use |
+|----------|-----------|
+| **Claude** | Create a Project → Add `SKILL.md` as Project Knowledge |
+| **ChatGPT** | Custom Instructions → paste the content |
+| **Gemini** | Gems → paste as context |
+| **Cursor** | `.cursor/rules/geo-optimizer.md` → new rule file |
+| **Windsurf** | `.windsurf/rules/geo-optimizer.md` → new rule file |
+
+Once loaded, just describe your site and ask: *"run a GEO audit"*, *"generate my llms.txt"*, *"add FAQPage schema to this page"*.
+
+---
+
 ## 📦 Structure
 
 ```
 geo-optimizer/
-├── SKILL.md                          # Workflow and usage guide
+├── SKILL.md                          # Universal AI context document (Claude/ChatGPT/Gemini/Cursor/Windsurf)
 ├── scripts/
 │   ├── geo_audit.py                  # Full audit with ✅/❌/⚠️ report
 │   ├── generate_llms_txt.py          # Generates llms.txt from XML sitemap
