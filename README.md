@@ -23,7 +23,7 @@
 **Optimize any website to be cited by ChatGPT, Perplexity, Claude, and Gemini.**  
 Research-backed. Script-powered. Works in 15 minutes.
 
-[**Quick Start**](#-quick-start) · [**How it works**](#-what-is-geo) · [**Use with AI**](#-use-skillmd-as-ai-context) · [**Changelog**](CHANGELOG.md)
+[**Quick Start**](#quick-start) · [**How it works**](#what-is-geo) · [**Use with AI**](#use-as-ai-context) · [**Changelog**](CHANGELOG.md)
 
 </div>
 
