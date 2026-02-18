@@ -117,8 +117,12 @@ curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skil
 
 ### 2. Run your first audit
 ```bash
-python scripts/geo_audit.py --url https://yoursite.com
+cd geo-optimizer-skill
+./geo scripts/geo_audit.py --url https://yoursite.com
 ```
+
+> `./geo` is a wrapper that uses the bundled virtual environment automatically.  
+> Alternatively: `source .venv/bin/activate` and then use `python3` directly.
 
 **Output:**
 ```

@@ -67,18 +67,23 @@ else
   ok "Repository cloned"
 fi
 
-# Install Python dependencies
+# Install Python dependencies in a virtual environment
 echo ""
-echo "📦 Installing Python dependencies..."
-if command -v pip3 >/dev/null 2>&1; then
-  pip3 install -r "$INSTALL_DIR/requirements.txt" -q
-  ok "Dependencies installed (requests, beautifulsoup4, lxml)"
-elif command -v pip >/dev/null 2>&1; then
-  pip install -r "$INSTALL_DIR/requirements.txt" -q
-  ok "Dependencies installed (requests, beautifulsoup4, lxml)"
-else
-  warn "pip not found. Install manually: pip install requests beautifulsoup4 lxml"
-fi
+echo "📦 Setting up Python virtual environment..."
+python3 -m venv "$INSTALL_DIR/.venv"
+ok "Virtual environment created: $INSTALL_DIR/.venv"
+
+echo "   Installing dependencies..."
+"$INSTALL_DIR/.venv/bin/pip" install -r "$INSTALL_DIR/requirements.txt" -q
+ok "Dependencies installed (requests, beautifulsoup4, lxml)"
+
+# Create a wrapper script so users can run without activating venv
+cat > "$INSTALL_DIR/geo" << 'WRAPPER'
+#!/usr/bin/env bash
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "$DIR/.venv/bin/python3" "$@"
+WRAPPER
+chmod +x "$INSTALL_DIR/geo"
 
 # OpenClaw skill symlink (optional)
 if [ "$OPENCLAW_MODE" = true ]; then
@@ -108,7 +113,9 @@ ok "Installation complete!"
 echo ""
 echo "🚀 Quick start:"
 echo "   cd $INSTALL_DIR"
-echo "   python3 scripts/geo_audit.py --url https://yoursite.com"
+echo "   ./geo scripts/geo_audit.py --url https://yoursite.com"
+echo ""
+echo "   (or activate the venv: source .venv/bin/activate)"
 echo ""
 echo "🔄 To update in the future:"
 echo "   cd $INSTALL_DIR && git pull origin main"

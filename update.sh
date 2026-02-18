@@ -36,8 +36,11 @@ git pull origin main
 NEW=$(git log --oneline -1)
 echo "   Latest:  $NEW"
 
-# Update dependencies
-if command -v pip3 >/dev/null 2>&1; then
+# Update dependencies (use venv if present, otherwise system pip)
+if [ -f ".venv/bin/pip" ]; then
+  .venv/bin/pip install -r requirements.txt -q
+  ok "Dependencies up to date (venv)"
+elif command -v pip3 >/dev/null 2>&1; then
   pip3 install -r requirements.txt -q
   ok "Dependencies up to date"
 elif command -v pip >/dev/null 2>&1; then
