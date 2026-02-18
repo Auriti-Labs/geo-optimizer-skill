@@ -248,7 +248,7 @@ GEO Score: 78/100 ✅ BUONO
 
 ## 👤 Autore
 
-**Juan Auriti**  
+**Juan Camilo Auriti**  
 Web Developer | GEO Specialist  
 📧 juancamilo.auriti@gmail.com  
 🐙 [@auriti-web-design](https://github.com/auriti-web-design)

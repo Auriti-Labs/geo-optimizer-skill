@@ -12,7 +12,7 @@ description: >
 # GEO Optimizer — Generative Engine Optimization
 
 > Basato sulla ricerca Princeton KDD 2024 "GEO: Generative Engine Optimization"  
-> Autore skill: Juan Auriti (juancamilo.auriti@gmail.com)
+> Autore skill: Juan Camilo Auriti (juancamilo.auriti@gmail.com)
 
 ## Cos'è il GEO?
 
