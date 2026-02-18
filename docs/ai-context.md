@@ -155,6 +155,52 @@ Windsurf uses the same YAML frontmatter format as Cursor. The `globs` pattern ac
 
 ---
 
+## Kiro
+
+**File:** `ai-context/kiro-steering.md`  
+**Format:** Markdown with YAML frontmatter  
+**Limit:** No character limit  
+**Activation:** `inclusion: fileMatch` — loads only when matching files are open
+
+### Setup
+
+```bash
+mkdir -p .kiro/steering
+cp ~/geo-optimizer-skill/ai-context/kiro-steering.md .kiro/steering/geo-optimizer.md
+```
+
+Or copy manually:
+1. In your project root, create `.kiro/steering/` directory
+2. Copy `ai-context/kiro-steering.md` → `.kiro/steering/geo-optimizer.md`
+3. Kiro loads the steering file automatically when files matching the pattern are open
+
+### What to expect
+
+- Same rules as Cursor/Windsurf — GEO "Always/Never" rules apply when editing HTML/Astro/robots.txt files
+- `fileMatch` inclusion means the steering doc is only loaded when relevant files are open (efficient)
+- Kiro will suggest correct schema types, remind you to run the audit command, and follow GEO best practices
+
+### Frontmatter reference
+
+```yaml
+---
+inclusion: fileMatch
+fileMatchPattern:
+  - "**/*.html"
+  - "**/*.astro"
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "**/*.php"
+  - "**/robots.txt"
+  - "**/llms.txt"
+  - "**/*.json"
+---
+```
+
+`inclusion: fileMatch` with a `fileMatchPattern` array is the Kiro equivalent of Cursor's `globs` — the steering file is only injected into context when one of the matching files is active.
+
+---
+
 ## Platform Comparison
 
 | Platform | Context quality | Setup effort | Cost | Persistence |
@@ -164,6 +210,7 @@ Windsurf uses the same YAML frontmatter format as Cursor. The `globs` pattern ac
 | ChatGPT Custom Instructions | ⭐⭐ Essentials only | Paste in settings | Free account | Account-wide |
 | Cursor | ⭐⭐⭐⭐ Rules format | Copy file | Free | Project-scoped |
 | Windsurf | ⭐⭐⭐⭐ Rules format | Copy file | Free | Project-scoped (glob activation) |
+| Kiro | ⭐⭐⭐⭐ Rules format | Copy file | Free | Project-scoped (fileMatch activation) |
 
 ## Updating context files
 
@@ -173,6 +220,7 @@ When the GEO Optimizer toolkit is updated, re-copy the relevant files:
 # Update all IDE rule files
 cp ~/geo-optimizer-skill/ai-context/cursor.mdc .cursor/rules/geo-optimizer.mdc
 cp ~/geo-optimizer-skill/ai-context/windsurf.md .windsurf/rules/geo-optimizer.md
+cp ~/geo-optimizer-skill/ai-context/kiro-steering.md .kiro/steering/geo-optimizer.md
 
 # For Claude/ChatGPT: re-upload/re-paste the updated file manually
 ```
