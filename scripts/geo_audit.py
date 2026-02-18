@@ -482,8 +482,8 @@ def compute_geo_score(robots: dict, llms: dict, schema: dict, meta: dict, conten
 
     # Schema (25 points)
     if schema["has_website"]: score += 10
-    if schema["has_webapp"]: score += 8
-    if schema["has_faq"]: score += 7
+    if schema["has_faq"]: score += 10
+    if schema["has_webapp"]: score += 5
 
     # Meta tags (20 points)
     if meta["has_title"]: score += 5
@@ -551,14 +551,16 @@ Examples:
     bar = "█" * bar_filled + "░" * bar_empty
     print(f"\n  [{bar}] {score}/100")
 
-    if score >= 80:
-        print(f"\n  🏆 EXCELLENT — Site is optimized for AI search engines!")
-    elif score >= 60:
-        print(f"\n  ✅ GOOD — Some optimizations still possible")
-    elif score >= 40:
-        print(f"\n  ⚠️  FAIR — Implement the missing optimizations")
+    if score >= 91:
+        print(f"\n  🏆 EXCELLENT — Site is well optimized for AI search engines!")
+    elif score >= 71:
+        print(f"\n  ✅ GOOD — Core optimizations in place, fine-tune content and schema")
+    elif score >= 41:
+        print(f"\n  ⚠️  FAIR — Foundation missing, implement priority fixes below")
     else:
-        print(f"\n  ❌ CRITICAL — Site is not optimized for AI search")
+        print(f"\n  ❌ CRITICAL — Site is not visible to AI search engines")
+
+    print(f"\n  Score bands: 0–40 = critical | 41–70 = fair | 71–90 = good | 91–100 = excellent")
 
     print("\n  📋 NEXT PRIORITY STEPS:")
 
