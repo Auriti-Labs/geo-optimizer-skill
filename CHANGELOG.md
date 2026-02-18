@@ -15,16 +15,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Fixed
 
-- `ai-context/windsurf.md` — **reverted YAML frontmatter** (incorrect); Windsurf does NOT read frontmatter from `.md` rule files — activation mode is configured via the Windsurf UI (Always On / Glob / Manual). Added setup note with UI instructions and known glob bug warning (2025).
-- `docs/ai-context.md` Windsurf section — corrected format description; added 12,000 char limit; UI-based activation steps; glob bug warning
-- `SKILL.md` / `README.md` — Windsurf entry updated to reflect plain MD + UI activation
-- `ai-context/cursor.mdc`, `kiro-steering.md`, `claude-project.md` — removed `howto` and `product` from schema types list (these types don't exist in `schema_injector.py`; would cause argparse errors)
-- `geo_audit.py` — schema scoring redistributed: `WebSite=10pt`, `FAQPage=10pt`, `WebApplication=5pt` (webapp is a bonus; blogs can now reach 100/100)
-- `geo_audit.py` — score thresholds aligned to docs: `>=91 EXCELLENT`, `>=71 GOOD`, `>=41 FAIR`, `<41 CRITICAL`
-- `geo_audit.py` — `--verbose` flag documented as "reserved — not yet implemented"
-- `docs/geo-audit.md` — score band table and schema description updated to match code
-- `install.sh` — added note: `--dir` cannot be used with `curl | bash`; download-first procedure documented
-- `README.md` / `docs/getting-started.md` — custom install path note added
+- **C1** `geo_audit.py` — score band 41–70 renamed from `FAIR` to `FOUNDATION` in both the printed label (`⚠️  FOUNDATION — Core elements missing…`) and the score band legend
+- **C2** `geo_audit.py` — `--verbose` help string updated to `"coming soon — currently has no effect"` (was `"reserved — not yet implemented"`)
+- **C2** `README.md` — `--verbose` example in Script Reference marked `# coming soon`
+- **C2** `docs/geo-audit.md` — `--verbose` example replaced with coming-soon note; Flags table updated; score band label corrected to `Foundation`
+- **C2** `docs/troubleshooting.md` — section 8 "Timeout error" removed the `--verbose` usage advice; replaced with note that `--verbose` is not yet implemented
+- **C3** `ai-context/cursor.mdc` — `FacebookBot` → `meta-externalagent` in bot list
+- **C3** `ai-context/windsurf.md` — `FacebookBot` → `meta-externalagent` in bot list
+- **C3** `ai-context/kiro-steering.md` — `FacebookBot` → `meta-externalagent` in bot list
+- **C3** `ai-context/claude-project.md` — `FacebookBot` → `meta-externalagent` in robots.txt block
+- **C3** `ai-context/chatgpt-custom-gpt.md` — `FacebookBot` → `meta-externalagent` in robots.txt block
+- **C4** `docs/ai-context.md` Windsurf section — format changed to "Plain Markdown — NO YAML frontmatter"; activation updated to "Windsurf UI → Customizations → Rules (4 modes)"; false `### Frontmatter reference` YAML block removed; 4-mode activation table added; platform comparison table updated to "UI activation"
+- **I1** `ai-context/cursor.mdc` — `Use HowTo for: step-by-step tutorials` replaced with `Use Article for: blog posts, guides, tutorials`
+- **I1** `ai-context/windsurf.md` — same HowTo → Article fix applied
+- **I1** `ai-context/kiro-steering.md` — same HowTo → Article fix applied
+- **I2** `README.md` — `## 📊 Sample Output` updated with realistic output matching actual script format: 🔍 banner, `============` section headers, bot format `✅ GPTBot allowed ✓`, progress bar `[█████████████████░░░] 85/100`, score label on separate line
+- **I3** `ai-context/chatgpt-custom-gpt.md` — STEP 4 schema types extended from `(types: website, webapp, faq)` to `(types: website, webapp, faq, article, organization, breadcrumb)`
+- **I4/M1** `SKILL.md` — `windsurf.md` row: size updated from `~4,000 chars` to `~4,500 chars`; Platform limit column updated from `Glob activation (same as Cursor)` to `12,000 chars (UI activation)`
+- **I5** `ai-context/chatgpt-custom-gpt.md` — robots.txt block completed: added `claude-web`, `Perplexity-User`, `Applebot-Extended`, `Bytespider`, `cohere-ai`; `FacebookBot` replaced with `meta-externalagent`
+- **M2** `ai-context/kiro-steering.md` — removed `"**/*.json"` from `fileMatchPattern` (too broad — matches all JSON files in project)
 
 ### Planned
 
