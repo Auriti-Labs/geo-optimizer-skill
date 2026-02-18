@@ -4,9 +4,32 @@
 [![GEO](https://img.shields.io/badge/GEO-Optimization-green)](https://arxiv.org/abs/2311.09735)
 [![Princeton Research](https://img.shields.io/badge/Based_on-Princeton_KDD_2024-orange)](https://arxiv.org/abs/2311.09735)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)](https://python.org)
+[![GitHub Stars](https://img.shields.io/github/stars/auriti-web-design/geo-optimizer-skill?style=social)](https://github.com/auriti-web-design/geo-optimizer-skill/stargazers)
 
 > Optimize websites to be **cited** by AI search engines: ChatGPT, Perplexity, Claude, Gemini.  
 > Based on Princeton research "GEO: Generative Engine Optimization" (KDD 2024, +40% AI visibility).
+
+---
+
+## ⭐ Why Star This Repo?
+
+If you build websites, run a SaaS, or do SEO for clients — **this will matter to you in 2025**.
+
+AI search engines (ChatGPT, Perplexity, Gemini) are changing how people find information. They don't show a list of links — they give a direct answer and **cite their sources**. If your site isn't optimized for this, you're invisible to a growing share of your audience.
+
+This toolkit gives you everything to fix that in under 15 minutes:
+
+| Without GEO Optimizer | With GEO Optimizer |
+|------------------------|---------------------|
+| Read a 40-page Princeton paper | Workflow distilled into 4 clear steps |
+| Manually research which AI bots exist | Ready-to-use `robots.txt` block (15+ bots) |
+| Write `llms.txt` from scratch | Auto-generate from your sitemap with one command |
+| Build JSON-LD schema by hand | Templates + injection script included |
+| Guess what improves AI visibility | 9 research-backed methods with measured impact |
+
+**The timing advantage is real.** GEO is where SEO was in 2005. Sites that implement it now will have authority and history when everyone else catches up.
+
+If this saves you time or lands you a client — a ⭐ on GitHub goes a long way. It helps others discover the project.
 
 ---
 
@@ -272,3 +295,7 @@ Please keep PRs focused and well-documented.
 ## 📄 License
 
 MIT License — free to use, modify and distribute.
+
+---
+
+*Found this useful? A ⭐ on [GitHub](https://github.com/auriti-web-design/geo-optimizer-skill) takes 2 seconds and helps others find the project. Thank you.*
