@@ -44,7 +44,7 @@ Use `Article` for: blog posts, guides, news.
 Use `HowTo` for: step-by-step tutorials.
 
 Inject schema automatically: `./geo scripts/schema_injector.py --type TYPE --url URL`
-Types available: `website`, `webapp`, `faq`, `article`, `organization`, `breadcrumb`, `howto`, `product`
+Types available: `website`, `webapp`, `faq`, `article`, `organization`, `breadcrumb`
 
 ## Content (Princeton GEO Methods)
 
@@ -84,7 +84,7 @@ The audit checks: robots.txt, llms.txt, JSON-LD schema, meta tags, content quali
   --description "One-sentence description." \
   --output ./public/llms.txt
 
-# Inject JSON-LD schema (types: website, webapp, faq, article, organization, howto)
+# Inject JSON-LD schema (types: website, webapp, faq, article, organization, breadcrumb)
 ./geo scripts/schema_injector.py --type faq --url https://yoursite.com/page
 ./geo scripts/schema_injector.py --type webapp --url https://yoursite.com/tool
 ```
