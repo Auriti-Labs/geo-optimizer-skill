@@ -110,6 +110,9 @@ curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skil
 ```bash
 cd ~/geo-optimizer-skill
 ./geo scripts/geo_audit.py --url https://yoursite.com
+
+# JSON output for CI/CD integration
+./geo scripts/geo_audit.py --url https://yoursite.com --format json --output report.json
 ```
 
 **3. Fix what's missing**
@@ -278,8 +281,13 @@ Apply in this order:
 <summary><strong>geo_audit.py</strong> — Full GEO audit, score 0–100</summary>
 
 ```bash
+# Text output (default)
 ./geo scripts/geo_audit.py --url https://yoursite.com
 ./geo scripts/geo_audit.py --url https://yoursite.com --verbose  # coming soon
+
+# JSON output for CI/CD pipelines
+./geo scripts/geo_audit.py --url https://yoursite.com --format json
+./geo scripts/geo_audit.py --url https://yoursite.com --format json --output report.json
 ```
 
 **Checks:**
@@ -288,6 +296,92 @@ Apply in this order:
 - JSON-LD — WebSite, WebApplication, FAQPage?
 - Meta tags — description, canonical, Open Graph?
 - Content — headings, statistics, external citations?
+
+**JSON Output Structure:**
+```json
+{
+  "url": "https://example.com",
+  "timestamp": "2026-02-21T12:52:18.983151Z",
+  "score": 85,
+  "band": "good",
+  "checks": {
+    "robots_txt": {
+      "score": 20,
+      "max": 20,
+      "passed": true,
+      "details": {
+        "found": true,
+        "citation_bots_ok": true,
+        "bots_allowed": ["GPTBot", "ClaudeBot", "PerplexityBot"],
+        "bots_blocked": [],
+        "bots_missing": ["Applebot-Extended"]
+      }
+    },
+    "llms_txt": {
+      "score": 20,
+      "max": 20,
+      "passed": true,
+      "details": {
+        "found": true,
+        "has_h1": true,
+        "has_sections": true,
+        "has_links": true,
+        "word_count": 559
+      }
+    },
+    "schema_jsonld": {
+      "score": 10,
+      "max": 25,
+      "passed": true,
+      "details": {
+        "has_website": true,
+        "has_webapp": false,
+        "has_faq": false,
+        "found_types": ["WebSite", "Organization"]
+      }
+    },
+    "meta_tags": {
+      "score": 20,
+      "max": 20,
+      "passed": true,
+      "details": {
+        "has_title": true,
+        "has_description": true,
+        "has_canonical": true,
+        "has_og_title": true,
+        "has_og_description": true,
+        "has_og_image": true
+      }
+    },
+    "content": {
+      "score": 15,
+      "max": 15,
+      "passed": true,
+      "details": {
+        "has_h1": true,
+        "heading_count": 31,
+        "has_numbers": true,
+        "has_links": true,
+        "word_count": 538
+      }
+    }
+  },
+  "recommendations": [
+    "Add FAQPage schema with frequently asked questions"
+  ]
+}
+```
+
+**CI/CD Integration Example:**
+```bash
+# GitHub Actions / GitLab CI
+./geo scripts/geo_audit.py --url https://yoursite.com --format json --output report.json
+SCORE=$(jq '.score' report.json)
+if [ "$SCORE" -lt 70 ]; then
+  echo "❌ GEO score too low: $SCORE/100"
+  exit 1
+fi
+```
 
 </details>
 

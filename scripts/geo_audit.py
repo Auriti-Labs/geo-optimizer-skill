@@ -14,6 +14,7 @@ Usage:
 import argparse
 import json
 import sys
+from datetime import datetime
 from urllib.parse import urljoin, urlparse
 
 # Dependencies are imported lazily inside main() so --help always works.
@@ -508,10 +509,14 @@ def main():
 Examples:
   ./geo scripts/geo_audit.py --url https://example.com
   ./geo scripts/geo_audit.py --url https://example.com --verbose
+  ./geo scripts/geo_audit.py --url https://example.com --format json
+  ./geo scripts/geo_audit.py --url https://example.com --format json --output report.json
         """
     )
     parser.add_argument("--url", required=True, help="URL of the site to audit (e.g. https://example.com)")
     parser.add_argument("--verbose", action="store_true", help="Verbose output (coming soon — currently has no effect)")
+    parser.add_argument("--format", choices=["text", "json"], default="text", help="Output format: text (default) or json")
+    parser.add_argument("--output", help="Output file path (optional, writes to stdout if not specified)")
     args = parser.parse_args()
 
     _ensure_deps()
@@ -521,75 +526,202 @@ Examples:
     if not base_url.startswith(("http://", "https://")):
         base_url = "https://" + base_url
 
-    print("\n" + "🔍 " * 20)
-    print(f"  GEO AUDIT — {base_url}")
-    print(f"  github.com/auriti-web-design/geo-optimizer-skill")
-    print("🔍 " * 20)
+    # Suppress verbose output in JSON mode
+    json_mode = args.format == "json"
+    
+    if not json_mode:
+        print("\n" + "🔍 " * 20)
+        print(f"  GEO AUDIT — {base_url}")
+        print(f"  github.com/auriti-web-design/geo-optimizer-skill")
+        print("🔍 " * 20)
 
     # Fetch homepage
-    print("\n⏳ Fetching homepage...")
+    if not json_mode:
+        print("\n⏳ Fetching homepage...")
     r, err = fetch_url(base_url)
     if err or not r:
-        print(f"\n❌ ERROR: Unable to reach {base_url}: {err}")
+        if json_mode:
+            error_data = {"error": f"Unable to reach {base_url}: {err}", "url": base_url}
+            print(json.dumps(error_data, indent=2))
+        else:
+            print(f"\n❌ ERROR: Unable to reach {base_url}: {err}")
         sys.exit(1)
 
     soup = BeautifulSoup(r.text, "html.parser")
-    print(f"   Status: {r.status_code} | Size: {len(r.text):,} bytes")
+    if not json_mode:
+        print(f"   Status: {r.status_code} | Size: {len(r.text):,} bytes")
 
-    # Run audits
+    # Run audits (suppressing print output in JSON mode by redirecting functions)
+    import io
+    import contextlib
+    
+    if json_mode:
+        # Redirect stdout to suppress print statements during audits
+        old_stdout = sys.stdout
+        sys.stdout = io.StringIO()
+    
     robots_results = audit_robots_txt(base_url)
     llms_results = audit_llms_txt(base_url)
     schema_results = audit_schema(soup, base_url)
     meta_results = audit_meta_tags(soup, base_url)
     content_results = audit_content_quality(soup, base_url)
+    
+    if json_mode:
+        # Restore stdout
+        sys.stdout = old_stdout
 
     # Final score
     score = compute_geo_score(robots_results, llms_results, schema_results, meta_results, content_results)
 
-    print_header("📊 FINAL GEO SCORE")
-    bar_filled = int(score / 5)
-    bar_empty = 20 - bar_filled
-    bar = "█" * bar_filled + "░" * bar_empty
-    print(f"\n  [{bar}] {score}/100")
-
+    # Determine score band
     if score >= 91:
-        print(f"\n  🏆 EXCELLENT — Site is well optimized for AI search engines!")
+        band = "excellent"
     elif score >= 71:
-        print(f"\n  ✅ GOOD — Core optimizations in place, fine-tune content and schema")
+        band = "good"
     elif score >= 41:
-        print(f"\n  ⚠️  FOUNDATION — Core elements missing, implement priority fixes below")
+        band = "foundation"
     else:
-        print(f"\n  ❌ CRITICAL — Site is not visible to AI search engines")
+        band = "critical"
 
-    print(f"\n  Score bands: 0–40 = critical | 41–70 = foundation | 71–90 = good | 91–100 = excellent")
-
-    print("\n  📋 NEXT PRIORITY STEPS:")
-
-    actions = []
+    # Build recommendations
+    recommendations = []
     if not robots_results["citation_bots_ok"]:
-        actions.append("1. Update robots.txt with all AI bots (see SKILL.md)")
+        recommendations.append("Update robots.txt with all AI bots (see SKILL.md)")
     if not llms_results["found"]:
-        actions.append("2. Create /llms.txt: ./geo scripts/generate_llms_txt.py --base-url " + base_url)
+        recommendations.append(f"Create /llms.txt: ./geo scripts/generate_llms_txt.py --base-url {base_url}")
     if not schema_results["has_website"]:
-        actions.append("3. Add WebSite JSON-LD schema")
+        recommendations.append("Add WebSite JSON-LD schema")
     if not schema_results["has_faq"]:
-        actions.append("4. Add FAQPage schema with frequently asked questions")
+        recommendations.append("Add FAQPage schema with frequently asked questions")
     if not meta_results["has_description"]:
-        actions.append("5. Add optimized meta description")
+        recommendations.append("Add optimized meta description")
     if not content_results["has_numbers"]:
-        actions.append("6. Add concrete numerical statistics (+40% AI visibility)")
+        recommendations.append("Add concrete numerical statistics (+40% AI visibility)")
     if not content_results["has_links"]:
-        actions.append("7. Cite authoritative sources with external links")
+        recommendations.append("Cite authoritative sources with external links")
 
-    if not actions:
-        print("  🎉 Great! All main optimizations are implemented.")
+    # JSON output
+    if args.format == "json":
+        output_data = {
+            "url": base_url,
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "score": score,
+            "band": band,
+            "checks": {
+                "robots_txt": {
+                    "score": 20 if robots_results["citation_bots_ok"] else (13 if robots_results["bots_allowed"] else (5 if robots_results["found"] else 0)),
+                    "max": 20,
+                    "passed": robots_results["citation_bots_ok"],
+                    "details": {
+                        "found": robots_results["found"],
+                        "citation_bots_ok": robots_results["citation_bots_ok"],
+                        "bots_allowed": robots_results["bots_allowed"],
+                        "bots_blocked": robots_results["bots_blocked"],
+                        "bots_missing": robots_results["bots_missing"]
+                    }
+                },
+                "llms_txt": {
+                    "score": (10 if llms_results["found"] else 0) + 
+                             (3 if llms_results["has_h1"] else 0) +
+                             (4 if llms_results["has_sections"] else 0) +
+                             (3 if llms_results["has_links"] else 0),
+                    "max": 20,
+                    "passed": llms_results["found"] and llms_results["has_h1"],
+                    "details": {
+                        "found": llms_results["found"],
+                        "has_h1": llms_results["has_h1"],
+                        "has_description": llms_results["has_description"],
+                        "has_sections": llms_results["has_sections"],
+                        "has_links": llms_results["has_links"],
+                        "word_count": llms_results["word_count"]
+                    }
+                },
+                "schema_jsonld": {
+                    "score": (10 if schema_results["has_website"] else 0) +
+                             (10 if schema_results["has_faq"] else 0) +
+                             (5 if schema_results["has_webapp"] else 0),
+                    "max": 25,
+                    "passed": schema_results["has_website"],
+                    "details": {
+                        "has_website": schema_results["has_website"],
+                        "has_webapp": schema_results["has_webapp"],
+                        "has_faq": schema_results["has_faq"],
+                        "found_types": schema_results["found_types"]
+                    }
+                },
+                "meta_tags": {
+                    "score": (5 if meta_results["has_title"] else 0) +
+                             (8 if meta_results["has_description"] else 0) +
+                             (3 if meta_results["has_canonical"] else 0) +
+                             (4 if (meta_results["has_og_title"] and meta_results["has_og_description"]) else 0),
+                    "max": 20,
+                    "passed": meta_results["has_title"] and meta_results["has_description"],
+                    "details": {
+                        "has_title": meta_results["has_title"],
+                        "has_description": meta_results["has_description"],
+                        "has_canonical": meta_results["has_canonical"],
+                        "has_og_title": meta_results["has_og_title"],
+                        "has_og_description": meta_results["has_og_description"],
+                        "has_og_image": meta_results["has_og_image"]
+                    }
+                },
+                "content": {
+                    "score": (4 if content_results["has_h1"] else 0) +
+                             (6 if content_results["has_numbers"] else 0) +
+                             (5 if content_results["has_links"] else 0),
+                    "max": 15,
+                    "passed": content_results["has_h1"],
+                    "details": {
+                        "has_h1": content_results["has_h1"],
+                        "heading_count": content_results["heading_count"],
+                        "has_numbers": content_results["has_numbers"],
+                        "has_links": content_results["has_links"],
+                        "word_count": content_results["word_count"]
+                    }
+                }
+            },
+            "recommendations": recommendations
+        }
+        
+        json_output = json.dumps(output_data, indent=2)
+        
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as f:
+                f.write(json_output)
+            print(f"✅ JSON report written to: {args.output}")
+        else:
+            print(json_output)
+    
+    # Text output (default)
     else:
-        for action in actions:
-            print(f"  {action}")
+        print_header("📊 FINAL GEO SCORE")
+        bar_filled = int(score / 5)
+        bar_empty = 20 - bar_filled
+        bar = "█" * bar_filled + "░" * bar_empty
+        print(f"\n  [{bar}] {score}/100")
 
-    print("\n  Ref: SKILL.md for detailed instructions")
-    print("  Ref: references/princeton-geo-methods.md for advanced methods")
-    print()
+        if score >= 91:
+            print(f"\n  🏆 EXCELLENT — Site is well optimized for AI search engines!")
+        elif score >= 71:
+            print(f"\n  ✅ GOOD — Core optimizations in place, fine-tune content and schema")
+        elif score >= 41:
+            print(f"\n  ⚠️  FOUNDATION — Core elements missing, implement priority fixes below")
+        else:
+            print(f"\n  ❌ CRITICAL — Site is not visible to AI search engines")
+
+        print(f"\n  Score bands: 0–40 = critical | 41–70 = foundation | 71–90 = good | 91–100 = excellent")
+
+        print("\n  📋 NEXT PRIORITY STEPS:")
+
+        if not recommendations:
+            print("  🎉 Great! All main optimizations are implemented.")
+        else:
+            for i, action in enumerate(recommendations, 1):
+                print(f"  {i}. {action}")
+
+        print("\n  Ref: SKILL.md for detailed instructions")
+        print("  Ref: references/princeton-geo-methods.md for advanced methods")
+        print()
 
     return score
 
