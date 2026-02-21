@@ -5,16 +5,18 @@ Generative Engine Optimization (GEO) Toolkit
 
 Author: Juan Camilo Auriti (juancamilo.auriti@gmail.com)
 
-
 Usage:
-    # Analyze HTML file and show suggested schema
-    ./geo scripts/schema_injector.py --file index.html
+    # Analyze HTML file and show existing schema + suggestions
+    ./geo scripts/schema_injector.py --file index.html --analyze
 
     # Inject WebSite schema into an HTML file
-    ./geo scripts/schema_injector.py --file index.html --type website --name "MySite" --url https://example.com
+    ./geo scripts/schema_injector.py --file index.html --type website --name "MySite" --url https://example.com --inject
 
-    # Inject FAQPage schema
-    ./geo scripts/schema_injector.py --file page.html --type faq --faq-file faqs.json
+    # Inject FAQPage schema (auto-extract FAQ from HTML)
+    ./geo scripts/schema_injector.py --file page.html --type faq --auto-extract --inject
+
+    # Inject FAQPage schema (from JSON file)
+    ./geo scripts/schema_injector.py --file page.html --type faq --faq-file faqs.json --inject
 
     # Generate Astro snippet for BaseLayout
     ./geo scripts/schema_injector.py --type website --name "MySite" --url https://example.com --astro
@@ -25,6 +27,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from typing import List, Dict, Optional
 
 
 SCHEMA_TEMPLATES = {
@@ -65,16 +68,7 @@ SCHEMA_TEMPLATES = {
     "faq": {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        "mainEntity": [
-            {
-                "@type": "Question",
-                "name": "{{question}}",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "{{answer}}"
-                }
-            }
-        ]
+        "mainEntity": []
     },
     "article": {
         "@context": "https://schema.org",
@@ -119,6 +113,7 @@ SCHEMA_TEMPLATES = {
         ]
     }
 }
+
 
 ASTRO_TEMPLATE = """\
 ---
@@ -209,8 +204,56 @@ def schema_to_html_tag(schema_dict: dict) -> str:
     return f'<script type="application/ld+json">\n{json_str}\n</script>'
 
 
-def analyze_html_file(file_path: str) -> dict:
-    """Analyze an HTML file and suggest missing schemas."""
+def extract_faq_from_html(soup) -> List[Dict[str, str]]:
+    """
+    Auto-extract FAQ items from HTML.
+    Looks for common patterns:
+    - <dt>question</dt><dd>answer</dd>
+    - <div class="faq-item"><h3>Q</h3><p>A</p></div>
+    - <details><summary>Q</summary>A</details>
+    """
+    faqs = []
+    
+    # Pattern 1: <dt> and <dd>
+    dts = soup.find_all("dt")
+    for dt in dts:
+        dd = dt.find_next_sibling("dd")
+        if dd:
+            question = dt.get_text(strip=True)
+            answer = dd.get_text(strip=True)
+            if question and answer and len(question) > 5 and len(answer) > 10:
+                faqs.append({"question": question, "answer": answer})
+    
+    # Pattern 2: <details> / <summary>
+    details = soup.find_all("details")
+    for detail in details:
+        summary = detail.find("summary")
+        if summary:
+            question = summary.get_text(strip=True)
+            # Answer is everything except the summary
+            summary.extract()
+            answer = detail.get_text(strip=True)
+            if question and answer and len(question) > 5 and len(answer) > 10:
+                faqs.append({"question": question, "answer": answer})
+    
+    # Pattern 3: Common FAQ class patterns
+    faq_containers = soup.find_all(class_=re.compile(r"faq|question|qa", re.I))
+    for container in faq_containers:
+        # Try to find question (h3, h4, strong, or element with "question" class)
+        q_elem = container.find(["h3", "h4", "strong"]) or container.find(class_=re.compile(r"question", re.I))
+        if q_elem:
+            question = q_elem.get_text(strip=True)
+            # Answer is the rest
+            q_elem.extract()
+            answer = container.get_text(strip=True)
+            if question and answer and len(question) > 5 and len(answer) > 10:
+                faqs.append({"question": question, "answer": answer})
+    
+    return faqs
+
+
+def analyze_html_file(file_path: str, verbose: bool = False) -> dict:
+    """Analyze an HTML file and return found/missing schemas + extracted data."""
     try:
         from bs4 import BeautifulSoup
     except ImportError:
@@ -221,213 +264,311 @@ def analyze_html_file(file_path: str) -> dict:
         content = f.read()
 
     soup = BeautifulSoup(content, "html.parser")
-
-    found_types = []
-    scripts = soup.find_all("script", attrs={"type": "application/ld+json"})
-    for script in scripts:
+    
+    # Extract all JSON-LD scripts
+    found_schemas = []
+    scripts = soup.find_all("script", type="application/ld+json")
+    
+    for idx, script in enumerate(scripts):
         try:
-            data = json.loads(script.string)
-            if isinstance(data, list):
-                for item in data:
-                    found_types.append(item.get("@type", "?"))
-            else:
-                found_types.append(data.get("@type", "?"))
-        except Exception:
-            pass
-
+            # Handle both string content and NavigableString
+            script_content = script.string
+            if script_content:
+                data = json.loads(script_content.strip())
+                
+                # Handle both single schema and array of schemas
+                if isinstance(data, list):
+                    for item in data:
+                        schema_type = item.get("@type", "Unknown")
+                        found_schemas.append({
+                            "type": schema_type,
+                            "data": item,
+                            "index": idx
+                        })
+                else:
+                    schema_type = data.get("@type", "Unknown")
+                    found_schemas.append({
+                        "type": schema_type,
+                        "data": data,
+                        "index": idx
+                    })
+        except json.JSONDecodeError as e:
+            if verbose:
+                print(f"⚠️  Invalid JSON in script tag {idx}: {e}")
+        except Exception as e:
+            if verbose:
+                print(f"⚠️  Error parsing script tag {idx}: {e}")
+    
+    # Determine what's missing
+    found_types = [s["type"] for s in found_schemas]
     missing = []
+    
     if "WebSite" not in found_types:
         missing.append("website")
     if "WebApplication" not in found_types:
         missing.append("webapp")
     if "FAQPage" not in found_types:
         missing.append("faq")
-
+    
+    # Extract FAQ if FAQPage is missing
+    extracted_faqs = []
+    if "FAQPage" not in found_types:
+        extracted_faqs = extract_faq_from_html(soup)
+    
+    # Check for duplicates
+    duplicates = {}
+    for schema_type in set(found_types):
+        count = found_types.count(schema_type)
+        if count > 1:
+            duplicates[schema_type] = count
+    
     return {
-        "found": found_types,
+        "found_schemas": found_schemas,
+        "found_types": found_types,
         "missing": missing,
+        "extracted_faqs": extracted_faqs,
+        "duplicates": duplicates,
         "has_head": bool(soup.find("head")),
+        "total_scripts": len(scripts)
     }
 
 
-def inject_schema_into_html(file_path: str, schema_tag: str, backup: bool = True) -> bool:
-    """Inject JSON-LD schema into an HTML file."""
-    with open(file_path, "r", encoding="utf-8") as f:
-        content = f.read()
+def generate_faq_schema(faq_items: List[Dict[str, str]]) -> dict:
+    """Generate FAQPage schema from FAQ items."""
+    schema = SCHEMA_TEMPLATES["faq"].copy()
+    schema["mainEntity"] = [
+        {
+            "@type": "Question",
+            "name": item["question"],
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": item["answer"]
+            }
+        }
+        for item in faq_items
+    ]
+    return schema
+
+
+def inject_schema_into_html(file_path: str, schema_dict: dict, backup: bool = True) -> bool:
+    """Inject a schema tag into an HTML file (before </head>)."""
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        print("❌ beautifulsoup4 required: pip install beautifulsoup4")
+        return False
 
     # Backup
     if backup:
-        backup_path = file_path + ".bak"
-        with open(backup_path, "w", encoding="utf-8") as f:
-            f.write(content)
-        print(f"   Backup: {backup_path}")
+        backup_path = f"{file_path}.bak"
+        Path(file_path).rename(backup_path)
+        print(f"📁 Backup created: {backup_path}")
 
-    # Insert before </head>
-    if "</head>" in content:
-        new_content = content.replace("</head>", f"\n  {schema_tag}\n</head>", 1)
-    elif "<head>" in content:
-        new_content = content.replace("<head>", f"<head>\n  {schema_tag}", 1)
-    else:
-        print("❌ <head> tag not found in file")
+    with open(file_path if not backup else backup_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    soup = BeautifulSoup(content, "html.parser")
+    head = soup.find("head")
+    
+    if not head:
+        print("❌ No <head> tag found in HTML")
         return False
-
+    
+    # Create new schema tag
+    schema_tag = soup.new_tag("script", type="application/ld+json")
+    schema_tag.string = "\n" + json.dumps(schema_dict, indent=2, ensure_ascii=False) + "\n"
+    
+    # Insert before </head>
+    head.append(schema_tag)
+    
+    # Write back
     with open(file_path, "w", encoding="utf-8") as f:
-        f.write(new_content)
-
+        f.write(str(soup))
+    
     return True
 
 
-def generate_faq_schema(faq_data) -> dict:
-    """Generate FAQPage schema from a list of questions/answers."""
-    if isinstance(faq_data, list):
-        items = faq_data
-    elif isinstance(faq_data, dict) and "faqs" in faq_data:
-        items = faq_data["faqs"]
+def print_analysis(analysis: dict, verbose: bool = False):
+    """Pretty-print analysis results."""
+    print(f"\n{'='*60}")
+    print(f"  SCHEMA ANALYSIS")
+    print(f"{'='*60}\n")
+    
+    if analysis["found_schemas"]:
+        print(f"✅ Found {len(analysis['found_schemas'])} schema(s):\n")
+        for idx, schema in enumerate(analysis["found_schemas"], 1):
+            schema_type = schema["type"]
+            data = schema["data"]
+            
+            print(f"   {idx}. {schema_type}")
+            
+            # Show key properties
+            if schema_type == "WebSite":
+                print(f"      url: {data.get('url', 'N/A')}")
+                print(f"      name: {data.get('name', 'N/A')}")
+            elif schema_type == "WebApplication":
+                print(f"      url: {data.get('url', 'N/A')}")
+                print(f"      name: {data.get('name', 'N/A')}")
+            elif schema_type == "FAQPage":
+                faq_count = len(data.get("mainEntity", []))
+                print(f"      questions: {faq_count}")
+            elif schema_type == "Organization":
+                print(f"      name: {data.get('name', 'N/A')}")
+            elif schema_type == "BreadcrumbList":
+                items = len(data.get("itemListElement", []))
+                print(f"      items: {items}")
+            
+            if verbose:
+                print(f"\n      Full schema:")
+                print(f"      {json.dumps(data, indent=6, ensure_ascii=False)}\n")
+            print()
     else:
-        print("❌ Unrecognized FAQ format. Use: [{question, answer}, ...]")
-        sys.exit(1)
-
-    schema = {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": []
-    }
-
-    for item in items:
-        q = item.get("question", item.get("q", ""))
-        a = item.get("answer", item.get("a", ""))
-        schema["mainEntity"].append({
-            "@type": "Question",
-            "name": q,
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": a
-            }
-        })
-
-    return schema
+        print("⚠️  No JSON-LD schemas found\n")
+    
+    # Duplicates warning
+    if analysis["duplicates"]:
+        print("⚠️  DUPLICATE SCHEMAS DETECTED:\n")
+        for schema_type, count in analysis["duplicates"].items():
+            print(f"   • {schema_type}: {count} instances (should be 1)")
+        print()
+    
+    # Missing schemas
+    if analysis["missing"]:
+        print(f"💡 Suggested schemas to add:\n")
+        for schema_type in analysis["missing"]:
+            print(f"   • {schema_type.upper()}")
+        print()
+    
+    # Extracted FAQs
+    if analysis["extracted_faqs"]:
+        print(f"📋 Auto-detected {len(analysis['extracted_faqs'])} FAQ items:\n")
+        for idx, faq in enumerate(analysis["extracted_faqs"][:3], 1):  # Show first 3
+            q = faq["question"][:60] + "..." if len(faq["question"]) > 60 else faq["question"]
+            print(f"   {idx}. {q}")
+        if len(analysis["extracted_faqs"]) > 3:
+            print(f"   ... and {len(analysis['extracted_faqs']) - 3} more")
+        print()
+        print("   💡 Use --type faq --auto-extract --inject to add FAQPage schema")
+        print()
 
 
 def main():
     parser = argparse.ArgumentParser(
         description="Inject JSON-LD schema into HTML pages or generate Astro snippets",
         formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Analyze HTML file and show existing schemas
+  ./geo scripts/schema_injector.py --file index.html --analyze
+
+  # Analyze with verbose output (shows full schema JSON)
+  ./geo scripts/schema_injector.py --file index.html --analyze --verbose
+
+  # Inject WebSite schema
+  ./geo scripts/schema_injector.py --file index.html --type website --name "MySite" --url https://example.com --inject
+
+  # Auto-extract FAQ and inject FAQPage schema
+  ./geo scripts/schema_injector.py --file page.html --type faq --auto-extract --inject
+
+  # Generate Astro BaseLayout snippet
+  ./geo scripts/schema_injector.py --type website --name "MySite" --url https://example.com --astro
+        """
     )
+    
     parser.add_argument("--file", help="HTML file to analyze/modify")
-    parser.add_argument("--type", choices=["website", "webapp", "faq", "article", "organization", "breadcrumb"],
+    parser.add_argument("--type", choices=list(SCHEMA_TEMPLATES.keys()),
                         help="Type of schema to generate")
     parser.add_argument("--name", help="Site/application name")
     parser.add_argument("--url", help="Site URL")
-    parser.add_argument("--description", default="", help="Description")
-    parser.add_argument("--author", default="", help="Author")
-    parser.add_argument("--logo-url", default="", help="Logo URL")
+    parser.add_argument("--description", help="Description")
+    parser.add_argument("--author", help="Author")
+    parser.add_argument("--logo-url", help="Logo URL")
     parser.add_argument("--faq-file", help="JSON file with FAQs [{question, answer}]")
-    parser.add_argument("--astro", action="store_true", help="Generate Astro snippet")
-    parser.add_argument("--inject", action="store_true", help="Inject directly into --file")
-    parser.add_argument("--no-backup", action="store_true", help="Do not create backup before modifying")
-    parser.add_argument("--analyze", action="store_true", help="Only analyze the file, do not modify")
+    parser.add_argument("--auto-extract", action="store_true", 
+                        help="Auto-extract FAQ from HTML")
+    parser.add_argument("--astro", action="store_true", 
+                        help="Generate Astro snippet")
+    parser.add_argument("--inject", action="store_true", 
+                        help="Inject directly into --file")
+    parser.add_argument("--no-backup", action="store_true", 
+                        help="Do not create backup before modifying")
+    parser.add_argument("--analyze", action="store_true", 
+                        help="Only analyze the file, do not modify")
+    parser.add_argument("--verbose", action="store_true",
+                        help="Show full schema JSON in analysis")
 
     args = parser.parse_args()
 
-    # Analysis only
+    # Mode 1: Analyze only
     if args.analyze:
         if not args.file:
-            print("❌ --analyze requires --file. Example: ./geo scripts/schema_injector.py --file index.html --analyze")
+            print("❌ --file required for --analyze")
             sys.exit(1)
-        print(f"\n🔍 Analyzing: {args.file}")
-        result = analyze_html_file(args.file)
-        print(f"   Schemas found: {', '.join(result['found']) or 'none'}")
-        print(f"   Schemas missing: {', '.join(result['missing']) or 'none ✅'}")
-        if result["missing"]:
-            print("\n💡 Add these schemas:")
-            for schema_type in result["missing"]:
-                print(f"   ./geo scripts/schema_injector.py --file {args.file} --type {schema_type} --url URL --name NAME --inject")
-        return
-
-    # Generate Astro snippet
+        
+        analysis = analyze_html_file(args.file, verbose=args.verbose)
+        print_analysis(analysis, verbose=args.verbose)
+        sys.exit(0)
+    
+    # Mode 2: Generate Astro snippet
     if args.astro:
-        template = ASTRO_TEMPLATE
-        template = template.replace("SITE_URL", args.url or "https://example.com")
-        template = template.replace("SITE_NAME", args.name or "SiteName")
-        print("\n─── Astro BaseLayout Snippet ───")
-        print(template)
-        return
-
-    # Generate schema
+        if not args.url or not args.name:
+            print("❌ --url and --name required for --astro")
+            sys.exit(1)
+        
+        snippet = ASTRO_TEMPLATE.replace("SITE_URL", args.url).replace("SITE_NAME", args.name)
+        print(snippet)
+        sys.exit(0)
+    
+    # Mode 3: Generate/inject schema
     if args.type:
+        # Build schema
         if args.type == "faq":
-            if args.faq_file:
+            if args.auto_extract and args.file:
+                # Auto-extract from HTML
+                analysis = analyze_html_file(args.file)
+                faq_items = analysis["extracted_faqs"]
+                if not faq_items:
+                    print("❌ No FAQ items found in HTML")
+                    sys.exit(1)
+                print(f"✅ Extracted {len(faq_items)} FAQ items")
+                schema = generate_faq_schema(faq_items)
+            elif args.faq_file:
+                # Load from JSON file
                 with open(args.faq_file, "r") as f:
-                    faq_data = json.load(f)
-                schema = generate_faq_schema(faq_data)
+                    faq_items = json.load(f)
+                schema = generate_faq_schema(faq_items)
             else:
-                # Example FAQ schema — replace with your actual Q&A content
-                schema = {
-                    "@context": "https://schema.org",
-                    "@type": "FAQPage",
-                    "mainEntity": [
-                        {
-                            "@type": "Question",
-                            "name": "REPLACE: What does this tool calculate?",
-                            "acceptedAnswer": {
-                                "@type": "Answer",
-                                "text": "REPLACE: Describe exactly what the tool does, with specific data if possible (e.g. 'Calculates net salary after Italian IRPEF tax deductions using 2026 rates: 23% up to €28,000, 35% up to €50,000, 43% above €50,000.')."
-                            }
-                        },
-                        {
-                            "@type": "Question",
-                            "name": "REPLACE: Is this tool free to use?",
-                            "acceptedAnswer": {
-                                "@type": "Answer",
-                                "text": "REPLACE: Yes, this tool is completely free. No registration required."
-                            }
-                        }
-                    ]
-                }
-                print("\n⚠️  Using placeholder FAQ content — edit the output before publishing!")
+                print("❌ --auto-extract or --faq-file required for FAQ schema")
+                sys.exit(1)
         else:
-            template = SCHEMA_TEMPLATES.get(args.type, {})
+            # Standard template
             values = {
-                "name": args.name or "Site Name",
-                "url": args.url or "https://example.com",
+                "name": args.name or "",
+                "url": args.url or "",
                 "description": args.description or "",
                 "author": args.author or "",
-                "logo_url": args.logo_url or "",
+                "logo_url": args.logo_url or ""
             }
-            schema = fill_template(template, values)
-
-        schema_tag = schema_to_html_tag(schema)
-
-        if args.inject and args.file:
-            print(f"\n💉 Injecting {args.type} schema into: {args.file}")
-            success = inject_schema_into_html(args.file, schema_tag, backup=not args.no_backup)
+            schema = fill_template(SCHEMA_TEMPLATES[args.type], values)
+        
+        # Output or inject
+        if args.inject:
+            if not args.file:
+                print("❌ --file required for --inject")
+                sys.exit(1)
+            
+            success = inject_schema_into_html(args.file, schema, backup=not args.no_backup)
             if success:
-                print(f"✅ {args.type} schema injected successfully!")
+                print(f"✅ Schema injected into {args.file}")
             else:
-                print("❌ Injection failed")
+                print(f"❌ Failed to inject schema")
+                sys.exit(1)
         else:
-            print(f"\n─── Schema {args.type.upper()} JSON-LD ───")
-            print(schema_tag)
-            if args.file:
-                print(f"\n💡 To inject: add --inject")
-            else:
-                print(f"\n💡 To inject into a file: add --file index.html --inject")
-
-        return
-
-    # File analysis without a specified type
-    if args.file:
-        result = analyze_html_file(args.file)
-        print(f"\n🔍 Schema analysis in: {args.file}")
-        print(f"   ✅ Found: {', '.join(result['found']) or 'none'}")
-        if result["missing"]:
-            print(f"   ❌ Missing: {', '.join(result['missing'])}")
-            print("\n💡 Suggested commands:")
-            for t in result["missing"]:
-                print(f"   ./geo scripts/schema_injector.py --file {args.file} --type {t} --name 'Name' --url 'URL' --inject")
-        return
-
-    parser.print_help()
+            # Print schema JSON
+            print(schema_to_html_tag(schema))
+    else:
+        parser.print_help()
+        sys.exit(1)
 
 
 if __name__ == "__main__":
