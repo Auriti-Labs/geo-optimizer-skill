@@ -16,8 +16,8 @@
 ```
 
 [![Python](https://img.shields.io/badge/Python-3.8+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![Tests](https://img.shields.io/badge/Tests-67_passing-22c55e?style=flat-square&logo=pytest&logoColor=white)](https://github.com/auriti-web-design/geo-optimizer-skill/actions)
-[![Coverage](https://img.shields.io/badge/Coverage-87%25-10b981?style=flat-square&logo=codecov&logoColor=white)](COVERAGE_REPORT.md)
+[![CI](https://github.com/auriti-web-design/geo-optimizer-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/auriti-web-design/geo-optimizer-skill/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/auriti-web-design/geo-optimizer-skill/branch/main/graph/badge.svg)](https://codecov.io/gh/auriti-web-design/geo-optimizer-skill)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
 [![Based on Princeton KDD 2024](https://img.shields.io/badge/Based_on-Princeton_KDD_2024-f97316?style=flat-square)](https://arxiv.org/abs/2311.09735)
 [![GitHub Stars](https://img.shields.io/github/stars/auriti-web-design/geo-optimizer-skill?style=flat-square&color=facc15&logo=github)](https://github.com/auriti-web-design/geo-optimizer-skill/stargazers)
@@ -514,7 +514,7 @@ cd ~/geo-optimizer-skill
 - ✅ GitHub Actions CI runs tests on every push
 - ✅ Production-hardened with comprehensive failure path testing
 
-See [COVERAGE_REPORT.md](COVERAGE_REPORT.md) for detailed analysis.
+See [Codecov](https://codecov.io/gh/auriti-web-design/geo-optimizer-skill) for live coverage analysis.
 
 ---
 

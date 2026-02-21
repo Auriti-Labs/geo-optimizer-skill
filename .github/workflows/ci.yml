@@ -40,11 +40,20 @@ jobs:
       - name: Run tests
         run: |
           if [ -d tests ]; then
-            pytest tests/ -v --tb=short --cov=scripts --cov-report=term-missing
+            pytest tests/ -v --tb=short --cov=scripts --cov-report=xml --cov-report=term-missing
           else
             echo "⚠️  No tests directory found - skipping test run"
             echo "📝 TODO: Add tests/test_audit.py for full CI coverage"
           fi
+      
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.12'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: false
+          verbose: true
       
       - name: Test install script (bash check)
         run: |
