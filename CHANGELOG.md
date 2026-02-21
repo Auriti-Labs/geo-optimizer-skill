@@ -12,6 +12,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - `ai-context/kiro-steering.md` — Kiro steering file with `inclusion: fileMatch` + `fileMatchPattern` array; place in `.kiro/steering/`
 - Kiro entry in `SKILL.md`, `README.md`, `docs/ai-context.md` (setup, frontmatter reference, platform comparison table, update commands)
 - `meta-externalagent` (Meta AI — Facebook/Instagram AI) added to `AI_BOTS` in `geo_audit.py`
+- **schema_injector.py v2.0** — Complete rewrite with robust schema detection, FAQ auto-extraction, and verbose mode
+  - `--analyze --verbose` — shows full JSON-LD schemas with key properties
+  - Auto-extract FAQ from HTML patterns (dt/dd, details/summary, common CSS classes)
+  - `--auto-extract` flag — extract FAQ from HTML and generate FAQPage schema
+  - Duplicate schema detection with warnings (e.g., 2x WebSite, 2x FAQPage)
+  - Better BeautifulSoup parsing — handles both string and NavigableString content
+  - Comprehensive error handling for malformed JSON-LD scripts
+  - Professional output formatting with structured analysis sections
 
 ### Fixed
 
