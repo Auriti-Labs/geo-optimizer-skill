@@ -75,15 +75,22 @@ SKIP_PATTERNS = [
 
 
 def fetch_sitemap(sitemap_url: str) -> list:
-    """Download and parse an XML sitemap, including sitemap index files."""
+    """
+    Download and parse an XML sitemap, including sitemap index files.
+    
+    Uses automatic retry with exponential backoff for transient failures.
+    """
+    from http_utils import create_session_with_retry
+    
     urls = []
     print(f"⏳ Fetching sitemap: {sitemap_url}")
 
     try:
-        r = requests.get(sitemap_url, headers=HEADERS, timeout=15)
+        session = create_session_with_retry()
+        r = session.get(sitemap_url, headers=HEADERS, timeout=15)
         r.raise_for_status()
     except Exception as e:
-        print(f"❌ Sitemap error: {e}")
+        print(f"❌ Sitemap error (after 3 retries): {e}")
         return urls
 
     soup = BeautifulSoup(r.content, "xml")
@@ -160,9 +167,17 @@ def categorize_url(url: str, base_domain: str) -> str:
 
 
 def fetch_page_title(url: str) -> str:
-    """Attempt to fetch the page title (with short timeout)."""
+    """
+    Attempt to fetch the page title (with short timeout and retry).
+    
+    Uses automatic retry for transient failures to improve success rate
+    on slow/unreliable sites.
+    """
+    from http_utils import create_session_with_retry
+    
     try:
-        r = requests.get(url, headers=HEADERS, timeout=5)
+        session = create_session_with_retry(total_retries=2, backoff_factor=0.5)
+        r = session.get(url, headers=HEADERS, timeout=5)
         soup = BeautifulSoup(r.text, "html.parser")
         title = soup.find("title")
         if title:
@@ -329,10 +344,14 @@ def discover_sitemap(base_url: str) -> str:
         "/sitemap-0.xml",
     ]
 
+    from http_utils import create_session_with_retry
+    
+    session = create_session_with_retry(total_retries=2, backoff_factor=0.5)
+    
     # First check robots.txt for Sitemap: directive
     robots_url = urljoin(base_url, "/robots.txt")
     try:
-        r = requests.get(robots_url, headers=HEADERS, timeout=5)
+        r = session.get(robots_url, headers=HEADERS, timeout=5)
         for line in r.text.splitlines():
             if line.lower().startswith("sitemap:"):
                 sitemap_url = line.split(":", 1)[1].strip()
@@ -345,7 +364,7 @@ def discover_sitemap(base_url: str) -> str:
     for path in common_paths:
         url = urljoin(base_url, path)
         try:
-            r = requests.head(url, headers=HEADERS, timeout=5)
+            r = session.head(url, headers=HEADERS, timeout=5)
             if r.status_code == 200:
                 print(f"   Sitemap found: {url}")
                 return url

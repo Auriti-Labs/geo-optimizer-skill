@@ -92,14 +92,30 @@ def info(msg: str):
 
 
 def fetch_url(url: str, timeout: int = 10):
-    """Fetch a URL, return (response, error_msg)."""
+    """
+    Fetch a URL with automatic retry on transient failures.
+    
+    Retry strategy:
+    - 3 attempts with exponential backoff (1s, 2s, 4s)
+    - Retries on: connection errors, timeouts, 5xx server errors, 429 rate limit
+    
+    Returns:
+        tuple: (response, error_msg) where response is None on failure
+    """
+    from http_utils import create_session_with_retry
+    
     try:
-        r = requests.get(url, headers=HEADERS, timeout=timeout, allow_redirects=True)
+        session = create_session_with_retry(
+            total_retries=3,
+            backoff_factor=1.0,
+            status_forcelist=[408, 429, 500, 502, 503, 504]
+        )
+        r = session.get(url, headers=HEADERS, timeout=timeout, allow_redirects=True)
         return r, None
     except requests.exceptions.Timeout:
-        return None, f"Timeout ({timeout}s)"
+        return None, f"Timeout ({timeout}s) after 3 retries"
     except requests.exceptions.ConnectionError as e:
-        return None, f"Connection failed: {e}"
+        return None, f"Connection failed after 3 retries: {e}"
     except Exception as e:
         return None, str(e)
 
