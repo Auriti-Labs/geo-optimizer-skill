@@ -350,13 +350,44 @@ def generate_faq_schema(faq_items: List[Dict[str, str]]) -> dict:
     return schema
 
 
-def inject_schema_into_html(file_path: str, schema_dict: dict, backup: bool = True) -> bool:
-    """Inject a schema tag into an HTML file (before </head>)."""
+def inject_schema_into_html(file_path: str, schema_dict: dict, backup: bool = True, validate: bool = True) -> bool:
+    """
+    Inject a schema tag into an HTML file (before </head>).
+    
+    Args:
+        file_path (str): Path to HTML file
+        schema_dict (dict): Schema dictionary to inject
+        backup (bool): Create .bak backup before modifying
+        validate (bool): Validate schema before injection (recommended)
+    
+    Returns:
+        bool: True if successful, False otherwise
+    """
     try:
         from bs4 import BeautifulSoup
     except ImportError:
         print("❌ beautifulsoup4 required: pip install beautifulsoup4")
         return False
+    
+    # Validate schema before injection (Fix #7)
+    if validate:
+        from schema_validator import validate_jsonld
+        
+        # Infer schema type from @type field for stricter validation
+        schema_type_field = schema_dict.get("@type")
+        if isinstance(schema_type_field, list):
+            schema_type = schema_type_field[0].lower() if schema_type_field else None
+        elif isinstance(schema_type_field, str):
+            schema_type = schema_type_field.lower()
+        else:
+            schema_type = None
+        
+        is_valid, error_msg = validate_jsonld(schema_dict, schema_type, strict=False)
+        if not is_valid:
+            print(f"⚠️  Schema validation failed: {error_msg}")
+            print(f"   Use --no-validate to inject anyway (not recommended)")
+            return False
+        print("✅ Schema validation passed")
 
     # Backup
     if backup:
@@ -492,6 +523,8 @@ Examples:
                         help="Inject directly into --file")
     parser.add_argument("--no-backup", action="store_true", 
                         help="Do not create backup before modifying")
+    parser.add_argument("--no-validate", action="store_true",
+                        help="Skip schema validation before injection (not recommended)")
     parser.add_argument("--analyze", action="store_true", 
                         help="Only analyze the file, do not modify")
     parser.add_argument("--verbose", action="store_true",
@@ -557,7 +590,12 @@ Examples:
                 print("❌ --file required for --inject")
                 sys.exit(1)
             
-            success = inject_schema_into_html(args.file, schema, backup=not args.no_backup)
+            success = inject_schema_into_html(
+                args.file,
+                schema,
+                backup=not args.no_backup,
+                validate=not args.no_validate
+            )
             if success:
                 print(f"✅ Schema injected into {args.file}")
             else:
