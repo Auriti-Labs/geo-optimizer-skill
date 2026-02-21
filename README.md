@@ -320,7 +320,6 @@ Apply in this order:
 ```bash
 # Text output (default)
 ./geo scripts/geo_audit.py --url https://yoursite.com
-./geo scripts/geo_audit.py --url https://yoursite.com --verbose  # coming soon
 
 # JSON output for CI/CD pipelines
 ./geo scripts/geo_audit.py --url https://yoursite.com --format json
