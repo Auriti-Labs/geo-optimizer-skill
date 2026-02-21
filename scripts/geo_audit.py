@@ -67,6 +67,9 @@ HEADERS = {
     "User-Agent": "GEO-Audit/1.0 (https://github.com/auriti-web-design/geo-optimizer-skill)"
 }
 
+# Global verbose flag (set in main())
+VERBOSE = False
+
 
 def print_header(text: str):
     width = 60
@@ -149,6 +152,11 @@ def audit_robots_txt(base_url: str) -> dict:
     ok(f"robots.txt found ({r.status_code})")
 
     content = r.text
+    
+    if VERBOSE:
+        print(f"     → Size: {len(content)} bytes")
+        print(f"     → Preview: {content[:200]}...")
+        print()
     # Parse robots.txt — collect bots by status
     current_agents = []
     agent_rules = {}  # agent -> list of Disallow paths
@@ -245,6 +253,11 @@ def audit_llms_txt(base_url: str) -> dict:
     results["word_count"] = len(content.split())
 
     ok(f"llms.txt found ({r.status_code}, {len(content)} bytes, ~{results['word_count']} words)")
+    
+    if VERBOSE:
+        print(f"     → Total lines: {len(lines)}")
+        print(f"     → Preview: {content[:300]}...")
+        print()
 
     # Check H1 (required)
     h1_lines = [l for l in lines if l.startswith("# ")]
@@ -301,6 +314,10 @@ def audit_schema(soup: BeautifulSoup, url: str) -> dict:
         return results
 
     ok(f"Found {len(scripts)} JSON-LD blocks")
+    
+    if VERBOSE:
+        print(f"     → Parsing {len(scripts)} schema blocks...")
+        print()
 
     for i, script in enumerate(scripts):
         try:
@@ -321,13 +338,20 @@ def audit_schema(soup: BeautifulSoup, url: str) -> dict:
                     if t == "WebSite":
                         results["has_website"] = True
                         ok(f"WebSite schema ✓ (url: {schema.get('url', 'n/a')})")
+                        if VERBOSE:
+                            print(f"        → name: {schema.get('name', 'n/a')}")
+                            print(f"        → description: {schema.get('description', 'n/a')[:80]}...")
                     elif t == "WebApplication":
                         results["has_webapp"] = True
                         ok(f"WebApplication schema ✓ (name: {schema.get('name', 'n/a')})")
+                        if VERBOSE:
+                            print(f"        → applicationCategory: {schema.get('applicationCategory', 'n/a')}")
                     elif t == "FAQPage":
                         results["has_faq"] = True
                         entities = schema.get("mainEntity", [])
                         ok(f"FAQPage schema ✓ ({len(entities)} questions)")
+                        if VERBOSE and entities:
+                            print(f"        → First question: {entities[0].get('name', 'n/a')[:80]}...")
                     elif t in VALUABLE_SCHEMAS:
                         ok(f"{t} schema ✓")
                     else:
@@ -435,7 +459,11 @@ def audit_content_quality(soup: BeautifulSoup, url: str) -> dict:
     h1 = soup.find("h1")
     if h1:
         results["has_h1"] = True
-        ok(f"H1: {h1.text.strip()[:60]}")
+        h1_text = h1.text.strip()[:60]
+        ok(f"H1: {h1_text}")
+        if VERBOSE:
+            print(f"     → Full H1: {h1.text.strip()}")
+            print()
     else:
         warn("H1 missing on homepage")
 
@@ -530,12 +558,16 @@ Examples:
         """
     )
     parser.add_argument("--url", required=True, help="URL of the site to audit (e.g. https://example.com)")
-    parser.add_argument("--verbose", action="store_true", help="Verbose output (coming soon — currently has no effect)")
+    parser.add_argument("--verbose", action="store_true", help="Show detailed check output with raw data for debugging")
     parser.add_argument("--format", choices=["text", "json"], default="text", help="Output format: text (default) or json")
     parser.add_argument("--output", help="Output file path (optional, writes to stdout if not specified)")
     args = parser.parse_args()
 
     _ensure_deps()
+    
+    # Set global verbose flag
+    global VERBOSE
+    VERBOSE = args.verbose
 
     # Normalize URL
     base_url = args.url.rstrip("/")
@@ -544,6 +576,8 @@ Examples:
 
     # Suppress verbose output in JSON mode
     json_mode = args.format == "json"
+    if json_mode:
+        VERBOSE = False  # JSON mode overrides verbose
     
     if not json_mode:
         print("\n" + "🔍 " * 20)
@@ -566,6 +600,9 @@ Examples:
     soup = BeautifulSoup(r.text, "html.parser")
     if not json_mode:
         print(f"   Status: {r.status_code} | Size: {len(r.text):,} bytes")
+        if VERBOSE:
+            print(f"   Response time: {r.elapsed.total_seconds():.2f}s")
+            print(f"   Content-Type: {r.headers.get('Content-Type', 'n/a')}")
 
     # Run audits (suppressing print output in JSON mode by redirecting functions)
     import io
