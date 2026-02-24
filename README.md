@@ -580,3 +580,11 @@ Keep contributions focused and documented.
 [![Star on GitHub](https://img.shields.io/github/stars/auriti-web-design/geo-optimizer-skill?style=for-the-badge&color=facc15&logo=github&label=Star%20this%20repo)](https://github.com/auriti-web-design/geo-optimizer-skill/stargazers)
 
 </div>
+
+---
+
+<p align="center">
+  <a href="https://buymeacoffee.com/auritidesign">
+    <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" />
+  </a>
+</p>
