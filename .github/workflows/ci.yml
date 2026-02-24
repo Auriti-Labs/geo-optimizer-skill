@@ -10,42 +10,30 @@ jobs:
   test:
     name: Test Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
-    
+
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.8', '3.10', '3.12']
-    
+        python-version: ['3.9', '3.11', '3.12', '3.13']
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      
-      - name: Install dependencies
+
+      - name: Install package
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-cov
-      
-      - name: Syntax check all scripts
-        run: |
-          python -m py_compile scripts/geo_audit.py
-          python -m py_compile scripts/generate_llms_txt.py
-          python -m py_compile scripts/schema_injector.py
-      
+          pip install -e ".[dev]"
+
       - name: Run tests
         run: |
-          if [ -d tests ]; then
-            pytest tests/ -v --tb=short --cov=scripts --cov-report=xml --cov-report=term-missing
-          else
-            echo "⚠️  No tests directory found - skipping test run"
-            echo "📝 TODO: Add tests/test_audit.py for full CI coverage"
-          fi
-      
+          pytest tests/ -v --tb=short --cov=geo_optimizer --cov=scripts --cov-report=xml --cov-report=term-missing
+
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.12'
         uses: codecov/codecov-action@v4
@@ -54,7 +42,12 @@ jobs:
           files: ./coverage.xml
           fail_ci_if_error: false
           verbose: true
-      
+
+      - name: Verify CLI entry point
+        run: |
+          geo --version
+          geo --help
+
       - name: Test install script (bash check)
         run: |
           bash -n install.sh
@@ -63,20 +56,20 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      
+          python-version: '3.12'
+
       - name: Install linting tools
         run: pip install flake8
-      
+
       - name: Run flake8
         run: |
-          # Stop build on syntax errors or undefined names
           flake8 scripts/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          # Warnings only (don't fail build)
+          flake8 src/geo_optimizer/ --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 scripts/ --count --exit-zero --max-complexity=15 --max-line-length=120 --statistics
+          flake8 src/geo_optimizer/ --count --exit-zero --max-complexity=15 --max-line-length=120 --statistics
