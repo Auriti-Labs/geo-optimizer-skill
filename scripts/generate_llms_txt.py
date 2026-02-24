@@ -17,7 +17,6 @@ import argparse
 import sys
 import re
 from urllib.parse import urljoin, urlparse
-from datetime import datetime
 from collections import defaultdict
 
 # Dependencies are imported lazily inside main() so --help always works.
@@ -102,7 +101,8 @@ def fetch_sitemap(sitemap_url: str) -> list:
         for sitemap in sitemap_tags[:10]:  # Limit to 10 sub-sitemaps
             loc = sitemap.find("loc")
             if loc:
-                sub_urls = fetch_sitemap(loc.text.strip())
+                sub_url = urljoin(sitemap_url, loc.text.strip())
+                sub_urls = fetch_sitemap(sub_url)
                 urls.extend(sub_urls)
         return urls
 
@@ -116,7 +116,7 @@ def fetch_sitemap(sitemap_url: str) -> list:
             continue
 
         url_data = {
-            "url": loc.text.strip(),
+            "url": urljoin(sitemap_url, loc.text.strip()),
             "lastmod": None,
             "priority": 0.5,
             "title": None,
@@ -252,8 +252,14 @@ def generate_llms_txt(
 
         category = categorize_url(url, domain)
 
-        # Generate label
-        label = url_data.get("title") or url_to_label(url, domain)
+        # Generate label (fetch from page if requested)
+        label = url_data.get("title")
+        if not label and fetch_titles:
+            fetched = fetch_page_title(url)
+            if fetched:
+                label = fetched
+        if not label:
+            label = url_to_label(url, domain)
 
         categorized[category].append({
             "url": url,

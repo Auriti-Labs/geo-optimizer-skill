@@ -14,7 +14,7 @@ Usage:
 import argparse
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import urljoin, urlparse
 
 # Dependencies are imported lazily inside main() so --help always works.
@@ -152,41 +152,60 @@ def audit_robots_txt(base_url: str) -> dict:
     ok(f"robots.txt found ({r.status_code})")
 
     content = r.text
-    
+
     if VERBOSE:
         print(f"     → Size: {len(content)} bytes")
         print(f"     → Preview: {content[:200]}...")
         print()
-    # Parse robots.txt — collect bots by status
+
+    # Parse robots.txt — collect rules per agent (supports Allow, Disallow, stacking)
+    agent_rules = {}  # agent -> {"allow": [...], "disallow": [...]}
     current_agents = []
-    agent_rules = {}  # agent -> list of Disallow paths
+    last_was_agent = False  # track consecutive User-agent lines for stacking
 
     for line in content.splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
-        if line.lower().startswith("user-agent:"):
+
+        lower = line.lower()
+        if lower.startswith("user-agent:"):
             agent = line.split(":", 1)[1].strip()
-            # Strip inline comments (e.g. "GPTBot # added 2026")
-            agent = agent.split("#")[0].strip()
-            current_agents = [agent]
+            agent = agent.split("#")[0].strip()  # strip inline comments
+            # RFC 9309: consecutive User-agent lines share the same rules
+            if not last_was_agent:
+                current_agents = []
             if agent not in agent_rules:
-                agent_rules[agent] = []
-        elif line.lower().startswith("disallow:"):
+                agent_rules[agent] = {"allow": [], "disallow": []}
+            current_agents.append(agent)
+            last_was_agent = True
+        elif lower.startswith("disallow:"):
             path = line.split(":", 1)[1].strip()
-            path = path.split("#")[0].strip()  # strip inline comments
+            path = path.split("#")[0].strip()
             for agent in current_agents:
-                if agent in agent_rules:
-                    agent_rules[agent].append(path)
+                agent_rules[agent]["disallow"].append(path)
+            last_was_agent = False
+        elif lower.startswith("allow:"):
+            path = line.split(":", 1)[1].strip()
+            path = path.split("#")[0].strip()
+            for agent in current_agents:
+                agent_rules[agent]["allow"].append(path)
+            last_was_agent = False
+        else:
+            last_was_agent = False
 
     print()
     for bot, description in AI_BOTS.items():
-        # Check case-insensitive
+        # Find matching agent (case-insensitive), fallback to wildcard *
         found_agent = None
         for agent in agent_rules:
             if agent.lower() == bot.lower():
                 found_agent = agent
                 break
+
+        # Fallback to wildcard User-agent: *
+        if found_agent is None and "*" in agent_rules:
+            found_agent = "*"
 
         if found_agent is None:
             results["bots_missing"].append(bot)
@@ -195,19 +214,27 @@ def audit_robots_txt(base_url: str) -> dict:
             else:
                 warn(f"{bot} not configured ({description})")
         else:
-            disallows = agent_rules[found_agent]
-            if any(d in ["/", "/*"] for d in disallows):
+            rules = agent_rules[found_agent]
+            disallows = rules["disallow"]
+            allows = rules["allow"]
+
+            # Check if fully blocked (Disallow: / or Disallow: /*)
+            is_blocked = any(d in ["/", "/*"] for d in disallows)
+            # Check if Allow overrides the block (Allow: / explicitly re-allows)
+            has_allow_root = any(a in ["/", "/*"] for a in allows)
+
+            if is_blocked and not has_allow_root:
                 results["bots_blocked"].append(bot)
                 if bot in CITATION_BOTS:
                     fail(f"{bot} BLOCKED — will not appear in AI citations!")
                 else:
                     warn(f"{bot} blocked (training disabled) — OK if intentional")
-            elif disallows == [] or all(d == "" for d in disallows):
+            elif not disallows or all(d == "" for d in disallows):
                 results["bots_allowed"].append(bot)
                 ok(f"{bot} allowed ✓ ({description})")
             else:
                 results["bots_allowed"].append(bot)
-                ok(f"{bot} partially allowed: {disallows} ({description})")
+                ok(f"{bot} partially allowed: disallow={disallows} ({description})")
 
     # Summary citation bots
     citation_ok = all(b in results["bots_allowed"] for b in CITATION_BOTS)
@@ -604,24 +631,22 @@ Examples:
             print(f"   Response time: {r.elapsed.total_seconds():.2f}s")
             print(f"   Content-Type: {r.headers.get('Content-Type', 'n/a')}")
 
-    # Run audits (suppressing print output in JSON mode by redirecting functions)
+    # Run audits (suppressing print output in JSON mode)
     import io
     import contextlib
-    
+
     if json_mode:
-        # Redirect stdout to suppress print statements during audits
-        old_stdout = sys.stdout
-        sys.stdout = io.StringIO()
-    
-    robots_results = audit_robots_txt(base_url)
-    llms_results = audit_llms_txt(base_url)
-    schema_results = audit_schema(soup, base_url)
-    meta_results = audit_meta_tags(soup, base_url)
-    content_results = audit_content_quality(soup, base_url)
-    
-    if json_mode:
-        # Restore stdout
-        sys.stdout = old_stdout
+        devnull = io.StringIO()
+        ctx = contextlib.redirect_stdout(devnull)
+    else:
+        ctx = contextlib.nullcontext()
+
+    with ctx:
+        robots_results = audit_robots_txt(base_url)
+        llms_results = audit_llms_txt(base_url)
+        schema_results = audit_schema(soup, base_url)
+        meta_results = audit_meta_tags(soup, base_url)
+        content_results = audit_content_quality(soup, base_url)
 
     # Final score
     score = compute_geo_score(robots_results, llms_results, schema_results, meta_results, content_results)
@@ -657,7 +682,7 @@ Examples:
     if args.format == "json":
         output_data = {
             "url": base_url,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "score": score,
             "band": band,
             "checks": {

@@ -22,6 +22,7 @@ SCHEMA_ORG_REQUIRED = {
     "breadcrumblist": ["@context", "@type", "itemListElement"],
     "product": ["@context", "@type", "name", "description"],
     "localbusiness": ["@context", "@type", "name", "address"],
+    "webapplication": ["@context", "@type", "name", "url"],
 }
 
 

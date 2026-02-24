@@ -25,9 +25,9 @@ Usage:
 import argparse
 import json
 import re
+import shutil
 import sys
-from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 
 SCHEMA_TEMPLATES = {
@@ -389,13 +389,13 @@ def inject_schema_into_html(file_path: str, schema_dict: dict, backup: bool = Tr
             return False
         print("✅ Schema validation passed")
 
-    # Backup
+    # Backup (copy, not move — preserves original if injection fails)
     if backup:
         backup_path = f"{file_path}.bak"
-        Path(file_path).rename(backup_path)
+        shutil.copy2(file_path, backup_path)
         print(f"📁 Backup created: {backup_path}")
 
-    with open(file_path if not backup else backup_path, "r", encoding="utf-8") as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
 
     soup = BeautifulSoup(content, "html.parser")
