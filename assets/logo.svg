@@ -39,9 +39,9 @@
     <circle cx="48" cy="48" r="3" fill="url(#geoGrad)" opacity="0.9"/>
   </g>
   <text x="118" y="52" font-family="'SF Mono', 'Fira Code', 'Courier New', monospace"
-        font-size="34" font-weight="700" letter-spacing="2">
-    <tspan fill="#e2e8f0">GEO </tspan><tspan fill="url(#geoGrad)">OPTIMIZER</tspan>
-  </text>
+        font-size="34" font-weight="700" fill="#e2e8f0" letter-spacing="2">GEO</text>
+  <text x="193" y="52" font-family="'SF Mono', 'Fira Code', 'Courier New', monospace"
+        font-size="34" font-weight="700" fill="url(#geoGrad)" letter-spacing="2">OPTIMIZER</text>
   <text x="118" y="76" font-family="-apple-system, 'Segoe UI', sans-serif"
         font-size="11.5" fill="#94a3b8" letter-spacing="1.5">MAKE AI CITE YOUR WEBSITE</text>
   <line x1="118" y1="85" x2="520" y2="85" stroke="#22c55e" stroke-width="0.5" opacity="0.3"/>
