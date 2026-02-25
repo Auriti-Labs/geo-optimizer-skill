@@ -66,4 +66,4 @@ GEO Optimizer is a Python toolkit to make websites visible and citable by AI sea
 - `generate_llms_txt.py` — auto-generates `/llms.txt` from your sitemap
 - `schema_injector.py` — generates or injects JSON-LD schema into HTML
 
-*GEO Optimizer by Juan Camilo Auriti — https://github.com/auriti-web-design/geo-optimizer-skill*
+*GEO Optimizer by Juan Camilo Auriti — https://github.com/auriti-labs/geo-optimizer-skill*

@@ -7,7 +7,7 @@ so that core modules, CLI, and tests can import from a single source.
 
 # ─── HTTP ────────────────────────────────────────────────────────────────────
 
-USER_AGENT = "GEO-Optimizer/2.0 (https://github.com/auriti-web-design/geo-optimizer-skill)"
+USER_AGENT = "GEO-Optimizer/2.0 (https://github.com/auriti-labs/geo-optimizer-skill)"
 
 HEADERS = {"User-Agent": USER_AGENT}
 

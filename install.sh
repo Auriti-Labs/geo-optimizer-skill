@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # GEO Optimizer — Installation Script
-# https://github.com/auriti-web-design/geo-optimizer-skill
+# https://github.com/auriti-labs/geo-optimizer-skill
 #
 # Usage:
-#   curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skill/main/install.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh | bash
 #   OR: bash install.sh [--dir /custom/path]
 #
 # NOTE: --dir cannot be used with curl | bash (the flag goes to bash, not this script).
 # To install to a custom path, download first:
-#   curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skill/main/install.sh -o install.sh
+#   curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh -o install.sh
 #   bash install.sh --dir /custom/path
 
 set -e
 
-REPO_URL="https://github.com/auriti-web-design/geo-optimizer-skill.git"
+REPO_URL="https://github.com/auriti-labs/geo-optimizer-skill.git"
 DEFAULT_DIR="$HOME/geo-optimizer-skill"
 
 # Colors
@@ -100,5 +100,5 @@ echo ""
 echo "🔄 To update in the future:"
 echo "   bash $INSTALL_DIR/update.sh"
 echo ""
-echo "📖 Full docs: https://github.com/auriti-web-design/geo-optimizer-skill"
+echo "📖 Full docs: https://github.com/auriti-labs/geo-optimizer-skill"
 echo ""

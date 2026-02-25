@@ -3,11 +3,11 @@
 <img src="assets/logo.svg" alt="Geo Optimizer" width="540"/>
 
 [![Python](https://img.shields.io/badge/Python-3.8+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![CI](https://github.com/auriti-web-design/geo-optimizer-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/auriti-web-design/geo-optimizer-skill/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/auriti-web-design/geo-optimizer-skill/branch/main/graph/badge.svg)](https://codecov.io/gh/auriti-web-design/geo-optimizer-skill)
+[![CI](https://github.com/auriti-labs/geo-optimizer-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/auriti-labs/geo-optimizer-skill/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/auriti-labs/geo-optimizer-skill/branch/main/graph/badge.svg)](https://codecov.io/gh/auriti-labs/geo-optimizer-skill)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
 [![Based on Princeton KDD 2024](https://img.shields.io/badge/Based_on-Princeton_KDD_2024-f97316?style=flat-square)](https://arxiv.org/abs/2311.09735)
-[![GitHub Stars](https://img.shields.io/github/stars/auriti-web-design/geo-optimizer-skill?style=flat-square&color=facc15&logo=github)](https://github.com/auriti-web-design/geo-optimizer-skill/stargazers)
+[![GitHub Stars](https://img.shields.io/github/stars/auriti-labs/geo-optimizer-skill?style=flat-square&color=facc15&logo=github)](https://github.com/auriti-labs/geo-optimizer-skill/stargazers)
 [![Docs](https://img.shields.io/badge/docs-auritidesign.it-00b4d8?style=flat-square)](https://auritidesign.it/docs/geo-optimizer/)
 
 **Optimize any website to be cited by ChatGPT, Perplexity, Claude, and Gemini.**  
@@ -83,12 +83,12 @@ geo-optimizer/
 
 ```bash
 # RECOMMENDED — Download, inspect, then run:
-curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skill/main/install.sh -o install.sh
+curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh -o install.sh
 cat install.sh  # Review the script before executing
 bash install.sh
 
 # Quick install (use only if you trust the source):
-curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skill/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh | bash
 ```
 
 > Installs to `~/geo-optimizer-skill`. Creates a Python venv automatically.  
@@ -172,7 +172,7 @@ See [SCORING_RUBRIC.md](SCORING_RUBRIC.md) for scoring methodology and [CHANGELO
 ```
 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍
   GEO AUDIT — https://yoursite.com
-  github.com/auriti-web-design/geo-optimizer-skill
+  github.com/auriti-labs/geo-optimizer-skill
 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍 🔍
 
 ⏳ Fetching homepage...
@@ -514,7 +514,7 @@ cd ~/geo-optimizer-skill
 - ✅ GitHub Actions CI runs tests on every push
 - ✅ Production-hardened with comprehensive failure path testing
 
-See [Codecov](https://codecov.io/gh/auriti-web-design/geo-optimizer-skill) for live coverage analysis.
+See [Codecov](https://codecov.io/gh/auriti-labs/geo-optimizer-skill) for live coverage analysis.
 
 ---
 
@@ -540,7 +540,7 @@ See [Codecov](https://codecov.io/gh/auriti-web-design/geo-optimizer-skill) for l
 **Juan Camilo Auriti**  
 Web Developer · GEO Researcher  
 📧 juancamilo.auriti@gmail.com  
-🐙 [github.com/auriti-web-design](https://github.com/auriti-web-design)
+🐙 [github.com/auriti-labs](https://github.com/auriti-labs)
 
 </td>
 </tr>
@@ -565,7 +565,7 @@ Keep contributions focused and documented.
 
 **If this saved you time — a ⭐ helps others find it.**
 
-[![Star on GitHub](https://img.shields.io/github/stars/auriti-web-design/geo-optimizer-skill?style=for-the-badge&color=facc15&logo=github&label=Star%20this%20repo)](https://github.com/auriti-web-design/geo-optimizer-skill/stargazers)
+[![Star on GitHub](https://img.shields.io/github/stars/auriti-labs/geo-optimizer-skill?style=for-the-badge&color=facc15&logo=github&label=Star%20this%20repo)](https://github.com/auriti-labs/geo-optimizer-skill/stargazers)
 
 </div>
 

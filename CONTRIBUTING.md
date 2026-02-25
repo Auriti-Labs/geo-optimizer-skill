@@ -139,7 +139,7 @@ Before submitting:
 
 ## Reporting Bugs
 
-Use [GitHub Issues](https://github.com/auriti-web-design/geo-optimizer-skill/issues) with this template:
+Use [GitHub Issues](https://github.com/auriti-labs/geo-optimizer-skill/issues) with this template:
 
 **Expected behavior:**  
 What should happen?
@@ -220,8 +220,8 @@ print(json.dumps(data, indent=2))
 
 ## Questions?
 
-- Open a [GitHub Discussion](https://github.com/auriti-web-design/geo-optimizer-skill/discussions)
-- Check existing [Issues](https://github.com/auriti-web-design/geo-optimizer-skill/issues)
+- Open a [GitHub Discussion](https://github.com/auriti-labs/geo-optimizer-skill/discussions)
+- Check existing [Issues](https://github.com/auriti-labs/geo-optimizer-skill/issues)
 - Read the [docs](docs/)
 
 ---

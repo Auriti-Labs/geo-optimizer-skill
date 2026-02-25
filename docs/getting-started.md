@@ -25,7 +25,7 @@ python3 --version
 **One-liner (recommended):**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skill/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh | bash
 ```
 
 This script:
@@ -38,14 +38,14 @@ You never need to activate the venv manually — `./geo` handles it.
 
 > **Custom install path?** The `--dir` flag cannot be used with `curl | bash` (the flag is intercepted by `bash`, not the script). Download first, then pass the flag:
 > ```bash
-> curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skill/main/install.sh -o install.sh
+> curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh -o install.sh
 > bash install.sh --dir /custom/path
 > ```
 
 **Manual alternative** (if you prefer to inspect first):
 
 ```bash
-git clone https://github.com/auriti-web-design/geo-optimizer-skill.git ~/geo-optimizer-skill
+git clone https://github.com/auriti-labs/geo-optimizer-skill.git ~/geo-optimizer-skill
 cd ~/geo-optimizer-skill
 bash install.sh
 ```

@@ -232,4 +232,4 @@ cp ~/geo-optimizer-skill/ai-context/kiro-steering.md .kiro/steering/geo-optimize
 
 ---
 
-*GEO Optimizer by Juan Camilo Auriti — https://github.com/auriti-web-design/geo-optimizer-skill*
+*GEO Optimizer by Juan Camilo Auriti — https://github.com/auriti-labs/geo-optimizer-skill*

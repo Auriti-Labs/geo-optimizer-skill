@@ -40,7 +40,7 @@ def _ensure_deps():
 
 
 HEADERS = {
-    "User-Agent": "GEO-Optimizer/1.0 (https://github.com/auriti-web-design/geo-optimizer-skill)"
+    "User-Agent": "GEO-Optimizer/1.0 (https://github.com/auriti-labs/geo-optimizer-skill)"
 }
 
 # Category mapping — URL pattern → section name

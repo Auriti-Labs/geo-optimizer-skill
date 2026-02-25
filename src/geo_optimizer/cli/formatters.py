@@ -66,7 +66,7 @@ def format_audit_text(result: AuditResult) -> str:
     lines.append("")
     lines.append("🔍 " * 20)
     lines.append(f"  GEO AUDIT — {result.url}")
-    lines.append("  github.com/auriti-web-design/geo-optimizer-skill")
+    lines.append("  github.com/auriti-labs/geo-optimizer-skill")
     lines.append("🔍 " * 20)
     lines.append("")
     lines.append(f"   Status: {result.http_status} | Size: {result.page_size:,} bytes")

@@ -64,7 +64,7 @@ VALUABLE_SCHEMAS = [
 ]
 
 HEADERS = {
-    "User-Agent": "GEO-Audit/1.0 (https://github.com/auriti-web-design/geo-optimizer-skill)"
+    "User-Agent": "GEO-Audit/1.0 (https://github.com/auriti-labs/geo-optimizer-skill)"
 }
 
 # Global verbose flag (set in main())
@@ -609,7 +609,7 @@ Examples:
     if not json_mode:
         print("\n" + "🔍 " * 20)
         print(f"  GEO AUDIT — {base_url}")
-        print(f"  github.com/auriti-web-design/geo-optimizer-skill")
+        print(f"  github.com/auriti-labs/geo-optimizer-skill")
         print("🔍 " * 20)
 
     # Fetch homepage

@@ -51,5 +51,5 @@ fi
 echo ""
 ok "GEO Optimizer updated successfully!"
 echo ""
-echo "📖 Changelog: https://github.com/auriti-web-design/geo-optimizer-skill/blob/main/CHANGELOG.md"
+echo "📖 Changelog: https://github.com/auriti-labs/geo-optimizer-skill/blob/main/CHANGELOG.md"
 echo ""

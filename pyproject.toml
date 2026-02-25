@@ -41,10 +41,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/auriti-web-design/geo-optimizer-skill"
+Homepage = "https://github.com/auriti-labs/geo-optimizer-skill"
 Documentation = "https://auritidesign.it/docs"
-Repository = "https://github.com/auriti-web-design/geo-optimizer-skill"
-Issues = "https://github.com/auriti-web-design/geo-optimizer-skill/issues"
+Repository = "https://github.com/auriti-labs/geo-optimizer-skill"
+Issues = "https://github.com/auriti-labs/geo-optimizer-skill/issues"
 
 [project.scripts]
 geo = "geo_optimizer.cli.main:cli"

@@ -267,7 +267,7 @@ After WSL2 installs and you restart:
 
 ```bash
 # Inside the WSL terminal (Ubuntu by default)
-curl -sSL https://raw.githubusercontent.com/auriti-web-design/geo-optimizer-skill/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh | bash
 cd ~/geo-optimizer-skill
 ./geo scripts/geo_audit.py --url https://yoursite.com
 ```
@@ -277,7 +277,7 @@ WSL2 gives you a full Linux environment. Python 3.8+ is included by default in U
 If you prefer not to use WSL2, you can run the Python scripts directly in a Windows environment:
 
 ```powershell
-git clone https://github.com/auriti-web-design/geo-optimizer-skill.git
+git clone https://github.com/auriti-labs/geo-optimizer-skill.git
 cd geo-optimizer-skill
 python -m venv .venv
 .venv\Scripts\activate
