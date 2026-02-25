@@ -20,55 +20,55 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Security
 
-- **SSRF Prevention** (#1) — Nuovo modulo `validators.py` con `validate_public_url()`
-  - Blocca IP privati (RFC 1918), loopback, link-local, cloud metadata (169.254.169.254)
-  - Blocca schema non consentiti (`file://`, `ftp://`), credenziali embedded (`user:pass@`)
-  - Validazione DNS: previene DNS rebinding verso reti interne
-  - Integrato come gate di ingresso in `audit_cmd.py` e `llms_cmd.py`
+- **SSRF Prevention** (#1) — New `validators.py` module with `validate_public_url()`
+  - Blocks private IPs (RFC 1918), loopback, link-local, cloud metadata (169.254.169.254)
+  - Blocks disallowed schemes (`file://`, `ftp://`) and embedded credentials (`user:pass@`)
+  - DNS validation: prevents DNS rebinding to internal networks
+  - Integrated as entry gate in `audit_cmd.py` and `llms_cmd.py`
 
 - **JSON Injection** (#2) — `fill_template()` in `schema_injector.py`
-  - I valori sono ora escaped con `json.dumps()` prima dell'inserimento
-  - Previene rottura del JSON tramite virgolette, backslash, newline
+  - Values are now escaped via `json.dumps()` before insertion
+  - Prevents JSON breakout via quotes, backslashes, newlines
 
-- **XSS Prevention** (#3) — `schema_to_html_tag()` e `inject_schema_into_html()`
-  - Escape di `</` → `<\/` nel JSON-LD serializzato
-  - Previene chiusura prematura del tag `<script>` da contenuto maligno
+- **XSS Prevention** (#3) — `schema_to_html_tag()` and `inject_schema_into_html()`
+  - Escapes `</` → `<\/` in serialized JSON-LD
+  - Prevents premature `<script>` tag closure from malicious content
 
 - **Domain Match Bypass** — `llms_generator.py`
-  - Sostituito substring match con `url_belongs_to_domain()` (match esatto + subdomain)
-  - Previene bypass dove `evil-example.com` passava il filtro per `example.com`
+  - Replaced substring match with `url_belongs_to_domain()` (exact + subdomain match)
+  - Prevents bypass where `evil-example.com` passed the filter for `example.com`
 
 ### Fixed
 
 - **script.string None** (#4) — `audit_schema()` in `audit.py`
-  - BeautifulSoup restituisce None quando il tag `<script>` ha nodi figli multipli
-  - Fallback a `get_text()`, skip se contenuto vuoto/whitespace
+  - BeautifulSoup returns None when `<script>` tag has multiple child nodes
+  - Falls back to `get_text()`, skips tag if content is empty/whitespace
 
 - **Scoring Inconsistency** (#5) — `formatters.py`
-  - Le 5 funzioni `_*_score()` ora usano costanti `SCORING` da `config.py`
-  - Eliminati numeri magici hardcoded; punteggi sempre sincronizzati
+  - All 5 `_*_score()` functions now use `SCORING` constants from `config.py`
+  - Removed hardcoded magic numbers; scores always stay in sync
 
-- **Dependency Bounds** (#15) — `pyproject.toml` e `requirements.txt`
-  - lxml: `<6.0.0` → `<7.0.0` (v6.0.2 già rilasciato)
-  - pytest: `<9.0` → `<10.0` (v9.0.2 disponibile)
-  - pytest-cov: `<5.0`/`<6.0` → `<8.0` (v7.0.0 disponibile)
-  - Aggiunto `click` mancante in `requirements.txt`
+- **Dependency Bounds** (#15) — `pyproject.toml` and `requirements.txt`
+  - lxml: `<6.0.0` → `<7.0.0` (v6.0.2 already released)
+  - pytest: `<9.0` → `<10.0` (v9.0.2 available)
+  - pytest-cov: `<5.0`/`<6.0` → `<8.0` (v7.0.0 available)
+  - Added missing `click` to `requirements.txt`
 
 - **Version PEP 440** — `__init__.py`
-  - `"2.0.0-beta"` → `"2.0.0b1"` (formato conforme a PEP 440)
+  - `"2.0.0-beta"` → `"2.0.0b1"` (PEP 440 compliant format)
 
 ### Added
 
-- `src/geo_optimizer/utils/validators.py` — modulo di validazione input (anti-SSRF, anti-path-traversal)
-- `tests/test_p0_security_fixes.py` — 45 test per tutte le fix P0
-  - 12 test anti-SSRF, 6 anti-JSON injection, 3 anti-XSS
-  - 4 test script.string None, 10 scoring consistency
-  - 7 domain match, 3 validazione path + versione
+- `src/geo_optimizer/utils/validators.py` — Input validation module (anti-SSRF, anti-path-traversal)
+- `tests/test_p0_security_fixes.py` — 45 tests for all P0 fixes
+  - 12 anti-SSRF, 6 anti-JSON injection, 3 anti-XSS
+  - 4 script.string None, 10 scoring consistency
+  - 7 domain match, 3 path validation + version
 
 ### Test Results
 
-- **300 test totali** (255 esistenti + 45 nuovi) — tutti passati ✅
-- Zero regressioni sui test esistenti
+- **300 total tests** (255 existing + 45 new) — all passing ✅
+- Zero regressions on existing test suite
 
 ---
 
@@ -76,14 +76,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Added — Package Restructure
 
-- Ristrutturato come pacchetto Python installabile (`pip install geo-optimizer`)
-- CLI basata su Click con comandi: `geo audit`, `geo llms`, `geo schema`
-- Architettura a layer: `core/` (business logic) → `cli/` (UI) → `models/` (dataclass)
-- Dataclass tipizzati per tutti i risultati (RobotsResult, LlmsTxtResult, ecc.)
-- Scoring centralizzato in `models/config.py` con costanti SCORING
-- Parser robots.txt dedicato in `utils/robots_parser.py`
-- Validatore JSON-LD in `core/schema_validator.py`
-- 255 test del package con pytest
+- Restructured as installable Python package (`pip install geo-optimizer`)
+- Click-based CLI with commands: `geo audit`, `geo llms`, `geo schema`
+- Layered architecture: `core/` (business logic) → `cli/` (UI) → `models/` (dataclasses)
+- Typed dataclasses for all results (RobotsResult, LlmsTxtResult, etc.)
+- Centralized scoring in `models/config.py` with SCORING constants
+- Dedicated robots.txt parser in `utils/robots_parser.py`
+- JSON-LD validator in `core/schema_validator.py`
+- 255 package tests with pytest
 
 ---
 
