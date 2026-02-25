@@ -182,9 +182,9 @@ class TestCLIVersionAndHelp:
         assert "--inject" in result.output
 
     def test_no_args_shows_usage(self, runner):
-        """Running geo with no arguments shows help."""
+        """Running geo with no arguments shows usage (Click returns exit code 2 for missing subcommand)."""
         result = runner.invoke(cli, [])
-        assert result.exit_code == 0
+        assert result.exit_code in (0, 2)
         assert "Usage" in result.output
 
 
