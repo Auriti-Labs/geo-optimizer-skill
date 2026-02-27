@@ -22,7 +22,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Check Docker Hub credentials
+        id: dockerhub
+        env:
+          HAS_CREDS: ${{ secrets.DOCKERHUB_USERNAME != '' }}
+        run: echo "available=$HAS_CREDS" >> "$GITHUB_OUTPUT"
+
       - name: Login to Docker Hub
+        if: steps.dockerhub.outputs.available == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -41,7 +48,21 @@ jobs:
           REF_NAME: ${{ github.ref_name }}
         run: echo "version=${REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
-      - name: Build and push
+      # Pubblica sempre su GHCR, Docker Hub solo se i secrets sono configurati
+      - name: Build and push (GHCR only)
+        if: steps.dockerhub.outputs.available != 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push (GHCR + Docker Hub)
+        if: steps.dockerhub.outputs.available == 'true'
         uses: docker/build-push-action@v6
         with:
           context: .

@@ -3,13 +3,17 @@
 name: GEO Audit
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  # Esegui anche su schedule settimanale per monitorare regressioni
-  schedule:
-    - cron: '0 9 * * 1'  # Ogni lunedì alle 9:00 UTC
+  # Solo manuale — questo è un esempio dimostrativo
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'URL da auditare'
+        required: true
+        default: 'https://example.com'
+      min-score:
+        description: 'Score minimo richiesto (0 per disabilitare)'
+        required: false
+        default: '0'
 
 jobs:
   geo-audit:
@@ -21,8 +25,8 @@ jobs:
         uses: auriti-labs/geo-optimizer-skill/.github/actions/geo-audit@main
         id: geo
         with:
-          url: https://example.com
-          min-score: 50
+          url: ${{ github.event.inputs.url }}
+          min-score: ${{ github.event.inputs.min-score }}
 
       - name: Print results
         env:
