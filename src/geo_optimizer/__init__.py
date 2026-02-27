@@ -7,4 +7,4 @@ Make websites visible and citable by AI search engines
 Based on the Princeton KDD 2024 research paper (arxiv.org/abs/2311.09735).
 """
 
-__version__ = "2.0.0b1"
+__version__ = "2.1.0b1"

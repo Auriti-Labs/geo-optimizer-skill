@@ -2,6 +2,7 @@
 
 <img src="assets/logo.svg" alt="Geo Optimizer" width="540"/>
 
+[![PyPI](https://img.shields.io/pypi/v/geo-optimizer-skill?style=flat-square&color=blue)](https://pypi.org/project/geo-optimizer-skill/)
 [![Python](https://img.shields.io/badge/Python-3.9+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![CI](https://github.com/auriti-labs/geo-optimizer-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/auriti-labs/geo-optimizer-skill/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/auriti-labs/geo-optimizer-skill/branch/main/graph/badge.svg)](https://codecov.io/gh/auriti-labs/geo-optimizer-skill)
@@ -62,7 +63,7 @@ geo-optimizer/
 │
 ├── 📁 docs/                        ← Full documentation (9 pages)
 ├── ⚙️  install.sh / update.sh      ← One-line install, one-command update
-└── 📋 requirements.txt             ← requests, beautifulsoup4, lxml
+└── 📦 pyproject.toml               ← Package config, dependencies, CLI entry point
 ```
 
 ---
@@ -71,7 +72,7 @@ geo-optimizer/
 
 | | |
 |---|---|
-| **Python** | 3.8 or higher → [python.org](https://python.org) |
+| **Python** | 3.9 or higher → [python.org](https://python.org) |
 | **git** | any version → [git-scm.com](https://git-scm.com) |
 | **Website** | publicly accessible URL |
 
@@ -82,88 +83,51 @@ geo-optimizer/
 **1. Install**
 
 ```bash
-# RECOMMENDED — Download, inspect, then run:
-curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh -o install.sh
-cat install.sh  # Review the script before executing
-bash install.sh
+# From PyPI (recommended)
+pip install geo-optimizer
 
-# Quick install (use only if you trust the source):
-curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh | bash
+# Or from source
+git clone https://github.com/auriti-labs/geo-optimizer-skill.git
+cd geo-optimizer-skill
+pip install -e ".[dev]"
 ```
-
-> Installs to `~/geo-optimizer-skill`. Creates a Python venv automatically.  
-> **Custom path?** Add `--dir /custom/path` to the bash command.  
-> **View source first:** [install.sh →](install.sh)
 
 **2. Audit your site**
 
 ```bash
-cd ~/geo-optimizer-skill
-./geo scripts/geo_audit.py --url https://yoursite.com
+geo audit --url https://yoursite.com
 
 # JSON output for CI/CD integration
-./geo scripts/geo_audit.py --url https://yoursite.com --format json --output report.json
+geo audit --url https://yoursite.com --format json --output report.json
 ```
 
 **3. Fix what's missing**
 
 ```bash
 # Generate llms.txt from your sitemap
-./geo scripts/generate_llms_txt.py --base-url https://yoursite.com --output ./public/llms.txt
+geo llms --base-url https://yoursite.com --output ./public/llms.txt
 
 # Generate JSON-LD schema
-./geo scripts/schema_injector.py --type website --name "MySite" --url https://yoursite.com
+geo schema --type website --name "MySite" --url https://yoursite.com
 
 # Analyze an existing HTML file
-./geo scripts/schema_injector.py --file index.html --analyze
-```
-
-**4. Update anytime**
-
-```bash
-bash ~/geo-optimizer-skill/update.sh
+geo schema --file index.html --analyze
 ```
 
 ---
 
-## ⭐ What's New in v1.4.0
+## What's New in v2.0
 
-**Enterprise-grade release with schema validation and integration testing.**
+**Complete rewrite as installable Python package with modern CLI.**
 
-### ✅ Schema Validation (Fix #7)
-- **JSON-LD validation** with `jsonschema` library (Draft 7)
-- Validates WebSite, WebPage, Organization, FAQPage schemas
-- Pre-injection validation in `schema_injector.py --analyze`
-- Reports validation errors and missing required fields
-- **All 9/9 technical audit fixes completed** ✅
+- **Installable package** — `pip install geo-optimizer` then use `geo` CLI anywhere
+- **Click CLI** — `geo audit`, `geo llms`, `geo schema` subcommands
+- **Security hardened** — SSRF prevention, XSS/injection protection, path traversal validation, DoS limits
+- **600+ tests** — comprehensive unit + security test coverage with Codecov integration
+- **Dataclass-based** — all core functions return typed dataclasses, no side effects
+- **JSON-LD validation** — manual schema validation without external dependency on jsonschema
 
-### 🧪 Integration Test Suite
-- **89 total tests** (67 unit + 13 integration + 9 validation)
-- End-to-end workflow testing for all scripts
-- Real script execution tests (geo_audit, schema_injector, generate_llms_txt)
-- Script executability verification
-- **87% business logic coverage** (exceeds 85% target)
-
-### 📊 Codecov Integration
-- Automated coverage reporting in CI
-- 70% total coverage target / 85% business logic target
-- Branch coverage enabled
-- Coverage badge in README
-
-### 📈 Quality Score: 9.25/10
-
-Latest stable score based on [SCORING_RUBRIC.md](SCORING_RUBRIC.md):
-
-- v1.0.0: 7.2/10 (foundation)
-- v1.1.0: 8.3/10 (infrastructure)
-- v1.2.0: 8.8/10 (JSON + tests)
-- v1.3.0: 9.0/10 (network retry)
-- v1.4.0: 9.15/10 (schema validation, 9/9 audit fixes)
-- **v1.5.0: 9.25/10** (verbose mode + doc cleanup) ⭐
-
-**Current status:** Production-ready, enterprise-grade quality.
-
-See [SCORING_RUBRIC.md](SCORING_RUBRIC.md) for scoring methodology and [CHANGELOG.md](CHANGELOG.md) for full details.
+See [CHANGELOG.md](CHANGELOG.md) for full details.
 
 ---
 
@@ -306,18 +270,18 @@ Apply in this order:
 
 ---
 
-## 🛠️ Script Reference
+## CLI Reference
 
 <details>
-<summary><strong>geo_audit.py</strong> — Full GEO audit, score 0–100</summary>
+<summary><strong>geo audit</strong> — Full GEO audit, score 0–100</summary>
 
 ```bash
 # Text output (default)
-./geo scripts/geo_audit.py --url https://yoursite.com
+geo audit --url https://yoursite.com
 
 # JSON output for CI/CD pipelines
-./geo scripts/geo_audit.py --url https://yoursite.com --format json
-./geo scripts/geo_audit.py --url https://yoursite.com --format json --output report.json
+geo audit --url https://yoursite.com --format json
+geo audit --url https://yoursite.com --format json --output report.json
 ```
 
 **Checks:**
@@ -405,10 +369,10 @@ Apply in this order:
 **CI/CD Integration Example:**
 ```bash
 # GitHub Actions / GitLab CI
-./geo scripts/geo_audit.py --url https://yoursite.com --format json --output report.json
+geo audit --url https://yoursite.com --format json --output report.json
 SCORE=$(jq '.score' report.json)
 if [ "$SCORE" -lt 70 ]; then
-  echo "❌ GEO score too low: $SCORE/100"
+  echo "GEO score too low: $SCORE/100"
   exit 1
 fi
 ```
@@ -416,10 +380,10 @@ fi
 </details>
 
 <details>
-<summary><strong>generate_llms_txt.py</strong> — Auto-generate /llms.txt from sitemap</summary>
+<summary><strong>geo llms</strong> — Auto-generate /llms.txt from sitemap</summary>
 
 ```bash
-./geo scripts/generate_llms_txt.py \
+geo llms \
   --base-url https://yoursite.com \
   --site-name "MySite" \
   --description "Free calculators for finance and math" \
@@ -431,20 +395,20 @@ fi
 </details>
 
 <details>
-<summary><strong>schema_injector.py</strong> — Generate & inject JSON-LD schema</summary>
+<summary><strong>geo schema</strong> — Generate & inject JSON-LD schema</summary>
 
 ```bash
 # Analyze HTML file — see what's missing
-./geo scripts/schema_injector.py --file index.html --analyze
+geo schema --file index.html --analyze
 
 # Generate WebSite schema
-./geo scripts/schema_injector.py --type website --name "MySite" --url https://yoursite.com
+geo schema --type website --name "MySite" --url https://yoursite.com
 
 # Inject FAQPage schema into a file
-./geo scripts/schema_injector.py --file page.html --type faq --inject
+geo schema --file page.html --type faq --inject
 
 # Generate Astro BaseLayout snippet
-./geo scripts/schema_injector.py --astro --name "MySite" --url https://yoursite.com
+geo schema --astro --name "MySite" --url https://yoursite.com
 ```
 
 **Schema types:** `website` · `webapp` · `faq` · `article` · `organization` · `breadcrumb`
@@ -470,49 +434,23 @@ Before publishing any page:
 
 ---
 
-## 🧪 Running Tests
+## Running Tests
 
-**67 comprehensive tests** with **87% business logic coverage** — production-ready reliability.
-
-**Run all tests:**
 ```bash
-cd ~/geo-optimizer-skill
-./geo -m pytest tests/ -v
+# All tests
+pytest tests/ -v
+
+# With coverage report
+pytest tests/ -v --cov=geo_optimizer --cov-report=term-missing
+
+# Single test file
+pytest tests/test_core.py -v
+
+# Single test
+pytest tests/test_core.py::TestAudit::test_name -v
 ```
 
-**Run tests with coverage report:**
-```bash
-./geo -m pytest tests/ -v --cov=scripts --cov-report=term-missing
-```
-
-**Run specific test file:**
-```bash
-./geo -m pytest tests/test_audit.py -v        # Audit function tests
-./geo -m pytest tests/test_http_utils.py -v   # Network retry tests
-```
-
-**Test coverage includes:**
-
-**Core Functionality:**
-- robots.txt parsing (allow/block/wildcards/comments/citation bots)
-- llms.txt validation (structure, H1, sections, links, empty content)
-- JSON-LD schema detection (multiple types, malformed JSON, missing fields)
-- Meta tag validation (SEO, Open Graph, missing/empty tags)
-- Content quality checks (headings, word count, numbers, external citations)
-- GEO score calculation (0-100 range, score bands, edge cases)
-
-**Production Edge Cases (v1.3.0):**
-- HTTP error handling (403, 500, timeout, SSL errors, redirect loops, DNS failures)
-- Encoding edge cases (non-UTF8, mixed line endings, charset mismatches)
-- Network resilience (automatic retry with exponential backoff)
-- Real-world scenarios (pages without titles, empty meta descriptions, wildcard disallows)
-
-**Quality:**
-- ✅ 67 tests total
-- ✅ 70% total coverage / **87% business logic coverage**
-- ✅ All tests use `unittest.mock` — no real network calls
-- ✅ GitHub Actions CI runs tests on every push
-- ✅ Production-hardened with comprehensive failure path testing
+**600+ tests** covering core audit, CLI, security fixes, and edge cases. All use `unittest.mock` — no real network calls.
 
 See [Codecov](https://codecov.io/gh/auriti-labs/geo-optimizer-skill) for live coverage analysis.
 

@@ -3,8 +3,8 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "geo-optimizer"
-version = "2.0.0b1"  # PEP 440: era "2.0.0-beta", normalizzato
+name = "geo-optimizer-skill"
+version = "2.1.0b1"
 description = "Generative Engine Optimization toolkit — make websites visible to AI search engines"
 readme = "README.md"
 license = {text = "MIT"}
@@ -31,13 +31,14 @@ dependencies = [
     "requests>=2.28.0,<3.0.0",
     "beautifulsoup4>=4.12.0,<5.0.0",
     "lxml>=4.9.0,<7.0.0",
+    "urllib3>=1.26.0,<3.0.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0,<10.0",
     "pytest-cov>=4.0,<8.0",
-    "flake8>=6.0,<8.0",
+    "ruff>=0.8.0",
 ]
 
 [project.urls]
@@ -55,7 +56,40 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src", "scripts"]
+markers = [
+    "legacy: test che importano da scripts/ legacy (deprecati, verranno rimossi in v3.0)",
+    "network: test che richiedono accesso rete (skip in CI con -m 'not network')",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:scripts",
+]
 
-[tool.flake8]
-max-line-length = 120
-select = ["E9", "F63", "F7", "F82"]
+[tool.coverage.run]
+source = ["geo_optimizer"]
+omit = ["scripts/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.",
+    "if TYPE_CHECKING:",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*.py" = ["E741", "E402"]
+"tests/test_audit.py" = ["E402"]
+"tests/test_generate_llms_txt.py" = ["E402"]
+"tests/test_schema_injector.py" = ["E402"]
+"tests/test_schema_validator.py" = ["E402"]
+"tests/test_http_utils.py" = ["E402", "F841"]
+"tests/test_integration.py" = ["E402"]
