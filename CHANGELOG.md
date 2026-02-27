@@ -16,6 +16,57 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [2.0.0b3] — 2026-02-27
+
+### Security
+
+- **SSRF Sitemap Validation** (#6) — `discover_sitemap()` in `llms_generator.py`
+  - Sitemap URLs extracted from robots.txt are now validated for domain ownership and public IP
+  - External domain or private IP sitemap URLs are silently ignored
+
+- **Path Traversal Prevention** (#7) — `schema_cmd.py`
+  - `--file` and `--faq-file` flags now validated with `validate_safe_path()`
+  - Enforces allowed extensions (.html, .htm, .astro, .svelte, .vue, .jsx, .tsx, .json)
+  - Resolves symlinks and verifies file existence before operations
+
+- **DoS Response Size Limit** (#9) — `http.py`
+  - `fetch_url()` now enforces a 10 MB max response size (configurable via `max_size`)
+  - Checks both Content-Length header and actual body size
+
+- **Sitemap Bomb Protection** (#10) — `llms_generator.py`
+  - Recursive sitemap index processing limited to 3 levels deep
+  - Prevents infinite recursion from maliciously nested sitemap indexes
+
+### Fixed
+
+- **HTTP Status Code Validation** (#12) — `audit.py`
+  - `audit_robots_txt()` and `audit_llms_txt()` now only parse 200 responses
+  - 403, 500, and other error pages are no longer treated as valid content
+
+- **Page Title on Error Pages** (#13) — `llms_generator.py`
+  - `fetch_page_title()` returns None for non-200 responses
+  - Prevents "Page Not Found" or "Internal Server Error" being used as page labels
+
+- **raw_schemas Duplication** (#11) — `audit.py`
+  - Schemas with `@type: ["WebSite", "WebApplication"]` now produce 1 raw_schema entry
+  - Previously each type created a duplicate raw_schema reference
+
+- **FAQ Extraction Tree Mutation** (#14) — `schema_injector.py`
+  - `extract_faq_from_html()` no longer calls `.extract()` on BeautifulSoup elements
+  - Uses non-destructive text extraction, preserving the caller's tree for reuse
+
+### Added
+
+- `tests/test_v2_remaining_fixes.py` — 20 tests for all v2.0 remaining fixes
+- Updated test mocks in `test_core.py` for new `content`/`headers` attributes
+
+### Test Results
+
+- **602 total tests** (582 unit + 20 new) — all passing ✅
+- Zero regressions
+
+---
+
 ## [2.0.0b2] — 2026-02-25
 
 ### Security
