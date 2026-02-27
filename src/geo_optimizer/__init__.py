@@ -13,7 +13,7 @@ Uso programmatico::
     print(result.score, result.band)
 """
 
-__version__ = "3.0.0a2"
+__version__ = "3.0.0"
 
 # ─── API pubblica ────────────────────────────────────────────────────────────
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geo-optimizer-skill"
-version = "3.0.0a2"
+version = "3.0.0"
 description = "Generative Engine Optimization toolkit — make websites visible to AI search engines"
 readme = "README.md"
 license = {text = "MIT"}
@@ -14,7 +14,7 @@ authors = [
 ]
 keywords = ["geo", "seo", "ai", "llm", "optimization", "schema", "llms-txt", "generative-engine"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",

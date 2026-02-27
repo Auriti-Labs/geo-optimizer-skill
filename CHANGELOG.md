@@ -14,6 +14,57 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [3.0.0] — 2026-02-27
+
+First stable release. All 11 security and quality issues from M1 milestone resolved.
+
+### Security
+
+- **XSS badge SVG** (#55) — `_svg_escape()` with `html.escape()`, label truncation (50 char),
+  band whitelist validation, score clamping 0-100. All SVG interpolation points sanitized.
+
+- **SSRF IP bypass** (#56) — Added 5 missing blocked networks: `0.0.0.0/8` (RFC 1122),
+  `100.64.0.0/10` (CGNAT RFC 6598), `192.0.0.0/24` (IETF), `198.18.0.0/15` (RFC 2544),
+  `::ffff:0:0/96` (IPv4-mapped IPv6). Added `_is_ip_blocked()` fallback with
+  `is_private`/`is_loopback`/`is_link_local`/`is_reserved`/`is_multicast`.
+
+- **SSRF sitemap index** (#57) — Sub-URLs from sitemap index validated with
+  `validate_public_url()` before recursive fetch.
+
+- **DoS cache** (#58) — In-memory cache bounded to 500 entries with LRU eviction
+  and expired entry cleanup.
+
+- **Info disclosure** (#59) — HTTP 500 errors return generic message, details logged server-side.
+
+- **Rate limiting** (#60) — 30 requests/minute per IP on audit and badge endpoints.
+  In-memory sliding window with automatic cleanup.
+
+- **Security headers** (#61) — Middleware adds CSP, X-Frame-Options DENY,
+  X-Content-Type-Options nosniff, X-XSS-Protection, Referrer-Policy.
+  CORS configured for public API access.
+
+- **Astro injection** (#62) — `generate_astro_snippet()` sanitizes url/name parameters:
+  removes `"`, `'`, `` ` ``, `\`, `${`, `}`, `<`, `>`. Truncation at 200/100 chars.
+
+### Changed
+
+- **Event loop** (#63) — `run_full_audit()` wrapped in `asyncio.to_thread()` in FastAPI
+  endpoints. Concurrent requests no longer blocked.
+
+- **Dockerfile** (#65) — Added `HEALTHCHECK`, `PYTHONDONTWRITEBYTECODE=1`,
+  `PYTHONUNBUFFERED=1` environment variables.
+
+- **Development Status** — PyPI classifier upgraded from `4 - Beta` to `5 - Production/Stable`.
+
+### Test Results
+
+- **814 total tests** — all passing
+- **88% code coverage** (up from 69%)
+- 161 new security tests across 2 test files
+- 122 new coverage tests for 9 previously-untested modules
+
+---
+
 ## [3.0.0a2] — 2026-02-27
 
 ### Added
