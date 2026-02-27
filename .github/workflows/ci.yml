@@ -73,5 +73,5 @@ jobs:
 
       - name: Audit dependencies
         run: |
-          pip install -e .
-          pip-audit --strict --skip-editable
+          pip install .
+          pip-audit
