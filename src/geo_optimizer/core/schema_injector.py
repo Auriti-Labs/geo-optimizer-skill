@@ -139,12 +139,14 @@ def extract_faq_from_html(soup: BeautifulSoup) -> List[Dict[str, str]]:
                 faqs.append({"question": question, "answer": answer})
 
     # Pattern 2: <details> / <summary>
+    # Nota: NON usiamo .extract() per evitare di mutare il tree del chiamante
     for detail in soup.find_all("details"):
         summary = detail.find("summary")
         if summary:
             question = summary.get_text(strip=True)
-            summary.extract()
-            answer = detail.get_text(strip=True)
+            # Estrai risposta senza mutare il tree: tutto il testo meno la domanda
+            full_text = detail.get_text(strip=True)
+            answer = full_text.replace(question, "", 1).strip()
             if question and answer and len(question) > 5 and len(answer) > 10:
                 faqs.append({"question": question, "answer": answer})
 
@@ -156,8 +158,8 @@ def extract_faq_from_html(soup: BeautifulSoup) -> List[Dict[str, str]]:
         )
         if q_elem:
             question = q_elem.get_text(strip=True)
-            q_elem.extract()
-            answer = container.get_text(strip=True)
+            full_text = container.get_text(strip=True)
+            answer = full_text.replace(question, "", 1).strip()
             if question and answer and len(question) > 5 and len(answer) > 10:
                 faqs.append({"question": question, "answer": answer})
 
