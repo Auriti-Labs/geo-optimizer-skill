@@ -23,7 +23,7 @@ from geo_optimizer.models.config import (
 )
 from geo_optimizer.models.results import SitemapUrl
 from geo_optimizer.utils.http import create_session_with_retry
-from geo_optimizer.utils.validators import url_belongs_to_domain
+from geo_optimizer.utils.validators import url_belongs_to_domain, validate_public_url
 
 logger = logging.getLogger(__name__)
 
@@ -32,22 +32,36 @@ logger = logging.getLogger(__name__)
 # Sitemap fetching
 # ---------------------------------------------------------------------------
 
+_MAX_SITEMAP_DEPTH = 3  # Limite profondità ricorsione sitemap index
+
+
 def fetch_sitemap(
     sitemap_url: str,
     on_status: Optional[Callable[[str], None]] = None,
+    _depth: int = 0,
 ) -> List[SitemapUrl]:
     """Download and parse an XML sitemap, including sitemap index files.
 
     Uses automatic retry with exponential backoff for transient failures.
+    Recursion is limited to ``_MAX_SITEMAP_DEPTH`` levels to prevent
+    sitemap bomb attacks.
 
     Args:
         sitemap_url: URL of the XML sitemap to fetch.
         on_status: Optional callback for progress messages.
+        _depth: Internal recursion depth counter (non usare direttamente).
 
     Returns:
         List of :class:`SitemapUrl` entries discovered in the sitemap.
     """
     urls: List[SitemapUrl] = []
+
+    # Protezione anti-bomb: limita profondità ricorsione
+    if _depth >= _MAX_SITEMAP_DEPTH:
+        logger.warning("Profondità massima sitemap raggiunta (%d), skip: %s", _depth, sitemap_url)
+        if on_status:
+            on_status(f"Max sitemap depth reached ({_depth}), skipping: {sitemap_url}")
+        return urls
 
     if on_status:
         on_status(f"Fetching sitemap: {sitemap_url}")
@@ -75,7 +89,7 @@ def fetch_sitemap(
             loc = sitemap.find("loc")
             if loc:
                 sub_url = urljoin(sitemap_url, loc.text.strip())
-                sub_urls = fetch_sitemap(sub_url, on_status=on_status)
+                sub_urls = fetch_sitemap(sub_url, on_status=on_status, _depth=_depth + 1)
                 urls.extend(sub_urls)
         return urls
 
@@ -165,6 +179,9 @@ def fetch_page_title(url: str) -> Optional[str]:
     try:
         session = create_session_with_retry(total_retries=2, backoff_factor=0.5)
         r = session.get(url, headers=HEADERS, timeout=5)
+        # Non usare titoli da pagine di errore (404, 500, ecc.)
+        if r.status_code != 200:
+            return None
         soup = BeautifulSoup(r.text, "html.parser")
         title = soup.find("title")
         if title:
@@ -371,13 +388,24 @@ def discover_sitemap(
 
     session = create_session_with_retry(total_retries=2, backoff_factor=0.5)
 
-    # First check robots.txt for Sitemap: directive
+    # Controlla robots.txt per la direttiva Sitemap:
+    parsed_base = urlparse(base_url)
+    base_domain = parsed_base.netloc
     robots_url = urljoin(base_url, "/robots.txt")
     try:
         r = session.get(robots_url, headers=HEADERS, timeout=5)
         for line in r.text.splitlines():
             if line.lower().startswith("sitemap:"):
                 sitemap_url = line.split(":", 1)[1].strip()
+                # Validazione anti-SSRF: l'URL sitemap deve appartenere
+                # allo stesso dominio e puntare a un host pubblico
+                if not url_belongs_to_domain(sitemap_url, base_domain):
+                    logger.warning("Sitemap URL esterno ignorato: %s", sitemap_url)
+                    continue
+                safe, reason = validate_public_url(sitemap_url)
+                if not safe:
+                    logger.warning("Sitemap URL non sicuro ignorato: %s (%s)", sitemap_url, reason)
+                    continue
                 logger.info("Sitemap found in robots.txt: %s", sitemap_url)
                 if on_status:
                     on_status(f"Sitemap found in robots.txt: {sitemap_url}")

@@ -18,6 +18,7 @@ from geo_optimizer.core.schema_injector import (
     schema_to_html_tag,
 )
 from geo_optimizer.models.config import SCHEMA_TEMPLATES
+from geo_optimizer.utils.validators import validate_safe_path
 
 
 @click.command()
@@ -41,6 +42,19 @@ def schema(file_path, schema_type, name, url, description, author, logo_url,
            faq_file, auto_extract, astro, inject, no_backup, no_validate,
            analyze, verbose):
     """Manage JSON-LD schema for GEO optimization."""
+
+    # Validazione anti-path-traversal per tutti i percorsi file
+    _ALLOWED_HTML_EXT = {".html", ".htm", ".astro", ".svelte", ".vue", ".jsx", ".tsx"}
+    if file_path:
+        safe, reason = validate_safe_path(file_path, allowed_extensions=_ALLOWED_HTML_EXT, must_exist=True)
+        if not safe:
+            click.echo(f"❌ Percorso file non valido: {reason}")
+            sys.exit(1)
+    if faq_file:
+        safe, reason = validate_safe_path(faq_file, allowed_extensions={".json"}, must_exist=True)
+        if not safe:
+            click.echo(f"❌ Percorso FAQ file non valido: {reason}")
+            sys.exit(1)
 
     # Mode 1: Analyze
     if analyze:

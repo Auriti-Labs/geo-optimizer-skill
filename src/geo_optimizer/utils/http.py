@@ -56,9 +56,18 @@ def create_session_with_retry(
     return session
 
 
-def fetch_url(url, timeout=10):
+# Limite dimensione risposta: 10 MB (previene DoS da risposte enormi)
+MAX_RESPONSE_SIZE = 10 * 1024 * 1024
+
+
+def fetch_url(url, timeout=10, max_size=MAX_RESPONSE_SIZE):
     """
     Fetch a URL with automatic retry on transient failures.
+
+    Args:
+        url: URL to fetch.
+        timeout: Request timeout in seconds.
+        max_size: Maximum response size in bytes (default: 10 MB).
 
     Returns:
         tuple: (response, error_msg) where response is None on failure
@@ -70,6 +79,16 @@ def fetch_url(url, timeout=10):
             status_forcelist=[408, 429, 500, 502, 503, 504],
         )
         r = session.get(url, timeout=timeout, allow_redirects=True)
+
+        # Verifica Content-Length se disponibile (prima di leggere il body)
+        content_length = r.headers.get("Content-Length")
+        if content_length and int(content_length) > max_size:
+            return None, f"Response too large: {int(content_length)} bytes (max: {max_size})"
+
+        # Verifica dimensione effettiva del body già scaricato
+        if len(r.content) > max_size:
+            return None, f"Response too large: {len(r.content)} bytes (max: {max_size})"
+
         return r, None
     except requests.exceptions.Timeout:
         return None, f"Timeout ({timeout}s) after 3 retries"

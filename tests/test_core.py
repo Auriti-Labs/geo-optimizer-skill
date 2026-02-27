@@ -317,7 +317,7 @@ class TestFetchUrl:
     def test_successful_fetch(self, mock_create):
         """Successful fetch returns (response, None)."""
         mock_session = MagicMock()
-        mock_response = Mock(status_code=200, text="OK")
+        mock_response = Mock(status_code=200, text="OK", content=b"OK", headers={})
         mock_session.get.return_value = mock_response
         mock_create.return_value = mock_session
 
@@ -1344,7 +1344,7 @@ class TestFetchPageTitle:
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
     def test_fetch_title(self, mock_create):
         mock_session = MagicMock()
-        mock_resp = Mock(text="<html><head><title>My Page Title</title></head></html>")
+        mock_resp = Mock(status_code=200, text="<html><head><title>My Page Title</title></head></html>")
         mock_session.get.return_value = mock_resp
         mock_create.return_value = mock_session
 
@@ -1354,7 +1354,7 @@ class TestFetchPageTitle:
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
     def test_fetch_title_from_h1(self, mock_create):
         mock_session = MagicMock()
-        mock_resp = Mock(text="<html><body><h1>Heading Title</h1></body></html>")
+        mock_resp = Mock(status_code=200, text="<html><body><h1>Heading Title</h1></body></html>")
         mock_session.get.return_value = mock_resp
         mock_create.return_value = mock_session
 
