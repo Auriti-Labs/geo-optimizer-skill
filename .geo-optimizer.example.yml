@@ -1,0 +1,31 @@
+# .geo-optimizer.yml — Configurazione per progetto
+#
+# Copia questo file nella root del progetto come .geo-optimizer.yml
+# Richiede: pip install geo-optimizer-skill[config]
+
+# Defaults per il comando "geo audit"
+audit:
+  url: https://example.com
+  format: text          # text | json | rich | html | github
+  # output: report.html # Salva output su file
+  min_score: 0          # Score minimo (utile in CI)
+  cache: false          # Abilita cache HTTP locale
+  verbose: false
+
+# Defaults per il comando "geo llms"
+llms:
+  base_url: https://example.com
+  # title: "My Site"
+  # description: "Site for AI engines"
+  max_urls: 50
+
+# Tipi schema da verificare/generare
+schema:
+  types:
+    - website
+    - faq
+    - organization
+
+# Bot AI extra da controllare in robots.txt (oltre ai 14 built-in)
+# extra_bots:
+#   MyCustomBot: "Descrizione del bot"
