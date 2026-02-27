@@ -10,12 +10,18 @@ Endpoint principali:
     GET  /health        — Health check
 """
 
+import asyncio
 import hashlib
+import logging
 import time
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+
+logger = logging.getLogger(__name__)
 
 from geo_optimizer import __version__
 
@@ -27,9 +33,64 @@ app = FastAPI(
     redoc_url=None,
 )
 
-# Cache in-memory per risultati audit (TTL 1 ora)
+
+# ─── Middleware: Security Headers ─────────────────────────────────────────────
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Aggiunge header di sicurezza HTTP a tutte le risposte."""
+
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
+            "frame-ancestors 'none'"
+        )
+        return response
+
+
+app.add_middleware(SecurityHeadersMiddleware)
+
+# CORS: permetti richieste cross-origin per l'API pubblica
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+    max_age=3600,
+)
+
+# ─── Rate Limiter in-memory ───────────────────────────────────────────────────
+_rate_limit_store: dict = {}  # {ip: [timestamp, ...]}
+_RATE_LIMIT_WINDOW = 60  # secondi
+_RATE_LIMIT_MAX_REQUESTS = 30  # richieste per finestra per IP
+
+
+def _check_rate_limit(client_ip: str) -> bool:
+    """Verifica rate limit per IP. Ritorna True se consentito."""
+    now = time.time()
+    timestamps = _rate_limit_store.get(client_ip, [])
+    # Rimuovi timestamp fuori finestra
+    timestamps = [t for t in timestamps if (now - t) < _RATE_LIMIT_WINDOW]
+    if len(timestamps) >= _RATE_LIMIT_MAX_REQUESTS:
+        _rate_limit_store[client_ip] = timestamps
+        return False
+    timestamps.append(now)
+    _rate_limit_store[client_ip] = timestamps
+    # Pulizia periodica: limita store a 10000 IP
+    if len(_rate_limit_store) > 10000:
+        cutoff = now - _RATE_LIMIT_WINDOW
+        _rate_limit_store.clear()
+    return True
+
+
+# Cache in-memory per risultati audit (TTL 1 ora, max 500 entry)
 _audit_cache: dict = {}
 _CACHE_TTL = 3600
+_MAX_CACHE_SIZE = 500
 
 
 def _cache_key(url: str) -> str:
@@ -43,12 +104,29 @@ def _get_cached(url: str) -> Optional[dict]:
     entry = _audit_cache.get(key)
     if entry and (time.time() - entry["cached_at"]) < _CACHE_TTL:
         return entry["data"]
+    # Rimuovi entry scaduta
+    if entry:
+        _audit_cache.pop(key, None)
     return None
 
 
+def _evict_expired() -> None:
+    """Rimuovi entry scadute dalla cache."""
+    now = time.time()
+    expired = [k for k, v in _audit_cache.items() if (now - v["cached_at"]) >= _CACHE_TTL]
+    for k in expired:
+        _audit_cache.pop(k, None)
+
+
 def _set_cached(url: str, data: dict) -> str:
-    """Salva risultato nella cache. Ritorna l'ID del report."""
+    """Salva risultato nella cache con limite dimensione. Ritorna l'ID del report."""
     key = _cache_key(url)
+    # Evita crescita illimitata: evict scadute, poi rimuovi le più vecchie
+    if len(_audit_cache) >= _MAX_CACHE_SIZE:
+        _evict_expired()
+    if len(_audit_cache) >= _MAX_CACHE_SIZE:
+        oldest_key = min(_audit_cache, key=lambda k: _audit_cache[k]["cached_at"])
+        _audit_cache.pop(oldest_key, None)
     _audit_cache[key] = {"data": data, "cached_at": time.time()}
     return key
 
@@ -67,15 +145,20 @@ async def health():
 
 @app.get("/api/audit")
 async def audit_get(
+    request: Request,
     url: str = Query(..., description="URL del sito da analizzare"),
 ):
     """Esegui audit GEO via GET."""
+    if not _check_rate_limit(request.client.host):
+        raise HTTPException(status_code=429, detail="Troppe richieste. Riprova tra poco.")
     return await _run_audit(url)
 
 
 @app.post("/api/audit")
 async def audit_post(request: Request):
     """Esegui audit GEO via POST (body JSON con campo 'url')."""
+    if not _check_rate_limit(request.client.host):
+        raise HTTPException(status_code=429, detail="Troppe richieste. Riprova tra poco.")
     body = await request.json()
     url = body.get("url")
     if not url:
@@ -103,6 +186,7 @@ async def report(report_id: str):
 
 @app.get("/badge")
 async def badge(
+    request: Request,
     url: str = Query(..., description="URL del sito per il badge"),
     label: str = Query("GEO Score", max_length=50, description="Etichetta lato sinistro"),
 ):
@@ -114,6 +198,9 @@ async def badge(
     from fastapi.responses import Response
 
     from geo_optimizer.utils.validators import validate_public_url
+
+    if not _check_rate_limit(request.client.host):
+        raise HTTPException(status_code=429, detail="Troppe richieste. Riprova tra poco.")
 
     # Normalizza URL
     if not url.startswith(("http://", "https://")):
@@ -133,7 +220,8 @@ async def badge(
         try:
             from geo_optimizer.core.audit import run_full_audit
 
-            result = run_full_audit(url)
+            # Esegui in thread separato per non bloccare l'event loop
+            result = await asyncio.to_thread(run_full_audit, url)
             data = _audit_result_to_dict(result)
             _set_cached(url, data)
             score = data["score"]
@@ -181,9 +269,14 @@ async def _run_audit(url: str) -> JSONResponse:
     try:
         from geo_optimizer.core.audit import run_full_audit
 
-        result = run_full_audit(url)
+        # Esegui in thread separato per non bloccare l'event loop
+        result = await asyncio.to_thread(run_full_audit, url)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Errore audit: {e}")
+        logger.error("Errore audit per %s: %s", url, e)
+        raise HTTPException(
+            status_code=500,
+            detail="Errore interno durante l'audit. Riprova più tardi.",
+        )
 
     # Serializza risultato
     data = _audit_result_to_dict(result)

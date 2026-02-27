@@ -89,6 +89,13 @@ def fetch_sitemap(
             loc = sitemap.find("loc")
             if loc:
                 sub_url = urljoin(sitemap_url, loc.text.strip())
+                # Validazione anti-SSRF: verifica che sub-URL sia pubblico
+                safe, reason = validate_public_url(sub_url)
+                if not safe:
+                    logger.warning("Sub-sitemap URL non sicuro ignorato: %s (%s)", sub_url, reason)
+                    if on_status:
+                        on_status(f"Sub-sitemap skipped (unsafe): {sub_url}")
+                    continue
                 sub_urls = fetch_sitemap(sub_url, on_status=on_status, _depth=_depth + 1)
                 urls.extend(sub_urls)
         return urls

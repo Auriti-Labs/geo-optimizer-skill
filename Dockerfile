@@ -40,6 +40,14 @@ RUN useradd --create-home --shell /bin/bash geo
 USER geo
 WORKDIR /home/geo
 
+# Variabili d'ambiente per produzione
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Health check per orchestratori (Docker Compose, K8s)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD ["geo", "--help"]
+
 # Punto di ingresso: CLI geo
 ENTRYPOINT ["geo"]
 

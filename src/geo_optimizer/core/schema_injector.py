@@ -281,5 +281,21 @@ def inject_schema_into_html(
 
 
 def generate_astro_snippet(url: str, name: str) -> str:
-    """Generate Astro BaseLayout snippet."""
-    return ASTRO_TEMPLATE.replace("SITE_URL", url).replace("SITE_NAME", name)
+    """Generate Astro BaseLayout snippet.
+
+    Sanitizza url e name per prevenire injection nel template Astro:
+    rimuove virgolette e caratteri di controllo che potrebbero
+    rompere la struttura del codice generato.
+    """
+    # Sanitizza: rimuovi caratteri che possono iniettare codice Astro/JS
+    def _sanitize(val: str) -> str:
+        for ch in ('"', "'", "`", "\\", "${", "}", "<", ">"):
+            val = val.replace(ch, "")
+        return val
+
+    safe_url = _sanitize(url)
+    safe_name = _sanitize(name)
+    # Tronca per prevenire abusi
+    safe_url = safe_url[:200]
+    safe_name = safe_name[:100]
+    return ASTRO_TEMPLATE.replace("SITE_URL", safe_url).replace("SITE_NAME", safe_name)
