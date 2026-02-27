@@ -27,7 +27,8 @@ from geo_optimizer.utils.validators import validate_public_url
 @click.option("--cache", is_flag=True, help="Use local HTTP cache for faster repeated audits")
 @click.option("--clear-cache", is_flag=True, help="Clear the local HTTP cache and exit")
 @click.option("--config", "config_file", default=None, help="Path to .geo-optimizer.yml config file")
-def audit(url, output_format, output_file, verbose, cache, clear_cache, config_file):
+@click.option("--no-plugins", is_flag=True, help="Disable loading of third-party check plugins")
+def audit(url, output_format, output_file, verbose, cache, clear_cache, config_file, no_plugins):
     """Audit a website's GEO (Generative Engine Optimization) readiness."""
     # Carica configurazione progetto (se disponibile)
     from geo_optimizer.models.project_config import load_config
@@ -61,6 +62,12 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
         count = fc.clear()
         click.echo(f"✅ Cache svuotata ({count} file rimossi)")
         return
+
+    # Carica plugin (se non disabilitati)
+    if not no_plugins:
+        from geo_optimizer.core.registry import CheckRegistry
+
+        CheckRegistry.load_entry_points()
 
     # Validazione anti-SSRF: blocca URL verso reti private/interne
     safe, reason = validate_public_url(url if url.startswith(("http://", "https://")) else f"https://{url}")
