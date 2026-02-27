@@ -38,7 +38,8 @@ def audit_robots_txt(base_url: str) -> RobotsResult:
     if err or not r:
         return result
 
-    if r.status_code == 404:
+    # Solo risposte 200 sono robots.txt validi (403, 500, ecc. non lo sono)
+    if r.status_code != 200:
         return result
 
     result.found = True
@@ -78,7 +79,8 @@ def audit_llms_txt(base_url: str) -> LlmsTxtResult:
     if err or not r:
         return result
 
-    if r.status_code == 404:
+    # Solo risposte 200 contengono llms.txt valido
+    if r.status_code != 200:
         return result
 
     result.found = True
@@ -135,9 +137,11 @@ def audit_schema(soup, url: str) -> SchemaResult:
                 else:
                     schema_types = [schema_type]
 
+                # Aggiungi lo schema raw una sola volta (non per ogni tipo)
+                result.raw_schemas.append(schema)
+
                 for t in schema_types:
                     result.found_types.append(t)
-                    result.raw_schemas.append(schema)
 
                     if t == "WebSite":
                         result.has_website = True
