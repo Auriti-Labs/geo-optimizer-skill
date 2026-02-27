@@ -21,9 +21,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-logger = logging.getLogger(__name__)
-
 from geo_optimizer import __version__
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="GEO Optimizer",
@@ -82,7 +82,6 @@ def _check_rate_limit(client_ip: str) -> bool:
     _rate_limit_store[client_ip] = timestamps
     # Pulizia periodica: limita store a 10000 IP
     if len(_rate_limit_store) > 10000:
-        cutoff = now - _RATE_LIMIT_WINDOW
         _rate_limit_store.clear()
     return True
 
