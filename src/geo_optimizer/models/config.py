@@ -17,6 +17,9 @@ MAX_RESPONSE_SIZE: int = 10 * 1024 * 1024
 # Numero massimo di sub-sitemap da processare in un sitemap index — fix #90
 MAX_SUB_SITEMAPS: int = 10
 
+# Limite totale URL estratti da tutte le sitemap — fix #124 (sitemap bomb)
+MAX_TOTAL_URLS: int = 10_000
+
 
 # ─── AI bots that should be listed in robots.txt ─────────────────────────────
 

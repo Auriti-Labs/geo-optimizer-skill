@@ -49,9 +49,7 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         if request.method == "POST":
             content_length = request.headers.get("content-length")
-            if content_length is not None:
-                # Rifiuta subito se Content-Length supera il limite
-                if int(content_length) > _MAX_BODY_BYTES:
+            if content_length is not None and int(content_length) > _MAX_BODY_BYTES:
                     return JSONResponse(
                         status_code=413,
                         content={"detail": f"Body troppo grande. Limite: {_MAX_BODY_BYTES} byte."},
@@ -438,18 +436,18 @@ async def _run_audit(url: str) -> JSONResponse:
             asyncio.to_thread(run_full_audit, url),
             timeout=60.0,
         )
-    except asyncio.TimeoutError:
+    except asyncio.TimeoutError as exc:
         logger.warning("Audit timeout (60s) per URL: %s", url)
         raise HTTPException(
             status_code=504,
             detail="Audit timeout: il sito impiega troppo tempo a rispondere.",
-        )
+        ) from exc
     except Exception as e:
         logger.error("Errore audit per %s: %s", url, e)
         raise HTTPException(
             status_code=500,
             detail="Errore interno durante l'audit. Riprova più tardi.",
-        )
+        ) from e
 
     # Serializza risultato
     data = _audit_result_to_dict(result)

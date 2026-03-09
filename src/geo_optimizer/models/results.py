@@ -5,9 +5,11 @@ All audit functions return these structures instead of printing.
 The CLI layer is responsible for formatting and display.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from typing import Any
 
 # ─── HTTP cache ───────────────────────────────────────────────────────────────
 
@@ -23,7 +25,7 @@ class CachedResponse:
     status_code: int
     text: str
     content: bytes
-    headers: Dict[str, str] = field(default_factory=dict)
+    headers: dict[str, str] = field(default_factory=dict)
 
 # ─── Robots.txt ──────────────────────────────────────────────────────────────
 
@@ -31,11 +33,11 @@ class CachedResponse:
 @dataclass
 class RobotsResult:
     found: bool = False
-    bots_allowed: List[str] = field(default_factory=list)
-    bots_missing: List[str] = field(default_factory=list)
-    bots_blocked: List[str] = field(default_factory=list)
+    bots_allowed: list[str] = field(default_factory=list)
+    bots_missing: list[str] = field(default_factory=list)
+    bots_blocked: list[str] = field(default_factory=list)
     # Bot parzialmente bloccati (Disallow: / + Allow specifici — #106)
-    bots_partial: List[str] = field(default_factory=list)
+    bots_partial: list[str] = field(default_factory=list)
     citation_bots_ok: bool = False
     # True se i citation bot sono consentiti esplicitamente (non solo via wildcard — #111)
     citation_bots_explicit: bool = False
@@ -59,11 +61,11 @@ class LlmsTxtResult:
 
 @dataclass
 class SchemaResult:
-    found_types: List[str] = field(default_factory=list)
+    found_types: list[str] = field(default_factory=list)
     has_website: bool = False
     has_webapp: bool = False
     has_faq: bool = False
-    raw_schemas: List[dict] = field(default_factory=list)
+    raw_schemas: list[dict] = field(default_factory=list)
 
 
 # ─── Meta tags ───────────────────────────────────────────────────────────────
@@ -113,9 +115,11 @@ class AuditResult:
     schema: SchemaResult = field(default_factory=SchemaResult)
     meta: MetaResult = field(default_factory=MetaResult)
     content: ContentResult = field(default_factory=ContentResult)
-    recommendations: List[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
     http_status: int = 0
     page_size: int = 0
+    # Fix #104: risultati dei plugin CheckRegistry (non influenzano lo score base)
+    extra_checks: dict[str, Any] = field(default_factory=dict)
 
 
 # ─── Schema analysis ─────────────────────────────────────────────────────────
@@ -123,11 +127,11 @@ class AuditResult:
 
 @dataclass
 class SchemaAnalysis:
-    found_schemas: List[Dict] = field(default_factory=list)
-    found_types: List[str] = field(default_factory=list)
-    missing: List[str] = field(default_factory=list)
-    extracted_faqs: List[Dict[str, str]] = field(default_factory=list)
-    duplicates: Dict[str, int] = field(default_factory=dict)
+    found_schemas: list[dict] = field(default_factory=list)
+    found_types: list[str] = field(default_factory=list)
+    missing: list[str] = field(default_factory=list)
+    extracted_faqs: list[dict[str, str]] = field(default_factory=list)
+    duplicates: dict[str, int] = field(default_factory=dict)
     has_head: bool = False
     total_scripts: int = 0
 
@@ -138,6 +142,6 @@ class SchemaAnalysis:
 @dataclass
 class SitemapUrl:
     url: str
-    lastmod: Optional[str] = None
+    lastmod: str | None = None
     priority: float = 0.5
-    title: Optional[str] = None
+    title: str | None = None

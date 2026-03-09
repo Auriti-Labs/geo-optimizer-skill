@@ -10,7 +10,7 @@ Richiede PyYAML come dipendenza opzionale:
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 # Nome del file di configurazione cercato nella directory corrente
 CONFIG_FILENAME = ".geo-optimizer.yml"
@@ -43,7 +43,7 @@ class LlmsConfig:
 class SchemaConfig:
     """Configurazione defaults per il comando schema."""
 
-    types: List[str] = field(default_factory=list)
+    types: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -53,7 +53,7 @@ class ProjectConfig:
     audit: AuditConfig = field(default_factory=AuditConfig)
     llms: LlmsConfig = field(default_factory=LlmsConfig)
     schema: SchemaConfig = field(default_factory=SchemaConfig)
-    extra_bots: Dict[str, str] = field(default_factory=dict)
+    extra_bots: dict[str, str] = field(default_factory=dict)
 
 
 def _is_yaml_available() -> bool:

@@ -11,6 +11,9 @@ import click
 
 from geo_optimizer.cli.formatters import format_audit_json, format_audit_text
 from geo_optimizer.core.audit import run_full_audit
+
+# Fix #127: importa _() per traduzioni (sistema i18n parzialmente implementato — v3.2.0 per localizzazione completa)
+from geo_optimizer.i18n import _  # noqa: F401
 from geo_optimizer.utils.validators import validate_public_url
 
 
@@ -29,7 +32,13 @@ from geo_optimizer.utils.validators import validate_public_url
 @click.option("--clear-cache", is_flag=True, help="Clear the local HTTP cache and exit")
 @click.option("--config", "config_file", default=None, help="Path to .geo-optimizer.yml config file")
 @click.option("--no-plugins", is_flag=True, help="Disable loading of third-party check plugins")
-def audit(url, output_format, output_file, verbose, cache, clear_cache, config_file, no_plugins):
+@click.option(
+    "--threshold",
+    default=None,
+    type=int,
+    help="Soglia minima di score (0-100). Se lo score finale è inferiore, exit code 1.",
+)
+def audit(url, output_format, output_file, verbose, cache, clear_cache, config_file, no_plugins, threshold):
     """Audit a website's GEO (Generative Engine Optimization) readiness."""
     # Carica configurazione progetto (se disponibile)
     from geo_optimizer.models.project_config import load_config
@@ -62,8 +71,11 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
         # Senza --verbose: sopprimi log sotto WARNING (fix #144)
         logging.basicConfig(level=logging.WARNING)
 
-    # Fix #121: leggi min_score dal config (CLI non ha ancora l'opzione --min-score)
-    min_score = project_config.audit.min_score
+    # Fix #145: --threshold ha precedenza su min_score da config (YAML come fallback)
+    if threshold is not None:
+        min_score = threshold
+    else:
+        min_score = project_config.audit.min_score
 
     if not url and not clear_cache:
         raise click.UsageError("Manca l'opzione '--url'. Specificala via CLI o in .geo-optimizer.yml")
@@ -89,8 +101,20 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
         click.echo(f"\n❌ URL non sicuro: {reason}", err=True)
         sys.exit(1)
 
+    # Fix #146: feedback visivo durante l'audit (su stderr per non inquinare JSON)
+    if output_format != "json":
+        click.echo("⏳ Avvio analisi GEO...", err=True)
+        click.echo("⏳ Verifica robots.txt e accesso bot AI...", err=True)
+
     try:
+        # Nota: il feedback intermedio viene emesso prima della chiamata perché
+        # run_full_audit è sincrono e non ha callback di progresso
+        if output_format != "json":
+            click.echo("⏳ Analisi llms.txt...", err=True)
         result = run_full_audit(url, use_cache=cache)
+        if output_format != "json":
+            click.echo("⏳ Analisi schema JSON-LD, meta tag e contenuto...", err=True)
+            click.echo("✅ Analisi completata.\n", err=True)
     except SystemExit:
         raise
     except Exception as e:
@@ -131,12 +155,15 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
     else:
         click.echo(output)
 
-    # Fix #121: exit code 2 se score < min_score (configurabile via .geo-optimizer.yml)
+    # Fix #145/#121: exit code se score < soglia minima
+    # --threshold CLI → exit 1 (convenzione standard CI)
+    # min_score da .geo-optimizer.yml → exit 2 (per distinguere dal CLI)
     if min_score > 0 and result.score < min_score:
         click.echo(
             f"\n❌ Score {result.score}/100 sotto il minimo richiesto ({min_score})",
             err=True,
         )
-        sys.exit(2)
+        exit_code = 1 if threshold is not None else 2
+        sys.exit(exit_code)
 
     return result.score

@@ -6,20 +6,22 @@ nothing is printed to stdout.  Status updates go through an optional
 ``on_status`` callback or standard ``logging``.
 """
 
+from __future__ import annotations
+
 import logging
 import re
-
-import requests
 from collections import defaultdict
-from typing import Callable, List, Optional
+from typing import Callable
 from urllib.parse import urljoin, urlparse
 
+import requests
 from bs4 import BeautifulSoup
 
 from geo_optimizer.models.config import (
     CATEGORY_PATTERNS,
     HEADERS,
     MAX_SUB_SITEMAPS,
+    MAX_TOTAL_URLS,
     OPTIONAL_CATEGORIES,
     SECTION_PRIORITY_ORDER,
     SKIP_PATTERNS,
@@ -29,6 +31,20 @@ from geo_optimizer.utils.http import create_session_with_retry
 from geo_optimizer.utils.validators import url_belongs_to_domain, validate_public_url
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Regex precompilate a livello modulo (fix #123)
+# Evita ricompilazione ad ogni chiamata in loop
+# ---------------------------------------------------------------------------
+
+# Pattern per verificare URL da skippare (SKIP_PATTERNS compilati)
+_SKIP_PATTERNS_RE = [re.compile(p, re.IGNORECASE) for p in SKIP_PATTERNS]
+
+# Pattern per categorizzare URL (CATEGORY_PATTERNS compilati)
+_CATEGORY_PATTERNS_RE = [(re.compile(p, re.IGNORECASE), cat) for p, cat in CATEGORY_PATTERNS]
+
+# Pattern per estrarre link markdown da llms.txt
+_MARKDOWN_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 
 
 # ---------------------------------------------------------------------------
@@ -40,24 +56,39 @@ _MAX_SITEMAP_DEPTH = 3  # Limite profondità ricorsione sitemap index
 
 def fetch_sitemap(
     sitemap_url: str,
-    on_status: Optional[Callable[[str], None]] = None,
+    on_status: Callable[[str], None] | None = None,
     _depth: int = 0,
-) -> List[SitemapUrl]:
-    """Download and parse an XML sitemap, including sitemap index files.
+    _total_count: list[int] | None = None,
+    session=None,
+) -> list[SitemapUrl]:
+    """Scarica e parsa un sitemap XML, inclusi sitemap index.
 
-    Uses automatic retry with exponential backoff for transient failures.
-    Recursion is limited to ``_MAX_SITEMAP_DEPTH`` levels to prevent
-    sitemap bomb attacks.
+    Usa retry automatico con backoff esponenziale per errori transitori.
+    La ricorsione è limitata a ``_MAX_SITEMAP_DEPTH`` livelli (anti-bomb).
+    Il totale URL è limitato a ``MAX_TOTAL_URLS`` (fix #124 — sitemap bomb).
 
     Args:
-        sitemap_url: URL of the XML sitemap to fetch.
-        on_status: Optional callback for progress messages.
-        _depth: Internal recursion depth counter (non usare direttamente).
+        sitemap_url: URL del sitemap XML.
+        on_status: Callback opzionale per messaggi di progresso.
+        _depth: Contatore profondità ricorsione (non usare direttamente).
+        _total_count: Lista mutable [n] per tracking URL totali tra chiamate recursive.
+        session: Session HTTP da riusare (fix #122). Se None, ne crea una nuova.
 
     Returns:
-        List of :class:`SitemapUrl` entries discovered in the sitemap.
+        Lista di :class:`SitemapUrl` trovati nel sitemap.
     """
-    urls: List[SitemapUrl] = []
+    urls: list[SitemapUrl] = []
+
+    # Fix #124: inizializza il contatore condiviso tra chiamate recursive
+    if _total_count is None:
+        _total_count = [0]
+
+    # Fix #124: stop immediato se limite URL già raggiunto
+    if _total_count[0] >= MAX_TOTAL_URLS:
+        logger.warning("Limite URL raggiunto (%d), skip sitemap: %s", MAX_TOTAL_URLS, sitemap_url)
+        if on_status:
+            on_status(f"URL limit reached ({MAX_TOTAL_URLS}), skipping: {sitemap_url}")
+        return urls
 
     # Protezione anti-bomb: limita profondità ricorsione
     if _depth >= _MAX_SITEMAP_DEPTH:
@@ -70,11 +101,14 @@ def fetch_sitemap(
         on_status(f"Fetching sitemap: {sitemap_url}")
     logger.info("Fetching sitemap: %s", sitemap_url)
 
-    try:
+    # Fix #122: usa la session passata o creane una nuova solo al primo livello
+    if session is None:
         session = create_session_with_retry()
+
+    try:
         r = session.get(sitemap_url, headers=HEADERS, timeout=15)
         r.raise_for_status()
-    except requests.exceptions.Timeout as e:
+    except requests.exceptions.Timeout:
         logger.warning("Sitemap timeout: %s", sitemap_url)
         if on_status:
             on_status(f"Sitemap timeout: {sitemap_url}")
@@ -98,13 +132,17 @@ def fetch_sitemap(
 
     soup = BeautifulSoup(r.content, "xml")
 
-    # Sitemap index (contains other sitemaps)
+    # Sitemap index (contiene altri sitemap)
     sitemap_tags = soup.find_all("sitemap")
     if sitemap_tags:
         logger.info("Sitemap index found: %d sitemaps", len(sitemap_tags))
         if on_status:
             on_status(f"Sitemap index found: {len(sitemap_tags)} sitemaps")
         for sitemap in sitemap_tags[:MAX_SUB_SITEMAPS]:  # Limit sub-sitemaps (fix #90)
+            # Fix #124: stop se limite raggiunto durante iterazione sub-sitemap
+            if _total_count[0] >= MAX_TOTAL_URLS:
+                logger.warning("Limite URL raggiunto (%d), stop sub-sitemaps", MAX_TOTAL_URLS)
+                break
             loc = sitemap.find("loc")
             if loc:
                 sub_url = urljoin(sitemap_url, loc.text.strip())
@@ -115,17 +153,31 @@ def fetch_sitemap(
                     if on_status:
                         on_status(f"Sub-sitemap skipped (unsafe): {sub_url}")
                     continue
-                sub_urls = fetch_sitemap(sub_url, on_status=on_status, _depth=_depth + 1)
+                # Fix #122: riusa la session; fix #124: passa il contatore
+                sub_urls = fetch_sitemap(
+                    sub_url,
+                    on_status=on_status,
+                    _depth=_depth + 1,
+                    _total_count=_total_count,
+                    session=session,
+                )
                 urls.extend(sub_urls)
         return urls
 
-    # Regular sitemap
+    # Sitemap normale
     url_tags = soup.find_all("url")
     logger.info("URLs found: %d", len(url_tags))
     if on_status:
         on_status(f"URLs found: {len(url_tags)}")
 
     for url_tag in url_tags:
+        # Fix #124: stop se limite raggiunto durante iterazione URL
+        if _total_count[0] >= MAX_TOTAL_URLS:
+            logger.warning("Limite URL raggiunto (%d), stop parsing sitemap: %s", MAX_TOTAL_URLS, sitemap_url)
+            if on_status:
+                on_status(f"URL limit reached ({MAX_TOTAL_URLS}), stopping")
+            break
+
         loc = url_tag.find("loc")
         if not loc:
             continue
@@ -146,6 +198,7 @@ def fetch_sitemap(
                 pass
 
         urls.append(entry)
+        _total_count[0] += 1
 
     return urls
 
@@ -156,27 +209,33 @@ def fetch_sitemap(
 
 
 def should_skip(url: str) -> bool:
-    """Check whether *url* should be skipped based on :data:`SKIP_PATTERNS`."""
-    for pattern in SKIP_PATTERNS:
-        if re.search(pattern, url, re.IGNORECASE):
+    """Verifica se l'URL deve essere escluso in base a :data:`_SKIP_PATTERNS_RE`.
+
+    Usa regex precompilate a livello modulo (fix #123) per evitare
+    ricompilazione ad ogni chiamata in loop.
+    """
+    for pattern_re in _SKIP_PATTERNS_RE:
+        if pattern_re.search(url):
             return True
     return False
 
 
 def categorize_url(url: str, base_domain: str) -> str:
-    """Assign a category to *url* based on :data:`CATEGORY_PATTERNS`.
+    """Assegna una categoria all'URL in base a :data:`_CATEGORY_PATTERNS_RE`.
+
+    Usa regex precompilate a livello modulo (fix #123).
 
     Args:
-        url: Full URL to categorise.
-        base_domain: The site's domain (used only for context, not matching).
+        url: URL completo da categorizzare.
+        base_domain: Dominio base del sito (non usato nel matching).
 
     Returns:
-        Category name string, e.g. ``"Blog & Articles"`` or ``"Main Pages"``.
+        Nome della categoria, es. ``"Blog & Articles"`` o ``"Main Pages"``.
     """
     path = urlparse(url).path.lower()
 
-    for pattern, category in CATEGORY_PATTERNS:
-        if re.search(pattern, path, re.IGNORECASE):
+    for pattern_re, category in _CATEGORY_PATTERNS_RE:
+        if pattern_re.search(path):
             return category
 
     # Root / homepage
@@ -196,7 +255,7 @@ def categorize_url(url: str, base_domain: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def fetch_page_title(url: str) -> Optional[str]:
+def fetch_page_title(url: str) -> str | None:
     """Attempt to fetch the ``<title>`` (or ``<h1>``) of a page.
 
     Uses a short timeout and limited retry to avoid blocking on slow pages.
@@ -259,9 +318,9 @@ def url_to_label(url: str, base_domain: str) -> str:
 
 def generate_llms_txt(
     base_url: str,
-    urls: List[SitemapUrl],
-    site_name: Optional[str] = None,
-    description: Optional[str] = None,
+    urls: list[SitemapUrl],
+    site_name: str | None = None,
+    description: str | None = None,
     fetch_titles: bool = False,
     max_urls_per_section: int = 20,
 ) -> str:
@@ -332,7 +391,7 @@ def generate_llms_txt(
         )
 
     # Build llms.txt
-    lines: List[str] = []
+    lines: list[str] = []
 
     # Required header
     lines.append(f"# {site_name}")
@@ -355,8 +414,8 @@ def generate_llms_txt(
     all_categories = important_categories + sorted(remaining)
 
     # Separate "Optional" (secondary) sections
-    main_categories: List[str] = []
-    optional_categories: List[str] = []
+    main_categories: list[str] = []
+    optional_categories: list[str] = []
 
     for cat in all_categories:
         if cat in OPTIONAL_CATEGORIES:
@@ -396,8 +455,8 @@ def generate_llms_txt(
 
 def discover_sitemap(
     base_url: str,
-    on_status: Optional[Callable[[str], None]] = None,
-) -> Optional[str]:
+    on_status: Callable[[str], None] | None = None,
+) -> str | None:
     """Discover the site's sitemap URL from ``robots.txt`` or common paths.
 
     Args:

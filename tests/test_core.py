@@ -1330,8 +1330,9 @@ class TestBuildRecommendations:
         assert any("WebSite" in r for r in recs)
         assert any("FAQPage" in r or "FAQ" in r for r in recs)
         assert any("description" in r.lower() for r in recs)
-        assert any("statistics" in r.lower() or "numerical" in r.lower() for r in recs)
-        assert any("external" in r.lower() or "cite" in r.lower() for r in recs)
+        # Fix #96: raccomandazioni in italiano — cerca termini IT o EN per retrocompatibilità
+        assert any("statistich" in r.lower() or "statistics" in r.lower() or "numeri" in r.lower() for r in recs)
+        assert any("fonti" in r.lower() or "external" in r.lower() or "cite" in r.lower() for r in recs)
 
     def test_all_good_gives_no_recommendations(self):
         recs = build_recommendations(

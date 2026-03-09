@@ -14,7 +14,7 @@ Il check deve implementare il Protocol ``AuditCheck``.
 
 import sys
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
+from typing import Any, Optional, Protocol, runtime_checkable
 
 
 @dataclass
@@ -25,7 +25,7 @@ class CheckResult:
     score: int = 0
     max_score: int = 10
     passed: bool = False
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     message: str = ""
 
 
@@ -57,7 +57,7 @@ class CheckRegistry:
     Singleton pattern: usa i metodi di classe per registrare e recuperare check.
     """
 
-    _checks: Dict[str, AuditCheck] = {}
+    _checks: dict[str, AuditCheck] = {}
     _loaded_entry_points: bool = False
 
     @classmethod
@@ -90,12 +90,12 @@ class CheckRegistry:
         return cls._checks.get(name)
 
     @classmethod
-    def all(cls) -> List[AuditCheck]:
+    def all(cls) -> list[AuditCheck]:
         """Ritorna tutti i check registrati."""
         return list(cls._checks.values())
 
     @classmethod
-    def names(cls) -> List[str]:
+    def names(cls) -> list[str]:
         """Ritorna i nomi di tutti i check registrati."""
         return list(cls._checks.keys())
 
@@ -143,7 +143,7 @@ class CheckRegistry:
         return loaded
 
     @classmethod
-    def run_all(cls, url: str, soup: Any = None, **kwargs: Any) -> List[CheckResult]:
+    def run_all(cls, url: str, soup: Any = None, **kwargs: Any) -> list[CheckResult]:
         """Esegui tutti i check registrati e ritorna i risultati.
 
         Args:

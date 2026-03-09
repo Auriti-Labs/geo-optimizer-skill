@@ -8,15 +8,14 @@ import json
 import logging
 import re
 import shutil
-from typing import Dict, List, Optional, Tuple
-
-logger = logging.getLogger(__name__)
 
 from bs4 import BeautifulSoup
 
 from geo_optimizer.core.schema_validator import validate_jsonld
 from geo_optimizer.models.config import SCHEMA_TEMPLATES
 from geo_optimizer.models.results import SchemaAnalysis
+
+logger = logging.getLogger(__name__)
 
 ASTRO_TEMPLATE = """\
 ---
@@ -87,9 +86,9 @@ const faqSchema = faqItems.length > 0 ? {
   <!-- GEO: Schema JSON-LD -->
   <!-- Sicurezza: replace('</', '<\\/') previene XSS da chiusura prematura del tag <script>.
        JSON.stringify() da solo non escapa '</script>' — il replace è obbligatorio. -->
-  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema).replace(/<\//g, '<\\/')} />
-  {webAppSchema && <script type="application/ld+json" set:html={JSON.stringify(webAppSchema).replace(/<\//g, '<\\/')} />}
-  {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema).replace(/<\//g, '<\\/')} />}
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema).replace(/<\\//g, '<\\/')} />
+  {webAppSchema && <script type="application/ld+json" set:html={JSON.stringify(webAppSchema).replace(/<\\//g, '<\\/')} />}
+  {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema).replace(/<\\//g, '<\\/')} />}
 </head>
 """
 
@@ -134,7 +133,7 @@ def schema_to_html_tag(schema_dict: dict) -> str:
     return f'<script type="application/ld+json">\n{json_str}\n</script>'
 
 
-def extract_faq_from_html(soup: BeautifulSoup) -> List[Dict[str, str]]:
+def extract_faq_from_html(soup: BeautifulSoup) -> list[dict[str, str]]:
     """
     Auto-extract FAQ items from HTML.
 
@@ -182,7 +181,7 @@ def extract_faq_from_html(soup: BeautifulSoup) -> List[Dict[str, str]]:
 
 def analyze_html_file(file_path: str) -> SchemaAnalysis:
     """Analyze an HTML file and return found/missing schemas + extracted data."""
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     soup = BeautifulSoup(content, "html.parser")
@@ -235,7 +234,7 @@ def analyze_html_file(file_path: str) -> SchemaAnalysis:
     )
 
 
-def generate_faq_schema(faq_items: List[Dict[str, str]]) -> dict:
+def generate_faq_schema(faq_items: list[dict[str, str]]) -> dict:
     """Generate FAQPage schema from FAQ items."""
     schema = SCHEMA_TEMPLATES["faq"].copy()
     schema["mainEntity"] = [
@@ -254,7 +253,7 @@ def inject_schema_into_html(
     schema_dict: dict,
     backup: bool = True,
     validate: bool = True,
-) -> Tuple[bool, Optional[str]]:
+) -> tuple[bool, str | None]:
     """
     Inject a schema tag into an HTML file (before </head>).
 
@@ -278,7 +277,7 @@ def inject_schema_into_html(
         backup_path = f"{file_path}.bak"
         shutil.copy2(file_path, backup_path)
 
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     soup = BeautifulSoup(content, "html.parser")

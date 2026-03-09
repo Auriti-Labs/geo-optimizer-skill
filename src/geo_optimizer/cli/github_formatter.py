@@ -7,9 +7,17 @@ integrazione nativa con GitHub Actions. Usato con ``geo audit --format github``.
 
 from geo_optimizer.cli.scoring_helpers import (
     content_score as _content_score,
+)
+from geo_optimizer.cli.scoring_helpers import (
     llms_score as _llms_score,
+)
+from geo_optimizer.cli.scoring_helpers import (
     meta_score as _meta_score,
+)
+from geo_optimizer.cli.scoring_helpers import (
     robots_score as _robots_score,
+)
+from geo_optimizer.cli.scoring_helpers import (
     schema_score as _schema_score,
 )
 from geo_optimizer.models.results import AuditResult

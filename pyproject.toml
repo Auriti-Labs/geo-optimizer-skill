@@ -104,8 +104,14 @@ line-length = 120
 target-version = "py39"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I"]
-ignore = ["E501"]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = [
+    "E501",    # Linee troppo lunghe (gestito con line-length)
+    "SIM108",  # Operatore ternario (peggiora leggibilità in alcuni casi)
+    "SIM105",  # contextlib.suppress (più verboso del try-except-pass)
+    "SIM114",  # Combina if-branch (peggiora leggibilità del CLI output)
+    "SIM110",  # Comprensione any() per for-return (non sempre più leggibile)
+]
 
 [tool.ruff.lint.per-file-ignores]
 "scripts/*.py" = ["E741", "E402"]

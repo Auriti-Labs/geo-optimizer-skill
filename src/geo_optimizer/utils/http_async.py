@@ -8,8 +8,9 @@ Richiede httpx come dipendenza opzionale:
     pip install geo-optimizer-skill[async]
 """
 
+from __future__ import annotations
+
 import asyncio
-from typing import Optional, Tuple
 
 from geo_optimizer.models.config import HEADERS
 from geo_optimizer.utils.http import MAX_RESPONSE_SIZE
@@ -30,7 +31,7 @@ async def fetch_url_async(
     client=None,
     timeout: int = 10,
     max_size: int = MAX_RESPONSE_SIZE,
-) -> Tuple[Optional[object], Optional[str]]:
+) -> tuple[object | None, str | None]:
     """Fetch asincrono di un URL con httpx.
 
     Args:

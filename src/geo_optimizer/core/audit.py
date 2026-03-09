@@ -5,7 +5,10 @@ Extracted from scripts/geo_audit.py. All functions return dataclasses
 instead of printing — the CLI layer handles display and formatting.
 """
 
+from __future__ import annotations
+
 import json
+import logging
 import re
 from urllib.parse import urljoin, urlparse
 
@@ -16,9 +19,6 @@ from geo_optimizer.models.config import (  # noqa: F401 (VALUABLE_SCHEMAS re-exp
     SCORING,
     VALUABLE_SCHEMAS,
 )
-import logging
-import requests
-
 from geo_optimizer.models.results import (
     AuditResult,
     CachedResponse,
@@ -238,9 +238,16 @@ def audit_content_quality(soup, url: str) -> ContentResult:
     headings = soup.find_all(["h1", "h2", "h3", "h4"])
     result.heading_count = len(headings)
 
+    # Fix #98: rimuovi tag script e style prima di estrarre il testo
+    # per evitare falsi positivi nel word count e nell'analisi del contenuto
+    import copy
+    soup_clean = copy.copy(soup)
+    for tag in soup_clean(["script", "style"]):
+        tag.decompose()
+
     # Fix #107: separator=" " previene concatenazione parole di tag adiacenti
     # Esempio: <span>Hello</span><span>World</span> → "Hello World" invece di "HelloWorld"
-    body_text = soup.get_text(separator=" ", strip=True)
+    body_text = soup_clean.get_text(separator=" ", strip=True)
     numbers = re.findall(r"\b\d+[%\u20ac$\u00a3]|\b\d+\.\d+|\b\d{3,}\b", body_text)
     result.numbers_count = len(numbers)
     if len(numbers) >= 3:
@@ -327,25 +334,90 @@ def get_score_band(score: int) -> str:
 
 
 def build_recommendations(base_url, robots, llms, schema, meta, content) -> list:
-    """Build list of recommendation strings."""
+    """Costruisce lista di raccomandazioni prioritarie in italiano."""
     recommendations = []
 
     if not robots.citation_bots_ok:
-        recommendations.append("Update robots.txt with all AI bots (see SKILL.md)")
+        recommendations.append("Aggiorna robots.txt includendo tutti i bot AI (GPTBot, ClaudeBot, PerplexityBot)")
     if not llms.found:
-        recommendations.append(f"Create /llms.txt: ./geo scripts/generate_llms_txt.py --base-url {base_url}")
+        recommendations.append(f"Crea /llms.txt per l'indicizzazione AI: geo llms --base-url {base_url}")
     if not schema.has_website:
-        recommendations.append("Add WebSite JSON-LD schema")
+        recommendations.append("Aggiungi schema JSON-LD di tipo WebSite alla homepage")
     if not schema.has_faq:
-        recommendations.append("Add FAQPage schema with frequently asked questions")
+        recommendations.append("Aggiungi schema FAQPage con le domande frequenti del sito")
     if not meta.has_description:
-        recommendations.append("Add optimized meta description")
+        recommendations.append("Aggiungi meta description ottimizzata (150-160 caratteri)")
     if not content.has_numbers:
-        recommendations.append("Add concrete numerical statistics (+40% AI visibility)")
+        recommendations.append("Inserisci dati numerici e statistiche concrete (+40% visibilità AI)")
     if not content.has_links:
-        recommendations.append("Cite authoritative sources with external links")
+        recommendations.append("Cita fonti autorevoli con link esterni (aumenta la credibilità AI)")
 
     return recommendations
+
+
+def _build_audit_result(
+    base_url: str,
+    robots: RobotsResult,
+    llms: LlmsTxtResult,
+    schema: SchemaResult,
+    meta: MetaResult,
+    content: ContentResult,
+    http_status: int,
+    page_size: int,
+    soup=None,
+    extra_checks: dict = None,
+) -> AuditResult:
+    """Costruisce AuditResult dai sub-audit (fix #97: logica comune sync/async).
+
+    Calcola score, band e raccomandazioni, poi esegue i plugin registrati
+    nel CheckRegistry (fix #104). I risultati dei plugin non influenzano
+    lo score base.
+
+    Args:
+        base_url: URL normalizzato del sito.
+        robots: Risultato audit robots.txt.
+        llms: Risultato audit llms.txt.
+        schema: Risultato audit schema JSON-LD.
+        meta: Risultato audit meta tag.
+        content: Risultato audit contenuto.
+        http_status: Codice HTTP della homepage.
+        page_size: Dimensione in byte della homepage.
+        soup: BeautifulSoup della homepage (opzionale, passato ai plugin).
+        extra_checks: Dizionario con risultati pre-calcolati (non usato internamente).
+
+    Returns:
+        AuditResult completo con score, band, raccomandazioni e plugin.
+    """
+    from geo_optimizer.core.registry import CheckRegistry
+
+    # Calcola score e band
+    score = compute_geo_score(robots, llms, schema, meta, content)
+    band = get_score_band(score)
+
+    # Raccomandazioni
+    recommendations = build_recommendations(base_url, robots, llms, schema, meta, content)
+
+    # Fix #104: esegui plugin registrati nel CheckRegistry
+    # I risultati non influenzano lo score base
+    plugin_results = {}
+    if CheckRegistry.all():
+        check_results = CheckRegistry.run_all(base_url, soup=soup)
+        plugin_results = {r.name: {"score": r.score, "max_score": r.max_score, "passed": r.passed, "message": r.message, "details": r.details} for r in check_results}
+
+    return AuditResult(
+        url=base_url,
+        score=score,
+        band=band,
+        robots=robots,
+        llms=llms,
+        schema=schema,
+        meta=meta,
+        content=content,
+        recommendations=recommendations,
+        http_status=http_status,
+        page_size=page_size,
+        extra_checks=plugin_results,
+    )
 
 
 def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> AuditResult:
@@ -405,25 +477,17 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     meta = audit_meta_tags(soup, base_url)
     content = audit_content_quality(soup, base_url)
 
-    # Compute score and band
-    score = compute_geo_score(robots, llms, schema, meta, content)
-    band = get_score_band(score)
-
-    # Build recommendations
-    recommendations = build_recommendations(base_url, robots, llms, schema, meta, content)
-
-    return AuditResult(
-        url=base_url,
-        score=score,
-        band=band,
+    # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
+    return _build_audit_result(
+        base_url=base_url,
         robots=robots,
         llms=llms,
         schema=schema,
         meta=meta,
         content=content,
-        recommendations=recommendations,
         http_status=r.status_code,
         page_size=len(r.text),
+        soup=soup,
     )
 
 
@@ -473,25 +537,17 @@ async def run_full_audit_async(url: str) -> AuditResult:
     meta = audit_meta_tags(soup, base_url)
     content = audit_content_quality(soup, base_url)
 
-    # Calcola score e band
-    score = compute_geo_score(robots, llms, schema, meta, content)
-    band = get_score_band(score)
-
-    # Raccomandazioni
-    recommendations = build_recommendations(base_url, robots, llms, schema, meta, content)
-
-    return AuditResult(
-        url=base_url,
-        score=score,
-        band=band,
+    # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
+    return _build_audit_result(
+        base_url=base_url,
         robots=robots,
         llms=llms,
         schema=schema,
         meta=meta,
         content=content,
-        recommendations=recommendations,
         http_status=r_home.status_code,
         page_size=len(r_home.text),
+        soup=soup,
     )
 
 

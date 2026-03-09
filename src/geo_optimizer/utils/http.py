@@ -13,8 +13,9 @@ Implementa protezioni anti-SSRF:
 - Streaming con size check per prevenire DoS da risposte enormi
 """
 
+from __future__ import annotations
+
 import socket
-from typing import List, Optional, Tuple
 from urllib.parse import urlparse
 
 import requests
@@ -38,7 +39,7 @@ def create_session_with_retry(
     backoff_factor=1.0,
     status_forcelist=None,
     allowed_methods=None,
-    pinned_ips: Optional[List[str]] = None,
+    pinned_ips: list[str] | None = None,
 ):
     """
     Create requests session with exponential backoff retry strategy.
@@ -89,7 +90,7 @@ class _PinnedIPAdapter(HTTPAdapter):
     l'IP viene fissato e usato direttamente senza una seconda risoluzione DNS.
     """
 
-    def __init__(self, pinned_ips: List[str], *args, **kwargs):
+    def __init__(self, pinned_ips: list[str], *args, **kwargs):
         """
         Args:
             pinned_ips: Lista di IP validati a cui forzare la connessione.
@@ -129,7 +130,7 @@ class _PinnedIPAdapter(HTTPAdapter):
             return super().send(request, *args, **kwargs)
 
 
-def _stream_response(response: requests.Response, max_size: int) -> Tuple[Optional[bytes], Optional[str]]:
+def _stream_response(response: requests.Response, max_size: int) -> tuple[bytes | None, str | None]:
     """Legge il body in streaming verificando il limite di dimensione.
 
     Previene DoS: scarica il body a chunk, interrompe se supera max_size.
@@ -154,7 +155,7 @@ def _stream_response(response: requests.Response, max_size: int) -> Tuple[Option
     return b"".join(chunks), None
 
 
-def fetch_url(url: str, timeout: int = 10, max_size: int = MAX_RESPONSE_SIZE) -> Tuple[Optional[requests.Response], Optional[str]]:
+def fetch_url(url: str, timeout: int = 10, max_size: int = MAX_RESPONSE_SIZE) -> tuple[requests.Response | None, str | None]:
     """
     Fetch a URL with automatic retry on transient failures.
 
@@ -187,8 +188,8 @@ def _fetch_with_manual_redirects(
     url: str,
     timeout: int,
     max_size: int,
-    pinned_ips: List[str],
-) -> Tuple[Optional[requests.Response], Optional[str]]:
+    pinned_ips: list[str],
+) -> tuple[requests.Response | None, str | None]:
     """Esegue il fetch con redirect manuale e rivalidazione SSRF su ogni hop.
 
     Ogni redirect viene rivalidato con resolve_and_validate_url() per

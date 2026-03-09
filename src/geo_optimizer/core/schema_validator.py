@@ -5,16 +5,16 @@ Validates schema.org JSON-LD structures for common types.
 """
 
 import json
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 from geo_optimizer.models.config import SCHEMA_ORG_REQUIRED
 
 
 def validate_jsonld(
-    schema_dict: Dict,
+    schema_dict: dict,
     schema_type: Optional[str] = None,
     strict: bool = False,
-) -> Tuple[bool, Optional[str]]:
+) -> tuple[bool, Optional[str]]:
     """
     Validate a JSON-LD schema structure.
 
@@ -80,11 +80,10 @@ def validate_jsonld(
                 continue
 
             for url in urls_to_check:
-                if isinstance(url, str) and not url.startswith(("http://", "https://", "/")):
-                    if strict:
-                        return False, (
-                            f"Invalid URL format in '{fld}': '{url}' (must start with http://, https://, or /)"
-                        )
+                if isinstance(url, str) and not url.startswith(("http://", "https://", "/")) and strict:
+                    return False, (
+                        f"Invalid URL format in '{fld}': '{url}' (must start with http://, https://, or /)"
+                    )
 
     return True, None
 
@@ -93,7 +92,7 @@ def validate_jsonld_string(
     json_string: str,
     schema_type: Optional[str] = None,
     strict: bool = False,
-) -> Tuple[bool, Optional[str]]:
+) -> tuple[bool, Optional[str]]:
     """Validate a JSON-LD schema from a string."""
     try:
         schema_dict = json.loads(json_string)
@@ -103,6 +102,6 @@ def validate_jsonld_string(
     return validate_jsonld(schema_dict, schema_type, strict)
 
 
-def get_required_fields(schema_type: str) -> List[str]:
+def get_required_fields(schema_type: str) -> list[str]:
     """Get list of required fields for a schema type."""
     return SCHEMA_ORG_REQUIRED.get(schema_type.lower(), ["@context", "@type"])

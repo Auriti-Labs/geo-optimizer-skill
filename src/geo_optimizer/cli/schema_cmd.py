@@ -103,7 +103,7 @@ def schema(
                 click.echo(f"✅ Extracted {len(faq_items)} FAQ items")
                 schema_dict = generate_faq_schema(faq_items)
             elif faq_file:
-                with open(faq_file, "r") as f:
+                with open(faq_file) as f:
                     faq_items = json.load(f)
                 schema_dict = generate_faq_schema(faq_items)
             else:
@@ -155,10 +155,7 @@ def _print_analysis(analysis, verbose=False):
             data = s["data"]
             click.echo(f"   {idx}. {schema_type}")
 
-            if schema_type == "WebSite":
-                click.echo(f"      url: {data.get('url', 'N/A')}")
-                click.echo(f"      name: {data.get('name', 'N/A')}")
-            elif schema_type == "WebApplication":
+            if schema_type == "WebSite" or schema_type == "WebApplication":
                 click.echo(f"      url: {data.get('url', 'N/A')}")
                 click.echo(f"      name: {data.get('name', 'N/A')}")
             elif schema_type == "FAQPage":

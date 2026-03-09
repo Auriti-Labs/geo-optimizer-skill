@@ -14,7 +14,13 @@ from geo_optimizer import __version__
 
 @click.group()
 @click.version_option(version=__version__, prog_name="geo-optimizer")
-@click.option("--lang", default=None, envvar="GEO_LANG", help="Language: it (default), en")
+@click.option(
+    "--lang",
+    default=None,
+    envvar="GEO_LANG",
+    type=click.Choice(["it", "en"], case_sensitive=False),
+    help="Lingua output: it (default), en",
+)
 def cli(lang):
     """GEO Optimizer — Make websites visible to AI search engines."""
     if lang:

@@ -18,9 +18,9 @@ def main(host, port, reload):
     """Avvia la web demo GEO Optimizer."""
     try:
         import uvicorn
-    except ImportError:
+    except ImportError as exc:
         click.echo("uvicorn non installato. Usa: pip install geo-optimizer-skill[web]", err=True)
-        raise SystemExit(1)
+        raise SystemExit(1) from exc
 
     click.echo(f"GEO Optimizer Web Demo: http://{host}:{port}")
     uvicorn.run(

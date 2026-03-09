@@ -206,8 +206,8 @@ class TestAuditCommand:
         assert "ROBOTS.TXT" in result.output
         assert "LLMS.TXT" in result.output
         assert "SCHEMA JSON-LD" in result.output
-        assert "META TAGS" in result.output
-        assert "CONTENT QUALITY" in result.output
+        assert "META TAG" in result.output
+        assert "CONTENUTI" in result.output
         assert "75/100" in result.output
         mock_audit.assert_called_once_with("https://example.com", use_cache=False)
 
@@ -325,7 +325,7 @@ class TestAuditCommand:
         result = runner.invoke(cli, ["audit", "--url", "https://minimal.example.com"])
         assert result.exit_code == 0
         assert "15/100" in result.output
-        assert "CRITICAL" in result.output
+        assert "CRITICO" in result.output
 
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_recommendations_listed(self, mock_audit, runner, sample_audit_result):
@@ -335,7 +335,7 @@ class TestAuditCommand:
         assert result.exit_code == 0
         assert "Add WebApplication schema" in result.output
         assert "Improve robots.txt coverage" in result.output
-        assert "NEXT PRIORITY STEPS" in result.output
+        assert "PROSSIMI PASSI" in result.output
 
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_no_recommendations(self, mock_audit, runner):
@@ -352,7 +352,7 @@ class TestAuditCommand:
         mock_audit.return_value = audit_result
         result = runner.invoke(cli, ["audit", "--url", "https://perfect.example.com"])
         assert result.exit_code == 0
-        assert "Great!" in result.output or "implemented" in result.output
+        assert "Ottimo" in result.output or "implementate" in result.output
 
 
 # ============================================================================
@@ -1005,8 +1005,8 @@ class TestFormatters:
         assert "1. ROBOTS.TXT" in output
         assert "2. LLMS.TXT" in output
         assert "3. SCHEMA JSON-LD" in output
-        assert "4. META TAGS" in output
-        assert "5. CONTENT QUALITY" in output
+        assert "4. META TAG" in output
+        assert "5. QUALITÀ" in output
 
     def test_format_audit_text_excellent_band(self):
         """Text output shows EXCELLENT label for score >= 91."""
@@ -1018,10 +1018,11 @@ class TestFormatters:
             band="excellent",
         )
         output = format_audit_text(result)
-        assert "EXCELLENT" in output
+        # Il formatter usa label in italiano (fix #127 — i18n)
+        assert "ECCELLENTE" in output
 
     def test_format_audit_text_critical_band(self):
-        """Text output shows CRITICAL label for score <= 40."""
+        """Text output shows CRITICO label for score <= 40."""
         from geo_optimizer.cli.formatters import format_audit_text
 
         result = AuditResult(
@@ -1030,7 +1031,8 @@ class TestFormatters:
             band="critical",
         )
         output = format_audit_text(result)
-        assert "CRITICAL" in output
+        # Il formatter usa label in italiano (fix #127 — i18n)
+        assert "CRITICO" in output
 
     def test_format_audit_json_recommendations(self, sample_audit_result):
         """JSON output includes the recommendations list."""

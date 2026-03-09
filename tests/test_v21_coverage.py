@@ -540,7 +540,8 @@ class TestFormatAuditTextBranchMancanti:
             "schema.has_faq": True,
         })
         output = format_audit_text(result)
-        assert "WebSite schema missing" in output
+        # Fix #96: testo in italiano
+        assert "Schema WebSite mancante" in output
 
     def test_riga_118_schema_trovato_senza_faq(self):
         """Riga 118: schema trovato ma has_faq=False → warning FAQPage."""

@@ -14,7 +14,7 @@ import json
 import shutil
 import time
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
 
 # Directory cache nella home dell'utente
 CACHE_DIR = Path.home() / ".geo-cache"
@@ -38,7 +38,7 @@ class FileCache:
         """Percorso file cache per un URL."""
         return self.cache_dir / f"{self._key(url)}.json"
 
-    def get(self, url: str) -> Optional[Tuple[int, str, dict]]:
+    def get(self, url: str) -> Optional[tuple[int, str, dict]]:
         """Recupera risposta dalla cache se valida.
 
         Returns:

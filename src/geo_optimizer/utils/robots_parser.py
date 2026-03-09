@@ -12,9 +12,10 @@ Supports:
 - Longest-match rule per Allow/Disallow (RFC 9309 §2.2.2)
 """
 
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 
 # Limite massimo di bytes per il file robots.txt (RFC 9309 §2.5)
 _MAX_ROBOTS_BYTES = 500 * 1024
@@ -26,8 +27,8 @@ logger = logging.getLogger(__name__)
 class AgentRules:
     """Rules for a single User-agent in robots.txt."""
 
-    allow: List[str] = field(default_factory=list)
-    disallow: List[str] = field(default_factory=list)
+    allow: list[str] = field(default_factory=list)
+    disallow: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -37,13 +38,13 @@ class BotStatus:
     bot: str
     description: str
     status: str  # "allowed", "blocked", "partial", "missing"
-    matched_agent: Optional[str] = None
-    disallow_paths: List[str] = field(default_factory=list)
+    matched_agent: str | None = None
+    disallow_paths: list[str] = field(default_factory=list)
     # True se il permesso arriva solo dal wildcard (non da regola specifica)
     via_wildcard: bool = False
 
 
-def parse_robots_txt(content: str) -> Dict[str, AgentRules]:
+def parse_robots_txt(content: str) -> dict[str, AgentRules]:
     """
     Parse robots.txt content into a dict of agent → rules.
 
@@ -74,8 +75,8 @@ def parse_robots_txt(content: str) -> Dict[str, AgentRules]:
         )
         content = content_bytes[:_MAX_ROBOTS_BYTES].decode("utf-8", errors="replace")
 
-    agent_rules: Dict[str, AgentRules] = {}
-    current_agents: List[str] = []
+    agent_rules: dict[str, AgentRules] = {}
+    current_agents: list[str] = []
     last_was_agent = False
 
     for line in content.splitlines():
@@ -111,7 +112,7 @@ def parse_robots_txt(content: str) -> Dict[str, AgentRules]:
     return agent_rules
 
 
-def _is_path_allowed(path: str, rules: AgentRules) -> Optional[bool]:
+def _is_path_allowed(path: str, rules: AgentRules) -> bool | None:
     """
     Verifica se un path è consentito secondo la regola longest-match (RFC 9309 §2.2.2).
 
@@ -161,7 +162,7 @@ def _is_path_allowed(path: str, rules: AgentRules) -> Optional[bool]:
 def classify_bot(
     bot: str,
     description: str,
-    agent_rules: Dict[str, AgentRules],
+    agent_rules: dict[str, AgentRules],
 ) -> BotStatus:
     """
     Classify a bot as allowed, blocked, partial, or missing based on robots.txt rules.

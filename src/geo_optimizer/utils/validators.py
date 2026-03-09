@@ -5,10 +5,11 @@ Controlla URL (anti-SSRF) e percorsi file (anti-path-traversal)
 prima di effettuare operazioni di rete o filesystem.
 """
 
+from __future__ import annotations
+
 import ipaddress
 import socket
 from pathlib import Path
-from typing import List, Optional, Set, Tuple
 from urllib.parse import urlparse
 
 # Reti private/riservate da bloccare (RFC 1918, loopback, link-local, metadata cloud)
@@ -63,7 +64,7 @@ def _is_ip_blocked(ip_obj) -> bool:
     )
 
 
-def _validate_url_structure(url: str) -> Tuple[bool, Optional[str], Optional[str]]:
+def _validate_url_structure(url: str) -> tuple[bool, str | None, str | None]:
     """Valida la struttura dell'URL (schema, hostname, credenziali).
 
     Returns:
@@ -91,7 +92,7 @@ def _validate_url_structure(url: str) -> Tuple[bool, Optional[str], Optional[str
     return True, None, hostname
 
 
-def _check_ip_blocked(ip_str: str) -> Tuple[bool, Optional[str]]:
+def _check_ip_blocked(ip_str: str) -> tuple[bool, str | None]:
     """Verifica se un singolo indirizzo IP è in una rete bloccata.
 
     Returns:
@@ -121,7 +122,7 @@ def _check_ip_blocked(ip_str: str) -> Tuple[bool, Optional[str]]:
     return False, None
 
 
-def resolve_and_validate_url(url: str) -> Tuple[bool, Optional[str], List[str]]:
+def resolve_and_validate_url(url: str) -> tuple[bool, str | None, list[str]]:
     """Valida l'URL anti-SSRF e restituisce la lista di IP risolti.
 
     Risolve il DNS UNA SOLA VOLTA e restituisce gli IP validati.
@@ -162,7 +163,7 @@ def resolve_and_validate_url(url: str) -> Tuple[bool, Optional[str], List[str]]:
     return True, None, ip_validi
 
 
-def validate_public_url(url: str) -> Tuple[bool, Optional[str]]:
+def validate_public_url(url: str) -> tuple[bool, str | None]:
     """
     Verifica che l'URL punti a un host pubblico, non a reti interne.
 
@@ -181,9 +182,9 @@ def validate_public_url(url: str) -> Tuple[bool, Optional[str]]:
 
 def validate_safe_path(
     file_path: str,
-    allowed_extensions: Optional[Set[str]] = None,
+    allowed_extensions: set[str] | None = None,
     must_exist: bool = False,
-) -> Tuple[bool, Optional[str]]:
+) -> tuple[bool, str | None]:
     """
     Verifica che un percorso file sia sicuro.
 
@@ -208,11 +209,10 @@ def validate_safe_path(
     if must_exist and not resolved.is_file():
         return False, f"Non è un file: {resolved}"
 
-    if allowed_extensions:
-        if resolved.suffix.lower() not in allowed_extensions:
-            return False, (
-                f"Estensione non consentita: '{resolved.suffix}'. Consentite: {', '.join(sorted(allowed_extensions))}"
-            )
+    if allowed_extensions and resolved.suffix.lower() not in allowed_extensions:
+        return False, (
+            f"Estensione non consentita: '{resolved.suffix}'. Consentite: {', '.join(sorted(allowed_extensions))}"
+        )
 
     return True, None
 
