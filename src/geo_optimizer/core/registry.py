@@ -118,16 +118,20 @@ class CheckRegistry:
         cls._loaded_entry_points = True
         loaded = 0
 
-        if sys.version_info >= (3, 10):
-            from importlib.metadata import entry_points
+        from importlib.metadata import entry_points
 
+        if sys.version_info >= (3, 10):
             eps = entry_points(group="geo_optimizer.checks")
         else:
-            # Python 3.9: entry_points() ritorna un dict
-            from importlib.metadata import entry_points
-
+            # Python 3.9: entry_points() può ritornare dict o SelectableGroups
             all_eps = entry_points()
-            eps = all_eps.get("geo_optimizer.checks", [])
+            if isinstance(all_eps, dict):
+                eps = all_eps.get("geo_optimizer.checks", [])
+            elif hasattr(all_eps, "select"):
+                eps = all_eps.select(group="geo_optimizer.checks")
+            else:
+                # Fallback: filtra manualmente la lista
+                eps = [ep for ep in all_eps if ep.group == "geo_optimizer.checks"]
 
         for ep in eps:
             try:
