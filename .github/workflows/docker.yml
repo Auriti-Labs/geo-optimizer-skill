@@ -54,7 +54,7 @@ jobs:
       # Pubblica sempre su GHCR, Docker Hub solo se i secrets sono configurati
       - name: Build and push (GHCR only)
         if: steps.dockerhub.outputs.available != 'true'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
@@ -66,7 +66,7 @@ jobs:
 
       - name: Build and push (GHCR + Docker Hub)
         if: steps.dockerhub.outputs.available == 'true'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
