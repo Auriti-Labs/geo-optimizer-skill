@@ -51,18 +51,15 @@ geo-optimizer/
 │   ├── windsurf.md                 ← Windsurf rules
 │   └── kiro-steering.md            ← Kiro steering file (inclusion: fileMatch)
 │
-├── 🐍 scripts/
-│   ├── geo_audit.py                ← Score your site 0–100, find what's missing
-│   ├── generate_llms_txt.py        ← Auto-generate /llms.txt from your sitemap
-│   └── schema_injector.py          ← Generate & inject JSON-LD schema
+├── 🐍 src/geo_optimizer/            ← Main package (core/, cli/, models/, utils/, web/)
 │
 ├── 📚 references/
 │   ├── princeton-geo-methods.md    ← The 9 research-backed methods (+40% AI visibility)
 │   ├── ai-bots-list.md             ← 25+ AI crawlers — ready-to-use robots.txt block
 │   └── schema-templates.md         ← 8 JSON-LD templates (WebSite, FAQPage, WebApp...)
 │
-├── 📁 docs/                        ← Full documentation (9 pages)
-├── ⚙️  install.sh / update.sh      ← One-line install, one-command update
+├── 📁 docs/                        ← Full documentation (10 pages)
+├── 🧪 tests/                       ← 880+ tests, 88% coverage
 └── 📦 pyproject.toml               ← Package config, dependencies, CLI entry point
 ```
 
@@ -123,7 +120,7 @@ geo schema --file index.html --analyze
 - **Installable package** — `pip install geo-optimizer-skill` then use `geo` CLI anywhere
 - **Click CLI** — `geo audit`, `geo llms`, `geo schema` subcommands
 - **Security hardened** — SSRF prevention, XSS/injection protection, path traversal validation, DoS limits
-- **800+ tests** — comprehensive unit + security test coverage with Codecov integration
+- **880+ tests** — comprehensive unit + security test coverage with Codecov integration
 - **Dataclass-based** — all core functions return typed dataclasses, no side effects
 - **JSON-LD validation** — manual schema validation without external dependency on jsonschema
 
@@ -450,7 +447,7 @@ pytest tests/test_core.py -v
 pytest tests/test_core.py::TestAudit::test_name -v
 ```
 
-**800+ tests** covering core audit, CLI, security fixes, and edge cases. All use `unittest.mock` — no real network calls.
+**880+ tests** covering core audit, CLI, security fixes, and edge cases. All use `unittest.mock` — no real network calls.
 
 See [Codecov](https://codecov.io/gh/auriti-labs/geo-optimizer-skill) for live coverage analysis.
 

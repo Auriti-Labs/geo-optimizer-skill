@@ -22,7 +22,8 @@
 # Standard audit
 geo audit --url https://yoursite.com
 
-# --verbose flag is coming soon (currently has no effect)
+# Verbose output for debugging
+geo audit --url https://yoursite.com --verbose
 ```
 
 ### Flags
@@ -30,7 +31,7 @@ geo audit --url https://yoursite.com
 | Flag | Required | Description |
 |------|----------|-------------|
 | `--url` | ✅ Yes | Full URL of the site to audit (must include `https://`) |
-| `--verbose` | No | Coming soon — currently has no effect |
+| `--verbose` | No | Show detailed debugging output (robots.txt preview, llms.txt lines, schema fields, response times) |
 
 ---
 

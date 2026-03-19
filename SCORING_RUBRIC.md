@@ -103,5 +103,5 @@ This document defines the stable, public criteria used to score `geo-optimizer-s
 
 ---
 
-**Last updated:** 2026-02-21  
+**Last updated:** 2026-03-19
 **Maintained by:** geo-optimizer-skill core team

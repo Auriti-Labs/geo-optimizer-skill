@@ -93,4 +93,6 @@ geo schema --type webapp --url https://yoursite.com/tool
 geo schema --type faq   --url https://yoursite.com/page
 ```
 
-Always use `./geo` — never call scripts with `python3` directly.
+Install with `pip install geo-optimizer-skill` — then use the `geo` CLI directly.
+Output formats: `--format text|json|html|rich|github`. Additional: `--verbose`, `--cache`, `--lang it|en`, `--no-plugins`.
+Optional web service: `pip install geo-optimizer-skill[web]` then `geo-web` for FastAPI endpoints.

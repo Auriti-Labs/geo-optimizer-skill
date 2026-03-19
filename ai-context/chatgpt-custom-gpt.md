@@ -109,13 +109,17 @@ Allow: /
 - [ ] Open Graph: og:title, og:description, og:image
 - [ ] H1–H3 heading structure
 
-## Scripts Reference
+## CLI Reference
 
-| Script | Command | Output |
-|--------|---------|--------|
+| Command | Usage | Output |
+|---------|-------|--------|
 | `geo audit` | `geo audit --url URL` | GEO score 0–100 + prioritized issues |
 | `geo llms` | `geo llms --base-url URL --output FILE` | Auto-generated /llms.txt from sitemap |
 | `geo schema` | `geo schema --type TYPE --url URL` | JSON-LD schema snippet or injected HTML |
+
+Output formats: `--format text|json|html|rich|github`. Additional: `--verbose`, `--cache`, `--lang it|en`.
+
+Install: `pip install geo-optimizer-skill`. Optional web service: `pip install geo-optimizer-skill[web]` then `geo-web`.
 
 ## Behavior Rules
 

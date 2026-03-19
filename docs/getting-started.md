@@ -22,38 +22,32 @@ python3 --version
 
 ## 2. Install
 
-**One-liner (recommended):**
+**From PyPI (recommended):**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh | bash
+pip install geo-optimizer-skill
 ```
 
-This script:
-1. Clones the repo to `~/geo-optimizer-skill`
-2. Creates a Python virtual environment at `~/geo-optimizer-skill/.venv`
-3. Installs dependencies (`requests`, `beautifulsoup4`, `lxml`) into the venv
-4. Creates a `./geo` wrapper script that activates the venv automatically before running any script
-
-You never need to activate the venv manually — `./geo` handles it.
-
-> **Custom install path?** The `--dir` flag cannot be used with `curl | bash` (the flag is intercepted by `bash`, not the script). Download first, then pass the flag:
-> ```bash
-> curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh -o install.sh
-> bash install.sh --dir /custom/path
-> ```
-
-**Manual alternative** (if you prefer to inspect first):
+This installs the `geo` CLI globally. Optional extras:
 
 ```bash
-git clone https://github.com/auriti-labs/geo-optimizer-skill.git ~/geo-optimizer-skill
-cd ~/geo-optimizer-skill
-bash install.sh
+pip install geo-optimizer-skill[rich]    # Colored tables output
+pip install geo-optimizer-skill[web]     # FastAPI web service
+pip install geo-optimizer-skill[dev]     # Development dependencies
+```
+
+**From source** (for development):
+
+```bash
+git clone https://github.com/auriti-labs/geo-optimizer-skill.git
+cd geo-optimizer-skill
+pip install -e ".[dev]"
 ```
 
 **Update anytime:**
 
 ```bash
-bash ~/geo-optimizer-skill/update.sh
+pip install --upgrade geo-optimizer-skill
 ```
 
 ---
@@ -61,7 +55,6 @@ bash ~/geo-optimizer-skill/update.sh
 ## 3. Your First Audit
 
 ```bash
-cd ~/geo-optimizer-skill
 geo audit --url https://yoursite.com
 ```
 
@@ -131,7 +124,7 @@ Counts headings, statistics (numbers/percentages), and external citation links.
 ──────────────────────────────────────────────────────────
 ```
 
-Score ranges: `0–40` Critical · `41–70` Fair · `71–90` Good · `91–100` Excellent
+Score ranges: `0–40` Critical · `41–70` Foundation · `71–90` Good · `91–100` Excellent
 
 ---
 
@@ -149,7 +142,7 @@ Follow this priority order — each step has the highest ROI before moving to th
 ## 6. Update
 
 ```bash
-bash ~/geo-optimizer-skill/update.sh
+pip install --upgrade geo-optimizer-skill
 ```
 
-Pulls the latest commits, updates dependencies, and keeps your `./geo` wrapper intact.
+Installs the latest version from PyPI.

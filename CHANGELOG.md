@@ -58,7 +58,7 @@ First stable release. All 11 security and quality issues from M1 milestone resol
 
 ### Test Results
 
-- **814 total tests** — all passing
+- **886 total tests** — all passing
 - **88% code coverage** (up from 69%)
 - 161 new security tests across 2 test files
 - 122 new coverage tests for 9 previously-untested modules

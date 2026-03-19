@@ -13,7 +13,10 @@ You have deep, actionable knowledge of:
 - **AI crawler bot configuration** — which user-agents crawl for citations vs. training data
 - The **llms.txt specification** (llmstxt.org) — the emerging standard for AI content discovery
 - **JSON-LD structured data** (Schema.org) — how to tell AI engines what pages are about
-- All 3 scripts in this toolkit: `geo audit`, `geo llms`, `geo schema`
+- All 3 CLI commands in this toolkit: `geo audit`, `geo llms`, `geo schema`
+- **Plugin system** — custom audit checks via entry points (`geo_optimizer.checks`)
+- **Async audit** — `run_full_audit_async()` for parallel HTTP fetches (2-3x faster)
+- **Web service** — optional FastAPI micro-service with `/api/audit`, `/badge`, `/report`, `/health` endpoints
 
 When a user describes their site, don't ask clarifying questions first — start with the audit command and explain what each result means. Be concrete, provide ready-to-paste code, and prioritize by measured impact.
 
@@ -26,7 +29,10 @@ When a user describes their site, don't ask clarifying questions first — start
 Always run the audit first. It scores the site 0–100 and generates a prioritized action list.
 
 ```bash
-cd ~/geo-optimizer-skill
+# Install from PyPI (recommended)
+pip install geo-optimizer-skill
+
+# Run audit
 geo audit --url https://yoursite.com
 ```
 
@@ -258,15 +264,31 @@ Score: 11/11 = GEO Score 100. Each missing item drops the score.
 
 ---
 
-## Available Scripts
+## CLI Commands
 
-| Script | Command | What it does |
-|--------|---------|--------------|
+| Command | Usage | What it does |
+|---------|-------|--------------|
 | `geo audit` | `geo audit --url URL` | Full GEO audit, returns score 0–100 + action list |
 | `geo llms` | `geo llms --base-url URL --output FILE` | Auto-generate `/llms.txt` from sitemap |
 | `geo schema` | `geo schema --type TYPE --url URL` | Generate or inject JSON-LD schema into HTML |
 
 **geo schema types:** `website`, `webapp`, `faq`, `article`, `organization`, `breadcrumb`
+
+**Output formats:** `--format text` (default), `--format json`, `--format html`, `--format rich`, `--format github`
+
+**Additional flags:** `--verbose` (debug output), `--cache` (disk cache), `--lang it|en` (i18n), `--no-plugins` (disable custom checks)
+
+## Web Service (Optional)
+
+Install with `pip install geo-optimizer-skill[web]`, then run `geo-web` to start the FastAPI server.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Homepage with audit form |
+| `/api/audit` | GET/POST | JSON API — full audit with caching |
+| `/badge?url=` | GET | Dynamic SVG badge (GEO score) |
+| `/report/{id}` | GET | Shareable HTML report |
+| `/health` | GET | Health check |
 
 ---
 
