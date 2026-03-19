@@ -4,6 +4,9 @@ Client HTTP asincrono con httpx per fetch parallelo.
 Velocizza l'audit eseguendo robots.txt, llms.txt e homepage in parallelo
 (speedup 2-3x rispetto al fetch sequenziale con requests).
 
+Fix #163: aggiunta validazione anti-SSRF (stessa protezione del client sync).
+Ogni URL viene validato con validate_public_url() prima del fetch.
+
 Richiede httpx come dipendenza opzionale:
     pip install geo-optimizer-skill[async]
 """
@@ -11,9 +14,12 @@ Richiede httpx come dipendenza opzionale:
 from __future__ import annotations
 
 import asyncio
+import logging
 
 from geo_optimizer.models.config import HEADERS
 from geo_optimizer.utils.http import MAX_RESPONSE_SIZE
+
+logger = logging.getLogger(__name__)
 
 
 def is_httpx_available() -> bool:
@@ -32,7 +38,10 @@ async def fetch_url_async(
     timeout: int = 10,
     max_size: int = MAX_RESPONSE_SIZE,
 ) -> tuple[object | None, str | None]:
-    """Fetch asincrono di un URL con httpx.
+    """Fetch asincrono di un URL con httpx e validazione anti-SSRF.
+
+    Fix #163: ogni URL viene validato con validate_public_url() prima del fetch,
+    allineando la sicurezza del client async a quella del client sync.
 
     Args:
         url: URL da scaricare.
@@ -43,6 +52,13 @@ async def fetch_url_async(
     Returns:
         Tupla (response, error_msg) — response è None in caso di errore.
     """
+    from geo_optimizer.utils.validators import validate_public_url
+
+    # Fix #163: validazione anti-SSRF prima del fetch (prima dell'import httpx)
+    safe, reason = validate_public_url(url)
+    if not safe:
+        return None, f"URL non sicuro: {reason}"
+
     import httpx
 
     own_client = client is None

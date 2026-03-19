@@ -81,9 +81,7 @@ def validate_jsonld(
 
             for url in urls_to_check:
                 if isinstance(url, str) and not url.startswith(("http://", "https://", "/")) and strict:
-                    return False, (
-                        f"Invalid URL format in '{fld}': '{url}' (must start with http://, https://, or /)"
-                    )
+                    return False, (f"Invalid URL format in '{fld}': '{url}' (must start with http://, https://, or /)")
 
     return True, None
 

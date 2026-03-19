@@ -7,6 +7,7 @@ instead of printing — the CLI layer handles display and formatting.
 
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import re
@@ -43,55 +44,15 @@ def audit_robots_txt(base_url: str, bots: dict = None) -> RobotsResult:
     robots_url = urljoin(base_url, "/robots.txt")
     r, err = fetch_url(robots_url)
 
-    result = RobotsResult()
-
     if err or not r:
-        return result
+        return RobotsResult()
 
     # Solo risposte 200 sono robots.txt validi (403, 500, ecc. non lo sono)
     if r.status_code != 200:
-        return result
+        return RobotsResult()
 
-    result.found = True
-
-    content = r.text
-
-    # Parse robots.txt into structured rules
-    agent_rules = parse_robots_txt(content)
-
-    # Usa i bot forniti oppure il default AI_BOTS
-    effective_bots = bots if bots is not None else AI_BOTS
-
-    # Classifica ogni AI bot
-    for bot, description in effective_bots.items():
-        bot_status = classify_bot(bot, description, agent_rules)
-
-        if bot_status.status == "missing":
-            result.bots_missing.append(bot)
-        elif bot_status.status == "blocked":
-            result.bots_blocked.append(bot)
-        elif bot_status.status == "partial":
-            # #106 — Parzialmente bloccato: lo trattiamo come allowed per compatibilità
-            # ma lo tracciamo separatamente in bots_partial
-            result.bots_allowed.append(bot)
-            result.bots_partial.append(bot)
-        else:
-            # "allowed" (pienamente consentito)
-            result.bots_allowed.append(bot)
-
-    # Check citation bots (allowed include anche partial)
-    result.citation_bots_ok = all(b in result.bots_allowed for b in CITATION_BOTS)
-
-    # #111 — Verifica che i citation bot siano consentiti ESPLICITAMENTE (non solo wildcard)
-    # Score pieno solo con regole specifiche per i citation bot
-    citation_explicit = []
-    for bot in CITATION_BOTS:
-        bot_status = classify_bot(bot, "", agent_rules)
-        if bot_status.status in ("allowed", "partial") and not bot_status.via_wildcard:
-            citation_explicit.append(bot)
-    result.citation_bots_explicit = len(citation_explicit) == len(CITATION_BOTS)
-
-    return result
+    # Fix #161: delega alla logica condivisa per eliminare duplicazione sync/async
+    return _classify_robots_content(r.text, bots=bots)
 
 
 def audit_llms_txt(base_url: str) -> LlmsTxtResult:
@@ -99,42 +60,15 @@ def audit_llms_txt(base_url: str) -> LlmsTxtResult:
     llms_url = urljoin(base_url, "/llms.txt")
     r, err = fetch_url(llms_url)
 
-    result = LlmsTxtResult()
-
     if err or not r:
-        return result
+        return LlmsTxtResult()
 
     # Solo risposte 200 contengono llms.txt valido
     if r.status_code != 200:
-        return result
+        return LlmsTxtResult()
 
-    result.found = True
-    # Rimuovi BOM UTF-8 se presente (es. file generati da Yoast SEO)
-    content = r.text.lstrip("\ufeff")
-    lines = content.splitlines()
-    result.word_count = len(content.split())
-
-    # Check H1 (required)
-    h1_lines = [line for line in lines if line.startswith("# ")]
-    if h1_lines:
-        result.has_h1 = True
-
-    # Check blockquote description
-    blockquotes = [line for line in lines if line.startswith("> ")]
-    if blockquotes:
-        result.has_description = True
-
-    # Check H2 sections
-    h2_lines = [line for line in lines if line.startswith("## ")]
-    if h2_lines:
-        result.has_sections = True
-
-    # Check markdown links
-    links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
-    if links:
-        result.has_links = True
-
-    return result
+    # Fix #161: delega alla logica condivisa per eliminare duplicazione sync/async
+    return _parse_llms_content(r.text)
 
 
 def audit_schema(soup, url: str) -> SchemaResult:
@@ -240,8 +174,8 @@ def audit_content_quality(soup, url: str) -> ContentResult:
 
     # Fix #98: rimuovi tag script e style prima di estrarre il testo
     # per evitare falsi positivi nel word count e nell'analisi del contenuto
-    import copy
-    soup_clean = copy.copy(soup)
+    # Fix #160: deepcopy per evitare che decompose() modifichi il soup originale
+    soup_clean = copy.deepcopy(soup)
     for tag in soup_clean(["script", "style"]):
         tag.decompose()
 
@@ -399,10 +333,23 @@ def _build_audit_result(
 
     # Fix #104: esegui plugin registrati nel CheckRegistry
     # I risultati non influenzano lo score base
+    # Fix #162: wrap in try-except per evitare che plugin falliti crashino l'audit
     plugin_results = {}
     if CheckRegistry.all():
-        check_results = CheckRegistry.run_all(base_url, soup=soup)
-        plugin_results = {r.name: {"score": r.score, "max_score": r.max_score, "passed": r.passed, "message": r.message, "details": r.details} for r in check_results}
+        try:
+            check_results = CheckRegistry.run_all(base_url, soup=soup)
+            plugin_results = {
+                r.name: {
+                    "score": r.score,
+                    "max_score": r.max_score,
+                    "passed": r.passed,
+                    "message": r.message,
+                    "details": r.details,
+                }
+                for r in check_results
+            }
+        except Exception as exc:
+            logging.warning("Plugin execution failed (non-fatal): %s", exc)
 
     return AuditResult(
         url=base_url,
@@ -551,18 +498,26 @@ async def run_full_audit_async(url: str) -> AuditResult:
     )
 
 
-def _audit_robots_from_response(r) -> RobotsResult:
-    """Analizza robots.txt da una risposta HTTP già scaricata."""
+def _classify_robots_content(content: str, bots: dict = None) -> RobotsResult:
+    """Logica condivisa per classificare il contenuto di robots.txt.
+
+    Fix #161: estratta da audit_robots_txt() e _audit_robots_from_response()
+    per eliminare la duplicazione sync/async (~35 righe duplicate).
+
+    Args:
+        content: Testo del file robots.txt.
+        bots: Dizionario bot da verificare. Default: AI_BOTS da config.
+
+    Returns:
+        RobotsResult con classificazione completa.
+    """
     result = RobotsResult()
-
-    if not r or r.status_code != 200:
-        return result
-
     result.found = True
-    content = r.text
-    agent_rules = parse_robots_txt(content)
 
-    for bot, description in AI_BOTS.items():
+    agent_rules = parse_robots_txt(content)
+    effective_bots = bots if bots is not None else AI_BOTS
+
+    for bot, description in effective_bots.items():
         bot_status = classify_bot(bot, description, agent_rules)
 
         if bot_status.status == "missing":
@@ -570,14 +525,16 @@ def _audit_robots_from_response(r) -> RobotsResult:
         elif bot_status.status == "blocked":
             result.bots_blocked.append(bot)
         elif bot_status.status == "partial":
+            # #106 — Parzialmente bloccato: allowed per compatibilità, tracciato in bots_partial
             result.bots_allowed.append(bot)
             result.bots_partial.append(bot)
         else:
             result.bots_allowed.append(bot)
 
+    # Check citation bots (allowed include anche partial)
     result.citation_bots_ok = all(b in result.bots_allowed for b in CITATION_BOTS)
 
-    # #111 — Distingui permesso esplicito da fallback wildcard
+    # #111 — Verifica che i citation bot siano consentiti ESPLICITAMENTE (non solo wildcard)
     citation_explicit = []
     for bot in CITATION_BOTS:
         bot_status = classify_bot(bot, "", agent_rules)
@@ -588,33 +545,54 @@ def _audit_robots_from_response(r) -> RobotsResult:
     return result
 
 
-def _audit_llms_from_response(r) -> LlmsTxtResult:
-    """Analizza llms.txt da una risposta HTTP già scaricata."""
+def _parse_llms_content(content: str) -> LlmsTxtResult:
+    """Logica condivisa per analizzare il contenuto di llms.txt.
+
+    Fix #161: estratta da audit_llms_txt() e _audit_llms_from_response()
+    per eliminare la duplicazione sync/async (~25 righe duplicate).
+
+    Args:
+        content: Testo del file llms.txt.
+
+    Returns:
+        LlmsTxtResult con analisi struttura e qualità.
+    """
     result = LlmsTxtResult()
-
-    if not r or r.status_code != 200:
-        return result
-
     result.found = True
+
     # Rimuovi BOM UTF-8 se presente (es. file generati da Yoast SEO)
-    content = r.text.lstrip("\ufeff")
+    content = content.lstrip("\ufeff")
     lines = content.splitlines()
     result.word_count = len(content.split())
 
-    h1_lines = [line for line in lines if line.startswith("# ")]
-    if h1_lines:
+    # Check H1 (required)
+    if any(line.startswith("# ") for line in lines):
         result.has_h1 = True
 
-    blockquotes = [line for line in lines if line.startswith("> ")]
-    if blockquotes:
+    # Check blockquote description
+    if any(line.startswith("> ") for line in lines):
         result.has_description = True
 
-    h2_lines = [line for line in lines if line.startswith("## ")]
-    if h2_lines:
+    # Check H2 sections
+    if any(line.startswith("## ") for line in lines):
         result.has_sections = True
 
-    links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
-    if links:
+    # Check markdown links
+    if re.search(r"\[([^\]]+)\]\(([^)]+)\)", content):
         result.has_links = True
 
     return result
+
+
+def _audit_robots_from_response(r) -> RobotsResult:
+    """Analizza robots.txt da una risposta HTTP già scaricata."""
+    if not r or r.status_code != 200:
+        return RobotsResult()
+    return _classify_robots_content(r.text)
+
+
+def _audit_llms_from_response(r) -> LlmsTxtResult:
+    """Analizza llms.txt da una risposta HTTP già scaricata."""
+    if not r or r.status_code != 200:
+        return LlmsTxtResult()
+    return _parse_llms_content(r.text)

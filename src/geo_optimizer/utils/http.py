@@ -155,7 +155,9 @@ def _stream_response(response: requests.Response, max_size: int) -> tuple[bytes 
     return b"".join(chunks), None
 
 
-def fetch_url(url: str, timeout: int = 10, max_size: int = MAX_RESPONSE_SIZE) -> tuple[requests.Response | None, str | None]:
+def fetch_url(
+    url: str, timeout: int = 10, max_size: int = MAX_RESPONSE_SIZE
+) -> tuple[requests.Response | None, str | None]:
     """
     Fetch a URL with automatic retry on transient failures.
 
@@ -279,7 +281,7 @@ def _fetch_with_manual_redirects(
         # I test legacy impostano r.content = b"..." come attributo Mock.
         # requests reali usano r._content internamente (bytes o False).
         # Distinguiamo i due casi con isinstance per evitare errori con Mock.
-        raw_content = getattr(r, '_content', False)  # noqa: SLF001
+        raw_content = getattr(r, "_content", False)  # noqa: SLF001
         if isinstance(raw_content, bytes):
             # _content già in bytes (risposta reale o mock con _content esplicito)
             if len(raw_content) > max_size:
@@ -287,7 +289,7 @@ def _fetch_with_manual_redirects(
             return r, None
 
         # Prova con r.content (attributo impostato nei mock legacy: content=b"...")
-        mock_content = getattr(r, 'content', None)
+        mock_content = getattr(r, "content", None)
         if isinstance(mock_content, bytes):
             if len(mock_content) > max_size:
                 return None, f"Response too large: {len(mock_content)} bytes (max: {max_size})"

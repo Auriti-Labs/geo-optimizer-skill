@@ -27,6 +27,7 @@ class CachedResponse:
     content: bytes
     headers: dict[str, str] = field(default_factory=dict)
 
+
 # ─── Robots.txt ──────────────────────────────────────────────────────────────
 
 

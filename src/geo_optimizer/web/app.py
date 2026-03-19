@@ -50,10 +50,10 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
         if request.method == "POST":
             content_length = request.headers.get("content-length")
             if content_length is not None and int(content_length) > _MAX_BODY_BYTES:
-                    return JSONResponse(
-                        status_code=413,
-                        content={"detail": f"Body troppo grande. Limite: {_MAX_BODY_BYTES} byte."},
-                    )
+                return JSONResponse(
+                    status_code=413,
+                    content={"detail": f"Body troppo grande. Limite: {_MAX_BODY_BYTES} byte."},
+                )
         return await call_next(request)
 
 
@@ -96,7 +96,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["GET", "POST", "OPTIONS"],  # Metodi espliciti, no wildcard
-    allow_headers=["Content-Type"],            # Header minimi necessari
+    allow_headers=["Content-Type"],  # Header minimi necessari
     max_age=3600,
 )
 
@@ -124,22 +124,20 @@ def _verify_bearer_token(request: Request) -> bool:
         return False
 
     # Confronto sicuro contro timing attack
-    provided_token = auth_header[len("Bearer "):]
+    provided_token = auth_header[len("Bearer ") :]
     return secrets.compare_digest(provided_token, _API_TOKEN)
 
 
 # ─── Rate Limiter in-memory ───────────────────────────────────────────────────
 _rate_limit_store: dict = {}  # {ip: [timestamp, ...]}
-_RATE_LIMIT_WINDOW = 60       # secondi
+_RATE_LIMIT_WINDOW = 60  # secondi
 _RATE_LIMIT_MAX_REQUESTS = 30  # richieste per finestra per IP
-_RATE_LIMIT_MAX_IPS = 10000   # numero massimo di IP tracciati
+_RATE_LIMIT_MAX_IPS = 10000  # numero massimo di IP tracciati
 
 # ─── Proxy trust: lista CIDR/IP di proxy fidati ───────────────────────────────
 # Configurabile tramite variabile d'ambiente TRUSTED_PROXIES (CSV di IP/CIDR).
 # Solo se il proxy è trusted si legge X-Forwarded-For (fix #68).
-_TRUSTED_PROXIES: set[str] = set(
-    filter(None, os.environ.get("TRUSTED_PROXIES", "").split(","))
-)
+_TRUSTED_PROXIES: set[str] = set(filter(None, os.environ.get("TRUSTED_PROXIES", "").split(",")))
 
 
 def _get_client_ip(request: Request) -> str:
@@ -266,6 +264,7 @@ async def health():
 
 # ─── Modello Pydantic per validazione body POST ───────────────────────────────
 
+
 class AuditRequest(BaseModel):
     """Schema per il body della richiesta POST /api/audit.
 
@@ -377,6 +376,7 @@ async def badge(
             # Timeout: mostra badge con testo "Error" (fix #152)
             logger.warning("Badge audit timeout (60s) per URL: %s", url)
             from geo_optimizer.web.badge import generate_badge_svg
+
             svg = generate_badge_svg(0, "critical", label=label, error=True)
             return Response(
                 content=svg,
@@ -386,6 +386,7 @@ async def badge(
         except Exception:
             # Errore generico: mostra badge con testo "Error" (fix #152)
             from geo_optimizer.web.badge import generate_badge_svg
+
             svg = generate_badge_svg(0, "critical", label=label, error=True)
             return Response(
                 content=svg,

@@ -68,8 +68,7 @@ def parse_robots_txt(content: str) -> dict[str, AgentRules]:
     content_bytes = content.encode("utf-8", errors="replace")
     if len(content_bytes) > _MAX_ROBOTS_BYTES:
         logger.warning(
-            "robots.txt supera il limite RFC 9309 di 500KB (%d bytes): "
-            "contenuto troncato a %d bytes",
+            "robots.txt supera il limite RFC 9309 di 500KB (%d bytes): contenuto troncato a %d bytes",
             len(content_bytes),
             _MAX_ROBOTS_BYTES,
         )

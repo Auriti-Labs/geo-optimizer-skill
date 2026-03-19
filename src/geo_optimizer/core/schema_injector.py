@@ -304,6 +304,7 @@ def generate_astro_snippet(url: str, name: str) -> str:
     rimuove virgolette e caratteri di controllo che potrebbero
     rompere la struttura del codice generato.
     """
+
     # Sanitizza: rimuovi caratteri che possono iniettare codice Astro/JS
     def _sanitize(val: str) -> str:
         for ch in ('"', "'", "`", "\\", "${", "}", "<", ">"):

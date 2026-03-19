@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9', '3.11', '3.12', '3.13']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     steps:
       - name: Checkout code
@@ -38,7 +38,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/ -v --tb=short --cov=geo_optimizer --cov-report=xml --cov-report=term-missing
+          pytest tests/ -v --tb=short --cov=geo_optimizer --cov-report=xml --cov-report=term-missing --cov-fail-under=80
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.12'
@@ -75,8 +75,8 @@ jobs:
 
       - name: Run ruff
         run: |
-          ruff check src/geo_optimizer/ scripts/
-          ruff format --check src/geo_optimizer/ scripts/
+          ruff check src/geo_optimizer/ scripts/ tests/
+          ruff format --check src/geo_optimizer/ scripts/ tests/
 
       - name: Audit dependencies
         run: |
