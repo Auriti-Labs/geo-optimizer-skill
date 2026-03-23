@@ -101,20 +101,30 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
         click.echo(f"\n❌ Unsafe URL: {reason}", err=True)
         sys.exit(1)
 
-    # Fix #146: visual feedback during audit (on stderr to avoid polluting JSON)
-    if output_format != "json":
-        click.echo("⏳ Starting GEO analysis...", err=True)
-        click.echo("⏳ Checking robots.txt and AI bot access...", err=True)
+    # Visual feedback during audit (on stderr to avoid polluting stdout)
+    _use_spinner = output_format == "rich"
+    if _use_spinner:
+        try:
+            from rich.console import Console as _RichConsole
+
+            _use_spinner = True
+        except ImportError:
+            _use_spinner = False
 
     try:
-        # Note: intermediate feedback is emitted before the call because
-        # run_full_audit is synchronous and has no progress callback
-        if output_format != "json":
-            click.echo("⏳ Analyzing llms.txt...", err=True)
-        result = run_full_audit(url, use_cache=cache, project_config=project_config)
-        if output_format != "json":
-            click.echo("⏳ Analyzing JSON-LD schema, meta tags and content...", err=True)
-            click.echo("✅ Analysis complete.\n", err=True)
+        if _use_spinner:
+            _stderr = _RichConsole(stderr=True)
+            with _stderr.status("[bold bright_blue]  Analyzing...[/]", spinner="dots"):
+                result = run_full_audit(url, use_cache=cache, project_config=project_config)
+        else:
+            if output_format != "json":
+                click.echo("⏳ Starting GEO analysis...", err=True)
+                click.echo("⏳ Checking robots.txt and AI bot access...", err=True)
+                click.echo("⏳ Analyzing llms.txt...", err=True)
+            result = run_full_audit(url, use_cache=cache, project_config=project_config)
+            if output_format != "json":
+                click.echo("⏳ Analyzing JSON-LD schema, meta tags and content...", err=True)
+                click.echo("✅ Analysis complete.\n", err=True)
     except SystemExit:
         raise
     except Exception as e:

@@ -628,8 +628,8 @@ class TestRichFormatter:
         result = _crea_audit_result_vuoto()
         output = format_audit_rich(result)
 
-        # Deve contenere "Non trovato" per robots.txt mancante
-        assert "Non trovato" in output
+        # Must contain "Not found" for missing robots.txt
+        assert "Not found" in output
 
     @pytest.mark.skipif(
         not __import__("importlib").util.find_spec("rich"),
@@ -642,7 +642,7 @@ class TestRichFormatter:
         result = _crea_audit_result_vuoto()
         output = format_audit_rich(result)
 
-        assert "Non trovato" in output
+        assert "Not found" in output
 
     @pytest.mark.skipif(
         not __import__("importlib").util.find_spec("rich"),
@@ -668,8 +668,8 @@ class TestRichFormatter:
         result = _crea_audit_result_completo()
         output = format_audit_rich(result)
 
-        # La barra usa caratteri blocco
-        assert "█" in output or "░" in output
+        # The bar uses line-drawing characters
+        assert "━" in output
 
     @pytest.mark.skipif(
         not __import__("importlib").util.find_spec("rich"),
@@ -682,7 +682,7 @@ class TestRichFormatter:
         result = _crea_audit_result_vuoto()
         output = format_audit_rich(result)
 
-        assert "Nessuno schema" in output
+        assert "No schema" in output
 
     def test_status_icon_passed(self):
         """_status_icon() ritorna l'icona check per True."""
