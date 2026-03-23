@@ -66,7 +66,9 @@ async def fetch_url_async(
     own_client = client is None
 
     try:
-        if own_client:
+        # Force safe client: always create our own to ensure follow_redirects=False (fix #196)
+        if own_client or getattr(client, "_transport", None) is None:
+            own_client = True
             client = httpx.AsyncClient(
                 headers=HEADERS,
                 follow_redirects=False,  # Manual redirect with SSRF revalidation (fix #179)
@@ -92,6 +94,15 @@ async def fetch_url_async(
                     return None, f"Response too large: {len(r.content)} bytes (max: {max_size})"
 
                 return r, None
+
+            # Redirect: check body size to prevent RAM exhaustion (fix #197)
+            cl = r.headers.get("content-length")
+            if cl:
+                try:
+                    if int(cl) > max_size:
+                        return None, f"Redirect body too large: {cl} bytes (max: {max_size})"
+                except (ValueError, TypeError):
+                    pass
 
             # Redirect: revalidate the target URL before following it
             location = r.headers.get("location", "").strip()

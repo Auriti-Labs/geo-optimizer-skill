@@ -190,52 +190,52 @@ def _evict_oldest_rate_limit_entries(count: int = 1) -> None:
 
 
 def _check_rate_limit(client_ip: str) -> bool:
-    """Verifica rate limit per IP. Ritorna True se consentito."""
+    """Check rate limit for IP. Returns True if allowed."""
     now = time.time()
     timestamps = _rate_limit_store.get(client_ip, [])
-    # Rimuovi timestamp fuori finestra temporale
+    # Remove timestamps outside the time window
     timestamps = [t for t in timestamps if (now - t) < _RATE_LIMIT_WINDOW]
     if len(timestamps) >= _RATE_LIMIT_MAX_REQUESTS:
         _rate_limit_store[client_ip] = timestamps
         return False
     timestamps.append(now)
     _rate_limit_store[client_ip] = timestamps
-    # Fix #70/#99: LRU eviction — rimuovi solo le entry più vecchie, non tutto
+    # Fix #70/#99: LRU eviction — remove only the oldest entries, not everything
     if len(_rate_limit_store) > _RATE_LIMIT_MAX_IPS:
         entries_to_remove = len(_rate_limit_store) - _RATE_LIMIT_MAX_IPS
         _evict_oldest_rate_limit_entries(entries_to_remove)
     return True
 
 
-# Cache in-memory per risultati audit (TTL 1 ora, max 500 entry)
+# In-memory cache for audit results (TTL 1 hour, max 500 entries)
 _audit_cache: dict = {}
 _CACHE_TTL = 3600
 _MAX_CACHE_SIZE = 500
 
 
 def _cache_key(url: str) -> str:
-    """Genera chiave cache da URL.
+    """Generate cache key from URL.
 
-    Fix #103: usa i primi 32 caratteri hex (128 bit) invece di 16 (64 bit)
-    per ridurre drasticamente il rischio di collisione.
+    Fix #103: uses the first 32 hex characters (128 bits) instead of 16 (64 bits)
+    to drastically reduce collision risk.
     """
     return hashlib.sha256(url.lower().strip().encode()).hexdigest()[:32]
 
 
 def _get_cached(url: str) -> Optional[dict]:
-    """Recupera risultato dalla cache se valido."""
+    """Retrieve result from cache if valid."""
     key = _cache_key(url)
     entry = _audit_cache.get(key)
     if entry and (time.time() - entry["cached_at"]) < _CACHE_TTL:
         return entry["data"]
-    # Rimuovi entry scaduta
+    # Remove expired entry
     if entry:
         _audit_cache.pop(key, None)
     return None
 
 
 def _evict_expired() -> None:
-    """Rimuovi entry scadute dalla cache."""
+    """Remove expired entries from cache."""
     now = time.time()
     expired = [k for k, v in _audit_cache.items() if (now - v["cached_at"]) >= _CACHE_TTL]
     for k in expired:
@@ -243,9 +243,9 @@ def _evict_expired() -> None:
 
 
 def _set_cached(url: str, data: dict) -> str:
-    """Salva risultato nella cache con limite dimensione. Ritorna l'ID del report."""
+    """Save result in cache with size limit. Returns the report ID."""
     key = _cache_key(url)
-    # Evita crescita illimitata: evict scadute, poi rimuovi le più vecchie
+    # Avoid unbounded growth: evict expired entries, then remove oldest
     if len(_audit_cache) >= _MAX_CACHE_SIZE:
         _evict_expired()
     if len(_audit_cache) >= _MAX_CACHE_SIZE:
@@ -257,26 +257,26 @@ def _set_cached(url: str, data: dict) -> str:
 
 @app.get("/", response_class=HTMLResponse)
 async def homepage(request: Request):
-    """Homepage con form per audit GEO."""
-    # Fix #75: recupera il nonce CSP impostato dal SecurityHeadersMiddleware
+    """Homepage with form for GEO audit."""
+    # Fix #75: retrieve the CSP nonce set by SecurityHeadersMiddleware
     nonce = getattr(request.state, "csp_nonce", "")
     return _render_homepage(nonce=nonce)
 
 
 @app.get("/health")
 async def health():
-    """Health check per monitoring."""
+    """Health check for monitoring."""
     return {"status": "ok", "version": __version__}
 
 
-# ─── Modello Pydantic per validazione body POST ───────────────────────────────
+# ─── Pydantic model for POST body validation ─────────────────────────────────
 
 
 class AuditRequest(BaseModel):
-    """Schema per il body della richiesta POST /api/audit.
+    """Schema for the POST /api/audit request body.
 
-    Fix #149: validazione Pydantic previene crash 500 con input non-stringa
-    (es. {"url": 123} ora ritorna 422 Unprocessable Entity invece di 500).
+    Fix #149: Pydantic validation prevents 500 crashes with non-string input
+    (e.g. {"url": 123} now returns 422 Unprocessable Entity instead of 500).
     """
 
     url: str
@@ -287,8 +287,8 @@ async def audit_get(
     request: Request,
     url: str = Query(..., description="URL del sito da analizzare"),
 ):
-    """Esegui audit GEO via GET."""
-    # Fix #95: usa _get_client_ip per gestire request.client None e proxy trusted
+    """Run GEO audit via GET."""
+    # Fix #95: use _get_client_ip to handle request.client None and trusted proxy
     if not _check_rate_limit(_get_client_ip(request)):
         raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
     return await _run_audit(url)
@@ -296,13 +296,13 @@ async def audit_get(
 
 @app.post("/api/audit")
 async def audit_post(request: Request, body: AuditRequest):
-    """Esegui audit GEO via POST (body JSON con campo 'url').
+    """Run GEO audit via POST (JSON body with 'url' field).
 
-    Fix #149: Pydantic valida il body — url deve essere stringa.
-    Fix #95: usa _get_client_ip per gestire request.client None e proxy trusted.
-    Fix #93: autenticazione Bearer token opzionale tramite GEO_API_TOKEN.
+    Fix #149: Pydantic validates the body — url must be a string.
+    Fix #95: use _get_client_ip to handle request.client None and trusted proxy.
+    Fix #93: optional Bearer token authentication via GEO_API_TOKEN.
     """
-    # Verifica token se GEO_API_TOKEN è impostato
+    # Verify token if GEO_API_TOKEN is set
     if not _verify_bearer_token(request):
         raise HTTPException(
             status_code=401,
@@ -316,8 +316,8 @@ async def audit_post(request: Request, body: AuditRequest):
 
 @app.get("/report/{report_id}", response_class=HTMLResponse)
 async def report(report_id: str):
-    """Report temporaneo valido per 1 ora, conservato in memoria. Riavviare il server azzera tutti i report."""
-    # Valida che report_id sia un hash esadecimale valido
+    """Temporary report valid for 1 hour, kept in memory. Restarting the server clears all reports."""
+    # Validate that report_id is a valid hexadecimal hash
     if not report_id.isalnum() or len(report_id) > 64:
         raise HTTPException(status_code=400, detail="Invalid report ID")
 
@@ -338,29 +338,29 @@ async def badge(
     url: str = Query(..., description="URL del sito per il badge"),
     label: str = Query("GEO Score", max_length=50, description="Etichetta lato sinistro"),
 ):
-    """Badge SVG dinamico con GEO Score (stile Shields.io).
+    """Dynamic SVG badge with GEO Score (Shields.io style).
 
-    Uso in Markdown:
+    Usage in Markdown:
         ![GEO Score](https://geo.example.com/badge?url=https://yoursite.com)
     """
     from fastapi.responses import Response
 
     from geo_optimizer.utils.validators import validate_public_url
 
-    # Fix #95: usa _get_client_ip per gestire request.client None e proxy trusted
+    # Fix #95: use _get_client_ip to handle request.client None and trusted proxy
     if not _check_rate_limit(_get_client_ip(request)):
         raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
 
-    # Normalizza URL
+    # Normalize URL
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
 
-    # Validazione anti-SSRF
+    # Anti-SSRF validation
     safe, reason = validate_public_url(url)
     if not safe:
         raise HTTPException(status_code=400, detail=f"Unsafe URL: {reason}")
 
-    # Controlla cache o esegui audit
+    # Check cache or run audit
     cached = _get_cached(url)
     if cached:
         score = cached.get("score", 0)
@@ -369,8 +369,8 @@ async def badge(
         try:
             from geo_optimizer.core.audit import run_full_audit
 
-            # Esegui in thread separato per non bloccare l'event loop
-            # Timeout 60s per non bloccare l'event loop (fix #82)
+            # Run in separate thread to avoid blocking the event loop
+            # Timeout 60s to avoid blocking the event loop (fix #82)
             result = await asyncio.wait_for(
                 asyncio.to_thread(run_full_audit, url),
                 timeout=60.0,
@@ -380,7 +380,7 @@ async def badge(
             score = data["score"]
             band = data["band"]
         except asyncio.TimeoutError:
-            # Timeout: mostra badge con testo "Error" (fix #152)
+            # Timeout: show badge with "Error" text (fix #152)
             logger.warning("Badge audit timeout (60s) per URL: %s", url)
             from geo_optimizer.web.badge import generate_badge_svg
 
@@ -391,7 +391,7 @@ async def badge(
                 headers={"Cache-Control": "no-store"},
             )
         except Exception:
-            # Errore generico: mostra badge con testo "Error" (fix #152)
+            # Generic error: show badge with "Error" text (fix #152)
             from geo_optimizer.web.badge import generate_badge_svg
 
             svg = generate_badge_svg(0, "critical", label=label, error=True)
@@ -415,19 +415,19 @@ async def badge(
 
 
 async def _run_audit(url: str) -> JSONResponse:
-    """Logica comune per eseguire un audit."""
+    """Common logic for running an audit."""
     from geo_optimizer.utils.validators import validate_public_url
 
-    # Normalizza URL
+    # Normalize URL
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
 
-    # Validazione anti-SSRF
+    # Anti-SSRF validation
     safe, reason = validate_public_url(url)
     if not safe:
         raise HTTPException(status_code=400, detail=f"Unsafe URL: {reason}")
 
-    # Controlla cache
+    # Check cache
     cached = _get_cached(url)
     if cached:
         report_id = _cache_key(url)
@@ -435,32 +435,32 @@ async def _run_audit(url: str) -> JSONResponse:
         response_data["report_url"] = f"/report/{report_id}"
         return JSONResponse(content=response_data)
 
-    # Esegui audit
+    # Run audit
     try:
         from geo_optimizer.core.audit import run_full_audit
 
-        # Esegui in thread separato con timeout 60s per non bloccare l'event loop (fix #82)
+        # Run in separate thread with 60s timeout to avoid blocking the event loop (fix #82)
         result = await asyncio.wait_for(
             asyncio.to_thread(run_full_audit, url),
             timeout=60.0,
         )
     except asyncio.TimeoutError as exc:
-        logger.warning("Audit timeout (60s) per URL: %s", url)
+        logger.warning("Audit timeout (60s) for URL: %s", url)
         raise HTTPException(
             status_code=504,
             detail="Audit timeout: site takes too long to respond.",
         ) from exc
     except Exception as e:
-        logger.error("Errore audit per %s: %s", url, e)
+        logger.error("Audit error for %s: %s", url, e)
         raise HTTPException(
             status_code=500,
             detail="Internal error during audit. Try again later.",
         ) from e
 
-    # Serializza risultato
+    # Serialize result
     data = _audit_result_to_dict(result)
 
-    # Salva in cache
+    # Save to cache
     report_id = _set_cached(url, data)
     data["report_url"] = f"/report/{report_id}"
 
@@ -468,16 +468,16 @@ async def _run_audit(url: str) -> JSONResponse:
 
 
 def _audit_result_to_dict(result) -> dict:
-    """Converte AuditResult in dizionario serializzabile.
+    """Convert AuditResult to serializable dictionary.
 
-    Usa dataclasses.asdict() come base per non perdere campi,
-    poi aggiunge i campi calcolati nidificati (checks) per compatibilità API.
-    Fix #151: la versione precedente perdeva 10+ campi del risultato.
+    Uses dataclasses.asdict() as the base to avoid losing fields,
+    then adds the nested calculated "checks" fields for API compatibility.
+    Fix #151: the previous version lost 10+ result fields.
     """
-    # Base completa tramite dataclasses.asdict (include tutti i campi)
+    # Full base via dataclasses.asdict (includes all fields)
     base = dataclasses.asdict(result)
 
-    # Aggiungi il mapping "checks" (struttura attesa dal frontend)
+    # Add the "checks" mapping (structure expected by the frontend)
     base["checks"] = {
         "robots_txt": {
             "found": result.robots.found,
@@ -532,7 +532,7 @@ def _audit_result_to_dict(result) -> dict:
 
 
 def _dict_to_audit_result(data: dict):
-    """Ricostruisce AuditResult da dizionario (per report HTML)."""
+    """Reconstruct AuditResult from dictionary (for HTML report)."""
     from geo_optimizer.models.results import (
         AuditResult,
         ContentResult,
@@ -607,16 +607,16 @@ def _dict_to_audit_result(data: dict):
 
 
 def _render_homepage(nonce: str = "") -> str:
-    """Carica e renderizza l'HTML homepage dal template file.
+    """Load and render the homepage HTML from the template file.
 
-    Fix #89: HTML spostato in templates/index.html invece di essere inline.
-    Fix #75: accetta il nonce CSP e sostituisce il placeholder __NONCE_ATTR__.
-    Il template usa '__NONCE_ATTR__' come placeholder nell'attributo del tag <script>.
+    Fix #89: HTML moved to templates/index.html instead of being inline.
+    Fix #75: accepts the CSP nonce and replaces the __NONCE_ATTR__ placeholder.
+    The template uses '__NONCE_ATTR__' as a placeholder in the <script> tag attribute.
     """
     template_path = Path(__file__).parent / "templates" / "index.html"
     html = template_path.read_text(encoding="utf-8")
-    # Sostituisce il placeholder nonce con il valore reale per la CSP
-    # Con nonce: "<script__NONCE_ATTR__>" → "<script nonce='xxx'>"
-    # Senza nonce: "<script__NONCE_ATTR__>" → "<script>"
+    # Replace the nonce placeholder with the real value for the CSP
+    # With nonce: "<script__NONCE_ATTR__>" → "<script nonce='xxx'>"
+    # Without nonce: "<script__NONCE_ATTR__>" → "<script>"
     nonce_attr = f' nonce="{nonce}"' if nonce else ""
     return html.replace("__NONCE_ATTR__", nonce_attr)

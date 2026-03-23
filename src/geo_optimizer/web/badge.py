@@ -1,24 +1,24 @@
 """
-Generatore Badge SVG dinamico per GEO Score.
+Dynamic SVG badge generator for GEO Score.
 
-Genera un badge SVG simile a Shields.io con il GEO Score del sito.
-Embeddabile in README, footer, portfolio.
+Generates a Shields.io-style SVG badge with the site's GEO Score.
+Embeddable in README, footer, portfolio.
 
-Uso in Markdown:
+Usage in Markdown:
     [![GEO Score](https://geo.auritidesign.it/badge?url=https://yoursite.com)](https://geo.auritidesign.it/)
 """
 
 import html as html_lib
 
-# Colori per fascia di score
+# Colors per score band
 BAND_COLORS = {
-    "excellent": "#22c55e",  # Verde scuro
-    "good": "#06b6d4",  # Ciano
-    "foundation": "#eab308",  # Arancione
-    "critical": "#ef4444",  # Rosso
+    "excellent": "#22c55e",  # Dark green
+    "good": "#06b6d4",  # Cyan
+    "foundation": "#eab308",  # Orange
+    "critical": "#ef4444",  # Red
 }
 
-# Whitelist esplicita delle label di testo per ogni band — nessun valore esterno ammesso
+# Explicit text label whitelist for each band — no external values allowed
 BAND_LABELS = {
     "excellent": "Excellent",
     "good": "Good",
@@ -26,36 +26,36 @@ BAND_LABELS = {
     "critical": "Critical",
 }
 
-# Lunghezza massima label (in caratteri di testo già escapato) per prevenire abusi
+# Maximum label length (in already-escaped text characters) to prevent abuse
 _MAX_LABEL_LENGTH = 50
 
 
 def _svg_escape(text: str) -> str:
-    """Escape caratteri speciali XML/SVG per prevenire XSS.
+    """Escape special XML/SVG characters to prevent XSS.
 
-    Converte <, >, &, " e ' nelle entità XML corrispondenti.
+    Converts <, >, &, " and ' to the corresponding XML entities.
     """
     return html_lib.escape(text, quote=True)
 
 
 def generate_badge_svg(score: int, band: str, label: str = "GEO Score", error: bool = False) -> str:
-    """Genera badge SVG con score e colore per fascia.
+    """Generate SVG badge with score and band color.
 
     Args:
-        score: Punteggio 0-100.
-        band: Fascia (excellent, good, foundation, critical).
-        label: Etichetta lato sinistro del badge (max 50 char, sanitizzata).
-        error: Se True, mostra "Error" con colore grigio invece del punteggio.
-               Fix #152: evita badge "0/100 CRITICAL" su errori di audit.
+        score: Score 0-100.
+        band: Band (excellent, good, foundation, critical).
+        label: Left-side badge label (max 50 chars, sanitized).
+        error: If True, shows "Error" with grey color instead of the score.
+               Fix #152: avoids "0/100 CRITICAL" badge on audit errors.
 
     Returns:
-        Stringa SVG completa.
+        Complete SVG string.
     """
-    # Fix #152: se audit fallisce, mostra badge errore con colore grigio
+    # Fix #152: if audit fails, show error badge with grey color
     if error:
         color = "#999999"
         score_text = "Error"
-        # Valida band e label normalmente (per la parte sinistra del badge)
+        # Validate band and label normally (for the left part of the badge)
         if band not in BAND_COLORS:
             band = "critical"
         safe_label = _svg_escape(label)
@@ -85,22 +85,22 @@ def generate_badge_svg(score: int, band: str, label: str = "GEO Score", error: b
   </g>
 </svg>"""
 
-    # Valida band contro whitelist
+    # Validate band against whitelist
     if band not in BAND_COLORS:
         band = "critical"
     color = BAND_COLORS[band]
 
-    # Clamp score nel range valido
+    # Clamp score to valid range
     score = max(0, min(100, score))
     score_text = f"{score}/100"
 
-    # Sanitizza PRIMA di troncare: così l'escape non viene mai spezzato a metà.
-    # Esempio: "&amp;" è sicura come unità; troncare dopo garantisce che
-    # il testo finale contenga solo entità XML complete.
+    # Sanitize BEFORE truncating: so the escape is never split in the middle.
+    # Example: "&amp;" is safe as a unit; truncating after guarantees that
+    # the final text contains only complete XML entities.
     safe_label = _svg_escape(label)
     safe_label = safe_label[:_MAX_LABEL_LENGTH]
 
-    # Calcola larghezze basate sul testo originale (non escapato), con truncation coerente
+    # Calculate widths based on original (unescaped) text, with consistent truncation
     label_width = len(label[:_MAX_LABEL_LENGTH]) * 6.5 + 12
     score_width = len(score_text) * 7 + 12
     total_width = label_width + score_width

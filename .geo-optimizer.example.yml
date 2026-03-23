@@ -6,9 +6,9 @@
 # Defaults per il comando "geo audit"
 audit:
   url: https://example.com
-  format: text          # text | json | rich | html | github
-  # output: report.html # Salva output su file
-  min_score: 0          # Score minimo (utile in CI)
+  format: text          # text | json | rich | html | github | sarif | junit
+  # output: report.html # Save output to file
+  min_score: 0          # Minimum score (useful in CI)
   cache: false          # Abilita cache HTTP locale
   verbose: false
 

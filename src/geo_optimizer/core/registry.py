@@ -12,10 +12,13 @@ External plugin example (plugin's pyproject.toml)::
 The check must implement the ``AuditCheck`` Protocol.
 """
 
+import logging
 import sys
 import threading
 from dataclasses import dataclass, field
 from typing import Any, Optional, Protocol, runtime_checkable
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -143,9 +146,9 @@ class CheckRegistry:
                 check = check_class() if isinstance(check_class, type) else check_class
                 cls.register(check)
                 loaded += 1
-            except Exception:
-                # Failed plugins do not block the audit
-                pass
+            except Exception as exc:
+                # Failed plugins do not block the audit, but log for debugging (fix #202)
+                logger.warning("Plugin '%s' failed to load: %s", ep.name, exc)
 
         return loaded
 

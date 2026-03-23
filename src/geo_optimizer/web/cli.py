@@ -1,25 +1,25 @@
 """
-CLI entry point per avviare la web demo.
+CLI entry point to start the web demo.
 
-Uso:
-    geo-web                    # Avvia su localhost:8000
-    geo-web --port 3000        # Porta personalizzata
-    geo-web --host 0.0.0.0     # Accessibile da rete
+Usage:
+    geo-web                    # Start on localhost:8000
+    geo-web --port 3000        # Custom port
+    geo-web --host 0.0.0.0     # Accessible from network
 """
 
 import click
 
 
 @click.command()
-@click.option("--host", default="127.0.0.1", help="Host su cui ascoltare")
-@click.option("--port", default=8000, help="Porta su cui ascoltare")
-@click.option("--reload", is_flag=True, help="Auto-reload in sviluppo")
+@click.option("--host", default="127.0.0.1", help="Host to listen on")
+@click.option("--port", default=8000, help="Port to listen on")
+@click.option("--reload", is_flag=True, help="Auto-reload in development")
 def main(host, port, reload):
-    """Avvia la web demo GEO Optimizer."""
+    """Start the GEO Optimizer web demo."""
     try:
         import uvicorn
     except ImportError as exc:
-        click.echo("uvicorn non installato. Usa: pip install geo-optimizer-skill[web]", err=True)
+        click.echo("uvicorn not installed. Use: pip install geo-optimizer-skill[web]", err=True)
         raise SystemExit(1) from exc
 
     click.echo(f"GEO Optimizer Web Demo: http://{host}:{port}")

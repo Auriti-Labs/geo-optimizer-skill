@@ -96,8 +96,11 @@ class FileCache:
 
         while total_size > MAX_CACHE_SIZE_BYTES and files:
             oldest = files.pop(0)
-            total_size -= oldest.stat().st_size
-            oldest.unlink(missing_ok=True)
+            try:
+                total_size -= oldest.stat().st_size
+                oldest.unlink(missing_ok=True)
+            except FileNotFoundError:
+                pass  # Already removed by another thread (fix #195)
 
     def clear(self) -> int:
         """Clear the entire cache. Returns the number of files removed."""

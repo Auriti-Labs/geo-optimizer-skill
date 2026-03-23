@@ -1,22 +1,22 @@
 """
-Server MCP per GEO Optimizer.
+MCP Server for GEO Optimizer.
 
-Espone le funzionalità core come tool MCP utilizzabili da
-Claude Code, Cursor, Windsurf e qualsiasi client MCP.
+Exposes core functionality as MCP tools usable from
+Claude Code, Cursor, Windsurf and any MCP client.
 
-Tool disponibili:
-    geo_audit            — Audit GEO completo (score 0-100)
-    geo_fix              — Genera fix automatici (robots, llms, schema, meta)
-    geo_llms_generate    — Genera contenuto llms.txt da sitemap
-    geo_schema_validate  — Valida schema JSON-LD
+Available tools:
+    geo_audit            — Full GEO audit (score 0-100)
+    geo_fix              — Generate automatic fixes (robots, llms, schema, meta)
+    geo_llms_generate    — Generate llms.txt content from sitemap
+    geo_schema_validate  — Validate JSON-LD schema
 
-Resource disponibili:
-    geo://ai-bots        — Lista bot AI tracciati
-    geo://score-bands    — Fasce di punteggio GEO
+Available resources:
+    geo://ai-bots        — List of tracked AI bots
+    geo://score-bands    — GEO score bands
 
-Avvio:
-    geo-mcp              # Entry point da pyproject.toml
-    python -m geo_optimizer.mcp.server  # Diretto
+Start:
+    geo-mcp              # Entry point from pyproject.toml
+    python -m geo_optimizer.mcp.server  # Direct
 """
 
 from __future__ import annotations
@@ -30,18 +30,18 @@ from mcp.server.fastmcp import FastMCP
 mcp = FastMCP("geo-optimizer")
 
 
-# ─── Helper serializzazione ──────────────────────────────────────────────────
+# ─── Serialization helper ────────────────────────────────────────────────────
 
 
 def _to_json(data: object) -> str:
-    """Serializza dataclass o dict in JSON leggibile."""
+    """Serialize dataclass or dict to readable JSON."""
     if hasattr(data, "__dataclass_fields__"):
         data = asdict(data)
     return json.dumps(data, indent=2, ensure_ascii=False, default=str)
 
 
 def _normalize_url(url: str) -> str:
-    """Normalizza URL aggiungendo schema se mancante."""
+    """Normalize URL by adding scheme if missing."""
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
     return url.rstrip("/")
@@ -65,7 +65,7 @@ def geo_audit(url: str) -> str:
 
     url = _normalize_url(url)
 
-    # Validazione anti-SSRF
+    # Anti-SSRF validation
     safe, reason = validate_public_url(url)
     if not safe:
         return json.dumps({"error": f"Unsafe URL: {reason}"})
@@ -105,7 +105,7 @@ def geo_fix(url: str, only: str = "") -> str:
     if not safe:
         return json.dumps({"error": f"Unsafe URL: {reason}"})
 
-    # Parsing filtro categorie con validazione (fix #186)
+    # Parse category filter with validation (fix #186)
     only_set = None
     if only:
         only_set = {c.strip().lower() for c in only.split(",")}
@@ -157,13 +157,13 @@ def geo_llms_generate(url: str) -> str:
         parsed = urlparse(url)
         site_name = parsed.netloc.replace("www.", "")
 
-        # Scopri e scarica sitemap
+        # Discover and download sitemap
         sitemap_url = discover_sitemap(url)
         urls = []
         if sitemap_url:
             urls = fetch_sitemap(sitemap_url)
 
-        # Genera llms.txt
+        # Generate llms.txt
         content = generate_llms_txt(
             base_url=url,
             urls=urls,
@@ -231,7 +231,7 @@ def geo_schema_validate(json_string: str, schema_type: str = "") -> str:
         json_string: JSON-LD string to validate
         schema_type: Schema type (e.g. "website", "faqpage"). If empty, auto-detected.
     """
-    # Size limit: previeni DoS da JSON-LD enormi (fix #182)
+    # Size limit: prevent DoS from huge JSON-LD (fix #182)
     if len(json_string) > 512 * 1024:
         return json.dumps({"valid": False, "error": "JSON-LD too large (max 512 KB)"})
 
@@ -276,7 +276,7 @@ def get_ai_bots() -> str:
 
 @mcp.resource("geo://score-bands")
 def get_score_bands() -> str:
-    """Fasce di punteggio GEO (critical 0-40, foundation 41-70, good 71-90, excellent 91-100)."""
+    """GEO score bands (critical 0-40, foundation 41-70, good 71-90, excellent 91-100)."""
     from geo_optimizer.models.config import SCORE_BANDS
 
     return json.dumps(SCORE_BANDS, indent=2)
@@ -286,7 +286,7 @@ def get_score_bands() -> str:
 
 
 def main() -> None:
-    """Entry point per il server MCP (stdio transport)."""
+    """Entry point for the MCP server (stdio transport)."""
     mcp.run(transport="stdio")
 
 

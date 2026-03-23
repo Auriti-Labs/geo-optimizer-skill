@@ -284,5 +284,5 @@ def format_audit_junit(result: AuditResult) -> str:
     prop_band.set("name", "geo.band")
     prop_band.set("value", result.band)
 
-    xml_bytes = tostring(testsuites, encoding="unicode", xml_declaration=True)
-    return xml_bytes
+    xml_content = tostring(testsuites, encoding="unicode")
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + xml_content

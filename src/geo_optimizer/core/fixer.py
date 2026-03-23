@@ -33,7 +33,7 @@ def generate_robots_fix(result: AuditResult, base_url: str) -> FixItem | None:
     Returns:
         FixItem or None if no fix needed.
     """
-    if result.robots.found and not result.robots.bots_missing:
+    if result.robots.found and not result.robots.bots_missing and not result.robots.bots_blocked:
         return None
 
     if not result.robots.found:
@@ -119,7 +119,7 @@ def generate_llms_fix(result: AuditResult, base_url: str) -> FixItem | None:
         max_urls_per_section=20,
     )
 
-    action = "create" if not result.llms.found else "create"
+    action = "create" if not result.llms.found else "overwrite"
     desc = "Create llms.txt" if not result.llms.found else "Regenerate llms.txt with complete structure"
 
     if urls:
@@ -249,16 +249,25 @@ def _estimate_score_after(result: AuditResult, fixes: list[FixItem]) -> int:
     Calculates the delta as the difference between the maximum achievable score
     and the current score for each fixed category (fix #187).
     """
-    from geo_optimizer.cli.scoring_helpers import robots_score
     from geo_optimizer.models.config import SCORING
 
     bonus = 0
     categories_fixed = {f.category for f in fixes}
 
     if "robots" in categories_fixed:
-        # Delta = maximum possible - current (fix #187)
+        # Delta = maximum possible - current (fix #187, #203: inline to avoid core→cli import)
         max_robots = SCORING["robots_found"] + SCORING["robots_citation_ok"]
-        current_robots = robots_score(result)
+        current_robots = 0
+        if result.robots.found:
+            current_robots = SCORING["robots_found"]
+            if result.robots.citation_bots_ok:
+                current_robots += (
+                    SCORING["robots_citation_ok"]
+                    if result.robots.citation_bots_explicit
+                    else SCORING["robots_some_allowed"]
+                )
+            elif result.robots.bots_allowed:
+                current_robots += SCORING["robots_some_allowed"]
         bonus += max_robots - current_robots
 
     if "llms" in categories_fixed and not result.llms.found:
