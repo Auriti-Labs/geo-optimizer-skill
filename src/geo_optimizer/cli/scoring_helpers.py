@@ -6,7 +6,7 @@ tra formatters.py, rich_formatter.py, html_formatter.py, github_formatter.py.
 Fix #77.
 """
 
-from geo_optimizer.models.config import SCORING
+from geo_optimizer.models.config import CONTENT_MIN_WORDS, SCORING
 from geo_optimizer.models.results import AuditResult
 
 
@@ -48,6 +48,8 @@ def schema_score(r: AuditResult) -> int:
     s = SCORING["schema_website"] if r.schema.has_website else 0
     s += SCORING["schema_faq"] if r.schema.has_faq else 0
     s += SCORING["schema_webapp"] if r.schema.has_webapp else 0
+    s += SCORING["schema_article"] if r.schema.has_article else 0
+    s += SCORING["schema_organization"] if r.schema.has_organization else 0
     return s
 
 
@@ -65,4 +67,5 @@ def content_score(r: AuditResult) -> int:
     s = SCORING["content_h1"] if r.content.has_h1 else 0
     s += SCORING["content_numbers"] if r.content.has_numbers else 0
     s += SCORING["content_links"] if r.content.has_links else 0
+    s += SCORING["content_word_count"] if r.content.word_count >= CONTENT_MIN_WORDS else 0
     return s

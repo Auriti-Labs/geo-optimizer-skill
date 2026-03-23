@@ -15,6 +15,7 @@ from urllib.parse import urljoin, urlparse
 from geo_optimizer.models.config import (  # noqa: F401 (VALUABLE_SCHEMAS re-exported)
     AI_BOTS,
     CITATION_BOTS,
+    CONTENT_MIN_WORDS,
     SCORE_BANDS,
     SCORING,
     VALUABLE_SCHEMAS,
@@ -176,6 +177,10 @@ def audit_schema(soup, url: str) -> SchemaResult:
                         result.has_webapp = True
                     elif t == "FAQPage":
                         result.has_faq = True
+                    elif t in ("Article", "BlogPosting", "NewsArticle"):
+                        result.has_article = True
+                    elif t == "Organization":
+                        result.has_organization = True
 
         except json.JSONDecodeError as exc:
             # Parsing fallito: logga a debug (non critico, script di terze parti) — fix #81
@@ -298,13 +303,17 @@ def compute_geo_score(robots, llms, schema, meta, content) -> int:
         if llms.has_links:
             score += SCORING["llms_links"]
 
-    # Schema (25 points)
+    # Schema (25 points — fix #158: Article + Organization ora contribuiscono)
     if schema.has_website:
         score += SCORING["schema_website"]
     if schema.has_faq:
         score += SCORING["schema_faq"]
     if schema.has_webapp:
         score += SCORING["schema_webapp"]
+    if schema.has_article:
+        score += SCORING["schema_article"]
+    if schema.has_organization:
+        score += SCORING["schema_organization"]
 
     # Meta tags (20 points)
     if meta.has_title:
@@ -316,13 +325,15 @@ def compute_geo_score(robots, llms, schema, meta, content) -> int:
     if meta.has_og_title and meta.has_og_description:
         score += SCORING["meta_og"]
 
-    # Content (15 points)
+    # Content (15 points — fix #162: word_count ora contribuisce)
     if content.has_h1:
         score += SCORING["content_h1"]
     if content.has_numbers:
         score += SCORING["content_numbers"]
     if content.has_links:
         score += SCORING["content_links"]
+    if content.word_count >= CONTENT_MIN_WORDS:
+        score += SCORING["content_word_count"]
 
     return min(score, 100)
 

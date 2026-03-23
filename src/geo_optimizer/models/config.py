@@ -24,16 +24,25 @@ MAX_TOTAL_URLS: int = 10_000
 # ─── AI bots that should be listed in robots.txt ─────────────────────────────
 
 AI_BOTS = {
+    # ── OpenAI ──────────────────────────────────────────────────────────────
     "GPTBot": "OpenAI (ChatGPT training)",
     "OAI-SearchBot": "OpenAI (ChatGPT search citations)",
     "ChatGPT-User": "OpenAI (ChatGPT on-demand fetch)",
+    # ── Anthropic ───────────────────────────────────────────────────────────
     "anthropic-ai": "Anthropic (Claude training)",
     "ClaudeBot": "Anthropic (Claude citations)",
+    "Claude-SearchBot": "Anthropic (Claude search citations)",
     "claude-web": "Anthropic (Claude web crawl)",
+    # ── Perplexity ──────────────────────────────────────────────────────────
     "PerplexityBot": "Perplexity AI (index builder)",
     "Perplexity-User": "Perplexity (citation fetch on-demand)",
+    # ── Google ──────────────────────────────────────────────────────────────
     "Google-Extended": "Google (Gemini training)",
+    # ── Microsoft ───────────────────────────────────────────────────────────
+    "Bingbot": "Microsoft (Bing/Copilot search)",
+    # ── Apple ───────────────────────────────────────────────────────────────
     "Applebot-Extended": "Apple (AI training)",
+    # ── Other ───────────────────────────────────────────────────────────────
     "cohere-ai": "Cohere (language models)",
     "DuckAssistBot": "DuckDuckGo AI",
     "Bytespider": "ByteDance/TikTok AI",
@@ -41,7 +50,7 @@ AI_BOTS = {
 }
 
 # Critical citation bots (search-oriented, not just training)
-CITATION_BOTS = {"OAI-SearchBot", "ClaudeBot", "PerplexityBot"}
+CITATION_BOTS = {"OAI-SearchBot", "ClaudeBot", "Claude-SearchBot", "PerplexityBot"}
 
 # ─── Schema types ────────────────────────────────────────────────────────────
 
@@ -243,24 +252,35 @@ OPTIONAL_CATEGORIES = {"Privacy & Legal", "Terms", "Contact", "Other"}
 # ─── Scoring weights ─────────────────────────────────────────────────────────
 
 SCORING = {
+    # robots.txt — 20 punti
     "robots_found": 5,
     "robots_citation_ok": 15,
     "robots_some_allowed": 8,
+    # llms.txt — 20 punti
     "llms_found": 10,
     "llms_h1": 3,
     "llms_sections": 4,
     "llms_links": 3,
-    "schema_website": 10,
-    "schema_faq": 10,
-    "schema_webapp": 5,
+    # Schema JSON-LD — 25 punti (ribilanciato: Article + Organization, fix #158)
+    "schema_website": 8,
+    "schema_faq": 7,
+    "schema_webapp": 3,
+    "schema_article": 4,
+    "schema_organization": 3,
+    # Meta tags — 20 punti
     "meta_title": 5,
     "meta_description": 8,
     "meta_canonical": 3,
     "meta_og": 4,
-    "content_h1": 4,
-    "content_numbers": 6,
-    "content_links": 5,
+    # Content quality — 15 punti (word_count aggiunto, fix #162)
+    "content_h1": 3,
+    "content_numbers": 4,
+    "content_links": 4,
+    "content_word_count": 4,
 }
+
+# Soglia minima di parole per content_word_count (300 parole = contenuto sostanziale)
+CONTENT_MIN_WORDS = 300
 
 SCORE_BANDS = {
     "excellent": (91, 100),

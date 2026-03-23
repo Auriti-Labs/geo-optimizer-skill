@@ -66,6 +66,8 @@ class SchemaResult:
     has_website: bool = False
     has_webapp: bool = False
     has_faq: bool = False
+    has_article: bool = False
+    has_organization: bool = False
     raw_schemas: list[dict] = field(default_factory=list)
 
 

@@ -376,6 +376,8 @@ class TestScoringConsistency:
             "schema.has_website": True,
             "schema.has_faq": True,
             "schema.has_webapp": True,
+            "schema.has_article": True,
+            "schema.has_organization": True,
             "meta.has_title": True,
             "meta.has_description": True,
             "meta.has_canonical": True,
@@ -384,6 +386,7 @@ class TestScoringConsistency:
             "content.has_h1": True,
             "content.has_numbers": True,
             "content.has_links": True,
+            "content.word_count": 500,
         })
         total = (
             _robots_score(r)
