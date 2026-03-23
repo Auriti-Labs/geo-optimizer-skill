@@ -1,0 +1,48 @@
+{
+  "permissions": {
+    "allow": [
+      "Read:*",
+      "Glob:*",
+      "Grep:*",
+      "Bash:git *",
+      "Bash:ls *",
+      "Bash:wc *",
+      "Write:*.md",
+      "Bash:pip *",
+      "Bash:pytest *",
+      "Bash:python *",
+      "Bash:.venv/bin/pytest *",
+      "Bash:.venv/bin/python *",
+      "Bash:.venv/bin/ruff *",
+      "Bash:ruff *",
+      "Bash:geo *",
+      "Bash:docker compose logs *",
+      "Bash:docker compose ps",
+      "Bash:docker build *",
+      "Bash:gh *"
+    ],
+    "deny": [
+      "Bash:rm -rf *",
+      "Bash:git push --force *",
+      "Bash:git reset --hard *",
+      "Read:*.env*",
+      "Bash:sudo *",
+      "Bash:docker compose down *",
+      "Bash:pip install --upgrade pip",
+      "Bash:docker push *"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-architecture.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
