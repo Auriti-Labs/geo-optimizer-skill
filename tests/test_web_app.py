@@ -364,3 +364,284 @@ def test_audit_result_to_dict_include_tutti_campi():
     assert "h1_text" in content
     assert "numbers_count" in content
     assert "external_links_count" in content
+
+
+# ─── Test: round-trip _audit_result_to_dict → _dict_to_audit_result ──────────
+
+
+def test_round_trip_audit_result_to_dict_e_ritorno():
+    """_audit_result_to_dict → _dict_to_audit_result preserva tutti i campi principali."""
+    from geo_optimizer.web.app import _audit_result_to_dict, _dict_to_audit_result
+
+    # Arrange
+    original = _make_mock_audit_result(score=82, band="good")
+
+    # Act
+    d = _audit_result_to_dict(original)
+    reconstructed = _dict_to_audit_result(d)
+
+    # Assert: campi scalari
+    assert reconstructed.url == original.url
+    assert reconstructed.score == original.score
+    assert reconstructed.band == original.band
+    assert reconstructed.http_status == original.http_status
+    assert reconstructed.page_size == original.page_size
+
+    # Assert: sub-risultati robots
+    assert reconstructed.robots.found == original.robots.found
+    assert reconstructed.robots.citation_bots_ok == original.robots.citation_bots_ok
+    assert reconstructed.robots.bots_allowed == original.robots.bots_allowed
+
+    # Assert: sub-risultati llms
+    assert reconstructed.llms.found == original.llms.found
+    assert reconstructed.llms.word_count == original.llms.word_count
+
+    # Assert: sub-risultati meta
+    assert reconstructed.meta.has_title == original.meta.has_title
+    assert reconstructed.meta.title_text == original.meta.title_text
+    assert reconstructed.meta.description_length == original.meta.description_length
+
+    # Assert: sub-risultati content
+    assert reconstructed.content.has_h1 == original.content.has_h1
+    assert reconstructed.content.word_count == original.content.word_count
+    assert reconstructed.content.h1_text == original.content.h1_text
+
+
+# ─── Test: GET /badge ─────────────────────────────────────────────────────────
+
+
+def test_badge_happy_path_restituisce_svg(client):
+    """GET /badge con URL valido e audit mockato restituisce SVG con lo score."""
+    mock_result = _make_mock_audit_result(score=75, band="good")
+
+    with patch("geo_optimizer.core.audit.run_full_audit", return_value=mock_result):
+        response = client.get("/badge?url=https://example.com")
+
+    assert response.status_code == 200
+    assert "image/svg+xml" in response.headers["content-type"]
+    assert b"75/100" in response.content
+    assert b"<svg" in response.content
+
+
+def test_badge_audit_timeout_restituisce_badge_errore(client):
+    """GET /badge con audit in timeout restituisce badge SVG di errore."""
+    import asyncio
+
+    with patch(
+        "geo_optimizer.core.audit.run_full_audit",
+        side_effect=asyncio.TimeoutError(),
+    ):
+        response = client.get("/badge?url=https://example.com")
+
+    # Anche in caso di timeout il badge viene restituito (non 5xx)
+    assert response.status_code == 200
+    assert "image/svg+xml" in response.headers["content-type"]
+    assert b"Error" in response.content
+
+
+def test_badge_audit_eccezione_generica_restituisce_badge_errore(client):
+    """GET /badge con eccezione generica durante l'audit restituisce badge SVG di errore."""
+    with patch(
+        "geo_optimizer.core.audit.run_full_audit",
+        side_effect=RuntimeError("connessione fallita"),
+    ):
+        response = client.get("/badge?url=https://example.com")
+
+    assert response.status_code == 200
+    assert "image/svg+xml" in response.headers["content-type"]
+    assert b"Error" in response.content
+
+
+def test_badge_url_privato_ritorna_400(client):
+    """GET /badge con URL interno ritorna 400 (anti-SSRF)."""
+    response = client.get("/badge?url=http://10.0.0.1")
+    assert response.status_code == 400
+
+
+def test_badge_senza_url_ritorna_422(client):
+    """GET /badge senza parametro url ritorna 422."""
+    response = client.get("/badge")
+    assert response.status_code == 422
+
+
+# ─── Test: GET /report/{report_id} ───────────────────────────────────────────
+
+
+def test_report_id_non_hex_ritorna_400(client):
+    """GET /report/{id} con ID non esadecimale ritorna 400."""
+    response = client.get("/report/ZZZZinvalidXXXX")
+    assert response.status_code == 400
+
+
+def test_report_id_troppo_corto_ritorna_400(client):
+    """GET /report/{id} con ID più corto di 32 caratteri ritorna 400."""
+    response = client.get("/report/abc123")
+    assert response.status_code == 400
+
+
+def test_report_id_maiuscolo_ritorna_400(client):
+    """GET /report/{id} con ID in maiuscolo ritorna 400 (fix #210)."""
+    # La regex accetta solo minuscolo — l'ID è esattamente 32 caratteri ma maiuscolo
+    id_maiuscolo = "A" * 32
+    response = client.get(f"/report/{id_maiuscolo}")
+    assert response.status_code == 400
+
+
+def test_report_id_valido_ma_non_in_cache_ritorna_404(client):
+    """GET /report/{id} con ID hex valido ma non in cache ritorna 404."""
+    # ID valido: 32 caratteri esadecimali minuscoli
+    id_valido = "a" * 32
+    response = client.get(f"/report/{id_valido}")
+    assert response.status_code == 404
+
+
+def test_report_id_valido_con_report_in_cache_ritorna_html(client):
+    """GET /report/{id} con report in cache restituisce HTML 200."""
+    from geo_optimizer.web.app import _audit_result_to_dict
+
+    mock_result = _make_mock_audit_result()
+    data = _audit_result_to_dict(mock_result)
+
+    # Inserisce direttamente in cache con un ID noto
+    import time
+    report_id = "b" * 32  # 32 caratteri hex validi
+    _audit_cache[report_id] = {"data": data, "cached_at": time.time()}
+
+    response = client.get(f"/report/{report_id}")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+
+
+# ─── Test: _verify_bearer_token ───────────────────────────────────────────────
+
+
+def test_verify_bearer_token_senza_geo_api_token_ritorna_true():
+    """_verify_bearer_token ritorna True quando GEO_API_TOKEN non è configurato."""
+    import geo_optimizer.web.app as app_module
+    from geo_optimizer.web.app import _verify_bearer_token
+    from unittest.mock import MagicMock
+
+    # Arrange: simula _API_TOKEN = None
+    original = app_module._API_TOKEN
+    app_module._API_TOKEN = None
+
+    mock_request = MagicMock()
+    mock_request.headers.get.return_value = ""
+
+    try:
+        # Act
+        result = _verify_bearer_token(mock_request)
+    finally:
+        app_module._API_TOKEN = original
+
+    # Assert
+    assert result is True
+
+
+def test_verify_bearer_token_con_token_corretto_ritorna_true():
+    """_verify_bearer_token ritorna True con token valido nell'header Authorization."""
+    import geo_optimizer.web.app as app_module
+    from geo_optimizer.web.app import _verify_bearer_token
+    from unittest.mock import MagicMock
+
+    # Arrange: imposta un token di test
+    original = app_module._API_TOKEN
+    app_module._API_TOKEN = "secret-token-test-123"
+
+    mock_request = MagicMock()
+    mock_request.headers.get.return_value = "Bearer secret-token-test-123"
+
+    try:
+        result = _verify_bearer_token(mock_request)
+    finally:
+        app_module._API_TOKEN = original
+
+    # Assert
+    assert result is True
+
+
+def test_verify_bearer_token_con_token_sbagliato_ritorna_false():
+    """_verify_bearer_token ritorna False con token errato."""
+    import geo_optimizer.web.app as app_module
+    from geo_optimizer.web.app import _verify_bearer_token
+    from unittest.mock import MagicMock
+
+    # Arrange
+    original = app_module._API_TOKEN
+    app_module._API_TOKEN = "secret-token-corretto"
+
+    mock_request = MagicMock()
+    mock_request.headers.get.return_value = "Bearer token-sbagliato"
+
+    try:
+        result = _verify_bearer_token(mock_request)
+    finally:
+        app_module._API_TOKEN = original
+
+    # Assert
+    assert result is False
+
+
+def test_verify_bearer_token_senza_header_authorization_ritorna_false():
+    """_verify_bearer_token ritorna False se manca l'header Authorization."""
+    import geo_optimizer.web.app as app_module
+    from geo_optimizer.web.app import _verify_bearer_token
+    from unittest.mock import MagicMock
+
+    # Arrange
+    original = app_module._API_TOKEN
+    app_module._API_TOKEN = "un-token-qualsiasi"
+
+    mock_request = MagicMock()
+    mock_request.headers.get.return_value = ""  # nessun header
+
+    try:
+        result = _verify_bearer_token(mock_request)
+    finally:
+        app_module._API_TOKEN = original
+
+    # Assert
+    assert result is False
+
+
+def test_post_audit_con_token_valido_restituisce_200(client):
+    """POST /api/audit con GEO_API_TOKEN impostato e token corretto ritorna 200."""
+    import os
+    import geo_optimizer.web.app as app_module
+
+    original_token = app_module._API_TOKEN
+    app_module._API_TOKEN = "test-token-xyz"
+
+    mock_result = _make_mock_audit_result()
+
+    try:
+        with patch("geo_optimizer.core.audit.run_full_audit", return_value=mock_result):
+            response = client.post(
+                "/api/audit",
+                json={"url": "https://example.com"},
+                headers={"Authorization": "Bearer test-token-xyz"},
+            )
+    finally:
+        app_module._API_TOKEN = original_token
+
+    assert response.status_code == 200
+
+
+def test_post_audit_con_token_sbagliato_ritorna_401(client):
+    """POST /api/audit con GEO_API_TOKEN impostato e token errato ritorna 401."""
+    import geo_optimizer.web.app as app_module
+
+    original_token = app_module._API_TOKEN
+    app_module._API_TOKEN = "token-corretto"
+
+    try:
+        response = client.post(
+            "/api/audit",
+            json={"url": "https://example.com"},
+            headers={"Authorization": "Bearer token-sbagliato"},
+        )
+    finally:
+        app_module._API_TOKEN = original_token
+
+    assert response.status_code == 401

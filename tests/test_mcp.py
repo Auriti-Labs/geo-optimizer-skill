@@ -253,3 +253,164 @@ class TestMcpResources:
         data = json.loads(result)
 
         assert "critical" in data or isinstance(data, dict)
+
+
+# ============================================================================
+# TEST: geo_citability
+# ============================================================================
+
+
+class TestGeoCitabilityTool:
+    """Test per il tool MCP geo_citability."""
+
+    @patch("geo_optimizer.utils.http.fetch_url")
+    @patch("geo_optimizer.core.citability.audit_citability")
+    def test_citability_happy_path_ritorna_json(self, mock_citability, mock_fetch):
+        """geo_citability con fetch OK e citability audit ritorna JSON valido."""
+        from geo_optimizer.models.results import CitabilityResult, MethodScore
+        from unittest.mock import MagicMock
+
+        # Arrange: risposta HTTP mock
+        mock_resp = MagicMock()
+        mock_resp.text = "<html><body><h1>Titolo</h1><p>Contenuto con citazione (Fonte: esempio.com).</p></body></html>"
+        mock_fetch.return_value = (mock_resp, None)
+
+        # Arrange: risultato citability mock
+        mock_result = CitabilityResult(
+            methods=[
+                MethodScore(
+                    name="cite_sources",
+                    label="Cite Sources",
+                    detected=True,
+                    score=8,
+                    max_score=10,
+                    impact="+27%",
+                )
+            ],
+            total_score=72,
+            grade="high",
+            top_improvements=[],
+        )
+        mock_citability.return_value = mock_result
+
+        from geo_optimizer.mcp.server import geo_citability
+
+        # Act
+        result = geo_citability("https://example.com")
+        data = json.loads(result)
+
+        # Assert
+        assert "total_score" in data
+        assert data["total_score"] == 72
+        assert data["grade"] == "high"
+        assert len(data["methods"]) == 1
+
+    @patch("geo_optimizer.utils.http.fetch_url")
+    def test_citability_fetch_errore_ritorna_errore(self, mock_fetch):
+        """geo_citability con fetch_url che ritorna errore restituisce messaggio di errore."""
+        # Arrange
+        mock_fetch.return_value = (None, "Connection refused")
+
+        from geo_optimizer.mcp.server import geo_citability
+
+        # Act
+        result = geo_citability("https://example.com")
+        data = json.loads(result)
+
+        # Assert
+        assert "error" in data
+        assert "Connection refused" in data["error"] or "example.com" in data["error"]
+
+    def test_citability_url_non_sicuro_ritorna_errore(self):
+        """geo_citability blocca URL verso reti private."""
+        from geo_optimizer.mcp.server import geo_citability
+
+        # Act
+        result = geo_citability("http://192.168.0.1")
+        data = json.loads(result)
+
+        # Assert
+        assert "error" in data
+        assert "Unsafe URL" in data["error"]
+
+    @patch("geo_optimizer.utils.http.fetch_url")
+    @patch("geo_optimizer.core.citability.audit_citability")
+    def test_citability_eccezione_ritorna_errore(self, mock_citability, mock_fetch):
+        """geo_citability gestisce eccezioni impreviste durante l'analisi."""
+        from unittest.mock import MagicMock
+
+        # Arrange
+        mock_resp = MagicMock()
+        mock_resp.text = "<html><body>test</body></html>"
+        mock_fetch.return_value = (mock_resp, None)
+        mock_citability.side_effect = RuntimeError("Errore imprevisto")
+
+        from geo_optimizer.mcp.server import geo_citability
+
+        # Act
+        result = geo_citability("https://example.com")
+        data = json.loads(result)
+
+        # Assert
+        assert "error" in data
+
+
+# ============================================================================
+# TEST: exception paths per geo_audit, geo_fix, geo_llms_generate
+# ============================================================================
+
+
+class TestExceptionPaths:
+    """Verifica i percorsi di eccezione nei tool MCP."""
+
+    @patch("geo_optimizer.core.audit.run_full_audit")
+    def test_geo_audit_eccezione_ritorna_json_errore(self, mock_audit):
+        """geo_audit gestisce eccezioni impreviste ritornando JSON di errore."""
+        # Arrange
+        mock_audit.side_effect = RuntimeError("DB unavailable")
+
+        # Act
+        result = geo_audit("https://example.com")
+        data = json.loads(result)
+
+        # Assert
+        assert "error" in data
+        assert "DB unavailable" in data["error"]
+        assert data["url"] == "https://example.com"
+
+    @patch("geo_optimizer.core.fixer.run_all_fixes")
+    def test_geo_fix_eccezione_ritorna_json_errore(self, mock_fixes):
+        """geo_fix gestisce eccezioni impreviste ritornando JSON di errore."""
+        # Arrange
+        mock_fixes.side_effect = RuntimeError("Fixer crashed")
+
+        # Act
+        result = geo_fix("https://example.com")
+        data = json.loads(result)
+
+        # Assert
+        assert "error" in data
+        assert "Fixer crashed" in data["error"]
+
+    def test_geo_fix_categoria_non_valida_ritorna_errore(self):
+        """geo_fix con categoria 'only' non valida ritorna errore senza crash."""
+        # Act
+        result = geo_fix("https://example.com", only="robots,invalid_cat")
+        data = json.loads(result)
+
+        # Assert
+        assert "error" in data
+        assert "invalid_cat" in data["error"]
+
+    @patch("geo_optimizer.core.llms_generator.discover_sitemap")
+    def test_geo_llms_generate_eccezione_ritorna_errore(self, mock_discover):
+        """geo_llms_generate gestisce eccezioni impreviste ritornando messaggio di errore."""
+        # Arrange
+        mock_discover.side_effect = RuntimeError("Sitemap parse error")
+
+        # Act
+        result = geo_llms_generate("https://example.com")
+
+        # Assert: ritorna stringa con "Error:" (non JSON)
+        assert "Error" in result
+        assert "Sitemap parse error" in result
