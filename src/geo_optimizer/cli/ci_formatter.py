@@ -48,25 +48,29 @@ def format_audit_sarif(result: AuditResult) -> str:
     ]
 
     for rule_id, rule_name, findings in checks:
-        rules.append({
-            "id": rule_id,
-            "name": rule_name,
-            "shortDescription": {"text": rule_name},
-        })
+        rules.append(
+            {
+                "id": rule_id,
+                "name": rule_name,
+                "shortDescription": {"text": rule_name},
+            }
+        )
 
         for finding in findings:
-            results.append({
-                "ruleId": rule_id,
-                "level": finding["level"],
-                "message": {"text": finding["message"]},
-                "locations": [
-                    {
-                        "physicalLocation": {
-                            "artifactLocation": {"uri": result.url},
+            results.append(
+                {
+                    "ruleId": rule_id,
+                    "level": finding["level"],
+                    "message": {"text": finding["message"]},
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {"uri": result.url},
+                            }
                         }
-                    }
-                ],
-            })
+                    ],
+                }
+            )
 
     sarif = {
         "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
@@ -123,20 +127,26 @@ def _robots_findings(result: AuditResult) -> list[dict]:
     if not result.robots.found:
         findings.append({"level": "error", "message": "robots.txt not found — AI bots cannot determine access rules"})
     elif result.robots.bots_blocked:
-        findings.append({
-            "level": "warning",
-            "message": f"AI bots blocked in robots.txt: {', '.join(result.robots.bots_blocked)}",
-        })
+        findings.append(
+            {
+                "level": "warning",
+                "message": f"AI bots blocked in robots.txt: {', '.join(result.robots.bots_blocked)}",
+            }
+        )
     if result.robots.bots_missing:
-        findings.append({
-            "level": "warning",
-            "message": f"AI bots not configured in robots.txt: {', '.join(result.robots.bots_missing[:5])}",
-        })
+        findings.append(
+            {
+                "level": "warning",
+                "message": f"AI bots not configured in robots.txt: {', '.join(result.robots.bots_missing[:5])}",
+            }
+        )
     if not result.robots.citation_bots_ok:
-        findings.append({
-            "level": "error",
-            "message": "Critical citation bots (OAI-SearchBot, ClaudeBot, PerplexityBot) not properly configured",
-        })
+        findings.append(
+            {
+                "level": "error",
+                "message": "Critical citation bots (OAI-SearchBot, ClaudeBot, PerplexityBot) not properly configured",
+            }
+        )
     return findings
 
 
@@ -187,10 +197,12 @@ def _content_findings(result: AuditResult) -> list[dict]:
     if not result.content.has_links:
         findings.append({"level": "note", "message": "No external links to authoritative sources (+27% AI visibility)"})
     if result.content.word_count < 300:
-        findings.append({
-            "level": "warning",
-            "message": f"Content too short ({result.content.word_count} words, minimum 300 recommended)",
-        })
+        findings.append(
+            {
+                "level": "warning",
+                "message": f"Content too short ({result.content.word_count} words, minimum 300 recommended)",
+            }
+        )
     return findings
 
 

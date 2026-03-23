@@ -56,15 +56,26 @@ AI_BOTS = {
 # 3-tier classification — bot raggruppati per funzione
 BOT_TIERS = {
     "training": {
-        "GPTBot", "anthropic-ai", "claude-web", "Google-Extended",
-        "Applebot-Extended", "cohere-ai", "Bytespider", "meta-externalagent",
+        "GPTBot",
+        "anthropic-ai",
+        "claude-web",
+        "Google-Extended",
+        "Applebot-Extended",
+        "cohere-ai",
+        "Bytespider",
+        "meta-externalagent",
     },
     "search": {
-        "OAI-SearchBot", "ClaudeBot", "Claude-SearchBot", "PerplexityBot",
-        "Bingbot", "DuckAssistBot",
+        "OAI-SearchBot",
+        "ClaudeBot",
+        "Claude-SearchBot",
+        "PerplexityBot",
+        "Bingbot",
+        "DuckAssistBot",
     },
     "user": {
-        "ChatGPT-User", "Perplexity-User",
+        "ChatGPT-User",
+        "Perplexity-User",
     },
 }
 
