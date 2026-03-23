@@ -12,6 +12,11 @@ import logging
 import re
 from urllib.parse import urljoin, urlparse
 
+from geo_optimizer.core.scoring import (  # noqa: F401 (re-esportato per retrocompatibilità)
+    compute_geo_score,
+    compute_score_breakdown,
+    get_score_band,
+)
 from geo_optimizer.models.config import (  # noqa: F401 (VALUABLE_SCHEMAS re-exported)
     AI_BOTS,
     CITATION_BOTS,
@@ -29,6 +34,7 @@ from geo_optimizer.models.results import (
     MetaResult,
     RobotsResult,
     SchemaResult,
+    SignalsResult,
 )
 from geo_optimizer.utils.http import fetch_url
 from geo_optimizer.utils.robots_parser import classify_bot, parse_robots_txt
@@ -199,6 +205,22 @@ def audit_schema(soup, url: str) -> SchemaResult:
                     elif t == "Product":
                         result.has_product = True
 
+                    # Qualsiasi tipo schema valido (non unknown) contribuisce
+                    if t != "unknown":
+                        result.any_schema_found = True
+
+                # Controlla la proprietà sameAs
+                same_as = schema.get("sameAs", [])
+                if isinstance(same_as, str):
+                    same_as = [same_as]
+                if same_as:
+                    result.has_sameas = True
+                    result.sameas_urls.extend(same_as[:10])  # limita a 10
+
+                # Controlla dateModified
+                if schema.get("dateModified"):
+                    result.has_date_modified = True
+
         except json.JSONDecodeError as exc:
             # Parsing failed: log at debug (not critical, third-party scripts) — fix #81
             logging.debug("Invalid JSON schema ignored: %s", exc)
@@ -282,7 +304,7 @@ def audit_content_quality(soup, url: str) -> ContentResult:
     words = body_text.split()
     result.word_count = len(words)
 
-    # External links (citations)
+    # External links (citazioni)
     parsed = urlparse(url)
     base_domain = parsed.netloc
     all_links = soup.find_all("a", href=True)
@@ -291,77 +313,26 @@ def audit_content_quality(soup, url: str) -> ContentResult:
     if external_links:
         result.has_links = True
 
+    # Gerarchia heading: H2 E H3 presenti
+    h2_tags = soup_clean.find_all("h2")
+    h3_tags = soup_clean.find_all("h3")
+    if h2_tags and h3_tags:
+        result.has_heading_hierarchy = True
+
+    # Liste o tabelle
+    lists = soup_clean.find_all(["ul", "ol", "table"])
+    if lists:
+        result.has_lists_or_tables = True
+
+    # Front-loading: primo 30% del testo ha contenuto sostanziale
+    if words:
+        soglia = max(len(words) * 30 // 100, 50)
+        first_30pct = words[:soglia]
+        if len(first_30pct) >= 50:
+            result.has_front_loading = True
+
     return result
 
-
-def compute_geo_score(robots, llms, schema, meta, content) -> int:
-    """Calculate GEO score 0-100 from SCORING weights."""
-    score = 0
-
-    # robots.txt (20 points)
-    if robots.found:
-        score += SCORING["robots_found"]
-    if robots.citation_bots_ok:
-        if robots.citation_bots_explicit:
-            # #111 — Full score only if citation bots are explicitly allowed
-            score += SCORING["robots_citation_ok"]
-        else:
-            # Allowed only via wildcard: partial score
-            score += SCORING["robots_some_allowed"]
-    elif robots.bots_allowed:
-        score += SCORING["robots_some_allowed"]
-
-    # llms.txt (20 points)
-    if llms.found:
-        score += SCORING["llms_found"]
-        if llms.has_h1:
-            score += SCORING["llms_h1"]
-        if llms.has_sections:
-            score += SCORING["llms_sections"]
-        if llms.has_links:
-            score += SCORING["llms_links"]
-
-    # Schema (25 points — fix #158: Article + Organization ora contribuiscono)
-    if schema.has_website:
-        score += SCORING["schema_website"]
-    if schema.has_faq:
-        score += SCORING["schema_faq"]
-    if schema.has_webapp:
-        score += SCORING["schema_webapp"]
-    if schema.has_article:
-        score += SCORING["schema_article"]
-    if schema.has_organization:
-        score += SCORING["schema_organization"]
-
-    # Meta tags (20 points)
-    if meta.has_title:
-        score += SCORING["meta_title"]
-    if meta.has_description:
-        score += SCORING["meta_description"]
-    if meta.has_canonical:
-        score += SCORING["meta_canonical"]
-    if meta.has_og_title and meta.has_og_description:
-        score += SCORING["meta_og"]
-
-    # Content (15 points — fix #162: word_count ora contribuisce)
-    if content.has_h1:
-        score += SCORING["content_h1"]
-    if content.has_numbers:
-        score += SCORING["content_numbers"]
-    if content.has_links:
-        score += SCORING["content_links"]
-    if content.word_count >= CONTENT_MIN_WORDS:
-        score += SCORING["content_word_count"]
-
-    return min(score, 100)
-
-
-def get_score_band(score: int) -> str:
-    """Return score band name from SCORE_BANDS."""
-    for band_name, (low, high) in SCORE_BANDS.items():
-        if low <= score <= high:
-            return band_name
-    return "critical"
 
 
 def build_recommendations(base_url, robots, llms, schema, meta, content) -> list:
@@ -397,38 +368,44 @@ def _build_audit_result(
     page_size: int,
     soup=None,
     extra_checks: dict = None,
+    signals: SignalsResult = None,  # v4.0: segnali tecnici
 ) -> AuditResult:
-    """Build AuditResult from sub-audits (fix #97: shared logic for sync/async).
+    """Costruisce AuditResult dai sub-audit (fix #97: logica comune sync/async).
 
-    Computes score, band and recommendations, then runs plugins registered
-    in CheckRegistry (fix #104). Plugin results do not affect the base score.
+    Calcola score, band e raccomandazioni, poi esegue i plugin registrati
+    in CheckRegistry (fix #104). I risultati dei plugin non influenzano il punteggio base.
 
     Args:
-        base_url: Normalized site URL.
-        robots: robots.txt audit result.
-        llms: llms.txt audit result.
-        schema: JSON-LD schema audit result.
-        meta: Meta tag audit result.
-        content: Content audit result.
-        http_status: HTTP status code of the homepage.
-        page_size: Homepage size in bytes.
-        soup: BeautifulSoup of the homepage (optional, passed to plugins).
-        extra_checks: Dictionary with pre-computed results (not used internally).
+        base_url: URL del sito normalizzato.
+        robots: Risultato audit robots.txt.
+        llms: Risultato audit llms.txt.
+        schema: Risultato audit schema JSON-LD.
+        meta: Risultato audit meta tag.
+        content: Risultato audit contenuto.
+        http_status: HTTP status code della homepage.
+        page_size: Dimensione della homepage in byte.
+        soup: BeautifulSoup della homepage (opzionale, passato ai plugin).
+        extra_checks: Dizionario con risultati pre-calcolati (non usato internamente).
+        signals: Segnali tecnici v4.0 (lang, RSS, freshness).
 
     Returns:
-        Complete AuditResult with score, band, recommendations and plugins.
+        AuditResult completo con score, band, raccomandazioni e plugin.
     """
     from geo_optimizer.core.registry import CheckRegistry
 
-    # Compute score and band
-    score = compute_geo_score(robots, llms, schema, meta, content)
+    # Usa SignalsResult vuoto se non fornito
+    effective_signals = signals if signals is not None else SignalsResult()
+
+    # Calcola score, breakdown e band (v4.0: include signals)
+    score = compute_geo_score(robots, llms, schema, meta, content, effective_signals)
+    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, effective_signals)
     band = get_score_band(score)
 
-    # Recommendations
+    # Raccomandazioni
     recommendations = build_recommendations(base_url, robots, llms, schema, meta, content)
 
-    # Fix #104: run plugins registered in CheckRegistry
-    # Results do not affect the base score
+    # Fix #104: esegui plugin registrati in CheckRegistry
+    # I risultati non influenzano il punteggio base
     plugin_results = {}
     if CheckRegistry.all():
         check_results = CheckRegistry.run_all(base_url, soup=soup)
@@ -443,7 +420,7 @@ def _build_audit_result(
             for r in check_results
         }
 
-    # Citability Score: content analysis with the 9 Princeton GEO methods
+    # Citability Score: analisi contenuto con i 9 metodi Princeton GEO
     from geo_optimizer.core.citability import audit_citability
 
     citability = audit_citability(soup, base_url) if soup else CitabilityResult()
@@ -462,6 +439,8 @@ def _build_audit_result(
         http_status=http_status,
         page_size=page_size,
         extra_checks=plugin_results,
+        signals=effective_signals,
+        score_breakdown=breakdown,
     )
 
 
@@ -508,14 +487,17 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     else:
         r, err = fetch_url(base_url)
     if err or not r:
-        result = AuditResult(url=base_url)
+        result = AuditResult(
+            url=base_url,
+            error=str(err) if err else "Connection failed",
+        )
         result.recommendations = [f"Unable to reach {base_url}: {err}"]
         return result
 
     soup = BeautifulSoup(r.text, "html.parser")
 
-    # Run all sub-audits
-    # Fix #120: pass effective_bots which includes any extra_bots from project_config
+    # Esegui tutti i sub-audit
+    # Fix #120: passa effective_bots che include eventuali extra_bots da project_config
     robots = audit_robots_txt(base_url, bots=effective_bots)
     llms = audit_llms_txt(base_url)
     schema = audit_schema(soup, base_url)
@@ -576,7 +558,10 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     r_llms_full, _ = responses.get(llms_full_url, (None, None))
 
     if err_home or not r_home:
-        result = AuditResult(url=base_url)
+        result = AuditResult(
+            url=base_url,
+            error=str(err_home) if err_home else "Connection failed",
+        )
         result.recommendations = [f"Unable to reach {base_url}: {err_home}"]
         return result
 

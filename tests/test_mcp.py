@@ -241,7 +241,7 @@ class TestMcpResources:
 
         assert "ai_bots" in data
         assert "GPTBot" in data["ai_bots"]
-        assert data["total"] == 16
+        assert data["total"] == len(data["ai_bots"])  # v4.0: bot count dinamico
         assert "tiers" in data
         assert "search" in data["tiers"]
         assert "training" in data["tiers"]

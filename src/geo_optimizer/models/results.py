@@ -73,6 +73,10 @@ class SchemaResult:
     has_person: bool = False
     has_product: bool = False
     raw_schemas: list[dict] = field(default_factory=list)
+    any_schema_found: bool = False    # True se QUALSIASI JSON-LD valido trovato
+    has_sameas: bool = False          # proprietà sameAs trovata
+    sameas_urls: list[str] = field(default_factory=list)
+    has_date_modified: bool = False   # dateModified in qualsiasi schema
 
 
 # ─── Meta tags ───────────────────────────────────────────────────────────────
@@ -106,6 +110,24 @@ class ContentResult:
     h1_text: str = ""
     numbers_count: int = 0
     external_links_count: int = 0
+    has_heading_hierarchy: bool = False  # H2+H3 presenti in gerarchia corretta
+    has_lists_or_tables: bool = False    # <ul>/<ol>/<table> trovati
+    has_front_loading: bool = False      # info chiave nel primo 30%
+
+
+# ─── Signals tecnici (v4.0) ──────────────────────────────────────────────────
+
+
+@dataclass
+class SignalsResult:
+    """Segnali tecnici per la scopribilità AI."""
+
+    has_lang: bool = False
+    lang_value: str = ""
+    has_rss: bool = False
+    rss_url: str = ""
+    has_freshness: bool = False
+    freshness_date: str = ""
 
 
 # ─── Citability (Princeton GEO Methods) ─────────────────────────────────────
@@ -155,6 +177,12 @@ class AuditResult:
     citability: CitabilityResult = field(default_factory=CitabilityResult)
     # Fix #104: CheckRegistry plugin results (do not affect the base score)
     extra_checks: dict[str, Any] = field(default_factory=dict)
+    # v4.0: segnali tecnici (lang, RSS, freshness)
+    signals: SignalsResult = field(default_factory=SignalsResult)
+    # v4.0: breakdown score per categoria
+    score_breakdown: dict[str, int] = field(default_factory=dict)
+    # v4.0: messaggio di errore connessione (None = successo)
+    error: str | None = None
 
 
 # ─── Schema analysis ─────────────────────────────────────────────────────────

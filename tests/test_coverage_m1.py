@@ -317,19 +317,19 @@ class TestHtmlFormatter:
         assert _llms_score(r) == expected
 
     def test_schema_score_completo(self):
-        """Punteggio schema massimo con tutti i flag attivi."""
+        """Punteggio schema massimo con tutti i flag attivi (v4.0: any_valid + website + faq)."""
         from geo_optimizer.cli.html_formatter import _schema_score
         from geo_optimizer.models.config import SCORING
 
         r = AuditResult(url="https://example.com")
         r.schema.has_website = True
         r.schema.has_faq = True
-        r.schema.has_webapp = True
+        r.schema.any_schema_found = True  # v4.0: sostituisce has_webapp
 
         expected = (
-            SCORING["schema_website"]
+            SCORING["schema_any_valid"]
+            + SCORING["schema_website"]
             + SCORING["schema_faq"]
-            + SCORING["schema_webapp"]
         )
         assert _schema_score(r) == expected
 
@@ -859,17 +859,17 @@ class TestGithubFormatter:
         assert _llms_score(r) == 0
 
     def test_schema_score_github_completo(self):
-        """_schema_score() del github formatter calcola il totale correttamente."""
+        """_schema_score() del github formatter calcola il totale correttamente (v4.0)."""
         from geo_optimizer.cli.github_formatter import _schema_score
         from geo_optimizer.models.config import SCORING
 
         r = AuditResult(url="https://example.com")
         r.schema.has_website = True
         r.schema.has_faq = True
-        r.schema.has_webapp = True
+        r.schema.any_schema_found = True  # v4.0: sostituisce has_webapp
 
         expected = (
-            SCORING["schema_website"] + SCORING["schema_faq"] + SCORING["schema_webapp"]
+            SCORING["schema_any_valid"] + SCORING["schema_website"] + SCORING["schema_faq"]
         )
         assert _schema_score(r) == expected
 

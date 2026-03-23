@@ -322,15 +322,16 @@ class TestScoringConsistency:
         assert _llms_score(r) == expected
 
     def test_schema_score_full(self):
+        # v4.0: schema_webapp rimosso, any_schema_found aggiunto
         r = self._make_result(**{
             "schema.has_website": True,
             "schema.has_faq": True,
-            "schema.has_webapp": True,
+            "schema.any_schema_found": True,
         })
         expected = (
-            SCORING["schema_website"]
+            SCORING["schema_any_valid"]
+            + SCORING["schema_website"]
             + SCORING["schema_faq"]
-            + SCORING["schema_webapp"]
         )
         assert _schema_score(r) == expected
 
@@ -364,29 +365,46 @@ class TestScoringConsistency:
         assert _content_score(r) == expected
 
     def test_somma_totale_100(self):
-        """La somma di tutti i punteggi massimi deve essere 100."""
+        """La somma di tutti i punteggi massimi deve essere 100 (v4.0)."""
+        from geo_optimizer.cli.scoring_helpers import signals_score
+
         r = self._make_result(**{
+            # robots: 5 + 13 = 18
             "robots.found": True,
             "robots.citation_bots_ok": True,
             "robots.citation_bots_explicit": True,
+            # llms: 6 + 2 + 2 + 2 + 2 + 2 + 2 = 18
             "llms.found": True,
             "llms.has_h1": True,
             "llms.has_sections": True,
             "llms.has_links": True,
+            "llms.word_count": 5000,  # depth + depth_high
+            "llms.has_full": True,
+            # schema: 5 + 5 + 3 + 3 + 3 + 3 = 22
+            "schema.any_schema_found": True,
             "schema.has_website": True,
             "schema.has_faq": True,
-            "schema.has_webapp": True,
             "schema.has_article": True,
             "schema.has_organization": True,
+            "schema.has_sameas": True,
+            # meta: 5 + 8 + 3 + 4 = 20
             "meta.has_title": True,
             "meta.has_description": True,
             "meta.has_canonical": True,
             "meta.has_og_title": True,
             "meta.has_og_description": True,
+            # content: 2 + 2 + 2 + 2 + 2 + 2 + 2 = 14
             "content.has_h1": True,
             "content.has_numbers": True,
             "content.has_links": True,
             "content.word_count": 500,
+            "content.has_heading_hierarchy": True,
+            "content.has_lists_or_tables": True,
+            "content.has_front_loading": True,
+            # signals: 3 + 3 + 2 = 8
+            "signals.has_lang": True,
+            "signals.has_rss": True,
+            "signals.has_freshness": True,
         })
         total = (
             _robots_score(r)
@@ -394,6 +412,7 @@ class TestScoringConsistency:
             + _schema_score(r)
             + _meta_score(r)
             + _content_score(r)
+            + signals_score(r)
         )
         assert total == 100
 

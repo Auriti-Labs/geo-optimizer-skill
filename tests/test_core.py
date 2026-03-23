@@ -559,10 +559,11 @@ class TestConfig:
             assert bot in AI_BOTS, f"{bot} is in CITATION_BOTS but not in AI_BOTS"
 
     def test_scoring_dict_has_expected_keys(self):
+        # v4.0: schema_webapp rimosso, aggiunti nuovi campi
         expected_keys = [
             "robots_found", "robots_citation_ok", "robots_some_allowed",
             "llms_found", "llms_h1", "llms_sections", "llms_links",
-            "schema_website", "schema_faq", "schema_webapp",
+            "schema_website", "schema_faq", "schema_any_valid",
             "meta_title", "meta_description", "meta_canonical", "meta_og",
             "content_h1", "content_numbers", "content_links",
         ]
@@ -1241,12 +1242,13 @@ class TestComputeGeoScore:
         assert score == expected
 
     def test_full_schema_score(self):
-        schema = SchemaResult(has_website=True, has_faq=True, has_webapp=True)
+        # v4.0: schema_webapp rimosso, any_schema_found aggiunto
+        schema = SchemaResult(has_website=True, has_faq=True, any_schema_found=True)
         score = compute_geo_score(
             RobotsResult(), LlmsTxtResult(), schema,
             MetaResult(), ContentResult(),
         )
-        expected = SCORING["schema_website"] + SCORING["schema_faq"] + SCORING["schema_webapp"]
+        expected = SCORING["schema_website"] + SCORING["schema_faq"] + SCORING["schema_any_valid"]
         assert score == expected
 
     def test_full_meta_score(self):
@@ -1297,19 +1299,23 @@ class TestGetScoreBand:
     """Tests for get_score_band()."""
 
     def test_critical_band(self):
+        # v4.0: critical = (0, 35)
         assert get_score_band(0) == "critical"
-        assert get_score_band(40) == "critical"
+        assert get_score_band(35) == "critical"
 
     def test_foundation_band(self):
-        assert get_score_band(41) == "foundation"
-        assert get_score_band(70) == "foundation"
+        # v4.0: foundation = (36, 67)
+        assert get_score_band(36) == "foundation"
+        assert get_score_band(67) == "foundation"
 
     def test_good_band(self):
-        assert get_score_band(71) == "good"
-        assert get_score_band(90) == "good"
+        # v4.0: good = (68, 85)
+        assert get_score_band(68) == "good"
+        assert get_score_band(85) == "good"
 
     def test_excellent_band(self):
-        assert get_score_band(91) == "excellent"
+        # v4.0: excellent = (86, 100)
+        assert get_score_band(86) == "excellent"
         assert get_score_band(100) == "excellent"
 
     def test_out_of_range_defaults_critical(self):

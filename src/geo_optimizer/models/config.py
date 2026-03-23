@@ -42,6 +42,7 @@ AI_BOTS = {
     "Perplexity-User": "Perplexity (citation fetch on-demand)",
     # ── Google ──────────────────────────────────────────────────────────────
     "Google-Extended": "Google (Gemini training)",
+    "Google-CloudVertexBot": "Google (Vertex AI)",
     # ── Microsoft ───────────────────────────────────────────────────────────
     "Bingbot": "Microsoft (Bing/Copilot search)",
     # ── Apple ───────────────────────────────────────────────────────────────
@@ -51,6 +52,18 @@ AI_BOTS = {
     "DuckAssistBot": "DuckDuckGo AI",
     "Bytespider": "ByteDance/TikTok AI",
     "meta-externalagent": "Meta AI (Facebook/Instagram AI)",
+    # ── Meta (expanded) ─────────────────────────────────────────────────────
+    "Meta-ExternalFetcher": "Meta (content fetch on-demand)",
+    "facebookexternalhit": "Meta (social preview + AI)",
+    # ── Amazon ──────────────────────────────────────────────────────────────
+    "Amazonbot": "Amazon (Alexa/search AI)",
+    # ── Allen Institute ─────────────────────────────────────────────────────
+    "AI2Bot": "Allen Institute (AI research)",
+    "AI2Bot-Dolma": "Allen Institute (Dolma dataset)",
+    # ── You.com ─────────────────────────────────────────────────────────────
+    "YouBot": "You.com AI search",
+    # ── Common Crawl ────────────────────────────────────────────────────────
+    "CCBot": "Common Crawl (used by many AI labs)",
 }
 
 # 3-tier classification — bots grouped by function
@@ -60,10 +73,14 @@ BOT_TIERS = {
         "anthropic-ai",
         "claude-web",
         "Google-Extended",
+        "Google-CloudVertexBot",
         "Applebot-Extended",
         "cohere-ai",
         "Bytespider",
         "meta-externalagent",
+        "AI2Bot",
+        "AI2Bot-Dolma",
+        "CCBot",
     },
     "search": {
         "OAI-SearchBot",
@@ -72,10 +89,14 @@ BOT_TIERS = {
         "PerplexityBot",
         "Bingbot",
         "DuckAssistBot",
+        "YouBot",
+        "Amazonbot",
     },
     "user": {
         "ChatGPT-User",
         "Perplexity-User",
+        "Meta-ExternalFetcher",
+        "facebookexternalhit",
     },
 }
 
@@ -282,39 +303,60 @@ OPTIONAL_CATEGORIES = {"Privacy & Legal", "Terms", "Contact", "Other"}
 # ─── Scoring weights ─────────────────────────────────────────────────────────
 
 SCORING = {
-    # robots.txt — 20 points
+    # robots.txt — 18 punti (era 20)
     "robots_found": 5,
-    "robots_citation_ok": 15,
-    "robots_some_allowed": 8,
-    # llms.txt — 20 points
-    "llms_found": 10,
-    "llms_h1": 3,
-    "llms_sections": 4,
-    "llms_links": 3,
-    # Schema JSON-LD — 25 points (rebalanced: Article + Organization, fix #158)
-    "schema_website": 8,
-    "schema_faq": 7,
-    "schema_webapp": 3,
-    "schema_article": 4,
-    "schema_organization": 3,
-    # Meta tags — 20 points
+    "robots_citation_ok": 13,       # era 15
+    "robots_some_allowed": 10,      # era 8 — wildcard Allow ora vale di più
+    # llms.txt — 18 punti (era 20) — qualità graduata
+    "llms_found": 6,                # era 10
+    "llms_h1": 2,                   # era 3
+    "llms_sections": 2,             # era 4
+    "llms_links": 2,                # era 3
+    "llms_depth": 2,                # NUOVO: word_count >= 1000
+    "llms_depth_high": 2,           # NUOVO: word_count >= 5000
+    "llms_full": 2,                 # NUOVO: has llms-full.txt
+    # Schema JSON-LD — 22 punti (era 25) — qualsiasi tipo valido + sameAs
+    "schema_any_valid": 5,          # NUOVO: qualsiasi JSON-LD schema valido trovato
+    "schema_faq": 5,                # era 7 — ancora il tipo singolo più alto
+    "schema_article": 3,            # era 4
+    "schema_organization": 3,       # era 3
+    "schema_website": 3,            # era 8
+    "schema_sameas": 3,             # NUOVO: link sameAs a Wikipedia/Wikidata/LinkedIn
+    # Meta tags — 20 punti (invariato)
     "meta_title": 5,
     "meta_description": 8,
     "meta_canonical": 3,
     "meta_og": 4,
-    # Content quality — 15 points (word_count added, fix #162)
-    "content_h1": 3,
-    "content_numbers": 4,
-    "content_links": 4,
-    "content_word_count": 4,
+    # Content quality — 14 punti (era 15) — controlli struttura
+    "content_h1": 2,                # era 3
+    "content_numbers": 2,           # era 4
+    "content_links": 2,             # era 4
+    "content_word_count": 2,        # era 4
+    "content_heading_hierarchy": 2, # NUOVO: ha H2 + H3 in gerarchia corretta
+    "content_lists_or_tables": 2,   # NUOVO: ha <ul>/<ol>/<table>
+    "content_front_loading": 2,     # NUOVO: info chiave nel primo 30% del contenuto
+    # Signals — 8 punti (NUOVA categoria)
+    "signals_lang": 3,              # NUOVO: <html lang="...">
+    "signals_rss": 3,               # NUOVO: feed RSS/Atom trovato
+    "signals_freshness": 2,         # NUOVO: dateModified nello schema o header Last-Modified
 }
 
-# Minimum word threshold for content_word_count (300 words = substantial content)
+# Minimum word threshold for content_word_count (300 parole = contenuto sostanziale)
 CONTENT_MIN_WORDS = 300
 
+# Soglie profondità llms.txt
+LLMS_DEPTH_WORDS = 1000
+LLMS_DEPTH_HIGH_WORDS = 5000
+
+# Domini autorevoli sameAs (per collegamento knowledge graph)
+SAMEAS_AUTHORITATIVE_DOMAINS = {
+    "wikipedia.org", "wikidata.org", "linkedin.com", "crunchbase.com",
+    "github.com", "twitter.com", "x.com", "facebook.com",
+}
+
 SCORE_BANDS = {
-    "excellent": (91, 100),
-    "good": (71, 90),
-    "foundation": (41, 70),
-    "critical": (0, 40),
+    "excellent": (86, 100),   # era (91, 100)
+    "good": (68, 85),         # era (71, 90)
+    "foundation": (36, 67),   # era (41, 70)
+    "critical": (0, 35),      # era (0, 40)
 }

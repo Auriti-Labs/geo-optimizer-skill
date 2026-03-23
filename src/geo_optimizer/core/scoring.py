@@ -1,0 +1,115 @@
+"""
+GEO scoring engine — calcola il punteggio 0-100 dai pesi SCORING.
+
+Separato da audit.py per abilitare estensibilità, override dello scoring
+e breakdown per categoria (v4.0).
+"""
+from __future__ import annotations
+
+from geo_optimizer.models.config import (
+    CONTENT_MIN_WORDS,
+    LLMS_DEPTH_HIGH_WORDS,
+    LLMS_DEPTH_WORDS,
+    SCORE_BANDS,
+    SCORING,
+)
+
+
+def compute_geo_score(robots, llms, schema, meta, content, signals=None) -> int:
+    """Calcola il punteggio GEO 0-100 dai pesi SCORING (v4.0)."""
+    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, signals)
+    return min(sum(breakdown.values()), 100)
+
+
+def compute_score_breakdown(robots, llms, schema, meta, content, signals=None) -> dict[str, int]:
+    """Ritorna il breakdown del punteggio per categoria."""
+    return {
+        "robots": _score_robots(robots),
+        "llms": _score_llms(llms),
+        "schema": _score_schema(schema),
+        "meta": _score_meta(meta),
+        "content": _score_content(content),
+        "signals": _score_signals(signals) if signals is not None else 0,
+    }
+
+
+def get_score_band(score: int) -> str:
+    """Ritorna il nome della banda di punteggio da SCORE_BANDS."""
+    for band_name, (low, high) in SCORE_BANDS.items():
+        if low <= score <= high:
+            return band_name
+    return "critical"
+
+
+def _score_robots(robots) -> int:
+    """Calcola il punteggio robots.txt."""
+    if not robots.found:
+        return 0
+    s = SCORING["robots_found"]
+    if robots.citation_bots_ok:
+        if robots.citation_bots_explicit:
+            # Punteggio pieno: bot di citazione esplicitamente permessi
+            s += SCORING["robots_citation_ok"]
+        else:
+            # Permesso solo via wildcard: punteggio parziale
+            s += SCORING["robots_some_allowed"]
+    elif robots.bots_allowed:
+        s += SCORING["robots_some_allowed"]
+    return s
+
+
+def _score_llms(llms) -> int:
+    """Calcola il punteggio llms.txt con qualità graduata."""
+    if not llms.found:
+        return 0
+    s = SCORING["llms_found"]
+    s += SCORING["llms_h1"] if llms.has_h1 else 0
+    s += SCORING["llms_sections"] if llms.has_sections else 0
+    s += SCORING["llms_links"] if llms.has_links else 0
+    # Profondità contenuto: bonus per file più ricchi
+    s += SCORING["llms_depth"] if llms.word_count >= LLMS_DEPTH_WORDS else 0
+    s += SCORING["llms_depth_high"] if llms.word_count >= LLMS_DEPTH_HIGH_WORDS else 0
+    s += SCORING["llms_full"] if llms.has_full else 0
+    return s
+
+
+def _score_schema(schema) -> int:
+    """Calcola il punteggio schema JSON-LD."""
+    s = SCORING["schema_any_valid"] if schema.any_schema_found else 0
+    s += SCORING["schema_faq"] if schema.has_faq else 0
+    s += SCORING["schema_article"] if schema.has_article else 0
+    s += SCORING["schema_organization"] if schema.has_organization else 0
+    s += SCORING["schema_website"] if schema.has_website else 0
+    s += SCORING["schema_sameas"] if schema.has_sameas else 0
+    return s
+
+
+def _score_meta(meta) -> int:
+    """Calcola il punteggio meta tag."""
+    s = SCORING["meta_title"] if meta.has_title else 0
+    s += SCORING["meta_description"] if meta.has_description else 0
+    s += SCORING["meta_canonical"] if meta.has_canonical else 0
+    s += SCORING["meta_og"] if (meta.has_og_title and meta.has_og_description) else 0
+    return s
+
+
+def _score_content(content) -> int:
+    """Calcola il punteggio qualità contenuto."""
+    s = SCORING["content_h1"] if content.has_h1 else 0
+    s += SCORING["content_numbers"] if content.has_numbers else 0
+    s += SCORING["content_links"] if content.has_links else 0
+    s += SCORING["content_word_count"] if content.word_count >= CONTENT_MIN_WORDS else 0
+    s += SCORING["content_heading_hierarchy"] if content.has_heading_hierarchy else 0
+    s += SCORING["content_lists_or_tables"] if content.has_lists_or_tables else 0
+    s += SCORING["content_front_loading"] if content.has_front_loading else 0
+    return s
+
+
+def _score_signals(signals) -> int:
+    """Calcola il punteggio segnali tecnici (v4.0)."""
+    if signals is None:
+        return 0
+    s = SCORING["signals_lang"] if signals.has_lang else 0
+    s += SCORING["signals_rss"] if signals.has_rss else 0
+    s += SCORING["signals_freshness"] if signals.has_freshness else 0
+    return s
