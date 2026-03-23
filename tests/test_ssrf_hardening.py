@@ -46,7 +46,7 @@ class TestResolveAndValidateUrl:
             mock_dns.return_value = [(2, 1, 6, "", ("10.0.0.1", 0))]
             ok, err, ips = resolve_and_validate_url("https://evil.example.com")
             assert ok is False
-            assert "rete privata" in err.lower()
+            assert "private" in err.lower()
             assert ips == []
 
     def test_dns_non_risolvibile_restituisce_lista_vuota(self):
@@ -152,7 +152,7 @@ class TestRedirectSsrfProtection:
         resp, err = fetch_url("https://example.com/page")
         assert resp is None
         assert err is not None
-        assert "non sicuro" in err.lower() or "rete privata" in err.lower()
+        assert "unsafe" in err.lower() or "private" in err.lower()
 
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
@@ -174,7 +174,7 @@ class TestRedirectSsrfProtection:
         assert resp is None
         assert err is not None
         # localhost è bloccato per hostname, non per IP
-        assert "non sicuro" in err.lower() or "non consentito" in err.lower()
+        assert "unsafe" in err.lower() or "not allowed" in err.lower()
 
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
@@ -368,7 +368,7 @@ class TestBodyStreamingSizeCheck:
 
         resp, err = fetch_url("https://evil.example.com")
         assert resp is None
-        assert "non sicuro" in err.lower() or err is not None
+        assert "unsafe" in err.lower() or err is not None
         # La sessione non deve essere stata creata
         mock_create.assert_not_called()
 

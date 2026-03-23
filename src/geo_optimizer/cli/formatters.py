@@ -92,48 +92,48 @@ def format_audit_text(result: AuditResult) -> str:
 
     # Robots
     lines.append("")
-    lines.append(_section_header("1. ROBOTS.TXT — Accesso Bot AI"))
+    lines.append(_section_header("1. ROBOTS.TXT — AI Bot Access"))
     if not result.robots.found:
-        lines.append("  ❌ robots.txt non trovato")
+        lines.append("  ❌ robots.txt not found")
     else:
-        lines.append("  ✅ robots.txt trovato")
+        lines.append("  ✅ robots.txt found")
         for bot in result.robots.bots_allowed:
-            lines.append(f"  ✅ {bot} autorizzato ✓")
+            lines.append(f"  ✅ {bot} allowed ✓")
         for bot in result.robots.bots_blocked:
-            lines.append(f"  ⚠️  {bot} bloccato")
+            lines.append(f"  ⚠️  {bot} blocked")
         for bot in result.robots.bots_missing:
-            lines.append(f"  ⚠️  {bot} non configurato")
+            lines.append(f"  ⚠️  {bot} not configured")
         if result.robots.citation_bots_ok:
-            lines.append("  ✅ Tutti i bot CITATION critici sono correttamente configurati")
+            lines.append("  ✅ All critical CITATION bots are correctly configured")
 
     # llms.txt
     lines.append("")
-    lines.append(_section_header("2. LLMS.TXT — File Indice per AI"))
+    lines.append(_section_header("2. LLMS.TXT — AI Index File"))
     if not result.llms.found:
-        lines.append("  ❌ llms.txt non trovato — essenziale per l'indicizzazione AI!")
+        lines.append("  ❌ llms.txt not found — essential for AI indexing!")
     else:
-        lines.append(f"  ✅ llms.txt trovato (~{result.llms.word_count} parole)")
+        lines.append(f"  ✅ llms.txt found (~{result.llms.word_count} words)")
         if result.llms.has_h1:
-            lines.append("  ✅ H1 presente")
+            lines.append("  ✅ H1 present")
         else:
-            lines.append("  ❌ H1 mancante")
+            lines.append("  ❌ H1 missing")
         if result.llms.has_sections:
-            lines.append("  ✅ Sezioni H2 presenti")
+            lines.append("  ✅ H2 sections present")
         if result.llms.has_links:
-            lines.append("  ✅ Link trovati")
+            lines.append("  ✅ Links found")
 
     # Schema
     lines.append("")
-    lines.append(_section_header("3. SCHEMA JSON-LD — Dati Strutturati"))
+    lines.append(_section_header("3. SCHEMA JSON-LD — Structured Data"))
     if not result.schema.found_types:
-        lines.append("  ❌ Nessuno schema JSON-LD trovato nella homepage")
+        lines.append("  ❌ No JSON-LD schema found on homepage")
     else:
         for t in result.schema.found_types:
             lines.append(f"  ✅ Schema {t} ✓")
         if not result.schema.has_website:
-            lines.append("  ❌ Schema WebSite mancante")
+            lines.append("  ❌ WebSite schema missing")
         if not result.schema.has_faq:
-            lines.append("  ⚠️  Schema FAQPage mancante")
+            lines.append("  ⚠️  FAQPage schema missing")
 
     # Meta
     lines.append("")
@@ -141,11 +141,11 @@ def format_audit_text(result: AuditResult) -> str:
     if result.meta.has_title:
         lines.append(f"  ✅ Title: {result.meta.title_text}")
     else:
-        lines.append("  ❌ Title mancante")
+        lines.append("  ❌ Title missing")
     if result.meta.has_description:
-        lines.append(f"  ✅ Meta description ({result.meta.description_length} caratteri) ✓")
+        lines.append(f"  ✅ Meta description ({result.meta.description_length} characters) ✓")
     else:
-        lines.append("  ❌ Meta description mancante")
+        lines.append("  ❌ Meta description missing")
     if result.meta.has_canonical:
         lines.append(f"  ✅ Canonical: {result.meta.canonical_url}")
     if result.meta.has_og_title:
@@ -157,44 +157,44 @@ def format_audit_text(result: AuditResult) -> str:
 
     # Content
     lines.append("")
-    lines.append(_section_header("5. QUALITÀ DEI CONTENUTI — Best Practice GEO"))
+    lines.append(_section_header("5. CONTENT QUALITY — GEO Best Practices"))
     if result.content.has_h1:
         lines.append(f"  ✅ H1: {result.content.h1_text}")
     else:
-        lines.append("  ⚠️  H1 mancante nella homepage")
-    lines.append(f"  {'✅' if result.content.heading_count >= 3 else '⚠️ '} {result.content.heading_count} intestazioni")
+        lines.append("  ⚠️  H1 missing on homepage")
+    lines.append(f"  {'✅' if result.content.heading_count >= 3 else '⚠️ '} {result.content.heading_count} headings")
     if result.content.has_numbers:
-        lines.append(f"  ✅ {result.content.numbers_count} numeri/statistiche trovati ✓")
+        lines.append(f"  ✅ {result.content.numbers_count} numbers/statistics found ✓")
     else:
-        lines.append("  ⚠️  Pochi dati numerici")
-    lines.append(f"  {'✅' if result.content.word_count >= 300 else '⚠️ '} ~{result.content.word_count} parole")
+        lines.append("  ⚠️  Few numerical data")
+    lines.append(f"  {'✅' if result.content.word_count >= 300 else '⚠️ '} ~{result.content.word_count} words")
     if result.content.has_links:
-        lines.append(f"  ✅ {result.content.external_links_count} link esterni ✓")
+        lines.append(f"  ✅ {result.content.external_links_count} external links ✓")
     else:
-        lines.append("  ⚠️  Nessun link a fonti esterne")
+        lines.append("  ⚠️  No links to external sources")
 
     # Score
     lines.append("")
-    lines.append(_section_header("📊 SCORE GEO FINALE"))
+    lines.append(_section_header("📊 FINAL GEO SCORE"))
     bar_filled = int(result.score / 5)
     bar_empty = 20 - bar_filled
     bar = "█" * bar_filled + "░" * bar_empty
     lines.append(f"\n  [{bar}] {result.score}/100")
 
-    # Fix #46: band label in italiano
+    # Fix #46: band labels
     band_labels = {
-        "excellent": "🏆 ECCELLENTE — Il sito è ottimizzato al meglio per i motori AI!",
-        "good": "✅ BUONO — Ottimizzazioni core in place, perfeziona contenuto e schema",
-        "foundation": "⚠️  BASE — Elementi core mancanti, implementa le priorità seguenti",
-        "critical": "❌ CRITICO — Il sito non è visibile ai motori di ricerca AI",
+        "excellent": "🏆 EXCELLENT — Site is well optimized for AI search engines!",
+        "good": "✅ GOOD — Core optimizations in place, fine-tune content and schema",
+        "foundation": "⚠️  FOUNDATION — Core elements missing, implement priority fixes",
+        "critical": "❌ CRITICAL — Site is not visible to AI search engines",
     }
     lines.append(f"\n  {band_labels.get(result.band, result.band)}")
-    lines.append("\n  Fasce score: 0–40 = critico | 41–70 = base | 71–90 = buono | 91–100 = eccellente")
+    lines.append("\n  Score bands: 0–40 = critical | 41–70 = foundation | 71–90 = good | 91–100 = excellent")
 
     # Recommendations
-    lines.append("\n  📋 PROSSIMI PASSI PRIORITARI:")
+    lines.append("\n  📋 PRIORITY NEXT STEPS:")
     if not result.recommendations:
-        lines.append("  🎉 Ottimo! Tutte le ottimizzazioni principali sono implementate.")
+        lines.append("  🎉 Excellent! All main optimizations are implemented.")
     else:
         for i, action in enumerate(result.recommendations, 1):
             lines.append(f"  {i}. {action}")

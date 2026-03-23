@@ -340,19 +340,19 @@ def build_recommendations(base_url, robots, llms, schema, meta, content) -> list
     recommendations = []
 
     if not robots.citation_bots_ok:
-        recommendations.append("Aggiorna robots.txt includendo tutti i bot AI (GPTBot, ClaudeBot, PerplexityBot)")
+        recommendations.append("Update robots.txt to include all AI bots (GPTBot, ClaudeBot, PerplexityBot)")
     if not llms.found:
-        recommendations.append(f"Crea /llms.txt per l'indicizzazione AI: geo llms --base-url {base_url}")
+        recommendations.append(f"Create /llms.txt for AI indexing: geo llms --base-url {base_url}")
     if not schema.has_website:
-        recommendations.append("Aggiungi schema JSON-LD di tipo WebSite alla homepage")
+        recommendations.append("Add WebSite JSON-LD schema to homepage")
     if not schema.has_faq:
-        recommendations.append("Aggiungi schema FAQPage con le domande frequenti del sito")
+        recommendations.append("Add FAQPage schema with site FAQs")
     if not meta.has_description:
-        recommendations.append("Aggiungi meta description ottimizzata (150-160 caratteri)")
+        recommendations.append("Add optimized meta description (150-160 characters)")
     if not content.has_numbers:
-        recommendations.append("Inserisci dati numerici e statistiche concrete (+40% visibilità AI)")
+        recommendations.append("Add numerical data and concrete statistics (+40% AI visibility)")
     if not content.has_links:
-        recommendations.append("Cita fonti autorevoli con link esterni (aumenta la credibilità AI)")
+        recommendations.append("Cite authoritative sources with external links (increase AI credibility)")
 
     return recommendations
 

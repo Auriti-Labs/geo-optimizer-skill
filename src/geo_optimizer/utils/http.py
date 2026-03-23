@@ -180,7 +180,7 @@ def fetch_url(
     # Fase 1: Validazione anti-SSRF con risoluzione DNS unica
     ok, err, pinned_ips = resolve_and_validate_url(url)
     if not ok:
-        return None, f"URL non sicuro: {err}"
+        return None, f"Unsafe URL: {err}"
 
     # Fase 2: Fetch con DNS pinning + redirect manuale + streaming
     return _fetch_with_manual_redirects(url, timeout, max_size, pinned_ips)
@@ -254,11 +254,11 @@ def _fetch_with_manual_redirects(
             redirect_count += 1
 
             if redirect_count > _MAX_REDIRECTS:
-                return None, f"Troppi redirect (max: {_MAX_REDIRECTS})"
+                return None, f"Too many redirects (max: {_MAX_REDIRECTS})"
 
             location = r.headers.get("Location", "").strip()
             if not location:
-                return None, "Redirect senza Location header"
+                return None, "Redirect without Location header"
 
             # Risolvi URL relativo rispetto all'URL corrente
             if location.startswith("/"):
@@ -271,7 +271,7 @@ def _fetch_with_manual_redirects(
             # Rivalida il target del redirect (anti-SSRF redirect)
             ok, err, next_ips = resolve_and_validate_url(location)
             if not ok:
-                return None, f"Redirect verso URL non sicuro: {err}"
+                return None, f"Redirect to unsafe URL: {err}"
 
             current_url = location
             current_ips = next_ips
@@ -307,4 +307,4 @@ def _fetch_with_manual_redirects(
 
         return r, None
 
-    return None, f"Troppi redirect (max: {_MAX_REDIRECTS})"
+    return None, f"Too many redirects (max: {_MAX_REDIRECTS})"

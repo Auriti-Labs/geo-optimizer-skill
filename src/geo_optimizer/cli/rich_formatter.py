@@ -78,11 +78,11 @@ def format_audit_rich(result: AuditResult) -> str:
     robots_score = _robots_score(result)
     robots_details = []
     if result.robots.found:
-        robots_details.append(f"{len(result.robots.bots_allowed)} bot consentiti")
+        robots_details.append(f"{len(result.robots.bots_allowed)} bots allowed")
         if result.robots.bots_blocked:
-            robots_details.append(f"{len(result.robots.bots_blocked)} bloccati")
+            robots_details.append(f"{len(result.robots.bots_blocked)} blocked")
     else:
-        robots_details.append("Non trovato")
+        robots_details.append("Not found")
     table.add_row(
         "Robots.txt",
         f"{robots_score}/20",
@@ -94,13 +94,13 @@ def format_audit_rich(result: AuditResult) -> str:
     llms_score = _llms_score(result)
     llms_details = []
     if result.llms.found:
-        llms_details.append(f"~{result.llms.word_count} parole")
+        llms_details.append(f"~{result.llms.word_count} words")
         if result.llms.has_h1:
             llms_details.append("H1")
         if result.llms.has_sections:
-            llms_details.append("sezioni")
+            llms_details.append("sections")
     else:
-        llms_details.append("Non trovato")
+        llms_details.append("Not found")
     table.add_row(
         "llms.txt",
         f"{llms_score}/20",
@@ -110,7 +110,7 @@ def format_audit_rich(result: AuditResult) -> str:
 
     # Schema JSON-LD
     schema_score = _schema_score(result)
-    schema_details = result.schema.found_types if result.schema.found_types else ["Nessuno schema"]
+    schema_details = result.schema.found_types if result.schema.found_types else ["No schema"]
     table.add_row(
         "Schema JSON-LD",
         f"{schema_score}/25",
@@ -133,7 +133,7 @@ def format_audit_rich(result: AuditResult) -> str:
         "Meta Tags",
         f"{meta_score}/20",
         _status_icon(result.meta.has_title and result.meta.has_description),
-        ", ".join(meta_details) if meta_details else "Nessun meta tag",
+        ", ".join(meta_details) if meta_details else "No meta tags",
     )
 
     # Content Quality
@@ -141,7 +141,7 @@ def format_audit_rich(result: AuditResult) -> str:
     content_details = []
     if result.content.has_h1:
         content_details.append("H1")
-    content_details.append(f"~{result.content.word_count} parole")
+    content_details.append(f"~{result.content.word_count} words")
     if result.content.has_numbers:
         content_details.append(f"{result.content.numbers_count} stat")
     if result.content.has_links:

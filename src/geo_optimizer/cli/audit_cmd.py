@@ -36,7 +36,7 @@ from geo_optimizer.utils.validators import validate_public_url
     "--threshold",
     default=None,
     type=int,
-    help="Soglia minima di score (0-100). Se lo score finale è inferiore, exit code 1.",
+    help="Minimum score threshold (0-100). Exit code 1 if score is below.",
 )
 def audit(url, output_format, output_file, verbose, cache, clear_cache, config_file, no_plugins, threshold):
     """Audit a website's GEO (Generative Engine Optimization) readiness."""
@@ -78,7 +78,7 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
         min_score = project_config.audit.min_score
 
     if not url and not clear_cache:
-        raise click.UsageError("Manca l'opzione '--url'. Specificala via CLI o in .geo-optimizer.yml")
+        raise click.UsageError("Missing '--url' option. Specify via CLI or in .geo-optimizer.yml")
 
     # Gestione --clear-cache
     if clear_cache:
@@ -86,7 +86,7 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
 
         fc = FileCache()
         count = fc.clear()
-        click.echo(f"✅ Cache svuotata ({count} file rimossi)")
+        click.echo(f"✅ Cache cleared ({count} files removed)")
         return
 
     # Carica plugin (se non disabilitati)
@@ -98,23 +98,23 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
     # Validazione anti-SSRF: blocca URL verso reti private/interne
     safe, reason = validate_public_url(url if url.startswith(("http://", "https://")) else f"https://{url}")
     if not safe:
-        click.echo(f"\n❌ URL non sicuro: {reason}", err=True)
+        click.echo(f"\n❌ Unsafe URL: {reason}", err=True)
         sys.exit(1)
 
     # Fix #146: feedback visivo durante l'audit (su stderr per non inquinare JSON)
     if output_format != "json":
-        click.echo("⏳ Avvio analisi GEO...", err=True)
-        click.echo("⏳ Verifica robots.txt e accesso bot AI...", err=True)
+        click.echo("⏳ Starting GEO analysis...", err=True)
+        click.echo("⏳ Checking robots.txt and AI bot access...", err=True)
 
     try:
         # Nota: il feedback intermedio viene emesso prima della chiamata perché
         # run_full_audit è sincrono e non ha callback di progresso
         if output_format != "json":
-            click.echo("⏳ Analisi llms.txt...", err=True)
+            click.echo("⏳ Analyzing llms.txt...", err=True)
         result = run_full_audit(url, use_cache=cache, project_config=project_config)
         if output_format != "json":
-            click.echo("⏳ Analisi schema JSON-LD, meta tag e contenuto...", err=True)
-            click.echo("✅ Analisi completata.\n", err=True)
+            click.echo("⏳ Analyzing JSON-LD schema, meta tags and content...", err=True)
+            click.echo("✅ Analysis complete.\n", err=True)
     except SystemExit:
         raise
     except Exception as e:
@@ -135,7 +135,7 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
         if is_rich_available():
             output = format_audit_rich(result)
         else:
-            click.echo("⚠️  rich non installato. Usa: pip install geo-optimizer-skill[rich]", err=True)
+            click.echo("⚠️  rich not installed. Use: pip install geo-optimizer-skill[rich]", err=True)
             output = format_audit_text(result)
     elif output_format == "html":
         from geo_optimizer.cli.html_formatter import format_audit_html
@@ -160,7 +160,7 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
     # min_score da .geo-optimizer.yml → exit 2 (per distinguere dal CLI)
     if min_score > 0 and result.score < min_score:
         click.echo(
-            f"\n❌ Score {result.score}/100 sotto il minimo richiesto ({min_score})",
+            f"\n❌ Score {result.score}/100 below minimum required ({min_score})",
             err=True,
         )
         exit_code = 1 if threshold is not None else 2

@@ -68,20 +68,20 @@ def _validate_url_structure(url: str) -> tuple[bool, str | None, str | None]:
 
     # 1. Verifica schema
     if parsed.scheme not in _ALLOWED_SCHEMES:
-        return False, f"Schema non consentito: '{parsed.scheme}'. Solo http/https.", None
+        return False, f"Scheme not allowed: '{parsed.scheme}'. Only http/https.", None
 
     # 2. Estrai hostname
     hostname = parsed.hostname
     if not hostname:
-        return False, "Hostname mancante o non valido.", None
+        return False, "Missing or invalid hostname.", None
 
     # 3. Blocca nomi host interni noti
     if hostname.lower() in _BLOCKED_HOSTNAMES:
-        return False, f"Host non consentito: '{hostname}'.", None
+        return False, f"Host not allowed: '{hostname}'.", None
 
     # 4. Blocca URL con credenziali embedded (user:pass@host)
     if "@" in (parsed.netloc or ""):
-        return False, "URL con credenziali embedded non consentiti.", None
+        return False, "URLs with embedded credentials not allowed.", None
 
     return True, None, hostname
 
@@ -101,11 +101,11 @@ def _check_ip_blocked(ip_str: str) -> tuple[bool, str | None]:
     # Controlla blocklist esplicita
     for network in _BLOCKED_NETWORKS:
         if ip_obj in network:
-            return True, (f"L'indirizzo '{ip_str}' risolto per l'host è in una rete privata/riservata.")
+            return True, (f"Address '{ip_str}' is in a private/reserved network.")
 
     # Fallback: cattura reti private non nella blocklist esplicita
     if _is_ip_blocked(ip_obj):
-        return True, (f"L'indirizzo '{ip_str}' risolto per l'host è in una rete privata/riservata.")
+        return True, (f"Address '{ip_str}' is in a private/reserved network.")
 
     return False, None
 
@@ -144,7 +144,7 @@ def resolve_and_validate_url(url: str) -> tuple[bool, str | None, list[str]]:
             # Riformula il messaggio con il nome host originale
             return (
                 False,
-                (f"L'indirizzo '{ip_str}' risolto per '{hostname_display}' è in una rete privata/riservata."),
+                (f"Address '{ip_str}' resolved for '{hostname_display}' is in a private/reserved network."),
                 [],
             )
         ip_validi.append(ip_str)
@@ -190,18 +190,16 @@ def validate_safe_path(
     try:
         resolved = Path(file_path).resolve()
     except (OSError, ValueError) as e:
-        return False, f"Percorso non valido: {e}"
+        return False, f"Invalid path: {e}"
 
     if must_exist and not resolved.exists():
-        return False, f"File non trovato: {resolved}"
+        return False, f"File not found: {resolved}"
 
     if must_exist and not resolved.is_file():
-        return False, f"Non è un file: {resolved}"
+        return False, f"Not a file: {resolved}"
 
     if allowed_extensions and resolved.suffix.lower() not in allowed_extensions:
-        return False, (
-            f"Estensione non consentita: '{resolved.suffix}'. Consentite: {', '.join(sorted(allowed_extensions))}"
-        )
+        return False, (f"Extension not allowed: '{resolved.suffix}'. Allowed: {', '.join(sorted(allowed_extensions))}")
 
     return True, None
 

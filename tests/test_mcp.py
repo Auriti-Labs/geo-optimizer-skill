@@ -111,7 +111,7 @@ class TestGeoAuditTool:
         data = json.loads(result)
 
         assert "error" in data
-        assert "non sicuro" in data["error"]
+        assert "Unsafe URL" in data["error"]
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_audit_normalizza_url(self, mock_audit):
@@ -182,7 +182,7 @@ class TestGeoLlmsGenerateTool:
         """geo_llms_generate blocca URL privati."""
         result = geo_llms_generate("http://10.0.0.1")
 
-        assert "non sicuro" in result
+        assert "Unsafe URL" in result
 
 
 # ============================================================================

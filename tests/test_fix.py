@@ -311,7 +311,7 @@ class TestFixCommand:
                 result = runner.invoke(cli, ["fix", "--url", "https://example.com"])
 
         assert result.exit_code == 0
-        assert "PREVIEW" in result.output or "Piano fix" in result.output
+        assert "PREVIEW" in result.output or "Fix plan" in result.output
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_fix_apply_scrive_file(self, mock_audit, tmp_path):
@@ -344,7 +344,7 @@ class TestFixCommand:
         result = runner.invoke(cli, ["fix", "--url", "https://example.com"])
 
         assert result.exit_code == 0
-        assert "Nessun fix necessario" in result.output
+        assert "No fixes needed" in result.output
 
     def test_fix_url_non_sicuro(self):
         """geo fix con URL locale viene bloccato."""
@@ -359,7 +359,7 @@ class TestFixCommand:
         result = runner.invoke(cli, ["fix", "--url", "https://example.com", "--only", "invalido"])
 
         assert result.exit_code != 0
-        assert "non valide" in result.output
+        assert "Invalid categories" in result.output
 
     def test_fix_help(self):
         """geo fix --help funziona."""

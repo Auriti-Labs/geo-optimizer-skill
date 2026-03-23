@@ -124,7 +124,7 @@ class TestSsrfBypassNetworks:
             mock_dns.return_value = [(2, 1, 6, "", ("0.0.0.1", 0))]
             ok, err = validate_public_url("https://evil.example.com")
             assert ok is False
-            assert "rete privata" in err.lower()
+            assert "private" in err.lower()
 
     def test_blocca_cgnat_rfc6598(self):
         """100.64.0.0/10 — CGNAT RFC 6598."""

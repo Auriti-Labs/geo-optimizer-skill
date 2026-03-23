@@ -274,7 +274,7 @@ def inject_schema_into_html(
         must_exist=True,
     )
     if not safe:
-        return False, f"Percorso non valido: {path_err}"
+        return False, f"Invalid path: {path_err}"
 
     if validate:
         schema_type_field = schema_dict.get("@type")

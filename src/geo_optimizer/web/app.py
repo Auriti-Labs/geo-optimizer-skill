@@ -55,12 +55,12 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
                 except (ValueError, TypeError):
                     return JSONResponse(
                         status_code=400,
-                        content={"detail": "Header Content-Length non valido."},
+                        content={"detail": "Invalid Content-Length header."},
                     )
                 if length_bytes > _MAX_BODY_BYTES:
                     return JSONResponse(
                         status_code=413,
-                        content={"detail": f"Body troppo grande. Limite: {_MAX_BODY_BYTES} byte."},
+                        content={"detail": f"Body too large. Limit: {_MAX_BODY_BYTES} bytes."},
                     )
         return await call_next(request)
 
@@ -291,7 +291,7 @@ async def audit_get(
     """Esegui audit GEO via GET."""
     # Fix #95: usa _get_client_ip per gestire request.client None e proxy trusted
     if not _check_rate_limit(_get_client_ip(request)):
-        raise HTTPException(status_code=429, detail="Troppe richieste. Riprova tra poco.")
+        raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
     return await _run_audit(url)
 
 
@@ -307,11 +307,11 @@ async def audit_post(request: Request, body: AuditRequest):
     if not _verify_bearer_token(request):
         raise HTTPException(
             status_code=401,
-            detail="Token di autenticazione mancante o non valido.",
+            detail="Missing or invalid authentication token.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     if not _check_rate_limit(_get_client_ip(request)):
-        raise HTTPException(status_code=429, detail="Troppe richieste. Riprova tra poco.")
+        raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
     return await _run_audit(body.url)
 
 
@@ -320,11 +320,11 @@ async def report(report_id: str):
     """Report temporaneo valido per 1 ora, conservato in memoria. Riavviare il server azzera tutti i report."""
     # Valida che report_id sia un hash esadecimale valido
     if not report_id.isalnum() or len(report_id) > 64:
-        raise HTTPException(status_code=400, detail="ID report non valido")
+        raise HTTPException(status_code=400, detail="Invalid report ID")
 
     entry = _audit_cache.get(report_id)
     if not entry:
-        raise HTTPException(status_code=404, detail="Report non trovato o scaduto")
+        raise HTTPException(status_code=404, detail="Report not found or expired")
 
     from geo_optimizer.cli.html_formatter import format_audit_html
 
@@ -350,7 +350,7 @@ async def badge(
 
     # Fix #95: usa _get_client_ip per gestire request.client None e proxy trusted
     if not _check_rate_limit(_get_client_ip(request)):
-        raise HTTPException(status_code=429, detail="Troppe richieste. Riprova tra poco.")
+        raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
 
     # Normalizza URL
     if not url.startswith(("http://", "https://")):
@@ -359,7 +359,7 @@ async def badge(
     # Validazione anti-SSRF
     safe, reason = validate_public_url(url)
     if not safe:
-        raise HTTPException(status_code=400, detail=f"URL non sicuro: {reason}")
+        raise HTTPException(status_code=400, detail=f"Unsafe URL: {reason}")
 
     # Controlla cache o esegui audit
     cached = _get_cached(url)
@@ -426,7 +426,7 @@ async def _run_audit(url: str) -> JSONResponse:
     # Validazione anti-SSRF
     safe, reason = validate_public_url(url)
     if not safe:
-        raise HTTPException(status_code=400, detail=f"URL non sicuro: {reason}")
+        raise HTTPException(status_code=400, detail=f"Unsafe URL: {reason}")
 
     # Controlla cache
     cached = _get_cached(url)
@@ -449,13 +449,13 @@ async def _run_audit(url: str) -> JSONResponse:
         logger.warning("Audit timeout (60s) per URL: %s", url)
         raise HTTPException(
             status_code=504,
-            detail="Audit timeout: il sito impiega troppo tempo a rispondere.",
+            detail="Audit timeout: site takes too long to respond.",
         ) from exc
     except Exception as e:
         logger.error("Errore audit per %s: %s", url, e)
         raise HTTPException(
             status_code=500,
-            detail="Errore interno durante l'audit. Riprova più tardi.",
+            detail="Internal error during audit. Try again later.",
         ) from e
 
     # Serializza risultato

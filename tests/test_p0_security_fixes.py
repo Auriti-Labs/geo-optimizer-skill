@@ -67,7 +67,7 @@ class TestValidatePublicUrl:
     def test_blocca_schema_non_consentito(self):
         ok, err = validate_public_url("file:///etc/passwd")
         assert ok is False
-        assert "Schema non consentito" in err
+        assert "Scheme not allowed" in err
 
     def test_blocca_ftp(self):
         ok, err = validate_public_url("ftp://internal.server/data")
@@ -76,7 +76,7 @@ class TestValidatePublicUrl:
     def test_blocca_credenziali_embedded(self):
         ok, err = validate_public_url("https://user:pass@example.com")
         assert ok is False
-        assert "credenziali" in err.lower()
+        assert "credentials" in err.lower()
 
     def test_blocca_dns_risolve_a_ip_privato(self):
         """DNS rebinding: hostname pubblico che risolve a IP privato."""
@@ -86,7 +86,7 @@ class TestValidatePublicUrl:
             ]
             ok, err = validate_public_url("https://evil.example.com")
             assert ok is False
-            assert "rete privata" in err.lower()
+            assert "private" in err.lower()
 
     def test_dns_non_risolvibile_passa(self):
         """DNS non risolvibile non è un errore di sicurezza."""
@@ -107,7 +107,7 @@ class TestValidatePublicUrl:
     def test_hostname_mancante(self):
         ok, err = validate_public_url("https://")
         assert ok is False
-        assert "Hostname" in err
+        assert "hostname" in err.lower()
 
 
 # ============================================================================
@@ -458,9 +458,9 @@ class TestValidateSafePath:
     def test_estensione_non_consentita(self):
         ok, err = validate_safe_path("/tmp/test.exe", allowed_extensions={".html", ".htm"})
         assert ok is False
-        assert "Estensione non consentita" in err
+        assert "Extension not allowed" in err
 
     def test_file_non_esistente_con_must_exist(self):
         ok, err = validate_safe_path("/tmp/nonexistent_file_xyz.html", must_exist=True)
         assert ok is False
-        assert "non trovato" in err.lower()
+        assert "not found" in err.lower()

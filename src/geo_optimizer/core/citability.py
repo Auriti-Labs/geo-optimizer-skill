@@ -556,15 +556,15 @@ def detect_keyword_stuffing(soup) -> MethodScore:
 
 # Suggerimenti per miglioramento per ogni metodo non rilevato
 _IMPROVEMENT_SUGGESTIONS = {
-    "quotation_addition": "Aggiungi citazioni con attribuzione in <blockquote> (+41% visibilità AI)",
-    "statistics_addition": "Inserisci dati quantitativi: percentuali, cifre, metriche (+33%)",
-    "fluency_optimization": "Migliora la fluidità con paragrafi più lunghi e connettivi logici (+29%)",
-    "cite_sources": "Cita fonti autorevoli (.edu, .gov, Wikipedia) con link esterni (+27%)",
-    "technical_terms": "Usa terminologia tecnica specifica del dominio (+18%)",
-    "authoritative_tone": "Aggiungi bio autore con credenziali e tono assertivo (+16%)",
-    "easy_to_understand": "Migliora leggibilità: frasi brevi, heading gerarchici, FAQ (+14%)",
-    "unique_words": "Varia il vocabolario: usa sinonimi, evita ripetizioni (+7%)",
-    "keyword_stuffing": "Riduci la densità delle parole chiave ripetute (-9% se presente)",
+    "quotation_addition": "Add attributed quotes in <blockquote> (+41% AI visibility)",
+    "statistics_addition": "Include quantitative data: percentages, figures, metrics (+33%)",
+    "fluency_optimization": "Improve fluency with longer paragraphs and logical connectives (+29%)",
+    "cite_sources": "Cite authoritative sources (.edu, .gov, Wikipedia) with external links (+27%)",
+    "technical_terms": "Use domain-specific technical terminology (+18%)",
+    "authoritative_tone": "Add author bio with credentials and assertive tone (+16%)",
+    "easy_to_understand": "Improve readability: short sentences, hierarchical headings, FAQ (+14%)",
+    "unique_words": "Vary vocabulary: use synonyms, avoid repetitions (+7%)",
+    "keyword_stuffing": "Reduce density of repeated keywords (-9% if present)",
 }
 
 # Ordine per impatto decrescente (escluso keyword_stuffing che è penalità)

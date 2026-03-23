@@ -15,22 +15,22 @@ from geo_optimizer.utils.validators import validate_public_url
 
 
 @click.command()
-@click.option("--url", required=True, help="URL del sito da ottimizzare")
+@click.option("--url", required=True, help="URL of the site to optimize")
 @click.option(
     "--output-dir",
     default="./geo-fixes",
-    help="Directory di output per i file generati (default: ./geo-fixes/)",
+    help="Output directory for generated files (default: ./geo-fixes/)",
 )
-@click.option("--dry-run", is_flag=True, default=True, help="Mostra preview senza scrivere (default)")
-@click.option("--apply", "do_apply", is_flag=True, help="Scrivi i file generati nella directory di output")
+@click.option("--dry-run", is_flag=True, default=True, help="Show preview without writing (default)")
+@click.option("--apply", "do_apply", is_flag=True, help="Write generated files to output directory")
 @click.option(
     "--only",
     default=None,
-    help="Filtra categorie: robots,llms,schema,meta (separate da virgola)",
+    help="Filter categories: robots,llms,schema,meta (comma-separated)",
 )
-@click.option("--config", "config_file", default=None, help="Percorso .geo-optimizer.yml")
+@click.option("--config", "config_file", default=None, help="Path to .geo-optimizer.yml")
 def fix(url, output_dir, dry_run, do_apply, only, config_file):
-    """Genera automaticamente fix GEO per il sito."""
+    """Automatically generate GEO fixes for the site."""
     # Se --apply è specificato, disabilita dry-run
     if do_apply:
         dry_run = False
@@ -39,7 +39,7 @@ def fix(url, output_dir, dry_run, do_apply, only, config_file):
     safe_url = url if url.startswith(("http://", "https://")) else f"https://{url}"
     safe, reason = validate_public_url(safe_url)
     if not safe:
-        click.echo(f"\n❌ URL non sicuro: {reason}", err=True)
+        click.echo(f"\n❌ Unsafe URL: {reason}", err=True)
         sys.exit(1)
 
     # Parsing filtro --only
@@ -49,12 +49,12 @@ def fix(url, output_dir, dry_run, do_apply, only, config_file):
         valid_categories = {"robots", "llms", "schema", "meta"}
         invalid = only_set - valid_categories
         if invalid:
-            click.echo(f"❌ Categorie non valide: {', '.join(invalid)}", err=True)
-            click.echo(f"   Categorie valide: {', '.join(sorted(valid_categories))}", err=True)
+            click.echo(f"❌ Invalid categories: {', '.join(invalid)}", err=True)
+            click.echo(f"   Valid categories: {', '.join(sorted(valid_categories))}", err=True)
             sys.exit(1)
 
     # Esegui audit
-    click.echo("⏳ Esecuzione audit GEO...", err=True)
+    click.echo("⏳ Running GEO audit...", err=True)
     from geo_optimizer.core.audit import run_full_audit
 
     # Carica configurazione progetto
@@ -64,37 +64,37 @@ def fix(url, output_dir, dry_run, do_apply, only, config_file):
     project_config = load_config(config_path)
 
     result = run_full_audit(safe_url, project_config=project_config)
-    click.echo(f"📊 Score attuale: {result.score}/100 ({result.band})\n", err=True)
+    click.echo(f"📊 Current score: {result.score}/100 ({result.band})\n", err=True)
 
     # Genera fix
-    click.echo("🔧 Generazione fix...\n", err=True)
+    click.echo("🔧 Generating fixes...\n", err=True)
     from geo_optimizer.core.fixer import run_all_fixes
 
     plan = run_all_fixes(url=safe_url, audit_result=result, only=only_set)
 
     if not plan.fixes:
-        click.echo("✅ Nessun fix necessario — il sito è già ottimizzato!")
+        click.echo("✅ No fixes needed — the site is already optimized!")
         return
 
     # Mostra piano
-    click.echo(f"📋 Piano fix — {len(plan.fixes)} correzioni trovate:\n")
+    click.echo(f"📋 Fix plan — {len(plan.fixes)} fixes found:\n")
 
     for i, fix_item in enumerate(plan.fixes, 1):
-        action_label = {"create": "CREA", "append": "AGGIUNGI", "snippet": "SNIPPET"}.get(fix_item.action, "FIX")
+        action_label = {"create": "CREATE", "append": "APPEND", "snippet": "SNIPPET"}.get(fix_item.action, "FIX")
         click.echo(f"  {i}. [{action_label}] {fix_item.description}")
         click.echo(f"     → {fix_item.file_name}")
 
     if plan.skipped:
-        click.echo(f"\n  Saltati: {len(plan.skipped)}")
+        click.echo(f"\n  Skipped: {len(plan.skipped)}")
         for s in plan.skipped:
             click.echo(f"    - {s}")
 
-    click.echo(f"\n📈 Score stimato dopo i fix: {plan.score_before}/100 → {plan.score_estimated_after}/100")
+    click.echo(f"\n📈 Estimated score after fixes: {plan.score_before}/100 → {plan.score_estimated_after}/100")
 
     if dry_run:
         # Mostra preview del contenuto
         click.echo("\n" + "=" * 60)
-        click.echo("PREVIEW (usa --apply per scrivere i file)")
+        click.echo("PREVIEW (use --apply to write the files)")
         click.echo("=" * 60)
 
         for fix_item in plan.fixes:
@@ -105,11 +105,11 @@ def fix(url, output_dir, dry_run, do_apply, only, config_file):
             lines = fix_item.content.split("\n")
             if len(lines) > 30:
                 click.echo("\n".join(lines[:30]))
-                click.echo(f"\n  ... ({len(lines) - 30} righe rimanenti)")
+                click.echo(f"\n  ... ({len(lines) - 30} remaining lines)")
             else:
                 click.echo(fix_item.content)
 
-        click.echo(f"\n💡 Esegui: geo fix --url {url} --apply")
+        click.echo(f"\n💡 Run: geo fix --url {url} --apply")
     else:
         # Scrivi file
         output_path = Path(output_dir)
@@ -120,5 +120,5 @@ def fix(url, output_dir, dry_run, do_apply, only, config_file):
             file_path.write_text(fix_item.content, encoding="utf-8")
             click.echo(f"  ✅ {file_path}")
 
-        click.echo(f"\n✅ {len(plan.fixes)} file scritti in {output_path}/")
-        click.echo(f"📈 Score stimato: {plan.score_before}/100 → {plan.score_estimated_after}/100")
+        click.echo(f"\n✅ {len(plan.fixes)} files written to {output_path}/")
+        click.echo(f"📈 Estimated score: {plan.score_before}/100 → {plan.score_estimated_after}/100")

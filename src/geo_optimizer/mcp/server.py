@@ -52,14 +52,14 @@ def _normalize_url(url: str) -> str:
 
 @mcp.tool()
 def geo_audit(url: str) -> str:
-    """Esegue un audit GEO completo su un sito web.
+    """Run a complete GEO audit on a website.
 
-    Analizza 5 aree: robots.txt (accesso bot AI), llms.txt (indice AI),
-    schema JSON-LD, meta tag SEO e qualità contenuto.
-    Restituisce score 0-100 con dettagli e raccomandazioni.
+    Analyzes 5 areas: robots.txt (AI bot access), llms.txt (AI index),
+    JSON-LD schema, SEO meta tags and content quality.
+    Returns score 0-100 with details and recommendations.
 
     Args:
-        url: URL del sito da auditare (es. https://example.com)
+        url: URL of the site to audit (e.g. https://example.com)
     """
     from geo_optimizer.utils.validators import validate_public_url
 
@@ -68,7 +68,7 @@ def geo_audit(url: str) -> str:
     # Validazione anti-SSRF
     safe, reason = validate_public_url(url)
     if not safe:
-        return json.dumps({"error": f"URL non sicuro: {reason}"})
+        return json.dumps({"error": f"Unsafe URL: {reason}"})
 
     try:
         from geo_optimizer.core.audit import run_full_audit
@@ -84,18 +84,18 @@ def geo_audit(url: str) -> str:
 
 @mcp.tool()
 def geo_fix(url: str, only: str = "") -> str:
-    """Genera fix GEO automatici per un sito web.
+    """Generate automatic GEO fixes for a website.
 
-    Analizza il sito e genera artefatti correttivi:
-    - robots.txt con bot AI mancanti
-    - llms.txt completo via sitemap
-    - Schema JSON-LD mancanti (WebSite, Organization)
-    - Meta tag HTML mancanti
+    Analyzes the site and generates corrective artifacts:
+    - robots.txt with missing AI bots
+    - Complete llms.txt via sitemap
+    - Missing JSON-LD schemas (WebSite, Organization)
+    - Missing HTML meta tags
 
     Args:
-        url: URL del sito da ottimizzare (es. https://example.com)
-        only: Filtra categorie (virgola-separato): robots,llms,schema,meta.
-              Vuoto = tutte le categorie.
+        url: URL of the site to optimize (e.g. https://example.com)
+        only: Filter categories (comma-separated): robots,llms,schema,meta.
+              Empty = all categories.
     """
     from geo_optimizer.utils.validators import validate_public_url
 
@@ -103,7 +103,7 @@ def geo_fix(url: str, only: str = "") -> str:
 
     safe, reason = validate_public_url(url)
     if not safe:
-        return json.dumps({"error": f"URL non sicuro: {reason}"})
+        return json.dumps({"error": f"Unsafe URL: {reason}"})
 
     # Parsing filtro categorie
     only_set = None
@@ -124,14 +124,14 @@ def geo_fix(url: str, only: str = "") -> str:
 
 @mcp.tool()
 def geo_llms_generate(url: str) -> str:
-    """Genera il contenuto llms.txt per un sito web.
+    """Generate llms.txt content for a website.
 
-    llms.txt è il file indice AI alla radice del sito (spec llmstxt.org).
-    Scopre il sitemap, categorizza gli URL e genera il file completo
-    con header H1, descrizione, sezioni H2 e link markdown.
+    llms.txt is the AI index file at the site root (spec llmstxt.org).
+    Discovers sitemap, categorizes URLs and generates the complete file
+    with H1 header, description, H2 sections and markdown links.
 
     Args:
-        url: URL base del sito (es. https://example.com)
+        url: Base URL of the site (e.g. https://example.com)
     """
     from geo_optimizer.utils.validators import validate_public_url
 
@@ -139,7 +139,7 @@ def geo_llms_generate(url: str) -> str:
 
     safe, reason = validate_public_url(url)
     if not safe:
-        return f"Errore: URL non sicuro — {reason}"
+        return f"Error: Unsafe URL — {reason}"
 
     try:
         from geo_optimizer.core.llms_generator import (
@@ -162,11 +162,11 @@ def geo_llms_generate(url: str) -> str:
             base_url=url,
             urls=urls,
             site_name=site_name,
-            description=f"Informazioni su {site_name} per motori di ricerca AI",
+            description=f"Information about {site_name} for AI search engines",
         )
         return content
     except Exception as e:
-        return f"Errore: {e}"
+        return f"Error: {e}"
 
 
 # ─── Tool 4: geo_citability ───────────────────────────────────────────────────
@@ -174,17 +174,17 @@ def geo_llms_generate(url: str) -> str:
 
 @mcp.tool()
 def geo_citability(url: str) -> str:
-    """Analizza la citabilità del contenuto con i 9 metodi Princeton GEO.
+    """Analyze content citability using the 9 Princeton GEO methods.
 
-    Valuta il contenuto della pagina secondo i 9 metodi del paper
-    Princeton KDD 2024 (Quotation +41%, Statistics +33%, Fluency +29%,
+    Evaluates page content according to the 9 methods from the
+    Princeton KDD 2024 paper (Quotation +41%, Statistics +33%, Fluency +29%,
     Cite Sources +27%, Technical Terms +18%, Authoritative +16%,
     Easy-to-Understand +14%, Unique Words +7%, Keyword Stuffing -9%).
 
-    Ritorna score 0-100 con dettaglio per metodo e suggerimenti.
+    Returns score 0-100 with per-method detail and suggestions.
 
     Args:
-        url: URL della pagina da analizzare (es. https://example.com)
+        url: URL of the page to analyze (e.g. https://example.com)
     """
     from geo_optimizer.utils.validators import validate_public_url
 
@@ -192,7 +192,7 @@ def geo_citability(url: str) -> str:
 
     safe, reason = validate_public_url(url)
     if not safe:
-        return json.dumps({"error": f"URL non sicuro: {reason}"})
+        return json.dumps({"error": f"Unsafe URL: {reason}"})
 
     try:
         from bs4 import BeautifulSoup
@@ -202,7 +202,7 @@ def geo_citability(url: str) -> str:
 
         r, err = fetch_url(url)
         if err or not r:
-            return json.dumps({"error": f"Impossibile raggiungere {url}: {err}"})
+            return json.dumps({"error": f"Cannot reach {url}: {err}"})
 
         soup = BeautifulSoup(r.text, "html.parser")
         result = audit_citability(soup, url)
@@ -216,14 +216,14 @@ def geo_citability(url: str) -> str:
 
 @mcp.tool()
 def geo_schema_validate(json_string: str, schema_type: str = "") -> str:
-    """Valida uno schema JSON-LD contro i requisiti schema.org.
+    """Validate a JSON-LD schema against schema.org requirements.
 
-    Verifica che il JSON-LD contenga tutti i campi obbligatori
-    per il tipo schema specificato (es. WebSite, FAQPage, Article).
+    Checks that the JSON-LD contains all required fields
+    for the specified schema type (e.g. WebSite, FAQPage, Article).
 
     Args:
-        json_string: Stringa JSON-LD da validare
-        schema_type: Tipo schema (es. "website", "faqpage"). Se vuoto, viene rilevato automaticamente.
+        json_string: JSON-LD string to validate
+        schema_type: Schema type (e.g. "website", "faqpage"). If empty, auto-detected.
     """
     try:
         from geo_optimizer.core.schema_validator import validate_jsonld_string
