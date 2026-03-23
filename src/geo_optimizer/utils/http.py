@@ -213,15 +213,15 @@ def _fetch_with_manual_redirects(
     current_ips = pinned_ips
     redirect_count = 0
 
-    while redirect_count <= _MAX_REDIRECTS:
-        # Crea sessione con IP pinnato per questo hop
-        session = create_session_with_retry(
-            total_retries=3,
-            backoff_factor=1.0,
-            status_forcelist=[408, 429, 500, 502, 503, 504],
-            pinned_ips=current_ips if current_ips else None,
-        )
+    # Riusa la stessa sessione finché gli IP pinnati non cambiano (fix #122)
+    session = create_session_with_retry(
+        total_retries=3,
+        backoff_factor=1.0,
+        status_forcelist=[408, 429, 500, 502, 503, 504],
+        pinned_ips=current_ips if current_ips else None,
+    )
 
+    while redirect_count <= _MAX_REDIRECTS:
         try:
             # stream=True: il body non viene scaricato subito in RAM
             r = session.get(
@@ -274,7 +274,15 @@ def _fetch_with_manual_redirects(
                 return None, f"Redirect to unsafe URL: {err}"
 
             current_url = location
-            current_ips = next_ips
+            # Ricrea sessione solo se gli IP sono cambiati (redirect a host diverso)
+            if next_ips != current_ips:
+                current_ips = next_ips
+                session = create_session_with_retry(
+                    total_retries=3,
+                    backoff_factor=1.0,
+                    status_forcelist=[408, 429, 500, 502, 503, 504],
+                    pinned_ips=current_ips if current_ips else None,
+                )
             continue
 
         # Risposta finale: scarica body in streaming o dal buffer già presente.
