@@ -105,10 +105,16 @@ def geo_fix(url: str, only: str = "") -> str:
     if not safe:
         return json.dumps({"error": f"Unsafe URL: {reason}"})
 
-    # Parsing filtro categorie
+    # Parsing filtro categorie con validazione (fix #186)
     only_set = None
     if only:
         only_set = {c.strip().lower() for c in only.split(",")}
+        valid = {"robots", "llms", "schema", "meta"}
+        invalid = only_set - valid
+        if invalid:
+            return json.dumps(
+                {"error": f"Invalid categories: {', '.join(sorted(invalid))}. Valid: {', '.join(sorted(valid))}"}
+            )
 
     try:
         from geo_optimizer.core.fixer import run_all_fixes

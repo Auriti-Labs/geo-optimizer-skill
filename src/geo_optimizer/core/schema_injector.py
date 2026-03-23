@@ -182,9 +182,21 @@ def extract_faq_from_html(soup: BeautifulSoup) -> list[dict[str, str]]:
 
 
 def analyze_html_file(file_path: str) -> SchemaAnalysis:
-    """Analyze an HTML file and return found/missing schemas + extracted data."""
-    with open(file_path, encoding="utf-8") as f:
-        content = f.read()
+    """Analyze an HTML file and return found/missing schemas + extracted data.
+
+    Validates file path against traversal attacks and encoding issues (fix #188).
+    """
+    from geo_optimizer.utils.validators import validate_safe_path
+
+    safe, path_err = validate_safe_path(file_path, allowed_extensions={".html", ".htm"}, must_exist=True)
+    if not safe:
+        raise ValueError(f"Invalid file path: {path_err}")
+
+    try:
+        with open(file_path, encoding="utf-8") as f:
+            content = f.read()
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"Cannot decode file (unsupported encoding): {file_path}") from exc
 
     soup = BeautifulSoup(content, "html.parser")
     found_schemas = []

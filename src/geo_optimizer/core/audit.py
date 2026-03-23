@@ -261,10 +261,11 @@ def audit_content_quality(soup, url: str) -> ContentResult:
     result.heading_count = len(headings)
 
     # Fix #98: rimuovi tag script e style prima di estrarre il testo
-    # per evitare falsi positivi nel word count e nell'analisi del contenuto
-    import copy
+    # per evitare falsi positivi nel word count e nell'analisi del contenuto.
+    # Usa re-parse completo (non copy.copy che è shallow e muta l'originale — fix #185)
+    from bs4 import BeautifulSoup as BS
 
-    soup_clean = copy.copy(soup)
+    soup_clean = BS(str(soup), "html.parser")
     for tag in soup_clean(["script", "style"]):
         tag.decompose()
 
@@ -561,16 +562,18 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     if not base_url.startswith(("http://", "https://")):
         base_url = "https://" + base_url
 
-    # Fetch parallelo: homepage + robots.txt + llms.txt
+    # Fetch parallelo: homepage + robots.txt + llms.txt + llms-full.txt
     robots_url = urljoin(base_url, "/robots.txt")
     llms_url = urljoin(base_url, "/llms.txt")
+    llms_full_url = urljoin(base_url, "/llms-full.txt")
 
-    responses = await fetch_urls_async([base_url, robots_url, llms_url])
+    responses = await fetch_urls_async([base_url, robots_url, llms_url, llms_full_url])
 
     # Estrai risposte
     r_home, err_home = responses.get(base_url, (None, "URL non richiesto"))
     r_robots, _ = responses.get(robots_url, (None, None))
     r_llms, _ = responses.get(llms_url, (None, None))
+    r_llms_full, _ = responses.get(llms_full_url, (None, None))
 
     if err_home or not r_home:
         result = AuditResult(url=base_url)
@@ -583,7 +586,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     robots = _audit_robots_from_response(r_robots, bots=effective_bots)
 
     # Sub-audit llms.txt (usa risposta pre-fetched)
-    llms = _audit_llms_from_response(r_llms)
+    llms = _audit_llms_from_response(r_llms, r_full=r_llms_full)
 
     # Sub-audit che lavorano sul DOM (non richiedono fetch aggiuntivo)
     schema = audit_schema(soup, base_url)
@@ -649,15 +652,19 @@ def _audit_robots_from_response(r, bots: dict = None) -> RobotsResult:
     return result
 
 
-def _audit_llms_from_response(r) -> LlmsTxtResult:
-    """Analizza llms.txt da una risposta HTTP già scaricata."""
+def _audit_llms_from_response(r, r_full=None) -> LlmsTxtResult:
+    """Analizza llms.txt da una risposta HTTP già scaricata.
+
+    Args:
+        r: Risposta HTTP di /llms.txt (o None).
+        r_full: Risposta HTTP di /llms-full.txt (o None). Fix #184.
+    """
     result = LlmsTxtResult()
 
     if not r or r.status_code != 200:
         return result
 
     result.found = True
-    # Rimuovi BOM UTF-8 se presente (es. file generati da Yoast SEO)
     content = r.text.lstrip("\ufeff")
     lines = content.splitlines()
     result.word_count = len(content.split())
@@ -677,5 +684,9 @@ def _audit_llms_from_response(r) -> LlmsTxtResult:
     links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
     if links:
         result.has_links = True
+
+    # Check /llms-full.txt — fix #184: ora funziona anche nel path async
+    if r_full and r_full.status_code == 200 and len(r_full.text.strip()) > 0:
+        result.has_full = True
 
     return result

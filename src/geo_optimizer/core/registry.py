@@ -13,6 +13,7 @@ Il check deve implementare il Protocol ``AuditCheck``.
 """
 
 import sys
+import threading
 from dataclasses import dataclass, field
 from typing import Any, Optional, Protocol, runtime_checkable
 
@@ -59,6 +60,7 @@ class CheckRegistry:
 
     _checks: dict[str, AuditCheck] = {}
     _loaded_entry_points: bool = False
+    _lock = threading.Lock()  # Thread-safe entry point loading (fix #189)
 
     @classmethod
     def register(cls, check: AuditCheck) -> None:
@@ -112,10 +114,11 @@ class CheckRegistry:
         Usa importlib.metadata per scoprire plugin installati.
         Ritorna il numero di plugin caricati con successo.
         """
-        if cls._loaded_entry_points:
-            return 0
+        with cls._lock:
+            if cls._loaded_entry_points:
+                return 0
+            cls._loaded_entry_points = True
 
-        cls._loaded_entry_points = True
         loaded = 0
 
         from importlib.metadata import entry_points

@@ -246,23 +246,20 @@ def generate_meta_fix(result: AuditResult, base_url: str) -> FixItem | None:
 def _estimate_score_after(result: AuditResult, fixes: list[FixItem]) -> int:
     """Stima lo score dopo l'applicazione dei fix.
 
-    Calcolo semplificato: prende lo score attuale e aggiunge i punti
-    potenziali per ogni categoria fixata.
+    Calcola il delta come differenza tra il punteggio massimo raggiungibile
+    e il punteggio attuale per ogni categoria fixata (fix #187).
     """
+    from geo_optimizer.cli.scoring_helpers import robots_score
     from geo_optimizer.models.config import SCORING
 
     bonus = 0
     categories_fixed = {f.category for f in fixes}
 
     if "robots" in categories_fixed:
-        # Se creiamo robots.txt da zero: punteggio pieno robots
-        has_robot_create = any(f.category == "robots" and f.action == "create" for f in fixes)
-        if has_robot_create:
-            bonus += SCORING["robots_found"] + SCORING["robots_citation_ok"]
-        else:
-            # Appendiamo bot mancanti — stimiamo che i citation bot saranno ok
-            if not result.robots.citation_bots_ok:
-                bonus += SCORING["robots_citation_ok"] - SCORING.get("robots_some_allowed", 0)
+        # Delta = massimo possibile - attuale (fix #187)
+        max_robots = SCORING["robots_found"] + SCORING["robots_citation_ok"]
+        current_robots = robots_score(result)
+        bonus += max_robots - current_robots
 
     if "llms" in categories_fixed and not result.llms.found:
         bonus += SCORING["llms_found"] + SCORING["llms_h1"] + SCORING["llms_sections"] + SCORING["llms_links"]
