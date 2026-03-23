@@ -4,8 +4,9 @@ Rich formatter for premium CLI output.
 Requires ``rich`` as optional dependency:
     pip install geo-optimizer-skill[rich]
 
-Provides branded panels, color-coded score gauge, per-check progress bars,
-and animated spinner. Graceful fallback via :func:`is_rich_available`.
+Provides branded panels, color-coded score gauge, per-check card panels
+with progress bars, Tree view for schema types, and animated spinner.
+Graceful fallback via :func:`is_rich_available`.
 """
 
 from __future__ import annotations
@@ -31,12 +32,13 @@ from geo_optimizer.cli.scoring_helpers import (
 from geo_optimizer.models.results import AuditResult
 
 try:
+    from rich import box
     from rich.align import Align
     from rich.console import Console
     from rich.panel import Panel
-    from rich.rule import Rule
     from rich.table import Table
     from rich.text import Text
+    from rich.tree import Tree
 
     RICH_AVAILABLE = True
 except ImportError:
@@ -71,7 +73,7 @@ def _score_color(score: int, max_score: int = 100) -> str:
     return "red"
 
 
-def _render_bar(score: int, max_score: int, width: int = 48) -> Text:
+def _render_bar(score: int, max_score: int, width: int = 60) -> Text:
     """Render a colored progress bar as Rich Text."""
     pct = score / max_score if max_score > 0 else 0
     filled = int(pct * width)
@@ -85,51 +87,80 @@ def _render_bar(score: int, max_score: int, width: int = 48) -> Text:
     return bar
 
 
-# ── Detail builders ────────────────────────────────────────────────────────────
+def _stack(*renderables) -> Table:
+    """Stack renderables vertically using an invisible Table layout."""
+    t = Table(show_header=False, box=None, expand=True, padding=0)
+    t.add_column(ratio=1)
+    for r in renderables:
+        t.add_row(r)
+    return t
 
 
-def _robots_details(result: AuditResult) -> str:
+# ── Check content builders ─────────────────────────────────────────────────────
+
+
+def _build_robots_content(result: AuditResult, bar: Text):
+    """Build inner content for Robots.txt check panel."""
     if not result.robots.found:
-        return "Not found"
-    parts = [f"{len(result.robots.bots_allowed)} bots allowed"]
-    if result.robots.bots_blocked:
-        parts.append(f"{len(result.robots.bots_blocked)} blocked")
-    return "  •  ".join(parts)
+        detail = Text("Not found", style="dim italic")
+    else:
+        parts = [f"{len(result.robots.bots_allowed)} bots allowed"]
+        if result.robots.bots_blocked:
+            parts.append(f"{len(result.robots.bots_blocked)} blocked")
+        if result.robots.bots_partial:
+            parts.append(f"{len(result.robots.bots_partial)} partial")
+        detail = Text("  •  ".join(parts))
+    return _stack(detail, Text(""), bar)
 
 
-def _llms_details(result: AuditResult) -> str:
+def _build_llms_content(result: AuditResult, bar: Text):
+    """Build inner content for llms.txt check panel."""
     if not result.llms.found:
-        return "Not found"
-    parts = [f"~{result.llms.word_count} words"]
-    if result.llms.has_h1:
-        parts.append("H1")
-    if result.llms.has_sections:
-        parts.append("sections")
-    if result.llms.has_full:
-        parts.append("llms-full.txt")
-    return "  •  ".join(parts)
+        detail = Text("Not found", style="dim italic")
+    else:
+        parts = [f"~{result.llms.word_count} words"]
+        if result.llms.has_h1:
+            parts.append("H1")
+        if result.llms.has_sections:
+            parts.append("sections")
+        if result.llms.has_full:
+            parts.append("llms-full.txt")
+        detail = Text("  •  ".join(parts))
+    return _stack(detail, Text(""), bar)
 
 
-def _schema_details(result: AuditResult) -> str:
+def _build_schema_content(result: AuditResult, bar: Text):
+    """Build inner content for Schema JSON-LD check panel with Tree view."""
     if not result.schema.found_types:
-        return "No schema"
-    return ", ".join(result.schema.found_types[:4])
+        detail = Text("No schema", style="dim italic")
+        return _stack(detail, Text(""), bar)
+
+    tree = Tree("📋 Types", guide_style="dim cyan")
+    for schema_type in result.schema.found_types[:5]:
+        tree.add(f"[bold]{schema_type}[/]")
+    return _stack(tree, Text(""), bar)
 
 
-def _meta_details(result: AuditResult) -> str:
+def _build_meta_content(result: AuditResult, bar: Text):
+    """Build inner content for Meta Tags check panel with inline checkmarks."""
+    meta_checks = [
+        ("title", result.meta.has_title),
+        ("description", result.meta.has_description),
+        ("canonical", result.meta.has_canonical),
+        ("OG", result.meta.has_og_title),
+    ]
     parts = []
-    if result.meta.has_title:
-        parts.append("title")
-    if result.meta.has_description:
-        parts.append("description")
-    if result.meta.has_canonical:
-        parts.append("canonical")
-    if result.meta.has_og_title:
-        parts.append("OG")
-    return ", ".join(parts) if parts else "No meta tags"
+    for label, present in meta_checks:
+        if present:
+            parts.append(f"[green]✓[/] {label}")
+        else:
+            parts.append(f"[red]✗[/] [dim]{label}[/]")
+    detail = Text.from_markup("   ".join(parts))
+    return _stack(detail, Text(""), bar)
 
 
-def _content_details(result: AuditResult) -> str:
+def _build_content_content(result: AuditResult, bar: Text):
+    """Build inner content for Content Quality check panel."""
     parts = []
     if result.content.has_h1:
         parts.append("H1")
@@ -138,17 +169,23 @@ def _content_details(result: AuditResult) -> str:
         parts.append(f"{result.content.numbers_count} stat")
     if result.content.has_links:
         parts.append(f"{result.content.external_links_count} link ext")
-    return ", ".join(parts)
+    detail = Text("  •  ".join(parts))
+    return _stack(detail, Text(""), bar)
 
 
 # ── Main formatter ─────────────────────────────────────────────────────────────
 
 
 def format_audit_rich(result: AuditResult) -> str:
-    """Format AuditResult with premium Rich output.
+    """Format AuditResult with premium Rich card-based output.
 
-    Returns a string with ANSI escape codes for colored terminal output.
-    Does not print directly — the caller (audit_cmd) handles output.
+    Each check is rendered as a colored Panel (card) with:
+    - Title: icon + check name (top-left border)
+    - Subtitle: score (bottom-right border)
+    - Content: details + progress bar
+    - Border color: matches score status
+
+    Returns a string with ANSI codes for colored terminal output.
     """
     from geo_optimizer import __version__
 
@@ -160,9 +197,9 @@ def format_audit_rich(result: AuditResult) -> str:
     header = Text()
     header.append("\n  🔍  ", style="bold")
     header.append("G E O   O P T I M I Z E R", style="bold bright_white")
-    header.append("\n\n  Target   ", style="dim")
+    header.append("\n\n  Target    ", style="dim")
     header.append(result.url, style="bold cyan underline")
-    header.append("\n  Status   ", style="dim")
+    header.append("\n  Response  ", style="dim")
     header.append(str(result.http_status), style="bold")
     header.append(f"  •  {result.page_size:,} bytes", style="dim")
     header.append("\n")
@@ -171,6 +208,7 @@ def format_audit_rich(result: AuditResult) -> str:
     console.print(
         Panel(
             header,
+            box=box.ROUNDED,
             border_style="bright_blue",
             subtitle=f"[dim]v{__version__}[/dim]",
             subtitle_align="right",
@@ -186,7 +224,7 @@ def format_audit_rich(result: AuditResult) -> str:
     score_display.append(" / 100", style="dim")
     console.print(Align.center(score_display))
 
-    # Score bar
+    # Score bar (centered)
     main_filled = int(result.score * 50 / 100)
     main_empty = 50 - main_filled
     main_bar = Text()
@@ -202,85 +240,57 @@ def format_audit_rich(result: AuditResult) -> str:
         "critical": "CRITICAL — Not visible to AI engines",
     }
     band_icons = {"excellent": "🏆", "good": "✅", "foundation": "⚠️ ", "critical": "❌"}
-    icon = band_icons.get(result.band, "")
-    label = band_labels.get(result.band, result.band.upper())
-    console.print(Align.center(Text(f"{icon}  {label}", style=main_color)))
+    band_icon = band_icons.get(result.band, "")
+    band_label = band_labels.get(result.band, result.band.upper())
+    console.print(Align.center(Text(f"{band_icon}  {band_label}", style=main_color)))
     console.print()
 
-    # ── Check results ─────────────────────────────────────────────
-    console.print(Rule("Check Results", style="bright_blue"))
-    console.print()
-
+    # ── Check cards ───────────────────────────────────────────────
     checks = [
-        (
-            "Robots.txt",
-            _robots_score(result),
-            20,
-            result.robots.citation_bots_ok,
-            _robots_details(result),
-        ),
-        (
-            "llms.txt",
-            _llms_score(result),
-            20,
-            result.llms.found and result.llms.has_h1,
-            _llms_details(result),
-        ),
-        (
-            "Schema JSON-LD",
-            _schema_score(result),
-            25,
-            result.schema.has_website,
-            _schema_details(result),
-        ),
-        (
-            "Meta Tags",
-            _meta_score(result),
-            20,
-            result.meta.has_title and result.meta.has_description,
-            _meta_details(result),
-        ),
-        (
-            "Content Quality",
-            _content_score(result),
-            15,
-            result.content.has_h1,
-            _content_details(result),
-        ),
+        ("Robots.txt", _robots_score(result), 20, result.robots.citation_bots_ok, _build_robots_content),
+        ("llms.txt", _llms_score(result), 20, result.llms.found and result.llms.has_h1, _build_llms_content),
+        ("Schema JSON-LD", _schema_score(result), 25, result.schema.has_website, _build_schema_content),
+        ("Meta Tags", _meta_score(result), 20, result.meta.has_title and result.meta.has_description, _build_meta_content),
+        ("Content Quality", _content_score(result), 15, result.content.has_h1, _build_content_content),
     ]
 
-    for name, score, max_score, passed, details in checks:
-        icon_str = _status_icon(passed)
+    for name, score, max_score, passed, builder in checks:
+        icon = _status_icon(passed)
         color = _score_color(score, max_score)
-
-        # Check header: icon + name + right-aligned score
-        ht = Table(show_header=False, box=None, padding=(0, 1), expand=True)
-        ht.add_column(width=3)
-        ht.add_column(ratio=1)
-        ht.add_column(justify="right", width=8)
-        ht.add_row(
-            f" {icon_str}",
-            Text(name, style="bold"),
-            Text(f"{score} / {max_score}", style=f"bold {color}"),
-        )
-        console.print(ht)
-
-        # Details
-        console.print(f"      [dim]{details}[/dim]")
-
-        # Mini progress bar
         bar = _render_bar(score, max_score)
-        bar_line = Text("      ")
-        bar_line.append_text(bar)
-        console.print(bar_line)
-        console.print()
+        content = builder(result, bar)
 
-    # ── Recommendations ───────────────────────────────────────────
+        console.print(
+            Panel(
+                content,
+                title=f"{icon} [bold]{name}[/]",
+                title_align="left",
+                subtitle=f"[bold {color}]{score} / {max_score}[/]",
+                subtitle_align="right",
+                border_style=color,
+                box=box.ROUNDED,
+                padding=(1, 2),
+            )
+        )
+
+    # ── Recommendations card ──────────────────────────────────────
     if result.recommendations:
-        console.print(Rule("Recommendations", style="yellow"))
-        console.print()
+        rec_lines = []
         for i, rec in enumerate(result.recommendations, 1):
-            console.print(f"  [yellow bold]{i}.[/]  {rec}")
-        console.print()
+            rec_lines.append(f"  [yellow bold]{i}.[/]  {rec}")
+        rec_text = "\n".join(rec_lines)
 
+        console.print()
+        console.print(
+            Panel(
+                rec_text,
+                title="💡 [bold]Recommendations[/]",
+                title_align="left",
+                border_style="yellow",
+                box=box.ROUNDED,
+                padding=(1, 2),
+            )
+        )
+
+    console.print()
     return buf.getvalue()
