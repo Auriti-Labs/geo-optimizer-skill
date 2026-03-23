@@ -27,6 +27,7 @@ class CachedResponse:
     content: bytes
     headers: dict[str, str] = field(default_factory=dict)
 
+
 # ─── Robots.txt ──────────────────────────────────────────────────────────────
 
 
@@ -154,11 +155,11 @@ class SitemapUrl:
 class FixItem:
     """Singolo fix generato da geo fix."""
 
-    category: str       # "robots", "llms", "schema", "meta"
-    description: str    # "Aggiunge 5 bot AI mancanti a robots.txt"
-    content: str        # Contenuto generato (testo del file o tag HTML)
-    file_name: str      # "robots.txt", "llms.txt", "schema-website.json"
-    action: str         # "create", "append", "snippet"
+    category: str  # "robots", "llms", "schema", "meta"
+    description: str  # "Aggiunge 5 bot AI mancanti a robots.txt"
+    content: str  # Contenuto generato (testo del file o tag HTML)
+    file_name: str  # "robots.txt", "llms.txt", "schema-website.json"
+    action: str  # "create", "append", "snippet"
 
 
 @dataclass

@@ -157,13 +157,15 @@ def generate_schema_fix(result: AuditResult, base_url: str) -> list[FixItem]:
             "description": result.meta.description_text or f"Sito web {site_name}",
         }
         schema = fill_template(template, values)
-        fixes.append(FixItem(
-            category="schema",
-            description="Genera schema WebSite JSON-LD",
-            content=json.dumps(schema, indent=2, ensure_ascii=False),
-            file_name="schema-website.jsonld",
-            action="snippet",
-        ))
+        fixes.append(
+            FixItem(
+                category="schema",
+                description="Genera schema WebSite JSON-LD",
+                content=json.dumps(schema, indent=2, ensure_ascii=False),
+                file_name="schema-website.jsonld",
+                action="snippet",
+            )
+        )
 
     # Organization schema
     if "Organization" not in result.schema.found_types:
@@ -177,13 +179,15 @@ def generate_schema_fix(result: AuditResult, base_url: str) -> list[FixItem]:
             "logo_url": f"{base_url}/logo.png",
         }
         schema = fill_template(template, values)
-        fixes.append(FixItem(
-            category="schema",
-            description="Genera schema Organization JSON-LD",
-            content=json.dumps(schema, indent=2, ensure_ascii=False),
-            file_name="schema-organization.jsonld",
-            action="snippet",
-        ))
+        fixes.append(
+            FixItem(
+                category="schema",
+                description="Genera schema Organization JSON-LD",
+                content=json.dumps(schema, indent=2, ensure_ascii=False),
+                file_name="schema-organization.jsonld",
+                action="snippet",
+            )
+        )
 
     return fixes
 
@@ -202,7 +206,7 @@ def generate_meta_fix(result: AuditResult, base_url: str) -> FixItem | None:
     tags = []
 
     if not result.meta.has_title:
-        tags.append(f'<title>{site_name}</title>')
+        tags.append(f"<title>{site_name}</title>")
 
     if not result.meta.has_description:
         tags.append(f'<meta name="description" content="Sito web {site_name}">')
@@ -291,6 +295,7 @@ def run_all_fixes(
     """
     if audit_result is None:
         from geo_optimizer.core.audit import run_full_audit
+
         audit_result = run_full_audit(url)
 
     # Normalizza URL

@@ -241,6 +241,7 @@ def audit_content_quality(soup, url: str) -> ContentResult:
     # Fix #98: rimuovi tag script e style prima di estrarre il testo
     # per evitare falsi positivi nel word count e nell'analisi del contenuto
     import copy
+
     soup_clean = copy.copy(soup)
     for tag in soup_clean(["script", "style"]):
         tag.decompose()
@@ -402,7 +403,16 @@ def _build_audit_result(
     plugin_results = {}
     if CheckRegistry.all():
         check_results = CheckRegistry.run_all(base_url, soup=soup)
-        plugin_results = {r.name: {"score": r.score, "max_score": r.max_score, "passed": r.passed, "message": r.message, "details": r.details} for r in check_results}
+        plugin_results = {
+            r.name: {
+                "score": r.score,
+                "max_score": r.max_score,
+                "passed": r.passed,
+                "message": r.message,
+                "details": r.details,
+            }
+            for r in check_results
+        }
 
     return AuditResult(
         url=base_url,

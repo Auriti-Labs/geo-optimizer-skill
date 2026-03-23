@@ -18,25 +18,25 @@ from urllib.parse import urlparse
 # ma i range vengono elencati esplicitamente per chiarezza e audit sicurezza.
 _BLOCKED_NETWORKS = [
     # ── IPv4 ──────────────────────────────────────────────────────────────────
-    ipaddress.ip_network("0.0.0.0/8"),        # "this network" RFC 1122
-    ipaddress.ip_network("127.0.0.0/8"),      # loopback IPv4
-    ipaddress.ip_network("10.0.0.0/8"),       # privato RFC 1918
-    ipaddress.ip_network("172.16.0.0/12"),    # privato RFC 1918
-    ipaddress.ip_network("192.168.0.0/16"),   # privato RFC 1918
-    ipaddress.ip_network("100.64.0.0/10"),    # CGNAT RFC 6598
-    ipaddress.ip_network("192.0.0.0/24"),     # IETF Protocol Assignments
-    ipaddress.ip_network("198.18.0.0/15"),    # benchmark testing RFC 2544
-    ipaddress.ip_network("169.254.0.0/16"),   # link-local (AWS/GCP/Azure metadata)
+    ipaddress.ip_network("0.0.0.0/8"),  # "this network" RFC 1122
+    ipaddress.ip_network("127.0.0.0/8"),  # loopback IPv4
+    ipaddress.ip_network("10.0.0.0/8"),  # privato RFC 1918
+    ipaddress.ip_network("172.16.0.0/12"),  # privato RFC 1918
+    ipaddress.ip_network("192.168.0.0/16"),  # privato RFC 1918
+    ipaddress.ip_network("100.64.0.0/10"),  # CGNAT RFC 6598
+    ipaddress.ip_network("192.0.0.0/24"),  # IETF Protocol Assignments
+    ipaddress.ip_network("198.18.0.0/15"),  # benchmark testing RFC 2544
+    ipaddress.ip_network("169.254.0.0/16"),  # link-local (AWS/GCP/Azure metadata)
     # ── IPv6 ──────────────────────────────────────────────────────────────────
-    ipaddress.ip_network("::1/128"),          # loopback IPv6
-    ipaddress.ip_network("fc00::/7"),         # unique local (ULA) RFC 4193: fc00:: - fdff::
-    ipaddress.ip_network("fe80::/10"),        # link-local IPv6 RFC 4291
+    ipaddress.ip_network("::1/128"),  # loopback IPv6
+    ipaddress.ip_network("fc00::/7"),  # unique local (ULA) RFC 4193: fc00:: - fdff::
+    ipaddress.ip_network("fe80::/10"),  # link-local IPv6 RFC 4291
     # IPv4-mapped IPv6 (::ffff:0:0/96 copre tutti i sotto-range, elencati per chiarezza)
-    ipaddress.ip_network("::ffff:0:0/96"),    # intero spazio IPv4-mapped (bypass comune)
+    ipaddress.ip_network("::ffff:0:0/96"),  # intero spazio IPv4-mapped (bypass comune)
     ipaddress.ip_network("::ffff:127.0.0.0/104"),  # loopback IPv4-mapped
-    ipaddress.ip_network("::ffff:10.0.0.0/104"),   # RFC 1918 privato IPv4-mapped
-    ipaddress.ip_network("::ffff:172.16.0.0/108"), # RFC 1918 privato IPv4-mapped
-    ipaddress.ip_network("::ffff:192.168.0.0/112"), # RFC 1918 privato IPv4-mapped
+    ipaddress.ip_network("::ffff:10.0.0.0/104"),  # RFC 1918 privato IPv4-mapped
+    ipaddress.ip_network("::ffff:172.16.0.0/108"),  # RFC 1918 privato IPv4-mapped
+    ipaddress.ip_network("::ffff:192.168.0.0/112"),  # RFC 1918 privato IPv4-mapped
 ]
 
 _ALLOWED_SCHEMES = {"https", "http"}
@@ -55,13 +55,7 @@ def _is_ip_blocked(ip_obj) -> bool:
 
     Fallback per catturare reti non nella blocklist esplicita.
     """
-    return (
-        ip_obj.is_private
-        or ip_obj.is_loopback
-        or ip_obj.is_link_local
-        or ip_obj.is_reserved
-        or ip_obj.is_multicast
-    )
+    return ip_obj.is_private or ip_obj.is_loopback or ip_obj.is_link_local or ip_obj.is_reserved or ip_obj.is_multicast
 
 
 def _validate_url_structure(url: str) -> tuple[bool, str | None, str | None]:
@@ -107,17 +101,11 @@ def _check_ip_blocked(ip_str: str) -> tuple[bool, str | None]:
     # Controlla blocklist esplicita
     for network in _BLOCKED_NETWORKS:
         if ip_obj in network:
-            return True, (
-                f"L'indirizzo '{ip_str}' risolto per l'host "
-                f"è in una rete privata/riservata."
-            )
+            return True, (f"L'indirizzo '{ip_str}' risolto per l'host è in una rete privata/riservata.")
 
     # Fallback: cattura reti private non nella blocklist esplicita
     if _is_ip_blocked(ip_obj):
-        return True, (
-            f"L'indirizzo '{ip_str}' risolto per l'host "
-            f"è in una rete privata/riservata."
-        )
+        return True, (f"L'indirizzo '{ip_str}' risolto per l'host è in una rete privata/riservata.")
 
     return False, None
 
@@ -154,10 +142,11 @@ def resolve_and_validate_url(url: str) -> tuple[bool, str | None, list[str]]:
         if bloccato:
             hostname_display = hostname or "sconosciuto"
             # Riformula il messaggio con il nome host originale
-            return False, (
-                f"L'indirizzo '{ip_str}' risolto per '{hostname_display}' "
-                f"è in una rete privata/riservata."
-            ), []
+            return (
+                False,
+                (f"L'indirizzo '{ip_str}' risolto per '{hostname_display}' è in una rete privata/riservata."),
+                [],
+            )
         ip_validi.append(ip_str)
 
     return True, None, ip_validi

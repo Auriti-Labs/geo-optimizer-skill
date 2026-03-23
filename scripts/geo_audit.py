@@ -640,7 +640,10 @@ Examples:
     hostname = parsed_check.hostname or ""
     if not hostname or ("." not in hostname and hostname != "localhost"):
         if args.format == "json":
-            error_data = {"error": f"URL non valido: '{args.url}'. Fornire un URL completo, es. https://example.com", "url": args.url}
+            error_data = {
+                "error": f"URL non valido: '{args.url}'. Fornire un URL completo, es. https://example.com",
+                "url": args.url,
+            }
             print(json.dumps(error_data, indent=2))
         else:
             print(f"\n❌ ERRORE: URL non valido: '{args.url}'. Fornire un URL completo, es. https://example.com")
