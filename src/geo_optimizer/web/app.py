@@ -1,12 +1,12 @@
 """
-FastAPI app per GEO Optimizer Web Demo.
+FastAPI app for GEO Optimizer Web Demo.
 
-Endpoint principali:
-    GET  /              — Homepage con form di audit
-    POST /api/audit     — Esegui audit e ritorna JSON
-    GET  /api/audit     — Esegui audit via query param
-    GET  /report/{id}   — Report HTML temporaneo (TTL 1h, in-memory)
-    GET  /badge          — Badge SVG dinamico
+Main endpoints:
+    GET  /              — Homepage with audit form
+    POST /api/audit     — Run audit and return JSON
+    GET  /api/audit     — Run audit via query param
+    GET  /report/{id}   — Temporary HTML report (TTL 1h, in-memory)
+    GET  /badge          — Dynamic SVG badge
     GET  /health        — Health check
 """
 
@@ -39,12 +39,12 @@ app = FastAPI(
 )
 
 
-# ─── Middleware: Limite dimensione body POST ───────────────────────────────────
-_MAX_BODY_BYTES = 4 * 1024  # 4 KB — previene DoS con body POST illimitati
+# ─── Middleware: POST body size limit ─────────────────────────────────────────
+_MAX_BODY_BYTES = 4 * 1024  # 4 KB — prevents DoS from unlimited POST bodies
 
 
 class BodySizeLimitMiddleware(BaseHTTPMiddleware):
-    """Rifiuta richieste POST con body superiore a _MAX_BODY_BYTES (fix #102)."""
+    """Rejects POST requests with body larger than _MAX_BODY_BYTES (fix #102)."""
 
     async def dispatch(self, request: Request, call_next):
         if request.method == "POST":
@@ -67,24 +67,24 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
 
 # ─── Middleware: Security Headers ─────────────────────────────────────────────
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Aggiunge header di sicurezza HTTP a tutte le risposte.
+    """Adds HTTP security headers to all responses.
 
-    Fix #75: usa nonce per script inline invece di 'unsafe-inline'.
-    Il nonce viene generato per ogni risposta e inserito nella CSP
-    e nella pagina HTML tramite request.state.
+    Fix #75: uses nonce for inline scripts instead of 'unsafe-inline'.
+    The nonce is generated per response and inserted into the CSP
+    and the HTML page via request.state.
     """
 
     async def dispatch(self, request: Request, call_next):
-        # Genera nonce crittograficamente sicuro per ogni richiesta
+        # Generate cryptographically secure nonce for each request
         nonce = secrets.token_urlsafe(16)
-        # Rende il nonce accessibile agli endpoint (es. homepage)
+        # Make the nonce accessible to endpoints (e.g. homepage)
         request.state.csp_nonce = nonce
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        # Usa 'nonce-{value}' invece di 'unsafe-inline' per la protezione XSS (fix #75)
+        # Use 'nonce-{value}' instead of 'unsafe-inline' for XSS protection (fix #75)
         response.headers["Content-Security-Policy"] = (
             f"default-src 'self'; script-src 'self' 'nonce-{nonce}'; "
             "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
@@ -107,22 +107,22 @@ app.add_middleware(
     max_age=3600,
 )
 
-# ─── Autenticazione Bearer token opzionale (fix #93) ─────────────────────────
-# Se GEO_API_TOKEN è impostato, le richieste POST /api/audit richiedono
-# l'header "Authorization: Bearer <token>". Se non impostato, nessuna auth.
+# ─── Optional Bearer token authentication (fix #93) ──────────────────────────
+# If GEO_API_TOKEN is set, POST /api/audit requests require
+# the "Authorization: Bearer <token>" header. If not set, no auth.
 _API_TOKEN: Optional[str] = os.environ.get("GEO_API_TOKEN") or None
 
 
 def _verify_bearer_token(request: Request) -> bool:
-    """Verifica il token Bearer se GEO_API_TOKEN è configurato.
+    """Verify the Bearer token if GEO_API_TOKEN is configured.
 
-    Ritorna True se:
-    - GEO_API_TOKEN non è impostato (demo pubblica)
-    - Il token nell'header Authorization corrisponde a GEO_API_TOKEN
+    Returns True if:
+    - GEO_API_TOKEN is not set (public demo)
+    - The token in the Authorization header matches GEO_API_TOKEN
 
-    Ritorna False se il token è errato o mancante.
+    Returns False if the token is wrong or missing.
     """
-    # Nessun token configurato: accesso libero
+    # No token configured: open access
     if _API_TOKEN is None:
         return True
 
@@ -130,41 +130,41 @@ def _verify_bearer_token(request: Request) -> bool:
     if not auth_header.startswith("Bearer "):
         return False
 
-    # Confronto sicuro contro timing attack
+    # Secure comparison against timing attacks
     provided_token = auth_header[len("Bearer ") :]
     return secrets.compare_digest(provided_token, _API_TOKEN)
 
 
-# ─── Rate Limiter in-memory ───────────────────────────────────────────────────
+# ─── In-memory rate limiter ───────────────────────────────────────────────────
 _rate_limit_store: dict = {}  # {ip: [timestamp, ...]}
-_RATE_LIMIT_WINDOW = 60  # secondi
-_RATE_LIMIT_MAX_REQUESTS = 30  # richieste per finestra per IP
-_RATE_LIMIT_MAX_IPS = 10000  # numero massimo di IP tracciati
+_RATE_LIMIT_WINDOW = 60  # seconds
+_RATE_LIMIT_MAX_REQUESTS = 30  # requests per window per IP
+_RATE_LIMIT_MAX_IPS = 10000  # maximum number of tracked IPs
 
-# ─── Proxy trust: lista CIDR/IP di proxy fidati ───────────────────────────────
-# Configurabile tramite variabile d'ambiente TRUSTED_PROXIES (CSV di IP/CIDR).
-# Solo se il proxy è trusted si legge X-Forwarded-For (fix #68).
+# ─── Proxy trust: list of trusted proxy CIDRs/IPs ─────────────────────────────
+# Configurable via TRUSTED_PROXIES environment variable (CSV of IPs/CIDRs).
+# X-Forwarded-For is read only if the proxy is trusted (fix #68).
 _TRUSTED_PROXIES: set[str] = set(filter(None, os.environ.get("TRUSTED_PROXIES", "").split(",")))
 
 
 def _get_client_ip(request: Request) -> str:
-    """Estrae l'IP reale del client dalla richiesta.
+    """Extract the real client IP from the request.
 
-    - Se request.client è None (ambienti proxy/test), ritorna "unknown" (fix #95).
-    - Se il proxy è trusted, legge X-Forwarded-For (fix #68).
-    - Altrimenti usa request.client.host direttamente.
+    - If request.client is None (proxy/test environments), returns "unknown" (fix #95).
+    - If the proxy is trusted, reads X-Forwarded-For (fix #68).
+    - Otherwise uses request.client.host directly.
     """
-    # Fix #95: request.client può essere None in ambienti proxy/test
+    # Fix #95: request.client can be None in proxy/test environments
     proxy_ip = request.client.host if request.client else None
 
     if proxy_ip is None:
         return "unknown"
 
-    # Fix #68: leggi X-Forwarded-For solo se il proxy è nella lista trusted
+    # Fix #68: read X-Forwarded-For only if the proxy is in the trusted list
     if proxy_ip in _TRUSTED_PROXIES:
         forwarded_for = request.headers.get("X-Forwarded-For", "")
         if forwarded_for:
-            # Prendi il primo IP della catena (IP originale del client)
+            # Take the first IP in the chain (original client IP)
             real_ip = forwarded_for.split(",")[0].strip()
             if real_ip:
                 return real_ip
@@ -173,14 +173,14 @@ def _get_client_ip(request: Request) -> str:
 
 
 def _evict_oldest_rate_limit_entries(count: int = 1) -> None:
-    """Rimuove le `count` entry più vecchie dal rate limit store (LRU eviction).
+    """Remove the `count` oldest entries from the rate limit store (LRU eviction).
 
-    Fix #70/#99: invece di _rate_limit_store.clear() che azzera tutti,
-    rimuoviamo solo le entry con l'ultima richiesta più datata.
+    Fix #70/#99: instead of _rate_limit_store.clear() which resets everything,
+    we remove only the entries with the oldest last request.
     """
     if not _rate_limit_store:
         return
-    # Ordina per timestamp dell'ultima richiesta (il più recente nell'array)
+    # Sort by last request timestamp (the most recent in the array)
     sorted_keys = sorted(
         _rate_limit_store,
         key=lambda ip: _rate_limit_store[ip][-1] if _rate_limit_store[ip] else 0,

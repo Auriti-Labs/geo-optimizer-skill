@@ -1,8 +1,8 @@
 """
-Formatter HTML per report audit GEO standalone.
+HTML formatter for standalone GEO audit reports.
 
-Genera un file HTML auto-contenuto con CSS embedded, apribile
-direttamente nel browser. Usato con ``geo audit --format html``.
+Generates a self-contained HTML file with embedded CSS, openable
+directly in the browser. Used with ``geo audit --format html``.
 """
 
 from datetime import datetime, timezone
@@ -26,7 +26,7 @@ from geo_optimizer.models.results import AuditResult
 
 
 def format_audit_html(result: AuditResult) -> str:
-    """Genera report HTML standalone con CSS embedded."""
+    """Generate standalone HTML report with embedded CSS."""
     band_colors = {
         "excellent": "#22c55e",
         "good": "#06b6d4",
@@ -42,7 +42,7 @@ def format_audit_html(result: AuditResult) -> str:
     color = band_colors.get(result.band, "#888")
     band_label = band_labels.get(result.band, result.band.upper())
 
-    # Costruisci righe tabella check
+    # Build check table rows
     checks = [
         ("Robots.txt", _robots_score(result), 20, result.robots.citation_bots_ok),
         ("llms.txt", _llms_score(result), 20, result.llms.found and result.llms.has_h1),
@@ -65,7 +65,7 @@ def format_audit_html(result: AuditResult) -> str:
             <td class="status">{icon}</td>
         </tr>"""
 
-    # Raccomandazioni
+    # Recommendations
     recs_html = ""
     if result.recommendations:
         recs_items = "".join(f"<li>{_escape(r)}</li>" for r in result.recommendations)
@@ -75,7 +75,7 @@ def format_audit_html(result: AuditResult) -> str:
             <ol>{recs_items}</ol>
         </div>"""
 
-    # Schema trovati
+    # Found schemas
     schemas_html = ""
     if result.schema.found_types:
         tags = " ".join(f'<span class="tag">{_escape(t)}</span>' for t in result.schema.found_types)
@@ -149,9 +149,9 @@ li{{margin-bottom:.4rem;line-height:1.5}}
 
 
 def _escape(text: str) -> str:
-    """Escape HTML speciali."""
+    """Escape special HTML characters."""
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 
-# Le funzioni _robots_score, _llms_score, _schema_score, _meta_score, _content_score
-# sono importate da scoring_helpers (fix #77 — eliminata duplicazione)
+# Functions _robots_score, _llms_score, _schema_score, _meta_score, _content_score
+# are imported from scoring_helpers (fix #77 — removed duplication)

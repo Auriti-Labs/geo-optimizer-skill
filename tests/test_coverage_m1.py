@@ -1605,7 +1605,7 @@ class TestCheckRegistry:
         check = self._crea_check_valido("check_unico")
         CheckRegistry.register(check)
 
-        with pytest.raises(ValueError, match="già registrato"):
+        with pytest.raises(ValueError, match="already registered"):
             CheckRegistry.register(check)
 
     def test_register_check_non_implementa_protocol_lancia_type_error(self):
@@ -1719,7 +1719,7 @@ class TestCheckRegistry:
         assert len(results) == 1
         assert results[0].score == 0
         assert results[0].passed is False
-        assert "Errore nel check" in results[0].message
+        assert "Error in check" in results[0].message
 
     def test_check_result_dataclass_defaults(self):
         """CheckResult ha valori di default corretti."""

@@ -6,7 +6,7 @@ Make websites visible and citable by AI search engines
 
 Based on the Princeton KDD 2024 research paper (arxiv.org/abs/2311.09735).
 
-Uso programmatico::
+Programmatic usage::
 
     from geo_optimizer import audit, AuditResult
     result = audit("https://example.com")
@@ -15,7 +15,7 @@ Uso programmatico::
 
 __version__ = "3.9.0"
 
-# ─── API pubblica ────────────────────────────────────────────────────────────
+# ─── Public API ──────────────────────────────────────────────────────────────
 
 from geo_optimizer.core.audit import run_full_audit as audit
 from geo_optimizer.core.audit import run_full_audit_async as audit_async
@@ -36,16 +36,16 @@ from geo_optimizer.models.results import (
 )
 
 __all__ = [
-    # Versione
+    # Version
     "__version__",
-    # Funzioni principali
+    # Main functions
     "audit",
     "audit_async",
     # Plugin system
     "CheckRegistry",
     "AuditCheck",
     "CheckResult",
-    # Dataclass risultati
+    # Result dataclasses
     "AuditResult",
     "RobotsResult",
     "LlmsTxtResult",

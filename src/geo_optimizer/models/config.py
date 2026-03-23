@@ -11,13 +11,13 @@ USER_AGENT = "GEO-Optimizer/2.0 (https://github.com/auriti-labs/geo-optimizer-sk
 
 HEADERS = {"User-Agent": USER_AGENT}
 
-# Limite dimensione risposta HTTP: 10 MB (previene DoS da risposte enormi) — fix #91
+# HTTP response size limit: 10 MB (prevents DoS from huge responses) — fix #91
 MAX_RESPONSE_SIZE: int = 10 * 1024 * 1024
 
-# Numero massimo di sub-sitemap da processare in un sitemap index — fix #90
+# Maximum number of sub-sitemaps to process in a sitemap index — fix #90
 MAX_SUB_SITEMAPS: int = 10
 
-# Limite totale URL estratti da tutte le sitemap — fix #124 (sitemap bomb)
+# Total URL limit extracted from all sitemaps — fix #124 (sitemap bomb)
 MAX_TOTAL_URLS: int = 10_000
 
 
@@ -53,7 +53,7 @@ AI_BOTS = {
     "meta-externalagent": "Meta AI (Facebook/Instagram AI)",
 }
 
-# 3-tier classification — bot raggruppati per funzione
+# 3-tier classification — bots grouped by function
 BOT_TIERS = {
     "training": {
         "GPTBot",
@@ -151,7 +151,7 @@ SCHEMA_TEMPLATES = {
         "headline": "{{title}}",
         "description": "{{description}}",
         "url": "{{url}}",
-        # Campo image obbligatorio per Google Rich Results (#112)
+        # image field required for Google Rich Results (#112)
         "image": "{{image_url}}",
         "datePublished": "{{date_published}}",
         "dateModified": "{{date_modified}}",
@@ -168,7 +168,7 @@ SCHEMA_TEMPLATES = {
         "name": "{{name}}",
         "url": "{{url}}",
         "description": "{{description}}",
-        # logo deve essere ImageObject, non stringa URL (#113)
+        # logo must be ImageObject, not URL string (#113)
         "logo": {"@type": "ImageObject", "url": "{{logo_url}}"},
         "sameAs": [],
     },
@@ -198,13 +198,13 @@ CATEGORY_PATTERNS = [
     (r"/guide/", "Guides"),
     (r"/tutorial/", "Tutorials"),
     (r"/tutorials/", "Tutorials"),
-    # Pattern con slash per evitare falsi positivi (#117)
+    # Patterns with slash to avoid false positives (#117)
     # /product → /production-process, /service → /service-terms
     (r"/products/", "Products"),
     (r"/product/", "Products"),
     (r"/services/", "Services"),
     (r"/service/", "Services"),
-    # Nuove categorie (#118)
+    # New categories (#118)
     (r"/faq/", "FAQ"),
     (r"/faqs/", "FAQ"),
     (r"/pricing/", "Pricing"),
@@ -237,7 +237,7 @@ SKIP_PATTERNS = [
     r"/tag/",
     r"/category/\w+/page/",
     r"/page/\d+",
-    # Pattern skip aggiuntivi (#118)
+    # Additional skip patterns (#118)
     r"/feed/",
     r"/author/",
     r"/amp/",
@@ -282,34 +282,34 @@ OPTIONAL_CATEGORIES = {"Privacy & Legal", "Terms", "Contact", "Other"}
 # ─── Scoring weights ─────────────────────────────────────────────────────────
 
 SCORING = {
-    # robots.txt — 20 punti
+    # robots.txt — 20 points
     "robots_found": 5,
     "robots_citation_ok": 15,
     "robots_some_allowed": 8,
-    # llms.txt — 20 punti
+    # llms.txt — 20 points
     "llms_found": 10,
     "llms_h1": 3,
     "llms_sections": 4,
     "llms_links": 3,
-    # Schema JSON-LD — 25 punti (ribilanciato: Article + Organization, fix #158)
+    # Schema JSON-LD — 25 points (rebalanced: Article + Organization, fix #158)
     "schema_website": 8,
     "schema_faq": 7,
     "schema_webapp": 3,
     "schema_article": 4,
     "schema_organization": 3,
-    # Meta tags — 20 punti
+    # Meta tags — 20 points
     "meta_title": 5,
     "meta_description": 8,
     "meta_canonical": 3,
     "meta_og": 4,
-    # Content quality — 15 punti (word_count aggiunto, fix #162)
+    # Content quality — 15 points (word_count added, fix #162)
     "content_h1": 3,
     "content_numbers": 4,
     "content_links": 4,
     "content_word_count": 4,
 }
 
-# Soglia minima di parole per content_word_count (300 parole = contenuto sostanziale)
+# Minimum word threshold for content_word_count (300 words = substantial content)
 CONTENT_MIN_WORDS = 300
 
 SCORE_BANDS = {

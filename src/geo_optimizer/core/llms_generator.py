@@ -33,17 +33,17 @@ from geo_optimizer.utils.validators import url_belongs_to_domain, validate_publi
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Regex precompilate a livello modulo (fix #123)
-# Evita ricompilazione ad ogni chiamata in loop
+# Module-level precompiled regexes (fix #123)
+# Avoids recompilation on every loop call
 # ---------------------------------------------------------------------------
 
-# Pattern per verificare URL da skippare (SKIP_PATTERNS compilati)
+# Pattern to check URLs to skip (compiled SKIP_PATTERNS)
 _SKIP_PATTERNS_RE = [re.compile(p, re.IGNORECASE) for p in SKIP_PATTERNS]
 
-# Pattern per categorizzare URL (CATEGORY_PATTERNS compilati)
+# Pattern to categorize URLs (compiled CATEGORY_PATTERNS)
 _CATEGORY_PATTERNS_RE = [(re.compile(p, re.IGNORECASE), cat) for p, cat in CATEGORY_PATTERNS]
 
-# Pattern per estrarre link markdown da llms.txt
+# Pattern to extract markdown links from llms.txt
 _MARKDOWN_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 
 
@@ -61,36 +61,36 @@ def fetch_sitemap(
     _total_count: list[int] | None = None,
     session=None,
 ) -> list[SitemapUrl]:
-    """Scarica e parsa un sitemap XML, inclusi sitemap index.
+    """Download and parse an XML sitemap, including sitemap indexes.
 
-    Usa retry automatico con backoff esponenziale per errori transitori.
-    La ricorsione è limitata a ``_MAX_SITEMAP_DEPTH`` livelli (anti-bomb).
-    Il totale URL è limitato a ``MAX_TOTAL_URLS`` (fix #124 — sitemap bomb).
+    Uses automatic retry with exponential backoff for transient errors.
+    Recursion is limited to ``_MAX_SITEMAP_DEPTH`` levels (anti-bomb).
+    Total URLs are limited to ``MAX_TOTAL_URLS`` (fix #124 — sitemap bomb).
 
     Args:
-        sitemap_url: URL del sitemap XML.
-        on_status: Callback opzionale per messaggi di progresso.
-        _depth: Contatore profondità ricorsione (non usare direttamente).
-        _total_count: Lista mutable [n] per tracking URL totali tra chiamate recursive.
-        session: Session HTTP da riusare (fix #122). Se None, ne crea una nuova.
+        sitemap_url: URL of the XML sitemap.
+        on_status: Optional callback for progress messages.
+        _depth: Recursion depth counter (do not use directly).
+        _total_count: Mutable list [n] for tracking total URLs across recursive calls.
+        session: HTTP session to reuse (fix #122). If None, creates a new one.
 
     Returns:
-        Lista di :class:`SitemapUrl` trovati nel sitemap.
+        List of :class:`SitemapUrl` found in the sitemap.
     """
     urls: list[SitemapUrl] = []
 
-    # Fix #124: inizializza il contatore condiviso tra chiamate recursive
+    # Fix #124: initialize shared counter across recursive calls
     if _total_count is None:
         _total_count = [0]
 
-    # Fix #124: stop immediato se limite URL già raggiunto
+    # Fix #124: immediate stop if URL limit already reached
     if _total_count[0] >= MAX_TOTAL_URLS:
         logger.warning("Limite URL raggiunto (%d), skip sitemap: %s", MAX_TOTAL_URLS, sitemap_url)
         if on_status:
             on_status(f"URL limit reached ({MAX_TOTAL_URLS}), skipping: {sitemap_url}")
         return urls
 
-    # Protezione anti-bomb: limita profondità ricorsione
+    # Anti-bomb protection: limit recursion depth
     if _depth >= _MAX_SITEMAP_DEPTH:
         logger.warning("Profondità massima sitemap raggiunta (%d), skip: %s", _depth, sitemap_url)
         if on_status:
@@ -101,13 +101,13 @@ def fetch_sitemap(
         on_status(f"Fetching sitemap: {sitemap_url}")
     logger.info("Fetching sitemap: %s", sitemap_url)
 
-    # Validazione anti-SSRF sull'URL del sitemap (fix #181)
+    # Anti-SSRF validation on the sitemap URL (fix #181)
     safe, reason = validate_public_url(sitemap_url)
     if not safe:
         logger.warning("Sitemap URL blocked (SSRF): %s — %s", sitemap_url, reason)
         return urls
 
-    # Fix #122: usa la session passata o creane una nuova solo al primo livello
+    # Fix #122: use the passed session or create a new one only at the first level
     if session is None:
         session = create_session_with_retry()
 
@@ -115,7 +115,7 @@ def fetch_sitemap(
         r = session.get(sitemap_url, headers=HEADERS, timeout=15)
         r.raise_for_status()
 
-        # Size check: previene DoS da sitemap enormi (fix #181)
+        # Size check: prevents DoS from oversized sitemaps (fix #181)
         if len(r.content) > MAX_RESPONSE_SIZE:
             logger.warning("Sitemap too large (%d bytes): %s", len(r.content), sitemap_url)
             return urls
@@ -135,8 +135,8 @@ def fetch_sitemap(
             on_status(f"Sitemap error (after retries): {e}")
         return urls
     except Exception as e:
-        # Catch finale per errori imprevisti (es. mock nei test) — fix #78
-        logger.warning("Sitemap errore imprevisto: %s", e)
+        # Final catch for unexpected errors (e.g. mocks in tests) — fix #78
+        logger.warning("Sitemap unexpected error: %s", e)
         if on_status:
             on_status(f"Sitemap error: {e}")
         return urls
@@ -150,21 +150,21 @@ def fetch_sitemap(
         if on_status:
             on_status(f"Sitemap index found: {len(sitemap_tags)} sitemaps")
         for sitemap in sitemap_tags[:MAX_SUB_SITEMAPS]:  # Limit sub-sitemaps (fix #90)
-            # Fix #124: stop se limite raggiunto durante iterazione sub-sitemap
+            # Fix #124: stop if limit reached during sub-sitemap iteration
             if _total_count[0] >= MAX_TOTAL_URLS:
-                logger.warning("Limite URL raggiunto (%d), stop sub-sitemaps", MAX_TOTAL_URLS)
+                logger.warning("URL limit reached (%d), stopping sub-sitemaps", MAX_TOTAL_URLS)
                 break
             loc = sitemap.find("loc")
             if loc:
                 sub_url = urljoin(sitemap_url, loc.text.strip())
-                # Validazione anti-SSRF: verifica che sub-URL sia pubblico
+                # Anti-SSRF validation: verify that sub-URL is public
                 safe, reason = validate_public_url(sub_url)
                 if not safe:
-                    logger.warning("Sub-sitemap URL non sicuro ignorato: %s (%s)", sub_url, reason)
+                    logger.warning("Unsafe sub-sitemap URL ignored: %s (%s)", sub_url, reason)
                     if on_status:
                         on_status(f"Sub-sitemap skipped (unsafe): {sub_url}")
                     continue
-                # Fix #122: riusa la session; fix #124: passa il contatore
+                # Fix #122: reuse session; fix #124: pass the counter
                 sub_urls = fetch_sitemap(
                     sub_url,
                     on_status=on_status,
@@ -182,9 +182,9 @@ def fetch_sitemap(
         on_status(f"URLs found: {len(url_tags)}")
 
     for url_tag in url_tags:
-        # Fix #124: stop se limite raggiunto durante iterazione URL
+        # Fix #124: stop if limit reached during URL iteration
         if _total_count[0] >= MAX_TOTAL_URLS:
-            logger.warning("Limite URL raggiunto (%d), stop parsing sitemap: %s", MAX_TOTAL_URLS, sitemap_url)
+            logger.warning("URL limit reached (%d), stopping sitemap parsing: %s", MAX_TOTAL_URLS, sitemap_url)
             if on_status:
                 on_status(f"URL limit reached ({MAX_TOTAL_URLS}), stopping")
             break
@@ -220,10 +220,10 @@ def fetch_sitemap(
 
 
 def should_skip(url: str) -> bool:
-    """Verifica se l'URL deve essere escluso in base a :data:`_SKIP_PATTERNS_RE`.
+    """Check whether a URL should be excluded based on :data:`_SKIP_PATTERNS_RE`.
 
-    Usa regex precompilate a livello modulo (fix #123) per evitare
-    ricompilazione ad ogni chiamata in loop.
+    Uses module-level precompiled regexes (fix #123) to avoid
+    recompilation on every loop call.
     """
     for pattern_re in _SKIP_PATTERNS_RE:
         if pattern_re.search(url):
@@ -232,16 +232,16 @@ def should_skip(url: str) -> bool:
 
 
 def categorize_url(url: str, base_domain: str) -> str:
-    """Assegna una categoria all'URL in base a :data:`_CATEGORY_PATTERNS_RE`.
+    """Assign a category to a URL based on :data:`_CATEGORY_PATTERNS_RE`.
 
-    Usa regex precompilate a livello modulo (fix #123).
+    Uses module-level precompiled regexes (fix #123).
 
     Args:
-        url: URL completo da categorizzare.
-        base_domain: Dominio base del sito (non usato nel matching).
+        url: Full URL to categorize.
+        base_domain: Site base domain (not used in matching).
 
     Returns:
-        Nome della categoria, es. ``"Blog & Articles"`` o ``"Main Pages"``.
+        Category name, e.g. ``"Blog & Articles"`` or ``"Main Pages"``.
     """
     path = urlparse(url).path.lower()
 
@@ -275,7 +275,7 @@ def fetch_page_title(url: str) -> str | None:
         The page title string, or ``None`` on failure.
     """
     try:
-        # Usa fetch_url() per anti-SSRF (validazione IP + DNS pinning) — fix #181
+        # Use fetch_url() for anti-SSRF (IP validation + DNS pinning) — fix #181
         from geo_optimizer.utils.http import fetch_url
 
         r, err = fetch_url(url, timeout=5)
@@ -317,7 +317,7 @@ def url_to_label(url: str, base_domain: str) -> str:
     if label.isdigit():
         label = "/".join(parts[-2:]).replace("-", " ").replace("_", " ").title()
     final = label or path
-    # Tronca label troppo lunghe (fix #85)
+    # Truncate overly long labels (fix #85)
     if len(final) > 80:
         final = final[:77] + "..."
     return final
@@ -370,7 +370,7 @@ def generate_llms_txt(
         if not url.startswith("http"):
             url = urljoin(base_url, url)
 
-        # Filtro dominio sicuro (previene bypass con substring match)
+        # Safe domain filter (prevents bypass via substring match)
         if not url_belongs_to_domain(url, domain):
             continue
 
@@ -489,7 +489,7 @@ def discover_sitemap(
 
     session = create_session_with_retry(total_retries=2, backoff_factor=0.5)
 
-    # Controlla robots.txt per TUTTE le direttive Sitemap: (#116)
+    # Check robots.txt for ALL Sitemap: directives (#116)
     parsed_base = urlparse(base_url)
     base_domain = parsed_base.netloc
     robots_url = urljoin(base_url, "/robots.txt")
@@ -498,25 +498,25 @@ def discover_sitemap(
         for line in r.text.splitlines():
             if line.lower().startswith("sitemap:"):
                 sitemap_url = line.split(":", 1)[1].strip()
-                # Validazione anti-SSRF: l'URL sitemap deve appartenere
-                # allo stesso dominio e puntare a un host pubblico
+                # Anti-SSRF validation: the sitemap URL must belong
+                # to the same domain and point to a public host
                 if not url_belongs_to_domain(sitemap_url, base_domain):
-                    logger.warning("Sitemap URL esterno ignorato: %s", sitemap_url)
+                    logger.warning("External sitemap URL ignored: %s", sitemap_url)
                     continue
                 safe, reason = validate_public_url(sitemap_url)
                 if not safe:
-                    logger.warning("Sitemap URL non sicuro ignorato: %s (%s)", sitemap_url, reason)
+                    logger.warning("Unsafe sitemap URL ignored: %s (%s)", sitemap_url, reason)
                     continue
                 logger.info("Sitemap found in robots.txt: %s", sitemap_url)
                 if on_status:
                     on_status(f"Sitemap found in robots.txt: {sitemap_url}")
-                # Restituisce il primo URL valido trovato in robots.txt
-                # (gli altri vengono scoperti ricorsivamente da fetch_sitemap)
+                # Return the first valid URL found in robots.txt
+                # (others are discovered recursively by fetch_sitemap)
                 return sitemap_url
     except Exception:
         pass
 
-    # Prova i percorsi comuni: HEAD prima, fallback GET se 405/timeout (#115)
+    # Try common paths: HEAD first, fallback GET if 405/timeout (#115)
     for path in common_paths:
         url = urljoin(base_url, path)
         try:
@@ -527,8 +527,8 @@ def discover_sitemap(
                     on_status(f"Sitemap found: {url}")
                 return url
             if r.status_code == 405:
-                # Server non supporta HEAD — fallback a GET (#115)
-                logger.debug("HEAD 405 per %s, fallback a GET", url)
+                # Server does not support HEAD — fallback to GET (#115)
+                logger.debug("HEAD 405 for %s, fallback to GET", url)
                 r_get = session.get(url, headers=HEADERS, timeout=5)
                 if r_get.status_code == 200:
                     logger.info("Sitemap found (via GET): %s", url)
@@ -536,7 +536,7 @@ def discover_sitemap(
                         on_status(f"Sitemap found: {url}")
                     return url
         except Exception:
-            # Timeout o errore di rete: prova GET come fallback (#115)
+            # Timeout or network error: try GET as fallback (#115)
             try:
                 r_get = session.get(url, headers=HEADERS, timeout=5)
                 if r_get.status_code == 200:

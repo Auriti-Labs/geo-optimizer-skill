@@ -1,10 +1,10 @@
 """
-GEO Optimizer Web Demo — FastAPI micro-servizio.
+GEO Optimizer Web Demo — FastAPI micro-service.
 
-Punto di ingresso zero-attrito per audit GEO senza installazione.
+Zero-friction entry point for GEO audits without installation.
 
-Avvio:
+Start:
     pip install geo-optimizer-skill[web]
     geo-web
-    # oppure: uvicorn geo_optimizer.web.app:app --reload
+    # or: uvicorn geo_optimizer.web.app:app --reload
 """

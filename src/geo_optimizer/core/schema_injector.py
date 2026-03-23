@@ -86,8 +86,8 @@ const faqSchema = faqItems.length > 0 ? {
   <meta property="og:type" content="website" />
 
   <!-- GEO: Schema JSON-LD -->
-  <!-- Sicurezza: replace('</', '<\\/') previene XSS da chiusura prematura del tag <script>.
-       JSON.stringify() da solo non escapa '</script>' — il replace è obbligatorio. -->
+  <!-- Security: replace('</', '<\\/') prevents XSS from premature closing of the <script> tag.
+       JSON.stringify() alone does not escape '</script>' — the replace is mandatory. -->
   <script type="application/ld+json" set:html={JSON.stringify(websiteSchema).replace(/<\\//g, '<\\/')} />
   {webAppSchema && <script type="application/ld+json" set:html={JSON.stringify(webAppSchema).replace(/<\\//g, '<\\/')} />}
   {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema).replace(/<\\//g, '<\\/')} />}
@@ -96,27 +96,27 @@ const faqSchema = faqItems.length > 0 ? {
 
 
 def fill_template(template: dict, values: dict) -> dict:
-    """Sostituisce segnaposto {{key}} nel template con valori sicuri.
+    """Replace {{key}} placeholders in the template with safe values.
 
-    I valori vengono serializzati con json.dumps per evitare
-    JSON injection tramite caratteri speciali (virgolette, backslash).
+    Values are serialized with json.dumps to prevent
+    JSON injection via special characters (quotes, backslashes).
 
-    Dopo la sostituzione, logga un warning se rimangono placeholder
-    non sostituiti (previene iniezione di template incompleti #114).
+    After substitution, logs a warning if any unsubstituted placeholders remain
+    (prevents injection from incomplete templates #114).
     """
     template_str = json.dumps(template)
     for key, value in values.items():
         safe_value = str(value) if value else ""
-        # Escape sicuro: json.dumps aggiunge le virgolette, le rimuoviamo
-        # ma manteniamo l'escape interno (", \, newline, ecc.)
+        # Safe escape: json.dumps adds quotes, we remove them
+        # but keep the internal escape (", \, newline, etc.)
         escaped = json.dumps(safe_value)[1:-1]
         template_str = template_str.replace(f"{{{{{key}}}}}", escaped)
 
-    # Verifica placeholder residui non sostituiti (#114)
+    # Check for unsubstituted placeholders (#114)
     residui = re.findall(r"\{\{\w+\}\}", template_str)
     if residui:
         logger.warning(
-            "Placeholder non sostituiti nel template: %s",
+            "Unsubstituted placeholders in template: %s",
             ", ".join(residui),
         )
 
@@ -124,13 +124,13 @@ def fill_template(template: dict, values: dict) -> dict:
 
 
 def schema_to_html_tag(schema_dict: dict) -> str:
-    """Converte uno schema dict in un tag HTML script JSON-LD.
+    """Convert a schema dict into an HTML JSON-LD script tag.
 
-    Esegue escape di '</' per prevenire XSS: il browser chiuderebbe
-    prematuramente il tag <script> se incontra '</script>' nel JSON.
+    Escapes '</' to prevent XSS: the browser would prematurely close
+    the <script> tag if it encounters '</script>' in the JSON.
     """
     json_str = json.dumps(schema_dict, indent=2, ensure_ascii=False)
-    # Previeni chiusura prematura del tag <script> (XSS)
+    # Prevent premature closing of the <script> tag (XSS)
     json_str = json_str.replace("</", r"<\/")
     return f'<script type="application/ld+json">\n{json_str}\n</script>'
 
@@ -156,12 +156,12 @@ def extract_faq_from_html(soup: BeautifulSoup) -> list[dict[str, str]]:
                 faqs.append({"question": question, "answer": answer})
 
     # Pattern 2: <details> / <summary>
-    # Nota: NON usiamo .extract() per evitare di mutare il tree del chiamante
+    # Note: do NOT use .extract() to avoid mutating the caller's tree
     for detail in soup.find_all("details"):
         summary = detail.find("summary")
         if summary:
             question = summary.get_text(strip=True)
-            # Estrai risposta senza mutare il tree: tutto il testo meno la domanda
+            # Extract answer without mutating the tree: full text minus the question
             full_text = detail.get_text(strip=True)
             answer = full_text.replace(question, "", 1).strip()
             if question and answer and len(question) > 5 and len(answer) > 10:
@@ -215,8 +215,8 @@ def analyze_html_file(file_path: str) -> SchemaAnalysis:
                     schema_type = data.get("@type", "Unknown")
                     found_schemas.append({"type": schema_type, "data": data, "index": idx})
         except json.JSONDecodeError as exc:
-            # Logga in debug — non blocca l'analisi degli altri script (#119)
-            logger.debug("JSON-LD non valido nello script #%d: %s", idx, exc)
+            # Log at debug — does not block analysis of other scripts (#119)
+            logger.debug("Invalid JSON-LD in script #%d: %s", idx, exc)
 
     found_types = [s["type"] for s in found_schemas]
     missing = []
@@ -271,15 +271,15 @@ def inject_schema_into_html(
     """
     Inject a schema tag into an HTML file (before </head>).
 
-    Valida il percorso del file contro path traversal e limita
-    le estensioni a .html/.htm per prevenire injection in file arbitrari.
+    Validates the file path against path traversal and restricts
+    extensions to .html/.htm to prevent injection into arbitrary files.
 
     Returns:
         tuple: (success, message) where message is an error/status string
     """
     from geo_optimizer.utils.validators import validate_safe_path
 
-    # Validazione anti-path-traversal: solo file HTML esistenti
+    # Anti-path-traversal validation: only existing HTML files
     safe, path_err = validate_safe_path(
         file_path,
         allowed_extensions={".html", ".htm"},
@@ -314,7 +314,7 @@ def inject_schema_into_html(
         return False, "No <head> tag found in HTML"
 
     schema_tag = soup.new_tag("script", type="application/ld+json")
-    # Escape '</' per prevenire XSS da chiusura prematura del tag <script>
+    # Escape '</' to prevent XSS from premature closing of the <script> tag
     safe_json = json.dumps(schema_dict, indent=2, ensure_ascii=False).replace("</", r"<\/")
     schema_tag.string = "\n" + safe_json + "\n"
     head.append(schema_tag)
@@ -328,12 +328,12 @@ def inject_schema_into_html(
 def generate_astro_snippet(url: str, name: str) -> str:
     """Generate Astro BaseLayout snippet.
 
-    Sanitizza url e name per prevenire injection nel template Astro:
-    rimuove virgolette e caratteri di controllo che potrebbero
-    rompere la struttura del codice generato.
+    Sanitizes url and name to prevent injection into the Astro template:
+    removes quotes and control characters that could
+    break the structure of the generated code.
     """
 
-    # Sanitizza: rimuovi caratteri che possono iniettare codice Astro/JS
+    # Sanitize: remove characters that can inject Astro/JS code
     def _sanitize(val: str) -> str:
         for ch in ('"', "'", "`", "\\", "${", "}", "<", ">"):
             val = val.replace(ch, "")
@@ -341,7 +341,7 @@ def generate_astro_snippet(url: str, name: str) -> str:
 
     safe_url = _sanitize(url)
     safe_name = _sanitize(name)
-    # Tronca per prevenire abusi
+    # Truncate to prevent abuse
     safe_url = safe_url[:200]
     safe_name = safe_name[:100]
     return ASTRO_TEMPLATE.replace("SITE_URL", safe_url).replace("SITE_NAME", safe_name)

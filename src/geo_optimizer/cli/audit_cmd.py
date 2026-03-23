@@ -12,7 +12,7 @@ import click
 from geo_optimizer.cli.formatters import format_audit_json, format_audit_text
 from geo_optimizer.core.audit import run_full_audit
 
-# Fix #127: importa _() per traduzioni (sistema i18n parzialmente implementato — v3.2.0 per localizzazione completa)
+# Fix #127: import _() for translations (i18n system partially implemented — v3.2.0 for full localization)
 from geo_optimizer.i18n import _  # noqa: F401
 from geo_optimizer.utils.validators import validate_public_url
 
@@ -40,7 +40,7 @@ from geo_optimizer.utils.validators import validate_public_url
 )
 def audit(url, output_format, output_file, verbose, cache, clear_cache, config_file, no_plugins, threshold):
     """Audit a website's GEO (Generative Engine Optimization) readiness."""
-    # Carica configurazione progetto (se disponibile)
+    # Load project configuration (if available)
     from geo_optimizer.models.project_config import load_config
 
     config_path = None
@@ -51,7 +51,7 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
 
     project_config = load_config(config_path)
 
-    # Applica defaults da config (CLI ha precedenza)
+    # Apply defaults from config (CLI takes precedence)
     if url is None:
         url = project_config.audit.url
     if output_format is None:
@@ -61,17 +61,17 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
     if not cache:
         cache = project_config.audit.cache
 
-    # Fix #121/#144: verbose da config/CLI configura il livello di logging
+    # Fix #121/#144: verbose from config/CLI sets the logging level
     if not verbose:
         verbose = project_config.audit.verbose
     if verbose:
-        # --verbose: mostra log DEBUG per diagnostica dettagliata
+        # --verbose: show DEBUG logs for detailed diagnostics
         logging.basicConfig(level=logging.DEBUG)
     else:
-        # Senza --verbose: sopprimi log sotto WARNING (fix #144)
+        # Without --verbose: suppress logs below WARNING (fix #144)
         logging.basicConfig(level=logging.WARNING)
 
-    # Fix #145: --threshold ha precedenza su min_score da config (YAML come fallback)
+    # Fix #145: --threshold takes precedence over min_score from config (YAML as fallback)
     if threshold is not None:
         min_score = threshold
     else:
@@ -80,7 +80,7 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
     if not url and not clear_cache:
         raise click.UsageError("Missing '--url' option. Specify via CLI or in .geo-optimizer.yml")
 
-    # Gestione --clear-cache
+    # Handle --clear-cache
     if clear_cache:
         from geo_optimizer.utils.cache import FileCache
 
@@ -89,26 +89,26 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
         click.echo(f"✅ Cache cleared ({count} files removed)")
         return
 
-    # Carica plugin (se non disabilitati)
+    # Load plugins (if not disabled)
     if not no_plugins:
         from geo_optimizer.core.registry import CheckRegistry
 
         CheckRegistry.load_entry_points()
 
-    # Validazione anti-SSRF: blocca URL verso reti private/interne
+    # Anti-SSRF validation: block URLs pointing to private/internal networks
     safe, reason = validate_public_url(url if url.startswith(("http://", "https://")) else f"https://{url}")
     if not safe:
         click.echo(f"\n❌ Unsafe URL: {reason}", err=True)
         sys.exit(1)
 
-    # Fix #146: feedback visivo durante l'audit (su stderr per non inquinare JSON)
+    # Fix #146: visual feedback during audit (on stderr to avoid polluting JSON)
     if output_format != "json":
         click.echo("⏳ Starting GEO analysis...", err=True)
         click.echo("⏳ Checking robots.txt and AI bot access...", err=True)
 
     try:
-        # Nota: il feedback intermedio viene emesso prima della chiamata perché
-        # run_full_audit è sincrono e non ha callback di progresso
+        # Note: intermediate feedback is emitted before the call because
+        # run_full_audit is synchronous and has no progress callback
         if output_format != "json":
             click.echo("⏳ Analyzing llms.txt...", err=True)
         result = run_full_audit(url, use_cache=cache, project_config=project_config)
@@ -163,9 +163,9 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
     else:
         click.echo(output)
 
-    # Fix #145/#121: exit code se score < soglia minima
-    # --threshold CLI → exit 1 (convenzione standard CI)
-    # min_score da .geo-optimizer.yml → exit 2 (per distinguere dal CLI)
+    # Fix #145/#121: exit code if score < minimum threshold
+    # --threshold CLI → exit 1 (standard CI convention)
+    # min_score from .geo-optimizer.yml → exit 2 (to distinguish from CLI)
     if min_score > 0 and result.score < min_score:
         click.echo(
             f"\n❌ Score {result.score}/100 below minimum required ({min_score})",

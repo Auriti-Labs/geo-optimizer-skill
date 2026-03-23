@@ -1,13 +1,13 @@
 """
-Client HTTP asincrono con httpx per fetch parallelo.
+Async HTTP client with httpx for parallel fetch.
 
-Velocizza l'audit eseguendo robots.txt, llms.txt e homepage in parallelo
-(speedup 2-3x rispetto al fetch sequenziale con requests).
+Speeds up the audit by fetching robots.txt, llms.txt and homepage in parallel
+(2-3x speedup over sequential fetch with requests).
 
-Implementa protezione anti-SSRF con redirect manuale: ogni redirect
-viene rivalidato con validate_public_url() prima di seguirlo (fix #179).
+Implements anti-SSRF protection with manual redirect: each redirect
+is revalidated with validate_public_url() before following it (fix #179).
 
-Richiede httpx come dipendenza opzionale:
+Requires httpx as an optional dependency:
     pip install geo-optimizer-skill[async]
 """
 
@@ -18,12 +18,12 @@ import asyncio
 from geo_optimizer.models.config import HEADERS
 from geo_optimizer.utils.http import MAX_RESPONSE_SIZE
 
-# Numero massimo di redirect da seguire manualmente
+# Maximum number of redirects to follow manually
 _MAX_REDIRECTS = 10
 
 
 def is_httpx_available() -> bool:
-    """Verifica se httpx è installato."""
+    """Check whether httpx is installed."""
     try:
         import httpx  # noqa: F401
 
@@ -38,25 +38,25 @@ async def fetch_url_async(
     timeout: int = 10,
     max_size: int = MAX_RESPONSE_SIZE,
 ) -> tuple[object | None, str | None]:
-    """Fetch asincrono di un URL con httpx.
+    """Async fetch of a URL with httpx.
 
-    Implementa validazione anti-SSRF completa:
-    - Ogni URL viene verificato con validate_public_url() prima del fetch
-    - I redirect vengono seguiti manualmente con rivalidazione SSRF su ogni hop
-    - Dimensione risposta verificata contro max_size
+    Implements full anti-SSRF validation:
+    - Each URL is checked with validate_public_url() before fetching
+    - Redirects are followed manually with SSRF revalidation on each hop
+    - Response size verified against max_size
 
     Args:
-        url: URL da scaricare.
-        client: httpx.AsyncClient opzionale (riutilizza connessioni).
-        timeout: Timeout in secondi.
-        max_size: Dimensione massima risposta in bytes.
+        url: URL to download.
+        client: Optional httpx.AsyncClient (reuses connections).
+        timeout: Timeout in seconds.
+        max_size: Maximum response size in bytes.
 
     Returns:
-        Tupla (response, error_msg) — response è None in caso di errore.
+        Tuple (response, error_msg) — response is None on error.
     """
     from geo_optimizer.utils.validators import validate_public_url
 
-    # Validazione anti-SSRF prima di qualsiasi fetch
+    # Anti-SSRF validation before any fetch
     safe, reason = validate_public_url(url)
     if not safe:
         return None, f"Unsafe URL: {reason}"
@@ -69,16 +69,16 @@ async def fetch_url_async(
         if own_client:
             client = httpx.AsyncClient(
                 headers=HEADERS,
-                follow_redirects=False,  # Redirect manuale con rivalidazione SSRF (fix #179)
+                follow_redirects=False,  # Manual redirect with SSRF revalidation (fix #179)
                 timeout=httpx.Timeout(timeout),
             )
 
-        # Redirect manuale con rivalidazione anti-SSRF su ogni hop
+        # Manual redirect with anti-SSRF revalidation on each hop
         current_url = url
         for _ in range(_MAX_REDIRECTS):
             r = await client.get(current_url)
 
-            # Risposta non-redirect: verifica dimensione e ritorna
+            # Non-redirect response: verify size and return
             if r.status_code not in (301, 302, 303, 307, 308):
                 content_length = r.headers.get("content-length")
                 if content_length:
@@ -93,12 +93,12 @@ async def fetch_url_async(
 
                 return r, None
 
-            # Redirect: rivalida il target URL prima di seguirlo
+            # Redirect: revalidate the target URL before following it
             location = r.headers.get("location", "").strip()
             if not location:
                 return None, "Redirect without Location header"
 
-            # Risolvi URL relativo
+            # Resolve relative URL
             if not location.startswith(("http://", "https://")):
                 from urllib.parse import urljoin
 
@@ -128,15 +128,15 @@ async def fetch_urls_async(
     timeout: int = 10,
     max_size: int = MAX_RESPONSE_SIZE,
 ) -> dict:
-    """Fetch parallelo di più URL con un singolo client httpx.
+    """Parallel fetch of multiple URLs with a single httpx client.
 
     Args:
-        urls: Lista di URL da scaricare.
-        timeout: Timeout per singola richiesta.
-        max_size: Dimensione massima per risposta.
+        urls: List of URLs to download.
+        timeout: Timeout per individual request.
+        max_size: Maximum size per response.
 
     Returns:
-        Dict {url: (response, error_msg)} per ogni URL.
+        Dict {url: (response, error_msg)} for each URL.
     """
     import httpx
 
@@ -144,7 +144,7 @@ async def fetch_urls_async(
 
     async with httpx.AsyncClient(
         headers=HEADERS,
-        follow_redirects=False,  # Redirect gestito in fetch_url_async (fix #179)
+        follow_redirects=False,  # Redirect handled in fetch_url_async (fix #179)
         timeout=httpx.Timeout(timeout),
     ) as client:
         tasks = {url: fetch_url_async(url, client=client, timeout=timeout, max_size=max_size) for url in urls}

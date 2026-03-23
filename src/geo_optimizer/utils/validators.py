@@ -1,8 +1,8 @@
 """
-Validatori di input per GEO Optimizer.
+Input validators for GEO Optimizer.
 
-Controlla URL (anti-SSRF) e percorsi file (anti-path-traversal)
-prima di effettuare operazioni di rete o filesystem.
+Checks URLs (anti-SSRF) and file paths (anti-path-traversal)
+before performing network or filesystem operations.
 """
 
 from __future__ import annotations
@@ -12,10 +12,10 @@ import socket
 from pathlib import Path
 from urllib.parse import urlparse
 
-# Reti private/riservate da bloccare (RFC 1918, loopback, link-local, metadata cloud)
-# Fix #80: range IPv6 espliciti per prevenire bypass SSRF tramite indirizzi IPv6.
-# Nota: ::ffff:0:0/96 copre tutti i sotto-range ::ffff:* (IPv4-mapped),
-# ma i range vengono elencati esplicitamente per chiarezza e audit sicurezza.
+# Private/reserved networks to block (RFC 1918, loopback, link-local, cloud metadata)
+# Fix #80: explicit IPv6 ranges to prevent SSRF bypass via IPv6 addresses.
+# Note: ::ffff:0:0/96 covers all ::ffff:* sub-ranges (IPv4-mapped),
+# but ranges are listed explicitly for clarity and security auditing.
 _BLOCKED_NETWORKS = [
     # ── IPv4 ──────────────────────────────────────────────────────────────────
     ipaddress.ip_network("0.0.0.0/8"),  # "this network" RFC 1122
@@ -41,7 +41,7 @@ _BLOCKED_NETWORKS = [
 
 _ALLOWED_SCHEMES = {"https", "http"}
 
-# Nomi host interni noti
+# Known internal hostnames
 _BLOCKED_HOSTNAMES = {
     "localhost",
     "metadata",
@@ -51,35 +51,35 @@ _BLOCKED_HOSTNAMES = {
 
 
 def _is_ip_blocked(ip_obj) -> bool:
-    """Verifica se un IP è privato/riservato usando le API standard di Python.
+    """Check whether an IP is private/reserved using Python's standard APIs.
 
-    Fallback per catturare reti non nella blocklist esplicita.
+    Fallback to catch networks not in the explicit blocklist.
     """
     return ip_obj.is_private or ip_obj.is_loopback or ip_obj.is_link_local or ip_obj.is_reserved or ip_obj.is_multicast
 
 
 def _validate_url_structure(url: str) -> tuple[bool, str | None, str | None]:
-    """Valida la struttura dell'URL (schema, hostname, credenziali).
+    """Validate the URL structure (scheme, hostname, credentials).
 
     Returns:
-        (valido, errore, hostname) — hostname è None se non valido.
+        (valid, error, hostname) — hostname is None if invalid.
     """
     parsed = urlparse(url)
 
-    # 1. Verifica schema
+    # 1. Check scheme
     if parsed.scheme not in _ALLOWED_SCHEMES:
         return False, f"Scheme not allowed: '{parsed.scheme}'. Only http/https.", None
 
-    # 2. Estrai hostname
+    # 2. Extract hostname
     hostname = parsed.hostname
     if not hostname:
         return False, "Missing or invalid hostname.", None
 
-    # 3. Blocca nomi host interni noti
+    # 3. Block known internal hostnames
     if hostname.lower() in _BLOCKED_HOSTNAMES:
         return False, f"Host not allowed: '{hostname}'.", None
 
-    # 4. Blocca URL con credenziali embedded (user:pass@host)
+    # 4. Block URLs with embedded credentials (user:pass@host)
     if "@" in (parsed.netloc or ""):
         return False, "URLs with embedded credentials not allowed.", None
 
@@ -87,23 +87,23 @@ def _validate_url_structure(url: str) -> tuple[bool, str | None, str | None]:
 
 
 def _check_ip_blocked(ip_str: str) -> tuple[bool, str | None]:
-    """Verifica se un singolo indirizzo IP è in una rete bloccata.
+    """Check whether a single IP address is in a blocked network.
 
     Returns:
-        (bloccato, messaggio_errore) — bloccato=True se l'IP è da bloccare.
+        (blocked, error_message) — blocked=True if the IP should be blocked.
     """
     try:
         ip_obj = ipaddress.ip_address(ip_str)
     except ValueError:
-        # IP non parsabile: salta silenziosamente
+        # Non-parseable IP: skip silently
         return False, None
 
-    # Controlla blocklist esplicita
+    # Check explicit blocklist
     for network in _BLOCKED_NETWORKS:
         if ip_obj in network:
             return True, (f"Address '{ip_str}' is in a private/reserved network.")
 
-    # Fallback: cattura reti private non nella blocklist esplicita
+    # Fallback: catch private networks not in the explicit blocklist
     if _is_ip_blocked(ip_obj):
         return True, (f"Address '{ip_str}' is in a private/reserved network.")
 
@@ -111,28 +111,27 @@ def _check_ip_blocked(ip_str: str) -> tuple[bool, str | None]:
 
 
 def resolve_and_validate_url(url: str) -> tuple[bool, str | None, list[str]]:
-    """Valida l'URL anti-SSRF e restituisce la lista di IP risolti.
+    """Validate the URL anti-SSRF and return the list of resolved IPs.
 
-    Risolve il DNS UNA SOLA VOLTA e restituisce gli IP validati.
-    Questo previene attacchi DNS rebinding TOCTOU: il chiamante deve
-    usare questi IP per la connessione effettiva, senza fare una seconda
-    risoluzione DNS.
+    Resolves DNS ONCE and returns the validated IPs.
+    This prevents TOCTOU DNS rebinding attacks: the caller must
+    use these IPs for the actual connection without a second DNS resolution.
 
     Returns:
-        (valido, errore, lista_ip_risolti)
-        - lista_ip_risolti è vuota se DNS non risolvibile o URL non valido.
+        (valid, error, resolved_ip_list)
+        - resolved_ip_list is empty if DNS is unresolvable or URL is invalid.
     """
-    # Valida struttura URL
+    # Validate URL structure
     ok, err, hostname = _validate_url_structure(url)
     if not ok:
         return False, err, []
 
-    # Risolvi DNS e verifica che ogni IP risolto sia pubblico
+    # Resolve DNS and verify that every resolved IP is public
     try:
         infos = socket.getaddrinfo(hostname, None)
     except socket.gaierror:
-        # DNS non risolvibile — non è un errore di sicurezza,
-        # lascio che il fetch fallisca normalmente
+        # DNS unresolvable — not a security error,
+        # let the fetch fail normally
         return True, None, []
 
     ip_validi = []
@@ -140,8 +139,8 @@ def resolve_and_validate_url(url: str) -> tuple[bool, str | None, list[str]]:
         ip_str = sockaddr[0]
         bloccato, msg = _check_ip_blocked(ip_str)
         if bloccato:
-            hostname_display = hostname or "sconosciuto"
-            # Riformula il messaggio con il nome host originale
+            hostname_display = hostname or "unknown"
+            # Reformat the message with the original hostname
             return (
                 False,
                 (f"Address '{ip_str}' resolved for '{hostname_display}' is in a private/reserved network."),
@@ -154,16 +153,16 @@ def resolve_and_validate_url(url: str) -> tuple[bool, str | None, list[str]]:
 
 def validate_public_url(url: str) -> tuple[bool, str | None]:
     """
-    Verifica che l'URL punti a un host pubblico, non a reti interne.
+    Verify that the URL points to a public host, not internal networks.
 
-    Previene attacchi SSRF bloccando:
-    - IP privati (RFC 1918), loopback, link-local
+    Prevents SSRF attacks by blocking:
+    - Private IPs (RFC 1918), loopback, link-local
     - Cloud metadata endpoints (169.254.169.254)
-    - Schema non consentiti (file://, ftp://, ecc.)
-    - Nomi host interni (localhost, metadata)
+    - Disallowed schemes (file://, ftp://, etc.)
+    - Known internal hostnames (localhost, metadata)
 
     Returns:
-        (True, None) se sicuro, (False, messaggio_errore) altrimenti.
+        (True, None) if safe, (False, error_message) otherwise.
     """
     ok, err, _ips = resolve_and_validate_url(url)
     return ok, err
@@ -175,17 +174,17 @@ def validate_safe_path(
     must_exist: bool = False,
 ) -> tuple[bool, str | None]:
     """
-    Verifica che un percorso file sia sicuro.
+    Verify that a file path is safe.
 
-    Risolve symlink e path traversal, controlla l'estensione.
+    Resolves symlinks and path traversal, checks the extension.
 
     Args:
-        file_path: Percorso da validare.
-        allowed_extensions: Set di estensioni consentite (es. {".html", ".htm"}).
-        must_exist: Se True, verifica che il file esista.
+        file_path: Path to validate.
+        allowed_extensions: Set of allowed extensions (e.g. {".html", ".htm"}).
+        must_exist: If True, verifies that the file exists.
 
     Returns:
-        (True, None) se sicuro, (False, messaggio_errore) altrimenti.
+        (True, None) if safe, (False, error_message) otherwise.
     """
     try:
         resolved = Path(file_path).resolve()
@@ -206,28 +205,28 @@ def validate_safe_path(
 
 def url_belongs_to_domain(url: str, domain: str) -> bool:
     """
-    Verifica l'appartenenza esatta al dominio, senza substring match.
+    Verify exact domain membership, without substring matching.
 
-    Gestisce subdomain legittimi (es. blog.example.com per example.com).
-    Blocca URL con credenziali embedded (@).
+    Handles legitimate subdomains (e.g. blog.example.com for example.com).
+    Blocks URLs with embedded credentials (@).
 
     Args:
-        url: URL completo da verificare.
-        domain: Dominio di riferimento (es. "example.com").
+        url: Full URL to check.
+        domain: Reference domain (e.g. "example.com").
 
     Returns:
-        True se l'URL appartiene al dominio.
+        True if the URL belongs to the domain.
     """
     parsed = urlparse(url)
     netloc = parsed.netloc
 
-    # Blocca URL con credenziali embedded
+    # Block URLs with embedded credentials
     if "@" in netloc:
         return False
 
-    # Rimuove porta se presente
+    # Remove port if present
     hostname = netloc.split(":")[0].lower()
     domain_lower = domain.lower()
 
-    # Corrispondenza esatta o subdomain legittimo
+    # Exact match or legitimate subdomain
     return hostname == domain_lower or hostname.endswith("." + domain_lower)

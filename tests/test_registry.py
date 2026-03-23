@@ -86,14 +86,14 @@ def test_register_check_valido():
 def test_register_check_duplicato_solleva_errore():
     """Registrare due check con lo stesso nome solleva ValueError."""
     CheckRegistry.register(_MockCheck())
-    with pytest.raises(ValueError, match="già registrato"):
+    with pytest.raises(ValueError, match="already registered"):
         CheckRegistry.register(_MockCheck())
 
 
 def test_register_oggetto_non_protocol_solleva_typeerror():
     """Un oggetto che non implementa AuditCheck solleva TypeError."""
     # _MissingMethodCheck non ha run() → non è AuditCheck
-    with pytest.raises(TypeError, match="non implementa il Protocol"):
+    with pytest.raises(TypeError, match="does not implement"):
         CheckRegistry.register(_MissingMethodCheck())
 
 
@@ -211,7 +211,7 @@ def test_run_all_check_fallito_non_blocca_altri():
     failing = risultati_per_nome["failing_check"]
     assert failing.score == 0
     assert failing.passed is False
-    assert "Errore" in failing.message
+    assert "Error" in failing.message
 
     # Il check valido deve funzionare normalmente
     ok = risultati_per_nome["mock_check"]

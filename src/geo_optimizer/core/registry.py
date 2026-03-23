@@ -1,15 +1,15 @@
 """
-Sistema di plugin per check GEO personalizzati.
+Plugin system for custom GEO checks.
 
-Permette a pacchetti di terze parti di registrare check aggiuntivi
-tramite entry points ``geo_optimizer.checks`` in pyproject.toml.
+Allows third-party packages to register additional checks
+via entry points ``geo_optimizer.checks`` in pyproject.toml.
 
-Esempio plugin esterno (pyproject.toml del plugin)::
+External plugin example (plugin's pyproject.toml)::
 
     [project.entry-points."geo_optimizer.checks"]
     my_check = "my_plugin:MyAuditCheck"
 
-Il check deve implementare il Protocol ``AuditCheck``.
+The check must implement the ``AuditCheck`` Protocol.
 """
 
 import sys
@@ -20,7 +20,7 @@ from typing import Any, Optional, Protocol, runtime_checkable
 
 @dataclass
 class CheckResult:
-    """Risultato di un check plugin."""
+    """Result of a plugin check."""
 
     name: str
     score: int = 0
@@ -32,13 +32,13 @@ class CheckResult:
 
 @runtime_checkable
 class AuditCheck(Protocol):
-    """Protocol per check GEO personalizzati (PEP 544).
+    """Protocol for custom GEO checks (PEP 544).
 
-    I plugin devono implementare questo protocol::
+    Plugins must implement this protocol::
 
         class MyCheck:
             name = "my_check"
-            description = "Verifica qualcosa di specifico"
+            description = "Checks something specific"
             max_score = 10
 
             def run(self, url: str, soup=None, **kwargs) -> CheckResult:
@@ -53,9 +53,9 @@ class AuditCheck(Protocol):
 
 
 class CheckRegistry:
-    """Registry centrale per check GEO (built-in + plugin).
+    """Central registry for GEO checks (built-in + plugin).
 
-    Singleton pattern: usa i metodi di classe per registrare e recuperare check.
+    Singleton pattern: use class methods to register and retrieve checks.
     """
 
     _checks: dict[str, AuditCheck] = {}
@@ -64,55 +64,55 @@ class CheckRegistry:
 
     @classmethod
     def register(cls, check: AuditCheck) -> None:
-        """Registra un check nel registry.
+        """Register a check in the registry.
 
         Args:
-            check: Istanza che implementa il Protocol AuditCheck.
+            check: Instance implementing the AuditCheck Protocol.
 
         Raises:
-            TypeError: Se il check non implementa AuditCheck.
-            ValueError: Se un check con lo stesso nome è già registrato.
+            TypeError: If the check does not implement AuditCheck.
+            ValueError: If a check with the same name is already registered.
         """
         if not isinstance(check, AuditCheck):
-            raise TypeError(f"{type(check).__name__} non implementa il Protocol AuditCheck")
+            raise TypeError(f"{type(check).__name__} does not implement the AuditCheck Protocol")
 
         if check.name in cls._checks:
-            raise ValueError(f"Check '{check.name}' già registrato")
+            raise ValueError(f"Check '{check.name}' already registered")
 
         cls._checks[check.name] = check
 
     @classmethod
     def unregister(cls, name: str) -> None:
-        """Rimuovi un check dal registry."""
+        """Remove a check from the registry."""
         cls._checks.pop(name, None)
 
     @classmethod
     def get(cls, name: str) -> Optional[AuditCheck]:
-        """Recupera un check per nome."""
+        """Retrieve a check by name."""
         return cls._checks.get(name)
 
     @classmethod
     def all(cls) -> list[AuditCheck]:
-        """Ritorna tutti i check registrati."""
+        """Return all registered checks."""
         return list(cls._checks.values())
 
     @classmethod
     def names(cls) -> list[str]:
-        """Ritorna i nomi di tutti i check registrati."""
+        """Return the names of all registered checks."""
         return list(cls._checks.keys())
 
     @classmethod
     def clear(cls) -> None:
-        """Svuota il registry (utile nei test)."""
+        """Clear the registry (useful in tests)."""
         cls._checks.clear()
         cls._loaded_entry_points = False
 
     @classmethod
     def load_entry_points(cls) -> int:
-        """Carica check da entry points ``geo_optimizer.checks``.
+        """Load checks from ``geo_optimizer.checks`` entry points.
 
-        Usa importlib.metadata per scoprire plugin installati.
-        Ritorna il numero di plugin caricati con successo.
+        Uses importlib.metadata to discover installed plugins.
+        Returns the number of plugins successfully loaded.
         """
         with cls._lock:
             if cls._loaded_entry_points:
@@ -126,40 +126,40 @@ class CheckRegistry:
         if sys.version_info >= (3, 10):
             eps = entry_points(group="geo_optimizer.checks")
         else:
-            # Python 3.9: entry_points() può ritornare dict o SelectableGroups
+            # Python 3.9: entry_points() may return dict or SelectableGroups
             all_eps = entry_points()
             if isinstance(all_eps, dict):
                 eps = all_eps.get("geo_optimizer.checks", [])
             elif hasattr(all_eps, "select"):
                 eps = all_eps.select(group="geo_optimizer.checks")
             else:
-                # Fallback: filtra manualmente la lista
+                # Fallback: filter the list manually
                 eps = [ep for ep in all_eps if ep.group == "geo_optimizer.checks"]
 
         for ep in eps:
             try:
                 check_class = ep.load()
-                # Istanzia se è una classe, altrimenti usa direttamente
+                # Instantiate if it is a class, otherwise use directly
                 check = check_class() if isinstance(check_class, type) else check_class
                 cls.register(check)
                 loaded += 1
             except Exception:
-                # Plugin falliti non bloccano l'audit
+                # Failed plugins do not block the audit
                 pass
 
         return loaded
 
     @classmethod
     def run_all(cls, url: str, soup: Any = None, **kwargs: Any) -> list[CheckResult]:
-        """Esegui tutti i check registrati e ritorna i risultati.
+        """Run all registered checks and return results.
 
         Args:
-            url: URL del sito da verificare.
-            soup: BeautifulSoup della homepage (opzionale).
-            **kwargs: Argomenti extra passati ai check.
+            url: URL of the site to check.
+            soup: BeautifulSoup of the homepage (optional).
+            **kwargs: Extra arguments passed to the checks.
 
         Returns:
-            Lista di CheckResult per ogni check eseguito.
+            List of CheckResult for each check executed.
         """
         results = []
         for check in cls._checks.values():
@@ -167,14 +167,14 @@ class CheckRegistry:
                 result = check.run(url=url, soup=soup, **kwargs)
                 results.append(result)
             except Exception as e:
-                # Check fallito: score 0, messaggio errore
+                # Check failed: score 0, error message
                 results.append(
                     CheckResult(
                         name=check.name,
                         score=0,
                         max_score=check.max_score,
                         passed=False,
-                        message=f"Errore nel check: {e}",
+                        message=f"Error in check: {e}",
                     )
                 )
         return results

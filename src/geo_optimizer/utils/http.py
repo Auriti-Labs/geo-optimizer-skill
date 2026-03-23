@@ -7,10 +7,10 @@ Provides robust HTTP session with automatic retry for transient failures:
 - Server errors (5xx)
 - Rate limits (429)
 
-Implementa protezioni anti-SSRF:
-- DNS pinning: risoluzione DNS unica, connessione forzata all'IP pre-validato
-- Redirect manuale con rivalidazione anti-SSRF su ogni hop
-- Streaming con size check per prevenire DoS da risposte enormi
+Implements anti-SSRF protections:
+- DNS pinning: single DNS resolution, connection forced to the pre-validated IP
+- Manual redirect with anti-SSRF revalidation on each hop
+- Streaming with size check to prevent DoS from huge responses
 """
 
 from __future__ import annotations
@@ -25,13 +25,13 @@ from urllib3.util.retry import Retry
 
 from geo_optimizer.models.config import HEADERS
 
-# Limite dimensione risposta: 10 MB (previene DoS da risposte enormi)
+# Response size limit: 10 MB (prevents DoS from huge responses)
 MAX_RESPONSE_SIZE = 10 * 1024 * 1024
 
-# Numero massimo di redirect da seguire manualmente (anti-loop infinito)
+# Maximum number of redirects to follow manually (anti-infinite loop)
 _MAX_REDIRECTS = 10
 
-# Dimensione chunk per lo streaming (8 KB)
+# Chunk size for streaming (8 KB)
 _CHUNK_SIZE = 8192
 
 
@@ -50,8 +50,8 @@ def create_session_with_retry(
         backoff_factor: Backoff multiplier (default: 1.0)
         status_forcelist: HTTP status codes to retry
         allowed_methods: HTTP methods to retry (default: ["GET", "HEAD"])
-        pinned_ips: Lista di IP pre-validati a cui forzare la connessione.
-                    Se fornita, usa _PinnedIPAdapter per prevenire DNS rebinding.
+        pinned_ips: List of pre-validated IPs to force the connection to.
+                    If provided, uses _PinnedIPAdapter to prevent DNS rebinding.
 
     Returns:
         requests.Session: Configured session with retry adapter
@@ -72,7 +72,7 @@ def create_session_with_retry(
         raise_on_status=False,
     )
 
-    # Se sono stati forniti IP pinnati, usa l'adapter con DNS pinning
+    # If pinned IPs were provided, use the adapter with DNS pinning
     if pinned_ips:
         adapter = _PinnedIPAdapter(pinned_ips, max_retries=retry_strategy)
     else:
@@ -85,13 +85,13 @@ def create_session_with_retry(
 
 
 class _PinnedIPAdapter(HTTPAdapter):
-    """HTTPAdapter che forza la connessione a un IP pre-risolto.
+    """HTTPAdapter that forces the connection to a pre-resolved IP.
 
-    Previene attacchi DNS rebinding TOCTOU: dopo la validazione dell'URL,
-    l'IP viene fissato e usato direttamente senza una seconda risoluzione DNS.
+    Prevents TOCTOU DNS rebinding attacks: after URL validation,
+    the IP is fixed and used directly without a second DNS resolution.
 
-    Thread-safe: usa un Lock globale per proteggere il monkeypatching
-    temporaneo di socket.getaddrinfo (fix #178).
+    Thread-safe: uses a global Lock to protect the temporary monkeypatching
+    of socket.getaddrinfo (fix #178).
     """
 
     _lock = threading.Lock()
@@ -99,17 +99,17 @@ class _PinnedIPAdapter(HTTPAdapter):
     def __init__(self, pinned_ips: list[str], *args, **kwargs):
         """
         Args:
-            pinned_ips: Lista di IP validati a cui forzare la connessione.
-                        Viene usato il primo IP disponibile.
+            pinned_ips: List of validated IPs to force the connection to.
+                        The first available IP is used.
         """
         self._pinned_ip = pinned_ips[0] if pinned_ips else None
         super().__init__(*args, **kwargs)
 
     def send(self, request, *args, **kwargs):
-        """Override send: sostituisce l'hostname con l'IP pinnato nel socket.
+        """Override send: replaces the hostname with the pinned IP in the socket.
 
-        Thread-safe: il Lock serializza l'accesso a socket.getaddrinfo
-        per prevenire race condition tra audit concorrenti (fix #178).
+        Thread-safe: the Lock serializes access to socket.getaddrinfo
+        to prevent race conditions between concurrent audits (fix #178).
         """
         if self._pinned_ip:
             pinned_ip = self._pinned_ip
@@ -135,16 +135,16 @@ class _PinnedIPAdapter(HTTPAdapter):
 
 
 def _stream_response(response: requests.Response, max_size: int) -> tuple[bytes | None, str | None]:
-    """Legge il body in streaming verificando il limite di dimensione.
+    """Read the body in streaming while checking the size limit.
 
-    Previene DoS: scarica il body a chunk, interrompe se supera max_size.
+    Prevents DoS: downloads the body in chunks, stops if it exceeds max_size.
 
     Args:
-        response: Risposta HTTP con stream=True attivo.
-        max_size: Limite in byte.
+        response: HTTP response with stream=True active.
+        max_size: Limit in bytes.
 
     Returns:
-        (content_bytes, errore) — content_bytes è None in caso di errore.
+        (content_bytes, error) — content_bytes is None on error.
     """
     chunks = []
     total = 0
@@ -165,10 +165,10 @@ def fetch_url(
     """
     Fetch a URL with automatic retry on transient failures.
 
-    Implementa tre protezioni anti-SSRF:
-    1. DNS pinning: risolve DNS una volta sola, connessione forzata all'IP validato
-    2. Redirect manuale: rivalida ogni redirect target con validate_public_url()
-    3. Streaming: scarica body a chunk, interrompe se supera max_size
+    Implements three anti-SSRF protections:
+    1. DNS pinning: resolves DNS once only, connection forced to the validated IP
+    2. Manual redirect: revalidates each redirect target with validate_public_url()
+    3. Streaming: downloads body in chunks, stops if it exceeds max_size
 
     Args:
         url: URL to fetch.
@@ -178,15 +178,15 @@ def fetch_url(
     Returns:
         tuple: (response, error_msg) where response is None on failure
     """
-    # Import qui per evitare import circolare (http ← validators ← http)
+    # Import here to avoid circular import (http ← validators ← http)
     from geo_optimizer.utils.validators import resolve_and_validate_url
 
-    # Fase 1: Validazione anti-SSRF con risoluzione DNS unica
+    # Phase 1: Anti-SSRF validation with single DNS resolution
     ok, err, pinned_ips = resolve_and_validate_url(url)
     if not ok:
         return None, f"Unsafe URL: {err}"
 
-    # Fase 2: Fetch con DNS pinning + redirect manuale + streaming
+    # Phase 2: Fetch with DNS pinning + manual redirect + streaming
     return _fetch_with_manual_redirects(url, timeout, max_size, pinned_ips)
 
 
@@ -196,28 +196,28 @@ def _fetch_with_manual_redirects(
     max_size: int,
     pinned_ips: list[str],
 ) -> tuple[requests.Response | None, str | None]:
-    """Esegue il fetch con redirect manuale e rivalidazione SSRF su ogni hop.
+    """Perform the fetch with manual redirect and SSRF revalidation on each hop.
 
-    Ogni redirect viene rivalidato con resolve_and_validate_url() per
-    prevenire redirect verso reti interne (open redirect SSRF).
+    Each redirect is revalidated with resolve_and_validate_url() to
+    prevent redirects to internal networks (open redirect SSRF).
 
     Args:
-        url: URL di partenza (già validato).
-        timeout: Timeout in secondi.
-        max_size: Limite dimensione risposta in byte.
-        pinned_ips: IP pre-risolti per l'URL di partenza.
+        url: Starting URL (already validated).
+        timeout: Timeout in seconds.
+        max_size: Response size limit in bytes.
+        pinned_ips: Pre-resolved IPs for the starting URL.
 
     Returns:
-        (response, errore)
+        (response, error)
     """
-    # Import qui per evitare import circolare
+    # Import here to avoid circular import
     from geo_optimizer.utils.validators import resolve_and_validate_url
 
     current_url = url
     current_ips = pinned_ips
     redirect_count = 0
 
-    # Riusa la stessa sessione finché gli IP pinnati non cambiano (fix #122)
+    # Reuse the same session until the pinned IPs change (fix #122)
     session = create_session_with_retry(
         total_retries=3,
         backoff_factor=1.0,
@@ -227,11 +227,11 @@ def _fetch_with_manual_redirects(
 
     while redirect_count <= _MAX_REDIRECTS:
         try:
-            # stream=True: il body non viene scaricato subito in RAM
+            # stream=True: the body is not immediately downloaded into RAM
             r = session.get(
                 current_url,
                 timeout=timeout,
-                allow_redirects=False,  # Gestione redirect manuale
+                allow_redirects=False,  # Manual redirect handling
                 stream=True,
             )
         except requests.exceptions.Timeout:
@@ -241,7 +241,7 @@ def _fetch_with_manual_redirects(
         except Exception as e:
             return None, str(e)
 
-        # Controlla Content-Length prima di scaricare il body
+        # Check Content-Length before downloading the body
         content_length = r.headers.get("Content-Length")
         if content_length:
             try:
@@ -250,9 +250,9 @@ def _fetch_with_manual_redirects(
                     r.close()
                     return None, f"Response too large: {cl_int} bytes (max: {max_size})"
             except (ValueError, TypeError):
-                pass  # Content-Length non numerico: ignora, controlla a stream
+                pass  # Non-numeric Content-Length: ignore, check during streaming
 
-        # Gestione redirect manuale con rivalidazione SSRF
+        # Manual redirect handling with SSRF revalidation
         if r.status_code in (301, 302, 303, 307, 308):
             r.close()
             redirect_count += 1
@@ -264,7 +264,7 @@ def _fetch_with_manual_redirects(
             if not location:
                 return None, "Redirect without Location header"
 
-            # Risolvi URL relativo rispetto all'URL corrente
+            # Resolve relative URL against the current URL
             if location.startswith("/"):
                 parsed = urlparse(current_url)
                 location = f"{parsed.scheme}://{parsed.netloc}{location}"
@@ -272,13 +272,13 @@ def _fetch_with_manual_redirects(
                 parsed = urlparse(current_url)
                 location = f"{parsed.scheme}://{parsed.netloc}/{location}"
 
-            # Rivalida il target del redirect (anti-SSRF redirect)
+            # Revalidate the redirect target (anti-SSRF redirect)
             ok, err, next_ips = resolve_and_validate_url(location)
             if not ok:
                 return None, f"Redirect to unsafe URL: {err}"
 
             current_url = location
-            # Ricrea sessione solo se gli IP sono cambiati (redirect a host diverso)
+            # Recreate session only if IPs have changed (redirect to different host)
             if next_ips != current_ips:
                 current_ips = next_ips
                 session = create_session_with_retry(
@@ -289,31 +289,31 @@ def _fetch_with_manual_redirects(
                 )
             continue
 
-        # Risposta finale: scarica body in streaming o dal buffer già presente.
-        # I test legacy impostano r.content = b"..." come attributo Mock.
-        # requests reali usano r._content internamente (bytes o False).
-        # Distinguiamo i due casi con isinstance per evitare errori con Mock.
+        # Final response: download body via streaming or from already-present buffer.
+        # Legacy tests set r.content = b"..." as a Mock attribute.
+        # Real requests use r._content internally (bytes or False).
+        # We distinguish the two cases with isinstance to avoid errors with Mock.
         raw_content = getattr(r, "_content", False)  # noqa: SLF001
         if isinstance(raw_content, bytes):
-            # _content già in bytes (risposta reale o mock con _content esplicito)
+            # _content already in bytes (real response or mock with explicit _content)
             if len(raw_content) > max_size:
                 return None, f"Response too large: {len(raw_content)} bytes (max: {max_size})"
             return r, None
 
-        # Prova con r.content (attributo impostato nei mock legacy: content=b"...")
+        # Try with r.content (attribute set in legacy mocks: content=b"...")
         mock_content = getattr(r, "content", None)
         if isinstance(mock_content, bytes):
             if len(mock_content) > max_size:
                 return None, f"Response too large: {len(mock_content)} bytes (max: {max_size})"
             return r, None
 
-        # Streaming reale per risposte live (nessun _content pre-caricato)
+        # Real streaming for live responses (no pre-loaded _content)
         content, err = _stream_response(r, max_size)
         if err:
             r.close()
             return None, err
 
-        # Imposta il body letto nel response object per backward compatibility
+        # Set the read body in the response object for backward compatibility
         r._content = content  # noqa: SLF001
         r._content_consumed = True  # noqa: SLF001
 

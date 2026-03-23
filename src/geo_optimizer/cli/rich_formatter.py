@@ -1,12 +1,12 @@
 """
-Formatter Rich per output CLI avanzato.
+Rich formatter for advanced CLI output.
 
-Richiede ``rich`` come dipendenza opzionale:
+Requires ``rich`` as an optional dependency:
     pip install geo-optimizer-skill[rich]
 
-Fornisce tabelle colorate, barra score visuale e spinner durante le
-operazioni HTTP. Fallback graceful: se rich non è installato,
-:func:`is_rich_available` ritorna False e il CLI usa il testo piatto.
+Provides colored tables, visual score bar and spinner during HTTP
+operations. Graceful fallback: if rich is not installed,
+:func:`is_rich_available` returns False and the CLI uses plain text.
 """
 
 from geo_optimizer.cli.scoring_helpers import (
@@ -38,14 +38,14 @@ except ImportError:
 
 
 def is_rich_available() -> bool:
-    """Verifica se la libreria rich è disponibile."""
+    """Check whether the rich library is available."""
     return RICH_AVAILABLE
 
 
 def format_audit_rich(result: AuditResult) -> str:
-    """Formatta AuditResult con tabelle e colori Rich.
+    """Format AuditResult with Rich tables and colors.
 
-    Ritorna la stringa renderizzata (non stampa direttamente).
+    Returns the rendered string (does not print directly).
     """
     console = Console(record=True, width=80)
 
@@ -67,7 +67,7 @@ def format_audit_rich(result: AuditResult) -> str:
         )
     )
 
-    # Tabella check
+    # Check table
     table = Table(title="Check Results", show_header=True, header_style="bold")
     table.add_column("Check", style="bold", width=22)
     table.add_column("Score", justify="center", width=10)
@@ -156,7 +156,7 @@ def format_audit_rich(result: AuditResult) -> str:
     console.print(table)
     console.print()
 
-    # Barra score con colore
+    # Score bar with color
     bar_filled = int(result.score / 5)
     bar_empty = 20 - bar_filled
     bar = "█" * bar_filled + "░" * bar_empty
@@ -175,7 +175,7 @@ def format_audit_rich(result: AuditResult) -> str:
     console.print(f"  {icon} {label}", style=color)
     console.print()
 
-    # Raccomandazioni
+    # Recommendations
     if result.recommendations:
         console.print("[bold]Recommendations:[/bold]")
         for i, rec in enumerate(result.recommendations, 1):
@@ -189,5 +189,5 @@ def _status_icon(passed: bool) -> str:
     return "✅" if passed else "❌"
 
 
-# Le funzioni _robots_score, _llms_score, _schema_score, _meta_score, _content_score
-# sono importate da scoring_helpers (fix #77 — eliminata duplicazione)
+# Functions _robots_score, _llms_score, _schema_score, _meta_score, _content_score
+# are imported from scoring_helpers (fix #77 — removed duplication)

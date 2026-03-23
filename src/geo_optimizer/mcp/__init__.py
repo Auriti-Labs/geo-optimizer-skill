@@ -1,1 +1,1 @@
-"""MCP Server per GEO Optimizer — espone audit, fix, llms e schema come tool."""
+"""MCP Server for GEO Optimizer — exposes audit, fix, llms and schema as tools."""

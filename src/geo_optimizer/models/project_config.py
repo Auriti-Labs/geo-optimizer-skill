@@ -1,10 +1,10 @@
 """
-Configurazione per progetto via .geo-optimizer.yml.
+Per-project configuration via .geo-optimizer.yml.
 
-Carica un file YAML opzionale dalla directory di lavoro per definire
-defaults del progetto: URL, formato output, cache, bot extra, schema extra.
+Loads an optional YAML file from the working directory to define
+project defaults: URL, output format, cache, extra bots, extra schemas.
 
-Richiede PyYAML come dipendenza opzionale:
+Requires PyYAML as an optional dependency:
     pip install geo-optimizer-skill[config]
 """
 
@@ -12,14 +12,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-# Nome del file di configurazione cercato nella directory corrente
+# Name of the configuration file searched in the current directory
 CONFIG_FILENAME = ".geo-optimizer.yml"
 CONFIG_FILENAME_ALT = ".geo-optimizer.yaml"
 
 
 @dataclass
 class AuditConfig:
-    """Configurazione defaults per il comando audit."""
+    """Default configuration for the audit command."""
 
     url: Optional[str] = None
     format: str = "text"
@@ -31,7 +31,7 @@ class AuditConfig:
 
 @dataclass
 class LlmsConfig:
-    """Configurazione defaults per il comando llms."""
+    """Default configuration for the llms command."""
 
     base_url: Optional[str] = None
     title: Optional[str] = None
@@ -41,14 +41,14 @@ class LlmsConfig:
 
 @dataclass
 class SchemaConfig:
-    """Configurazione defaults per il comando schema."""
+    """Default configuration for the schema command."""
 
     types: list[str] = field(default_factory=list)
 
 
 @dataclass
 class ProjectConfig:
-    """Configurazione completa del progetto."""
+    """Complete project configuration."""
 
     audit: AuditConfig = field(default_factory=AuditConfig)
     llms: LlmsConfig = field(default_factory=LlmsConfig)
@@ -57,7 +57,7 @@ class ProjectConfig:
 
 
 def _is_yaml_available() -> bool:
-    """Verifica se PyYAML è installato."""
+    """Check whether PyYAML is installed."""
     try:
         import yaml  # noqa: F401
 
@@ -67,9 +67,9 @@ def _is_yaml_available() -> bool:
 
 
 def find_config_file(start_dir: Optional[Path] = None) -> Optional[Path]:
-    """Cerca il file di configurazione nella directory corrente.
+    """Search for the configuration file in the current directory.
 
-    Cerca prima .geo-optimizer.yml, poi .geo-optimizer.yaml.
+    Looks first for .geo-optimizer.yml, then .geo-optimizer.yaml.
     """
     search_dir = start_dir or Path.cwd()
 
@@ -82,10 +82,10 @@ def find_config_file(start_dir: Optional[Path] = None) -> Optional[Path]:
 
 
 def load_config(config_path: Optional[Path] = None) -> ProjectConfig:
-    """Carica configurazione da file YAML.
+    """Load configuration from YAML file.
 
-    Se config_path è None, cerca automaticamente nella directory corrente.
-    Ritorna ProjectConfig con defaults se il file non esiste o PyYAML non è installato.
+    If config_path is None, searches automatically in the current directory.
+    Returns ProjectConfig with defaults if the file does not exist or PyYAML is not installed.
     """
     if config_path is None:
         config_path = find_config_file()
@@ -110,10 +110,10 @@ def load_config(config_path: Optional[Path] = None) -> ProjectConfig:
 
 
 def _parse_config(raw: dict) -> ProjectConfig:
-    """Converte dizionario YAML in ProjectConfig tipizzato."""
+    """Convert YAML dictionary to typed ProjectConfig."""
     config = ProjectConfig()
 
-    # Sezione audit
+    # audit section
     audit_raw = raw.get("audit", {})
     if isinstance(audit_raw, dict):
         config.audit = AuditConfig(
@@ -125,7 +125,7 @@ def _parse_config(raw: dict) -> ProjectConfig:
             verbose=bool(audit_raw.get("verbose", False)),
         )
 
-    # Sezione llms
+    # llms section
     llms_raw = raw.get("llms", {})
     if isinstance(llms_raw, dict):
         config.llms = LlmsConfig(
@@ -135,14 +135,14 @@ def _parse_config(raw: dict) -> ProjectConfig:
             max_urls=int(llms_raw.get("max_urls", 50)),
         )
 
-    # Sezione schema
+    # schema section
     schema_raw = raw.get("schema", {})
     if isinstance(schema_raw, dict):
         types = schema_raw.get("types", [])
         if isinstance(types, list):
             config.schema = SchemaConfig(types=[str(t) for t in types])
 
-    # Bot extra
+    # Extra bots
     extra_bots = raw.get("extra_bots", {})
     if isinstance(extra_bots, dict):
         config.extra_bots = {str(k): str(v) for k, v in extra_bots.items()}

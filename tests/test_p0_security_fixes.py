@@ -54,7 +54,7 @@ class TestValidatePublicUrl:
     def test_blocca_localhost(self):
         ok, err = validate_public_url("http://localhost/admin")
         assert ok is False
-        assert "non consentito" in err.lower() or "Host" in err
+        assert "not allowed" in err.lower() or "Host" in err
 
     def test_blocca_ip_privato_rfc1918(self):
         ok, err = validate_public_url("http://192.168.1.1/secret")

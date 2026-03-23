@@ -1,10 +1,10 @@
 """
-Cache HTTP locale su filesystem.
+Local HTTP cache on filesystem.
 
-Salva le risposte HTTP in ``~/.geo-cache/`` per evitare fetch ripetuti
-durante lo sviluppo. Disabilitata di default, attivabile con ``--cache``.
+Saves HTTP responses in ``~/.geo-cache/`` to avoid repeated fetches
+during development. Disabled by default, enabled with ``--cache``.
 
-Uso:
+Usage:
     geo audit --url https://example.com --cache
     geo audit --url https://example.com --clear-cache
 """
@@ -16,36 +16,36 @@ import time
 from pathlib import Path
 from typing import Optional
 
-# Directory cache nella home dell'utente
+# Cache directory in the user's home
 CACHE_DIR = Path.home() / ".geo-cache"
 
-# TTL di default: 1 ora
+# Default TTL: 1 hour
 DEFAULT_TTL = 3600
 
-# Limite dimensione cache su disco: 500 MB (fix #192)
+# Disk cache size limit: 500 MB (fix #192)
 MAX_CACHE_SIZE_BYTES = 500 * 1024 * 1024
 
 
 class FileCache:
-    """Cache HTTP su filesystem con TTL."""
+    """HTTP cache on filesystem with TTL."""
 
     def __init__(self, cache_dir: Optional[Path] = None, ttl: int = DEFAULT_TTL):
         self.cache_dir = cache_dir or CACHE_DIR
         self.ttl = ttl
 
     def _key(self, url: str) -> str:
-        """Genera chiave cache da URL (hash SHA-256)."""
+        """Generate cache key from URL (SHA-256 hash)."""
         return hashlib.sha256(url.encode()).hexdigest()
 
     def _path(self, url: str) -> Path:
-        """Percorso file cache per un URL."""
+        """Cache file path for a URL."""
         return self.cache_dir / f"{self._key(url)}.json"
 
     def get(self, url: str) -> Optional[tuple[int, str, dict]]:
-        """Recupera risposta dalla cache se valida.
+        """Retrieve response from cache if valid.
 
         Returns:
-            Tupla (status_code, text, headers) o None se non in cache/scaduta.
+            Tuple (status_code, text, headers) or None if not cached/expired.
         """
         path = self._path(url)
         if not path.exists():
@@ -56,7 +56,7 @@ class FileCache:
         except (json.JSONDecodeError, OSError):
             return None
 
-        # Verifica TTL
+        # Check TTL
         cached_at = data.get("cached_at", 0)
         if time.time() - cached_at > self.ttl:
             path.unlink(missing_ok=True)
@@ -100,7 +100,7 @@ class FileCache:
             oldest.unlink(missing_ok=True)
 
     def clear(self) -> int:
-        """Svuota tutta la cache. Ritorna il numero di file rimossi."""
+        """Clear the entire cache. Returns the number of files removed."""
         if not self.cache_dir.exists():
             return 0
 
@@ -109,7 +109,7 @@ class FileCache:
         return count
 
     def stats(self) -> dict:
-        """Statistiche cache: numero file, dimensione totale."""
+        """Cache statistics: file count, total size."""
         if not self.cache_dir.exists():
             return {"files": 0, "size_bytes": 0}
 

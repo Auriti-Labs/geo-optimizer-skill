@@ -1,8 +1,8 @@
 """
-Output formatters per la CLI.
+Output formatters for the CLI.
 
-Gestisce output testo e JSON dei risultati di audit.
-Fix #127: _() importata per utilizzo futuro (localizzazione completa in v3.2.0).
+Handles text and JSON output of audit results.
+Fix #127: _() imported for future use (full localization in v3.2.0).
 """
 
 import json
@@ -24,7 +24,7 @@ from geo_optimizer.cli.scoring_helpers import (
     schema_score as _schema_score,
 )
 
-# Fix #127: disponibile per wrapping stringhe UI in v3.2.0
+# Fix #127: available for wrapping UI strings in v3.2.0
 from geo_optimizer.i18n import _  # noqa: F401
 from geo_optimizer.models.results import AuditResult
 
@@ -90,7 +90,7 @@ def format_audit_text(result: AuditResult) -> str:
     lines.append("")
     lines.append(f"   Status: {result.http_status} | Size: {result.page_size:,} bytes")
 
-    # Robots
+    # Robots.txt
     lines.append("")
     lines.append(_section_header("1. ROBOTS.TXT — AI Bot Access"))
     if not result.robots.found:
@@ -208,5 +208,5 @@ def _section_header(text: str) -> str:
     return f"{'=' * width}\n  {text}\n{'=' * width}"
 
 
-# Le funzioni _robots_score, _llms_score, _schema_score, _meta_score, _content_score
-# sono importate da scoring_helpers (fix #77 — eliminata duplicazione)
+# Functions _robots_score, _llms_score, _schema_score, _meta_score, _content_score
+# are imported from scoring_helpers (fix #77 — removed duplication)

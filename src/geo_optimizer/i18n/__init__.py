@@ -1,34 +1,34 @@
 """
-Internazionalizzazione (i18n) per GEO Optimizer.
+Internationalization (i18n) for GEO Optimizer.
 
-Usa gettext della libreria standard Python. Italiano come lingua
-primaria (built-in), inglese come secondaria.
+Uses Python standard library gettext. Italian as the primary language
+(built-in), English as secondary.
 
-Configurazione lingua:
-    - Flag CLI: ``geo audit --lang en``
-    - Variabile ambiente: ``GEO_LANG=en``
-    - Default: ``it`` (italiano)
+Language configuration:
+    - CLI flag: ``geo audit --lang en``
+    - Environment variable: ``GEO_LANG=en``
+    - Default: ``it`` (Italian)
 """
 
 import gettext
 import os
 from pathlib import Path
 
-# Directory contenente i file .mo di traduzione
+# Directory containing .mo translation files
 LOCALES_DIR = Path(__file__).parent / "locales"
 
-# Lingua di default
+# Default language
 DEFAULT_LANG = "it"
 
-# Lingue supportate
+# Supported languages
 SUPPORTED_LANGS = {"it", "en"}
 
-# Istanza globale di traduzione
+# Global translation instance
 _current_translation = None
 
 
 def get_lang() -> str:
-    """Determina la lingua corrente da GEO_LANG o default."""
+    """Determine the current language from GEO_LANG or default."""
     lang = os.environ.get("GEO_LANG", DEFAULT_LANG).lower()
     if lang not in SUPPORTED_LANGS:
         lang = DEFAULT_LANG
@@ -36,13 +36,13 @@ def get_lang() -> str:
 
 
 def setup_i18n(lang: str = None) -> gettext.GNUTranslations:
-    """Inizializza il sistema i18n per la lingua specificata.
+    """Initialize the i18n system for the specified language.
 
     Args:
-        lang: Codice lingua (it, en). Se None, usa get_lang().
+        lang: Language code (it, en). If None, uses get_lang().
 
     Returns:
-        Oggetto GNUTranslations (o NullTranslations se file .mo mancante).
+        GNUTranslations object (or NullTranslations if .mo file is missing).
     """
     global _current_translation
 
@@ -56,7 +56,7 @@ def setup_i18n(lang: str = None) -> gettext.GNUTranslations:
             languages=[lang],
         )
     except FileNotFoundError:
-        # Fallback: nessuna traduzione (stringhe passthrough)
+        # Fallback: no translation (passthrough strings)
         translation = gettext.NullTranslations()
 
     _current_translation = translation
@@ -64,9 +64,9 @@ def setup_i18n(lang: str = None) -> gettext.GNUTranslations:
 
 
 def _(message: str) -> str:
-    """Traduce un messaggio nella lingua corrente.
+    """Translate a message into the current language.
 
-    Funzione di traduzione principale. Uso::
+    Main translation function. Usage::
 
         from geo_optimizer.i18n import _
         print(_("Score GEO"))
@@ -80,7 +80,7 @@ def _(message: str) -> str:
 
 
 def set_lang(lang: str) -> None:
-    """Cambia la lingua corrente a runtime."""
+    """Change the current language at runtime."""
     if lang not in SUPPORTED_LANGS:
         lang = DEFAULT_LANG
     setup_i18n(lang)

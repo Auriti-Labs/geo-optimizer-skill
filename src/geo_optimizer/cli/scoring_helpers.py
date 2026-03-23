@@ -1,8 +1,8 @@
 """
-Funzioni di calcolo punteggio GEO condivise tra tutti i formatter CLI.
+GEO scoring calculation functions shared across all CLI formatters.
 
-Centralizza le 5 funzioni di scoring per eliminare la duplicazione
-tra formatters.py, rich_formatter.py, html_formatter.py, github_formatter.py.
+Centralizes the 5 scoring functions to eliminate duplication
+across formatters.py, rich_formatter.py, html_formatter.py, github_formatter.py.
 Fix #77.
 """
 
@@ -11,10 +11,10 @@ from geo_optimizer.models.results import AuditResult
 
 
 def robots_score(r: AuditResult) -> int:
-    """Punteggio robots.txt allineato a compute_geo_score() in audit.py.
+    """robots.txt score aligned with compute_geo_score() in audit.py.
 
-    Distingue citation bot espliciti (regola dedicata) da quelli consentiti
-    solo tramite wildcard User-agent: * — fix divergenza scoring_helpers vs audit.
+    Distinguishes citation bots explicitly allowed (dedicated rule) from those
+    allowed only via wildcard User-agent: * — fixes divergence between scoring_helpers and audit.
     """
     if not r.robots.found:
         return 0
@@ -30,9 +30,9 @@ def robots_score(r: AuditResult) -> int:
 
 
 def llms_score(r: AuditResult) -> int:
-    """Punteggio llms.txt allineato a SCORING (config.py).
+    """llms.txt score aligned with SCORING (config.py).
 
-    Guardia: senza llms.txt trovato il punteggio è zero (#105).
+    Guard: without llms.txt found the score is zero (#105).
     """
     if not r.llms.found:
         return 0
@@ -44,7 +44,7 @@ def llms_score(r: AuditResult) -> int:
 
 
 def schema_score(r: AuditResult) -> int:
-    """Punteggio schema JSON-LD allineato a SCORING (config.py)."""
+    """JSON-LD schema score aligned with SCORING (config.py)."""
     s = SCORING["schema_website"] if r.schema.has_website else 0
     s += SCORING["schema_faq"] if r.schema.has_faq else 0
     s += SCORING["schema_webapp"] if r.schema.has_webapp else 0
@@ -54,7 +54,7 @@ def schema_score(r: AuditResult) -> int:
 
 
 def meta_score(r: AuditResult) -> int:
-    """Punteggio meta tags allineato a SCORING (config.py)."""
+    """Meta tags score aligned with SCORING (config.py)."""
     s = SCORING["meta_title"] if r.meta.has_title else 0
     s += SCORING["meta_description"] if r.meta.has_description else 0
     s += SCORING["meta_canonical"] if r.meta.has_canonical else 0
@@ -63,7 +63,7 @@ def meta_score(r: AuditResult) -> int:
 
 
 def content_score(r: AuditResult) -> int:
-    """Punteggio content quality allineato a SCORING (config.py)."""
+    """Content quality score aligned with SCORING (config.py)."""
     s = SCORING["content_h1"] if r.content.has_h1 else 0
     s += SCORING["content_numbers"] if r.content.has_numbers else 0
     s += SCORING["content_links"] if r.content.has_links else 0

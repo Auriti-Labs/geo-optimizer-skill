@@ -1,9 +1,8 @@
 """
-Citability Score — Analisi contenuto con i 9 metodi Princeton GEO (KDD 2024).
+Citability Score — Content analysis with the 9 Princeton GEO methods (KDD 2024).
 
-Ogni funzione detect_*() analizza un aspetto del contenuto HTML e ritorna
-un MethodScore. Nessuna dipendenza ML — solo regex, tag HTML e metriche
-strutturali.
+Each detect_*() function analyzes one aspect of HTML content and returns
+a MethodScore. No ML dependencies — only regex, HTML tags and structural metrics.
 
 Paper: "GEO: Generative Engine Optimization" (arxiv.org/abs/2311.09735)
 """
@@ -16,9 +15,9 @@ from urllib.parse import urlparse
 
 from geo_optimizer.models.results import CitabilityResult, MethodScore
 
-# ─── Costanti ─────────────────────────────────────────────────────────────────
+# ─── Constants ────────────────────────────────────────────────────────────────
 
-# Domini autorevoli per Cite Sources
+# Authoritative domains for Cite Sources
 _AUTHORITATIVE_TLDS = {".edu", ".gov", ".org"}
 _AUTHORITATIVE_DOMAINS = {
     "wikipedia.org",
@@ -36,13 +35,13 @@ _AUTHORITATIVE_DOMAINS = {
     "ieee.org",
 }
 
-# Pattern citazione con attribuzione: "testo" — Autore
+# Attribution quote pattern: "text" — Author
 _QUOTE_ATTRIBUTION_RE = re.compile(
     r'["\u201c].{10,300}["\u201d]\s*(?:[-\u2014\u2013]|—|–)\s*\w+',
     re.DOTALL,
 )
 
-# Pattern statistiche
+# Statistics patterns
 _STAT_PATTERNS = [
     r"\b\d+(?:\.\d+)?%",
     r"\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b",
@@ -52,7 +51,7 @@ _STAT_PATTERNS = [
 ]
 _STAT_RE = re.compile("|".join(_STAT_PATTERNS), re.IGNORECASE)
 
-# Connettivi logici (EN + IT)
+# Logical connectives (EN + IT)
 _CONNECTIVES = re.compile(
     r"\b(?:therefore|consequently|furthermore|moreover|however|nevertheless"
     r"|in addition|as a result|for example|for instance|in conclusion"
@@ -62,7 +61,7 @@ _CONNECTIVES = re.compile(
     re.IGNORECASE,
 )
 
-# Marcatori tono autorevole
+# Authoritative tone markers
 _AUTHORITY_RE = re.compile(
     r"\b(?:according to|research (?:shows?|indicates?|demonstrates?)"
     r"|studies? (?:show|indicate|demonstrate|confirm)"
@@ -73,13 +72,13 @@ _AUTHORITY_RE = re.compile(
     re.IGNORECASE,
 )
 
-# Hedging eccessivo
+# Excessive hedging
 _HEDGE_RE = re.compile(
     r"\b(?:might be|could possibly|maybe|perhaps|somewhat|kind of|sort of|seems like)\b",
     re.IGNORECASE,
 )
 
-# Pattern terminologia tecnica
+# Technical terminology patterns
 _TECH_PATTERNS = [
     r"\b[A-Z]{2,6}\b",
     r"\bv\d+\.\d+(?:\.\d+)?\b",
@@ -90,7 +89,7 @@ _TECH_PATTERNS = [
 ]
 _TECH_RE = re.compile("|".join(_TECH_PATTERNS))
 
-# Stop words per TTR (inglese base)
+# Stop words for TTR (basic English)
 _STOP_WORDS = {
     "the",
     "a",
@@ -143,11 +142,11 @@ _STOP_WORDS = {
 }
 
 
-# ─── Funzione helper ─────────────────────────────────────────────────────────
+# ─── Helper function ─────────────────────────────────────────────────────────
 
 
 def _get_clean_text(soup) -> str:
-    """Estrae testo pulito rimuovendo script, style, nav, footer."""
+    """Extract clean text by removing script, style, nav, footer."""
     from bs4 import BeautifulSoup
 
     clean = BeautifulSoup(str(soup), "html.parser")
@@ -160,7 +159,7 @@ def _get_clean_text(soup) -> str:
 
 
 def detect_cite_sources(soup, base_url: str) -> MethodScore:
-    """Rileva citazioni a fonti autorevoli (.edu, .gov, Wikipedia, ecc.)."""
+    """Detect citations to authoritative sources (.edu, .gov, Wikipedia, etc.)."""
     parsed_base = urlparse(base_url)
     base_domain = parsed_base.netloc.replace("www.", "")
 
@@ -179,7 +178,7 @@ def detect_cite_sources(soup, base_url: str) -> MethodScore:
         if tld in _AUTHORITATIVE_TLDS or any(d in link_domain for d in _AUTHORITATIVE_DOMAINS):
             authoritative_count += 1
 
-    # Sezione references/bibliography
+    # References/bibliography section
     ref_headings = [
         h
         for h in soup.find_all(["h2", "h3", "h4"])
@@ -210,14 +209,14 @@ def detect_cite_sources(soup, base_url: str) -> MethodScore:
 
 
 def detect_quotations(soup) -> MethodScore:
-    """Rileva citazioni con attribuzione (blockquote, virgolettati attribuiti)."""
+    """Detect attributed quotes (blockquote, attributed quoted text)."""
     blockquotes = soup.find_all("blockquote")
     q_tags = soup.find_all("q")
 
-    # Blockquote con cite attribute = citazione formale
+    # Blockquote with cite attribute = formal citation
     bq_with_cite = [bq for bq in blockquotes if bq.get("cite") or bq.find("cite")]
 
-    # Pattern testo "..." — Autore
+    # Text pattern "..." — Author
     body_text = soup.get_text(separator=" ")
     text_attributions = _QUOTE_ATTRIBUTION_RE.findall(body_text)
 
@@ -250,14 +249,14 @@ def detect_quotations(soup) -> MethodScore:
 
 
 def detect_statistics(soup, clean_text: str | None = None) -> MethodScore:
-    """Rileva dati statistici e quantitativi nel contenuto."""
+    """Detect statistical and quantitative data in content."""
     body_text = clean_text or _get_clean_text(soup)
     matches = _STAT_RE.findall(body_text)
 
-    # Tabelle con dati numerici (separator=" " per evitare concatenazione senza spazi)
+    # Tables with numerical data (separator=" " to avoid concatenation without spaces)
     tables_with_data = sum(1 for t in soup.find_all("table") if _STAT_RE.search(t.get_text(separator=" ")))
 
-    # Elementi HTML5 per dati
+    # HTML5 data elements
     data_elements = len(soup.find_all(["data", "meter", "progress"]))
 
     word_count = max(len(body_text.split()), 1)
@@ -284,20 +283,20 @@ def detect_statistics(soup, clean_text: str | None = None) -> MethodScore:
 
 
 def detect_fluency(soup) -> MethodScore:
-    """Stima la fluidità del testo tramite euristiche strutturali."""
+    """Estimate text fluency through structural heuristics."""
     paragraphs = soup.find_all("p")
     if not paragraphs:
         return MethodScore(name="fluency_optimization", label="Fluency Optimization", max_score=12, impact="+29%")
 
-    # Lunghezza media paragrafi
+    # Average paragraph length
     para_lengths = [len(p.get_text().split()) for p in paragraphs if p.get_text().strip()]
     avg_para_len = sum(para_lengths) / max(len(para_lengths), 1)
 
-    # Connettivi logici
+    # Logical connectives
     body_text = soup.get_text(separator=" ")
     connective_count = len(_CONNECTIVES.findall(body_text))
 
-    # Rapporto testo/liste
+    # Text-to-list ratio
     list_items = soup.find_all("li")
     text_to_list_ratio = len(paragraphs) / max(len(list_items), 1)
 
@@ -332,7 +331,7 @@ def detect_fluency(soup) -> MethodScore:
 
 
 def detect_technical_terms(soup, clean_text: str | None = None) -> MethodScore:
-    """Rileva densità di terminologia tecnica nel contenuto."""
+    """Detect density of technical terminology in content."""
     body_text = clean_text or _get_clean_text(soup)
     tech_matches = _TECH_RE.findall(body_text)
 
@@ -365,23 +364,23 @@ def detect_technical_terms(soup, clean_text: str | None = None) -> MethodScore:
 
 
 def detect_authoritative_tone(soup) -> MethodScore:
-    """Rileva segnali di tono autorevole e credenziali autore."""
+    """Detect authoritative tone signals and author credentials."""
     body_text = soup.get_text(separator=" ")
 
     authority_signals = len(_AUTHORITY_RE.findall(body_text))
     hedge_signals = len(_HEDGE_RE.findall(body_text))
 
-    # Bio autore
+    # Author bio
     author_bio = soup.find_all(
         ["div", "section", "aside"],
         class_=re.compile(r"author|bio|about-author|byline|contributor", re.I),
     )
     author_schema = soup.find_all("span", attrs={"itemprop": "author"})
 
-    # Credenziali
+    # Credentials
     credentials = re.findall(r"\b(?:Dr\.?|Prof\.?|PhD|M\.?D\.?|MBA|MSc|BSc|CEO|CTO)\b", body_text)
 
-    # Meta autore
+    # Author meta tag
     author_meta = soup.find("meta", attrs={"name": re.compile(r"author", re.I)})
 
     score = 0
@@ -412,7 +411,7 @@ def detect_authoritative_tone(soup) -> MethodScore:
 
 
 def detect_easy_to_understand(soup) -> MethodScore:
-    """Stima la leggibilità con metriche strutturali."""
+    """Estimate readability with structural metrics."""
     main = soup.find("main") or soup.find("article") or soup
     paragraphs = main.find_all("p") if main else []
 
@@ -471,14 +470,14 @@ def detect_easy_to_understand(soup) -> MethodScore:
 
 
 def detect_unique_words(soup, clean_text: str | None = None) -> MethodScore:
-    """Calcola Type-Token Ratio per stimare ricchezza del vocabolario."""
+    """Calculate Type-Token Ratio to estimate vocabulary richness."""
     body_text = (clean_text or _get_clean_text(soup)).lower()
     words = [w for w in re.findall(r"\b[a-zA-Zà-ú]{4,}\b", body_text) if w not in _STOP_WORDS]
 
     if len(words) < 50:
         return MethodScore(name="unique_words", label="Unique Words", max_score=5, impact="+7%")
 
-    # TTR con finestra scorrevole di 200 parole
+    # TTR with sliding window of 200 words
     window = 200
     ttr_scores = []
     for i in range(0, max(len(words) - window, 1), 50):
@@ -509,12 +508,12 @@ def detect_unique_words(soup, clean_text: str | None = None) -> MethodScore:
 
 
 def detect_keyword_stuffing(soup, clean_text: str | None = None) -> MethodScore:
-    """Rileva keyword stuffing che penalizza la visibilità AI."""
+    """Detect keyword stuffing that penalizes AI visibility."""
     body_text = (clean_text or _get_clean_text(soup)).lower()
     words = re.findall(r"\b[a-zA-Zà-ú]{3,}\b", body_text)
 
     if len(words) < 50:
-        # Testo troppo corto per analisi keyword stuffing significativa
+        # Text too short for meaningful keyword stuffing analysis
         return MethodScore(
             name="keyword_stuffing", label="No Keyword Stuffing", score=15, max_score=15, impact="-9%", detected=False
         )
@@ -523,12 +522,12 @@ def detect_keyword_stuffing(soup, clean_text: str | None = None) -> MethodScore:
     total = len(words)
     threshold = 0.03
 
-    # Parole con frequenza anomala (>3%)
+    # Words with anomalous frequency (>3%)
     suspicious = {w: c for w, c in word_freq.most_common(20) if c / total > threshold and w not in _STOP_WORDS}
 
     stuffing_count = len(suspicious)
 
-    # Bonus pieno se nessun stuffing rilevato
+    # Full bonus if no stuffing detected
     if stuffing_count == 0:
         score = 15
     elif stuffing_count <= 1:
@@ -552,9 +551,9 @@ def detect_keyword_stuffing(soup, clean_text: str | None = None) -> MethodScore:
     )
 
 
-# ─── Orchestratore ────────────────────────────────────────────────────────────
+# ─── Orchestrator ─────────────────────────────────────────────────────────────
 
-# Suggerimenti per miglioramento per ogni metodo non rilevato
+# Improvement suggestions for each undetected method
 _IMPROVEMENT_SUGGESTIONS = {
     "quotation_addition": "Add attributed quotes in <blockquote> (+41% AI visibility)",
     "statistics_addition": "Include quantitative data: percentages, figures, metrics (+33%)",
@@ -567,7 +566,7 @@ _IMPROVEMENT_SUGGESTIONS = {
     "keyword_stuffing": "Reduce density of repeated keywords (-9% if present)",
 }
 
-# Ordine per impatto decrescente (escluso keyword_stuffing che è penalità)
+# Order by decreasing impact (excluding keyword_stuffing which is a penalty)
 _METHOD_ORDER = [
     "quotation_addition",
     "statistics_addition",
@@ -582,7 +581,7 @@ _METHOD_ORDER = [
 
 
 def _compute_grade(total: int) -> str:
-    """Calcola il grade citability dal punteggio totale."""
+    """Calculate the citability grade from the total score."""
     if total >= 75:
         return "excellent"
     if total >= 50:
@@ -593,14 +592,14 @@ def _compute_grade(total: int) -> str:
 
 
 def audit_citability(soup, base_url: str) -> CitabilityResult:
-    """Analizza la citabilità del contenuto con tutti i 9 metodi Princeton.
+    """Analyze content citability with all 9 Princeton methods.
 
     Args:
-        soup: BeautifulSoup della pagina HTML.
-        base_url: URL base del sito.
+        soup: BeautifulSoup of the HTML page.
+        base_url: Base URL of the site.
 
     Returns:
-        CitabilityResult con score 0-100 e dettaglio per metodo.
+        CitabilityResult with score 0-100 and per-method detail.
     """
     # Pre-compute clean text once to avoid 3 redundant DOM re-parses (fix #190)
     clean_text = _get_clean_text(soup)
@@ -617,11 +616,11 @@ def audit_citability(soup, base_url: str) -> CitabilityResult:
         detect_keyword_stuffing(soup, clean_text=clean_text),
     ]
 
-    # Somma punteggi (max possibile = 100)
+    # Sum scores (max possible = 100)
     total = sum(m.score for m in methods)
     total = max(min(total, 100), 0)
 
-    # Top 3 miglioramenti: metodi non rilevati, ordinati per impatto
+    # Top 3 improvements: undetected methods, ordered by impact
     improvements = []
     for method_name in _METHOD_ORDER:
         if method_name == "keyword_stuffing":
@@ -632,7 +631,7 @@ def audit_citability(soup, base_url: str) -> CitabilityResult:
         if len(improvements) >= 3:
             break
 
-    # Aggiungi warning stuffing se rilevato
+    # Add stuffing warning if detected
     stuffing = next((m for m in methods if m.name == "keyword_stuffing"), None)
     if stuffing and stuffing.detected:
         improvements.insert(0, _IMPROVEMENT_SUGGESTIONS["keyword_stuffing"])

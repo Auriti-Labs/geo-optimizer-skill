@@ -1,8 +1,8 @@
 """
-Formatter GitHub Actions per output audit GEO.
+GitHub Actions formatter for GEO audit output.
 
-Genera output con annotazioni ``::notice`` e ``::warning`` per
-integrazione nativa con GitHub Actions. Usato con ``geo audit --format github``.
+Generates output with ``::notice`` and ``::warning`` annotations for
+native GitHub Actions integration. Used with ``geo audit --format github``.
 """
 
 from geo_optimizer.cli.scoring_helpers import (
@@ -24,10 +24,10 @@ from geo_optimizer.models.results import AuditResult
 
 
 def format_audit_github(result: AuditResult) -> str:
-    """Formatta AuditResult con annotazioni GitHub Actions."""
+    """Format AuditResult with GitHub Actions annotations."""
     lines = []
 
-    # Score principale
+    # Main score
     band_labels = {
         "excellent": "EXCELLENT",
         "good": "GOOD",
@@ -43,7 +43,7 @@ def format_audit_github(result: AuditResult) -> str:
     else:
         lines.append(f"::error::GEO Score: {result.score}/100 ({band_label}) — {result.url}")
 
-    # Check individuali
+    # Individual checks
     checks = [
         ("Robots.txt", _robots_score(result), 20, result.robots.citation_bots_ok),
         ("llms.txt", _llms_score(result), 20, result.llms.found and result.llms.has_h1),
@@ -56,12 +56,12 @@ def format_audit_github(result: AuditResult) -> str:
         if not passed:
             lines.append(f"::warning::{name}: {score}/{max_score}")
 
-    # Raccomandazioni
+    # Recommendations
     for rec in result.recommendations:
         lines.append(f"::warning::{rec}")
 
     return "\n".join(lines)
 
 
-# Le funzioni _robots_score, _llms_score, _schema_score, _meta_score, _content_score
-# sono importate da scoring_helpers (fix #77 — eliminata duplicazione)
+# Functions _robots_score, _llms_score, _schema_score, _meta_score, _content_score
+# are imported from scoring_helpers (fix #77 — removed duplication)

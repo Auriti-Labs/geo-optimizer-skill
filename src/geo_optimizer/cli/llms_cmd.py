@@ -30,13 +30,13 @@ def llms(base_url, output, sitemap, site_name, description, fetch_titles, max_pe
     if not base_url.startswith(("http://", "https://")):
         base_url = "https://" + base_url
 
-    # Validazione anti-SSRF: blocca URL verso reti private/interne
+    # Anti-SSRF validation: block URLs pointing to private/internal networks
     safe, reason = validate_public_url(base_url)
     if not safe:
         click.echo(f"\n❌ URL non sicuro: {reason}", err=True)
         sys.exit(1)
 
-    # Messaggi di stato su stderr per non interferire con l'output rediretto (fix #143)
+    # Status messages on stderr to avoid interfering with redirected output (fix #143)
     click.echo("\n🌐 GEO llms.txt Generator", err=True)
     click.echo(f"   Site: {base_url}", err=True)
 
@@ -55,7 +55,7 @@ def llms(base_url, output, sitemap, site_name, description, fetch_titles, max_pe
                 f.write(minimal)
             click.echo(f"✅ Minimal llms.txt written to: {output}", err=True)
         else:
-            # Il contenuto llms.txt va su stdout
+            # llms.txt content goes to stdout
             click.echo(minimal)
         return
 
@@ -86,7 +86,7 @@ def llms(base_url, output, sitemap, site_name, description, fetch_titles, max_pe
         click.echo(f"   Lines: {len(content.splitlines())}", err=True)
         click.echo(f"\n   Upload the file to: {base_url}/llms.txt", err=True)
     else:
-        # Il contenuto llms.txt va su stdout; il separatore decorativo su stderr
+        # llms.txt content goes to stdout; decorative separator to stderr
         click.echo("\n" + "─" * 50, err=True)
         click.echo(content)
         click.echo("─" * 50, err=True)

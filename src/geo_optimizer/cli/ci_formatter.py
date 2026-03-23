@@ -2,11 +2,11 @@
 CI/CD output formatters — SARIF and JUnit for pipeline integration.
 
 SARIF (Static Analysis Results Interchange Format):
-    Standard OASIS per risultati analisi statica. Compatibile con
+    OASIS standard for static analysis results. Compatible with
     GitHub Code Scanning, GitLab SAST, Azure DevOps, SonarQube.
 
 JUnit XML:
-    Standard de facto per test results in CI/CD. Compatibile con
+    De facto standard for test results in CI/CD. Compatible with
     GitHub Actions, GitLab CI, Jenkins, CircleCI, Azure DevOps.
 """
 

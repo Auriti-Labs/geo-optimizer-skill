@@ -58,7 +58,7 @@ def schema(
 ):
     """Manage JSON-LD schema for GEO optimization."""
 
-    # Validazione anti-path-traversal per tutti i percorsi file
+    # Anti-path-traversal validation for all file paths
     _ALLOWED_HTML_EXT = {".html", ".htm", ".astro", ".svelte", ".vue", ".jsx", ".tsx"}
     if file_path:
         safe, reason = validate_safe_path(file_path, allowed_extensions=_ALLOWED_HTML_EXT, must_exist=True)
