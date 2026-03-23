@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geo-optimizer-skill"
-version = "3.1.0"
+version = "3.2.0"
 description = "Generative Engine Optimization toolkit — make websites visible to AI search engines"
 readme = "README.md"
 license = {text = "MIT"}
@@ -48,6 +48,9 @@ web = [
     "fastapi>=0.110.0,<1.0",
     "uvicorn[standard]>=0.27.0,<1.0",
 ]
+mcp = [
+    "mcp>=1.0.0",
+]
 dev = [
     "pytest>=7.0,<10.0",
     "pytest-cov>=4.0,<8.0",
@@ -55,7 +58,7 @@ dev = [
 ]
 # Gruppo convenienza: installa tutte le dipendenze opzionali utente (#136)
 all = [
-    "geo-optimizer-skill[async,web]",
+    "geo-optimizer-skill[async,web,mcp]",
 ]
 
 [project.urls]
@@ -66,6 +69,7 @@ Issues = "https://github.com/auriti-labs/geo-optimizer-skill/issues"
 
 [project.scripts]
 geo = "geo_optimizer.cli.main:cli"
+geo-mcp = "geo_optimizer.mcp.server:main"
 geo-web = "geo_optimizer.web.cli:main"
 
 [tool.setuptools.packages.find]
