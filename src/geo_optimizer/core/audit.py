@@ -909,7 +909,7 @@ def _audit_llms_from_response(r, r_full=None) -> LlmsTxtResult:
 # ─── CDN AI Crawler Check (#225) ─────────────────────────────────────────────
 
 
-def audit_cdn_ai_crawler(base_url: str) -> "CdnAiCrawlerResult":
+def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
     """Check if CDN/WAF blocks AI crawler user-agents (#225).
 
     Simulates requests with AI bot User-Agents (GPTBot, ClaudeBot, PerplexityBot)
@@ -1053,7 +1053,7 @@ def audit_cdn_ai_crawler(base_url: str) -> "CdnAiCrawlerResult":
 # ─── JS Rendering Check (#226) ───────────────────────────────────────────────
 
 
-def audit_js_rendering(soup, raw_html: str) -> "JsRenderingResult":
+def audit_js_rendering(soup, raw_html: str) -> JsRenderingResult:
     """Check if page content is accessible without JavaScript (#226).
 
     Analyzes raw HTML (as fetched by requests, without JS execution) for
