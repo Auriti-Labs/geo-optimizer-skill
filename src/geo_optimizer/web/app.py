@@ -438,6 +438,72 @@ async def badge(
     )
 
 
+@app.get("/badge/endpoint")
+async def badge_endpoint(
+    request: Request,
+    url: str = Query(..., description="URL del sito da analizzare"),
+):
+    """Endpoint compatibile con shields.io per badge dinamico.
+
+    Usage with shields.io:
+        ![GEO Score](https://img.shields.io/endpoint?url=https://geo-optimizer-web.onrender.com/badge/endpoint?url=https://yoursite.com)
+
+    Returns JSON in shields.io schema:
+        {"schemaVersion": 1, "label": "GEO Score", "message": "77/100", "color": "green"}
+    """
+    from geo_optimizer.utils.validators import validate_public_url
+
+    # Rate limit
+    if not await _check_rate_limit(_get_client_ip(request)):
+        return JSONResponse(
+            {"schemaVersion": 1, "label": "GEO Score", "message": "rate limited", "color": "lightgrey"},
+            status_code=429,
+        )
+
+    # Normalizza URL
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+
+    # Validazione anti-SSRF
+    safe, reason = validate_public_url(url)
+    if not safe:
+        return JSONResponse(
+            {"schemaVersion": 1, "label": "GEO Score", "message": "invalid url", "color": "lightgrey"},
+            status_code=400,
+        )
+
+    # Cache o audit
+    cached = await _get_cached(url)
+    if cached:
+        score = cached.get("score", 0)
+        band = cached.get("band", "critical")
+    else:
+        try:
+            from geo_optimizer.core.audit import run_full_audit
+
+            result = await asyncio.wait_for(
+                asyncio.to_thread(run_full_audit, url),
+                timeout=60.0,
+            )
+            data = _audit_result_to_dict(result)
+            await _set_cached(url, data)
+            score = data["score"]
+            band = data["band"]
+        except (asyncio.TimeoutError, Exception):
+            return JSONResponse(
+                {"schemaVersion": 1, "label": "GEO Score", "message": "error", "color": "lightgrey"},
+            )
+
+    # Colore basato sulla banda
+    color_map = {"excellent": "brightgreen", "good": "green", "foundation": "yellow", "critical": "red"}
+    color = color_map.get(band, "lightgrey")
+
+    return JSONResponse(
+        {"schemaVersion": 1, "label": "GEO Score", "message": f"{score}/100", "color": color},
+        headers={"Cache-Control": "public, max-age=3600"},
+    )
+
+
 async def _run_audit(url: str) -> JSONResponse:
     """Common logic for running an audit."""
     from geo_optimizer.utils.validators import validate_public_url
