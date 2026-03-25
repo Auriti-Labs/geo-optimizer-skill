@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare GEO Scores — GEO Optimizer</title>
+<meta name="description" content="Compare GEO scores between two websites side by side. See which site is better optimized for AI search engines.">
+<link rel="canonical" href="https://geo-optimizer-web.onrender.com/compare">
+<meta property="og:title" content="Compare GEO Scores — GEO Optimizer">
+<meta property="og:description" content="Side-by-side GEO score comparison for AI search visibility.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+background:#0f172a;color:#e2e8f0;min-height:100vh;padding:2rem}
+.container{max-width:700px;margin:0 auto}
+h1{font-size:2.2rem;margin-bottom:.5rem;background:linear-gradient(135deg,#60a5fa,#a78bfa);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.subtitle{color:#94a3b8;margin-bottom:2rem;font-size:1.05rem;text-align:center}
+.form-row{display:flex;gap:.5rem;margin-bottom:.5rem}
+.form-row input{flex:1;padding:.65rem .75rem;border:2px solid #334155;border-radius:8px;
+background:#1e293b;color:#e2e8f0;font-size:.95rem;outline:none}
+.form-row input:focus{border-color:#60a5fa}
+.vs{text-align:center;color:#64748b;font-size:.85rem;margin:.25rem 0}
+button{display:block;width:100%;padding:.75rem;border:none;border-radius:8px;background:#3b82f6;
+color:#fff;font-size:1rem;font-weight:600;cursor:pointer;margin-top:.75rem}
+button:hover{background:#2563eb}
+button:disabled{opacity:.5;cursor:not-allowed}
+.spinner{display:none;text-align:center;margin:1rem 0;color:#94a3b8}
+.spinner.active{display:block}
+.error{color:#ef4444;text-align:center;margin-top:1rem;display:none}
+.results{display:none;margin-top:1.5rem}
+.comparison{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.site-card{background:#1e293b;border-radius:12px;padding:1.25rem;text-align:center}
+.site-url{font-size:.8rem;color:#64748b;word-break:break-all;margin-bottom:.75rem}
+.site-score{font-size:2.5rem;font-weight:700}
+.site-band{font-size:1rem;font-weight:600;margin-top:.25rem}
+.breakdown{margin-top:1rem}
+.bar-row{display:flex;align-items:center;gap:.5rem;margin:.3rem 0;font-size:.8rem}
+.bar-label{width:80px;text-align:right;color:#94a3b8}
+.bar-bg{flex:1;height:8px;background:#334155;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px}
+.bar-val{width:25px;color:#94a3b8;font-size:.75rem}
+.winner{border:2px solid #22c55e}
+.nav{text-align:center;margin-bottom:2rem}
+.nav a{color:#60a5fa;text-decoration:none;margin:0 .75rem;font-size:.9rem}
+.footer{text-align:center;margin-top:2rem;color:#64748b;font-size:.85rem}
+.footer a{color:#60a5fa;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="container">
+    <nav class="nav">
+        <a href="/">← Audit Tool</a>
+        <a href="/roadmap">Roadmap</a>
+        <a href="/research">Research</a>
+        <a href="/compare">Compare</a>
+    </nav>
+
+    <h1>Compare GEO Scores</h1>
+    <p class="subtitle">Side-by-side comparison — see who's more visible to AI.</p>
+
+    <div>
+        <div class="form-row">
+            <input type="url" id="url1" placeholder="https://site-a.com" required>
+        </div>
+        <div class="vs">vs</div>
+        <div class="form-row">
+            <input type="url" id="url2" placeholder="https://site-b.com" required>
+        </div>
+        <button id="btn">Compare</button>
+    </div>
+
+    <div class="spinner" id="spinner">Analyzing both sites... this may take up to 60 seconds.</div>
+    <div class="error" id="error"></div>
+
+    <div class="results" id="results">
+        <div class="comparison" id="comparison"></div>
+    </div>
+
+    <div class="footer">
+        <p><a href="https://github.com/auriti-labs/geo-optimizer-skill">GitHub</a> · <a href="/docs">API Docs</a> · <a href="https://pypi.org/project/geo-optimizer-skill/">PyPI</a></p>
+    </div>
+</div>
+
+<script__NONCE_ATTR__>
+document.getElementById('btn').addEventListener('click', runCompare);
+document.getElementById('url2').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') runCompare();
+});
+
+async function runCompare() {
+    const url1 = document.getElementById('url1').value;
+    const url2 = document.getElementById('url2').value;
+    if (!url1 || !url2) return;
+
+    const btn = document.getElementById('btn');
+    const spinner = document.getElementById('spinner');
+    const errorEl = document.getElementById('error');
+    const resultsEl = document.getElementById('results');
+
+    btn.disabled = true;
+    spinner.classList.add('active');
+    errorEl.style.display = 'none';
+    resultsEl.style.display = 'none';
+
+    try {
+        const [res1, res2] = await Promise.all([
+            fetch('/api/audit?url=' + encodeURIComponent(url1)),
+            fetch('/api/audit?url=' + encodeURIComponent(url2))
+        ]);
+        const [data1, data2] = await Promise.all([res1.json(), res2.json()]);
+
+        if (!res1.ok) throw new Error('Site A: ' + (data1.detail || 'Error'));
+        if (!res2.ok) throw new Error('Site B: ' + (data2.detail || 'Error'));
+
+        renderComparison(data1, data2);
+        resultsEl.style.display = 'block';
+    } catch (e) {
+        errorEl.textContent = e.message;
+        errorEl.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        spinner.classList.remove('active');
+    }
+}
+
+function renderComparison(a, b) {
+    const colors = {excellent:'#22c55e',good:'#06b6d4',foundation:'#eab308',critical:'#ef4444'};
+    const comp = document.getElementById('comparison');
+    comp.textContent = '';
+
+    [a, b].forEach((data, i) => {
+        const isWinner = (i === 0 ? a.score >= b.score : b.score >= a.score) && a.score !== b.score;
+        const card = document.createElement('div');
+        card.className = 'site-card' + (isWinner ? ' winner' : '');
+
+        const color = colors[data.band] || '#888';
+        const url = document.createElement('div');
+        url.className = 'site-url';
+        url.textContent = data.url || (i === 0 ? document.getElementById('url1').value : document.getElementById('url2').value);
+        card.appendChild(url);
+
+        const score = document.createElement('div');
+        score.className = 'site-score';
+        score.style.color = color;
+        score.textContent = data.score + '/100';
+        card.appendChild(score);
+
+        const band = document.createElement('div');
+        band.className = 'site-band';
+        band.style.color = color;
+        band.textContent = data.band ? data.band.toUpperCase() : '';
+        card.appendChild(band);
+
+        const breakdown = document.createElement('div');
+        breakdown.className = 'breakdown';
+        const categories = {robots_txt:'Robots',llms_txt:'llms.txt',schema_jsonld:'Schema',meta_tags:'Meta',content:'Content'};
+        const maxes = {robots_txt:18,llms_txt:18,schema_jsonld:22,meta_tags:14,content:14};
+        for (const [key, label] of Object.entries(categories)) {
+            const c = data.checks ? data.checks[key] : null;
+            const sc = c ? (c.score || 0) : 0;
+            const mx = maxes[key];
+            const pct = Math.min(sc / mx * 100, 100);
+            const row = document.createElement('div');
+            row.className = 'bar-row';
+            row.innerHTML = '<span class="bar-label">' + label + '</span>' +
+                '<div class="bar-bg"><div class="bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+                '<span class="bar-val">' + sc + '</span>';
+            breakdown.appendChild(row);
+        }
+        card.appendChild(breakdown);
+        comp.appendChild(card);
+    });
+}
+</script>
+</body>
+</html>

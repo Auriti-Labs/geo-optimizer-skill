@@ -285,6 +285,33 @@ async def homepage(request: Request):
     return _render_homepage(nonce=nonce)
 
 
+# ─── Pagine statiche informative ──────────────────────────────────────────────
+
+
+@app.get("/roadmap", response_class=HTMLResponse)
+async def roadmap_page():
+    """Public roadmap: Now / Next / Later — no dates, just direction."""
+    template_path = Path(__file__).parent / "templates" / "roadmap.html"
+    return template_path.read_text(encoding="utf-8")
+
+
+@app.get("/research", response_class=HTMLResponse)
+async def research_page():
+    """Research foundation: peer-reviewed papers behind the scoring."""
+    template_path = Path(__file__).parent / "templates" / "research.html"
+    return template_path.read_text(encoding="utf-8")
+
+
+@app.get("/compare", response_class=HTMLResponse)
+async def compare_page(request: Request):
+    """Compare GEO scores of two websites side by side."""
+    nonce = getattr(request.state, "csp_nonce", "")
+    template_path = Path(__file__).parent / "templates" / "compare.html"
+    html = template_path.read_text(encoding="utf-8")
+    nonce_attr = f' nonce="{nonce}"' if nonce else ""
+    return html.replace("__NONCE_ATTR__", nonce_attr)
+
+
 # ─── Contatore audit globale ─────────────────────────────────────────────────
 # Contatore in-memory degli audit eseguiti (reset al restart del servizio)
 _audit_counter: int = 0

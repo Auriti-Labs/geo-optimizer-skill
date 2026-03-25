@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research Foundation — GEO Optimizer</title>
+<meta name="description" content="GEO Optimizer is built on peer-reviewed academic research. Princeton KDD 2024, AutoGEO ICLR 2026, and more.">
+<link rel="canonical" href="https://geo-optimizer-web.onrender.com/research">
+<meta property="og:title" content="Research Foundation — GEO Optimizer">
+<meta property="og:description" content="The academic research behind GEO Optimizer's scoring and recommendations.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+background:#0f172a;color:#e2e8f0;min-height:100vh;padding:2rem}
+.container{max-width:700px;margin:0 auto}
+h1{font-size:2.2rem;margin-bottom:.5rem;background:linear-gradient(135deg,#60a5fa,#a78bfa);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.subtitle{color:#94a3b8;margin-bottom:2.5rem;font-size:1.05rem;text-align:center}
+.paper{background:#1e293b;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.paper h2{font-size:1.15rem;margin-bottom:.5rem;color:#f8fafc}
+.paper .venue{color:#a78bfa;font-size:.85rem;font-weight:600;margin-bottom:.5rem}
+.paper .finding{color:#94a3b8;margin-bottom:.75rem;line-height:1.6}
+.paper .impact{background:#0f172a;padding:.75rem;border-radius:8px;margin-top:.5rem}
+.paper .impact strong{color:#60a5fa}
+.paper a{color:#60a5fa;text-decoration:none;font-size:.9rem}
+.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:1rem}
+.method{background:#0f172a;padding:.5rem .75rem;border-radius:6px;font-size:.85rem}
+.method .pct{color:#22c55e;font-weight:600}
+.method .neg{color:#ef4444;font-weight:600}
+.nav{text-align:center;margin-bottom:2rem}
+.nav a{color:#60a5fa;text-decoration:none;margin:0 .75rem;font-size:.9rem}
+.footer{text-align:center;margin-top:2rem;color:#64748b;font-size:.85rem}
+.footer a{color:#60a5fa;text-decoration:none}
+.disclaimer{text-align:center;color:#64748b;font-size:.8rem;margin-top:2rem;padding:1rem;background:#1e293b;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="container">
+    <nav class="nav">
+        <a href="/">← Audit Tool</a>
+        <a href="/roadmap">Roadmap</a>
+        <a href="/research">Research</a>
+        <a href="/compare">Compare</a>
+    </nav>
+
+    <h1>Research Foundation</h1>
+    <p class="subtitle">Built on peer-reviewed science, not marketing claims.</p>
+
+    <div class="paper">
+        <h2>GEO: Generative Engine Optimization</h2>
+        <div class="venue">KDD 2024 — Princeton, Georgia Tech, AI2, IIT Delhi</div>
+        <div class="finding">
+            Tested 9 optimization strategies across 10,000 queries on GEO-bench. Validated on Perplexity.ai with 22-37% real-world improvements. The foundational controlled experiment for GEO.
+        </div>
+        <div class="impact">
+            <strong>Key finding:</strong> Adding citations to content increases AI visibility by up to +115%. Statistics add +40%. Keyword stuffing has ~0% effect.
+        </div>
+        <div class="method-grid">
+            <div class="method">Cite Sources <span class="pct">+27-115%</span></div>
+            <div class="method">Quotations <span class="pct">+41%</span></div>
+            <div class="method">Statistics <span class="pct">+33%</span></div>
+            <div class="method">Fluency <span class="pct">+29%</span></div>
+            <div class="method">Technical Terms <span class="pct">+18%</span></div>
+            <div class="method">Authority <span class="pct">+16%</span></div>
+            <div class="method">Readability <span class="pct">+14%</span></div>
+            <div class="method">Unique Words <span class="pct">+7%</span></div>
+            <div class="method">Keyword Stuffing <span class="neg">~0%</span></div>
+        </div>
+        <a href="https://arxiv.org/abs/2311.09735">Read paper →</a>
+    </div>
+
+    <div class="paper">
+        <h2>AutoGEO: Automatic Generative Engine Optimization</h2>
+        <div class="venue">ICLR 2026 — Carnegie Mellon University</div>
+        <div class="finding">
+            Uses frontier LLMs to automatically discover optimization rules, then trains compact models via reinforcement learning. Achieved +50.99% improvement over best Princeton baseline. Introduces GEU (Generative Engine Utility) metric.
+        </div>
+        <div class="impact">
+            <strong>How we use it:</strong> Informs our scoring weight updates and content analysis heuristics. Answer-first structure and passage density checks are based on AutoGEO findings.
+        </div>
+        <a href="https://arxiv.org/abs/2510.11438">Read paper →</a>
+    </div>
+
+    <div class="paper">
+        <h2>C-SEO Bench: Conversational SEO Methods</h2>
+        <div class="venue">2025 — Puerto et al.</div>
+        <div class="finding">
+            Found that most conversational SEO methods are largely ineffective and frequently have negative impact. As adoption increases, gains decrease — revealing a zero-sum competitive dynamic.
+        </div>
+        <div class="impact">
+            <strong>How we use it:</strong> Validates our focus on technical infrastructure optimization over content manipulation. We build white-hat GEO tools.
+        </div>
+        <a href="https://arxiv.org/abs/2506.11097">Read paper →</a>
+    </div>
+
+    <div class="paper">
+        <h2>Schema Markup & AI Citations</h2>
+        <div class="venue">Growth Marshal, February 2026 — Study of 730 pages</div>
+        <div class="finding">
+            Attribute-rich schema markup earns 61.7% citation rate vs 41.6% for generic schema. Generic schema actually underperforms having no schema at all.
+        </div>
+        <div class="impact">
+            <strong>How we use it:</strong> Our schema richness check differentiates between rich and generic schema. Generic schema gets zero bonus points.
+        </div>
+    </div>
+
+    <div class="paper">
+        <h2>AI Citations Report 2026</h2>
+        <div class="venue">OtterlyAI — 1M+ citations analyzed</div>
+        <div class="finding">
+            73% of sites have technical barriers blocking AI crawlers. Reference-grade content receives 3-5x more citations. Reddit is the #1 cited domain across all AI platforms.
+        </div>
+        <div class="impact">
+            <strong>How we use it:</strong> Our robots.txt, CDN, and JS rendering checks address the 73% barrier problem. Content quality analysis targets reference-grade optimization.
+        </div>
+    </div>
+
+    <div class="paper">
+        <h2>AI Mode Citation Factors</h2>
+        <div class="venue">SE Ranking, 2025 — 2.3M pages analyzed</div>
+        <div class="finding">
+            Domain traffic is the #1 predictor (3x), followed by referring domains (2.5x). Flesch-Kincaid Grade 6-8 is the readability sweet spot. Sections of 100-150 words between headings are optimal. FAQ schema markup has zero impact — only real FAQ content in the body matters.
+        </div>
+        <div class="impact">
+            <strong>How we use it:</strong> Informs our readability, passage density, FAQ-in-content, and content structure checks.
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        GEO Optimizer focuses on <strong>infrastructure optimization</strong> (robots.txt, llms.txt, schema, meta tags, content structure) — not content manipulation. The adversarial research (ETH Zurich, Harvard, UC Berkeley) shows that manipulative techniques degrade the ecosystem. We build tools for white-hat GEO.
+    </div>
+
+    <div class="footer">
+        <p><a href="https://github.com/auriti-labs/geo-optimizer-skill">GitHub</a> · <a href="/docs">API Docs</a> · <a href="https://pypi.org/project/geo-optimizer-skill/">PyPI</a></p>
+    </div>
+</div>
+</body>
+</html>
