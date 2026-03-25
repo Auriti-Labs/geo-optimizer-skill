@@ -337,9 +337,14 @@ async def docs_page(slug: str):
     if not _re.match(r"^[a-z0-9\-]+$", slug):
         raise HTTPException(status_code=404, detail="Page not found")
 
-    # Cerca il file markdown nella directory docs/
-    docs_dir = Path(__file__).resolve().parent.parent.parent.parent / "docs"
+    # Cerca il file markdown: prima nella directory web/docs/ (pacchetto installato),
+    # poi nella root docs/ del progetto (sviluppo locale)
+    docs_dir = Path(__file__).resolve().parent / "docs"
     md_path = docs_dir / f"{slug}.md"
+    if not md_path.exists():
+        # Fallback: directory docs/ nella root del progetto (per sviluppo locale)
+        docs_dir = Path(__file__).resolve().parent.parent.parent.parent / "docs"
+        md_path = docs_dir / f"{slug}.md"
 
     if not md_path.exists():
         raise HTTPException(status_code=404, detail="Page not found")
