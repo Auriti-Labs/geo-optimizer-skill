@@ -73,10 +73,10 @@ class SchemaResult:
     has_person: bool = False
     has_product: bool = False
     raw_schemas: list[dict] = field(default_factory=list)
-    any_schema_found: bool = False    # True se QUALSIASI JSON-LD valido trovato
-    has_sameas: bool = False          # proprietà sameAs trovata
+    any_schema_found: bool = False  # True se QUALSIASI JSON-LD valido trovato
+    has_sameas: bool = False  # proprietà sameAs trovata
     sameas_urls: list[str] = field(default_factory=list)
-    has_date_modified: bool = False   # dateModified in qualsiasi schema
+    has_date_modified: bool = False  # dateModified in qualsiasi schema
 
 
 # ─── Meta tags ───────────────────────────────────────────────────────────────
@@ -111,8 +111,8 @@ class ContentResult:
     numbers_count: int = 0
     external_links_count: int = 0
     has_heading_hierarchy: bool = False  # H2+H3 presenti in gerarchia corretta
-    has_lists_or_tables: bool = False    # <ul>/<ol>/<table> trovati
-    has_front_loading: bool = False      # info chiave nel primo 30%
+    has_lists_or_tables: bool = False  # <ul>/<ol>/<table> trovati
+    has_front_loading: bool = False  # info chiave nel primo 30%
 
 
 # ─── Signals tecnici (v4.0) ──────────────────────────────────────────────────

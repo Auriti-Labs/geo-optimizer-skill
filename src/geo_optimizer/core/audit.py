@@ -334,7 +334,6 @@ def audit_content_quality(soup, url: str) -> ContentResult:
     return result
 
 
-
 def build_recommendations(base_url, robots, llms, schema, meta, content) -> list:
     """Build a prioritized list of recommendations."""
     recommendations = []

@@ -2,6 +2,7 @@
 GEO scoring calculation functions shared across all CLI formatters.
 v4.0: delega a core/scoring.py per consistenza e breakdown per categoria.
 """
+
 from geo_optimizer.core.scoring import (
     _score_content as content_score_impl,
 )

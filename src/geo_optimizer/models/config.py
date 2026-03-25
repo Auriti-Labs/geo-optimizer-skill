@@ -305,40 +305,40 @@ OPTIONAL_CATEGORIES = {"Privacy & Legal", "Terms", "Contact", "Other"}
 SCORING = {
     # robots.txt — 18 punti (era 20)
     "robots_found": 5,
-    "robots_citation_ok": 13,       # era 15
-    "robots_some_allowed": 10,      # era 8 — wildcard Allow ora vale di più
+    "robots_citation_ok": 13,  # era 15
+    "robots_some_allowed": 10,  # era 8 — wildcard Allow ora vale di più
     # llms.txt — 18 punti (era 20) — qualità graduata
-    "llms_found": 6,                # era 10
-    "llms_h1": 2,                   # era 3
-    "llms_sections": 2,             # era 4
-    "llms_links": 2,                # era 3
-    "llms_depth": 2,                # NUOVO: word_count >= 1000
-    "llms_depth_high": 2,           # NUOVO: word_count >= 5000
-    "llms_full": 2,                 # NUOVO: has llms-full.txt
+    "llms_found": 6,  # era 10
+    "llms_h1": 2,  # era 3
+    "llms_sections": 2,  # era 4
+    "llms_links": 2,  # era 3
+    "llms_depth": 2,  # NUOVO: word_count >= 1000
+    "llms_depth_high": 2,  # NUOVO: word_count >= 5000
+    "llms_full": 2,  # NUOVO: has llms-full.txt
     # Schema JSON-LD — 22 punti (era 25) — qualsiasi tipo valido + sameAs
-    "schema_any_valid": 5,          # NUOVO: qualsiasi JSON-LD schema valido trovato
-    "schema_faq": 5,                # era 7 — ancora il tipo singolo più alto
-    "schema_article": 3,            # era 4
-    "schema_organization": 3,       # era 3
-    "schema_website": 3,            # era 8
-    "schema_sameas": 3,             # NUOVO: link sameAs a Wikipedia/Wikidata/LinkedIn
+    "schema_any_valid": 5,  # NUOVO: qualsiasi JSON-LD schema valido trovato
+    "schema_faq": 5,  # era 7 — ancora il tipo singolo più alto
+    "schema_article": 3,  # era 4
+    "schema_organization": 3,  # era 3
+    "schema_website": 3,  # era 8
+    "schema_sameas": 3,  # NUOVO: link sameAs a Wikipedia/Wikidata/LinkedIn
     # Meta tags — 20 punti (invariato)
     "meta_title": 5,
     "meta_description": 8,
     "meta_canonical": 3,
     "meta_og": 4,
     # Content quality — 14 punti (era 15) — controlli struttura
-    "content_h1": 2,                # era 3
-    "content_numbers": 2,           # era 4
-    "content_links": 2,             # era 4
-    "content_word_count": 2,        # era 4
-    "content_heading_hierarchy": 2, # NUOVO: ha H2 + H3 in gerarchia corretta
-    "content_lists_or_tables": 2,   # NUOVO: ha <ul>/<ol>/<table>
-    "content_front_loading": 2,     # NUOVO: info chiave nel primo 30% del contenuto
+    "content_h1": 2,  # era 3
+    "content_numbers": 2,  # era 4
+    "content_links": 2,  # era 4
+    "content_word_count": 2,  # era 4
+    "content_heading_hierarchy": 2,  # NUOVO: ha H2 + H3 in gerarchia corretta
+    "content_lists_or_tables": 2,  # NUOVO: ha <ul>/<ol>/<table>
+    "content_front_loading": 2,  # NUOVO: info chiave nel primo 30% del contenuto
     # Signals — 8 punti (NUOVA categoria)
-    "signals_lang": 3,              # NUOVO: <html lang="...">
-    "signals_rss": 3,               # NUOVO: feed RSS/Atom trovato
-    "signals_freshness": 2,         # NUOVO: dateModified nello schema o header Last-Modified
+    "signals_lang": 3,  # NUOVO: <html lang="...">
+    "signals_rss": 3,  # NUOVO: feed RSS/Atom trovato
+    "signals_freshness": 2,  # NUOVO: dateModified nello schema o header Last-Modified
 }
 
 # Minimum word threshold for content_word_count (300 parole = contenuto sostanziale)
@@ -350,13 +350,19 @@ LLMS_DEPTH_HIGH_WORDS = 5000
 
 # Domini autorevoli sameAs (per collegamento knowledge graph)
 SAMEAS_AUTHORITATIVE_DOMAINS = {
-    "wikipedia.org", "wikidata.org", "linkedin.com", "crunchbase.com",
-    "github.com", "twitter.com", "x.com", "facebook.com",
+    "wikipedia.org",
+    "wikidata.org",
+    "linkedin.com",
+    "crunchbase.com",
+    "github.com",
+    "twitter.com",
+    "x.com",
+    "facebook.com",
 }
 
 SCORE_BANDS = {
-    "excellent": (86, 100),   # era (91, 100)
-    "good": (68, 85),         # era (71, 90)
-    "foundation": (36, 67),   # era (41, 70)
-    "critical": (0, 35),      # era (0, 40)
+    "excellent": (86, 100),  # era (91, 100)
+    "good": (68, 85),  # era (71, 90)
+    "foundation": (36, 67),  # era (41, 70)
+    "critical": (0, 35),  # era (0, 40)
 }

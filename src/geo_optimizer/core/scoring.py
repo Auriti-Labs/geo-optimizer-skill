@@ -4,6 +4,7 @@ GEO scoring engine — calcola il punteggio 0-100 dai pesi SCORING.
 Separato da audit.py per abilitare estensibilità, override dello scoring
 e breakdown per categoria (v4.0).
 """
+
 from __future__ import annotations
 
 from geo_optimizer.models.config import (
