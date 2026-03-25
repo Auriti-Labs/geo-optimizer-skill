@@ -167,10 +167,10 @@ class TestAnswerFirst:
         assert result.detected is False
         assert result.score == 0
 
-    def test_max_score_10(self):
-        """Il max score deve essere 10."""
+    def test_max_score_5(self):
+        """Il max score deve essere 5 (ricalibrato v3.15)."""
         result = detect_answer_first(_soup("<html><body></body></html>"))
-        assert result.max_score == 10
+        assert result.max_score == 5
         assert result.impact == "+25%"
 
 
@@ -224,10 +224,10 @@ class TestPassageDensity:
         result = detect_passage_density(_soup("<html><body></body></html>"))
         assert result.score == 0
 
-    def test_max_score_10(self):
-        """Il max score deve essere 10."""
+    def test_max_score_5(self):
+        """Il max score deve essere 5 (ricalibrato v3.15)."""
         result = detect_passage_density(_soup("<html><body></body></html>"))
-        assert result.max_score == 10
+        assert result.max_score == 5
         assert result.impact == "+23%"
 
 
@@ -291,11 +291,11 @@ class TestPesiCitability:
         total_max = sum(m.max_score for m in result.methods)
         assert total_max == 100, f"Max totale citability: {total_max}, atteso 100"
 
-    def test_metodi_sono_11(self):
-        """Devono esserci 11 metodi (9 originali + 2 nuovi)."""
+    def test_metodi_sono_18(self):
+        """Devono esserci 18 metodi (11 ricalibrati + 7 nuovi v3.15)."""
         html = "<html><body><p>Test.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
-        assert len(result.methods) == 11
+        assert len(result.methods) == 18
 
     def test_nomi_nuovi_metodi_presenti(self):
         """I nuovi metodi answer_first e passage_density devono essere presenti."""
@@ -306,25 +306,32 @@ class TestPesiCitability:
         assert "passage_density" in names
 
     def test_max_score_singoli_aggiornati(self):
-        """Verifica che i max_score dei metodi ricalibrati siano corretti."""
+        """Verifica che i max_score dei metodi ricalibrati siano corretti (v3.15)."""
         html = "<html><body><p>Test.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
         scores_by_name = {m.name: m.max_score for m in result.methods}
 
-        # Metodi ricalibrati (ricerca 2025-2026)
-        assert scores_by_name["keyword_stuffing"] == 10  # era 15
-        assert scores_by_name["quotation_addition"] == 12  # era 15
-        assert scores_by_name["statistics_addition"] == 11  # era 13
-        assert scores_by_name["cite_sources"] == 10  # era 12
-        assert scores_by_name["fluency_optimization"] == 10  # era 12
-        assert scores_by_name["technical_terms"] == 8  # era 10
-        assert scores_by_name["authoritative_tone"] == 8  # era 10
-        assert scores_by_name["easy_to_understand"] == 7  # era 8
-        assert scores_by_name["unique_words"] == 4  # era 5
+        # Metodi ricalibrati v3.15
+        assert scores_by_name["keyword_stuffing"] == 6
+        assert scores_by_name["quotation_addition"] == 6
+        assert scores_by_name["statistics_addition"] == 6
+        assert scores_by_name["cite_sources"] == 6
+        assert scores_by_name["fluency_optimization"] == 6
+        assert scores_by_name["technical_terms"] == 5
+        assert scores_by_name["authoritative_tone"] == 5
+        assert scores_by_name["easy_to_understand"] == 5
+        assert scores_by_name["unique_words"] == 3
+        assert scores_by_name["answer_first"] == 5
+        assert scores_by_name["passage_density"] == 5
 
-        # Nuovi metodi
-        assert scores_by_name["answer_first"] == 10
-        assert scores_by_name["passage_density"] == 10
+        # Nuovi metodi v3.15
+        assert scores_by_name["readability"] == 8
+        assert scores_by_name["faq_in_content"] == 6
+        assert scores_by_name["image_alt_quality"] == 5
+        assert scores_by_name["content_freshness"] == 6
+        assert scores_by_name["citability_density"] == 7
+        assert scores_by_name["definition_patterns"] == 5
+        assert scores_by_name["format_mix"] == 5
 
     def test_improvement_suggestions_nuovi_metodi(self):
         """Le suggestion per i nuovi metodi devono essere presenti."""
