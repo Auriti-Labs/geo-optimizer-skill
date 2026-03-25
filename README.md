@@ -128,7 +128,7 @@ geo schema --type website --name "MySite" --url https://yoursite.com
 
 **MCP Server** — use all audit capabilities directly from Claude, Cursor, or any MCP-compatible client. Five tools and two resources, no API keys required. See [MCP Server](#mcp-server) below.
 
-**Citability Score** — a separate 0–100 score based on the nine Princeton KDD 2024 methods, measuring how citable your content is (not just whether you have the right technical setup). Returned as `result.citability.total_score` in the library API.
+**Citability Score** — a separate 0–100 score based on 18 research-backed methods (Princeton KDD 2024 + AutoGEO ICLR 2026 + SE Ranking 2025), measuring how citable your content is (not just whether you have the right technical setup). Returned as `result.citability.total_score` in the library API.
 
 **16 AI bots with 3-tier classification** — training, search, and user tiers. Bingbot (Microsoft Copilot) and Claude-SearchBot added in v3.4–3.5.
 
@@ -496,7 +496,7 @@ Once connected, you can ask your AI assistant things like: *"audit my site and f
 
 Separate from the main GEO audit score, the citability score measures how well your **content** is written to be cited by AI — not just whether the technical plumbing is in place.
 
-It's based on the nine Princeton KDD 2024 methods, each with a measured impact:
+It's based on 18 research-backed methods (Princeton KDD 2024 + AutoGEO ICLR 2026 + SE Ranking 2025), each with a measured impact:
 
 | Method | Impact |
 |--------|--------|
@@ -562,7 +562,7 @@ result = await audit_async("https://example.com")
 
 ---
 
-## 🔬 The 9 Princeton GEO Methods
+## 🔬 The 18 GEO Methods
 
 Apply in this order:
 

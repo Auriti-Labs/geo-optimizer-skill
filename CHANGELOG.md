@@ -5,9 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
-## [Unreleased]
+## [Unreleased] → v3.15.0
 
-### Planned
+### Added (Batch 1 — Content Analysis)
+
+- **Readability Score** (#239) — Flesch-Kincaid Grade Level, sweet spot 6-8 for AI citations
+- **FAQ-in-Content Check** (#240) — detects Q&A in body text (not just schema), +0.5 AI citations per SE Ranking
+- **Image Alt Text Quality** (#241) — descriptive vs generic alt text analysis
+- **Content Freshness Warning** (#242) — alert when dateModified > 6 months
+- **Citability Density** (#254) — facts-per-paragraph ratio measurement
+- **Definition Pattern Detection** (#267) — "X is..." patterns that match "what is X?" queries
+- **Response Format Mix** (#272) — verifies content has paragraphs + lists + tables for cross-platform citability
+
+### Changed
+
+- Citability engine: **18 methods** (was 11), all weights recalibrated (total = 100)
+- 730 tests (was 710)
+
+### Planned (remaining Batch 2-4)
 
 - Batch audit mode (`--urls sites.txt`)
 - Remove legacy `scripts/` directory
