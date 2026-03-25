@@ -38,6 +38,8 @@ border-bottom:1px solid #334155}
 .error{color:#ef4444;margin-top:1rem;display:none}
 .report-link{margin-top:1rem;text-align:center}
 .report-link a{color:#60a5fa;text-decoration:none;font-size:.9rem}
+.stats{display:flex;justify-content:center;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.stat{background:#1e293b;padding:.4rem .8rem;border-radius:6px;font-size:.85rem;color:#94a3b8}
 </style>
 </head>
 <body>
@@ -63,10 +65,17 @@ border-bottom:1px solid #334155}
         <div class="report-link" id="report-link"></div>
     </div>
 
+    <div class="stats" id="stats-bar">
+        <span class="stat" id="stat-stars">⭐ <span id="stars-count">—</span> stars</span>
+        <span class="stat" id="stat-downloads">📦 <span id="downloads-count">—</span> downloads/mo</span>
+        <span class="stat" id="stat-audits">🔍 <span id="audits-count">—</span> audits run</span>
+    </div>
+
     <div class="links">
         <p>CLI: <code>pip install geo-optimizer-skill</code></p>
         <p><a href="https://github.com/auriti-labs/geo-optimizer-skill">GitHub</a> &middot;
-           <a href="/docs">API Docs</a></p>
+           <a href="/docs">API Docs</a> &middot;
+           <a href="https://github.com/auriti-labs/geo-optimizer-skill/issues">Issues</a></p>
     </div>
 </div>
 
@@ -163,6 +172,19 @@ async function runAudit() {
 document.getElementById('url-input').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') runAudit();
 });
+
+// Carica le statistiche all'avvio della pagina
+(async function loadStats() {
+    try {
+        const res = await fetch('/api/stats');
+        if (!res.ok) return;
+        const data = await res.json();
+        const fmt = (n) => n >= 1000 ? (n/1000).toFixed(1) + 'k' : String(n);
+        document.getElementById('stars-count').textContent = fmt(data.github_stars);
+        document.getElementById('downloads-count').textContent = fmt(data.pypi_downloads_month);
+        document.getElementById('audits-count').textContent = fmt(data.audits_run);
+    } catch (e) { /* silenzioso se le stats non sono disponibili */ }
+})();
 </script>
 </body>
 </html>

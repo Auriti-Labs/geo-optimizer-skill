@@ -285,10 +285,62 @@ async def homepage(request: Request):
     return _render_homepage(nonce=nonce)
 
 
+# ─── Contatore audit globale ─────────────────────────────────────────────────
+# Contatore in-memory degli audit eseguiti (reset al restart del servizio)
+_audit_counter: int = 0
+
+
 @app.get("/health")
 async def health():
     """Health check for monitoring."""
     return {"status": "ok", "version": __version__}
+
+
+@app.get("/api/stats")
+async def stats():
+    """Public stats: GitHub stars, PyPI downloads, audit count.
+
+    Fetches GitHub and PyPI data with in-memory cache (1h TTL).
+    Used by the homepage for social proof counters.
+    """
+    import time as _time
+
+    import httpx
+
+    cache_key = "_stats_cache"
+    cache_ttl = 3600  # 1 ora
+
+    # Cache semplice in-memory tramite attributo della funzione
+    cached = getattr(stats, cache_key, None)
+    if cached and (_time.time() - cached["ts"]) < cache_ttl:
+        # Aggiorna solo il contatore audit (sempre fresco)
+        cached["data"]["audits_run"] = _audit_counter
+        return cached["data"]
+
+    result = {"github_stars": 0, "pypi_downloads_month": 0, "audits_run": _audit_counter}
+
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        # GitHub stars
+        try:
+            r = await client.get(
+                "https://api.github.com/repos/Auriti-Labs/geo-optimizer-skill",
+                headers={"Accept": "application/vnd.github.v3+json"},
+            )
+            if r.status_code == 200:
+                result["github_stars"] = r.json().get("stargazers_count", 0)
+        except Exception:
+            pass
+
+        # PyPI downloads ultimo mese
+        try:
+            r = await client.get("https://pypistats.org/api/packages/geo-optimizer-skill/recent")
+            if r.status_code == 200:
+                result["pypi_downloads_month"] = r.json().get("data", {}).get("last_month", 0)
+        except Exception:
+            pass
+
+    setattr(stats, cache_key, {"data": result, "ts": _time.time()})
+    return result
 
 
 # ─── Pydantic model for POST body validation ─────────────────────────────────
@@ -549,6 +601,10 @@ async def _run_audit(url: str) -> JSONResponse:
 
     # Serialize result
     data = _audit_result_to_dict(result)
+
+    # Incrementa contatore audit globale
+    global _audit_counter
+    _audit_counter += 1
 
     # Save to cache
     report_id = await _set_cached(url, data)
