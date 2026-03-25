@@ -5,6 +5,36 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [3.15.1] — 2026-03-25
+
+### Added (Batch 2 — Quality Signals)
+
+- **Attribution Completeness** (#255) — source chain verification for claims
+- **Negative Signals Detection** (#257) — auto-promo, thin content, repetitive phrases
+- **Comparison Content** (#258) — tables, pros/cons, X vs Y patterns
+- **E-E-A-T Composite** (#260) — privacy, terms, about, contact signals
+- **Content Decay** (#265) — outdated years, stale references
+- **Boilerplate Ratio** (#266) — main content vs nav/footer/sidebar
+- **Nuance Signals** (#270) — "however", "limitations", balanced perspectives
+
+### Added (Batch 3+4 — Specialized)
+
+- **Snippet-Ready Content** (#249) — definitions and direct answers after headings
+- **Chunk Quotability** (#229) — self-contained paragraphs with concrete data
+- **Blog Structure** (#230) — Article/BlogPosting schema, dates, author
+- **AI Shopping Readiness** (#277) — Product schema completeness
+- **ChatGPT Shopping Feed** (#275) — Product schema for ChatGPT Shopping
+- **E-commerce GEO Profile** (#232) — ecommerce signals in schema analysis
+- **llms.txt Policy Intelligence** (#247) — content depth analysis
+- **Machine-Readable Presence** (#263) — RSS feed recommendations
+
+### Changed
+
+- Citability engine: **30 methods** total (18 from batch1 + 7 batch2 + 5 batch3+4)
+- 760 tests passing
+
+---
+
 ## [3.15.0] — 2026-03-25
 
 ### Added (Batch 1 — Content Analysis)
