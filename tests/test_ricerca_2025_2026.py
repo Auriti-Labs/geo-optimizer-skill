@@ -284,17 +284,17 @@ class TestOverOptimization:
 
 class TestPesiCitability:
     def test_max_score_totale_100(self):
-        """I 18 metodi base sommano 100, i 7 bonus (Batch 2) aggiungono 31 = 131."""
+        """I 18 metodi base sommano 100, i 7 bonus batch2 aggiungono 31, i 5 bonus batch3+4 aggiungono 18 = 149."""
         html = "<html><body><p>Test content.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
         total_max = sum(m.max_score for m in result.methods)
-        assert total_max == 131, f"Max totale citability: {total_max}, atteso 131 (100 base + 31 bonus)"
+        assert total_max == 149, f"Max totale citability: {total_max}, atteso 149 (100 base + 31 batch2 + 18 batch3+4)"
 
     def test_metodi_sono_25(self):
-        """Devono esserci 25 metodi (18 base + 7 Quality Signals Batch 2)."""
+        """Devono esserci 30 metodi (18 base + 7 Batch 2 + 5 Batch 3+4)."""
         html = "<html><body><p>Test.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
-        assert len(result.methods) == 25
+        assert len(result.methods) == 30
 
     def test_nomi_nuovi_metodi_presenti(self):
         """I nuovi metodi answer_first e passage_density devono essere presenti."""

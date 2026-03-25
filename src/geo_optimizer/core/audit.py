@@ -139,11 +139,15 @@ def audit_llms_txt(base_url: str) -> LlmsTxtResult:
     h2_lines = [line for line in lines if line.startswith("## ")]
     if h2_lines:
         result.has_sections = True
+    # #247: conta sezioni H2 per Policy Intelligence
+    result.sections_count = len(h2_lines)
 
     # Check markdown links
     links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
     if links:
         result.has_links = True
+    # #247: conta link per Policy Intelligence
+    result.links_count = len(links)
 
     # Check /llms-full.txt (llmstxt.org spec — optional extended version)
     full_url = urljoin(base_url, "/llms-full.txt")
@@ -248,6 +252,27 @@ def audit_schema(soup, url: str) -> SchemaResult:
             result.schema_richness_score = 1
         else:
             result.schema_richness_score = 0
+
+    # #232: E-commerce GEO Profile — analizza ricchezza Product schema
+    if result.has_product:
+        for schema_obj in result.raw_schemas:
+            schema_type = schema_obj.get("@type", "")
+            types = schema_type if isinstance(schema_type, list) else [schema_type]
+            if "Product" in types:
+                offers = schema_obj.get("offers") or schema_obj.get("offer", {})
+                if isinstance(offers, list):
+                    offers = offers[0] if offers else {}
+                result.ecommerce_signals = {
+                    "has_price": bool(offers.get("price") or offers.get("lowPrice")),
+                    "has_availability": bool(offers.get("availability")),
+                    "has_brand": bool(schema_obj.get("brand")),
+                    "has_image": bool(schema_obj.get("image")),
+                    "has_reviews": bool(schema_obj.get("aggregateRating") or schema_obj.get("review")),
+                }
+                result.ecommerce_signals["complete"] = all(
+                    result.ecommerce_signals[k] for k in result.ecommerce_signals if k != "complete"
+                )
+                break
 
     return result
 
@@ -488,14 +513,36 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
     return result
 
 
-def build_recommendations(base_url, robots, llms, schema, meta, content, ai_discovery=None) -> list:
-    """Build a prioritized list of recommendations."""
+def build_recommendations(base_url, robots, llms, schema, meta, content, ai_discovery=None, signals=None) -> list:
+    """Build a prioritized list of recommendations.
+
+    Args:
+        base_url: URL base del sito.
+        robots: RobotsResult.
+        llms: LlmsTxtResult.
+        schema: SchemaResult.
+        meta: MetaResult.
+        content: ContentResult.
+        ai_discovery: AiDiscoveryResult (opzionale).
+        signals: SignalsResult (opzionale, per raccomandazioni machine-readable #263).
+    """
     recommendations = []
 
     if not robots.citation_bots_ok:
         recommendations.append("Update robots.txt to include all AI bots (GPTBot, ClaudeBot, PerplexityBot)")
     if not llms.found:
         recommendations.append(f"Create /llms.txt for AI indexing: geo llms --base-url {base_url}")
+    elif llms.found:
+        # #247: llms.txt Policy Intelligence — raccomandazioni sulla qualità del contenuto
+        if llms.sections_count == 0:
+            recommendations.append(
+                "Add H2 sections to llms.txt to organize content by topic (e.g. ## Features, ## Documentation, ## API)"
+            )
+        if llms.links_count < 3:
+            recommendations.append(
+                f"llms.txt has only {llms.links_count} links. "
+                "Add more markdown links to key pages for better AI indexing coverage."
+            )
     if not schema.has_website:
         recommendations.append("Add WebSite JSON-LD schema to homepage")
     if not schema.has_faq:
@@ -507,6 +554,13 @@ def build_recommendations(base_url, robots, llms, schema, meta, content, ai_disc
     if not content.has_links:
         recommendations.append("Cite authoritative sources with external links (increase AI credibility)")
 
+    # #263: Raccomandazioni Machine-Readable Presence (RSS + sitemap)
+    if signals is not None and not signals.has_rss:
+        recommendations.append(
+            "Add RSS/Atom feed and link it in <head> with "
+            '<link rel="alternate" type="application/rss+xml"> for AI discovery'
+        )
+
     # Raccomandazioni AI discovery (geo-checklist.dev)
     if ai_discovery is not None:
         if not ai_discovery.has_well_known_ai:
@@ -517,6 +571,16 @@ def build_recommendations(base_url, robots, llms, schema, meta, content, ai_disc
             recommendations.append("Create /ai/faq.json with structured FAQ for AI search visibility")
         if not ai_discovery.has_service:
             recommendations.append("Create /ai/service.json to describe service capabilities for AI")
+
+    # #232: Raccomandazione e-commerce se Product schema è incompleto
+    if schema.has_product and hasattr(schema, "ecommerce_signals"):
+        signals_dict = schema.ecommerce_signals
+        missing_fields = [k for k, v in signals_dict.items() if not v and k != "complete"]
+        if missing_fields:
+            recommendations.append(
+                f"Complete Product schema: missing {', '.join(missing_fields)}. "
+                "Rich Product schema improves AI shopping visibility."
+            )
 
     return recommendations
 
@@ -575,7 +639,9 @@ def _build_audit_result(
     band = get_score_band(score)
 
     # Raccomandazioni
-    recommendations = build_recommendations(base_url, robots, llms, schema, meta, content, effective_ai_discovery)
+    recommendations = build_recommendations(
+        base_url, robots, llms, schema, meta, content, effective_ai_discovery, effective_signals
+    )
 
     # Fix #104: esegui plugin registrati in CheckRegistry
     # I risultati non influenzano il punteggio base
@@ -928,10 +994,14 @@ def _audit_llms_from_response(r, r_full=None) -> LlmsTxtResult:
     h2_lines = [line for line in lines if line.startswith("## ")]
     if h2_lines:
         result.has_sections = True
+    # #247: conta sezioni H2 per Policy Intelligence
+    result.sections_count = len(h2_lines)
 
     links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
     if links:
         result.has_links = True
+    # #247: conta link per Policy Intelligence
+    result.links_count = len(links)
 
     # Check /llms-full.txt — fix #184: now works in the async path too
     if r_full and r_full.status_code == 200 and len(r_full.text.strip()) > 0:
