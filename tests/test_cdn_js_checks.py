@@ -166,8 +166,9 @@ class TestJsRenderingCheck:
 class TestCdnAiCrawlerCheck:
     """Tests for audit_cdn_ai_crawler()."""
 
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
     @patch("requests.get")
-    def test_no_block_all_pass(self, mock_get):
+    def test_no_block_all_pass(self, mock_get, mock_validate):
         """When all bots get 200 with similar content, no block detected."""
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -181,8 +182,9 @@ class TestCdnAiCrawlerCheck:
         assert result.any_blocked is False
         assert len(result.bot_results) == 3  # GPTBot, ClaudeBot, PerplexityBot
 
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
     @patch("requests.get")
-    def test_bot_403_detected(self, mock_get):
+    def test_bot_403_detected(self, mock_get, mock_validate):
         """403 for AI bot should be detected as blocked."""
         import requests as real_requests
 
@@ -207,8 +209,9 @@ class TestCdnAiCrawlerCheck:
         gptbot = next(b for b in result.bot_results if b["bot"] == "GPTBot")
         assert gptbot["blocked"] is True
 
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
     @patch("requests.get")
-    def test_cloudflare_challenge_detected(self, mock_get):
+    def test_cloudflare_challenge_detected(self, mock_get, mock_validate):
         """Cloudflare challenge page should be detected."""
 
         def side_effect(url, **kwargs):
@@ -233,8 +236,9 @@ class TestCdnAiCrawlerCheck:
         gptbot = next(b for b in result.bot_results if b["bot"] == "GPTBot")
         assert gptbot["challenge_detected"] is True
 
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
     @patch("requests.get")
-    def test_content_length_mismatch_detected(self, mock_get):
+    def test_content_length_mismatch_detected(self, mock_get, mock_validate):
         """Bot receiving <30% of browser content should be detected as blocked."""
 
         def side_effect(url, **kwargs):
@@ -255,8 +259,9 @@ class TestCdnAiCrawlerCheck:
         assert result.checked is True
         assert result.any_blocked is True
 
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
     @patch("requests.get")
-    def test_cdn_headers_detected(self, mock_get):
+    def test_cdn_headers_detected(self, mock_get, mock_validate):
         """CDN headers should be captured."""
         mock_response = MagicMock()
         mock_response.status_code = 200
