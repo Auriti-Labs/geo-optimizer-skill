@@ -302,10 +302,11 @@ async def stats():
 
     Fetches GitHub and PyPI data with in-memory cache (1h TTL).
     Used by the homepage for social proof counters.
+    Usa urllib (standard library) per evitare dipendenza da httpx.
     """
+    import json as _json
     import time as _time
-
-    import httpx
+    import urllib.request
 
     cache_key = "_stats_cache"
     cache_ttl = 3600  # 1 ora
@@ -319,35 +320,39 @@ async def stats():
 
     result = {"github_stars": 0, "pypi_downloads_month": 0, "audits_run": _audit_counter}
 
-    async with httpx.AsyncClient(timeout=5.0) as client:
-        # GitHub stars
+    def _fetch_json(url: str, headers: dict | None = None) -> dict | None:
+        """Fetch JSON da URL con timeout 5s. Ritorna None se fallisce."""
         try:
-            r = await client.get(
-                "https://api.github.com/repos/Auriti-Labs/geo-optimizer-skill",
-                headers={"Accept": "application/vnd.github.v3+json"},
-            )
-            if r.status_code == 200:
-                result["github_stars"] = r.json().get("stargazers_count", 0)
+            req = urllib.request.Request(url, headers=headers or {"User-Agent": "GEO-Optimizer"})
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                if resp.status == 200:
+                    return _json.loads(resp.read())
         except Exception:
-            pass
+            return None
 
-        # PyPI downloads ultimo mese — solo utenti reali (senza mirror, senza null/bot)
-        try:
-            r = await client.get(
-                "https://pypistats.org/api/packages/geo-optimizer-skill/system",
-                params={"mirrors": "false"},
-            )
-            if r.status_code == 200:
-                # Somma solo download con OS reale (Linux, Darwin, Windows)
-                # Escludi category=null che sono bot, CI senza OS, scanner
-                downloads = sum(
-                    item.get("downloads", 0)
-                    for item in r.json().get("data", [])
-                    if item.get("category") not in (None, "null")
-                )
-                result["pypi_downloads_month"] = downloads
-        except Exception:
-            pass
+    # Esegui le chiamate in thread separati per non bloccare l'event loop
+    github_data, pypi_data = await asyncio.gather(
+        asyncio.to_thread(
+            _fetch_json,
+            "https://api.github.com/repos/Auriti-Labs/geo-optimizer-skill",
+            {"User-Agent": "GEO-Optimizer", "Accept": "application/vnd.github.v3+json"},
+        ),
+        asyncio.to_thread(
+            _fetch_json,
+            "https://pypistats.org/api/packages/geo-optimizer-skill/system?mirrors=false",
+        ),
+    )
+
+    # GitHub stars
+    if github_data:
+        result["github_stars"] = github_data.get("stargazers_count", 0)
+
+    # PyPI downloads — solo utenti reali (senza mirror, senza null/bot)
+    if pypi_data:
+        downloads = sum(
+            item.get("downloads", 0) for item in pypi_data.get("data", []) if item.get("category") not in (None, "null")
+        )
+        result["pypi_downloads_month"] = downloads
 
     setattr(stats, cache_key, {"data": result, "ts": _time.time()})
     return result
