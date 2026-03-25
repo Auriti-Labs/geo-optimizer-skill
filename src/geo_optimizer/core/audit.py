@@ -225,6 +225,27 @@ def audit_schema(soup, url: str) -> SchemaResult:
             # Parsing failed: log at debug (not critical, third-party scripts) — fix #81
             logging.debug("Invalid JSON schema ignored: %s", exc)
 
+    # Schema richness (Growth Marshal Feb 2026): conta attributi per ogni schema
+    # Schema generico (@type + name + url = 3 attributi) performa PEGGIO di nessuno schema
+    # Schema ricco (5+ attributi) → 61.7% citation rate vs 41.6% generico
+    _GENERIC_KEYS = {"@context", "@type", "@id"}
+    attr_counts = []
+    for schema_obj in result.raw_schemas:
+        # Conta solo attributi rilevanti (esclusi @context, @type, @id)
+        relevant_attrs = [k for k in schema_obj if k not in _GENERIC_KEYS]
+        attr_counts.append(len(relevant_attrs))
+
+    if attr_counts:
+        result.avg_attributes_per_schema = round(sum(attr_counts) / len(attr_counts), 1)
+        # Score: 0 se media < 3 (generico), 1 se 3-4, 3 se 5+ (ricco)
+        avg = result.avg_attributes_per_schema
+        if avg >= 5:
+            result.schema_richness_score = 3
+        elif avg >= 3:
+            result.schema_richness_score = 1
+        else:
+            result.schema_richness_score = 0
+
     return result
 
 

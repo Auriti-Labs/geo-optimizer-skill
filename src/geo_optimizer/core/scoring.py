@@ -75,8 +75,14 @@ def _score_llms(llms) -> int:
 
 
 def _score_schema(schema) -> int:
-    """Calcola il punteggio schema JSON-LD."""
+    """Calcola il punteggio schema JSON-LD.
+
+    Schema richness (Growth Marshal Feb 2026): schema con solo @type + name + url
+    è generico e non aiuta. Schema con 5+ attributi rilevanti → punti pieni.
+    """
     s = SCORING["schema_any_valid"] if schema.any_schema_found else 0
+    # Schema richness: premia schema con attributi ricchi, penalizza quelli generici
+    s += min(schema.schema_richness_score, SCORING["schema_richness"])
     s += SCORING["schema_faq"] if schema.has_faq else 0
     s += SCORING["schema_article"] if schema.has_article else 0
     s += SCORING["schema_organization"] if schema.has_organization else 0

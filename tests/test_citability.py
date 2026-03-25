@@ -354,7 +354,7 @@ class TestAuditCitability:
 
         assert result.total_score > 0
         assert result.grade in ("low", "medium", "high", "excellent")
-        assert len(result.methods) == 9
+        assert len(result.methods) == 11
 
         # Verifica che ogni metodo abbia un nome
         names = {m.name for m in result.methods}
@@ -366,7 +366,7 @@ class TestAuditCitability:
     def test_pagina_vuota(self):
         result = audit_citability(_soup("<html><body></body></html>"), "https://example.com")
         assert result.total_score >= 0
-        assert len(result.methods) == 9
+        assert len(result.methods) == 11
 
     def test_top_improvements_generate(self):
         result = audit_citability(_soup("<html><body><p>Testo semplice.</p></body></html>"), "https://example.com")

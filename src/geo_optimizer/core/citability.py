@@ -186,7 +186,7 @@ def detect_cite_sources(soup, base_url: str) -> MethodScore:
     ]
     cite_tags = len(soup.find_all("cite"))
 
-    score = min(authoritative_count * 3 + external_count + cite_tags * 2 + len(ref_headings) * 3, 12)
+    score = min(authoritative_count * 3 + external_count + cite_tags * 2 + len(ref_headings) * 3, 10)
     detected = authoritative_count >= 2 or bool(ref_headings) or cite_tags >= 1
 
     return MethodScore(
@@ -194,7 +194,7 @@ def detect_cite_sources(soup, base_url: str) -> MethodScore:
         label="Cite Sources",
         detected=detected,
         score=score,
-        max_score=12,
+        max_score=10,
         impact="+27%",
         details={
             "authoritative_links": authoritative_count,
@@ -227,14 +227,14 @@ def detect_quotations(soup) -> MethodScore:
     )
 
     total = len(blockquotes) + len(q_tags) + len(text_attributions) + len(pull_quotes)
-    score = min(total * 3 + len(bq_with_cite) * 2, 15)
+    score = min(total * 3 + len(bq_with_cite) * 2, 12)
 
     return MethodScore(
         name="quotation_addition",
         label="Quotation Addition",
         detected=total >= 1,
         score=score,
-        max_score=15,
+        max_score=12,
         impact="+41%",
         details={
             "blockquotes": len(blockquotes),
@@ -262,14 +262,14 @@ def detect_statistics(soup, clean_text: str | None = None) -> MethodScore:
     word_count = max(len(body_text.split()), 1)
     density = len(matches) / word_count * 1000
 
-    score = min(int(density * 2) + tables_with_data * 3 + data_elements * 2, 13)
+    score = min(int(density * 2) + tables_with_data * 3 + data_elements * 2, 11)
 
     return MethodScore(
         name="statistics_addition",
         label="Statistics Addition",
         detected=len(matches) >= 3,
         score=score,
-        max_score=13,
+        max_score=11,
         impact="+33%",
         details={
             "stat_matches": len(matches),
@@ -305,9 +305,9 @@ def detect_fluency(soup) -> MethodScore:
         score += 4
     elif avg_para_len >= 15:
         score += 2
-    score += min(connective_count // 2, 4)
+    score += min(connective_count // 2, 3)
     if text_to_list_ratio >= 1.5:
-        score += 2
+        score += 1
     if len(paragraphs) >= 5:
         score += 2
 
@@ -315,8 +315,8 @@ def detect_fluency(soup) -> MethodScore:
         name="fluency_optimization",
         label="Fluency Optimization",
         detected=score >= 4,
-        score=min(score, 12),
-        max_score=12,
+        score=min(score, 10),
+        max_score=10,
         impact="+29%",
         details={
             "avg_paragraph_words": round(avg_para_len, 1),
@@ -342,14 +342,14 @@ def detect_technical_terms(soup, clean_text: str | None = None) -> MethodScore:
     word_count = max(len(body_text.split()), 1)
     density = len(tech_matches) / word_count * 1000
 
-    score = min(int(density) + code_blocks * 2 + abbr_tags + dfn_tags, 10)
+    score = min(int(density) + code_blocks * 2 + abbr_tags + dfn_tags, 8)
 
     return MethodScore(
         name="technical_terms",
         label="Technical Terms",
         detected=density >= 5 or code_blocks >= 1,
         score=score,
-        max_score=10,
+        max_score=8,
         impact="+18%",
         details={
             "tech_matches": len(tech_matches),
@@ -394,8 +394,8 @@ def detect_authoritative_tone(soup) -> MethodScore:
         name="authoritative_tone",
         label="Authoritative Tone",
         detected=max(score, 0) >= 3,
-        score=max(min(score, 10), 0),
-        max_score=10,
+        score=max(min(score, 8), 0),
+        max_score=8,
         impact="+16%",
         details={
             "authority_markers": authority_signals,
@@ -424,7 +424,7 @@ def detect_easy_to_understand(soup) -> MethodScore:
                 all_sentences.append(words)
 
     if not all_sentences:
-        return MethodScore(name="easy_to_understand", label="Easy-to-Understand", max_score=8, impact="+14%")
+        return MethodScore(name="easy_to_understand", label="Easy-to-Understand", max_score=7, impact="+14%")
 
     avg_sentence_len = sum(len(s) for s in all_sentences) / len(all_sentences)
 
@@ -454,8 +454,8 @@ def detect_easy_to_understand(soup) -> MethodScore:
         name="easy_to_understand",
         label="Easy-to-Understand",
         detected=score >= 3,
-        score=min(score, 8),
-        max_score=8,
+        score=min(score, 7),
+        max_score=7,
         impact="+14%",
         details={
             "avg_sentence_length": round(avg_sentence_len, 1),
@@ -475,7 +475,7 @@ def detect_unique_words(soup, clean_text: str | None = None) -> MethodScore:
     words = [w for w in re.findall(r"\b[a-zA-Zà-ú]{4,}\b", body_text) if w not in _STOP_WORDS]
 
     if len(words) < 50:
-        return MethodScore(name="unique_words", label="Unique Words", max_score=5, impact="+7%")
+        return MethodScore(name="unique_words", label="Unique Words", max_score=4, impact="+7%")
 
     # TTR with sliding window of 200 words
     window = 200
@@ -487,14 +487,14 @@ def detect_unique_words(soup, clean_text: str | None = None) -> MethodScore:
 
     avg_ttr = sum(ttr_scores) / max(len(ttr_scores), 1)
 
-    score = min(int(avg_ttr * 12), 5)
+    score = min(int(avg_ttr * 10), 4)
 
     return MethodScore(
         name="unique_words",
         label="Unique Words",
         detected=avg_ttr >= 0.40,
         score=score,
-        max_score=5,
+        max_score=4,
         impact="+7%",
         details={
             "ttr": round(avg_ttr, 3),
@@ -513,40 +513,174 @@ def detect_keyword_stuffing(soup, clean_text: str | None = None) -> MethodScore:
     words = re.findall(r"\b[a-zA-Zà-ú]{3,}\b", body_text)
 
     if len(words) < 50:
-        # Text too short for meaningful keyword stuffing analysis
+        # Testo troppo corto per analisi significativa
         return MethodScore(
-            name="keyword_stuffing", label="No Keyword Stuffing", score=15, max_score=15, impact="-9%", detected=False
+            name="keyword_stuffing", label="No Keyword Stuffing", score=10, max_score=10, impact="-9%", detected=False
         )
 
     word_freq = Counter(words)
     total = len(words)
     threshold = 0.03
 
-    # Words with anomalous frequency (>3%)
+    # Parole con frequenza anomala (>3%)
     suspicious = {w: c for w, c in word_freq.most_common(20) if c / total > threshold and w not in _STOP_WORDS}
 
     stuffing_count = len(suspicious)
 
-    # Full bonus if no stuffing detected
+    # Over-optimization warning (C-SEO Bench 2025):
+    # 1. Frasi ripetitive (stessa frase che appare 3+ volte)
+    sentences = re.split(r"[.!?]+", body_text)
+    sentence_counts = Counter(s.strip() for s in sentences if len(s.strip()) > 20)
+    repeated_phrases = {s: c for s, c in sentence_counts.items() if c >= 3}
+
+    # 2. Front-loading di keyword nelle prime 200 parole
+    first_200 = words[:200]
+    front_loading_warning = False
+    if len(first_200) >= 50:
+        front_freq = Counter(first_200)
+        front_total = len(first_200)
+        front_suspicious = {
+            w: c for w, c in front_freq.most_common(10) if c / front_total > 0.05 and w not in _STOP_WORDS
+        }
+        if len(front_suspicious) >= 2:
+            front_loading_warning = True
+
+    # Penalizzazione aggiuntiva per over-optimization
+    over_opt_penalty = 0
+    if repeated_phrases:
+        over_opt_penalty += min(len(repeated_phrases), 2)
+    if front_loading_warning:
+        over_opt_penalty += 1
+
+    # Punteggio pieno se nessun stuffing rilevato
     if stuffing_count == 0:
-        score = 15
-    elif stuffing_count <= 1:
         score = 10
+    elif stuffing_count <= 1:
+        score = 7
     elif stuffing_count <= 3:
-        score = 5
+        score = 3
     else:
         score = 0
+
+    # Applica penalità over-optimization
+    score = max(score - over_opt_penalty, 0)
 
     return MethodScore(
         name="keyword_stuffing",
         label="No Keyword Stuffing",
-        detected=stuffing_count >= 2,
+        detected=stuffing_count >= 2 or bool(repeated_phrases),
         score=score,
-        max_score=15,
+        max_score=10,
         impact="-9%",
         details={
             "suspicious_keywords": {k: round(v / total * 100, 1) for k, v in suspicious.items()},
             "stuffing_severity": "high" if stuffing_count >= 4 else "medium" if stuffing_count >= 2 else "none",
+            "repeated_phrases": len(repeated_phrases),
+            "front_loading_detected": front_loading_warning,
+        },
+    )
+
+
+# ─── 10. Answer-First Structure (+25%) — AutoGEO ICLR 2026 ───────────────────
+
+
+# Pattern per fatti concreti: numeri, percentuali, statement assertivi
+_FACT_RE = re.compile(
+    r"\b\d+(?:\.\d+)?%"  # percentuali
+    r"|\$\d+"  # valute
+    r"|\b\d{2,}\b"  # numeri a 2+ cifre
+    r"|\b(?:is|are|was|were|has|have|can|will|must|should"
+    r"|è|sono|ha|hanno|può|deve)\b",  # verbi assertivi EN+IT
+    re.IGNORECASE,
+)
+
+
+def detect_answer_first(soup) -> MethodScore:
+    """Detect answer-first structure: H2 followed by paragraph with concrete fact.
+
+    AutoGEO (ICLR 2026) identifies AnswerFirst as one of the most effective
+    strategies for AI citation. For each H2, checks if the first paragraph
+    contains a concrete fact (number, assertive statement) in the first 150 chars.
+    """
+    h2_tags = soup.find_all("h2")
+    if not h2_tags:
+        return MethodScore(name="answer_first", label="Answer-First Structure", max_score=10, impact="+25%")
+
+    answer_first_count = 0
+    for h2 in h2_tags:
+        # Trova il primo paragrafo dopo l'H2
+        next_p = h2.find_next("p")
+        if not next_p:
+            continue
+        # Controlla solo i primi 150 caratteri
+        first_text = next_p.get_text(strip=True)[:150]
+        if _FACT_RE.search(first_text):
+            answer_first_count += 1
+
+    total_h2 = len(h2_tags)
+    ratio = answer_first_count / total_h2 if total_h2 > 0 else 0
+
+    # Score proporzionale alla percentuale di H2 con answer-first
+    score = min(int(ratio * 12), 10)
+
+    return MethodScore(
+        name="answer_first",
+        label="Answer-First Structure",
+        detected=ratio >= 0.3,
+        score=score,
+        max_score=10,
+        impact="+25%",
+        details={
+            "h2_count": total_h2,
+            "answer_first_count": answer_first_count,
+            "ratio": round(ratio, 2),
+        },
+    )
+
+
+# ─── 11. Passage Density (+23%) — Stanford Nature Communications 2025 ────────
+
+
+def detect_passage_density(soup) -> MethodScore:
+    """Detect self-contained dense passages (50-150 words with numeric data).
+
+    Stanford Nature Communications 2025: paragraphs of 50-150 words containing
+    concrete data have 2.3x citation rate compared to generic paragraphs.
+    """
+    paragraphs = soup.find_all("p")
+    if not paragraphs:
+        return MethodScore(name="passage_density", label="Passage Density", max_score=10, impact="+23%")
+
+    total_paras = 0
+    dense_paras = 0
+
+    for p in paragraphs:
+        text = p.get_text(strip=True)
+        word_count = len(text.split())
+        if word_count < 10:
+            # Paragrafi troppo corti non contano
+            continue
+        total_paras += 1
+        # Paragrafo denso: 50-150 parole con almeno un dato numerico
+        if 50 <= word_count <= 150 and re.search(r"\b\d+(?:\.\d+)?[%$€]?|\b\d{3,}\b", text):
+            dense_paras += 1
+
+    ratio = dense_paras / total_paras if total_paras > 0 else 0
+
+    # Score proporzionale alla percentuale di paragrafi densi
+    score = min(int(ratio * 20), 10)
+
+    return MethodScore(
+        name="passage_density",
+        label="Passage Density",
+        detected=dense_paras >= 2,
+        score=score,
+        max_score=10,
+        impact="+23%",
+        details={
+            "total_paragraphs": total_paras,
+            "dense_paragraphs": dense_paras,
+            "ratio": round(ratio, 2),
         },
     )
 
@@ -559,6 +693,8 @@ _IMPROVEMENT_SUGGESTIONS = {
     "statistics_addition": "Include quantitative data: percentages, figures, metrics (+33%)",
     "fluency_optimization": "Improve fluency with longer paragraphs and logical connectives (+29%)",
     "cite_sources": "Cite authoritative sources (.edu, .gov, Wikipedia) with external links (+27%)",
+    "answer_first": "Start each section with a concrete fact in the first sentence (+25% AI citation)",
+    "passage_density": "Write self-contained paragraphs of 50-150 words with numeric data (+23%)",
     "technical_terms": "Use domain-specific technical terminology (+18%)",
     "authoritative_tone": "Add author bio with credentials and assertive tone (+16%)",
     "easy_to_understand": "Improve readability: short sentences, hierarchical headings, FAQ (+14%)",
@@ -566,12 +702,14 @@ _IMPROVEMENT_SUGGESTIONS = {
     "keyword_stuffing": "Reduce density of repeated keywords (-9% if present)",
 }
 
-# Order by decreasing impact (excluding keyword_stuffing which is a penalty)
+# Ordine per impatto decrescente (escluso keyword_stuffing che è una penalità)
 _METHOD_ORDER = [
     "quotation_addition",
     "statistics_addition",
     "fluency_optimization",
     "cite_sources",
+    "answer_first",
+    "passage_density",
     "technical_terms",
     "authoritative_tone",
     "easy_to_understand",
@@ -609,6 +747,8 @@ def audit_citability(soup, base_url: str) -> CitabilityResult:
         detect_statistics(soup, clean_text=clean_text),
         detect_fluency(soup),
         detect_cite_sources(soup, base_url),
+        detect_answer_first(soup),
+        detect_passage_density(soup),
         detect_technical_terms(soup, clean_text=clean_text),
         detect_authoritative_tone(soup),
         detect_easy_to_understand(soup),
@@ -616,7 +756,7 @@ def audit_citability(soup, base_url: str) -> CitabilityResult:
         detect_keyword_stuffing(soup, clean_text=clean_text),
     ]
 
-    # Sum scores (max possible = 100)
+    # Somma score (max possibile = 100)
     total = sum(m.score for m in methods)
     total = max(min(total, 100), 0)
 

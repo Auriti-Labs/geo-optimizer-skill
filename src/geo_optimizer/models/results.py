@@ -77,6 +77,9 @@ class SchemaResult:
     has_sameas: bool = False  # proprietà sameAs trovata
     sameas_urls: list[str] = field(default_factory=list)
     has_date_modified: bool = False  # dateModified in qualsiasi schema
+    # Schema richness (Growth Marshal Feb 2026): schema con 5+ attributi rilevanti
+    schema_richness_score: int = 0
+    avg_attributes_per_schema: float = 0.0
 
 
 # ─── Meta tags ───────────────────────────────────────────────────────────────

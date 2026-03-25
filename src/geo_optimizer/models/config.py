@@ -315,8 +315,9 @@ SCORING = {
     "llms_depth": 2,  # NUOVO: word_count >= 1000
     "llms_depth_high": 2,  # NUOVO: word_count >= 5000
     "llms_full": 2,  # NUOVO: has llms-full.txt
-    # Schema JSON-LD — 22 punti (era 25) — qualsiasi tipo valido + sameAs
-    "schema_any_valid": 5,  # NUOVO: qualsiasi JSON-LD schema valido trovato
+    # Schema JSON-LD — 22 punti (era 25) — qualsiasi tipo valido + sameAs + richness
+    "schema_any_valid": 2,  # qualsiasi JSON-LD schema valido trovato (era 5, ridotto per richness)
+    "schema_richness": 3,  # NUOVO: schema con 5+ attributi rilevanti (Growth Marshal 2026)
     "schema_faq": 5,  # era 7 — ancora il tipo singolo più alto
     "schema_article": 3,  # era 4
     "schema_organization": 3,  # era 3

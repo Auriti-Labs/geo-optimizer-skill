@@ -380,8 +380,9 @@ class TestScoringConsistency:
             "llms.has_links": True,
             "llms.word_count": 5000,  # depth + depth_high
             "llms.has_full": True,
-            # schema: 5 + 5 + 3 + 3 + 3 + 3 = 22
+            # schema: 2 + 3 + 5 + 3 + 3 + 3 + 3 = 22
             "schema.any_schema_found": True,
+            "schema.schema_richness_score": 3,
             "schema.has_website": True,
             "schema.has_faq": True,
             "schema.has_article": True,
