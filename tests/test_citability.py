@@ -11,17 +11,24 @@ from bs4 import BeautifulSoup
 
 from geo_optimizer.core.citability import (
     audit_citability,
+    detect_attribution,
     detect_authoritative_tone,
+    detect_boilerplate_ratio,
     detect_citability_density,
     detect_cite_sources,
+    detect_comparison_content,
+    detect_content_decay,
     detect_content_freshness,
     detect_definition_patterns,
     detect_easy_to_understand,
+    detect_eeat,
     detect_faq_in_content,
     detect_fluency,
     detect_format_mix,
     detect_image_alt_quality,
     detect_keyword_stuffing,
+    detect_negative_signals,
+    detect_nuance_signals,
     detect_quotations,
     detect_readability,
     detect_statistics,
@@ -586,17 +593,279 @@ class TestFormatMix:
 
 
 # ============================================================================
-# TEST: Somma pesi = 100
+# TEST: Attribution Completeness (+12%) — Batch 2
+# ============================================================================
+
+
+class TestAttribution:
+    def test_attribuzione_inline(self):
+        html = """
+        <html><body>
+            <p>According to recent studies, AI adoption grew by 300%.
+            Smith (2024) found that content quality matters most.
+            As reported by MIT, the trend will continue.</p>
+        </body></html>
+        """
+        result = detect_attribution(_soup(html))
+        assert result.detected is True
+        assert result.details["inline_attributions"] >= 2
+        assert result.score > 0
+
+    def test_nessuna_attribuzione(self):
+        html = "<html><body><p>Il contenuto è importante per tutti i siti web moderni.</p></body></html>"
+        result = detect_attribution(_soup(html))
+        assert result.detected is False
+        assert result.details["inline_attributions"] == 0
+
+    def test_footnote_sup(self):
+        html = """
+        <html><body>
+            <p>AI visibility is growing rapidly<sup>1</sup>.
+            Content quality matters<sup>2</sup>.
+            Research confirms this trend<sup>3</sup>.</p>
+        </body></html>
+        """
+        result = detect_attribution(_soup(html))
+        assert result.details["footnotes"] >= 3
+
+
+# ============================================================================
+# TEST: Negative Signals Detection (-15%) — Batch 2
+# ============================================================================
+
+
+class TestNegativeSignals:
+    def test_nessun_segnale_negativo(self):
+        html = """
+        <html><body>
+            <meta name="author" content="Dr. Smith">
+            <p>This comprehensive guide covers AI optimization strategies.
+            The research shows clear patterns in content quality metrics.
+            Understanding these patterns helps improve visibility.</p>
+        </body></html>
+        """
+        result = detect_negative_signals(_soup(html))
+        assert result.score >= 4
+        assert result.details["has_author"] is True
+
+    def test_auto_promozione_eccessiva(self):
+        html = """
+        <html><body>
+            <h2>Our Amazing Product</h2>
+            <p>Buy now our incredible tool. Sign up today for free.
+            Subscribe to our newsletter. Get started immediately.
+            Try free for 30 days. Order now with discount.
+            Click here to buy. Don't miss this limited time offer.</p>
+        </body></html>
+        """
+        result = detect_negative_signals(_soup(html))
+        assert result.details["cta_count"] >= 5
+        assert result.score < 5
+
+    def test_thin_content(self):
+        html = """
+        <html><body>
+            <h2>Complex Topic Analysis</h2>
+            <p>Short text here.</p>
+        </body></html>
+        """
+        result = detect_negative_signals(_soup(html))
+        assert result.details["is_thin_content"] is True
+
+
+# ============================================================================
+# TEST: Comparison Content (+10%) — Batch 2
+# ============================================================================
+
+
+class TestComparisonContent:
+    def test_vs_heading_e_tabella(self):
+        html = """
+        <html><body>
+            <h2>WordPress vs Shopify</h2>
+            <table>
+                <tr><th>Feature</th><th>WordPress</th><th>Shopify</th></tr>
+                <tr><td>Prezzo</td><td>Free</td><td>$29/mo</td></tr>
+                <tr><td>Hosting</td><td>Self</td><td>Included</td></tr>
+                <tr><td>Plugin</td><td>60k+</td><td>8k+</td></tr>
+                <tr><td>SEO</td><td>Excellent</td><td>Good</td></tr>
+            </table>
+        </body></html>
+        """
+        result = detect_comparison_content(_soup(html))
+        assert result.detected is True
+        assert result.details["vs_headings"] >= 1
+        assert result.details["large_tables"] >= 1
+
+    def test_nessun_confronto(self):
+        html = "<html><body><h2>Guide</h2><p>Simple text without comparisons.</p></body></html>"
+        result = detect_comparison_content(_soup(html))
+        assert result.detected is False
+
+    def test_pro_contro(self):
+        html = """
+        <html><body>
+            <h2>Pros and Cons of Static Sites</h2>
+            <p>There are advantages and disadvantages to consider.</p>
+        </body></html>
+        """
+        result = detect_comparison_content(_soup(html))
+        assert result.detected is True
+        assert result.details["pro_con_sections"] >= 1
+
+
+# ============================================================================
+# TEST: E-E-A-T Composite (+15%) — Batch 2
+# ============================================================================
+
+
+class TestEeat:
+    def test_trust_links_completi(self):
+        html = """
+        <html><body>
+            <a href="/privacy-policy">Privacy Policy</a>
+            <a href="/terms-of-service">Terms of Service</a>
+            <a href="/about">About Us</a>
+            <a href="/contact">Contact</a>
+            <link rel="canonical" href="https://example.com/page">
+        </body></html>
+        """
+        result = detect_eeat(_soup(html))
+        assert result.detected is True
+        assert result.details["trust_link_count"] >= 4
+        assert result.details["is_https"] is True
+
+    def test_nessun_segnale_eeat(self):
+        html = "<html><body><p>Content without any trust signals.</p></body></html>"
+        result = detect_eeat(_soup(html))
+        assert result.details["trust_link_count"] == 0
+        assert result.score == 0
+
+
+# ============================================================================
+# TEST: Content Decay Detection (-10%) — Batch 2
+# ============================================================================
+
+
+class TestContentDecay:
+    def test_contenuto_aggiornato(self):
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {"@type": "Article", "dateModified": "2026-02-01"}
+            </script>
+            <p>In 2026, AI search is evolving rapidly.</p>
+        </body></html>
+        """
+        result = detect_content_decay(_soup(html))
+        assert result.score >= 4
+        assert result.details["is_recently_modified"] is True
+
+    def test_contenuto_con_anni_vecchi(self):
+        html = """
+        <html><body>
+            <p>As of 2022, the market was growing. In 2021, we saw major changes.
+            Back in 2020, everything shifted. The 2019 data shows clear trends.</p>
+        </body></html>
+        """
+        result = detect_content_decay(_soup(html))
+        assert len(result.details["old_year_references"]) >= 2
+        assert result.score < 5
+
+
+# ============================================================================
+# TEST: Content-to-Boilerplate Ratio (+8%) — Batch 2
+# ============================================================================
+
+
+class TestBoilerplateRatio:
+    def test_buon_rapporto_con_main(self):
+        html = """
+        <html><body>
+            <nav>Menu item 1 | Menu item 2</nav>
+            <main>
+                <p>This is the main content of the page with substantial text
+                that forms the core of the article. It contains detailed analysis
+                and valuable information for the reader.</p>
+                <p>Additional paragraph with more useful content that readers
+                actually want to read and search engines should index.</p>
+            </main>
+            <footer>Copyright 2026</footer>
+        </body></html>
+        """
+        result = detect_boilerplate_ratio(_soup(html))
+        assert result.details["method"] == "main_tag"
+        assert result.details["ratio"] > 0.3
+
+    def test_testo_insufficiente(self):
+        html = "<html><body><p>Hi.</p></body></html>"
+        result = detect_boilerplate_ratio(_soup(html))
+        assert result.score == 2  # Score neutro per testo insufficiente
+
+    def test_euristica_senza_main(self):
+        html = """
+        <html><body>
+            <nav>Nav menu with some text here for navigation</nav>
+            <header>Header section with logo and title</header>
+            <div>
+                <p>Main content paragraph one with detailed information about the topic.</p>
+                <p>Main content paragraph two with more analysis and data.</p>
+            </div>
+            <footer>Footer with copyright and links</footer>
+        </body></html>
+        """
+        result = detect_boilerplate_ratio(_soup(html))
+        assert result.details["method"] == "heuristic"
+
+
+# ============================================================================
+# TEST: Nuance/Honesty Signals (+5%) — Batch 2
+# ============================================================================
+
+
+class TestNuanceSignals:
+    def test_contenuto_con_nuance(self):
+        html = """
+        <html><body>
+            <p>AI optimization improves visibility. However, it has limitations.
+            On the other hand, not every site needs it. Nevertheless, the
+            trade-offs are worth considering.</p>
+            <h3>Limitations</h3>
+            <p>The main drawbacks include complexity and maintenance cost.</p>
+        </body></html>
+        """
+        result = detect_nuance_signals(_soup(html))
+        assert result.detected is True
+        assert result.details["nuance_patterns"] >= 3
+        assert result.details["nuance_headings"] >= 1
+
+    def test_contenuto_senza_nuance(self):
+        html = """
+        <html><body>
+            <p>This is the best tool ever. It works perfectly for everyone.
+            There are no problems at all. Everything is amazing.</p>
+        </body></html>
+        """
+        result = detect_nuance_signals(_soup(html))
+        assert result.detected is False
+        assert result.score == 0
+
+
+# ============================================================================
+# TEST: Somma pesi = 100 + bonus
 # ============================================================================
 
 
 class TestWeightSum:
-    def test_somma_max_score_uguale_100(self):
-        """Verifica che la somma di tutti i max_score sia esattamente 100."""
+    def test_somma_max_score_base_100_con_bonus(self):
+        """Verifica che i 18 metodi base sommano 100, i 7 bonus aggiungono 31."""
         html = "<html><body><p>Test content.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
+        # 18 metodi base = 100, 7 bonus = 31, totale max_score = 131
         total_max = sum(m.max_score for m in result.methods)
-        assert total_max == 100, f"Somma max_score = {total_max}, atteso 100"
+        assert total_max == 131, f"Somma max_score = {total_max}, atteso 131 (100 base + 31 bonus)"
+        # Ma il total_score è sempre cappato a 100
+        assert result.total_score <= 100
 
 
 # ============================================================================
@@ -644,7 +913,7 @@ class TestAuditCitability:
 
         assert result.total_score > 0
         assert result.grade in ("low", "medium", "high", "excellent")
-        assert len(result.methods) == 18
+        assert len(result.methods) == 25
 
         # Verifica che ogni metodo abbia un nome
         names = {m.name for m in result.methods}
@@ -660,11 +929,19 @@ class TestAuditCitability:
         assert "citability_density" in names
         assert "definition_patterns" in names
         assert "format_mix" in names
+        # Quality Signals Batch 2
+        assert "attribution_completeness" in names
+        assert "no_negative_signals" in names
+        assert "comparison_content" in names
+        assert "eeat_signals" in names
+        assert "no_content_decay" in names
+        assert "boilerplate_ratio" in names
+        assert "nuance_signals" in names
 
     def test_pagina_vuota(self):
         result = audit_citability(_soup("<html><body></body></html>"), "https://example.com")
         assert result.total_score >= 0
-        assert len(result.methods) == 18
+        assert len(result.methods) == 25
 
     def test_top_improvements_generate(self):
         result = audit_citability(_soup("<html><body><p>Testo semplice.</p></body></html>"), "https://example.com")

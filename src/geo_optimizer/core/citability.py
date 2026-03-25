@@ -1203,6 +1203,500 @@ def detect_format_mix(soup) -> MethodScore:
     )
 
 
+# ─── 19. Attribution Completeness (+12%) — Quality Signal Batch 2 ─────────────
+
+# Pattern per attribuzione inline: "secondo X", "according to X (2024)", etc.
+_ATTRIBUTION_INLINE_RE = re.compile(
+    r"\b(?:according to|as reported by|as noted by|as stated by"
+    r"|secondo|come riportato da|come indicato da)\b"
+    r"|(?:\w+\s+\(\d{4}\)\s+(?:found|showed|reported|demonstrated|noted|argued|claimed))",
+    re.IGNORECASE,
+)
+
+# Pattern per footnote: [1], [2], numeri in apice
+_FOOTNOTE_RE = re.compile(r"\[(\d{1,3})\]|\{\d{1,3}\}|<sup>\d{1,3}</sup>")
+
+
+def detect_attribution(soup, clean_text: str | None = None) -> MethodScore:
+    """Detect attribution completeness: inline citations, footnotes, sourced claims."""
+    body_text = clean_text or _get_clean_text(soup)
+
+    # Citazioni inline (vicine al claim)
+    inline_attributions = _ATTRIBUTION_INLINE_RE.findall(body_text)
+
+    # Link inline vicino a testo di claim (paragrafi con link + pattern autorevole)
+    inline_link_citations = 0
+    for p in soup.find_all("p"):
+        p_text = p.get_text(strip=True)
+        links_in_p = p.find_all("a", href=True)
+        if links_in_p and _AUTHORITY_RE.search(p_text):
+            inline_link_citations += 1
+
+    # Footnote (fine pagina)
+    raw_html = str(soup)
+    footnotes = _FOOTNOTE_RE.findall(raw_html)
+
+    # Conta sup tag con numeri (note a piè di pagina HTML)
+    sup_footnotes = 0
+    for sup in soup.find_all("sup"):
+        sup_text = sup.get_text(strip=True)
+        if sup_text.isdigit():
+            sup_footnotes += 1
+
+    total_inline = len(inline_attributions) + inline_link_citations
+    total_footnotes = len(footnotes) + sup_footnotes
+
+    # Score: inline vale di più di footnote
+    score = min(total_inline * 2 + total_footnotes, 5)
+
+    return MethodScore(
+        name="attribution_completeness",
+        label="Attribution Completeness",
+        detected=total_inline >= 1 or total_footnotes >= 2,
+        score=min(score, 5),
+        max_score=5,
+        impact="+12%",
+        details={
+            "inline_attributions": total_inline,
+            "footnotes": total_footnotes,
+            "inline_link_citations": inline_link_citations,
+        },
+    )
+
+
+# ─── 20. Negative Signals Detection (-15%) — Quality Signal Batch 2 ──────────
+
+# Pattern CTA aggressivi
+_CTA_RE = re.compile(
+    r"\b(?:buy now|sign up|subscribe|get started|try free|order now|click here"
+    r"|compra ora|iscriviti|registrati|prova gratis|acquista|scarica ora"
+    r"|limited time|act now|don't miss|offerta limitata|non perdere)\b",
+    re.IGNORECASE,
+)
+
+
+def detect_negative_signals(soup, clean_text: str | None = None) -> MethodScore:
+    """Detect negative quality signals: excessive self-promotion, thin content, repetitions."""
+    body_text = clean_text or _get_clean_text(soup)
+    words = body_text.split()
+    word_count = len(words)
+    penalties = 0
+
+    # 1. Auto-promozione eccessiva: CTA ogni 200 parole
+    cta_matches = _CTA_RE.findall(body_text)
+    cta_count = len(cta_matches)
+    if word_count > 0 and cta_count > 0:
+        cta_ratio = word_count / max(cta_count, 1)
+        if cta_ratio < 200:
+            penalties += 2  # CTA troppo frequenti
+
+    # 2. Thin content: < 300 parole con H2 complessi
+    h2_tags = soup.find_all("h2")
+    if h2_tags and word_count < 300:
+        penalties += 2  # Contenuto troppo sottile per argomento strutturato
+
+    # 3. Contenuto senza autore
+    author_meta = soup.find("meta", attrs={"name": re.compile(r"author", re.I)})
+    author_bio = soup.find_all(
+        ["div", "section", "aside"],
+        class_=re.compile(r"author|bio|byline", re.I),
+    )
+    author_schema = soup.find_all("span", attrs={"itemprop": "author"})
+    if not author_meta and not author_bio and not author_schema:
+        penalties += 1
+
+    # 4. Frasi ripetitive (stessa frase 3+ volte)
+    sentences = [s.strip().lower() for s in re.split(r"[.!?]+", body_text) if len(s.strip()) > 20]
+    sentence_counts = Counter(sentences)
+    repeated = sum(1 for c in sentence_counts.values() if c >= 3)
+    if repeated > 0:
+        penalties += min(repeated, 2)
+
+    # Score INVERSO: 5 se nessun segnale, 0 se molti
+    score = max(5 - penalties, 0)
+
+    return MethodScore(
+        name="no_negative_signals",
+        label="No Negative Signals",
+        detected=penalties >= 2,
+        score=score,
+        max_score=5,
+        impact="-15%",
+        details={
+            "cta_count": cta_count,
+            "is_thin_content": bool(h2_tags and word_count < 300),
+            "has_author": bool(author_meta or author_bio or author_schema),
+            "repeated_phrases": repeated,
+            "total_penalties": penalties,
+        },
+    )
+
+
+# ─── 21. Comparison Content (+10%) — Quality Signal Batch 2 ──────────────────
+
+_VS_RE = re.compile(r"\bvs\.?\b|\bversus\b|\bconfronto\b|\bcomparison\b", re.IGNORECASE)
+_PRO_CON_RE = re.compile(
+    r"\b(?:pros?\s*(?:and|&|e)\s*cons?|vantaggi\s*e\s*svantaggi"
+    r"|advantages?\s*(?:and|&)\s*disadvantages?|pro\s*e\s*contro)\b",
+    re.IGNORECASE,
+)
+
+
+def detect_comparison_content(soup) -> MethodScore:
+    """Detect comparison content: tables, pro/con sections, X vs Y headings."""
+    score = 0
+
+    # 1. Pattern "X vs Y" nei heading
+    vs_headings = 0
+    for h in soup.find_all(["h1", "h2", "h3", "h4"]):
+        h_text = h.get_text(strip=True)
+        if _VS_RE.search(h_text):
+            vs_headings += 1
+
+    # 2. Sezioni pro/contro
+    pro_con_sections = 0
+    for h in soup.find_all(["h2", "h3", "h4"]):
+        h_text = h.get_text(strip=True)
+        if _PRO_CON_RE.search(h_text):
+            pro_con_sections += 1
+    # Cerca anche nel testo
+    body_text = soup.get_text(separator=" ")
+    pro_con_in_text = len(_PRO_CON_RE.findall(body_text))
+
+    # 3. Tabelle comparative (>3 righe e >2 colonne = bonus)
+    comparison_tables = 0
+    large_tables = 0
+    for table in soup.find_all("table"):
+        rows = table.find_all("tr")
+        if len(rows) >= 2:
+            comparison_tables += 1
+            # Controlla se è "grande" (>3 righe e >2 colonne)
+            cols = rows[0].find_all(["th", "td"]) if rows else []
+            if len(rows) > 3 and len(cols) > 2:
+                large_tables += 1
+
+    # Calcola score
+    score += min(vs_headings, 2)
+    score += min(pro_con_sections + (1 if pro_con_in_text > 0 else 0), 2)
+    score += min(comparison_tables + large_tables, 2)
+
+    detected = vs_headings >= 1 or pro_con_sections >= 1 or comparison_tables >= 1
+
+    return MethodScore(
+        name="comparison_content",
+        label="Comparison Content",
+        detected=detected,
+        score=min(score, 4),
+        max_score=4,
+        impact="+10%",
+        details={
+            "vs_headings": vs_headings,
+            "pro_con_sections": pro_con_sections,
+            "comparison_tables": comparison_tables,
+            "large_tables": large_tables,
+        },
+    )
+
+
+# ─── 22. E-E-A-T Composite (+15%) — Quality Signal Batch 2 ──────────────────
+
+
+def detect_eeat(soup) -> MethodScore:
+    """Detect E-E-A-T trust signals not covered by detect_authoritative_tone."""
+    score = 0
+
+    # Trust signals: privacy policy, terms, about, contact
+    trust_links = {"privacy": False, "terms": False, "about": False, "contact": False}
+    for a in soup.find_all("a", href=True):
+        href = a["href"].lower()
+        link_text = a.get_text(strip=True).lower()
+        combined = href + " " + link_text
+        if "privacy" in combined or "cookie" in combined:
+            trust_links["privacy"] = True
+        if "terms" in combined or "tos" in combined or "condizioni" in combined:
+            trust_links["terms"] = True
+        if "about" in combined or "chi-siamo" in combined or "chi siamo" in combined:
+            trust_links["about"] = True
+        if "contact" in combined or "contatti" in combined:
+            trust_links["contact"] = True
+
+    trust_count = sum(trust_links.values())
+    score += min(trust_count, 3)
+
+    # Experience: autore con bio dettagliata (cerchiamo pattern anno/esperienza)
+    author_sections = soup.find_all(
+        ["div", "section", "aside"],
+        class_=re.compile(r"author|bio|about-author|byline|contributor", re.I),
+    )
+    has_detailed_bio = False
+    for section in author_sections:
+        bio_text = section.get_text(strip=True)
+        # Bio dettagliata: > 50 caratteri con numeri o anni
+        if len(bio_text) > 50 and re.search(r"\b\d+\s*(?:years?|anni|experience)\b", bio_text, re.I):
+            has_detailed_bio = True
+            break
+
+    if has_detailed_bio:
+        score += 1
+
+    # HTTPS (cerchiamo canonical o og:url con https)
+    canonical = soup.find("link", attrs={"rel": "canonical"})
+    og_url = soup.find("meta", attrs={"property": "og:url"})
+    is_https = False
+    for tag in [canonical, og_url]:
+        if tag:
+            url_val = tag.get("href") or tag.get("content") or ""
+            if url_val.startswith("https://"):
+                is_https = True
+                break
+    if is_https:
+        score += 1
+
+    return MethodScore(
+        name="eeat_signals",
+        label="E-E-A-T Signals",
+        detected=trust_count >= 2 or (has_detailed_bio and trust_count >= 1),
+        score=min(score, 5),
+        max_score=5,
+        impact="+15%",
+        details={
+            "trust_links": trust_links,
+            "trust_link_count": trust_count,
+            "has_detailed_bio": has_detailed_bio,
+            "is_https": is_https,
+        },
+    )
+
+
+# ─── 23. Content Decay Detection (-10%) — Quality Signal Batch 2 ─────────────
+
+
+def detect_content_decay(soup, clean_text: str | None = None) -> MethodScore:
+    """Detect content decay signals: old year references, stale update dates."""
+    body_text = clean_text or _get_clean_text(soup)
+    now = datetime.now(tz=timezone.utc)
+    current_year = now.year
+    penalties = 0
+
+    # 1. Anni passati nel testo senza dateModified recente
+    year_refs = re.findall(r"\b(20[12]\d)\b", body_text)
+    old_years = [int(y) for y in year_refs if int(y) < current_year - 1]
+    current_years = [int(y) for y in year_refs if int(y) >= current_year]
+
+    # Controlla dateModified
+    date_modified = None
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if isinstance(item, dict) and "dateModified" in item:
+                    date_modified = item["dateModified"]
+        except (json.JSONDecodeError, TypeError):
+            continue
+    if not date_modified:
+        meta_mod = soup.find("meta", attrs={"property": "article:modified_time"})
+        if meta_mod and meta_mod.get("content"):
+            date_modified = meta_mod["content"]
+
+    # Verifica se dateModified è recente
+    is_recently_modified = False
+    if date_modified:
+        try:
+            clean_date = str(date_modified)[:10]
+            parsed = datetime.strptime(clean_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            months_old = (now - parsed).days / 30
+            is_recently_modified = months_old <= 12
+        except (ValueError, TypeError):
+            pass
+
+    # Penalizza anni vecchi senza aggiornamento recente
+    if old_years and not is_recently_modified and not current_years:
+        penalties += min(len(set(old_years)), 3)
+
+    # 2. Pattern "last updated" / "aggiornato" con data vecchia
+    update_patterns = re.findall(
+        r"(?:last\s+updated|updated\s+on|aggiornato\s+(?:il|a|al))\s*:?\s*"
+        r"(?:(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})|(\w+)\s+(\d{1,2}),?\s+(\d{4}))",
+        body_text,
+        re.IGNORECASE,
+    )
+    for match in update_patterns:
+        # Estrai l'anno dal match
+        year_str = match[2] or match[5]
+        if year_str and int(year_str) < current_year - 1:
+            penalties += 1
+
+    # 3. Conta link esterni (non possiamo testare se rotti, ma segnaliamo quantità)
+    external_links = 0
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if href.startswith("http") and not href.startswith("#"):
+            external_links += 1
+
+    # Score INVERSO: 5 se nessun decay, 0 se molto
+    score = max(5 - penalties, 0)
+
+    return MethodScore(
+        name="no_content_decay",
+        label="No Content Decay",
+        detected=penalties >= 2,
+        score=score,
+        max_score=5,
+        impact="-10%",
+        details={
+            "old_year_references": list(set(old_years)),
+            "is_recently_modified": is_recently_modified,
+            "stale_update_patterns": len(update_patterns),
+            "external_links_count": external_links,
+            "total_penalties": penalties,
+        },
+    )
+
+
+# ─── 24. Content-to-Boilerplate Ratio (+8%) — Quality Signal Batch 2 ─────────
+
+
+def detect_boilerplate_ratio(soup) -> MethodScore:
+    """Detect content-to-boilerplate ratio: main/article text vs total page text."""
+    import copy
+
+    # Testo totale della pagina (esclusi script/style)
+    total_soup = copy.deepcopy(soup)
+    for tag in total_soup(["script", "style"]):
+        tag.decompose()
+    total_text = total_soup.get_text(separator=" ", strip=True)
+    total_len = len(total_text)
+
+    if total_len < 50:
+        return MethodScore(
+            name="boilerplate_ratio",
+            label="Content-to-Boilerplate Ratio",
+            detected=False,
+            score=2,
+            max_score=4,
+            impact="+8%",
+            details={"ratio": 0, "method": "insufficient_text"},
+        )
+
+    # Cerca contenuto principale in <main> o <article>
+    content_tag = soup.find("main") or soup.find("article")
+    method = "main_tag"
+
+    if content_tag:
+        content_text = content_tag.get_text(separator=" ", strip=True)
+    else:
+        # Euristica: rimuovi nav, header, footer, sidebar
+        method = "heuristic"
+        clean_soup = copy.deepcopy(soup)
+        for tag in clean_soup(["script", "style", "nav", "header", "footer"]):
+            tag.decompose()
+        # Rimuovi sidebar per class/id
+        for tag in clean_soup.find_all(
+            ["div", "aside", "section"],
+            class_=re.compile(r"sidebar|widget|menu|navigation|nav-", re.I),
+        ):
+            tag.decompose()
+        for tag in clean_soup.find_all(
+            ["div", "aside", "section"],
+            id=re.compile(r"sidebar|widget|menu|navigation", re.I),
+        ):
+            tag.decompose()
+        content_text = clean_soup.get_text(separator=" ", strip=True)
+
+    content_len = len(content_text)
+    ratio = content_len / total_len if total_len > 0 else 0
+
+    # Score basato sul rapporto
+    if ratio >= 0.6:
+        score = 4
+    elif ratio >= 0.45:
+        score = 3
+    elif ratio >= 0.30:
+        score = 2
+    elif ratio >= 0.15:
+        score = 1
+    else:
+        score = 0
+
+    return MethodScore(
+        name="boilerplate_ratio",
+        label="Content-to-Boilerplate Ratio",
+        detected=ratio >= 0.45,
+        score=min(score, 4),
+        max_score=4,
+        impact="+8%",
+        details={
+            "content_length": content_len,
+            "total_length": total_len,
+            "ratio": round(ratio, 2),
+            "method": method,
+        },
+    )
+
+
+# ─── 25. Nuance/Honesty Signals (+5%) — Quality Signal Batch 2 ──────────────
+
+_NUANCE_RE = re.compile(
+    r"\b(?:however|on the other hand|nevertheless|nonetheless|that said"
+    r"|conversely|in contrast|although|despite|while .+ also"
+    r"|limitations? include|drawbacks?|disadvantages?"
+    r"|it(?:'s| is) (?:worth noting|important to note)"
+    r"|not without|trade-?offs?|caveat|downside"
+    r"|tuttavia|d'altra parte|nonostante|ciononostante"
+    r"|limiti|svantaggi|aspetti negativi)\b",
+    re.IGNORECASE,
+)
+
+_NUANCE_HEADING_RE = re.compile(
+    r"\b(?:limitations?|cons|disadvantages?|drawbacks?|challenges?"
+    r"|trade-?offs?|caveats?|risks?"
+    r"|limiti|svantaggi|sfide|rischi)\b",
+    re.IGNORECASE,
+)
+
+
+def detect_nuance_signals(soup, clean_text: str | None = None) -> MethodScore:
+    """Detect nuance and intellectual honesty signals in content."""
+    body_text = clean_text or _get_clean_text(soup)
+
+    # Pattern di onestà nel testo
+    nuance_matches = _NUANCE_RE.findall(body_text)
+
+    # Heading con sezioni dedicate a limitazioni/svantaggi
+    nuance_headings = 0
+    for h in soup.find_all(["h2", "h3", "h4"]):
+        h_text = h.get_text(strip=True)
+        if _NUANCE_HEADING_RE.search(h_text):
+            nuance_headings += 1
+
+    total_signals = len(nuance_matches) + nuance_headings * 2
+
+    # Score basato sulla quantità di segnali
+    if total_signals >= 5:
+        score = 3
+    elif total_signals >= 3:
+        score = 2
+    elif total_signals >= 1:
+        score = 1
+    else:
+        score = 0
+
+    return MethodScore(
+        name="nuance_signals",
+        label="Nuance/Honesty Signals",
+        detected=total_signals >= 2,
+        score=min(score, 3),
+        max_score=3,
+        impact="+5%",
+        details={
+            "nuance_patterns": len(nuance_matches),
+            "nuance_headings": nuance_headings,
+            "total_signals": total_signals,
+        },
+    )
+
+
 # ─── Orchestrator ─────────────────────────────────────────────────────────────
 
 # Suggerimenti di miglioramento per ogni metodo non rilevato
@@ -1225,9 +1719,17 @@ _IMPROVEMENT_SUGGESTIONS = {
     "format_mix": "Mix content formats: paragraphs + bullet lists + tables (+8%)",
     "unique_words": "Vary vocabulary: use synonyms, avoid repetitions (+7%)",
     "keyword_stuffing": "Reduce density of repeated keywords (-9% if present)",
+    # Quality Signals Batch 2
+    "attribution_completeness": "Add inline attributions: 'according to X', 'Y (2024) found that' (+12%)",
+    "no_negative_signals": "Remove excessive CTAs, add author info, avoid repetitive phrases (-15%)",
+    "comparison_content": "Add comparison tables, pro/con sections, or 'X vs Y' headings (+10%)",
+    "eeat_signals": "Add privacy policy, terms, about page, and contact links for E-E-A-T trust (+15%)",
+    "no_content_decay": "Update old year references and add recent dateModified (-10%)",
+    "boilerplate_ratio": "Ensure main content is >60% of page text; use <main> or <article> tags (+8%)",
+    "nuance_signals": "Add nuance: 'however', 'limitations include', 'on the other hand' (+5%)",
 }
 
-# Ordine per impatto decrescente (escluso keyword_stuffing che è una penalità)
+# Ordine per impatto decrescente (escluso penalità)
 _METHOD_ORDER = [
     "quotation_addition",
     "statistics_addition",
@@ -1237,16 +1739,23 @@ _METHOD_ORDER = [
     "passage_density",
     "technical_terms",
     "authoritative_tone",
+    "eeat_signals",
     "readability",
     "citability_density",
     "easy_to_understand",
+    "attribution_completeness",
     "faq_in_content",
     "content_freshness",
+    "comparison_content",
     "definition_patterns",
     "image_alt_quality",
+    "boilerplate_ratio",
     "format_mix",
     "unique_words",
+    "nuance_signals",
     "keyword_stuffing",
+    "no_negative_signals",
+    "no_content_decay",
 ]
 
 
@@ -1296,6 +1805,14 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         detect_citability_density(soup, clean_text=clean_text),
         detect_definition_patterns(soup),
         detect_format_mix(soup),
+        # Quality Signals Batch 2 (bonus — cappati a 100 dal totale)
+        detect_attribution(soup, clean_text=clean_text),
+        detect_negative_signals(soup, clean_text=clean_text),
+        detect_comparison_content(soup),
+        detect_eeat(soup),
+        detect_content_decay(soup, clean_text=clean_text),
+        detect_boilerplate_ratio(soup),
+        detect_nuance_signals(soup, clean_text=clean_text),
     ]
 
     # Somma score (max possibile = 100)
