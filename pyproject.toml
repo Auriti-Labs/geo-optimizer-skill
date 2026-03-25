@@ -78,7 +78,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 # Solo i file compilati .mo — i sorgenti .po non appartengono al pacchetto distribuito (#135)
-"geo_optimizer" = ["py.typed", "i18n/locales/*/LC_MESSAGES/*.mo", "web/templates/*.html"]
+"geo_optimizer" = ["py.typed", "i18n/locales/*/LC_MESSAGES/*.mo", "web/templates/*.html", "web/docs/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
