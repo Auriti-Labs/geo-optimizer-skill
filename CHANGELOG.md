@@ -5,7 +5,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
-## [Unreleased] → v3.15.0
+## [3.15.0] — 2026-03-25
 
 ### Added (Batch 1 — Content Analysis)
 
