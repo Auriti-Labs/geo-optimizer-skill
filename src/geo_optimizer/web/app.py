@@ -331,11 +331,21 @@ async def stats():
         except Exception:
             pass
 
-        # PyPI downloads ultimo mese
+        # PyPI downloads ultimo mese — solo utenti reali (senza mirror, senza null/bot)
         try:
-            r = await client.get("https://pypistats.org/api/packages/geo-optimizer-skill/recent")
+            r = await client.get(
+                "https://pypistats.org/api/packages/geo-optimizer-skill/system",
+                params={"mirrors": "false"},
+            )
             if r.status_code == 200:
-                result["pypi_downloads_month"] = r.json().get("data", {}).get("last_month", 0)
+                # Somma solo download con OS reale (Linux, Darwin, Windows)
+                # Escludi category=null che sono bot, CI senza OS, scanner
+                downloads = sum(
+                    item.get("downloads", 0)
+                    for item in r.json().get("data", [])
+                    if item.get("category") not in (None, "null")
+                )
+                result["pypi_downloads_month"] = downloads
         except Exception:
             pass
 
