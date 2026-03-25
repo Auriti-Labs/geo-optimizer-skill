@@ -74,29 +74,37 @@ def _make_result(**overrides):
 
 def _make_optimized_result():
     """Crea un AuditResult con tutto ottimizzato (nessun fix necessario)."""
-    return _make_result(**{
-        "score": 95,
-        "band": "excellent",
-        "robots.found": True,
-        "robots.bots_allowed": ["GPTBot", "ClaudeBot", "PerplexityBot"],
-        "robots.bots_missing": [],
-        "robots.citation_bots_ok": True,
-        "robots.citation_bots_explicit": True,
-        "llms.found": True,
-        "llms.has_h1": True,
-        "llms.has_description": True,
-        "llms.has_sections": True,
-        "llms.has_links": True,
-        "schema.has_website": True,
-        "schema.has_faq": True,
-        "schema.found_types": ["WebSite", "FAQPage", "Organization"],
-        "meta.has_title": True,
-        "meta.has_description": True,
-        "meta.has_canonical": True,
-        "meta.has_og_title": True,
-        "meta.has_og_description": True,
-        "meta.has_og_image": True,
-    })
+    return _make_result(
+        **{
+            "score": 95,
+            "band": "excellent",
+            "robots.found": True,
+            "robots.bots_allowed": ["GPTBot", "ClaudeBot", "PerplexityBot"],
+            "robots.bots_missing": [],
+            "robots.citation_bots_ok": True,
+            "robots.citation_bots_explicit": True,
+            "llms.found": True,
+            "llms.has_h1": True,
+            "llms.has_description": True,
+            "llms.has_sections": True,
+            "llms.has_links": True,
+            "schema.has_website": True,
+            "schema.has_faq": True,
+            "schema.found_types": ["WebSite", "FAQPage", "Organization"],
+            "meta.has_title": True,
+            "meta.has_description": True,
+            "meta.has_canonical": True,
+            "meta.has_og_title": True,
+            "meta.has_og_description": True,
+            "meta.has_og_image": True,
+            "ai_discovery.has_well_known_ai": True,
+            "ai_discovery.has_summary": True,
+            "ai_discovery.summary_valid": True,
+            "ai_discovery.has_faq": True,
+            "ai_discovery.has_service": True,
+            "ai_discovery.endpoints_found": 4,
+        }
+    )
 
 
 # ============================================================================
@@ -124,11 +132,13 @@ class TestGenerateRobotsFix:
 
     def test_robots_con_bot_mancanti_genera_append(self):
         """Se robots.txt esiste ma mancano bot, genera righe da appendere."""
-        result = _make_result(**{
-            "robots.found": True,
-            "robots.bots_allowed": ["GPTBot"],
-            "robots.bots_missing": ["ClaudeBot", "PerplexityBot"],
-        })
+        result = _make_result(
+            **{
+                "robots.found": True,
+                "robots.bots_allowed": ["GPTBot"],
+                "robots.bots_missing": ["ClaudeBot", "PerplexityBot"],
+            }
+        )
         fix = generate_robots_fix(result, "https://example.com")
 
         assert fix is not None
@@ -139,10 +149,12 @@ class TestGenerateRobotsFix:
 
     def test_robots_completo_ritorna_none(self):
         """Se tutti i bot sono già consentiti, non serve fix."""
-        result = _make_result(**{
-            "robots.found": True,
-            "robots.bots_missing": [],
-        })
+        result = _make_result(
+            **{
+                "robots.found": True,
+                "robots.bots_missing": [],
+            }
+        )
         fix = generate_robots_fix(result, "https://example.com")
 
         assert fix is None
@@ -171,12 +183,14 @@ class TestGenerateLlmsFix:
 
     def test_llms_completo_ritorna_none(self):
         """Se llms.txt è già completo, non serve fix."""
-        result = _make_result(**{
-            "llms.found": True,
-            "llms.has_h1": True,
-            "llms.has_sections": True,
-            "llms.has_links": True,
-        })
+        result = _make_result(
+            **{
+                "llms.found": True,
+                "llms.has_h1": True,
+                "llms.has_sections": True,
+                "llms.has_links": True,
+            }
+        )
         fix = generate_llms_fix(result, "https://example.com")
 
         assert fix is None
@@ -206,10 +220,12 @@ class TestGenerateSchemaFix:
 
     def test_schema_completo_ritorna_vuoto(self):
         """Se tutti gli schema sono presenti, ritorna lista vuota."""
-        result = _make_result(**{
-            "schema.has_website": True,
-            "schema.found_types": ["WebSite", "Organization"],
-        })
+        result = _make_result(
+            **{
+                "schema.has_website": True,
+                "schema.found_types": ["WebSite", "Organization"],
+            }
+        )
         fixes = generate_schema_fix(result, "https://example.com")
 
         assert len(fixes) == 0
@@ -233,9 +249,9 @@ class TestGenerateMetaFix:
         assert "<title>" in fix.content
         assert 'name="description"' in fix.content
         assert 'rel="canonical"' in fix.content
-        assert 'og:title' in fix.content
-        assert 'og:description' in fix.content
-        assert 'og:image' in fix.content
+        assert "og:title" in fix.content
+        assert "og:description" in fix.content
+        assert "og:image" in fix.content
 
     def test_meta_completo_ritorna_none(self):
         """Se tutti i meta tag sono presenti, non serve fix."""
@@ -322,14 +338,22 @@ class TestFixCommand:
         output_dir = str(tmp_path / "geo-fixes")
         with patch("geo_optimizer.core.llms_generator.discover_sitemap", return_value=None):
             with patch("geo_optimizer.core.llms_generator.fetch_sitemap", return_value=[]):
-                result = runner.invoke(cli, [
-                    "fix", "--url", "https://example.com",
-                    "--apply", "--output-dir", output_dir,
-                ])
+                result = runner.invoke(
+                    cli,
+                    [
+                        "fix",
+                        "--url",
+                        "https://example.com",
+                        "--apply",
+                        "--output-dir",
+                        output_dir,
+                    ],
+                )
 
         assert result.exit_code == 0
         # Verifica che almeno un file sia stato scritto
         from pathlib import Path
+
         output = Path(output_dir)
         assert output.exists()
         files = list(output.iterdir())

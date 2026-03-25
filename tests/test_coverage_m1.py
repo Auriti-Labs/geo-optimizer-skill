@@ -308,12 +308,7 @@ class TestHtmlFormatter:
         r.llms.has_sections = True
         r.llms.has_links = True
 
-        expected = (
-            SCORING["llms_found"]
-            + SCORING["llms_h1"]
-            + SCORING["llms_sections"]
-            + SCORING["llms_links"]
-        )
+        expected = SCORING["llms_found"] + SCORING["llms_h1"] + SCORING["llms_sections"] + SCORING["llms_links"]
         assert _llms_score(r) == expected
 
     def test_schema_score_completo(self):
@@ -326,11 +321,7 @@ class TestHtmlFormatter:
         r.schema.has_faq = True
         r.schema.any_schema_found = True  # v4.0: sostituisce has_webapp
 
-        expected = (
-            SCORING["schema_any_valid"]
-            + SCORING["schema_website"]
-            + SCORING["schema_faq"]
-        )
+        expected = SCORING["schema_any_valid"] + SCORING["schema_website"] + SCORING["schema_faq"]
         assert _schema_score(r) == expected
 
     def test_meta_score_completo(self):
@@ -345,12 +336,7 @@ class TestHtmlFormatter:
         r.meta.has_og_title = True
         r.meta.has_og_description = True
 
-        expected = (
-            SCORING["meta_title"]
-            + SCORING["meta_description"]
-            + SCORING["meta_canonical"]
-            + SCORING["meta_og"]
-        )
+        expected = SCORING["meta_title"] + SCORING["meta_description"] + SCORING["meta_canonical"] + SCORING["meta_og"]
         assert _meta_score(r) == expected
 
     def test_content_score_completo(self):
@@ -363,11 +349,7 @@ class TestHtmlFormatter:
         r.content.has_numbers = True
         r.content.has_links = True
 
-        expected = (
-            SCORING["content_h1"]
-            + SCORING["content_numbers"]
-            + SCORING["content_links"]
-        )
+        expected = SCORING["content_h1"] + SCORING["content_numbers"] + SCORING["content_links"]
         assert _content_score(r) == expected
 
     def test_format_audit_html_contiene_timestamp(self):
@@ -868,9 +850,7 @@ class TestGithubFormatter:
         r.schema.has_faq = True
         r.schema.any_schema_found = True  # v4.0: sostituisce has_webapp
 
-        expected = (
-            SCORING["schema_any_valid"] + SCORING["schema_website"] + SCORING["schema_faq"]
-        )
+        expected = SCORING["schema_any_valid"] + SCORING["schema_website"] + SCORING["schema_faq"]
         assert _schema_score(r) == expected
 
     def test_meta_score_github_parziale(self):
@@ -949,6 +929,7 @@ class TestHttpAsync:
             import importlib
 
             import geo_optimizer.utils.http_async as mod
+
             importlib.reload(mod)
             result = mod.is_httpx_available()
             assert result is False
@@ -988,9 +969,7 @@ class TestHttpAsync:
         from geo_optimizer.utils.http_async import fetch_url_async
 
         mock_client = AsyncMock()
-        mock_client.get = AsyncMock(
-            side_effect=httpx.TimeoutException("Timeout", request=MagicMock())
-        )
+        mock_client.get = AsyncMock(side_effect=httpx.TimeoutException("Timeout", request=MagicMock()))
 
         async def run():
             return await fetch_url_async("https://example.com", client=mock_client)
@@ -1010,9 +989,7 @@ class TestHttpAsync:
         from geo_optimizer.utils.http_async import fetch_url_async
 
         mock_client = AsyncMock()
-        mock_client.get = AsyncMock(
-            side_effect=httpx.ConnectError("Connection failed", request=MagicMock())
-        )
+        mock_client.get = AsyncMock(side_effect=httpx.ConnectError("Connection failed", request=MagicMock()))
 
         async def run():
             return await fetch_url_async("https://example.com", client=mock_client)
@@ -1038,9 +1015,7 @@ class TestHttpAsync:
         mock_client.get = AsyncMock(return_value=mock_response)
 
         async def run():
-            return await fetch_url_async(
-                "https://example.com", client=mock_client, max_size=1000
-            )
+            return await fetch_url_async("https://example.com", client=mock_client, max_size=1000)
 
         response, error = asyncio.get_event_loop().run_until_complete(run())
         assert response is None
@@ -1062,9 +1037,7 @@ class TestHttpAsync:
         mock_client.get = AsyncMock(return_value=mock_response)
 
         async def run():
-            return await fetch_url_async(
-                "https://example.com", client=mock_client, max_size=1000
-            )
+            return await fetch_url_async("https://example.com", client=mock_client, max_size=1000)
 
         response, error = asyncio.get_event_loop().run_until_complete(run())
         assert response is None
@@ -1266,9 +1239,7 @@ class TestWebCli:
         call_kwargs = mock_uvicorn.run.call_args
 
         # Verifica parametri host e port
-        assert call_kwargs[1]["host"] == "127.0.0.1" or (
-            len(call_kwargs[0]) > 1 and call_kwargs[0][1] == "127.0.0.1"
-        )
+        assert call_kwargs[1]["host"] == "127.0.0.1" or (len(call_kwargs[0]) > 1 and call_kwargs[0][1] == "127.0.0.1")
 
     def test_main_con_uvicorn_parametri_default(self):
         """main() usa parametri di default host=127.0.0.1, port=8000."""
@@ -1614,6 +1585,7 @@ class TestCheckRegistry:
 
         class CheckNonValido:
             """Manca name, description, max_score e run()."""
+
             pass
 
         with pytest.raises(TypeError):

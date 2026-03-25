@@ -245,6 +245,64 @@ def generate_meta_fix(result: AuditResult, base_url: str) -> FixItem | None:
     )
 
 
+def generate_ai_discovery_fix(result: AuditResult, base_url: str) -> list[FixItem]:
+    """Genera template per endpoint AI discovery mancanti (geo-checklist.dev).
+
+    Genera /ai/summary.json e /ai/faq.json se assenti.
+    NON genera /.well-known/ai.txt (troppo specifico per il server).
+
+    Returns:
+        Lista di FixItem (può essere vuota).
+    """
+    fixes = []
+    parsed = urlparse(base_url)
+    site_name = parsed.netloc.replace("www.", "")
+
+    # Template /ai/summary.json
+    if not result.ai_discovery.has_summary or not result.ai_discovery.summary_valid:
+        summary_data = {
+            "name": result.meta.title_text or site_name,
+            "description": result.meta.description_text or f"Website {site_name}",
+            "url": base_url,
+            "lastModified": "{{ISO_DATE}}",
+        }
+        fixes.append(
+            FixItem(
+                category="ai_discovery",
+                description="Genera /ai/summary.json con informazioni del sito per AI",
+                content=json.dumps(summary_data, indent=2, ensure_ascii=False),
+                file_name="ai/summary.json",
+                action="create",
+            )
+        )
+
+    # Template /ai/faq.json
+    if not result.ai_discovery.has_faq:
+        faq_data = {
+            "faqs": [
+                {
+                    "question": f"What is {site_name}?",
+                    "answer": result.meta.description_text or f"A website about {site_name}.",
+                },
+                {
+                    "question": f"How can I use {site_name}?",
+                    "answer": f"Visit {base_url} to get started.",
+                },
+            ]
+        }
+        fixes.append(
+            FixItem(
+                category="ai_discovery",
+                description="Genera /ai/faq.json con FAQ di esempio per AI",
+                content=json.dumps(faq_data, indent=2, ensure_ascii=False),
+                file_name="ai/faq.json",
+                action="create",
+            )
+        )
+
+    return fixes
+
+
 def _estimate_score_after(result: AuditResult, fixes: list[FixItem]) -> int:
     """Estimate the score after applying the fixes.
 
@@ -288,6 +346,12 @@ def _estimate_score_after(result: AuditResult, fixes: list[FixItem]) -> int:
         if not result.meta.has_og_title and not result.meta.has_og_description:
             bonus += SCORING["meta_og"]
 
+    if "ai_discovery" in categories_fixed:
+        if not result.ai_discovery.has_summary or not result.ai_discovery.summary_valid:
+            bonus += SCORING["ai_discovery_summary"]
+        if not result.ai_discovery.has_faq:
+            bonus += SCORING["ai_discovery_faq"]
+
     return min(100, result.score + bonus)
 
 
@@ -317,7 +381,7 @@ def run_all_fixes(
 
     fixes: list[FixItem] = []
     skipped: list[str] = []
-    all_categories = {"robots", "llms", "schema", "meta"}
+    all_categories = {"robots", "llms", "schema", "meta", "ai_discovery"}
     active = only if only else all_categories
 
     # Robots fix
@@ -348,6 +412,15 @@ def run_all_fixes(
             skipped.append("schema: all relevant schemas are present")
     else:
         skipped.append("schema: excluded by --only filter")
+
+    # AI Discovery fix (v4.1: genera template per endpoint AI discovery)
+    if "ai_discovery" in active:
+        ai_fixes = generate_ai_discovery_fix(audit_result, base_url)
+        fixes.extend(ai_fixes)
+        if not ai_fixes:
+            skipped.append("ai_discovery: tutti gli endpoint AI discovery sono presenti")
+    else:
+        skipped.append("ai_discovery: excluded by --only filter")
 
     # Meta fix
     if "meta" in active:

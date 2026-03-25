@@ -159,6 +159,22 @@ class CitabilityResult:
     top_improvements: list[str] = field(default_factory=list)
 
 
+# ─── AI Discovery (geo-checklist.dev) ────────────────────────────────────────
+
+
+@dataclass
+class AiDiscoveryResult:
+    """Result of checking AI discovery endpoints (.well-known/ai.txt, /ai/*.json)."""
+
+    has_well_known_ai: bool = False
+    has_summary: bool = False
+    has_faq: bool = False
+    has_service: bool = False
+    summary_valid: bool = False  # ha i campi richiesti (name + description)
+    faq_count: int = 0  # numero di FAQ trovate
+    endpoints_found: int = 0  # conteggio totale endpoint trovati (0-4)
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -182,6 +198,8 @@ class AuditResult:
     extra_checks: dict[str, Any] = field(default_factory=dict)
     # v4.0: segnali tecnici (lang, RSS, freshness)
     signals: SignalsResult = field(default_factory=SignalsResult)
+    # v4.1: AI discovery endpoints (geo-checklist.dev)
+    ai_discovery: AiDiscoveryResult = field(default_factory=AiDiscoveryResult)
     # v4.0: breakdown score per categoria
     score_breakdown: dict[str, int] = field(default_factory=dict)
     # v4.0: messaggio di errore connessione (None = successo)

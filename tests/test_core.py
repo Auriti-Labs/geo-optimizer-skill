@@ -135,13 +135,7 @@ class TestParseRobotsTxt:
 
     def test_multiple_agents(self):
         """Multiple user-agents with separate rule blocks."""
-        content = (
-            "User-agent: GPTBot\n"
-            "Disallow: /\n"
-            "\n"
-            "User-agent: ClaudeBot\n"
-            "Allow: /\n"
-        )
+        content = "User-agent: GPTBot\nDisallow: /\n\nUser-agent: ClaudeBot\nAllow: /\n"
         result = parse_robots_txt(content)
         assert "GPTBot" in result
         assert "ClaudeBot" in result
@@ -150,11 +144,7 @@ class TestParseRobotsTxt:
 
     def test_consecutive_agents_share_rules(self):
         """RFC 9309: consecutive User-agent lines share the same rule block."""
-        content = (
-            "User-agent: GPTBot\n"
-            "User-agent: ChatGPT-User\n"
-            "Disallow: /\n"
-        )
+        content = "User-agent: GPTBot\nUser-agent: ChatGPT-User\nDisallow: /\n"
         result = parse_robots_txt(content)
         assert "/" in result["GPTBot"].disallow
         assert "/" in result["ChatGPT-User"].disallow
@@ -176,12 +166,7 @@ class TestParseRobotsTxt:
 
     def test_non_agent_breaks_stacking(self):
         """Non-agent directive breaks consecutive agent stacking."""
-        content = (
-            "User-agent: Bot1\n"
-            "Disallow: /a/\n"
-            "User-agent: Bot2\n"
-            "Disallow: /b/\n"
-        )
+        content = "User-agent: Bot1\nDisallow: /a/\nUser-agent: Bot2\nDisallow: /b/\n"
         result = parse_robots_txt(content)
         assert "/a/" in result["Bot1"].disallow
         assert "/b/" in result["Bot2"].disallow
@@ -500,6 +485,7 @@ class TestFetchUrl:
     def test_timeout_error(self, mock_create):
         """Timeout returns (None, error_message)."""
         import requests
+
         mock_session = MagicMock()
         mock_session.get.side_effect = requests.exceptions.Timeout()
         mock_create.return_value = mock_session
@@ -512,6 +498,7 @@ class TestFetchUrl:
     def test_connection_error(self, mock_create):
         """Connection error returns (None, error_message)."""
         import requests
+
         mock_session = MagicMock()
         mock_session.get.side_effect = requests.exceptions.ConnectionError("refused")
         mock_create.return_value = mock_session
@@ -561,11 +548,23 @@ class TestConfig:
     def test_scoring_dict_has_expected_keys(self):
         # v4.0: schema_webapp rimosso, aggiunti nuovi campi
         expected_keys = [
-            "robots_found", "robots_citation_ok", "robots_some_allowed",
-            "llms_found", "llms_h1", "llms_sections", "llms_links",
-            "schema_website", "schema_faq", "schema_any_valid",
-            "meta_title", "meta_description", "meta_canonical", "meta_og",
-            "content_h1", "content_numbers", "content_links",
+            "robots_found",
+            "robots_citation_ok",
+            "robots_some_allowed",
+            "llms_found",
+            "llms_h1",
+            "llms_sections",
+            "llms_links",
+            "schema_website",
+            "schema_faq",
+            "schema_any_valid",
+            "meta_title",
+            "meta_description",
+            "meta_canonical",
+            "meta_og",
+            "content_h1",
+            "content_numbers",
+            "content_links",
         ]
         for key in expected_keys:
             assert key in SCORING, f"SCORING missing key: {key}"
@@ -967,10 +966,7 @@ class TestAuditLlmsTxt:
 
     @patch("geo_optimizer.core.audit.fetch_url")
     def test_llms_found_full(self, mock_fetch):
-        content = (
-            "# My Site\n\n> A description\n\n## Section\n\n"
-            "- [Link](https://example.com)\n"
-        )
+        content = "# My Site\n\n> A description\n\n## Section\n\n- [Link](https://example.com)\n"
         mock_resp = Mock(status_code=200, text=content)
         mock_fetch.return_value = (mock_resp, None)
 
@@ -1013,26 +1009,26 @@ class TestAuditSchema:
     """Tests for audit_schema()."""
 
     def test_website_schema_detected(self):
-        html = '''<html><head><script type="application/ld+json">
+        html = """<html><head><script type="application/ld+json">
         {"@context":"https://schema.org","@type":"WebSite","name":"Test","url":"https://example.com"}
-        </script></head><body></body></html>'''
+        </script></head><body></body></html>"""
         soup = BeautifulSoup(html, "html.parser")
         result = audit_schema(soup, "https://example.com")
         assert "WebSite" in result.found_types
         assert result.has_website is True
 
     def test_faq_schema_detected(self):
-        html = '''<html><head><script type="application/ld+json">
+        html = """<html><head><script type="application/ld+json">
         {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[]}
-        </script></head><body></body></html>'''
+        </script></head><body></body></html>"""
         soup = BeautifulSoup(html, "html.parser")
         result = audit_schema(soup, "https://example.com")
         assert result.has_faq is True
 
     def test_webapp_schema_detected(self):
-        html = '''<html><head><script type="application/ld+json">
+        html = """<html><head><script type="application/ld+json">
         {"@context":"https://schema.org","@type":"WebApplication","name":"App","url":"https://example.com"}
-        </script></head><body></body></html>'''
+        </script></head><body></body></html>"""
         soup = BeautifulSoup(html, "html.parser")
         result = audit_schema(soup, "https://example.com")
         assert result.has_webapp is True
@@ -1049,10 +1045,10 @@ class TestAuditSchema:
         ws += '"name":"T","url":"https://example.com"}'
         faq = '{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[]}'
         html = (
-            f'<html><head>'
+            f"<html><head>"
             f'<script type="application/ld+json">{ws}</script>'
             f'<script type="application/ld+json">{faq}</script>'
-            f'</head><body></body></html>'
+            f"</head><body></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
         result = audit_schema(soup, "https://example.com")
@@ -1061,17 +1057,17 @@ class TestAuditSchema:
         assert len(result.found_types) == 2
 
     def test_invalid_json_in_script(self):
-        html = '''<html><head><script type="application/ld+json">
+        html = """<html><head><script type="application/ld+json">
         {not valid json}
-        </script></head><body></body></html>'''
+        </script></head><body></body></html>"""
         soup = BeautifulSoup(html, "html.parser")
         result = audit_schema(soup, "https://example.com")
         assert result.found_types == []
 
     def test_array_type_schema(self):
-        html = '''<html><head><script type="application/ld+json">
+        html = """<html><head><script type="application/ld+json">
         {"@context":"https://schema.org","@type":["WebSite","SearchAction"],"name":"T","url":"https://example.com"}
-        </script></head><body></body></html>'''
+        </script></head><body></body></html>"""
         soup = BeautifulSoup(html, "html.parser")
         result = audit_schema(soup, "https://example.com")
         assert "WebSite" in result.found_types
@@ -1079,10 +1075,10 @@ class TestAuditSchema:
 
     def test_schema_array_in_script(self):
         """JSON-LD can be a list of schemas."""
-        html = '''<html><head><script type="application/ld+json">
+        html = """<html><head><script type="application/ld+json">
         [{"@context":"https://schema.org","@type":"WebSite","name":"T","url":"https://example.com"},
          {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[]}]
-        </script></head><body></body></html>'''
+        </script></head><body></body></html>"""
         soup = BeautifulSoup(html, "html.parser")
         result = audit_schema(soup, "https://example.com")
         assert result.has_website is True
@@ -1093,14 +1089,14 @@ class TestAuditMetaTags:
     """Tests for audit_meta_tags()."""
 
     def test_full_meta_tags(self):
-        html = '''<html><head>
+        html = """<html><head>
         <title>My Site</title>
         <meta name="description" content="A description of my site">
         <link rel="canonical" href="https://example.com">
         <meta property="og:title" content="My Site">
         <meta property="og:description" content="Description">
         <meta property="og:image" content="https://example.com/image.jpg">
-        </head><body></body></html>'''
+        </head><body></body></html>"""
         soup = BeautifulSoup(html, "html.parser")
         result = audit_meta_tags(soup, "https://example.com")
         assert result.has_title is True
@@ -1133,10 +1129,10 @@ class TestAuditMetaTags:
         assert result.has_description is False
 
     def test_title_and_description_lengths(self):
-        html = '''<html><head>
+        html = """<html><head>
         <title>Test Title</title>
         <meta name="description" content="This is the description">
-        </head><body></body></html>'''
+        </head><body></body></html>"""
         soup = BeautifulSoup(html, "html.parser")
         result = audit_meta_tags(soup, "https://example.com")
         assert result.title_length == len("Test Title")
@@ -1147,12 +1143,12 @@ class TestAuditContentQuality:
     """Tests for audit_content_quality()."""
 
     def test_rich_content(self):
-        html = '''<html><body>
+        html = """<html><body>
         <h1>Main Title</h1>
         <h2>Sub</h2><h3>Sub-sub</h3>
         <p>There are 1000 users and 50% growth rate. Revenue: $2000000.</p>
         <a href="https://external.com/source">External link</a>
-        </body></html>'''
+        </body></html>"""
         soup = BeautifulSoup(html, "html.parser")
         result = audit_content_quality(soup, "https://example.com")
         assert result.has_h1 is True
@@ -1172,9 +1168,9 @@ class TestAuditContentQuality:
         assert result.has_links is False
 
     def test_internal_links_not_counted(self):
-        html = '''<html><body>
+        html = """<html><body>
         <a href="https://example.com/internal">Internal</a>
-        </body></html>'''
+        </body></html>"""
         soup = BeautifulSoup(html, "html.parser")
         result = audit_content_quality(soup, "https://example.com")
         assert result.has_links is False
@@ -1200,8 +1196,11 @@ class TestComputeGeoScore:
     def test_zero_score(self):
         """All defaults should yield zero."""
         score = compute_geo_score(
-            RobotsResult(), LlmsTxtResult(), SchemaResult(),
-            MetaResult(), ContentResult(),
+            RobotsResult(),
+            LlmsTxtResult(),
+            SchemaResult(),
+            MetaResult(),
+            ContentResult(),
         )
         assert score == 0
 
@@ -1209,8 +1208,11 @@ class TestComputeGeoScore:
         # #111 — punteggio pieno richiede citation_bots_explicit=True
         robots = RobotsResult(found=True, citation_bots_ok=True, citation_bots_explicit=True)
         score = compute_geo_score(
-            robots, LlmsTxtResult(), SchemaResult(),
-            MetaResult(), ContentResult(),
+            robots,
+            LlmsTxtResult(),
+            SchemaResult(),
+            MetaResult(),
+            ContentResult(),
         )
         assert score == SCORING["robots_found"] + SCORING["robots_citation_ok"]
 
@@ -1219,24 +1221,33 @@ class TestComputeGeoScore:
         # #111 — wildcard fallback → punteggio robots_some_allowed, non citation_ok
         robots = RobotsResult(found=True, citation_bots_ok=True, citation_bots_explicit=False)
         score = compute_geo_score(
-            robots, LlmsTxtResult(), SchemaResult(),
-            MetaResult(), ContentResult(),
+            robots,
+            LlmsTxtResult(),
+            SchemaResult(),
+            MetaResult(),
+            ContentResult(),
         )
         assert score == SCORING["robots_found"] + SCORING["robots_some_allowed"]
 
     def test_robots_some_allowed(self):
         robots = RobotsResult(found=True, bots_allowed=["GPTBot"], citation_bots_ok=False)
         score = compute_geo_score(
-            robots, LlmsTxtResult(), SchemaResult(),
-            MetaResult(), ContentResult(),
+            robots,
+            LlmsTxtResult(),
+            SchemaResult(),
+            MetaResult(),
+            ContentResult(),
         )
         assert score == SCORING["robots_found"] + SCORING["robots_some_allowed"]
 
     def test_full_llms_score(self):
         llms = LlmsTxtResult(found=True, has_h1=True, has_sections=True, has_links=True)
         score = compute_geo_score(
-            RobotsResult(), llms, SchemaResult(),
-            MetaResult(), ContentResult(),
+            RobotsResult(),
+            llms,
+            SchemaResult(),
+            MetaResult(),
+            ContentResult(),
         )
         expected = sum(SCORING[k] for k in ["llms_found", "llms_h1", "llms_sections", "llms_links"])
         assert score == expected
@@ -1245,20 +1256,29 @@ class TestComputeGeoScore:
         # v4.0: schema_webapp rimosso, any_schema_found aggiunto
         schema = SchemaResult(has_website=True, has_faq=True, any_schema_found=True)
         score = compute_geo_score(
-            RobotsResult(), LlmsTxtResult(), schema,
-            MetaResult(), ContentResult(),
+            RobotsResult(),
+            LlmsTxtResult(),
+            schema,
+            MetaResult(),
+            ContentResult(),
         )
         expected = SCORING["schema_website"] + SCORING["schema_faq"] + SCORING["schema_any_valid"]
         assert score == expected
 
     def test_full_meta_score(self):
         meta = MetaResult(
-            has_title=True, has_description=True, has_canonical=True,
-            has_og_title=True, has_og_description=True,
+            has_title=True,
+            has_description=True,
+            has_canonical=True,
+            has_og_title=True,
+            has_og_description=True,
         )
         score = compute_geo_score(
-            RobotsResult(), LlmsTxtResult(), SchemaResult(),
-            meta, ContentResult(),
+            RobotsResult(),
+            LlmsTxtResult(),
+            SchemaResult(),
+            meta,
+            ContentResult(),
         )
         expected = sum(SCORING[k] for k in ["meta_title", "meta_description", "meta_canonical", "meta_og"])
         assert score == expected
@@ -1267,16 +1287,22 @@ class TestComputeGeoScore:
         """OG points only awarded when BOTH og:title and og:description present."""
         meta = MetaResult(has_og_title=True, has_og_description=False)
         score = compute_geo_score(
-            RobotsResult(), LlmsTxtResult(), SchemaResult(),
-            meta, ContentResult(),
+            RobotsResult(),
+            LlmsTxtResult(),
+            SchemaResult(),
+            meta,
+            ContentResult(),
         )
         assert score == 0
 
     def test_full_content_score(self):
         content = ContentResult(has_h1=True, has_numbers=True, has_links=True)
         score = compute_geo_score(
-            RobotsResult(), LlmsTxtResult(), SchemaResult(),
-            MetaResult(), content,
+            RobotsResult(),
+            LlmsTxtResult(),
+            SchemaResult(),
+            MetaResult(),
+            content,
         )
         expected = SCORING["content_h1"] + SCORING["content_numbers"] + SCORING["content_links"]
         assert score == expected
@@ -1287,8 +1313,11 @@ class TestComputeGeoScore:
         llms = LlmsTxtResult(found=True, has_h1=True, has_sections=True, has_links=True)
         schema = SchemaResult(has_website=True, has_faq=True, has_webapp=True)
         meta = MetaResult(
-            has_title=True, has_description=True, has_canonical=True,
-            has_og_title=True, has_og_description=True,
+            has_title=True,
+            has_description=True,
+            has_canonical=True,
+            has_og_title=True,
+            has_og_description=True,
         )
         content = ContentResult(has_h1=True, has_numbers=True, has_links=True)
         score = compute_geo_score(robots, llms, schema, meta, content)
@@ -1328,8 +1357,11 @@ class TestBuildRecommendations:
     def test_all_bad_gives_recommendations(self):
         recs = build_recommendations(
             "https://example.com",
-            RobotsResult(), LlmsTxtResult(), SchemaResult(),
-            MetaResult(), ContentResult(),
+            RobotsResult(),
+            LlmsTxtResult(),
+            SchemaResult(),
+            MetaResult(),
+            ContentResult(),
         )
         assert len(recs) > 0
         assert any("robots.txt" in r for r in recs)
@@ -1375,13 +1407,13 @@ class TestRunFullAudit:
 
     @patch("geo_optimizer.core.audit.fetch_url")
     def test_full_audit_success(self, mock_fetch):
-        html = '''<html><head>
+        html = """<html><head>
         <title>My Site</title>
         <meta name="description" content="Description here">
         <script type="application/ld+json">
         {"@context":"https://schema.org","@type":"WebSite","name":"My Site","url":"https://example.com"}
         </script>
-        </head><body><h1>Welcome</h1></body></html>'''
+        </head><body><h1>Welcome</h1></body></html>"""
 
         # Homepage fetch
         mock_homepage = Mock(status_code=200, text=html)
@@ -1395,9 +1427,13 @@ class TestRunFullAudit:
 
         mock_fetch.side_effect = [
             (mock_homepage, None),  # homepage
-            (mock_robots, None),    # robots.txt
-            (mock_llms, None),      # llms.txt
-            (None, "Not found"),    # llms-full.txt (optional, 404)
+            (mock_robots, None),  # robots.txt
+            (mock_llms, None),  # llms.txt
+            (None, "Not found"),  # llms-full.txt (optional, 404)
+            (None, "Not found"),  # /.well-known/ai.txt (AI discovery)
+            (None, "Not found"),  # /ai/summary.json (AI discovery)
+            (None, "Not found"),  # /ai/faq.json (AI discovery)
+            (None, "Not found"),  # /ai/service.json (AI discovery)
         ]
 
         result = run_full_audit("https://example.com")
@@ -1567,11 +1603,11 @@ class TestFetchSitemap:
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
     def test_parse_simple_sitemap(self, mock_create):
-        xml = '''<?xml version="1.0" encoding="UTF-8"?>
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
           <url><loc>https://example.com/</loc><priority>1.0</priority></url>
           <url><loc>https://example.com/about</loc><lastmod>2024-01-01</lastmod></url>
-        </urlset>'''
+        </urlset>"""
         mock_session = MagicMock()
         mock_resp = Mock()
         mock_resp.content = xml.encode()
@@ -1588,14 +1624,14 @@ class TestFetchSitemap:
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
     def test_sitemap_index(self, mock_create):
         """Sitemap index should recursively fetch sub-sitemaps."""
-        index_xml = '''<?xml version="1.0" encoding="UTF-8"?>
+        index_xml = """<?xml version="1.0" encoding="UTF-8"?>
         <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
           <sitemap><loc>https://example.com/sitemap-1.xml</loc></sitemap>
-        </sitemapindex>'''
-        sub_xml = '''<?xml version="1.0" encoding="UTF-8"?>
+        </sitemapindex>"""
+        sub_xml = """<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
           <url><loc>https://example.com/page1</loc></url>
-        </urlset>'''
+        </urlset>"""
         mock_session = MagicMock()
         mock_resp_index = Mock()
         mock_resp_index.content = index_xml.encode()
@@ -1622,10 +1658,10 @@ class TestFetchSitemap:
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
     def test_sitemap_with_on_status_callback(self, mock_create):
-        xml = '''<?xml version="1.0" encoding="UTF-8"?>
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
           <url><loc>https://example.com/</loc></url>
-        </urlset>'''
+        </urlset>"""
         mock_session = MagicMock()
         mock_resp = Mock()
         mock_resp.content = xml.encode()
@@ -1657,7 +1693,8 @@ class TestGenerateLlmsTxt:
     def test_custom_site_name_and_description(self):
         urls = [SitemapUrl(url="https://example.com/", priority=1.0)]
         result = generate_llms_txt(
-            "https://example.com", urls,
+            "https://example.com",
+            urls,
             site_name="My Cool Site",
             description="The best site ever",
         )
@@ -1682,10 +1719,7 @@ class TestGenerateLlmsTxt:
         assert result.count("about") <= 2  # label + link
 
     def test_max_urls_per_section(self):
-        urls = [
-            SitemapUrl(url=f"https://example.com/blog/post-{i}", priority=0.5)
-            for i in range(30)
-        ]
+        urls = [SitemapUrl(url=f"https://example.com/blog/post-{i}", priority=0.5) for i in range(30)]
         result = generate_llms_txt("https://example.com", urls, max_urls_per_section=5)
         blog_links = [line for line in result.splitlines() if "blog/post-" in line]
         assert len(blog_links) <= 5
@@ -1834,7 +1868,7 @@ class TestExtractFaqFromHtml:
     def test_faq_class_pattern(self):
         html = (
             '<div class="faq-item"><h3>How do I start with GEO?</h3>'
-            '<p>Start by running the audit tool on your website</p></div>'
+            "<p>Start by running the audit tool on your website</p></div>"
         )
         soup = BeautifulSoup(html, "html.parser")
         faqs = extract_faq_from_html(soup)
@@ -1885,11 +1919,11 @@ class TestAnalyzeHtmlFile:
     """Tests for analyze_html_file()."""
 
     def test_analyze_file_with_schemas(self):
-        html = '''<html><head>
+        html = """<html><head>
         <script type="application/ld+json">
         {"@context":"https://schema.org","@type":"WebSite","name":"Test","url":"https://example.com"}
         </script>
-        </head><body></body></html>'''
+        </head><body></body></html>"""
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
             f.write(html)
@@ -1922,12 +1956,12 @@ class TestAnalyzeHtmlFile:
             os.unlink(path)
 
     def test_analyze_file_with_faqs(self):
-        html = '''<html><head></head><body>
+        html = """<html><head></head><body>
         <dl>
         <dt>What is GEO optimization?</dt>
         <dd>GEO is Generative Engine Optimization for AI visibility</dd>
         </dl>
-        </body></html>'''
+        </body></html>"""
         with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
             f.write(html)
             f.flush()
@@ -1945,10 +1979,10 @@ class TestAnalyzeHtmlFile:
         ws2 = '{"@context":"https://schema.org","@type":"WebSite",'
         ws2 += '"name":"T2","url":"https://example.com"}'
         html = (
-            f'<html><head>'
+            f"<html><head>"
             f'<script type="application/ld+json">{ws1}</script>'
             f'<script type="application/ld+json">{ws2}</script>'
-            f'</head><body></body></html>'
+            f"</head><body></body></html>"
         )
         with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
             f.write(html)
@@ -1963,9 +1997,9 @@ class TestAnalyzeHtmlFile:
             os.unlink(path)
 
     def test_analyze_invalid_json_in_script(self):
-        html = '''<html><head>
+        html = """<html><head>
         <script type="application/ld+json">{invalid json}</script>
-        </head><body></body></html>'''
+        </head><body></body></html>"""
         with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
             f.write(html)
             f.flush()

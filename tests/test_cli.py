@@ -253,9 +253,7 @@ class TestAuditCommand:
         with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
             output_path = f.name
         try:
-            result = runner.invoke(cli, [
-                "audit", "--url", "https://example.com", "--output", output_path
-            ])
+            result = runner.invoke(cli, ["audit", "--url", "https://example.com", "--output", output_path])
             assert result.exit_code == 0
             assert "Report written to" in result.output
             assert output_path in result.output
@@ -273,10 +271,18 @@ class TestAuditCommand:
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             output_path = f.name
         try:
-            result = runner.invoke(cli, [
-                "audit", "--url", "https://example.com",
-                "--format", "json", "--output", output_path,
-            ])
+            result = runner.invoke(
+                cli,
+                [
+                    "audit",
+                    "--url",
+                    "https://example.com",
+                    "--format",
+                    "json",
+                    "--output",
+                    output_path,
+                ],
+            )
             assert result.exit_code == 0
             with open(output_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -300,9 +306,7 @@ class TestAuditCommand:
     def test_audit_error_json_format(self, mock_audit, runner):
         """Audit errors in JSON mode produce a JSON error object on stdout."""
         mock_audit.side_effect = RuntimeError("Server error")
-        result = runner.invoke(cli, [
-            "audit", "--url", "https://broken.example.com", "--format", "json"
-        ])
+        result = runner.invoke(cli, ["audit", "--url", "https://broken.example.com", "--format", "json"])
         assert result.exit_code == 1
         data = json.loads(result.output)
         assert "error" in data
@@ -318,9 +322,7 @@ class TestAuditCommand:
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_invalid_format_choice(self, mock_audit, runner):
         """geo audit --format xml is rejected by Click's choice validation."""
-        result = runner.invoke(cli, [
-            "audit", "--url", "https://example.com", "--format", "xml"
-        ])
+        result = runner.invoke(cli, ["audit", "--url", "https://example.com", "--format", "xml"])
         assert result.exit_code != 0
 
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
@@ -405,11 +407,18 @@ class TestLlmsCommand:
     def test_llms_no_sitemap_custom_name_and_description(self, mock_discover, runner):
         """Minimal output uses --site-name and --description when sitemap missing."""
         mock_discover.return_value = None
-        result = runner.invoke(cli, [
-            "llms", "--base-url", "https://example.com",
-            "--site-name", "My Custom Site",
-            "--description", "A custom description",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "llms",
+                "--base-url",
+                "https://example.com",
+                "--site-name",
+                "My Custom Site",
+                "--description",
+                "A custom description",
+            ],
+        )
         assert result.exit_code == 0
         assert "My Custom Site" in result.output
         assert "A custom description" in result.output
@@ -421,9 +430,7 @@ class TestLlmsCommand:
         with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
             output_path = f.name
         try:
-            result = runner.invoke(cli, [
-                "llms", "--base-url", "https://example.com", "--output", output_path
-            ])
+            result = runner.invoke(cli, ["llms", "--base-url", "https://example.com", "--output", output_path])
             assert result.exit_code == 0
             assert "Minimal llms.txt written to" in result.output
             with open(output_path, "r") as f:
@@ -445,9 +452,7 @@ class TestLlmsCommand:
         with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
             output_path = f.name
         try:
-            result = runner.invoke(cli, [
-                "llms", "--base-url", "https://example.com", "--output", output_path
-            ])
+            result = runner.invoke(cli, ["llms", "--base-url", "https://example.com", "--output", output_path])
             assert result.exit_code == 0
             assert "llms.txt written to" in result.output
             with open(output_path, "r") as f:
@@ -465,9 +470,7 @@ class TestLlmsCommand:
         mock_fetch.return_value = [SitemapUrl(url="https://example.com/")]
         mock_generate.return_value = "# Example\n"
 
-        runner.invoke(cli, [
-            "llms", "--base-url", "https://example.com", "--fetch-titles"
-        ])
+        runner.invoke(cli, ["llms", "--base-url", "https://example.com", "--fetch-titles"])
         call_kwargs = mock_generate.call_args[1]
         assert call_kwargs["fetch_titles"] is True
 
@@ -480,9 +483,7 @@ class TestLlmsCommand:
         mock_fetch.return_value = [SitemapUrl(url="https://example.com/")]
         mock_generate.return_value = "# Example\n"
 
-        runner.invoke(cli, [
-            "llms", "--base-url", "https://example.com", "--max-per-section", "5"
-        ])
+        runner.invoke(cli, ["llms", "--base-url", "https://example.com", "--max-per-section", "5"])
         call_kwargs = mock_generate.call_args[1]
         assert call_kwargs["max_urls_per_section"] == 5
 
@@ -494,10 +495,9 @@ class TestLlmsCommand:
         mock_fetch.return_value = [SitemapUrl(url="https://example.com/")]
         mock_generate.return_value = "# Example\n"
 
-        runner.invoke(cli, [
-            "llms", "--base-url", "https://example.com",
-            "--sitemap", "https://example.com/custom-sitemap.xml"
-        ])
+        runner.invoke(
+            cli, ["llms", "--base-url", "https://example.com", "--sitemap", "https://example.com/custom-sitemap.xml"]
+        )
         mock_discover.assert_not_called()
         mock_fetch.assert_called_once()
         assert "custom-sitemap.xml" in mock_fetch.call_args[0][0]
@@ -654,60 +654,98 @@ class TestSchemaGenerateCommand:
 
     def test_generate_website_schema(self, runner):
         """geo schema --type website --name X --url Y generates a WebSite script tag."""
-        result = runner.invoke(cli, [
-            "schema", "--type", "website",
-            "--name", "Test Site",
-            "--url", "https://test.example.com",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "schema",
+                "--type",
+                "website",
+                "--name",
+                "Test Site",
+                "--url",
+                "https://test.example.com",
+            ],
+        )
         assert result.exit_code == 0
-        assert 'application/ld+json' in result.output
+        assert "application/ld+json" in result.output
         assert '"@type": "WebSite"' in result.output
         assert '"name": "Test Site"' in result.output
         assert '"url": "https://test.example.com"' in result.output
 
     def test_generate_webapp_schema(self, runner):
         """geo schema --type webapp generates a WebApplication script tag."""
-        result = runner.invoke(cli, [
-            "schema", "--type", "webapp",
-            "--name", "My App",
-            "--url", "https://app.example.com",
-            "--description", "A test app",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "schema",
+                "--type",
+                "webapp",
+                "--name",
+                "My App",
+                "--url",
+                "https://app.example.com",
+                "--description",
+                "A test app",
+            ],
+        )
         assert result.exit_code == 0
         assert '"@type": "WebApplication"' in result.output
         assert '"name": "My App"' in result.output
 
     def test_generate_organization_schema(self, runner):
         """geo schema --type organization generates an Organization script tag."""
-        result = runner.invoke(cli, [
-            "schema", "--type", "organization",
-            "--name", "My Org",
-            "--url", "https://org.example.com",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "schema",
+                "--type",
+                "organization",
+                "--name",
+                "My Org",
+                "--url",
+                "https://org.example.com",
+            ],
+        )
         assert result.exit_code == 0
         assert '"@type": "Organization"' in result.output
         assert '"name": "My Org"' in result.output
 
     def test_generate_breadcrumb_schema(self, runner):
         """geo schema --type breadcrumb generates a BreadcrumbList script tag."""
-        result = runner.invoke(cli, [
-            "schema", "--type", "breadcrumb",
-            "--url", "https://example.com",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "schema",
+                "--type",
+                "breadcrumb",
+                "--url",
+                "https://example.com",
+            ],
+        )
         assert result.exit_code == 0
         assert '"@type": "BreadcrumbList"' in result.output
         assert '"itemListElement"' in result.output
 
     def test_generate_schema_with_all_fields(self, runner):
         """All optional fields are reflected in the generated schema."""
-        result = runner.invoke(cli, [
-            "schema", "--type", "webapp",
-            "--name", "Full App",
-            "--url", "https://full.example.com",
-            "--description", "Full description",
-            "--author", "Test Author",
-            "--logo-url", "https://full.example.com/logo.png",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "schema",
+                "--type",
+                "webapp",
+                "--name",
+                "Full App",
+                "--url",
+                "https://full.example.com",
+                "--description",
+                "Full description",
+                "--author",
+                "Test Author",
+                "--logo-url",
+                "https://full.example.com/logo.png",
+            ],
+        )
         assert result.exit_code == 0
         assert '"Full App"' in result.output
         assert '"Full description"' in result.output
@@ -726,11 +764,17 @@ class TestSchemaAstroCommand:
     def test_astro_snippet_output(self, mock_astro, runner):
         """geo schema --astro --name X --url Y outputs an Astro snippet."""
         mock_astro.return_value = "---\n// Astro snippet for Test Site\n---\n<html></html>"
-        result = runner.invoke(cli, [
-            "schema", "--astro",
-            "--name", "Test Site",
-            "--url", "https://test.example.com",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "schema",
+                "--astro",
+                "--name",
+                "Test Site",
+                "--url",
+                "https://test.example.com",
+            ],
+        )
         assert result.exit_code == 0
         assert "Astro snippet" in result.output
         mock_astro.assert_called_once_with("https://test.example.com", "Test Site")
@@ -766,9 +810,7 @@ class TestSchemaFaqCommand:
             json.dump(faq_data, f)
             faq_path = f.name
         try:
-            result = runner.invoke(cli, [
-                "schema", "--type", "faq", "--faq-file", faq_path
-            ])
+            result = runner.invoke(cli, ["schema", "--type", "faq", "--faq-file", faq_path])
             assert result.exit_code == 0
             assert '"@type": "FAQPage"' in result.output
             assert "What is GEO?" in result.output
@@ -796,9 +838,7 @@ class TestSchemaFaqCommand:
             f.write(b"<html><body><dt>Q</dt><dd>A</dd></body></html>")
             file_path = f.name
         try:
-            result = runner.invoke(cli, [
-                "schema", "--type", "faq", "--auto-extract", "--file", file_path
-            ])
+            result = runner.invoke(cli, ["schema", "--type", "faq", "--auto-extract", "--file", file_path])
             assert result.exit_code == 0
             assert "Extracted 2 FAQ items" in result.output
             assert '"@type": "FAQPage"' in result.output
@@ -810,16 +850,19 @@ class TestSchemaFaqCommand:
     def test_faq_auto_extract_no_faqs_found(self, mock_analyze, runner):
         """Auto-extract exits with error when no FAQ items are found."""
         mock_analyze.return_value = SchemaAnalysis(
-            found_schemas=[], found_types=[], missing=[],
-            extracted_faqs=[], duplicates={}, has_head=True, total_scripts=0,
+            found_schemas=[],
+            found_types=[],
+            missing=[],
+            extracted_faqs=[],
+            duplicates={},
+            has_head=True,
+            total_scripts=0,
         )
         with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as f:
             f.write(b"<html><body></body></html>")
             file_path = f.name
         try:
-            result = runner.invoke(cli, [
-                "schema", "--type", "faq", "--auto-extract", "--file", file_path
-            ])
+            result = runner.invoke(cli, ["schema", "--type", "faq", "--auto-extract", "--file", file_path])
             assert result.exit_code == 1
             assert "No FAQ items found" in result.output
         finally:
@@ -848,11 +891,21 @@ class TestSchemaInjectCommand:
             f.write(b"<html><head></head><body></body></html>")
             file_path = f.name
         try:
-            result = runner.invoke(cli, [
-                "schema", "--type", "website",
-                "--name", "Test", "--url", "https://example.com",
-                "--inject", "--file", file_path,
-            ])
+            result = runner.invoke(
+                cli,
+                [
+                    "schema",
+                    "--type",
+                    "website",
+                    "--name",
+                    "Test",
+                    "--url",
+                    "https://example.com",
+                    "--inject",
+                    "--file",
+                    file_path,
+                ],
+            )
             assert result.exit_code == 0
             assert "Schema injected" in result.output
             assert file_path in result.output
@@ -871,11 +924,21 @@ class TestSchemaInjectCommand:
             f.write(b"<html><body></body></html>")
             file_path = f.name
         try:
-            result = runner.invoke(cli, [
-                "schema", "--type", "website",
-                "--name", "Test", "--url", "https://example.com",
-                "--inject", "--file", file_path,
-            ])
+            result = runner.invoke(
+                cli,
+                [
+                    "schema",
+                    "--type",
+                    "website",
+                    "--name",
+                    "Test",
+                    "--url",
+                    "https://example.com",
+                    "--inject",
+                    "--file",
+                    file_path,
+                ],
+            )
             assert result.exit_code == 1
             assert "No <head> tag found" in result.output
         finally:
@@ -889,11 +952,22 @@ class TestSchemaInjectCommand:
             f.write(b"<html><head></head><body></body></html>")
             file_path = f.name
         try:
-            runner.invoke(cli, [
-                "schema", "--type", "website",
-                "--name", "Test", "--url", "https://example.com",
-                "--inject", "--file", file_path, "--no-backup",
-            ])
+            runner.invoke(
+                cli,
+                [
+                    "schema",
+                    "--type",
+                    "website",
+                    "--name",
+                    "Test",
+                    "--url",
+                    "https://example.com",
+                    "--inject",
+                    "--file",
+                    file_path,
+                    "--no-backup",
+                ],
+            )
             call_kwargs = mock_inject.call_args
             assert call_kwargs[1]["backup"] is False
         finally:
@@ -907,11 +981,22 @@ class TestSchemaInjectCommand:
             f.write(b"<html><head></head><body></body></html>")
             file_path = f.name
         try:
-            runner.invoke(cli, [
-                "schema", "--type", "website",
-                "--name", "Test", "--url", "https://example.com",
-                "--inject", "--file", file_path, "--no-validate",
-            ])
+            runner.invoke(
+                cli,
+                [
+                    "schema",
+                    "--type",
+                    "website",
+                    "--name",
+                    "Test",
+                    "--url",
+                    "https://example.com",
+                    "--inject",
+                    "--file",
+                    file_path,
+                    "--no-validate",
+                ],
+            )
             call_kwargs = mock_inject.call_args
             assert call_kwargs[1]["validate"] is False
         finally:
@@ -919,11 +1004,19 @@ class TestSchemaInjectCommand:
 
     def test_inject_without_file_exits(self, runner):
         """geo schema --type website --inject without --file exits with error."""
-        result = runner.invoke(cli, [
-            "schema", "--type", "website",
-            "--name", "Test", "--url", "https://example.com",
-            "--inject",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "schema",
+                "--type",
+                "website",
+                "--name",
+                "Test",
+                "--url",
+                "https://example.com",
+                "--inject",
+            ],
+        )
         assert result.exit_code == 1
         assert "--file required" in result.output
 
@@ -944,10 +1037,18 @@ class TestSchemaErrorCases:
 
     def test_invalid_schema_type(self, runner):
         """geo schema --type invalid_type is rejected by Click Choice."""
-        result = runner.invoke(cli, [
-            "schema", "--type", "invalid_type",
-            "--name", "Test", "--url", "https://example.com",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "schema",
+                "--type",
+                "invalid_type",
+                "--name",
+                "Test",
+                "--url",
+                "https://example.com",
+            ],
+        )
         assert result.exit_code != 0
 
     def test_no_action_with_only_file(self, runner):
@@ -979,9 +1080,7 @@ class TestFormatters:
         assert data["url"] == "https://example.com"
         assert data["score"] == 75
         assert data["band"] == "good"
-        assert set(data["checks"].keys()) == {
-            "robots_txt", "llms_txt", "schema_jsonld", "meta_tags", "content"
-        }
+        assert set(data["checks"].keys()) == {"robots_txt", "llms_txt", "schema_jsonld", "meta_tags", "content"}
 
     def test_format_audit_json_robots_details(self, sample_audit_result):
         """JSON robots_txt check includes correct details."""

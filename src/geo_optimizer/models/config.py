@@ -325,7 +325,7 @@ SCORING = {
     "schema_sameas": 3,  # NUOVO: link sameAs a Wikipedia/Wikidata/LinkedIn
     # Meta tags — 20 punti (invariato)
     "meta_title": 5,
-    "meta_description": 8,
+    "meta_description": 2,
     "meta_canonical": 3,
     "meta_og": 4,
     # Content quality — 14 punti (era 15) — controlli struttura
@@ -340,6 +340,11 @@ SCORING = {
     "signals_lang": 3,  # NUOVO: <html lang="...">
     "signals_rss": 3,  # NUOVO: feed RSS/Atom trovato
     "signals_freshness": 2,  # NUOVO: dateModified nello schema o header Last-Modified
+    # AI Discovery — 6 punti (geo-checklist.dev standard)
+    "ai_discovery_well_known": 2,  # /.well-known/ai.txt presente
+    "ai_discovery_summary": 2,  # /ai/summary.json valido
+    "ai_discovery_faq": 1,  # /ai/faq.json presente
+    "ai_discovery_service": 1,  # /ai/service.json presente
 }
 
 # Minimum word threshold for content_word_count (300 parole = contenuto sostanziale)

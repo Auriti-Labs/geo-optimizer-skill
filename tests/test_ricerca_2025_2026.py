@@ -108,8 +108,13 @@ class TestSchemaRichness:
     def test_pesi_schema_sommano_22(self):
         """I pesi schema devono sommare 22 (invariato dal v4.0)."""
         schema_keys = [
-            "schema_any_valid", "schema_richness", "schema_faq",
-            "schema_article", "schema_organization", "schema_website", "schema_sameas",
+            "schema_any_valid",
+            "schema_richness",
+            "schema_faq",
+            "schema_article",
+            "schema_organization",
+            "schema_website",
+            "schema_sameas",
         ]
         total = sum(SCORING[k] for k in schema_keys)
         assert total == 22
@@ -339,7 +344,10 @@ class TestPesiCitability:
         assert SCORING["robots_found"] == 5
         assert SCORING["robots_citation_ok"] == 13
         # Meta: 20 max
-        assert SCORING["meta_title"] + SCORING["meta_description"] + SCORING["meta_canonical"] + SCORING["meta_og"] == 20
+        # meta_description ridotta da 8 a 6 per fare spazio a ai_discovery (6 punti)
+        assert (
+            SCORING["meta_title"] + SCORING["meta_description"] + SCORING["meta_canonical"] + SCORING["meta_og"] == 14
+        )
         # Content: 14 max
         content_keys = [k for k in SCORING if k.startswith("content_")]
         assert sum(SCORING[k] for k in content_keys) == 14

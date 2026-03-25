@@ -195,12 +195,14 @@ class TestGeoSchemaValidateTool:
 
     def test_schema_valido(self):
         """Schema WebSite completo viene validato correttamente."""
-        schema = json.dumps({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "url": "https://example.com",
-            "name": "Example",
-        })
+        schema = json.dumps(
+            {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "url": "https://example.com",
+                "name": "Example",
+            }
+        )
         result = geo_schema_validate(schema, "website")
         data = json.loads(result)
 
@@ -208,10 +210,12 @@ class TestGeoSchemaValidateTool:
 
     def test_schema_non_valido(self):
         """Schema incompleto viene rilevato."""
-        schema = json.dumps({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-        })
+        schema = json.dumps(
+            {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+            }
+        )
         result = geo_schema_validate(schema, "website")
         data = json.loads(result)
 

@@ -315,9 +315,7 @@ class TestGenerateLlmsTxtFetchTitles:
         """fetch_titles=False (default) non chiama mai fetch_page_title."""
         urls = [SitemapUrl(url="https://example.com/pagina")]
 
-        with patch(
-            "geo_optimizer.core.llms_generator.fetch_page_title"
-        ) as mock_fetch:
+        with patch("geo_optimizer.core.llms_generator.fetch_page_title") as mock_fetch:
             generate_llms_txt(
                 "https://example.com",
                 urls,
@@ -525,30 +523,36 @@ class TestFormatAuditTextBranchMancanti:
 
     def test_riga_101_llms_trovato_senza_h1(self):
         """Riga 101: llms.txt trovato ma has_h1=False → '❌ H1 missing'."""
-        result = _make_audit_result(**{
-            "llms.found": True,
-            "llms.has_h1": False,
-        })
+        result = _make_audit_result(
+            **{
+                "llms.found": True,
+                "llms.has_h1": False,
+            }
+        )
         output = format_audit_text(result)
         assert "H1 missing" in output or "H1" in output
 
     def test_riga_116_schema_trovato_senza_website(self):
         """Riga 116: schema trovato (found_types non vuoto) ma has_website=False."""
-        result = _make_audit_result(**{
-            "schema.found_types": ["FAQPage"],
-            "schema.has_website": False,
-            "schema.has_faq": True,
-        })
+        result = _make_audit_result(
+            **{
+                "schema.found_types": ["FAQPage"],
+                "schema.has_website": False,
+                "schema.has_faq": True,
+            }
+        )
         output = format_audit_text(result)
         assert "WebSite schema missing" in output
 
     def test_riga_118_schema_trovato_senza_faq(self):
         """Riga 118: schema trovato ma has_faq=False → warning FAQPage."""
-        result = _make_audit_result(**{
-            "schema.found_types": ["WebSite"],
-            "schema.has_website": True,
-            "schema.has_faq": False,
-        })
+        result = _make_audit_result(
+            **{
+                "schema.found_types": ["WebSite"],
+                "schema.has_website": True,
+                "schema.has_faq": False,
+            }
+        )
         output = format_audit_text(result)
         assert "FAQPage" in output
 
@@ -635,10 +639,14 @@ class TestSchemaCmdPathTraversalValidation:
     def test_righe_66_67_file_path_non_esistente_bloccato(self):
         """Righe 66-67: --file con percorso non esistente → errore e exit code 1."""
         runner = CliRunner()
-        result = runner.invoke(schema, [
-            "--file", "/tmp/file_inesistente_xyz_abc.html",
-            "--analyze",
-        ])
+        result = runner.invoke(
+            schema,
+            [
+                "--file",
+                "/tmp/file_inesistente_xyz_abc.html",
+                "--analyze",
+            ],
+        )
         assert result.exit_code == 1
         assert "non valido" in result.output or "Percorso" in result.output
 
@@ -649,11 +657,17 @@ class TestSchemaCmdPathTraversalValidation:
             # Crea un file HTML valido per --file
             with open("test.html", "w") as f:
                 f.write("<html><body></body></html>")
-            result = runner.invoke(schema, [
-                "--file", "test.html",
-                "--type", "faq",
-                "--faq-file", "/tmp/faq_inesistente_xyz.json",
-            ])
+            result = runner.invoke(
+                schema,
+                [
+                    "--file",
+                    "test.html",
+                    "--type",
+                    "faq",
+                    "--faq-file",
+                    "/tmp/faq_inesistente_xyz.json",
+                ],
+            )
         assert result.exit_code == 1
         assert "non valido" in result.output or "FAQ" in result.output
 
@@ -663,10 +677,14 @@ class TestSchemaCmdPathTraversalValidation:
         with runner.isolated_filesystem():
             with open("test.txt", "w") as f:
                 f.write("contenuto testo")
-            result = runner.invoke(schema, [
-                "--file", "test.txt",
-                "--analyze",
-            ])
+            result = runner.invoke(
+                schema,
+                [
+                    "--file",
+                    "test.txt",
+                    "--analyze",
+                ],
+            )
         assert result.exit_code == 1
 
 
@@ -776,11 +794,15 @@ class TestSchemaCmdPrintAnalysis:
                 }
                 </script>
                 </head><body></body></html>""")
-            result = runner.invoke(schema, [
-                "--file", "test.html",
-                "--analyze",
-                "--verbose",
-            ])
+            result = runner.invoke(
+                schema,
+                [
+                    "--file",
+                    "test.html",
+                    "--analyze",
+                    "--verbose",
+                ],
+            )
         assert result.exit_code == 0
         # In modalità verbose deve mostrare il JSON completo
         assert "Full schema" in result.output or "Sito Verbose" in result.output
@@ -798,13 +820,15 @@ class TestSchemaCmdFaqOltreTre:
         """Riga 198: più di 3 FAQ estratte → riga '... and X more'."""
         runner = CliRunner()
         # Crea un HTML con 5 blocchi details/summary per far estrarre 5 FAQ
-        faq_blocks = "\n".join([
-            f"""<details>
+        faq_blocks = "\n".join(
+            [
+                f"""<details>
                 <summary>Domanda {i}: cosa fa la funzione {i}?</summary>
                 <p>La funzione {i} esegue operazioni di elaborazione dati avanzate</p>
             </details>"""
-            for i in range(1, 6)
-        ])
+                for i in range(1, 6)
+            ]
+        )
         with runner.isolated_filesystem():
             with open("test.html", "w") as f:
                 f.write(f"""<html><head>
@@ -917,16 +941,18 @@ class TestIntegrazioneBranchCoperti:
 
     def test_format_audit_text_completo_non_crasha(self):
         """format_audit_text con AuditResult completo non solleva eccezioni."""
-        result = _make_audit_result(**{
-            "robots.citation_bots_ok": True,
-            "robots.bots_blocked": ["Bytespider"],
-            "robots.bots_missing": ["DuckAssistBot"],
-            "llms.found": True,
-            "llms.has_h1": True,
-            "schema.found_types": ["WebSite", "FAQPage"],
-            "schema.has_website": True,
-            "schema.has_faq": True,
-        })
+        result = _make_audit_result(
+            **{
+                "robots.citation_bots_ok": True,
+                "robots.bots_blocked": ["Bytespider"],
+                "robots.bots_missing": ["DuckAssistBot"],
+                "llms.found": True,
+                "llms.has_h1": True,
+                "schema.found_types": ["WebSite", "FAQPage"],
+                "schema.has_website": True,
+                "schema.has_faq": True,
+            }
+        )
         output = format_audit_text(result)
         assert "GEO AUDIT" in output
         assert "example.com" in output

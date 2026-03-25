@@ -95,29 +95,31 @@ class TestSarifFormatter:
 
     def test_sarif_sito_ottimizzato_pochi_findings(self):
         """Sito ottimizzato produce pochi o zero findings."""
-        result = _make_result(**{
-            "score": 95,
-            "band": "excellent",
-            "robots.citation_bots_ok": True,
-            "robots.bots_missing": [],
-            "robots.bots_blocked": [],
-            "llms.found": True,
-            "llms.has_h1": True,
-            "llms.has_sections": True,
-            "llms.has_links": True,
-            "schema.has_website": True,
-            "schema.has_organization": True,
-            "schema.has_faq": True,
-            "meta.has_title": True,
-            "meta.has_description": True,
-            "meta.has_canonical": True,
-            "meta.has_og_title": True,
-            "meta.has_og_description": True,
-            "content.has_h1": True,
-            "content.has_numbers": True,
-            "content.has_links": True,
-            "content.word_count": 500,
-        })
+        result = _make_result(
+            **{
+                "score": 95,
+                "band": "excellent",
+                "robots.citation_bots_ok": True,
+                "robots.bots_missing": [],
+                "robots.bots_blocked": [],
+                "llms.found": True,
+                "llms.has_h1": True,
+                "llms.has_sections": True,
+                "llms.has_links": True,
+                "schema.has_website": True,
+                "schema.has_organization": True,
+                "schema.has_faq": True,
+                "meta.has_title": True,
+                "meta.has_description": True,
+                "meta.has_canonical": True,
+                "meta.has_og_title": True,
+                "meta.has_og_description": True,
+                "content.has_h1": True,
+                "content.has_numbers": True,
+                "content.has_links": True,
+                "content.word_count": 500,
+            }
+        )
         data = json.loads(format_audit_sarif(result))
         results = data["runs"][0]["results"]
 
@@ -166,30 +168,32 @@ class TestJunitFormatter:
 
     def test_junit_sito_ottimizzato_zero_failures(self):
         """Sito ottimizzato produce zero failures in JUnit."""
-        result = _make_result(**{
-            "score": 95,
-            "robots.found": True,
-            "robots.citation_bots_ok": True,
-            "robots.bots_missing": [],
-            "robots.bots_blocked": [],
-            "llms.found": True,
-            "llms.has_h1": True,
-            "llms.has_sections": True,
-            "llms.has_links": True,
-            "schema.has_website": True,
-            "schema.has_organization": True,
-            "schema.has_faq": True,
-            "schema.has_article": True,
-            "meta.has_title": True,
-            "meta.has_description": True,
-            "meta.has_canonical": True,
-            "meta.has_og_title": True,
-            "meta.has_og_description": True,
-            "content.has_h1": True,
-            "content.has_numbers": True,
-            "content.has_links": True,
-            "content.word_count": 500,
-        })
+        result = _make_result(
+            **{
+                "score": 95,
+                "robots.found": True,
+                "robots.citation_bots_ok": True,
+                "robots.bots_missing": [],
+                "robots.bots_blocked": [],
+                "llms.found": True,
+                "llms.has_h1": True,
+                "llms.has_sections": True,
+                "llms.has_links": True,
+                "schema.has_website": True,
+                "schema.has_organization": True,
+                "schema.has_faq": True,
+                "schema.has_article": True,
+                "meta.has_title": True,
+                "meta.has_description": True,
+                "meta.has_canonical": True,
+                "meta.has_og_title": True,
+                "meta.has_og_description": True,
+                "content.has_h1": True,
+                "content.has_numbers": True,
+                "content.has_links": True,
+                "content.word_count": 500,
+            }
+        )
         root = ET.fromstring(format_audit_junit(result))
 
         total_failures = int(root.get("failures", "0"))

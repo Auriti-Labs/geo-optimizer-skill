@@ -16,13 +16,13 @@ from geo_optimizer.models.config import (
 )
 
 
-def compute_geo_score(robots, llms, schema, meta, content, signals=None) -> int:
+def compute_geo_score(robots, llms, schema, meta, content, signals=None, ai_discovery=None) -> int:
     """Calcola il punteggio GEO 0-100 dai pesi SCORING (v4.0)."""
-    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, signals)
+    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, signals, ai_discovery)
     return min(sum(breakdown.values()), 100)
 
 
-def compute_score_breakdown(robots, llms, schema, meta, content, signals=None) -> dict[str, int]:
+def compute_score_breakdown(robots, llms, schema, meta, content, signals=None, ai_discovery=None) -> dict[str, int]:
     """Ritorna il breakdown del punteggio per categoria."""
     return {
         "robots": _score_robots(robots),
@@ -31,6 +31,7 @@ def compute_score_breakdown(robots, llms, schema, meta, content, signals=None) -
         "meta": _score_meta(meta),
         "content": _score_content(content),
         "signals": _score_signals(signals) if signals is not None else 0,
+        "ai_discovery": _score_ai_discovery(ai_discovery) if ai_discovery is not None else 0,
     }
 
 
@@ -119,4 +120,15 @@ def _score_signals(signals) -> int:
     s = SCORING["signals_lang"] if signals.has_lang else 0
     s += SCORING["signals_rss"] if signals.has_rss else 0
     s += SCORING["signals_freshness"] if signals.has_freshness else 0
+    return s
+
+
+def _score_ai_discovery(ai_discovery) -> int:
+    """Calcola il punteggio AI discovery (geo-checklist.dev standard)."""
+    if ai_discovery is None:
+        return 0
+    s = SCORING["ai_discovery_well_known"] if ai_discovery.has_well_known_ai else 0
+    s += SCORING["ai_discovery_summary"] if ai_discovery.has_summary and ai_discovery.summary_valid else 0
+    s += SCORING["ai_discovery_faq"] if ai_discovery.has_faq else 0
+    s += SCORING["ai_discovery_service"] if ai_discovery.has_service else 0
     return s

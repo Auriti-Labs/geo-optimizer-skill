@@ -22,7 +22,9 @@ from geo_optimizer.utils.http import MAX_RESPONSE_SIZE
 # ─── Helper: risposta httpx mock ─────────────────────────────────────────────
 
 
-def _mock_response(status_code: int = 200, content: bytes = b"<html>ok</html>", headers: dict | None = None) -> MagicMock:
+def _mock_response(
+    status_code: int = 200, content: bytes = b"<html>ok</html>", headers: dict | None = None
+) -> MagicMock:
     """Costruisce un mock di httpx.Response con i campi necessari."""
     resp = MagicMock()
     resp.status_code = status_code
@@ -242,9 +244,7 @@ def test_fetch_url_async_connect_error_restituisce_errore():
         with patch("geo_optimizer.utils.validators.validate_public_url", return_value=(True, None)):
             with patch("httpx.AsyncClient") as mock_client_cls:
                 mock_client_inst = AsyncMock()
-                mock_client_inst.get = AsyncMock(
-                    side_effect=httpx.ConnectError("Connection refused")
-                )
+                mock_client_inst.get = AsyncMock(side_effect=httpx.ConnectError("Connection refused"))
                 mock_client_inst.aclose = AsyncMock()
                 mock_client_cls.return_value = mock_client_inst
 
@@ -374,6 +374,7 @@ def test_fetch_urls_async_mix_successo_e_fallimento():
 
 def test_fetch_urls_async_lista_vuota_restituisce_dict_vuoto():
     """fetch_urls_async con lista vuota restituisce dizionario vuoto."""
+
     async def _run():
         with patch("httpx.AsyncClient") as mock_client_cls:
             mock_client_inst = AsyncMock()

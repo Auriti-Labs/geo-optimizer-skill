@@ -270,6 +270,7 @@ def test_rate_limit_429_dopo_troppe_richieste(client):
 
     # Riempi il rate limit store con timestamp recenti
     import time
+
     now = time.time()
     _rate_limit_store["testclient"] = [now] * _RATE_LIMIT_MAX_REQUESTS
 
@@ -504,6 +505,7 @@ def test_report_id_valido_con_report_in_cache_ritorna_html(client):
 
     # Inserisce direttamente in cache con un ID noto
     import time
+
     report_id = "b" * 32  # 32 caratteri hex validi
     _audit_cache[report_id] = {"data": data, "cached_at": time.time()}
 

@@ -117,6 +117,8 @@ def fix(url, output_dir, dry_run, do_apply, only, config_file):
 
         for fix_item in plan.fixes:
             file_path = output_path / fix_item.file_name
+            # Crea sottodirectory se necessario (es. ai/summary.json)
+            file_path.parent.mkdir(parents=True, exist_ok=True)
             file_path.write_text(fix_item.content, encoding="utf-8")
             click.echo(f"  ✅ {file_path}")
 

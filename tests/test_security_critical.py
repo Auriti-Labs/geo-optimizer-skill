@@ -49,9 +49,7 @@ class TestBadgeSvgXss:
 
     def test_label_con_script_injection(self):
         """Payload XSS nel label viene neutralizzato."""
-        svg = generate_badge_svg(
-            85, "good", label='"></text><script>alert("xss")</script><text>'
-        )
+        svg = generate_badge_svg(85, "good", label='"></text><script>alert("xss")</script><text>')
         assert "<script>" not in svg
         assert "&lt;script&gt;" in svg
 
@@ -60,7 +58,7 @@ class TestBadgeSvgXss:
         svg = generate_badge_svg(90, "excellent", label='" onload="alert(1)')
         assert "onload" not in svg or "&quot;" in svg
         # Il " viene escapato a &quot;, rompendo l'injection
-        assert '&quot;' in svg
+        assert "&quot;" in svg
 
     def test_label_troncata_a_max_length(self):
         """Label troppo lunga viene troncata."""
@@ -150,18 +148,14 @@ class TestSsrfBypassNetworks:
     def test_blocca_ipv4_mapped_ipv6(self):
         """::ffff:127.0.0.1 — IPv4-mapped IPv6 bypass."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
-            mock_dns.return_value = [
-                (10, 1, 6, "", ("::ffff:127.0.0.1", 0, 0, 0))
-            ]
+            mock_dns.return_value = [(10, 1, 6, "", ("::ffff:127.0.0.1", 0, 0, 0))]
             ok, err = validate_public_url("https://evil.example.com")
             assert ok is False
 
     def test_blocca_ipv4_mapped_ipv6_privato(self):
         """::ffff:10.0.0.1 — IPv4-mapped IPv6 con IP privato."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
-            mock_dns.return_value = [
-                (10, 1, 6, "", ("::ffff:10.0.0.1", 0, 0, 0))
-            ]
+            mock_dns.return_value = [(10, 1, 6, "", ("::ffff:10.0.0.1", 0, 0, 0))]
             ok, err = validate_public_url("https://evil.example.com")
             assert ok is False
 
@@ -184,9 +178,7 @@ class TestSsrfBypassNetworks:
         """Reti RFC 1918 originali continuano a essere bloccate."""
         test_ips = ["10.0.0.1", "172.16.0.1", "192.168.1.1"]
         for ip in test_ips:
-            with patch(
-                "geo_optimizer.utils.validators.socket.getaddrinfo"
-            ) as mock_dns:
+            with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
                 mock_dns.return_value = [(2, 1, 6, "", (ip, 0))]
                 ok, err = validate_public_url("https://evil.example.com")
                 assert ok is False, f"{ip} dovrebbe essere bloccato"

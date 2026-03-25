@@ -84,7 +84,7 @@ class TestResolveAndValidateUrl:
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [
                 (2, 1, 6, "", ("93.184.216.34", 0)),  # pubblico
-                (2, 1, 6, "", ("192.168.1.1", 0)),    # privato
+                (2, 1, 6, "", ("192.168.1.1", 0)),  # privato
             ]
             ok, err, ips = resolve_and_validate_url("https://evil.example.com")
             assert ok is False

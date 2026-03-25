@@ -26,6 +26,7 @@ from geo_optimizer.models.config import (  # noqa: F401 (VALUABLE_SCHEMAS re-exp
     VALUABLE_SCHEMAS,
 )
 from geo_optimizer.models.results import (
+    AiDiscoveryResult,
     AuditResult,
     CachedResponse,
     CitabilityResult,
@@ -355,7 +356,130 @@ def audit_content_quality(soup, url: str) -> ContentResult:
     return result
 
 
-def build_recommendations(base_url, robots, llms, schema, meta, content) -> list:
+def audit_ai_discovery(base_url: str) -> AiDiscoveryResult:
+    """Check AI discovery endpoints (geo-checklist.dev standard).
+
+    Checks for:
+    - /.well-known/ai.txt (HTTP 200)
+    - /ai/summary.json (HTTP 200 + JSON valido con name e description)
+    - /ai/faq.json (HTTP 200 + JSON valido)
+    - /ai/service.json (HTTP 200 + JSON valido)
+
+    Args:
+        base_url: URL base del sito (normalizzato).
+
+    Returns:
+        AiDiscoveryResult con i risultati dei check.
+    """
+    result = AiDiscoveryResult()
+
+    # Check /.well-known/ai.txt
+    ai_txt_url = urljoin(base_url, "/.well-known/ai.txt")
+    r, err = fetch_url(ai_txt_url)
+    if r and not err and r.status_code == 200 and len(r.text.strip()) > 0:
+        result.has_well_known_ai = True
+        result.endpoints_found += 1
+
+    # Check /ai/summary.json
+    summary_url = urljoin(base_url, "/ai/summary.json")
+    r, err = fetch_url(summary_url)
+    if r and not err and r.status_code == 200:
+        try:
+            data = json.loads(r.text)
+            result.has_summary = True
+            result.endpoints_found += 1
+            # Valida campi richiesti: name e description
+            if isinstance(data, dict) and data.get("name") and data.get("description"):
+                result.summary_valid = True
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    # Check /ai/faq.json
+    faq_url = urljoin(base_url, "/ai/faq.json")
+    r, err = fetch_url(faq_url)
+    if r and not err and r.status_code == 200:
+        try:
+            data = json.loads(r.text)
+            result.has_faq = True
+            result.endpoints_found += 1
+            # Conta FAQ: supporta lista di oggetti o dict con chiave "faqs"
+            if isinstance(data, list):
+                result.faq_count = len(data)
+            elif isinstance(data, dict) and isinstance(data.get("faqs"), list):
+                result.faq_count = len(data["faqs"])
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    # Check /ai/service.json
+    service_url = urljoin(base_url, "/ai/service.json")
+    r, err = fetch_url(service_url)
+    if r and not err and r.status_code == 200:
+        try:
+            json.loads(r.text)
+            result.has_service = True
+            result.endpoints_found += 1
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    return result
+
+
+def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) -> AiDiscoveryResult:
+    """Analyze AI discovery from pre-fetched HTTP responses (async path).
+
+    Args:
+        r_ai_txt: HTTP response for /.well-known/ai.txt (or None).
+        r_summary: HTTP response for /ai/summary.json (or None).
+        r_faq: HTTP response for /ai/faq.json (or None).
+        r_service: HTTP response for /ai/service.json (or None).
+
+    Returns:
+        AiDiscoveryResult con i risultati dei check.
+    """
+    result = AiDiscoveryResult()
+
+    # /.well-known/ai.txt
+    if r_ai_txt and r_ai_txt.status_code == 200 and len(r_ai_txt.text.strip()) > 0:
+        result.has_well_known_ai = True
+        result.endpoints_found += 1
+
+    # /ai/summary.json
+    if r_summary and r_summary.status_code == 200:
+        try:
+            data = json.loads(r_summary.text)
+            result.has_summary = True
+            result.endpoints_found += 1
+            if isinstance(data, dict) and data.get("name") and data.get("description"):
+                result.summary_valid = True
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    # /ai/faq.json
+    if r_faq and r_faq.status_code == 200:
+        try:
+            data = json.loads(r_faq.text)
+            result.has_faq = True
+            result.endpoints_found += 1
+            if isinstance(data, list):
+                result.faq_count = len(data)
+            elif isinstance(data, dict) and isinstance(data.get("faqs"), list):
+                result.faq_count = len(data["faqs"])
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    # /ai/service.json
+    if r_service and r_service.status_code == 200:
+        try:
+            json.loads(r_service.text)
+            result.has_service = True
+            result.endpoints_found += 1
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    return result
+
+
+def build_recommendations(base_url, robots, llms, schema, meta, content, ai_discovery=None) -> list:
     """Build a prioritized list of recommendations."""
     recommendations = []
 
@@ -374,6 +498,17 @@ def build_recommendations(base_url, robots, llms, schema, meta, content) -> list
     if not content.has_links:
         recommendations.append("Cite authoritative sources with external links (increase AI credibility)")
 
+    # Raccomandazioni AI discovery (geo-checklist.dev)
+    if ai_discovery is not None:
+        if not ai_discovery.has_well_known_ai:
+            recommendations.append("Create /.well-known/ai.txt to define AI crawler permissions")
+        if not ai_discovery.has_summary or not ai_discovery.summary_valid:
+            recommendations.append("Create /ai/summary.json with site name and description for AI engines")
+        if not ai_discovery.has_faq:
+            recommendations.append("Create /ai/faq.json with structured FAQ for AI search visibility")
+        if not ai_discovery.has_service:
+            recommendations.append("Create /ai/service.json to describe service capabilities for AI")
+
     return recommendations
 
 
@@ -389,6 +524,7 @@ def _build_audit_result(
     soup=None,
     extra_checks: dict = None,
     signals: SignalsResult = None,  # v4.0: segnali tecnici
+    ai_discovery=None,  # Standard AI discovery endpoints (.well-known/ai.txt, ecc.)
 ) -> AuditResult:
     """Costruisce AuditResult dai sub-audit (fix #97: logica comune sync/async).
 
@@ -416,13 +552,18 @@ def _build_audit_result(
     # Usa SignalsResult vuoto se non fornito
     effective_signals = signals if signals is not None else SignalsResult()
 
-    # Calcola score, breakdown e band (v4.0: include signals)
-    score = compute_geo_score(robots, llms, schema, meta, content, effective_signals)
-    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, effective_signals)
+    # Usa AiDiscoveryResult vuoto se non fornito
+    from geo_optimizer.models.results import AiDiscoveryResult
+
+    effective_ai_discovery = ai_discovery if ai_discovery is not None else AiDiscoveryResult()
+
+    # Calcola score, breakdown e band (v4.0: include signals, ai_discovery)
+    score = compute_geo_score(robots, llms, schema, meta, content, effective_signals, effective_ai_discovery)
+    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, effective_signals, effective_ai_discovery)
     band = get_score_band(score)
 
     # Raccomandazioni
-    recommendations = build_recommendations(base_url, robots, llms, schema, meta, content)
+    recommendations = build_recommendations(base_url, robots, llms, schema, meta, content, effective_ai_discovery)
 
     # Fix #104: esegui plugin registrati in CheckRegistry
     # I risultati non influenzano il punteggio base
@@ -460,6 +601,7 @@ def _build_audit_result(
         page_size=page_size,
         extra_checks=plugin_results,
         signals=effective_signals,
+        ai_discovery=effective_ai_discovery,
         score_breakdown=breakdown,
     )
 
@@ -524,6 +666,9 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     meta = audit_meta_tags(soup, base_url)
     content = audit_content_quality(soup, base_url)
 
+    # v4.1: audit AI discovery endpoints
+    ai_disc = audit_ai_discovery(base_url)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -535,6 +680,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         http_status=r.status_code,
         page_size=len(r.text),
         soup=soup,
+        ai_discovery=ai_disc,
     )
 
 
@@ -564,18 +710,39 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     if not base_url.startswith(("http://", "https://")):
         base_url = "https://" + base_url
 
-    # Parallel fetch: homepage + robots.txt + llms.txt + llms-full.txt
+    # Parallel fetch: homepage + robots.txt + llms.txt + llms-full.txt + AI discovery
     robots_url = urljoin(base_url, "/robots.txt")
     llms_url = urljoin(base_url, "/llms.txt")
     llms_full_url = urljoin(base_url, "/llms-full.txt")
+    # v4.1: AI discovery endpoints (geo-checklist.dev)
+    ai_txt_url = urljoin(base_url, "/.well-known/ai.txt")
+    ai_summary_url = urljoin(base_url, "/ai/summary.json")
+    ai_faq_url = urljoin(base_url, "/ai/faq.json")
+    ai_service_url = urljoin(base_url, "/ai/service.json")
 
-    responses = await fetch_urls_async([base_url, robots_url, llms_url, llms_full_url])
+    responses = await fetch_urls_async(
+        [
+            base_url,
+            robots_url,
+            llms_url,
+            llms_full_url,
+            ai_txt_url,
+            ai_summary_url,
+            ai_faq_url,
+            ai_service_url,
+        ]
+    )
 
     # Extract responses
     r_home, err_home = responses.get(base_url, (None, "URL not requested"))
     r_robots, _ = responses.get(robots_url, (None, None))
     r_llms, _ = responses.get(llms_url, (None, None))
     r_llms_full, _ = responses.get(llms_full_url, (None, None))
+    # AI discovery responses
+    r_ai_txt, _ = responses.get(ai_txt_url, (None, None))
+    r_ai_summary, _ = responses.get(ai_summary_url, (None, None))
+    r_ai_faq, _ = responses.get(ai_faq_url, (None, None))
+    r_ai_service, _ = responses.get(ai_service_url, (None, None))
 
     if err_home or not r_home:
         result = AuditResult(
@@ -598,6 +765,9 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     meta = audit_meta_tags(soup, base_url)
     content = audit_content_quality(soup, base_url)
 
+    # v4.1: AI discovery da risposte pre-scaricate
+    ai_disc = _audit_ai_discovery_from_responses(r_ai_txt, r_ai_summary, r_ai_faq, r_ai_service)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -609,6 +779,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
         http_status=r_home.status_code,
         page_size=len(r_home.text),
         soup=soup,
+        ai_discovery=ai_disc,
     )
 
 

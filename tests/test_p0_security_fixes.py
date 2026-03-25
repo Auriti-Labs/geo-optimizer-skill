@@ -91,6 +91,7 @@ class TestValidatePublicUrl:
     def test_dns_non_risolvibile_passa(self):
         """DNS non risolvibile non è un errore di sicurezza."""
         import socket
+
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.side_effect = socket.gaierror("Name resolution failed")
             ok, err = validate_public_url("https://nonexistent.example.com")
@@ -282,19 +283,23 @@ class TestScoringConsistency:
         return result
 
     def test_robots_score_citation_ok(self):
-        r = self._make_result(**{
-            "robots.found": True,
-            "robots.citation_bots_ok": True,
-            "robots.citation_bots_explicit": True,
-        })
+        r = self._make_result(
+            **{
+                "robots.found": True,
+                "robots.citation_bots_ok": True,
+                "robots.citation_bots_explicit": True,
+            }
+        )
         expected = SCORING["robots_found"] + SCORING["robots_citation_ok"]
         assert _robots_score(r) == expected
 
     def test_robots_score_some_allowed(self):
-        r = self._make_result(**{
-            "robots.found": True,
-            "robots.bots_allowed": ["GPTBot"],
-        })
+        r = self._make_result(
+            **{
+                "robots.found": True,
+                "robots.bots_allowed": ["GPTBot"],
+            }
+        )
         expected = SCORING["robots_found"] + SCORING["robots_some_allowed"]
         assert _robots_score(r) == expected
 
@@ -307,106 +312,105 @@ class TestScoringConsistency:
         assert _robots_score(r) == 0
 
     def test_llms_score_full(self):
-        r = self._make_result(**{
-            "llms.found": True,
-            "llms.has_h1": True,
-            "llms.has_sections": True,
-            "llms.has_links": True,
-        })
-        expected = (
-            SCORING["llms_found"]
-            + SCORING["llms_h1"]
-            + SCORING["llms_sections"]
-            + SCORING["llms_links"]
+        r = self._make_result(
+            **{
+                "llms.found": True,
+                "llms.has_h1": True,
+                "llms.has_sections": True,
+                "llms.has_links": True,
+            }
         )
+        expected = SCORING["llms_found"] + SCORING["llms_h1"] + SCORING["llms_sections"] + SCORING["llms_links"]
         assert _llms_score(r) == expected
 
     def test_schema_score_full(self):
         # v4.0: schema_webapp rimosso, any_schema_found aggiunto
-        r = self._make_result(**{
-            "schema.has_website": True,
-            "schema.has_faq": True,
-            "schema.any_schema_found": True,
-        })
-        expected = (
-            SCORING["schema_any_valid"]
-            + SCORING["schema_website"]
-            + SCORING["schema_faq"]
+        r = self._make_result(
+            **{
+                "schema.has_website": True,
+                "schema.has_faq": True,
+                "schema.any_schema_found": True,
+            }
         )
+        expected = SCORING["schema_any_valid"] + SCORING["schema_website"] + SCORING["schema_faq"]
         assert _schema_score(r) == expected
 
     def test_meta_score_full(self):
-        r = self._make_result(**{
-            "meta.has_title": True,
-            "meta.has_description": True,
-            "meta.has_canonical": True,
-            "meta.has_og_title": True,
-            "meta.has_og_description": True,
-        })
-        expected = (
-            SCORING["meta_title"]
-            + SCORING["meta_description"]
-            + SCORING["meta_canonical"]
-            + SCORING["meta_og"]
+        r = self._make_result(
+            **{
+                "meta.has_title": True,
+                "meta.has_description": True,
+                "meta.has_canonical": True,
+                "meta.has_og_title": True,
+                "meta.has_og_description": True,
+            }
         )
+        expected = SCORING["meta_title"] + SCORING["meta_description"] + SCORING["meta_canonical"] + SCORING["meta_og"]
         assert _meta_score(r) == expected
 
     def test_content_score_full(self):
-        r = self._make_result(**{
-            "content.has_h1": True,
-            "content.has_numbers": True,
-            "content.has_links": True,
-        })
-        expected = (
-            SCORING["content_h1"]
-            + SCORING["content_numbers"]
-            + SCORING["content_links"]
+        r = self._make_result(
+            **{
+                "content.has_h1": True,
+                "content.has_numbers": True,
+                "content.has_links": True,
+            }
         )
+        expected = SCORING["content_h1"] + SCORING["content_numbers"] + SCORING["content_links"]
         assert _content_score(r) == expected
 
     def test_somma_totale_100(self):
-        """La somma di tutti i punteggi massimi deve essere 100 (v4.0)."""
+        """La somma di tutti i punteggi massimi deve essere 100 (v4.0 + v4.1 ai_discovery)."""
         from geo_optimizer.cli.scoring_helpers import signals_score
+        from geo_optimizer.core.scoring import _score_ai_discovery
 
-        r = self._make_result(**{
-            # robots: 5 + 13 = 18
-            "robots.found": True,
-            "robots.citation_bots_ok": True,
-            "robots.citation_bots_explicit": True,
-            # llms: 6 + 2 + 2 + 2 + 2 + 2 + 2 = 18
-            "llms.found": True,
-            "llms.has_h1": True,
-            "llms.has_sections": True,
-            "llms.has_links": True,
-            "llms.word_count": 5000,  # depth + depth_high
-            "llms.has_full": True,
-            # schema: 2 + 3 + 5 + 3 + 3 + 3 + 3 = 22
-            "schema.any_schema_found": True,
-            "schema.schema_richness_score": 3,
-            "schema.has_website": True,
-            "schema.has_faq": True,
-            "schema.has_article": True,
-            "schema.has_organization": True,
-            "schema.has_sameas": True,
-            # meta: 5 + 8 + 3 + 4 = 20
-            "meta.has_title": True,
-            "meta.has_description": True,
-            "meta.has_canonical": True,
-            "meta.has_og_title": True,
-            "meta.has_og_description": True,
-            # content: 2 + 2 + 2 + 2 + 2 + 2 + 2 = 14
-            "content.has_h1": True,
-            "content.has_numbers": True,
-            "content.has_links": True,
-            "content.word_count": 500,
-            "content.has_heading_hierarchy": True,
-            "content.has_lists_or_tables": True,
-            "content.has_front_loading": True,
-            # signals: 3 + 3 + 2 = 8
-            "signals.has_lang": True,
-            "signals.has_rss": True,
-            "signals.has_freshness": True,
-        })
+        r = self._make_result(
+            **{
+                # robots: 5 + 13 = 18
+                "robots.found": True,
+                "robots.citation_bots_ok": True,
+                "robots.citation_bots_explicit": True,
+                # llms: 6 + 2 + 2 + 2 + 2 + 2 + 2 = 18
+                "llms.found": True,
+                "llms.has_h1": True,
+                "llms.has_sections": True,
+                "llms.has_links": True,
+                "llms.word_count": 5000,  # depth + depth_high
+                "llms.has_full": True,
+                # schema: 2 + 3 + 5 + 3 + 3 + 3 + 3 = 22
+                "schema.any_schema_found": True,
+                "schema.schema_richness_score": 3,
+                "schema.has_website": True,
+                "schema.has_faq": True,
+                "schema.has_article": True,
+                "schema.has_organization": True,
+                "schema.has_sameas": True,
+                # meta: 5 + 2 + 3 + 4 = 14 (v4.1: meta_description ridotto a 2)
+                "meta.has_title": True,
+                "meta.has_description": True,
+                "meta.has_canonical": True,
+                "meta.has_og_title": True,
+                "meta.has_og_description": True,
+                # content: 2 + 2 + 2 + 2 + 2 + 2 + 2 = 14
+                "content.has_h1": True,
+                "content.has_numbers": True,
+                "content.has_links": True,
+                "content.word_count": 500,
+                "content.has_heading_hierarchy": True,
+                "content.has_lists_or_tables": True,
+                "content.has_front_loading": True,
+                # signals: 3 + 3 + 2 = 8
+                "signals.has_lang": True,
+                "signals.has_rss": True,
+                "signals.has_freshness": True,
+                # ai_discovery: 2 + 2 + 1 + 1 = 6
+                "ai_discovery.has_well_known_ai": True,
+                "ai_discovery.has_summary": True,
+                "ai_discovery.summary_valid": True,
+                "ai_discovery.has_faq": True,
+                "ai_discovery.has_service": True,
+            }
+        )
         total = (
             _robots_score(r)
             + _llms_score(r)
@@ -414,6 +418,7 @@ class TestScoringConsistency:
             + _meta_score(r)
             + _content_score(r)
             + signals_score(r)
+            + _score_ai_discovery(r.ai_discovery)
         )
         assert total == 100
 
@@ -460,6 +465,7 @@ class TestVersionPep440:
 
     def test_version_format(self):
         from geo_optimizer import __version__
+
         # PEP 440: non deve contenere trattini
         assert "-" not in __version__
         # Deve essere "2.0.0b1" (o simile)
