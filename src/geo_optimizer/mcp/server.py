@@ -426,63 +426,7 @@ def get_score_bands() -> str:
     return json.dumps(SCORE_BANDS, indent=2)
 
 
-# ─── Resource: Citability Methods ─────────────────────────────────────────────
-
-
-@mcp.resource("geo://methods")
-def get_methods() -> str:
-    """List of 11 citability strategies from the Princeton KDD 2024 research with impact data."""
-    from geo_optimizer.core.citability import (
-        _IMPROVEMENT_SUGGESTIONS,
-        _METHOD_ORDER,
-    )
-
-    # Mappa dei max_score per ogni metodo
-    max_scores = {
-        "quotation_addition": 10,
-        "statistics_addition": 12,
-        "fluency_optimization": 12,
-        "cite_sources": 10,
-        "answer_first": 10,
-        "passage_density": 10,
-        "technical_terms": 8,
-        "authoritative_tone": 8,
-        "easy_to_understand": 7,
-        "unique_words": 4,
-        "keyword_stuffing": 10,
-    }
-
-    # Impatto per ogni metodo
-    impacts = {
-        "quotation_addition": "+41%",
-        "statistics_addition": "+33%",
-        "fluency_optimization": "+29%",
-        "cite_sources": "+27%",
-        "answer_first": "+25%",
-        "passage_density": "+23%",
-        "technical_terms": "+18%",
-        "authoritative_tone": "+16%",
-        "easy_to_understand": "+14%",
-        "unique_words": "+7%",
-        "keyword_stuffing": "-9%",
-    }
-
-    methods = []
-    for name in _METHOD_ORDER:
-        methods.append(
-            {
-                "name": name,
-                "impact": impacts.get(name, ""),
-                "max_score": max_scores.get(name, 0),
-                "suggestion": _IMPROVEMENT_SUGGESTIONS.get(name, ""),
-            }
-        )
-
-    return json.dumps(
-        {"methods": methods, "total_methods": len(methods), "total_max_score": sum(max_scores.values())},
-        indent=2,
-    )
-
+# Fix #282: rimossa prima registrazione duplicata di geo://methods
 
 # ─── Resource: Citability Methods ─────────────────────────────────────────────
 

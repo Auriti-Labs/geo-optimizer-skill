@@ -698,6 +698,9 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     cdn_result = audit_cdn_ai_crawler(base_url)
     js_result = audit_js_rendering(soup, r.text)
 
+    # Fix #281: calcolo segnali tecnici (lang, RSS, freshness)
+    signals = audit_signals(soup, schema)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -712,6 +715,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         ai_discovery=ai_disc,
         cdn_check=cdn_result,
         js_rendering=js_result,
+        signals=signals,
     )
 
 
@@ -804,6 +808,9 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     cdn_result = audit_cdn_ai_crawler(base_url)
     js_result = audit_js_rendering(soup, r_home.text)
 
+    # Fix #281: calcolo segnali tecnici (lang, RSS, freshness)
+    signals = audit_signals(soup, schema)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -818,6 +825,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
         ai_discovery=ai_disc,
         cdn_check=cdn_result,
         js_rendering=js_result,
+        signals=signals,
     )
 
 
@@ -964,12 +972,20 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
         "server": "",  # check value
     }
 
-    import requests as _cdn_requests
+    from geo_optimizer.utils.validators import resolve_and_validate_url
+
+    # Fix #283: validazione SSRF prima delle richieste CDN
+    is_safe, reason, _pinned_ips = resolve_and_validate_url(base_url)
+    if not is_safe:
+        result.error = f"URL non sicura: {reason}"
+        return result
+
+    import requests as _requests_module
 
     try:
         # Step 1: Browser request (baseline)
         try:
-            browser_r = _cdn_requests.get(
+            browser_r = _requests_module.get(
                 base_url,
                 headers={"User-Agent": browser_ua},
                 timeout=10,
@@ -992,7 +1008,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
             elif "akamaighost" in server_val or "akamai" in server_val:
                 result.cdn_detected = "akamai"
 
-        except _cdn_requests.RequestException:
+        except _requests_module.RequestException:
             # Can't even reach the site as browser — skip entire check
             return result
 
@@ -1006,7 +1022,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
                 "challenge_detected": False,
             }
             try:
-                bot_r = _cdn_requests.get(
+                bot_r = _requests_module.get(
                     base_url,
                     headers={"User-Agent": bot_ua},
                     timeout=10,
@@ -1036,7 +1052,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
                         # Bot receives <30% of the content → likely a block page
                         bot_entry["blocked"] = True
 
-            except _cdn_requests.RequestException:
+            except _requests_module.RequestException:
                 bot_entry["blocked"] = True
 
             result.bot_results.append(bot_entry)
@@ -1044,7 +1060,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
         result.checked = True
         result.any_blocked = any(b["blocked"] or b["challenge_detected"] for b in result.bot_results)
 
-    except _cdn_requests.RequestException:
+    except _requests_module.RequestException:
         pass
 
     return result
@@ -1172,3 +1188,52 @@ def audit_js_rendering(soup, raw_html: str) -> JsRenderingResult:
         )
 
     return result
+
+
+# ─── Fix #281: Calcolo SignalsResult ─────────────────────────────────────────
+
+
+def audit_signals(soup, schema_result) -> SignalsResult:
+    """Calcola i segnali tecnici: lang, RSS, freshness.
+
+    Args:
+        soup: BeautifulSoup del documento HTML.
+        schema_result: SchemaResult con gli schema JSON-LD trovati.
+
+    Returns:
+        SignalsResult con has_lang, has_rss, has_freshness popolati.
+    """
+    signals = SignalsResult()
+
+    # 1. Controllo lang attribute su <html>
+    html_tag = soup.find("html")
+    if html_tag:
+        lang_val = html_tag.get("lang", "").strip()
+        if lang_val:
+            signals.has_lang = True
+            signals.lang_value = lang_val
+
+    # 2. Controllo RSS/Atom feed
+    rss_link = soup.find("link", attrs={"type": lambda t: t and ("rss" in t.lower() or "atom" in t.lower())})
+    if rss_link:
+        signals.has_rss = True
+        signals.rss_url = rss_link.get("href", "")
+
+    # 3. Controllo freshness (dateModified nello schema o meta tag)
+    # Cerca dateModified negli schema JSON-LD
+    if schema_result and schema_result.raw_schemas:
+        for s in schema_result.raw_schemas:
+            date_mod = s.get("dateModified", "") or s.get("datePublished", "")
+            if date_mod:
+                signals.has_freshness = True
+                signals.freshness_date = str(date_mod)
+                break
+
+    # Fallback: meta tag article:modified_time
+    if not signals.has_freshness:
+        meta_mod = soup.find("meta", attrs={"property": "article:modified_time"})
+        if meta_mod and meta_mod.get("content", "").strip():
+            signals.has_freshness = True
+            signals.freshness_date = meta_mod["content"].strip()
+
+    return signals
