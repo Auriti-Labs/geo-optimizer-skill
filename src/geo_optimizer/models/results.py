@@ -175,6 +175,49 @@ class AiDiscoveryResult:
     endpoints_found: int = 0  # conteggio totale endpoint trovati (0-4)
 
 
+# ─── CDN AI Crawler Check (#225) ─────────────────────────────────────────────
+
+
+@dataclass
+class CdnAiCrawlerResult:
+    """Result of checking if CDN blocks AI crawler user-agents.
+
+    Simulates requests as AI bots (GPTBot, ClaudeBot, PerplexityBot) and
+    compares status codes + content-length to a normal browser request.
+    """
+
+    checked: bool = False
+    browser_status: int = 0
+    browser_content_length: int = 0
+    bot_results: list[dict] = field(default_factory=list)
+    # bot_results: [{"bot": "GPTBot", "status": 200, "content_length": 12345,
+    #                "blocked": False, "challenge_detected": False}]
+    any_blocked: bool = False
+    cdn_detected: str = ""  # "cloudflare", "akamai", "aws", "" if none
+    cdn_headers: dict[str, str] = field(default_factory=dict)
+
+
+# ─── JS Rendering Check (#226) ──────────────────────────────────────────────
+
+
+@dataclass
+class JsRenderingResult:
+    """Result of checking if page content is accessible without JavaScript.
+
+    Analyzes raw HTML (no JS execution) for content indicators:
+    word count, heading count, SPA framework detection.
+    """
+
+    checked: bool = False
+    raw_word_count: int = 0
+    raw_heading_count: int = 0
+    has_empty_root: bool = False  # <div id="root"></div> or id="app"
+    has_noscript_content: bool = False
+    framework_detected: str = ""  # "react", "vue", "angular", "next", ""
+    js_dependent: bool = False  # True if content likely needs JS
+    details: str = ""
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -204,6 +247,10 @@ class AuditResult:
     score_breakdown: dict[str, int] = field(default_factory=dict)
     # v4.0: messaggio di errore connessione (None = successo)
     error: str | None = None
+    # v4.2: CDN AI Crawler check (#225)
+    cdn_check: CdnAiCrawlerResult = field(default_factory=CdnAiCrawlerResult)
+    # v4.2: JS Rendering check (#226)
+    js_rendering: JsRenderingResult = field(default_factory=JsRenderingResult)
 
 
 # ─── Schema analysis ─────────────────────────────────────────────────────────

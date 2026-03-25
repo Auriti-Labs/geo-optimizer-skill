@@ -297,6 +297,66 @@ def format_audit_rich(result: AuditResult) -> str:
             )
         )
 
+    # ── CDN AI Crawler Check (#225) ──────────────────────────────
+    if result.cdn_check.checked:
+        cdn = result.cdn_check
+        cdn_content = Text()
+        if cdn.cdn_detected:
+            cdn_content.append(f"  CDN detected: {cdn.cdn_detected.upper()}\n", style="dim")
+        cdn_content.append(f"  Browser baseline: HTTP {cdn.browser_status} ({cdn.browser_content_length:,} bytes)\n", style="dim")
+        for bot in cdn.bot_results:
+            icon = "✅" if not bot["blocked"] and not bot["challenge_detected"] else "❌"
+            status_info = f"HTTP {bot['status']}"
+            if bot["challenge_detected"]:
+                status_info += " (challenge page)"
+            elif bot["blocked"]:
+                status_info += " (blocked)"
+            cdn_content.append(f"  {icon} {bot['bot']}: {status_info} ({bot['content_length']:,} bytes)\n")
+
+        cdn_color = "green" if not cdn.any_blocked else "red"
+        cdn_icon = "✅" if not cdn.any_blocked else "❌"
+        console.print(
+            Panel(
+                cdn_content,
+                title=f"{cdn_icon} [bold]CDN AI Crawler Access[/]",
+                title_align="left",
+                subtitle=f"[bold {cdn_color}]{'PASS' if not cdn.any_blocked else 'BLOCKED'}[/]",
+                subtitle_align="right",
+                border_style=cdn_color,
+                box=box.ROUNDED,
+                padding=(1, 2),
+            )
+        )
+
+    # ── JS Rendering Check (#226) ────────────────────────────────
+    if result.js_rendering.checked:
+        js = result.js_rendering
+        js_content = Text()
+        js_content.append(f"  Words in raw HTML: {js.raw_word_count}\n")
+        js_content.append(f"  Headings in raw HTML: {js.raw_heading_count}\n")
+        if js.framework_detected:
+            js_content.append(f"  Framework: {js.framework_detected}\n", style="dim")
+        if js.has_empty_root:
+            js_content.append("  ⚠️  Empty SPA root container detected\n", style="yellow")
+        if js.has_noscript_content:
+            js_content.append("  ℹ️  <noscript> fallback content found\n", style="dim")
+        js_content.append(f"  {js.details}\n")
+
+        js_color = "green" if not js.js_dependent else "red"
+        js_icon = "✅" if not js.js_dependent else "❌"
+        console.print(
+            Panel(
+                js_content,
+                title=f"{js_icon} [bold]JS Rendering Access[/]",
+                title_align="left",
+                subtitle=f"[bold {js_color}]{'PASS' if not js.js_dependent else 'JS-DEPENDENT'}[/]",
+                subtitle_align="right",
+                border_style=js_color,
+                box=box.ROUNDED,
+                padding=(1, 2),
+            )
+        )
+
     # ── Recommendations card ──────────────────────────────────────
     if result.recommendations:
         rec_lines = []

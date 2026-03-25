@@ -29,8 +29,10 @@ from geo_optimizer.models.results import (
     AiDiscoveryResult,
     AuditResult,
     CachedResponse,
+    CdnAiCrawlerResult,
     CitabilityResult,
     ContentResult,
+    JsRenderingResult,
     LlmsTxtResult,
     MetaResult,
     RobotsResult,
@@ -525,6 +527,8 @@ def _build_audit_result(
     extra_checks: dict = None,
     signals: SignalsResult = None,  # v4.0: segnali tecnici
     ai_discovery=None,  # Standard AI discovery endpoints (.well-known/ai.txt, ecc.)
+    cdn_check=None,  # v4.2: CDN AI Crawler check (#225)
+    js_rendering=None,  # v4.2: JS Rendering check (#226)
 ) -> AuditResult:
     """Costruisce AuditResult dai sub-audit (fix #97: logica comune sync/async).
 
@@ -586,6 +590,25 @@ def _build_audit_result(
 
     citability = audit_citability(soup, base_url) if soup else CitabilityResult()
 
+    # v4.2: CDN + JS checks (#225, #226)
+    effective_cdn = cdn_check if cdn_check is not None else CdnAiCrawlerResult()
+    effective_js = js_rendering if js_rendering is not None else JsRenderingResult()
+
+    # Add CDN/JS warnings to recommendations
+    if effective_cdn.checked and effective_cdn.any_blocked:
+        blocked_bots = [b["bot"] for b in effective_cdn.bot_results if b["blocked"] or b["challenge_detected"]]
+        cdn_name = effective_cdn.cdn_detected or "CDN/WAF"
+        recommendations.append(
+            f"⚠️ {cdn_name.upper()} blocks AI crawlers: {', '.join(blocked_bots)}. "
+            "Configure your CDN to allow AI bot User-Agents (GPTBot, ClaudeBot, PerplexityBot)."
+        )
+
+    if effective_js.checked and effective_js.js_dependent:
+        recommendations.append(
+            f"⚠️ Content requires JavaScript to render ({effective_js.raw_word_count} words in raw HTML). "
+            "AI crawlers don't execute JS. Implement SSR, SSG, or pre-rendering."
+        )
+
     return AuditResult(
         url=base_url,
         score=score,
@@ -603,6 +626,8 @@ def _build_audit_result(
         signals=effective_signals,
         ai_discovery=effective_ai_discovery,
         score_breakdown=breakdown,
+        cdn_check=effective_cdn,
+        js_rendering=effective_js,
     )
 
 
@@ -669,6 +694,10 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     # v4.1: audit AI discovery endpoints
     ai_disc = audit_ai_discovery(base_url)
 
+    # v4.2: CDN AI Crawler check (#225) + JS Rendering check (#226)
+    cdn_result = audit_cdn_ai_crawler(base_url)
+    js_result = audit_js_rendering(soup, r.text)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -681,6 +710,8 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         page_size=len(r.text),
         soup=soup,
         ai_discovery=ai_disc,
+        cdn_check=cdn_result,
+        js_rendering=js_result,
     )
 
 
@@ -768,6 +799,11 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     # v4.1: AI discovery da risposte pre-scaricate
     ai_disc = _audit_ai_discovery_from_responses(r_ai_txt, r_ai_summary, r_ai_faq, r_ai_service)
 
+    # v4.2: CDN AI Crawler check (#225) + JS Rendering check (#226)
+    # CDN check runs synchronously (needs separate requests with different UAs)
+    cdn_result = audit_cdn_ai_crawler(base_url)
+    js_result = audit_js_rendering(soup, r_home.text)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -780,6 +816,8 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
         page_size=len(r_home.text),
         soup=soup,
         ai_discovery=ai_disc,
+        cdn_check=cdn_result,
+        js_rendering=js_result,
     )
 
 
@@ -864,5 +902,273 @@ def _audit_llms_from_response(r, r_full=None) -> LlmsTxtResult:
     # Check /llms-full.txt — fix #184: now works in the async path too
     if r_full and r_full.status_code == 200 and len(r_full.text.strip()) > 0:
         result.has_full = True
+
+    return result
+
+
+# ─── CDN AI Crawler Check (#225) ─────────────────────────────────────────────
+
+
+def audit_cdn_ai_crawler(base_url: str) -> "CdnAiCrawlerResult":
+    """Check if CDN/WAF blocks AI crawler user-agents (#225).
+
+    Simulates requests with AI bot User-Agents (GPTBot, ClaudeBot, PerplexityBot)
+    and compares response status/size to a normal browser request.
+
+    Based on OtterlyAI Citation Report 2026: 73% of sites have technical
+    barriers blocking AI crawlers. CDN restrictions are barrier #2.
+
+    Args:
+        base_url: Base URL of the site (normalized).
+
+    Returns:
+        CdnAiCrawlerResult with per-bot comparison data.
+    """
+    from geo_optimizer.models.results import CdnAiCrawlerResult
+
+    result = CdnAiCrawlerResult()
+
+    # AI bots to test (most impactful for citations)
+    test_bots = {
+        "GPTBot": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)",
+        "ClaudeBot": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +https://claudebot.ai)",
+        "PerplexityBot": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)",
+    }
+
+    browser_ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+    # Challenge page indicators (Cloudflare, AWS WAF, etc.)
+    challenge_indicators = [
+        "cf-browser-verification",
+        "challenge-platform",
+        "just a moment",
+        "checking your browser",
+        "ray id",
+        "access denied",
+        "bot detection",
+        "captcha",
+        "blocked",
+        "forbidden",
+    ]
+
+    # CDN detection headers
+    cdn_header_map = {
+        "cf-ray": "cloudflare",
+        "cf-cache-status": "cloudflare",
+        "x-amz-cf-id": "aws-cloudfront",
+        "x-amz-request-id": "aws",
+        "x-akamai-transformed": "akamai",
+        "x-cdn": "",  # generic CDN
+        "x-served-by": "",  # Fastly/Varnish
+        "x-vercel-id": "vercel",
+        "server": "",  # check value
+    }
+
+    import requests as _cdn_requests
+
+    try:
+        # Step 1: Browser request (baseline)
+        try:
+            browser_r = _cdn_requests.get(
+                base_url,
+                headers={"User-Agent": browser_ua},
+                timeout=10,
+                allow_redirects=True,
+            )
+            result.browser_status = browser_r.status_code
+            result.browser_content_length = len(browser_r.text)
+
+            # Detect CDN from headers
+            resp_headers = {k.lower(): v for k, v in browser_r.headers.items()}
+            for header_key, cdn_name in cdn_header_map.items():
+                if header_key in resp_headers:
+                    result.cdn_headers[header_key] = resp_headers[header_key]
+                    if cdn_name and not result.cdn_detected:
+                        result.cdn_detected = cdn_name
+            # Check server header for CDN names
+            server_val = resp_headers.get("server", "").lower()
+            if "cloudflare" in server_val:
+                result.cdn_detected = "cloudflare"
+            elif "akamaighost" in server_val or "akamai" in server_val:
+                result.cdn_detected = "akamai"
+
+        except _cdn_requests.RequestException:
+            # Can't even reach the site as browser — skip entire check
+            return result
+
+        # Step 2: AI bot requests
+        for bot_name, bot_ua in test_bots.items():
+            bot_entry = {
+                "bot": bot_name,
+                "status": 0,
+                "content_length": 0,
+                "blocked": False,
+                "challenge_detected": False,
+            }
+            try:
+                bot_r = _cdn_requests.get(
+                    base_url,
+                    headers={"User-Agent": bot_ua},
+                    timeout=10,
+                    allow_redirects=True,
+                )
+                bot_entry["status"] = bot_r.status_code
+                bot_entry["content_length"] = len(bot_r.text)
+
+                # Check 1: HTTP error status
+                if bot_r.status_code in (403, 429, 451, 503):
+                    bot_entry["blocked"] = True
+
+                # Check 2: Challenge/captcha page detection
+                body_lower = bot_r.text[:5000].lower()
+                if any(indicator in body_lower for indicator in challenge_indicators):
+                    bot_entry["challenge_detected"] = True
+
+                # Check 3: Content-length mismatch (>70% difference → probable block)
+                if (
+                    result.browser_content_length > 0
+                    and bot_entry["content_length"] > 0
+                    and result.browser_status == 200
+                    and bot_r.status_code == 200
+                ):
+                    ratio = bot_entry["content_length"] / result.browser_content_length
+                    if ratio < 0.3:
+                        # Bot receives <30% of the content → likely a block page
+                        bot_entry["blocked"] = True
+
+            except _cdn_requests.RequestException:
+                bot_entry["blocked"] = True
+
+            result.bot_results.append(bot_entry)
+
+        result.checked = True
+        result.any_blocked = any(b["blocked"] or b["challenge_detected"] for b in result.bot_results)
+
+    except _cdn_requests.RequestException:
+        pass
+
+    return result
+
+
+# ─── JS Rendering Check (#226) ───────────────────────────────────────────────
+
+
+def audit_js_rendering(soup, raw_html: str) -> "JsRenderingResult":
+    """Check if page content is accessible without JavaScript (#226).
+
+    Analyzes raw HTML (as fetched by requests, without JS execution) for
+    content indicators. AI crawlers typically don't execute JavaScript,
+    so content that requires JS rendering is invisible to them.
+
+    Based on OtterlyAI Citation Report 2026: JS rendering is barrier #3.
+
+    Args:
+        soup: BeautifulSoup of the page (parsed from raw HTML).
+        raw_html: Raw HTML string of the page.
+
+    Returns:
+        JsRenderingResult with content analysis.
+    """
+    from geo_optimizer.models.results import JsRenderingResult
+
+    result = JsRenderingResult()
+
+    if not soup or not raw_html:
+        return result
+
+    result.checked = True
+
+    # Extract body text (excluding script/style tags)
+    body = soup.find("body")
+    if not body:
+        result.js_dependent = True
+        result.details = "No <body> tag found in raw HTML"
+        return result
+
+    # Remove script and style elements for text extraction
+    for tag in body.find_all(["script", "style", "noscript"]):
+        tag.decompose()
+
+    body_text = body.get_text(separator=" ", strip=True)
+    result.raw_word_count = len(body_text.split())
+
+    # Count headings in raw HTML
+    headings = soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])
+    result.raw_heading_count = len(headings)
+
+    # Check for empty SPA root containers
+    spa_indicators = [
+        ("div", {"id": "root"}),
+        ("div", {"id": "app"}),
+        ("div", {"id": "__next"}),
+        ("div", {"id": "__nuxt"}),
+        ("div", {"id": "gatsby-focus-wrapper"}),
+    ]
+    for tag_name, attrs in spa_indicators:
+        el = soup.find(tag_name, attrs)
+        if el:
+            # Check if the element is essentially empty (< 50 chars of text)
+            inner_text = el.get_text(strip=True)
+            if len(inner_text) < 50:
+                result.has_empty_root = True
+                break
+
+    # Check for <noscript> content (fallback for JS-only sites)
+    noscript_tags = soup.find_all("noscript")  # Re-parse since we decomposed earlier
+    # Re-parse to check noscript properly
+    from bs4 import BeautifulSoup as BS
+
+    fresh_soup = BS(raw_html, "html.parser")
+    noscript_tags = fresh_soup.find_all("noscript")
+    for ns in noscript_tags:
+        ns_text = ns.get_text(strip=True)
+        if len(ns_text) > 20:
+            result.has_noscript_content = True
+            break
+
+    # Detect JS frameworks from raw HTML
+    html_lower = raw_html[:10000].lower()
+    if "/__next/" in html_lower or "_next/static" in html_lower or "__next" in html_lower:
+        result.framework_detected = "next.js"
+    elif "__nuxt" in html_lower or "_nuxt/" in html_lower:
+        result.framework_detected = "nuxt"
+    elif "react" in html_lower and ('id="root"' in html_lower or "createroot" in html_lower):
+        result.framework_detected = "react"
+    elif "ng-version" in html_lower or "ng-app" in html_lower:
+        result.framework_detected = "angular"
+    elif "data-v-" in html_lower or 'id="app"' in html_lower:
+        result.framework_detected = "vue"
+    elif "gatsby" in html_lower:
+        result.framework_detected = "gatsby"
+    elif "astro" in html_lower or "_astro/" in html_lower:
+        result.framework_detected = "astro"
+
+    # Determine if content is JS-dependent
+    # Thresholds: < 100 words in body AND 0 headings → likely SPA
+    if result.raw_word_count < 100 and result.raw_heading_count == 0:
+        result.js_dependent = True
+        result.details = (
+            f"Only {result.raw_word_count} words and 0 headings in raw HTML. "
+            "Content likely requires JavaScript to render. "
+            "AI crawlers won't see it. Consider SSR/SSG or pre-rendering."
+        )
+    elif result.has_empty_root and result.raw_word_count < 200:
+        result.js_dependent = True
+        result.details = (
+            f"Empty SPA root container detected with only {result.raw_word_count} words. "
+            f"Framework: {result.framework_detected or 'unknown'}. "
+            "Implement server-side rendering for AI crawler accessibility."
+        )
+    elif result.raw_word_count < 50:
+        result.js_dependent = True
+        result.details = (
+            f"Critically low content: {result.raw_word_count} words in raw HTML. "
+            "Page appears to be a JavaScript-only application."
+        )
+    else:
+        result.details = (
+            f"{result.raw_word_count} words and {result.raw_heading_count} headings "
+            "found in raw HTML. Content is accessible without JavaScript."
+        )
 
     return result
