@@ -1,6 +1,8 @@
-# The 9 Princeton GEO Methods
+# The 11 GEO Methods
 
-Research-backed content optimization techniques for AI citation visibility, from the Princeton KDD 2024 study.
+Research-backed content optimization techniques for AI citation visibility.
+
+> **Methods 1–9** from the Princeton KDD 2024 study (Aggarwal et al.). **Methods 10–11** informed by AutoGEO ICLR 2026 and Stanford 2025 research.
 
 ---
 
@@ -187,6 +189,58 @@ Instead: use Fluency Optimization + Cite Sources + Statistics.
 
 ---
 
+## Method 10 — Answer-First Structure
+
+**Measured impact: +25% AI visibility** (AutoGEO, ICLR 2026)
+
+Place the key conclusion or answer in the first 150 characters after every H2 heading. AI engines extract content from the opening of each section to build answers — if your conclusion is buried in the third paragraph, it may never be surfaced.
+
+**Apply when:** Writing any informational or how-to content. Especially effective for query-driven pages (FAQ, guides, tutorials).
+
+```diff
+- ## How to Choose a Mortgage Rate
+- There are many factors to consider when choosing a mortgage.
+- First, you need to understand how rates work. Banks set rates
+- based on central bank policy. After analyzing your situation...
+- The best choice for most buyers is a fixed rate below 5%.
+
++ ## How to Choose a Mortgage Rate
++ A fixed rate below 5% is the best choice for most buyers.
++ Banks set rates based on central bank policy, and understanding
++ how this works helps you negotiate better terms.
+```
+
+Structure: **Answer → Context → Detail**. The first sentence after each H2 should be extractable as a standalone answer. Think of it as the "TL;DR" for that section.
+
+---
+
+## Method 11 — Passage Density
+
+**Measured impact: +23% AI visibility** (Stanford, 2025)
+
+Write paragraphs of 50–150 words, each containing at least one concrete data point (number, date, measurement, percentage). AI retrieval systems chunk content into passages — dense, self-contained paragraphs are more likely to be selected and cited than long, sprawling blocks of text.
+
+**Apply when:** Reviewing any page with paragraphs over 200 words or paragraphs that lack specific data.
+
+```diff
+- WordPress powers a lot of websites. It's a popular CMS that
+- many people use for their blogs and business sites. The platform
+- has been around for a long time and continues to grow. Many
+- developers build plugins and themes for it, making it versatile
+- for different use cases. Companies of all sizes rely on it.
+
++ WordPress powers 43.1% of all websites globally (W3Techs, 2025),
++ serving over 835 million sites. The platform processes 70 million
++ new posts per month and supports 55,000+ plugins in its official
++ directory. Enterprise adopters include Time, TechCrunch, and the
++ White House — sites handling 50M+ monthly pageviews on WordPress
++ infrastructure.
+```
+
+Each paragraph should pass the "citation test": could an AI engine quote this paragraph as a standalone answer? If not, add a concrete fact or split it.
+
+---
+
 ## Implementation Strategy
 
 ### Phase 1 — Quick Wins (Days 1–3)
@@ -219,6 +273,8 @@ Focus on the two highest-ROI methods first.
 | Quotation Addition | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐ |
 | Authoritative Tone | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐ |
 | Fluency Optimization | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ |
+| Answer-First Structure | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ |
+| Passage Density | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
 | Easy-to-Understand | ⭐⭐ | ⭐⭐⭐ | ⭐ | ⭐ | ⭐⭐⭐ |
 | Technical Terms | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐ | ⭐ |
 | Unique Words | ⭐ | ⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ |

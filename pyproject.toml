@@ -47,6 +47,7 @@ async = [
 web = [
     "fastapi>=0.110.0,<1.0",
     "uvicorn[standard]>=0.27.0,<1.0",
+    "markdown>=3.5.0,<4.0",
 ]
 mcp = [
     "mcp>=1.0.0",

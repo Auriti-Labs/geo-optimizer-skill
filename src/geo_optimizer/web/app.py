@@ -302,6 +302,113 @@ async def research_page():
     return template_path.read_text(encoding="utf-8")
 
 
+# ─── Documentazione online (Markdown → HTML) ─────────────────────────────────
+
+# Mappa slug → titolo per la sidebar e i meta tag
+_DOCS_PAGES = {
+    "index": "Documentation",
+    "getting-started": "Getting Started",
+    "geo-audit": "GEO Audit Script",
+    "geo-fix": "geo fix Command",
+    "llms-txt": "Generating llms.txt",
+    "schema-injector": "Schema Injector",
+    "mcp-server": "MCP Server",
+    "ai-context": "Using as AI Context",
+    "geo-methods": "The 11 GEO Methods",
+    "ai-bots-reference": "AI Bots Reference",
+    "ci-cd": "CI/CD Integration",
+    "scoring-rubric": "Scoring Rubric",
+    "troubleshooting": "Troubleshooting",
+}
+
+
+@app.get("/docs/", response_class=HTMLResponse)
+async def docs_index():
+    """Documentation index — redirect to the main docs page."""
+    return await docs_page("index")
+
+
+@app.get("/docs/{slug}", response_class=HTMLResponse)
+async def docs_page(slug: str):
+    """Render a documentation page from docs/*.md as styled HTML."""
+    import re as _re
+
+    # Validazione slug: solo alfanumerici e trattini (previene path traversal)
+    if not _re.match(r"^[a-z0-9\-]+$", slug):
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    # Cerca il file markdown nella directory docs/
+    docs_dir = Path(__file__).resolve().parent.parent.parent.parent / "docs"
+    md_path = docs_dir / f"{slug}.md"
+
+    if not md_path.exists():
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    # Converti Markdown in HTML
+    md_content = md_path.read_text(encoding="utf-8")
+    html_content = _markdown_to_html(md_content)
+
+    # Costruisci sidebar con link a tutte le pagine
+    sidebar_links = []
+    for page_slug, page_title in _DOCS_PAGES.items():
+        if page_slug == "index":
+            continue
+        active = " active" if page_slug == slug else ""
+        sidebar_links.append(f'<a href="/docs/{page_slug}" class="{active}">{page_title}</a>')
+    sidebar_html = "\n".join(sidebar_links)
+
+    # Titolo e descrizione dalla mappa
+    title = _DOCS_PAGES.get(slug, slug.replace("-", " ").title())
+    description = f"GEO Optimizer documentation: {title}"
+
+    # Carica template e sostituisci placeholder
+    template_path = Path(__file__).parent / "templates" / "docs.html"
+    template = template_path.read_text(encoding="utf-8")
+    html = (
+        template.replace("__TITLE__", title)
+        .replace("__DESCRIPTION__", description)
+        .replace("__SLUG__", slug)
+        .replace("__SIDEBAR__", sidebar_html)
+        .replace("__CONTENT__", html_content)
+    )
+    return html
+
+
+def _markdown_to_html(md: str) -> str:
+    """Converti Markdown in HTML. Usa la libreria markdown se disponibile, altrimenti regex base."""
+    try:
+        import markdown
+
+        return markdown.markdown(
+            md,
+            extensions=["tables", "fenced_code", "toc"],
+            output_format="html",
+        )
+    except ImportError:
+        # Fallback: conversione base con regex
+        import re
+
+        html = md
+        # Headers
+        html = re.sub(r"^### (.+)$", r"<h3>\1</h3>", html, flags=re.MULTILINE)
+        html = re.sub(r"^## (.+)$", r"<h2>\1</h2>", html, flags=re.MULTILINE)
+        html = re.sub(r"^# (.+)$", r"<h1>\1</h1>", html, flags=re.MULTILINE)
+        # Code blocks
+        html = re.sub(r"```(\w*)\n(.*?)```", r"<pre><code>\2</code></pre>", html, flags=re.DOTALL)
+        # Inline code
+        html = re.sub(r"`([^`]+)`", r"<code>\1</code>", html)
+        # Bold
+        html = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", html)
+        # Links
+        html = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', html)
+        # Paragraphs
+        html = re.sub(r"\n\n", r"</p><p>", html)
+        html = f"<p>{html}</p>"
+        # Horizontal rules
+        html = re.sub(r"<p>---</p>", "<hr>", html)
+        return html
+
+
 @app.get("/compare", response_class=HTMLResponse)
 async def compare_page(request: Request):
     """Compare GEO scores of two websites side by side."""
