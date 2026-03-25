@@ -13,7 +13,10 @@ from geo_optimizer.core.citability import (
     audit_citability,
     detect_attribution,
     detect_authoritative_tone,
+    detect_blog_structure,
     detect_boilerplate_ratio,
+    detect_chatgpt_shopping,
+    detect_chunk_quotability,
     detect_citability_density,
     detect_cite_sources,
     detect_comparison_content,
@@ -31,6 +34,8 @@ from geo_optimizer.core.citability import (
     detect_nuance_signals,
     detect_quotations,
     detect_readability,
+    detect_shopping_readiness,
+    detect_snippet_ready,
     detect_statistics,
     detect_technical_terms,
     detect_unique_words,
@@ -852,6 +857,214 @@ class TestNuanceSignals:
 
 
 # ============================================================================
+# TEST: Snippet-Ready Content (#249)
+# ============================================================================
+
+
+class TestSnippetReady:
+    def test_definizione_dopo_heading(self):
+        html = """
+        <html><body>
+            <h2>What is GEO?</h2>
+            <p>GEO is the practice of optimizing content for AI search engines.</p>
+            <h2>Key Benefits</h2>
+            <p>SEO refers to traditional search optimization techniques.</p>
+            <h3>Details</h3>
+            <p>Some additional context here without definition.</p>
+        </body></html>
+        """
+        result = detect_snippet_ready(_soup(html))
+        assert result.detected is True
+        assert result.details["snippet_ready_sections"] >= 2
+        assert result.score > 0
+
+    def test_domanda_con_risposta_breve(self):
+        html = """
+        <html><body>
+            <h2>How does it work?</h2>
+            <p>It works by analyzing structured data and content signals.</p>
+        </body></html>
+        """
+        result = detect_snippet_ready(_soup(html))
+        assert result.detected is True
+        assert result.details["snippet_ready_sections"] >= 1
+
+    def test_nessun_heading(self):
+        html = "<html><body><p>Solo testo.</p></body></html>"
+        result = detect_snippet_ready(_soup(html))
+        assert result.detected is False
+        assert result.score == 0
+
+
+# ============================================================================
+# TEST: Chunk Quotability (#229)
+# ============================================================================
+
+
+class TestChunkQuotability:
+    def test_paragrafi_quotabili(self):
+        # Paragrafo di ~60 parole con dato concreto
+        words = " ".join(["word"] * 55)
+        html = f"""
+        <html><body>
+            <p>In 2024 the market grew by 35% reaching $82 billion.
+            {words} This represents a significant shift.</p>
+            <p>{words} The growth rate was 25% year over year with data backing it up.</p>
+        </body></html>
+        """
+        result = detect_chunk_quotability(_soup(html))
+        assert result.detected is True
+        assert result.details["quotable_paragraphs"] >= 1
+
+    def test_paragrafi_troppo_corti(self):
+        html = """
+        <html><body>
+            <p>Short text.</p>
+            <p>Another short one.</p>
+        </body></html>
+        """
+        result = detect_chunk_quotability(_soup(html))
+        assert result.detected is False
+        assert result.details["candidate_paragraphs"] == 0
+
+
+# ============================================================================
+# TEST: Blog Structure (#230)
+# ============================================================================
+
+
+class TestBlogStructure:
+    def test_blog_completo(self):
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {
+                "@type": "BlogPosting",
+                "datePublished": "2025-01-15",
+                "dateModified": "2025-03-01",
+                "author": {"@type": "Person", "name": "Juan"},
+                "articleSection": "SEO",
+                "keywords": ["GEO", "AI"]
+            }
+            </script>
+            <div class="author-bio">Juan — 15 years WordPress developer</div>
+            <p>Contenuto del blog.</p>
+        </body></html>
+        """
+        result = detect_blog_structure(_soup(html))
+        assert result.detected is True
+        assert result.details["has_article_schema"] is True
+        assert result.details["has_dates"] is True
+        assert result.details["has_author"] is True
+        assert result.score >= 3
+
+    def test_nessun_schema_article(self):
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {"@type": "WebSite", "name": "Example"}
+            </script>
+            <p>Non è un blog.</p>
+        </body></html>
+        """
+        result = detect_blog_structure(_soup(html))
+        assert result.detected is False
+        assert result.score == 0
+        assert result.details["has_article_schema"] is False
+
+
+# ============================================================================
+# TEST: AI Shopping Readiness (#277)
+# ============================================================================
+
+
+class TestShoppingReadiness:
+    def test_product_completo(self):
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {
+                "@type": "Product",
+                "name": "GEO Optimizer Pro",
+                "offers": {
+                    "price": "99.00",
+                    "availability": "https://schema.org/InStock"
+                },
+                "aggregateRating": {
+                    "ratingValue": "4.8",
+                    "reviewCount": "150"
+                }
+            }
+            </script>
+        </body></html>
+        """
+        result = detect_shopping_readiness(_soup(html))
+        assert result.detected is True
+        assert result.score == 3
+        assert result.details["has_price"] is True
+        assert result.details["has_availability"] is True
+        assert result.details["has_review_count"] is True
+
+    def test_nessun_product_schema(self):
+        html = "<html><body><p>Nessun prodotto.</p></body></html>"
+        result = detect_shopping_readiness(_soup(html))
+        assert result.detected is False
+        assert result.score == 0
+        assert result.details["has_product_schema"] is False
+
+
+# ============================================================================
+# TEST: ChatGPT Shopping Feed (#275)
+# ============================================================================
+
+
+class TestChatgptShopping:
+    def test_product_completo_chatgpt(self):
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {
+                "@type": "Product",
+                "name": "GEO Optimizer Pro",
+                "image": "https://example.com/img.jpg",
+                "brand": {"@type": "Brand", "name": "Auriti Labs"},
+                "offers": {
+                    "price": "99.00",
+                    "availability": "https://schema.org/InStock"
+                }
+            }
+            </script>
+        </body></html>
+        """
+        result = detect_chatgpt_shopping(_soup(html))
+        assert result.detected is True
+        assert result.score == 3
+        assert result.details["fields_present"] == 5
+
+    def test_product_parziale(self):
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {
+                "@type": "Product",
+                "name": "GEO Optimizer",
+                "offers": {"price": "49.00"}
+            }
+            </script>
+        </body></html>
+        """
+        result = detect_chatgpt_shopping(_soup(html))
+        assert result.detected is False
+        assert result.details["fields_present"] == 2
+
+    def test_nessun_product(self):
+        html = "<html><body><p>No product.</p></body></html>"
+        result = detect_chatgpt_shopping(_soup(html))
+        assert result.detected is False
+        assert result.score == 0
+
+
+# ============================================================================
 # TEST: Somma pesi = 100 + bonus
 # ============================================================================
 
@@ -861,9 +1074,9 @@ class TestWeightSum:
         """Verifica che i 18 metodi base sommano 100, i 7 bonus aggiungono 31."""
         html = "<html><body><p>Test content.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
-        # 18 metodi base = 100, 7 bonus = 31, totale max_score = 131
+        # 18 metodi base = 100, 7 bonus batch2 = 31, 5 bonus batch3+4 = 18, totale = 149
         total_max = sum(m.max_score for m in result.methods)
-        assert total_max == 131, f"Somma max_score = {total_max}, atteso 131 (100 base + 31 bonus)"
+        assert total_max == 149, f"Somma max_score = {total_max}, atteso 149 (100 base + 31 batch2 + 18 batch3+4)"
         # Ma il total_score è sempre cappato a 100
         assert result.total_score <= 100
 
@@ -913,7 +1126,7 @@ class TestAuditCitability:
 
         assert result.total_score > 0
         assert result.grade in ("low", "medium", "high", "excellent")
-        assert len(result.methods) == 25
+        assert len(result.methods) == 30
 
         # Verifica che ogni metodo abbia un nome
         names = {m.name for m in result.methods}
@@ -937,11 +1150,17 @@ class TestAuditCitability:
         assert "no_content_decay" in names
         assert "boilerplate_ratio" in names
         assert "nuance_signals" in names
+        # Quality Signals Batch 3+4
+        assert "snippet_ready" in names
+        assert "chunk_quotability" in names
+        assert "blog_structure" in names
+        assert "shopping_readiness" in names
+        assert "chatgpt_shopping" in names
 
     def test_pagina_vuota(self):
         result = audit_citability(_soup("<html><body></body></html>"), "https://example.com")
         assert result.total_score >= 0
-        assert len(result.methods) == 25
+        assert len(result.methods) == 30
 
     def test_top_improvements_generate(self):
         result = audit_citability(_soup("<html><body><p>Testo semplice.</p></body></html>"), "https://example.com")

@@ -1377,7 +1377,7 @@ class TestBuildRecommendations:
         recs = build_recommendations(
             "https://example.com",
             RobotsResult(citation_bots_ok=True),
-            LlmsTxtResult(found=True),
+            LlmsTxtResult(found=True, has_sections=True, sections_count=3, has_links=True, links_count=5),
             SchemaResult(has_website=True, has_faq=True),
             MetaResult(has_description=True),
             ContentResult(has_numbers=True, has_links=True),

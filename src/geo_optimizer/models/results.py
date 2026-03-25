@@ -56,6 +56,9 @@ class LlmsTxtResult:
     has_links: bool = False
     word_count: int = 0
     has_full: bool = False  # /llms-full.txt present
+    # #247: llms.txt Policy Intelligence — analisi contenuto
+    sections_count: int = 0
+    links_count: int = 0
 
 
 # ─── Schema JSON-LD ──────────────────────────────────────────────────────────
@@ -80,6 +83,8 @@ class SchemaResult:
     # Schema richness (Growth Marshal Feb 2026): schema con 5+ attributi rilevanti
     schema_richness_score: int = 0
     avg_attributes_per_schema: float = 0.0
+    # #232: E-commerce GEO Profile — analisi ricchezza Product schema
+    ecommerce_signals: dict = field(default_factory=dict)
 
 
 # ─── Meta tags ───────────────────────────────────────────────────────────────

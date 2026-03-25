@@ -1697,6 +1697,382 @@ def detect_nuance_signals(soup, clean_text: str | None = None) -> MethodScore:
     )
 
 
+# ─── 26. Snippet-Ready / Zero-Click (#249) ────────────────────────────────────
+
+# Pattern per definizioni esplicite nei primi 150 char dopo heading
+_SNIPPET_DEF_RE = re.compile(
+    r"\b(?:is|are|refers?\s+to|means?|can\s+be\s+defined\s+as"
+    r"|è|sono|si\s+riferisce\s+a|significa)\b",
+    re.IGNORECASE,
+)
+
+
+def detect_snippet_ready(soup) -> MethodScore:
+    """Detect zero-click / snippet-ready content sections.
+
+    Checks if headings are followed by concise definitions (first 150 chars)
+    or if question headings (ending with '?') have direct answers under 60 words.
+    """
+    headings = soup.find_all(["h2", "h3", "h4"])
+    if not headings:
+        return MethodScore(name="snippet_ready", label="Snippet-Ready Content", max_score=4, impact="+10%")
+
+    snippet_ready_count = 0
+
+    for heading in headings:
+        heading_text = heading.get_text(strip=True)
+        # Trova il primo paragrafo dopo il heading
+        next_p = heading.find_next("p")
+        if not next_p:
+            continue
+        p_text = next_p.get_text(strip=True)
+
+        # Pattern 1: heading con "?" → risposta diretta sotto 60 parole
+        if heading_text.endswith("?"):
+            word_count = len(p_text.split())
+            if 5 <= word_count <= 60:
+                snippet_ready_count += 1
+                continue
+
+        # Pattern 2: definizione esplicita nei primi 150 char dopo heading
+        first_150 = p_text[:150]
+        if _SNIPPET_DEF_RE.search(first_150):
+            snippet_ready_count += 1
+
+    total_headings = len(headings)
+    ratio = snippet_ready_count / total_headings if total_headings > 0 else 0
+
+    # Score proporzionale
+    if ratio >= 0.5:
+        score = 4
+    elif ratio >= 0.3:
+        score = 3
+    elif ratio >= 0.15:
+        score = 2
+    elif snippet_ready_count >= 1:
+        score = 1
+    else:
+        score = 0
+
+    return MethodScore(
+        name="snippet_ready",
+        label="Snippet-Ready Content",
+        detected=snippet_ready_count >= 1,
+        score=min(score, 4),
+        max_score=4,
+        impact="+10%",
+        details={
+            "snippet_ready_sections": snippet_ready_count,
+            "total_headings": total_headings,
+            "ratio": round(ratio, 2),
+        },
+    )
+
+
+# ─── 27. Chunk Quotability (#229) ────────────────────────────────────────────
+
+# Pattern per dati concreti in un paragrafo
+_CONCRETE_DATA_RE = re.compile(
+    r"\b\d+(?:\.\d+)?%"  # percentuali
+    r"|\$\d+"  # valute $
+    r"|€\d+"  # valute €
+    r"|\b\d{4}\b"  # anni
+    r"|\b\d+(?:\.\d+)?\s*(?:x|times|volte)\b"  # moltiplicatori
+    r"|\b\d+(?:\.\d+)?\s*(?:million|billion|miliardi|milioni)\b",  # grandi numeri
+    re.IGNORECASE,
+)
+
+
+def detect_chunk_quotability(soup) -> MethodScore:
+    """Detect quotable content chunks: self-contained paragraphs with concrete data.
+
+    For each paragraph of 50-150 words, checks if it contains concrete data
+    (numbers, percentages, dates) making it independently quotable by AI.
+    """
+    paragraphs = soup.find_all("p")
+    if not paragraphs:
+        return MethodScore(name="chunk_quotability", label="Chunk Quotability", max_score=4, impact="+10%")
+
+    candidate_count = 0
+    quotable_count = 0
+
+    for p in paragraphs:
+        text = p.get_text(strip=True)
+        word_count = len(text.split())
+        # Solo paragrafi nella fascia 50-150 parole
+        if word_count < 50 or word_count > 150:
+            continue
+        candidate_count += 1
+        # Verifica dato concreto
+        if _CONCRETE_DATA_RE.search(text):
+            quotable_count += 1
+
+    ratio = quotable_count / candidate_count if candidate_count > 0 else 0
+
+    # Score proporzionale alla % di paragrafi quotabili
+    if ratio >= 0.5:
+        score = 4
+    elif ratio >= 0.3:
+        score = 3
+    elif ratio >= 0.15:
+        score = 2
+    elif quotable_count >= 1:
+        score = 1
+    else:
+        score = 0
+
+    return MethodScore(
+        name="chunk_quotability",
+        label="Chunk Quotability",
+        detected=quotable_count >= 1,
+        score=min(score, 4),
+        max_score=4,
+        impact="+10%",
+        details={
+            "candidate_paragraphs": candidate_count,
+            "quotable_paragraphs": quotable_count,
+            "ratio": round(ratio, 2),
+        },
+    )
+
+
+# ─── 28. Blog Structure (#230) ───────────────────────────────────────────────
+
+
+def detect_blog_structure(soup) -> MethodScore:
+    """Detect blog structure signals in Article/BlogPosting schema.
+
+    Checks: datePublished/dateModified, author bio, categories/tags.
+    Only scores if Article or BlogPosting schema is present (non-blog pages get 0).
+    """
+    # Cerca schema Article o BlogPosting nel JSON-LD
+    article_schema = None
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if isinstance(item, dict):
+                    schema_type = item.get("@type", "")
+                    types = schema_type if isinstance(schema_type, list) else [schema_type]
+                    if any(t in ("Article", "BlogPosting", "NewsArticle") for t in types):
+                        article_schema = item
+                        break
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if article_schema:
+            break
+
+    # Se non c'è schema Article/BlogPosting, score 0 senza penalizzare
+    if not article_schema:
+        return MethodScore(
+            name="blog_structure",
+            label="Blog Structure",
+            detected=False,
+            score=0,
+            max_score=4,
+            impact="+8%",
+            details={"has_article_schema": False},
+        )
+
+    score = 0
+    has_dates = bool(article_schema.get("datePublished") or article_schema.get("dateModified"))
+    has_author = bool(article_schema.get("author"))
+    # Cerca categorie/tag nei meta o nello schema
+    has_categories = bool(
+        article_schema.get("articleSection")
+        or article_schema.get("keywords")
+        or soup.find("meta", attrs={"property": "article:tag"})
+    )
+    # Cerca author bio nel DOM
+    author_bio = soup.find_all(
+        ["div", "section", "aside"],
+        class_=re.compile(r"author|bio|about-author|byline", re.I),
+    )
+    has_author_bio = bool(author_bio)
+
+    if has_dates:
+        score += 1
+    if has_author:
+        score += 1
+    if has_author_bio:
+        score += 1
+    if has_categories:
+        score += 1
+
+    return MethodScore(
+        name="blog_structure",
+        label="Blog Structure",
+        detected=score >= 2,
+        score=min(score, 4),
+        max_score=4,
+        impact="+8%",
+        details={
+            "has_article_schema": True,
+            "has_dates": has_dates,
+            "has_author": has_author,
+            "has_author_bio": has_author_bio,
+            "has_categories": has_categories,
+        },
+    )
+
+
+# ─── 29. AI Shopping Readiness (#277) ────────────────────────────────────────
+
+
+def detect_shopping_readiness(soup) -> MethodScore:
+    """Detect AI shopping readiness from Product schema.
+
+    Checks: Product schema with price + availability, AggregateRating, review count.
+    Only scores if Product schema is present (non-ecommerce pages get 0).
+    """
+    product_schema = None
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if isinstance(item, dict):
+                    schema_type = item.get("@type", "")
+                    types = schema_type if isinstance(schema_type, list) else [schema_type]
+                    if "Product" in types:
+                        product_schema = item
+                        break
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if product_schema:
+            break
+
+    if not product_schema:
+        return MethodScore(
+            name="shopping_readiness",
+            label="AI Shopping Readiness",
+            detected=False,
+            score=0,
+            max_score=3,
+            impact="+8%",
+            details={"has_product_schema": False},
+        )
+
+    score = 0
+    # Verifica price + availability nell'offerta
+    offers = product_schema.get("offers") or product_schema.get("offer", {})
+    if isinstance(offers, list):
+        offers = offers[0] if offers else {}
+    has_price = bool(offers.get("price") or offers.get("lowPrice"))
+    has_availability = bool(offers.get("availability"))
+
+    if has_price and has_availability:
+        score += 1
+
+    # AggregateRating
+    has_rating = bool(product_schema.get("aggregateRating"))
+    if has_rating:
+        score += 1
+
+    # Review count
+    rating_data = product_schema.get("aggregateRating", {})
+    has_review_count = bool(rating_data.get("reviewCount") or rating_data.get("ratingCount"))
+    if has_review_count:
+        score += 1
+
+    return MethodScore(
+        name="shopping_readiness",
+        label="AI Shopping Readiness",
+        detected=score >= 1,
+        score=min(score, 3),
+        max_score=3,
+        impact="+8%",
+        details={
+            "has_product_schema": True,
+            "has_price": has_price,
+            "has_availability": has_availability,
+            "has_rating": has_rating,
+            "has_review_count": has_review_count,
+        },
+    )
+
+
+# ─── 30. ChatGPT Shopping Feed (#275) ────────────────────────────────────────
+
+
+def detect_chatgpt_shopping(soup) -> MethodScore:
+    """Detect ChatGPT Shopping integration signals from Product schema.
+
+    Checks required fields for ChatGPT Shopping: name, price, image, availability, brand.
+    Cannot verify chatgpt.com/merchants registration, but verifies field completeness.
+    """
+    product_schema = None
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if isinstance(item, dict):
+                    schema_type = item.get("@type", "")
+                    types = schema_type if isinstance(schema_type, list) else [schema_type]
+                    if "Product" in types:
+                        product_schema = item
+                        break
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if product_schema:
+            break
+
+    if not product_schema:
+        return MethodScore(
+            name="chatgpt_shopping",
+            label="ChatGPT Shopping Feed",
+            detected=False,
+            score=0,
+            max_score=3,
+            impact="+8%",
+            details={"has_product_schema": False},
+        )
+
+    # Campi richiesti per ChatGPT Shopping
+    has_name = bool(product_schema.get("name"))
+    has_image = bool(product_schema.get("image"))
+    has_brand = bool(product_schema.get("brand"))
+
+    offers = product_schema.get("offers") or product_schema.get("offer", {})
+    if isinstance(offers, list):
+        offers = offers[0] if offers else {}
+    has_price = bool(offers.get("price") or offers.get("lowPrice"))
+    has_availability = bool(offers.get("availability"))
+
+    # Conta campi presenti su 5 richiesti
+    fields_present = sum([has_name, has_image, has_brand, has_price, has_availability])
+
+    if fields_present >= 5:
+        score = 3
+    elif fields_present >= 3:
+        score = 2
+    elif fields_present >= 1:
+        score = 1
+    else:
+        score = 0
+
+    return MethodScore(
+        name="chatgpt_shopping",
+        label="ChatGPT Shopping Feed",
+        detected=fields_present >= 3,
+        score=min(score, 3),
+        max_score=3,
+        impact="+8%",
+        details={
+            "has_product_schema": True,
+            "has_name": has_name,
+            "has_image": has_image,
+            "has_brand": has_brand,
+            "has_price": has_price,
+            "has_availability": has_availability,
+            "fields_present": fields_present,
+            "fields_required": 5,
+        },
+    )
+
+
 # ─── Orchestrator ─────────────────────────────────────────────────────────────
 
 # Suggerimenti di miglioramento per ogni metodo non rilevato
@@ -1727,6 +2103,12 @@ _IMPROVEMENT_SUGGESTIONS = {
     "no_content_decay": "Update old year references and add recent dateModified (-10%)",
     "boilerplate_ratio": "Ensure main content is >60% of page text; use <main> or <article> tags (+8%)",
     "nuance_signals": "Add nuance: 'however', 'limitations include', 'on the other hand' (+5%)",
+    # Quality Signals Batch 3+4
+    "snippet_ready": "Add snippet-ready definitions after headings: 'X is...', 'X refers to...' (+10%)",
+    "chunk_quotability": "Write self-contained paragraphs (50-150 words) with concrete data for AI quoting (+10%)",
+    "blog_structure": "Add Article/BlogPosting schema with datePublished, author, and categories (+8%)",
+    "shopping_readiness": "Add Product schema with price, availability, and AggregateRating (+8%)",
+    "chatgpt_shopping": "Complete Product schema with name, price, image, availability, brand for ChatGPT Shopping (+8%)",
 }
 
 # Ordine per impatto decrescente (escluso penalità)
@@ -1753,6 +2135,11 @@ _METHOD_ORDER = [
     "format_mix",
     "unique_words",
     "nuance_signals",
+    "snippet_ready",
+    "chunk_quotability",
+    "blog_structure",
+    "shopping_readiness",
+    "chatgpt_shopping",
     "keyword_stuffing",
     "no_negative_signals",
     "no_content_decay",
@@ -1813,6 +2200,12 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         detect_content_decay(soup, clean_text=clean_text),
         detect_boilerplate_ratio(soup),
         detect_nuance_signals(soup, clean_text=clean_text),
+        # Quality Signals Batch 3+4 (bonus — cappati a 100 dal totale)
+        detect_snippet_ready(soup),
+        detect_chunk_quotability(soup),
+        detect_blog_structure(soup),
+        detect_shopping_readiness(soup),
+        detect_chatgpt_shopping(soup),
     ]
 
     # Somma score (max possibile = 100)
