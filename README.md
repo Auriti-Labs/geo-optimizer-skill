@@ -428,6 +428,40 @@ geo schema --astro --name "MySite" --url https://yoursite.com
 
 ---
 
+## CI/CD Integration
+
+Run GEO audits in your CI/CD pipeline with the official GitHub Action:
+
+```yaml
+- uses: Auriti-Labs/geo-optimizer-skill@v1
+  with:
+    url: https://yoursite.com
+```
+
+Enforce a minimum score (fails the job if below threshold):
+
+```yaml
+- uses: Auriti-Labs/geo-optimizer-skill@v1
+  with:
+    url: https://yoursite.com
+    threshold: 70
+```
+
+Upload results to GitHub Security tab (SARIF):
+
+```yaml
+- uses: Auriti-Labs/geo-optimizer-skill@v1
+  with:
+    url: https://yoursite.com
+    format: sarif
+```
+
+Works on `ubuntu-latest`, `macos-latest`, and `windows-latest`. Also works with GitLab CI, Jenkins, and any CI that supports Python.
+
+👉 **[Full CI/CD documentation →](docs/ci-cd.md)**
+
+---
+
 ## MCP Server
 
 Use GEO Optimizer directly from Claude, Cursor, or any MCP-compatible client.

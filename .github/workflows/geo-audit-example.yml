@@ -1,37 +1,64 @@
-# Esempio di workflow per audit GEO in CI/CD
-# Copia questo file nel tuo progetto e personalizza url e min-score
-name: GEO Audit
+# Workflow di esempio / dogfooding per la GitHub Action GEO Optimizer.
+# Esegue un audit GEO sul sito AgencyPilot ogni lunedì e ad ogni push su main.
+
+name: GEO Audit (dogfooding)
 
 on:
-  # Solo manuale — questo è un esempio dimostrativo
-  workflow_dispatch:
-    inputs:
-      url:
-        description: 'URL da auditare'
-        required: true
-        default: 'https://example.com'
-      min-score:
-        description: 'Score minimo richiesto (0 per disabilitare)'
-        required: false
-        default: '0'
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1" # ogni lunedì alle 6 UTC
+
+permissions:
+  contents: read
+  security-events: write # necessario per SARIF upload
 
 jobs:
   geo-audit:
-    name: GEO Score Check
+    name: GEO Audit
     runs-on: ubuntu-latest
-
     steps:
-      - name: Run GEO Audit
-        uses: auriti-labs/geo-optimizer-skill/.github/actions/geo-audit@main
-        id: geo
-        with:
-          url: ${{ github.event.inputs.url }}
-          min-score: ${{ github.event.inputs.min-score }}
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      # Esempio base — audit con output JSON
+      - name: Run GEO Audit
+        id: geo
+        uses: ./
+        with:
+          url: https://agencypilot.it
+          threshold: 40
+          format: json
+
+      # Mostra risultati nel summary del job
       - name: Print results
-        env:
-          GEO_SCORE: ${{ steps.geo.outputs.score }}
-          GEO_BAND: ${{ steps.geo.outputs.band }}
         run: |
-          echo "GEO Score: $GEO_SCORE/100"
-          echo "Band: $GEO_BAND"
+          echo "## 🎯 GEO Audit Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Metric | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|--------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Score | **${{ steps.geo.outputs.score }}**/100 |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Band | \`${{ steps.geo.outputs.band }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Report | \`${{ steps.geo.outputs.report-path }}\` |" >> "$GITHUB_STEP_SUMMARY"
+
+      # Upload report come artifact
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: geo-report
+          path: ${{ steps.geo.outputs.report-path }}
+          retention-days: 30
+
+  # Esempio con SARIF — visibile nella tab Security di GitHub
+  geo-sarif:
+    name: GEO Audit (SARIF)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run GEO Audit (SARIF)
+        uses: ./
+        with:
+          url: https://agencypilot.it
+          format: sarif

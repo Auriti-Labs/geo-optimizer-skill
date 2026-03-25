@@ -1,0 +1,146 @@
+# GitHub Action Composita per GEO Optimizer Skill
+# Esegue un audit GEO completo su qualsiasi URL direttamente nella CI/CD pipeline.
+#
+# Utilizzo:
+#   - uses: Auriti-Labs/geo-optimizer-skill@v1
+#     with:
+#       url: https://mysite.com
+#       threshold: 70
+#       format: sarif
+
+name: "GEO Optimizer Audit"
+description: "Run a full GEO audit on any URL and get a citability score (0-100) for AI search engines."
+author: "Auriti Labs"
+
+branding:
+  icon: "search"
+  color: "blue"
+
+inputs:
+  url:
+    description: "URL to audit"
+    required: true
+  threshold:
+    description: "Minimum score (0-100). The step fails if the score is below this value."
+    required: false
+    default: "0"
+  format:
+    description: "Output format: json, sarif, junit, text"
+    required: false
+    default: "json"
+  output-file:
+    description: "Base name for the output file (without extension)"
+    required: false
+    default: "geo-report"
+  fail-on-warning:
+    description: "Fail the step on warnings too"
+    required: false
+    default: "false"
+
+outputs:
+  score:
+    description: "GEO citability score (0-100)"
+    value: ${{ steps.extract.outputs.score }}
+  band:
+    description: "Score band: critical, foundation, good, or excellent"
+    value: ${{ steps.extract.outputs.band }}
+  report-path:
+    description: "Path to the generated report file"
+    value: ${{ steps.audit.outputs.report_path }}
+
+runs:
+  using: "composite"
+  steps:
+    # 1. Setup Python
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    # 2. Installa geo-optimizer-skill
+    - name: Install geo-optimizer-skill
+      shell: bash
+      run: pip install geo-optimizer-skill
+
+    # 3. Determina estensione del file in base al formato
+    - name: Determine file extension
+      id: ext
+      shell: bash
+      run: |
+        # Mappa formato → estensione
+        case "${{ inputs.format }}" in
+          sarif) echo "ext=sarif" >> "$GITHUB_OUTPUT" ;;
+          junit) echo "ext=xml" >> "$GITHUB_OUTPUT" ;;
+          text)  echo "ext=txt" >> "$GITHUB_OUTPUT" ;;
+          *)     echo "ext=json" >> "$GITHUB_OUTPUT" ;;
+        esac
+
+    # 4. Esegui l'audit GEO
+    - name: Run GEO audit
+      id: audit
+      shell: bash
+      run: |
+        REPORT_PATH="${{ inputs.output-file }}.${{ steps.ext.outputs.ext }}"
+        echo "report_path=${REPORT_PATH}" >> "$GITHUB_OUTPUT"
+
+        # Esegui sempre anche un JSON per estrarre score/band
+        geo audit --url "${{ inputs.url }}" --format "${{ inputs.format }}" --output "${REPORT_PATH}"
+
+        # Se il formato non è JSON, genera anche un JSON temporaneo per lo score
+        if [ "${{ inputs.format }}" != "json" ]; then
+          geo audit --url "${{ inputs.url }}" --format json --output geo-score-tmp.json
+        else
+          cp "${REPORT_PATH}" geo-score-tmp.json
+        fi
+
+    # 5. Estrai score e band dal JSON
+    - name: Extract score and band
+      id: extract
+      shell: bash
+      run: |
+        SCORE=$(python3 -c "import json; d=json.load(open('geo-score-tmp.json')); print(d.get('score', 0))")
+        BAND=$(python3 -c "import json; d=json.load(open('geo-score-tmp.json')); print(d.get('band', 'critical'))")
+        echo "score=${SCORE}" >> "$GITHUB_OUTPUT"
+        echo "band=${BAND}" >> "$GITHUB_OUTPUT"
+        echo "::notice::GEO Score: ${SCORE}/100 (${BAND})"
+        # Pulizia file temporaneo
+        rm -f geo-score-tmp.json
+
+    # 6. Upload SARIF (solo se formato sarif)
+    - name: Upload SARIF results
+      if: inputs.format == 'sarif'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.audit.outputs.report_path }}
+      continue-on-error: true
+
+    # 7. Controlla soglia score
+    - name: Check score threshold
+      if: inputs.threshold != '0'
+      shell: bash
+      run: |
+        SCORE=${{ steps.extract.outputs.score }}
+        THRESHOLD=${{ inputs.threshold }}
+        if [ "${SCORE}" -lt "${THRESHOLD}" ]; then
+          echo "::error::GEO score ${SCORE} is below threshold ${THRESHOLD}"
+          exit 1
+        fi
+        echo "✅ GEO score ${SCORE} meets threshold ${THRESHOLD}"
+
+    # 8. Controlla warning (se abilitato)
+    - name: Check warnings
+      if: inputs.fail-on-warning == 'true'
+      shell: bash
+      run: |
+        # Conta i warning dal report JSON
+        WARNINGS=$(python3 -c "
+        import json
+        d = json.load(open('${{ steps.audit.outputs.report_path }}' if '${{ inputs.format }}' == 'json' else 'geo-score-tmp.json'))
+        checks = d.get('checks', [])
+        warns = [c for c in checks if c.get('severity') == 'warning' and c.get('passed') is False]
+        print(len(warns))
+        " 2>/dev/null || echo "0")
+        if [ "${WARNINGS}" -gt 0 ]; then
+          echo "::error::Found ${WARNINGS} warnings (fail-on-warning is enabled)"
+          exit 1
+        fi
