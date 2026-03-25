@@ -293,8 +293,17 @@ def audit_meta_tags(soup, url: str) -> MetaResult:
     return result
 
 
-def audit_content_quality(soup, url: str) -> ContentResult:
-    """Check content quality for GEO. Returns ContentResult."""
+def audit_content_quality(soup, url: str, soup_clean=None) -> ContentResult:
+    """Check content quality for GEO. Returns ContentResult.
+
+    Args:
+        soup: BeautifulSoup dell'HTML originale.
+        url: URL della pagina.
+        soup_clean: (opzionale) BeautifulSoup già pulito (senza script/style).
+                    Se fornito, evita il re-parse dell'HTML (fix #285).
+    """
+    import copy
+
     result = ContentResult()
 
     # H1
@@ -307,14 +316,12 @@ def audit_content_quality(soup, url: str) -> ContentResult:
     headings = soup.find_all(["h1", "h2", "h3", "h4"])
     result.heading_count = len(headings)
 
-    # Fix #98: remove script and style tags before extracting text
-    # to avoid false positives in word count and content analysis.
-    # Uses full re-parse (not copy.copy which is shallow and mutates the original — fix #185)
-    from bs4 import BeautifulSoup as BS
-
-    soup_clean = BS(str(soup), "html.parser")
-    for tag in soup_clean(["script", "style"]):
-        tag.decompose()
+    # Fix #285: usa soup_clean pre-calcolato se disponibile, altrimenti crea copia
+    # Usa copy.deepcopy() invece di BS(str(soup)) per evitare re-parse costoso
+    if soup_clean is None:
+        soup_clean = copy.deepcopy(soup)
+        for tag in soup_clean(["script", "style"]):
+            tag.decompose()
 
     # Fix #107: separator=" " prevents word concatenation from adjacent tags
     # Example: <span>Hello</span><span>World</span> → "Hello World" instead of "HelloWorld"
@@ -524,6 +531,7 @@ def _build_audit_result(
     http_status: int,
     page_size: int,
     soup=None,
+    soup_clean=None,  # Fix #285: soup pre-pulito (senza script/style) per evitare re-parse
     extra_checks: dict = None,
     signals: SignalsResult = None,  # v4.0: segnali tecnici
     ai_discovery=None,  # Standard AI discovery endpoints (.well-known/ai.txt, ecc.)
@@ -586,9 +594,10 @@ def _build_audit_result(
         }
 
     # Citability Score: analisi contenuto con i 9 metodi Princeton GEO
+    # Fix #285: passa soup_clean pre-calcolato per evitare re-parse in citability
     from geo_optimizer.core.citability import audit_citability
 
-    citability = audit_citability(soup, base_url) if soup else CitabilityResult()
+    citability = audit_citability(soup, base_url, soup_clean=soup_clean) if soup else CitabilityResult()
 
     # v4.2: CDN + JS checks (#225, #226)
     effective_cdn = cdn_check if cdn_check is not None else CdnAiCrawlerResult()
@@ -681,7 +690,15 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         result.recommendations = [f"Unable to reach {base_url}: {err}"]
         return result
 
+    import copy
+
     soup = BeautifulSoup(r.text, "html.parser")
+
+    # Fix #285: calcola soup_clean una volta sola e passalo ai sub-audit
+    # Evita 3-4 re-parse dello stesso HTML (risparmio 50-200ms per pagina)
+    soup_clean = copy.deepcopy(soup)
+    for tag in soup_clean(["script", "style"]):
+        tag.decompose()
 
     # Esegui tutti i sub-audit
     # Fix #120: passa effective_bots che include eventuali extra_bots da project_config
@@ -689,7 +706,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     llms = audit_llms_txt(base_url)
     schema = audit_schema(soup, base_url)
     meta = audit_meta_tags(soup, base_url)
-    content = audit_content_quality(soup, base_url)
+    content = audit_content_quality(soup, base_url, soup_clean=soup_clean)
 
     # v4.1: audit AI discovery endpoints
     ai_disc = audit_ai_discovery(base_url)
@@ -712,6 +729,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         http_status=r.status_code,
         page_size=len(r.text),
         soup=soup,
+        soup_clean=soup_clean,
         ai_discovery=ai_disc,
         cdn_check=cdn_result,
         js_rendering=js_result,
@@ -787,7 +805,14 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
         result.recommendations = [f"Unable to reach {base_url}: {err_home}"]
         return result
 
+    import copy
+
     soup = BeautifulSoup(r_home.text, "html.parser")
+
+    # Fix #285: calcola soup_clean una volta sola per il path async
+    soup_clean = copy.deepcopy(soup)
+    for tag in soup_clean(["script", "style"]):
+        tag.decompose()
 
     # Sub-audit robots.txt (uses pre-fetched response with extra_bots)
     robots = _audit_robots_from_response(r_robots, bots=effective_bots)
@@ -798,7 +823,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     # Sub-audits that work on the DOM (no additional fetch required)
     schema = audit_schema(soup, base_url)
     meta = audit_meta_tags(soup, base_url)
-    content = audit_content_quality(soup, base_url)
+    content = audit_content_quality(soup, base_url, soup_clean=soup_clean)
 
     # v4.1: AI discovery da risposte pre-scaricate
     ai_disc = _audit_ai_discovery_from_responses(r_ai_txt, r_ai_summary, r_ai_faq, r_ai_service)
@@ -822,6 +847,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
         http_status=r_home.status_code,
         page_size=len(r_home.text),
         soup=soup,
+        soup_clean=soup_clean,
         ai_discovery=ai_disc,
         cdn_check=cdn_result,
         js_rendering=js_result,

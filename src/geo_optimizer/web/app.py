@@ -90,6 +90,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         # Use 'nonce-{value}' instead of 'unsafe-inline' for XSS protection (fix #75)
+        # Nota #287: style-src usa 'unsafe-inline' perché tutti i <style> sono hardcodati
+        # nei template (non user-controllabili). Rimuoverlo richiederebbe nonce su ogni
+        # tag <style> in ogni template — complessità alta per rischio nullo.
         response.headers["Content-Security-Policy"] = (
             f"default-src 'self'; script-src 'self' 'nonce-{nonce}'; "
             "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
@@ -551,7 +554,9 @@ async def report(report_id: str):
     if not _HEX_ID_RE.match(report_id):
         raise HTTPException(status_code=400, detail="Invalid report ID format")
 
-    entry = _audit_cache.get(report_id)
+    # Fix #286: accesso alla cache protetto da lock per evitare race condition
+    async with _audit_cache_lock:
+        entry = _audit_cache.get(report_id)
     if not entry:
         raise HTTPException(status_code=404, detail="Report not found or expired")
 

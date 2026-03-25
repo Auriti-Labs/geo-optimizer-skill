@@ -145,14 +145,28 @@ _STOP_WORDS = {
 # ─── Helper function ─────────────────────────────────────────────────────────
 
 
-def _get_clean_text(soup) -> str:
-    """Extract clean text by removing script, style, nav, footer."""
-    from bs4 import BeautifulSoup
+def _get_clean_text(soup, soup_clean=None) -> str:
+    """Estrae testo pulito rimuovendo script, style, nav, footer.
 
-    clean = BeautifulSoup(str(soup), "html.parser")
-    for tag in clean(["script", "style", "nav", "footer", "header"]):
+    Args:
+        soup: BeautifulSoup originale.
+        soup_clean: (opzionale) soup già pulito da script/style (fix #285).
+                    Se fornito, evita il re-parse costoso dell'HTML.
+    """
+    import copy
+
+    if soup_clean is not None:
+        # Usa copia del soup_clean pre-calcolato, rimuovi solo nav/footer/header
+        working = copy.deepcopy(soup_clean)
+        for tag in working(["nav", "footer", "header"]):
+            tag.decompose()
+        return working.get_text(separator=" ", strip=True)
+
+    # Fallback: crea copia pulita da zero con deepcopy (fix #285: evita BS(str(soup)))
+    working = copy.deepcopy(soup)
+    for tag in working(["script", "style", "nav", "footer", "header"]):
         tag.decompose()
-    return clean.get_text(separator=" ", strip=True)
+    return working.get_text(separator=" ", strip=True)
 
 
 # ─── 1. Cite Sources (+27%) ──────────────────────────────────────────────────
@@ -729,18 +743,19 @@ def _compute_grade(total: int) -> str:
     return "low"
 
 
-def audit_citability(soup, base_url: str) -> CitabilityResult:
+def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
     """Analyze content citability with all 9 Princeton methods.
 
     Args:
         soup: BeautifulSoup of the HTML page.
         base_url: Base URL of the site.
+        soup_clean: (opzionale) soup pre-pulito da script/style (fix #285).
 
     Returns:
         CitabilityResult with score 0-100 and per-method detail.
     """
-    # Pre-compute clean text once to avoid 3 redundant DOM re-parses (fix #190)
-    clean_text = _get_clean_text(soup)
+    # Fix #285: passa soup_clean a _get_clean_text per evitare re-parse
+    clean_text = _get_clean_text(soup, soup_clean=soup_clean)
 
     methods = [
         detect_quotations(soup),

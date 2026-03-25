@@ -4,6 +4,7 @@ CLI command: geo audit
 Runs the full GEO audit on a website and displays results.
 """
 
+import asyncio
 import logging
 import sys
 
@@ -111,17 +112,36 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
         except ImportError:
             _use_spinner = False
 
+    # Fix #284: usa path async se httpx è disponibile e non si usa cache
+    # Il path async fa fetch paralleli ed è 2-3x più veloce
+    _use_async = False
+    if not cache:
+        try:
+            import httpx  # noqa: F401
+
+            from geo_optimizer.core.audit import run_full_audit_async
+
+            _use_async = True
+        except ImportError:
+            pass
+
     try:
         if _use_spinner:
             _stderr = _RichConsole(stderr=True)
             with _stderr.status("[bold bright_blue]  Analyzing...[/]", spinner="dots"):
-                result = run_full_audit(url, use_cache=cache, project_config=project_config)
+                if _use_async:
+                    result = asyncio.run(run_full_audit_async(url, project_config=project_config))
+                else:
+                    result = run_full_audit(url, use_cache=cache, project_config=project_config)
         else:
             if output_format != "json":
                 click.echo("⏳ Starting GEO analysis...", err=True)
                 click.echo("⏳ Checking robots.txt and AI bot access...", err=True)
                 click.echo("⏳ Analyzing llms.txt...", err=True)
-            result = run_full_audit(url, use_cache=cache, project_config=project_config)
+            if _use_async:
+                result = asyncio.run(run_full_audit_async(url, project_config=project_config))
+            else:
+                result = run_full_audit(url, use_cache=cache, project_config=project_config)
             if output_format != "json":
                 click.echo("⏳ Analyzing JSON-LD schema, meta tags and content...", err=True)
                 click.echo("✅ Analysis complete.\n", err=True)
