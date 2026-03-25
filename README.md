@@ -514,6 +514,31 @@ You get back a score from 0–100 and per-method recommendations. Available via 
 
 ---
 
+## 🏅 Dynamic GEO Badge
+
+Show your GEO score in your README — updates automatically.
+
+**SVG Badge (self-hosted):**
+```markdown
+![GEO Score](https://geo-optimizer-web.onrender.com/badge?url=https://yoursite.com)
+```
+
+**Shields.io Badge (via endpoint):**
+```markdown
+![GEO Score](https://img.shields.io/endpoint?url=https%3A%2F%2Fgeo-optimizer-web.onrender.com%2Fbadge%2Fendpoint%3Furl%3Dhttps%3A%2F%2Fyoursite.com&style=flat-square)
+```
+
+**With custom label:**
+```markdown
+![My Site GEO](https://geo-optimizer-web.onrender.com/badge?url=https://yoursite.com&label=My%20Site%20GEO)
+```
+
+Badge colors: 🟢 86-100 (excellent) · 🟡 68-85 (good) · 🟠 36-67 (foundation) · 🔴 0-35 (critical)
+
+> Results are cached for 1 hour. First request may take ~30s if the service is cold.
+
+---
+
 ## Use as a Library
 
 ```python
