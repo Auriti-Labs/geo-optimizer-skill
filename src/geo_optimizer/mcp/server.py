@@ -8,11 +8,18 @@ Available tools:
     geo_audit            — Full GEO audit (score 0-100)
     geo_fix              — Generate automatic fixes (robots, llms, schema, meta)
     geo_llms_generate    — Generate llms.txt content from sitemap
+    geo_citability       — Citability score (11 Princeton + AutoGEO methods)
     geo_schema_validate  — Validate JSON-LD schema
+    geo_compare          — Compare GEO scores across multiple sites
+    geo_ai_discovery     — Check AI discovery endpoints (.well-known/ai.txt, etc.)
+    geo_check_bots       — Check which AI bots can access via robots.txt
 
 Available resources:
-    geo://ai-bots        — List of tracked AI bots
-    geo://score-bands    — GEO score bands
+    geo://ai-bots            — List of tracked AI bots
+    geo://score-bands        — GEO score bands
+    geo://methods            — 11 citability methods with impact data
+    geo://changelog          — Latest changes
+    geo://ai-discovery-spec  — AI discovery endpoint specification
 
 Start:
     geo-mcp              # Entry point from pyproject.toml
@@ -252,6 +259,143 @@ def geo_schema_validate(json_string: str, schema_type: str = "") -> str:
         return json.dumps({"valid": False, "error": str(e)})
 
 
+# ─── Tool 6: geo_compare ──────────────────────────────────────────────────────
+
+
+@mcp.tool()
+def geo_compare(urls: str) -> str:
+    """Compare GEO scores across multiple websites (max 5).
+
+    Returns a ranked comparison with score, band and per-category breakdown.
+
+    Args:
+        urls: Comma-separated URLs (e.g. "site1.com, site2.com")
+    """
+    from geo_optimizer.utils.validators import validate_public_url
+
+    url_list = [u.strip() for u in urls.split(",") if u.strip()]
+    if not url_list:
+        return json.dumps({"error": "Nessuna URL fornita"})
+    if len(url_list) > 5:
+        return json.dumps({"error": "Massimo 5 URL per confronto"})
+
+    results = []
+    for u in url_list:
+        u = _normalize_url(u)
+        safe, reason = validate_public_url(u)
+        if not safe:
+            results.append({"url": u, "error": f"URL non sicura: {reason}"})
+            continue
+        try:
+            from geo_optimizer.core.audit import run_full_audit
+
+            result = run_full_audit(u)
+            results.append(
+                {
+                    "url": u,
+                    "score": result.score,
+                    "band": result.band,
+                    "breakdown": result.score_breakdown,
+                    "recommendations_count": len(result.recommendations),
+                }
+            )
+        except Exception as e:
+            results.append({"url": u, "error": str(e)})
+
+    # Ordina per score decrescente
+    results.sort(key=lambda x: x.get("score", 0), reverse=True)
+    return json.dumps({"comparison": results, "total_sites": len(results)}, indent=2)
+
+
+# ─── Tool 7: geo_ai_discovery ────────────────────────────────────────────────
+
+
+@mcp.tool()
+def geo_ai_discovery(url: str) -> str:
+    """Check AI discovery endpoints on a website.
+
+    Verifies: /.well-known/ai.txt, /ai/summary.json, /ai/faq.json, /ai/service.json
+    Based on the emerging geo-checklist.dev standard.
+
+    Args:
+        url: URL to check (e.g. https://example.com)
+    """
+    from geo_optimizer.utils.validators import validate_public_url
+
+    url = _normalize_url(url)
+    safe, reason = validate_public_url(url)
+    if not safe:
+        return json.dumps({"error": f"URL non sicura: {reason}"})
+
+    try:
+        from geo_optimizer.core.audit import audit_ai_discovery
+
+        result = audit_ai_discovery(url)
+        return _to_json(result)
+    except Exception as e:
+        return json.dumps({"error": str(e), "url": url})
+
+
+# ─── Tool 8: geo_check_bots ──────────────────────────────────────────────────
+
+
+@mcp.tool()
+def geo_check_bots(url: str) -> str:
+    """Check which AI bots can access a website via robots.txt.
+
+    Returns per-bot status (allowed/blocked/missing) with tier classification
+    (training/search/user) and citation bot verification.
+
+    Args:
+        url: URL to check (e.g. https://example.com)
+    """
+    from geo_optimizer.utils.validators import validate_public_url
+
+    url = _normalize_url(url)
+    safe, reason = validate_public_url(url)
+    if not safe:
+        return json.dumps({"error": f"URL non sicura: {reason}"})
+
+    try:
+        from geo_optimizer.core.audit import audit_robots_txt
+        from geo_optimizer.models.config import AI_BOTS, BOT_TIERS
+
+        result = audit_robots_txt(url)
+
+        # Costruisci dettaglio per-bot con tier
+        bot_details = {}
+        for bot, desc in AI_BOTS.items():
+            tier = "unknown"
+            for t, bots in BOT_TIERS.items():
+                if bot in bots:
+                    tier = t
+                    break
+            if bot in result.bots_allowed:
+                status = "allowed"
+            elif bot in result.bots_blocked:
+                status = "blocked"
+            else:
+                status = "missing"
+            bot_details[bot] = {"description": desc, "status": status, "tier": tier}
+
+        return json.dumps(
+            {
+                "url": url,
+                "robots_found": result.found,
+                "citation_bots_ok": result.citation_bots_ok,
+                "bots": bot_details,
+                "summary": {
+                    "allowed": len(result.bots_allowed),
+                    "blocked": len(result.bots_blocked),
+                    "missing": len(result.bots_missing),
+                },
+            },
+            indent=2,
+        )
+    except Exception as e:
+        return json.dumps({"error": str(e), "url": url})
+
+
 # ─── Resource: AI Bots ────────────────────────────────────────────────────────
 
 
@@ -280,6 +424,167 @@ def get_score_bands() -> str:
     from geo_optimizer.models.config import SCORE_BANDS
 
     return json.dumps(SCORE_BANDS, indent=2)
+
+
+# ─── Resource: Citability Methods ─────────────────────────────────────────────
+
+
+@mcp.resource("geo://methods")
+def get_methods() -> str:
+    """List of 11 citability strategies from the Princeton KDD 2024 research with impact data."""
+    from geo_optimizer.core.citability import (
+        _IMPROVEMENT_SUGGESTIONS,
+        _METHOD_ORDER,
+    )
+
+    # Mappa dei max_score per ogni metodo
+    max_scores = {
+        "quotation_addition": 10,
+        "statistics_addition": 12,
+        "fluency_optimization": 12,
+        "cite_sources": 10,
+        "answer_first": 10,
+        "passage_density": 10,
+        "technical_terms": 8,
+        "authoritative_tone": 8,
+        "easy_to_understand": 7,
+        "unique_words": 4,
+        "keyword_stuffing": 10,
+    }
+
+    # Impatto per ogni metodo
+    impacts = {
+        "quotation_addition": "+41%",
+        "statistics_addition": "+33%",
+        "fluency_optimization": "+29%",
+        "cite_sources": "+27%",
+        "answer_first": "+25%",
+        "passage_density": "+23%",
+        "technical_terms": "+18%",
+        "authoritative_tone": "+16%",
+        "easy_to_understand": "+14%",
+        "unique_words": "+7%",
+        "keyword_stuffing": "-9%",
+    }
+
+    methods = []
+    for name in _METHOD_ORDER:
+        methods.append(
+            {
+                "name": name,
+                "impact": impacts.get(name, ""),
+                "max_score": max_scores.get(name, 0),
+                "suggestion": _IMPROVEMENT_SUGGESTIONS.get(name, ""),
+            }
+        )
+
+    return json.dumps(
+        {"methods": methods, "total_methods": len(methods), "total_max_score": sum(max_scores.values())},
+        indent=2,
+    )
+
+
+# ─── Resource: Citability Methods ─────────────────────────────────────────────
+
+
+@mcp.resource("geo://methods")
+def get_citability_methods() -> str:
+    """The 11 citability methods with measured impact (Princeton KDD 2024 + AutoGEO ICLR 2026)."""
+    methods = [
+        {"name": "quotation_addition", "label": "Quotation Addition", "impact": "+41%", "max_score": 12},
+        {"name": "statistics_addition", "label": "Statistics Addition", "impact": "+33%", "max_score": 11},
+        {"name": "fluency_optimization", "label": "Fluency Optimization", "impact": "+29%", "max_score": 12},
+        {"name": "cite_sources", "label": "Cite Sources", "impact": "+27%", "max_score": 12},
+        {
+            "name": "answer_first",
+            "label": "Answer-First Structure",
+            "impact": "+25%",
+            "max_score": 10,
+            "source": "AutoGEO ICLR 2026",
+        },
+        {
+            "name": "passage_density",
+            "label": "Passage Density",
+            "impact": "+23%",
+            "max_score": 10,
+            "source": "Stanford Nature Comm. 2025",
+        },
+        {"name": "technical_terms", "label": "Technical Terms", "impact": "+18%", "max_score": 10},
+        {"name": "authoritative_tone", "label": "Authoritative Tone", "impact": "+16%", "max_score": 10},
+        {"name": "easy_to_understand", "label": "Easy-to-Understand", "impact": "+14%", "max_score": 8},
+        {"name": "unique_words", "label": "Unique Words", "impact": "+7%", "max_score": 5},
+        {
+            "name": "keyword_stuffing",
+            "label": "No Keyword Stuffing",
+            "impact": "-9%",
+            "max_score": 12,
+            "note": "Penalty if detected",
+        },
+    ]
+    return json.dumps(
+        {"methods": methods, "total_max_score": 100, "source": "Princeton KDD 2024 + AutoGEO ICLR 2026"}, indent=2
+    )
+
+
+# ─── Resource: Changelog ─────────────────────────────────────────────────────
+
+
+@mcp.resource("geo://changelog")
+def get_changelog() -> str:
+    """Latest changes from CHANGELOG.md (first 50 lines)."""
+    from pathlib import Path
+
+    changelog_path = Path(__file__).parent.parent.parent.parent / "CHANGELOG.md"
+    if not changelog_path.exists():
+        return "CHANGELOG.md not found"
+    lines = changelog_path.read_text(encoding="utf-8").splitlines()[:50]
+    return "\n".join(lines)
+
+
+# ─── Resource: AI Discovery Spec ─────────────────────────────────────────────
+
+
+@mcp.resource("geo://ai-discovery-spec")
+def get_ai_discovery_spec() -> str:
+    """Specification of AI discovery endpoints (geo-checklist.dev standard)."""
+    spec = {
+        "standard": "geo-checklist.dev (emerging)",
+        "endpoints": [
+            {
+                "path": "/.well-known/ai.txt",
+                "description": "AI crawler permissions (similar to robots.txt but AI-specific)",
+                "content_type": "text/plain",
+                "required_fields": None,
+            },
+            {
+                "path": "/ai/summary.json",
+                "description": "Site summary for AI systems",
+                "content_type": "application/json",
+                "required_fields": ["name", "description"],
+                "schema": {
+                    "name": "string",
+                    "description": "string (max 800 chars)",
+                    "url": "string",
+                    "lastModified": "ISO 8601 date",
+                },
+            },
+            {
+                "path": "/ai/faq.json",
+                "description": "Structured FAQ for AI systems",
+                "content_type": "application/json",
+                "required_fields": ["questions"],
+                "schema": {"questions": [{"question": "string", "answer": "string"}]},
+            },
+            {
+                "path": "/ai/service.json",
+                "description": "Service capabilities for AI systems",
+                "content_type": "application/json",
+                "required_fields": ["name", "capabilities"],
+                "schema": {"name": "string", "description": "string", "capabilities": ["string"]},
+            },
+        ],
+    }
+    return json.dumps(spec, indent=2)
 
 
 # ─── Entry point ──────────────────────────────────────────────────────────────
