@@ -303,7 +303,9 @@ def format_audit_rich(result: AuditResult) -> str:
         cdn_content = Text()
         if cdn.cdn_detected:
             cdn_content.append(f"  CDN detected: {cdn.cdn_detected.upper()}\n", style="dim")
-        cdn_content.append(f"  Browser baseline: HTTP {cdn.browser_status} ({cdn.browser_content_length:,} bytes)\n", style="dim")
+        cdn_content.append(
+            f"  Browser baseline: HTTP {cdn.browser_status} ({cdn.browser_content_length:,} bytes)\n", style="dim"
+        )
         for bot in cdn.bot_results:
             icon = "✅" if not bot["blocked"] and not bot["challenge_detected"] else "❌"
             status_info = f"HTTP {bot['status']}"
