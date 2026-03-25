@@ -49,7 +49,7 @@ border-bottom:1px solid #334155}
 
     <div class="form-group">
         <input type="url" id="url-input" placeholder="https://example.com" required>
-        <button id="btn" onclick="runAudit()">Audit</button>
+        <button id="btn">Audit</button>
     </div>
 
     <div class="spinner" id="spinner">Analyzing...</div>
@@ -169,6 +169,8 @@ async function runAudit() {
     }
 }
 
+// Event listener per il bottone Audit (al posto di onclick inline, bloccato dalla CSP)
+document.getElementById('btn').addEventListener('click', runAudit);
 document.getElementById('url-input').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') runAudit();
 });
