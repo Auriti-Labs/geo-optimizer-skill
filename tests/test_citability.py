@@ -47,6 +47,10 @@ from geo_optimizer.core.citability import (
     detect_social_proof,
     detect_accessibility_signals,
     detect_conversion_funnel,
+    detect_temporal_coherence,
+    detect_anchor_text_quality,
+    detect_international_geo,
+    detect_crawl_budget,
 )
 
 
@@ -1082,9 +1086,9 @@ class TestWeightSum:
         """Verifica che i 18 metodi base sommano 100, i 7 bonus aggiungono 31."""
         html = "<html><body><p>Test content.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
-        # 18 metodi base = 100, 7 bonus batch2 = 31, 5 bonus batch3+4 = 18, 8 bonus batchA = 27, totale = 176
+        # 18 metodi base = 100, 7 bonus batch2 = 31, 5 bonus batch3+4 = 18, 8 bonus batchA = 27, 4 bonus batchB = 13, totale = 189
         total_max = sum(m.max_score for m in result.methods)
-        assert total_max == 176, f"Somma max_score = {total_max}, atteso 176 (100 base + 31 batch2 + 18 batch3+4 + 27 batchA)"
+        assert total_max == 189, f"Somma max_score = {total_max}, atteso 189 (100 base + 31 batch2 + 18 batch3+4 + 27 batchA + 13 batchB)"
         # Ma il total_score è sempre cappato a 100
         assert result.total_score <= 100
 
@@ -1134,7 +1138,7 @@ class TestAuditCitability:
 
         assert result.total_score > 0
         assert result.grade in ("low", "medium", "high", "excellent")
-        assert len(result.methods) == 38
+        assert len(result.methods) == 42
 
         # Verifica che ogni metodo abbia un nome
         names = {m.name for m in result.methods}
@@ -1177,7 +1181,7 @@ class TestAuditCitability:
     def test_pagina_vuota(self):
         result = audit_citability(_soup("<html><body></body></html>"), "https://example.com")
         assert result.total_score >= 0
-        assert len(result.methods) == 38
+        assert len(result.methods) == 42
 
     def test_top_improvements_generate(self):
         result = audit_citability(_soup("<html><body><p>Testo semplice.</p></body></html>"), "https://example.com")
@@ -1446,3 +1450,274 @@ class TestConversionFunnel:
         html = "<html><body><p>Just some informational text.</p></body></html>"
         result = detect_conversion_funnel(_soup(html))
         assert result.score == 0
+
+
+# ============================================================================
+# TEST: Temporal Signal Coherence (+8%) — Batch B v3.16.0
+# ============================================================================
+
+
+class TestTemporalCoherence:
+    def test_date_coerenti_schema_e_testo(self):
+        """Date in schema e nel testo entro 30 giorni → punteggio pieno."""
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {"@type": "Article", "dateModified": "2026-03-01"}
+            </script>
+            <p>Last updated: 2026-03-10</p>
+        </body></html>
+        """
+        result = detect_temporal_coherence(_soup(html))
+        assert result.detected
+        assert result.score == 4
+        assert result.details["is_coherent"]
+        assert result.details["date_count"] >= 2
+
+    def test_date_incoerenti(self):
+        """Date con differenza > 90 giorni → score basso."""
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {"@type": "Article", "dateModified": "2025-01-15"}
+            </script>
+            <p>Last updated: 2025-12-01</p>
+        </body></html>
+        """
+        result = detect_temporal_coherence(_soup(html))
+        assert not result.detected
+        assert result.details["is_incoherent"]
+        assert result.score == 0
+
+    def test_una_sola_data(self):
+        """Solo una data trovata → score 1."""
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {"@type": "Article", "dateModified": "2026-03-15"}
+            </script>
+            <p>Some text without visible dates.</p>
+        </body></html>
+        """
+        result = detect_temporal_coherence(_soup(html))
+        assert result.score == 1
+        assert result.details["date_count"] == 1
+
+    def test_nessuna_data(self):
+        """Nessuna data trovata → score 0."""
+        html = "<html><body><p>No dates anywhere.</p></body></html>"
+        result = detect_temporal_coherence(_soup(html))
+        assert result.score == 0
+        assert result.details["date_count"] == 0
+
+    def test_date_da_meta_tag(self):
+        """Date da meta tag article:modified_time coerenti con schema."""
+        html = """
+        <html>
+        <head>
+            <meta property="article:modified_time" content="2026-03-05">
+        </head>
+        <body>
+            <script type="application/ld+json">
+            {"@type": "Article", "dateModified": "2026-03-10"}
+            </script>
+        </body></html>
+        """
+        result = detect_temporal_coherence(_soup(html))
+        assert result.detected
+        assert result.score == 4
+        assert result.details["is_coherent"]
+
+
+# ============================================================================
+# TEST: Internal Link Anchor Text (+5%) — Batch B v3.16.0
+# ============================================================================
+
+
+class TestAnchorTextQuality:
+    def test_anchor_descrittivi(self):
+        """Tutti anchor descrittivi → punteggio pieno."""
+        html = """
+        <html><body>
+            <a href="/guide/wordpress-security">Complete WordPress security guide</a>
+            <a href="/blog/seo-tips">Advanced SEO optimization tips</a>
+            <a href="/docs/api-reference">Full API reference documentation</a>
+        </body></html>
+        """
+        result = detect_anchor_text_quality(_soup(html), "https://example.com")
+        assert result.detected
+        assert result.score == 3
+        assert result.details["descriptive_ratio"] >= 0.8
+
+    def test_anchor_generici(self):
+        """Tutti anchor generici → score 0."""
+        html = """
+        <html><body>
+            <a href="/page1">click here</a>
+            <a href="/page2">read more</a>
+            <a href="/page3">here</a>
+            <a href="/page4">learn more</a>
+        </body></html>
+        """
+        result = detect_anchor_text_quality(_soup(html), "https://example.com")
+        assert result.score == 0
+        assert result.details["generic_count"] == 4
+
+    def test_mix_anchor(self):
+        """Mix di anchor generici e descrittivi → score intermedio."""
+        html = """
+        <html><body>
+            <a href="/guide">Complete WordPress security guide</a>
+            <a href="/page">click here</a>
+            <a href="/docs">Full documentation reference</a>
+        </body></html>
+        """
+        result = detect_anchor_text_quality(_soup(html), "https://example.com")
+        assert result.score >= 1
+
+    def test_link_esterni_ignorati(self):
+        """Link esterni non contano nel calcolo."""
+        html = """
+        <html><body>
+            <a href="https://other.com/page">click here</a>
+            <a href="/internal">Great internal documentation page</a>
+        </body></html>
+        """
+        result = detect_anchor_text_quality(_soup(html), "https://example.com")
+        assert result.details["total_internal_links"] == 1
+        assert result.details["descriptive_count"] == 1
+
+    def test_nessun_link_interno(self):
+        """Nessun link interno → score neutro."""
+        html = "<html><body><p>No links at all.</p></body></html>"
+        result = detect_anchor_text_quality(_soup(html), "https://example.com")
+        assert result.score == 2  # Score neutro
+        assert result.details["total_internal_links"] == 0
+
+
+# ============================================================================
+# TEST: International GEO (+5%) — Batch B v3.16.0
+# ============================================================================
+
+
+class TestInternationalGeo:
+    def test_sito_multilingua_completo(self):
+        """Hreflang + inLanguage → punteggio pieno."""
+        html = """
+        <html lang="en">
+        <head>
+            <link rel="alternate" hreflang="en" href="https://example.com/en/">
+            <link rel="alternate" hreflang="it" href="https://example.com/it/">
+            <link rel="alternate" hreflang="es" href="https://example.com/es/">
+            <script type="application/ld+json">
+            {"@type": "WebPage", "inLanguage": "en"}
+            </script>
+        </head>
+        <body><p>Content here.</p></body>
+        </html>
+        """
+        result = detect_international_geo(_soup(html))
+        assert result.detected
+        assert result.score == 3
+        assert result.details["is_multilingual"]
+        assert result.details["hreflang_count"] == 3
+
+    def test_sito_monolingua_non_penalizzato(self):
+        """Sito senza hreflang → score 0, ma non penalizzato."""
+        html = '<html lang="en"><body><p>English only site.</p></body></html>'
+        result = detect_international_geo(_soup(html))
+        assert not result.detected
+        assert result.score == 0
+        assert not result.details["is_multilingual"]
+
+    def test_hreflang_senza_schema(self):
+        """Solo hreflang senza inLanguage → score parziale."""
+        html = """
+        <html lang="en">
+        <head>
+            <link rel="alternate" hreflang="en" href="https://example.com/en/">
+            <link rel="alternate" hreflang="fr" href="https://example.com/fr/">
+        </head>
+        <body><p>Content here.</p></body>
+        </html>
+        """
+        result = detect_international_geo(_soup(html))
+        assert result.detected
+        assert result.score >= 1
+        assert result.details["hreflang_count"] == 2
+
+
+# ============================================================================
+# TEST: AI Crawl Budget (+5%) — Batch B v3.16.0
+# ============================================================================
+
+
+class TestCrawlBudget:
+    def test_pagina_normale(self):
+        """Pagina senza restrizioni → punteggio pieno."""
+        html = """
+        <html>
+        <head>
+            <meta name="robots" content="index, follow">
+            <link rel="sitemap" href="/sitemap.xml">
+        </head>
+        <body><p>Normal content.</p></body>
+        </html>
+        """
+        result = detect_crawl_budget(_soup(html))
+        assert result.detected
+        assert result.score == 3
+        assert not result.details["has_noindex"]
+        assert result.details["has_sitemap_link"]
+
+    def test_noindex_penalita(self):
+        """Meta robots noindex → forte penalità."""
+        html = """
+        <html>
+        <head>
+            <meta name="robots" content="noindex, follow">
+        </head>
+        <body><p>Hidden content.</p></body>
+        </html>
+        """
+        result = detect_crawl_budget(_soup(html))
+        assert not result.detected
+        assert result.details["has_noindex"]
+        assert result.score <= 1
+
+    def test_nofollow_penalita(self):
+        """Meta robots nofollow → penalità."""
+        html = """
+        <html>
+        <head>
+            <meta name="robots" content="index, nofollow">
+        </head>
+        <body><p>Content without follow.</p></body>
+        </html>
+        """
+        result = detect_crawl_budget(_soup(html))
+        assert result.details["has_nofollow"]
+        assert result.score < 3
+
+    def test_noindex_nofollow_combinati(self):
+        """Meta robots noindex + nofollow → penalità massima."""
+        html = """
+        <html>
+        <head>
+            <meta name="robots" content="noindex, nofollow">
+        </head>
+        <body><p>Completely blocked content.</p></body>
+        </html>
+        """
+        result = detect_crawl_budget(_soup(html))
+        assert result.score == 0
+        assert result.details["has_noindex"]
+        assert result.details["has_nofollow"]
+
+    def test_pagina_pulita_senza_sitemap(self):
+        """Pagina senza restrizioni e senza sitemap link → score pieno."""
+        html = "<html><head></head><body><p>Clean page.</p></body></html>"
+        result = detect_crawl_budget(_soup(html))
+        assert result.detected
+        assert result.score == 3
+        assert not result.details["has_sitemap_link"]

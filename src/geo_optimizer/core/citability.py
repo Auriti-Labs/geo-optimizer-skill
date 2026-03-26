@@ -2618,6 +2618,383 @@ def detect_conversion_funnel(soup) -> MethodScore:
     )
 
 
+# ─── Temporal Signal Coherence (+8%) — Batch B v3.16.0 ───────────────────────
+
+# Pattern per date nel testo: "Last updated: DATE", "Updated: DATE", etc.
+_UPDATED_DATE_RE = re.compile(
+    r"\b(?:last\s+updated|updated|aggiornato)\s*:?\s*"
+    r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4}"  # DD/MM/YYYY or similar
+    r"|\d{4}[/\-\.]\d{1,2}[/\-\.]\d{1,2}"  # YYYY-MM-DD
+    r"|\w+\s+\d{1,2},?\s+\d{4})",  # Month DD, YYYY
+    re.IGNORECASE,
+)
+
+
+def _parse_date_flexible(date_str: str) -> datetime | None:
+    """Try to parse a date string in common formats. Returns None on failure."""
+    if not date_str:
+        return None
+    # Prendi solo i primi 10 char per formato ISO
+    clean = str(date_str).strip()
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y", "%d.%m.%Y"):
+        try:
+            return datetime.strptime(clean[:10], fmt).replace(tzinfo=timezone.utc)
+        except (ValueError, TypeError):
+            continue
+    # Prova formato "Month DD, YYYY"
+    try:
+        # Rimuovi virgola e prova
+        clean_no_comma = clean.replace(",", "")
+        return datetime.strptime(clean_no_comma[:20].strip(), "%B %d %Y").replace(tzinfo=timezone.utc)
+    except (ValueError, TypeError):
+        pass
+    return None
+
+
+def detect_temporal_coherence(soup, clean_text: str | None = None) -> MethodScore:
+    """Detect temporal signal coherence across schema dates and visible content dates.
+
+    Compares dateModified/datePublished from JSON-LD schema with visible
+    'Last updated' / 'Updated' patterns in text. Coherent dates (< 30 days
+    apart) get full score; incoherent dates (> 90 days) get a warning.
+    """
+    body_text = clean_text or _get_clean_text(soup)
+    dates_found: dict[str, datetime] = {}
+
+    # 1. Schema JSON-LD: dateModified, datePublished
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                for key in ("dateModified", "datePublished"):
+                    if key in item:
+                        parsed = _parse_date_flexible(str(item[key]))
+                        if parsed:
+                            dates_found[f"schema_{key}"] = parsed
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+    # 2. Meta tag article:modified_time / article:published_time
+    for meta_prop, label in [
+        ("article:modified_time", "meta_modified"),
+        ("article:published_time", "meta_published"),
+    ]:
+        meta = soup.find("meta", attrs={"property": meta_prop})
+        if meta and meta.get("content"):
+            parsed = _parse_date_flexible(meta["content"])
+            if parsed:
+                dates_found[label] = parsed
+
+    # 3. Pattern visibile nel testo: "Last updated: DATE", "Updated: DATE"
+    matches = _UPDATED_DATE_RE.findall(body_text)
+    for i, match in enumerate(matches[:3]):  # Max 3 match
+        parsed = _parse_date_flexible(match)
+        if parsed:
+            dates_found[f"visible_updated_{i}"] = parsed
+
+    # 4. Calcola coerenza
+    date_values = list(dates_found.values())
+    is_coherent = False
+    is_incoherent = False
+    max_diff_days = 0
+
+    if len(date_values) >= 2:
+        # Calcola differenza massima tra tutte le coppie
+        for i in range(len(date_values)):
+            for j in range(i + 1, len(date_values)):
+                diff = abs((date_values[i] - date_values[j]).days)
+                max_diff_days = max(max_diff_days, diff)
+
+        if max_diff_days <= 30:
+            is_coherent = True
+        elif max_diff_days > 90:
+            is_incoherent = True
+
+    # Score
+    score = 0
+    if len(date_values) >= 2 and is_coherent:
+        score = 4  # Punteggio pieno: date presenti e coerenti
+    elif len(date_values) >= 2 and not is_incoherent:
+        score = 2  # Date presenti, differenza moderata (30-90 giorni)
+    elif len(date_values) == 1:
+        score = 1  # Solo una data trovata
+    # Se incoerenti (> 90 giorni) o nessuna data: score = 0
+
+    return MethodScore(
+        name="temporal_coherence",
+        label="Temporal Signal Coherence",
+        detected=len(date_values) >= 2 and is_coherent,
+        score=min(score, 4),
+        max_score=4,
+        impact="+8%",
+        details={
+            "dates_found": {k: v.isoformat() for k, v in dates_found.items()},
+            "date_count": len(date_values),
+            "max_diff_days": max_diff_days,
+            "is_coherent": is_coherent,
+            "is_incoherent": is_incoherent,
+        },
+    )
+
+
+# ─── Internal Link Anchor Text (+5%) — Batch B v3.16.0 ──────────────────────
+
+# Anchor text generici da penalizzare
+_GENERIC_ANCHORS = {
+    "click here",
+    "read more",
+    "learn more",
+    "here",
+    "this",
+    "link",
+    "more",
+    "continue",
+    "go",
+    "see more",
+    "clicca qui",
+    "leggi di più",
+    "scopri di più",
+    "qui",
+    "questo",
+}
+
+
+def detect_anchor_text_quality(soup, base_url: str) -> MethodScore:
+    """Detect internal link anchor text quality.
+
+    Counts internal links with generic anchor text ('click here', 'read more',
+    'here', etc.) vs descriptive anchor text (> 3 words, not generic).
+    Score: > 80% descriptive = full, < 50% = 0.
+    """
+    parsed_base = urlparse(base_url)
+    base_domain = parsed_base.netloc.replace("www.", "")
+
+    generic_count = 0
+    descriptive_count = 0
+    total_internal = 0
+
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        # Determina se è un link interno
+        if href.startswith("http"):
+            link_domain = urlparse(href).netloc.replace("www.", "")
+            if link_domain != base_domain:
+                continue  # Link esterno, skip
+        elif href.startswith("#") or href.startswith("mailto:") or href.startswith("tel:"):
+            continue  # Ancora interna o mailto/tel, skip
+
+        # È un link interno
+        anchor_text = a.get_text(strip=True).lower()
+        if not anchor_text:
+            continue
+
+        total_internal += 1
+
+        # Controlla se è generico
+        if anchor_text in _GENERIC_ANCHORS:
+            generic_count += 1
+        elif len(anchor_text.split()) > 3:
+            descriptive_count += 1
+        else:
+            # Anchor corto (1-3 parole) ma non generico — conta come parziale
+            descriptive_count += 1
+
+    if total_internal == 0:
+        # Nessun link interno: score neutro
+        return MethodScore(
+            name="anchor_text_quality",
+            label="Anchor Text Quality",
+            detected=False,
+            score=2,
+            max_score=3,
+            impact="+5%",
+            details={
+                "total_internal_links": 0,
+                "generic_count": 0,
+                "descriptive_count": 0,
+                "descriptive_ratio": 0,
+            },
+        )
+
+    descriptive_ratio = descriptive_count / total_internal
+
+    if descriptive_ratio >= 0.8:
+        score = 3
+    elif descriptive_ratio >= 0.5:
+        score = 2
+    elif descriptive_ratio > 0:
+        score = 1
+    else:
+        score = 0
+
+    return MethodScore(
+        name="anchor_text_quality",
+        label="Anchor Text Quality",
+        detected=descriptive_ratio >= 0.8,
+        score=min(score, 3),
+        max_score=3,
+        impact="+5%",
+        details={
+            "total_internal_links": total_internal,
+            "generic_count": generic_count,
+            "descriptive_count": descriptive_count,
+            "descriptive_ratio": round(descriptive_ratio, 2),
+        },
+    )
+
+
+# ─── International GEO (+5%) — Batch B v3.16.0 ─────────────────────────────
+
+
+def detect_international_geo(soup) -> MethodScore:
+    """Detect international GEO signals: hreflang tags, html lang, schema inLanguage.
+
+    Only scores if the site HAS hreflang tags — does not penalize monolingual sites.
+    """
+    score = 0
+
+    # 1. <html lang="...">
+    html_tag = soup.find("html")
+    html_lang = html_tag.get("lang", "").strip() if html_tag else ""
+
+    # 2. <link rel="alternate" hreflang="..."> tags
+    hreflang_tags = soup.find_all("link", attrs={"rel": "alternate", "hreflang": True})
+    hreflang_langs = [tag.get("hreflang", "") for tag in hreflang_tags if tag.get("hreflang")]
+
+    # 3. Schema inLanguage
+    in_language = None
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if isinstance(item, dict) and "inLanguage" in item:
+                    in_language = item["inLanguage"]
+                    break
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if in_language:
+            break
+
+    # Solo se il sito ha hreflang, assegna punteggio
+    has_hreflang = len(hreflang_langs) > 0
+
+    if not has_hreflang:
+        # Sito monolingua: score neutro (0), non penalizzare
+        return MethodScore(
+            name="international_geo",
+            label="International GEO",
+            detected=False,
+            score=0,
+            max_score=3,
+            impact="+5%",
+            details={
+                "html_lang": html_lang,
+                "hreflang_count": 0,
+                "hreflang_langs": [],
+                "schema_inLanguage": in_language,
+                "is_multilingual": False,
+            },
+        )
+
+    # Ha hreflang: assegna punteggio
+    if len(hreflang_langs) >= 3:
+        score += 2
+    elif len(hreflang_langs) >= 1:
+        score += 1
+
+    if in_language:
+        score += 1
+
+    return MethodScore(
+        name="international_geo",
+        label="International GEO",
+        detected=True,
+        score=min(score, 3),
+        max_score=3,
+        impact="+5%",
+        details={
+            "html_lang": html_lang,
+            "hreflang_count": len(hreflang_langs),
+            "hreflang_langs": hreflang_langs,
+            "schema_inLanguage": in_language,
+            "is_multilingual": True,
+        },
+    )
+
+
+# ─── AI Crawl Budget (+5%) — Batch B v3.16.0 ────────────────────────────────
+
+
+def detect_crawl_budget(soup) -> MethodScore:
+    """Detect AI crawl budget signals from HTML meta tags and head links.
+
+    Since citability analysis only has access to HTML (not robots.txt),
+    checks: link rel='sitemap' in head, meta robots noindex/nofollow penalties.
+    """
+    score = 3  # Punteggio pieno di default, con penalità
+    penalties = []
+
+    # 1. Controlla meta robots per noindex/nofollow
+    meta_robots = soup.find("meta", attrs={"name": re.compile(r"^robots$", re.I)})
+    has_noindex = False
+    has_nofollow = False
+    if meta_robots:
+        content = (meta_robots.get("content") or "").lower()
+        if "noindex" in content:
+            has_noindex = True
+            penalties.append("meta robots noindex")
+            score -= 2
+        if "nofollow" in content:
+            has_nofollow = True
+            penalties.append("meta robots nofollow")
+            score -= 1
+
+    # 2. Controlla X-Robots-Tag meta (alternativa)
+    meta_x_robots = soup.find("meta", attrs={"http-equiv": re.compile(r"x-robots-tag", re.I)})
+    if meta_x_robots:
+        content = (meta_x_robots.get("content") or "").lower()
+        if "noindex" in content and not has_noindex:
+            has_noindex = True
+            penalties.append("X-Robots-Tag noindex")
+            score -= 2
+        if "nofollow" in content and not has_nofollow:
+            has_nofollow = True
+            penalties.append("X-Robots-Tag nofollow")
+            score -= 1
+
+    # 3. Cerca link rel="sitemap" nel <head>
+    has_sitemap_link = False
+    sitemap_link = soup.find("link", attrs={"rel": "sitemap"})
+    if sitemap_link and sitemap_link.get("href"):
+        has_sitemap_link = True
+
+    # Bonus se sitemap è referenziata nel head (segnale positivo per AI crawler)
+    if not has_sitemap_link and score > 0:
+        # Non penalizzare, ma niente bonus
+        pass
+
+    score = max(score, 0)
+
+    return MethodScore(
+        name="crawl_budget",
+        label="AI Crawl Budget",
+        detected=not has_noindex and not has_nofollow,
+        score=min(score, 3),
+        max_score=3,
+        impact="+5%",
+        details={
+            "has_noindex": has_noindex,
+            "has_nofollow": has_nofollow,
+            "has_sitemap_link": has_sitemap_link,
+            "penalties": penalties,
+        },
+    )
+
+
 # ─── Orchestrator ─────────────────────────────────────────────────────────────
 
 # Suggerimenti di miglioramento per ogni metodo non rilevato
@@ -2663,6 +3040,11 @@ _IMPROVEMENT_SUGGESTIONS = {
     "social_proof": "Add testimonials, AggregateRating with reviews, or trust badges (+8%)",
     "accessibility_signals": "Use semantic HTML (<main>, <nav>), ARIA landmarks, and skip links (+5%)",
     "conversion_funnel": "Add visible CTAs, pricing page link, and contact information (+8%)",
+    # Quality Signals Batch B v3.16.0
+    "temporal_coherence": "Add coherent date signals: schema dateModified, visible 'Last updated' dates within 30 days (+8%)",
+    "anchor_text_quality": "Use descriptive anchor text for internal links instead of 'click here' or 'read more' (+5%)",
+    "international_geo": "Add hreflang tags and schema inLanguage for multilingual sites (+5%)",
+    "crawl_budget": "Remove meta robots noindex/nofollow to allow AI crawlers to index content (+5%)",
 }
 
 # Ordine per impatto decrescente (escluso penalità)
@@ -2702,6 +3084,11 @@ _METHOD_ORDER = [
     "conversion_funnel",
     "voice_search_ready",
     "accessibility_signals",
+    # Quality Signals Batch B v3.16.0
+    "temporal_coherence",
+    "anchor_text_quality",
+    "international_geo",
+    "crawl_budget",
     # Penalità
     "keyword_stuffing",
     "no_negative_signals",
@@ -2779,6 +3166,11 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         detect_social_proof(soup),
         detect_accessibility_signals(soup),
         detect_conversion_funnel(soup),
+        # Quality Signals Batch B v3.16.0
+        detect_temporal_coherence(soup, clean_text=clean_text),
+        detect_anchor_text_quality(soup, base_url),
+        detect_international_geo(soup),
+        detect_crawl_budget(soup),
     ]
 
     # Somma score (max possibile = 100)
