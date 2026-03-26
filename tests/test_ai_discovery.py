@@ -273,6 +273,7 @@ class TestAiDiscoveryScoring:
         max_llms = (
             SCORING["llms_found"]
             + SCORING["llms_h1"]
+            + SCORING["llms_blockquote"]
             + SCORING["llms_sections"]
             + SCORING["llms_links"]
             + SCORING["llms_depth"]

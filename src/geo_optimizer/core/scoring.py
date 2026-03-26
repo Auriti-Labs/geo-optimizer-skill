@@ -66,6 +66,8 @@ def _score_llms(llms) -> int:
         return 0
     s = SCORING["llms_found"]
     s += SCORING["llms_h1"] if llms.has_h1 else 0
+    # #39: bonus blockquote (1 punto dal budget llms_found ridotto)
+    s += SCORING.get("llms_blockquote", 1) if getattr(llms, "has_blockquote", False) else 0
     s += SCORING["llms_sections"] if llms.has_sections else 0
     s += SCORING["llms_links"] if llms.has_links else 0
     # Profondità contenuto: bonus per file più ricchi

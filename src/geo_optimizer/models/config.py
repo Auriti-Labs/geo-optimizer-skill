@@ -307,9 +307,10 @@ SCORING = {
     "robots_found": 5,
     "robots_citation_ok": 13,  # era 15
     "robots_some_allowed": 10,  # era 8 — wildcard Allow ora vale di più
-    # llms.txt — 18 punti (era 20) — qualità graduata
-    "llms_found": 6,  # era 10
+    # llms.txt — 18 punti (era 20) — qualità graduata + blockquote v2
+    "llms_found": 5,  # era 6 — 1 punto spostato a llms_blockquote (#39)
     "llms_h1": 2,  # era 3
+    "llms_blockquote": 1,  # #39: blockquote description presente
     "llms_sections": 2,  # era 4
     "llms_links": 2,  # era 3
     "llms_depth": 2,  # NUOVO: word_count >= 1000

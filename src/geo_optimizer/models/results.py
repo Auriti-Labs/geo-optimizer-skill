@@ -59,6 +59,11 @@ class LlmsTxtResult:
     # #247: llms.txt Policy Intelligence — analisi contenuto
     sections_count: int = 0
     links_count: int = 0
+    # #39: validazione llms.txt v2 — conformità spec completa
+    has_blockquote: bool = False  # > blockquote description presente
+    has_optional_section: bool = False  # sezione ## Optional presente
+    companion_files_hint: bool = False  # link a file .md companion
+    validation_warnings: list[str] = field(default_factory=list)  # warning di conformità
 
 
 # ─── Schema JSON-LD ──────────────────────────────────────────────────────────

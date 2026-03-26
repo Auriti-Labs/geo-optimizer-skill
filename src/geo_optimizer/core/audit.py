@@ -105,6 +105,56 @@ def audit_robots_txt(base_url: str, bots: dict = None) -> RobotsResult:
     return result
 
 
+def _validate_llms_content(result: LlmsTxtResult, content: str) -> None:
+    """Validate llms.txt content against spec v2 and populate result fields.
+
+    Popola has_blockquote, has_optional_section, companion_files_hint
+    e validation_warnings sul result passato.
+
+    Args:
+        result: LlmsTxtResult già inizializzato con i campi base.
+        content: Contenuto testuale del file llms.txt (già senza BOM).
+    """
+    lines = content.splitlines()
+    warnings: list[str] = []
+
+    # Validazione blockquote (> description) — REQUIRED per spec
+    blockquotes = [line for line in lines if line.startswith("> ")]
+    if blockquotes:
+        result.has_blockquote = True
+    else:
+        warnings.append("llms.txt should have a > blockquote description after H1")
+
+    # Validazione H1 come prima riga non vuota
+    non_empty_lines = [line for line in lines if line.strip()]
+    if non_empty_lines and not non_empty_lines[0].startswith("# "):
+        warnings.append("H1 should be the first line of llms.txt")
+
+    # Validazione link markdown
+    if not result.has_links:
+        warnings.append("llms.txt should contain markdown links to site pages")
+
+    # Validazione lunghezza minima
+    if result.word_count < 100:
+        warnings.append("llms.txt is too short, consider adding more content")
+
+    # Sezione ## Optional — buona pratica
+    h2_lines = [line for line in lines if line.startswith("## ")]
+    for h2 in h2_lines:
+        if "optional" in h2.lower():
+            result.has_optional_section = True
+            break
+
+    # Companion files: link a file .md (es. something.html.md)
+    links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
+    for _text, url in links:
+        if url.endswith(".md"):
+            result.companion_files_hint = True
+            break
+
+    result.validation_warnings = warnings
+
+
 def audit_llms_txt(base_url: str) -> LlmsTxtResult:
     """Check for presence and quality of llms.txt. Returns LlmsTxtResult."""
     llms_url = urljoin(base_url, "/llms.txt")
@@ -148,6 +198,9 @@ def audit_llms_txt(base_url: str) -> LlmsTxtResult:
         result.has_links = True
     # #247: conta link per Policy Intelligence
     result.links_count = len(links)
+
+    # #39: validazione v2 — conformità spec completa
+    _validate_llms_content(result, content)
 
     # Check /llms-full.txt (llmstxt.org spec — optional extended version)
     full_url = urljoin(base_url, "/llms-full.txt")
@@ -531,7 +584,11 @@ def build_recommendations(base_url, robots, llms, schema, meta, content, ai_disc
     if not robots.citation_bots_ok:
         recommendations.append("Update robots.txt to include all AI bots (GPTBot, ClaudeBot, PerplexityBot)")
     if not llms.found:
-        recommendations.append(f"Create /llms.txt for AI indexing: geo llms --base-url {base_url}")
+        recommendations.append(
+            f"Create /llms.txt for AI indexing: geo llms --base-url {base_url}. "
+            "Note: llms.txt is an organizational signal, not a proven ranking factor. "
+            "It helps structure content for AI systems."
+        )
     elif llms.found:
         # #247: llms.txt Policy Intelligence — raccomandazioni sulla qualità del contenuto
         if llms.sections_count == 0:
@@ -543,6 +600,10 @@ def build_recommendations(base_url, robots, llms, schema, meta, content, ai_disc
                 f"llms.txt has only {llms.links_count} links. "
                 "Add more markdown links to key pages for better AI indexing coverage."
             )
+        # #39: aggiungi validation warnings alle raccomandazioni
+        if hasattr(llms, "validation_warnings"):
+            for warning in llms.validation_warnings:
+                recommendations.append(warning)
     if not schema.has_website:
         recommendations.append("Add WebSite JSON-LD schema to homepage")
     if not schema.has_faq:
@@ -1002,6 +1063,9 @@ def _audit_llms_from_response(r, r_full=None) -> LlmsTxtResult:
         result.has_links = True
     # #247: conta link per Policy Intelligence
     result.links_count = len(links)
+
+    # #39: validazione v2 — conformità spec completa
+    _validate_llms_content(result, content)
 
     # Check /llms-full.txt — fix #184: now works in the async path too
     if r_full and r_full.status_code == 200 and len(r_full.text.strip()) > 0:
