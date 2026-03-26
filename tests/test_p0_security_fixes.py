@@ -370,9 +370,10 @@ class TestScoringConsistency:
                 "robots.found": True,
                 "robots.citation_bots_ok": True,
                 "robots.citation_bots_explicit": True,
-                # llms: 6 + 2 + 2 + 2 + 2 + 2 + 2 = 18
+                # llms: 5 + 2 + 1 + 2 + 2 + 2 + 2 + 2 = 18
                 "llms.found": True,
                 "llms.has_h1": True,
+                "llms.has_blockquote": True,
                 "llms.has_sections": True,
                 "llms.has_links": True,
                 "llms.word_count": 5000,  # depth + depth_high
