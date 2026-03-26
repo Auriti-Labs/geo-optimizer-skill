@@ -19,3 +19,7 @@ services:
         value: "1"
       - key: PYTHONUNBUFFERED
         value: "1"
+      - key: GEO_STATS_API_URL
+        value: "https://agencypilot.it/api/geo-stats"
+      - key: GEO_STATS_API_KEY
+        sync: false  # da impostare manualmente nella dashboard Render

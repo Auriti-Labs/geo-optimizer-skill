@@ -427,28 +427,30 @@ async def compare_page(request: Request):
     return html.replace("__NONCE_ATTR__", nonce_attr)
 
 
-# ─── Contatore audit persistente ─────────────────────────────────────────────
-# Salvato su file per sopravvivere ai restart del servizio (Render free tier)
-_COUNTER_FILE = Path("/tmp/geo_audit_counter.txt")
+# ─── Stats API esterna (AgencyPilot) ─────────────────────────────────────────
+# Il contatore audit è persistente su un DB SQLite esterno via API REST
+_STATS_API_URL = os.environ.get("GEO_STATS_API_URL", "https://agencypilot.it/api/geo-stats")
+_STATS_API_KEY = os.environ.get("GEO_STATS_API_KEY", "")
 
 
-def _load_audit_counter() -> int:
-    """Carica il contatore da file. Ritorna 0 se il file non esiste."""
+def _increment_remote_stat(key: str, amount: int = 1) -> None:
+    """Incrementa un contatore sull'API esterna (best-effort, non blocca se fallisce)."""
+    import json as _json
+    import urllib.request
+
+    if not _STATS_API_KEY:
+        return
     try:
-        return int(_COUNTER_FILE.read_text().strip())
-    except (FileNotFoundError, ValueError):
-        return 0
-
-
-def _save_audit_counter(count: int) -> None:
-    """Salva il contatore su file (best-effort, non blocca se fallisce)."""
-    try:
-        _COUNTER_FILE.write_text(str(count))
-    except OSError:
-        pass
-
-
-_audit_counter: int = _load_audit_counter()
+        data = _json.dumps({"key": key, "amount": amount}).encode()
+        req = urllib.request.Request(
+            f"{_STATS_API_URL}/increment",
+            data=data,
+            headers={"Content-Type": "application/json", "X-API-Key": _STATS_API_KEY},
+            method="POST",
+        )
+        urllib.request.urlopen(req, timeout=3)
+    except Exception:
+        pass  # Best-effort: non bloccare l'audit se l'API è down
 
 
 @app.get("/health")
@@ -475,11 +477,9 @@ async def stats():
     # Cache semplice in-memory tramite attributo della funzione
     cached = getattr(stats, cache_key, None)
     if cached and (_time.time() - cached["ts"]) < cache_ttl:
-        # Aggiorna solo il contatore audit (sempre fresco)
-        cached["data"]["audits_run"] = _audit_counter
         return cached["data"]
 
-    result = {"github_stars": 0, "pypi_downloads_month": 0, "audits_run": _audit_counter}
+    result = {"github_stars": 0, "pypi_downloads_month": 0, "audits_run": 0}
 
     def _fetch_json(url: str, headers: dict | None = None) -> dict | None:
         """Fetch JSON da URL con timeout 5s. Ritorna None se fallisce."""
@@ -491,8 +491,8 @@ async def stats():
         except Exception:
             return None
 
-    # Esegui le chiamate in thread separati per non bloccare l'event loop
-    github_data, pypi_data = await asyncio.gather(
+    # Esegui le 3 chiamate in parallelo (GitHub, PyPI, AgencyPilot stats)
+    github_data, pypi_data, geo_stats = await asyncio.gather(
         asyncio.to_thread(
             _fetch_json,
             "https://api.github.com/repos/Auriti-Labs/geo-optimizer-skill",
@@ -501,6 +501,10 @@ async def stats():
         asyncio.to_thread(
             _fetch_json,
             "https://pypistats.org/api/packages/geo-optimizer-skill/system?mirrors=false",
+        ),
+        asyncio.to_thread(
+            _fetch_json,
+            _STATS_API_URL,
         ),
     )
 
@@ -514,6 +518,10 @@ async def stats():
             item.get("downloads", 0) for item in pypi_data.get("data", []) if item.get("category") not in (None, "null")
         )
         result["pypi_downloads_month"] = downloads
+
+    # Audit counter dal DB persistente su AgencyPilot
+    if geo_stats and "stats" in geo_stats:
+        result["audits_run"] = geo_stats["stats"].get("audits", 0)
 
     setattr(stats, cache_key, {"data": result, "ts": _time.time()})
     return result
@@ -860,10 +868,8 @@ async def _run_audit(url: str) -> JSONResponse:
     # Serialize result
     data = _audit_result_to_dict(result)
 
-    # Incrementa contatore audit e salva su file per persistenza
-    global _audit_counter
-    _audit_counter += 1
-    _save_audit_counter(_audit_counter)
+    # Incrementa contatore audit sul DB persistente (AgencyPilot)
+    await asyncio.to_thread(_increment_remote_stat, "audits")
 
     # Save to cache
     report_id = await _set_cached(url, data)
