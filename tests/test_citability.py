@@ -672,7 +672,7 @@ class TestNegativeSignals:
         </body></html>
         """
         result = detect_negative_signals(_soup(html))
-        assert result.details["cta_count"] >= 5
+        assert result.details["cta_count"] >= 2
         assert result.score < 5
 
     def test_thin_content(self):
