@@ -427,9 +427,28 @@ async def compare_page(request: Request):
     return html.replace("__NONCE_ATTR__", nonce_attr)
 
 
-# ─── Contatore audit globale ─────────────────────────────────────────────────
-# Contatore in-memory degli audit eseguiti (reset al restart del servizio)
-_audit_counter: int = 0
+# ─── Contatore audit persistente ─────────────────────────────────────────────
+# Salvato su file per sopravvivere ai restart del servizio (Render free tier)
+_COUNTER_FILE = Path("/tmp/geo_audit_counter.txt")
+
+
+def _load_audit_counter() -> int:
+    """Carica il contatore da file. Ritorna 0 se il file non esiste."""
+    try:
+        return int(_COUNTER_FILE.read_text().strip())
+    except (FileNotFoundError, ValueError):
+        return 0
+
+
+def _save_audit_counter(count: int) -> None:
+    """Salva il contatore su file (best-effort, non blocca se fallisce)."""
+    try:
+        _COUNTER_FILE.write_text(str(count))
+    except OSError:
+        pass
+
+
+_audit_counter: int = _load_audit_counter()
 
 
 @app.get("/health")
@@ -841,9 +860,10 @@ async def _run_audit(url: str) -> JSONResponse:
     # Serialize result
     data = _audit_result_to_dict(result)
 
-    # Incrementa contatore audit globale
+    # Incrementa contatore audit e salva su file per persistenza
     global _audit_counter
     _audit_counter += 1
+    _save_audit_counter(_audit_counter)
 
     # Save to cache
     report_id = await _set_cached(url, data)
