@@ -39,6 +39,14 @@ from geo_optimizer.core.citability import (
     detect_statistics,
     detect_technical_terms,
     detect_unique_words,
+    detect_voice_search,
+    detect_multi_platform,
+    detect_entity_disambiguation,
+    detect_first_party_data,
+    detect_stale_data,
+    detect_social_proof,
+    detect_accessibility_signals,
+    detect_conversion_funnel,
 )
 
 
@@ -1074,9 +1082,9 @@ class TestWeightSum:
         """Verifica che i 18 metodi base sommano 100, i 7 bonus aggiungono 31."""
         html = "<html><body><p>Test content.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
-        # 18 metodi base = 100, 7 bonus batch2 = 31, 5 bonus batch3+4 = 18, totale = 149
+        # 18 metodi base = 100, 7 bonus batch2 = 31, 5 bonus batch3+4 = 18, 8 bonus batchA = 27, totale = 176
         total_max = sum(m.max_score for m in result.methods)
-        assert total_max == 149, f"Somma max_score = {total_max}, atteso 149 (100 base + 31 batch2 + 18 batch3+4)"
+        assert total_max == 176, f"Somma max_score = {total_max}, atteso 176 (100 base + 31 batch2 + 18 batch3+4 + 27 batchA)"
         # Ma il total_score è sempre cappato a 100
         assert result.total_score <= 100
 
@@ -1126,7 +1134,7 @@ class TestAuditCitability:
 
         assert result.total_score > 0
         assert result.grade in ("low", "medium", "high", "excellent")
-        assert len(result.methods) == 30
+        assert len(result.methods) == 38
 
         # Verifica che ogni metodo abbia un nome
         names = {m.name for m in result.methods}
@@ -1156,13 +1164,285 @@ class TestAuditCitability:
         assert "blog_structure" in names
         assert "shopping_readiness" in names
         assert "chatgpt_shopping" in names
+        # Quality Signals Batch A v3.16.0
+        assert "voice_search_ready" in names
+        assert "multi_platform" in names
+        assert "entity_disambiguation" in names
+        assert "first_party_data" in names
+        assert "no_stale_data" in names
+        assert "social_proof" in names
+        assert "accessibility_signals" in names
+        assert "conversion_funnel" in names
 
     def test_pagina_vuota(self):
         result = audit_citability(_soup("<html><body></body></html>"), "https://example.com")
         assert result.total_score >= 0
-        assert len(result.methods) == 30
+        assert len(result.methods) == 38
 
     def test_top_improvements_generate(self):
         result = audit_citability(_soup("<html><body><p>Testo semplice.</p></body></html>"), "https://example.com")
         assert len(result.top_improvements) > 0
         assert any("+" in imp for imp in result.top_improvements)
+
+
+# ============================================================================
+# TEST: Voice/Conversational Search (+5%) — Batch A v3.16.0
+# ============================================================================
+
+
+class TestVoiceSearch:
+    def test_rileva_heading_domanda(self):
+        html = """
+        <html><body>
+            <h2>What is SEO?</h2>
+            <p>SEO is the practice of optimizing websites for search engines.</p>
+            <h2>How do I improve my rankings?</h2>
+            <p>Focus on content quality and technical optimization.</p>
+        </body></html>
+        """
+        result = detect_voice_search(_soup(html))
+        assert result.detected
+        assert result.score >= 2
+        assert result.details["question_headings"] >= 2
+        assert result.details["concise_answers"] >= 1
+
+    def test_nessuna_domanda(self):
+        html = "<html><body><h2>SEO Guide</h2><p>Some content here.</p></body></html>"
+        result = detect_voice_search(_soup(html))
+        assert not result.detected
+        assert result.score == 0
+
+    def test_speakable_schema(self):
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {"@type": "WebPage", "speakable": {"@type": "SpeakableSpecification", "cssSelector": [".intro"]}}
+            </script>
+            <p>Content here.</p>
+        </body></html>
+        """
+        result = detect_voice_search(_soup(html))
+        assert result.detected
+        assert result.details["has_speakable_schema"]
+
+
+# ============================================================================
+# TEST: Multi-Platform Presence (+10%) — Batch A v3.16.0
+# ============================================================================
+
+
+class TestMultiPlatform:
+    def test_rileva_piattaforme_da_sameas(self):
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {"@type": "Organization", "name": "Test", "sameAs": [
+                "https://github.com/test",
+                "https://linkedin.com/in/test",
+                "https://twitter.com/test",
+                "https://www.youtube.com/test",
+                "https://medium.com/@test"
+            ]}
+            </script>
+        </body></html>
+        """
+        result = detect_multi_platform(_soup(html))
+        assert result.detected
+        assert result.score == 4
+        assert result.details["platform_count"] == 5
+
+    def test_poche_piattaforme(self):
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {"@type": "Organization", "sameAs": ["https://github.com/test"]}
+            </script>
+        </body></html>
+        """
+        result = detect_multi_platform(_soup(html))
+        assert not result.detected
+        assert result.score == 0
+
+
+# ============================================================================
+# TEST: Entity Disambiguation (+8%) — Batch A v3.16.0
+# ============================================================================
+
+
+class TestEntityDisambiguation:
+    def test_nomi_consistenti(self):
+        html = """
+        <html>
+        <head>
+            <title>AgencyPilot</title>
+            <meta property="og:title" content="AgencyPilot">
+            <script type="application/ld+json">
+            {"@type": "Organization", "name": "AgencyPilot", "sameAs": [
+                "https://github.com/test", "https://twitter.com/test",
+                "https://linkedin.com/test", "https://youtube.com/test"
+            ]}
+            </script>
+        </head>
+        <body><p>AgencyPilot is a SaaS for WordPress management.</p></body>
+        </html>
+        """
+        result = detect_entity_disambiguation(_soup(html))
+        assert result.detected
+        assert result.score >= 2
+
+    def test_nomi_inconsistenti(self):
+        html = """
+        <html>
+        <head>
+            <title>AgencyPilot</title>
+            <meta property="og:title" content="Something Else">
+        </head>
+        <body><p>Random content here.</p></body>
+        </html>
+        """
+        result = detect_entity_disambiguation(_soup(html))
+        assert result.score <= 1
+
+
+# ============================================================================
+# TEST: First-Party Data (+12%) — Batch A v3.16.0
+# ============================================================================
+
+
+class TestFirstPartyData:
+    def test_rileva_ricerca_propria(self):
+        html = """
+        <html><body>
+            <h2>Methodology</h2>
+            <p>Our research analyzed 500 websites over 6 months.
+            We found that 73% of sites lack proper schema markup.
+            Our data shows a clear correlation between freshness and rankings.</p>
+        </body></html>
+        """
+        result = detect_first_party_data(_soup(html))
+        assert result.detected
+        assert result.score >= 3
+        assert result.details["has_methodology_section"]
+
+    def test_nessun_dato_proprio(self):
+        html = "<html><body><p>SEO is important for websites.</p></body></html>"
+        result = detect_first_party_data(_soup(html))
+        assert not result.detected
+        assert result.score == 0
+
+
+# ============================================================================
+# TEST: Stale Data Detection (-10%) — Batch A v3.16.0
+# ============================================================================
+
+
+class TestStaleData:
+    def test_contenuto_pulito(self):
+        html = "<html><body><p>Fresh content about modern SEO in 2026.</p></body></html>"
+        result = detect_stale_data(_soup(html))
+        assert result.detected  # detected = pulito (nessuna penalità)
+        assert result.score == 4
+
+    def test_copyright_vecchio(self):
+        html = """
+        <html><body>
+            <p>Some content</p>
+            <footer>© 2022 Old Company. All rights reserved.</footer>
+        </body></html>
+        """
+        result = detect_stale_data(_soup(html))
+        assert not result.detected
+        assert result.score <= 2
+        assert result.details["old_copyright_in_footer"]
+
+    def test_riferimenti_stale(self):
+        html = """
+        <html><body>
+            <p>As of 2023, the market was growing. In 2022, we saw changes.
+            The data from 2021 shows interesting trends.</p>
+        </body></html>
+        """
+        result = detect_stale_data(_soup(html))
+        assert not result.detected
+        assert result.score < 4
+
+
+# ============================================================================
+# TEST: Social Proof (+8%) — Batch A v3.16.0
+# ============================================================================
+
+
+class TestSocialProof:
+    def test_rileva_testimonial_e_rating(self):
+        html = """
+        <html><body>
+            <div class="testimonial">
+                <blockquote>"Great product!"<footer>— John Doe</footer></blockquote>
+            </div>
+            <script type="application/ld+json">
+            {"@type": "Product", "aggregateRating": {"@type": "AggregateRating",
+             "ratingValue": "4.5", "reviewCount": "150"}}
+            </script>
+            <img alt="Certified Partner Badge" src="/badge.png">
+        </body></html>
+        """
+        result = detect_social_proof(_soup(html))
+        assert result.detected
+        assert result.score == 3
+
+    def test_nessun_social_proof(self):
+        html = "<html><body><p>Simple text without any proof.</p></body></html>"
+        result = detect_social_proof(_soup(html))
+        assert result.score == 0
+
+
+# ============================================================================
+# TEST: Accessibility Signals (+5%) — Batch A v3.16.0
+# ============================================================================
+
+
+class TestAccessibilitySignals:
+    def test_rileva_html_semantico(self):
+        html = """
+        <html><body>
+            <a href="#main">Skip to content</a>
+            <header><nav role="navigation">Menu</nav></header>
+            <main role="main"><p>Content</p></main>
+            <footer>Footer</footer>
+        </body></html>
+        """
+        result = detect_accessibility_signals(_soup(html))
+        assert result.detected
+        assert result.score == 3
+
+    def test_nessun_segnale_accessibilita(self):
+        html = "<html><body><div>Content in a div only.</div></body></html>"
+        result = detect_accessibility_signals(_soup(html))
+        assert result.score == 0
+
+
+# ============================================================================
+# TEST: AI Conversion Funnel (+8%) — Batch A v3.16.0
+# ============================================================================
+
+
+class TestConversionFunnel:
+    def test_rileva_cta_pricing_contatto(self):
+        html = """
+        <html><body>
+            <a href="/pricing">View Plans</a>
+            <a href="mailto:info@example.com">Contact us</a>
+            <button>Get Started</button>
+        </body></html>
+        """
+        result = detect_conversion_funnel(_soup(html))
+        assert result.detected
+        assert result.score == 3
+        assert result.details["has_cta"]
+        assert result.details["has_pricing_link"]
+        assert result.details["has_contact"]
+
+    def test_nessun_funnel(self):
+        html = "<html><body><p>Just some informational text.</p></body></html>"
+        result = detect_conversion_funnel(_soup(html))
+        assert result.score == 0

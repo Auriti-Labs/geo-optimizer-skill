@@ -2073,6 +2073,551 @@ def detect_chatgpt_shopping(soup) -> MethodScore:
     )
 
 
+# ─── Voice/Conversational Search (+5%) — Batch A v3.16.0 ─────────────────────
+
+# Pattern per heading in formato domanda naturale (EN + IT)
+_QUESTION_HEADING_RE = re.compile(
+    r"^(?:how\s+(?:do|can|to|does)|what\s+is|what\s+are|why\s+(?:do|is|are|does)"
+    r"|when\s+(?:do|is|should)|where\s+(?:do|can|is)|which\s+(?:is|are)"
+    r"|come\s+(?:funziona|fare|si)|cosa\s+(?:è|sono)|perché\s+(?:è|si)"
+    r"|qual\s+è|quali\s+sono|quando\s+(?:è|si))",
+    re.IGNORECASE,
+)
+
+
+def detect_voice_search(soup) -> MethodScore:
+    """Detect voice/conversational search readiness signals."""
+    score = 0
+    question_headings = 0
+    concise_answers = 0
+    has_speakable = False
+
+    # 1. Cerca heading in formato domanda naturale
+    headings = soup.find_all(re.compile(r"^h[1-6]$", re.I))
+    for h in headings:
+        text = h.get_text(strip=True)
+        if "?" in text or _QUESTION_HEADING_RE.search(text):
+            question_headings += 1
+            # Cerca risposta concisa dopo heading con "?"
+            if "?" in text:
+                next_p = h.find_next("p")
+                if next_p:
+                    words = next_p.get_text(strip=True).split()
+                    if 0 < len(words) < 60:
+                        concise_answers += 1
+
+    if question_headings >= 2:
+        score += 1
+    if concise_answers >= 1:
+        score += 1
+
+    # 2. Cerca speakable schema in qualsiasi JSON-LD
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if isinstance(item, dict) and "speakable" in item:
+                    has_speakable = True
+                    break
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if has_speakable:
+            break
+
+    if has_speakable:
+        score += 1
+
+    return MethodScore(
+        name="voice_search_ready",
+        label="Voice/Conversational Search",
+        detected=question_headings >= 2 or has_speakable,
+        score=min(score, 3),
+        max_score=3,
+        impact="+5%",
+        details={
+            "question_headings": question_headings,
+            "concise_answers": concise_answers,
+            "has_speakable_schema": has_speakable,
+        },
+    )
+
+
+# ─── Multi-Platform Presence (+10%) — Batch A v3.16.0 ────────────────────────
+
+# Piattaforme riconosciute per multi-platform presence
+_PLATFORM_DOMAINS = {
+    "github.com": "GitHub",
+    "linkedin.com": "LinkedIn",
+    "twitter.com": "Twitter/X",
+    "x.com": "Twitter/X",
+    "youtube.com": "YouTube",
+    "reddit.com": "Reddit",
+    "wikipedia.org": "Wikipedia",
+    "medium.com": "Medium",
+    "facebook.com": "Facebook",
+}
+
+
+def detect_multi_platform(soup) -> MethodScore:
+    """Detect multi-platform presence via sameAs URLs in schema."""
+    platforms_found: set[str] = set()
+
+    # Estrai sameAs da tutti gli schema JSON-LD
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                same_as = item.get("sameAs", [])
+                if isinstance(same_as, str):
+                    same_as = [same_as]
+                for url in same_as:
+                    if not isinstance(url, str):
+                        continue
+                    parsed = urlparse(url)
+                    domain = parsed.netloc.lower().removeprefix("www.")
+                    for plat_domain, plat_name in _PLATFORM_DOMAINS.items():
+                        if domain.endswith(plat_domain):
+                            platforms_found.add(plat_name)
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+    count = len(platforms_found)
+    if count >= 5:
+        score = 4
+    elif count >= 3:
+        score = 2
+    else:
+        score = 0
+
+    return MethodScore(
+        name="multi_platform",
+        label="Multi-Platform Presence",
+        detected=count >= 3,
+        score=min(score, 4),
+        max_score=4,
+        impact="+10%",
+        details={
+            "platforms_found": sorted(platforms_found),
+            "platform_count": count,
+        },
+    )
+
+
+# ─── Entity Disambiguation (+8%) — Batch A v3.16.0 ───────────────────────────
+
+
+def detect_entity_disambiguation(soup) -> MethodScore:
+    """Detect entity disambiguation signals: consistent naming and explicit definitions."""
+    score = 0
+
+    # 1. Raccogli nomi dal title, og:title, schema name
+    names: list[str] = []
+    title_tag = soup.find("title")
+    if title_tag and title_tag.string:
+        # Prendi la parte prima di separatori comuni
+        raw = title_tag.string.strip()
+        parts = re.split(r"\s*[|\-–—]\s*", raw)
+        if parts:
+            names.append(parts[0].strip().lower())
+
+    og_title = soup.find("meta", attrs={"property": "og:title"})
+    if og_title and og_title.get("content"):
+        parts = re.split(r"\s*[|\-–—]\s*", og_title["content"])
+        if parts:
+            names.append(parts[0].strip().lower())
+
+    # Nome dallo schema JSON-LD
+    schema_name = None
+    sameas_count = 0
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if isinstance(item, dict):
+                    if "name" in item and not schema_name:
+                        schema_name = str(item["name"]).strip().lower()
+                        names.append(schema_name)
+                    same_as = item.get("sameAs", [])
+                    if isinstance(same_as, str):
+                        same_as = [same_as]
+                    if isinstance(same_as, list):
+                        sameas_count = max(sameas_count, len(same_as))
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+    # Verifica consistenza: almeno 2 nomi e tutti uguali
+    if len(names) >= 2:
+        unique_names = set(names)
+        if len(unique_names) == 1:
+            score += 1
+
+    # 2. Prima frase contiene definizione esplicita del brand/sito
+    body = soup.find("body")
+    if body:
+        # Cerca il primo paragrafo significativo
+        first_p = body.find("p")
+        if first_p:
+            first_text = first_p.get_text(strip=True)
+            # Cerca pattern definitorio: "X is...", "X è..."
+            if re.search(r"\b(?:is|are|è|sono)\s+(?:a|an|the|un|una|il|la|lo)\b", first_text, re.I):
+                score += 1
+
+    # 3. sameAs con > 3 link (bonus disambiguazione)
+    if sameas_count > 3:
+        score += 1
+
+    return MethodScore(
+        name="entity_disambiguation",
+        label="Entity Disambiguation",
+        detected=score >= 2,
+        score=min(score, 3),
+        max_score=3,
+        impact="+8%",
+        details={
+            "names_found": names,
+            "names_consistent": len(set(names)) <= 1 if names else False,
+            "sameas_count": sameas_count,
+        },
+    )
+
+
+# ─── First-Party Data (+12%) — Batch A v3.16.0 ──────────────────────────────
+
+# Pattern per dati di prima parte
+_FIRST_PARTY_PATTERNS = re.compile(
+    r"\b(?:our\s+research|we\s+analyzed|our\s+data\s+shows?"
+    r"|our\s+study|we\s+found|our\s+analysis|we\s+discovered"
+    r"|we\s+tested|our\s+findings|we\s+measured"
+    r"|la\s+nostra\s+ricerca|abbiamo\s+analizzato|i\s+nostri\s+dati)\b",
+    re.IGNORECASE,
+)
+
+# Pattern per numeri specifici attribuiti al sito (non citazioni esterne)
+_OWN_DATA_RE = re.compile(
+    r"\b(?:we|our\s+team|our\s+company)\s+\w+\s+\d+",
+    re.IGNORECASE,
+)
+
+
+def detect_first_party_data(soup, clean_text: str | None = None) -> MethodScore:
+    """Detect first-party data and original research signals."""
+    body_text = clean_text or _get_clean_text(soup)
+    score = 0
+
+    # 1. Pattern di ricerca propria
+    first_party_matches = _FIRST_PARTY_PATTERNS.findall(body_text)
+    if len(first_party_matches) >= 2:
+        score += 2
+    elif len(first_party_matches) >= 1:
+        score += 1
+
+    # 2. Numeri specifici attribuiti al sito stesso
+    own_data_matches = _OWN_DATA_RE.findall(body_text)
+    if own_data_matches:
+        score += 1
+
+    # 3. Sezione "Methodology" o "Methods"
+    has_methodology = False
+    for h in soup.find_all(re.compile(r"^h[1-6]$", re.I)):
+        h_text = h.get_text(strip=True).lower()
+        if h_text in (
+            "methodology",
+            "methods",
+            "our methodology",
+            "research methodology",
+            "metodologia",
+            "metodo",
+            "la nostra metodologia",
+        ):
+            has_methodology = True
+            break
+    if has_methodology:
+        score += 1
+
+    return MethodScore(
+        name="first_party_data",
+        label="First-Party Data",
+        detected=score >= 2,
+        score=min(score, 4),
+        max_score=4,
+        impact="+12%",
+        details={
+            "first_party_patterns": len(first_party_matches),
+            "own_data_signals": len(own_data_matches),
+            "has_methodology_section": has_methodology,
+        },
+    )
+
+
+# ─── Stale Data Detection (-10%) — Batch A v3.16.0 ──────────────────────────
+
+
+def detect_stale_data(soup, clean_text: str | None = None) -> MethodScore:
+    """Detect stale data signals. Score INVERSO: 4 se pulito, 0 se molto stale."""
+    body_text = clean_text or _get_clean_text(soup)
+    now = datetime.now(tz=timezone.utc)
+    current_year = now.year
+    penalties = 0
+
+    # 1. Copyright anno vecchio nel footer
+    footer = soup.find("footer")
+    old_copyright = False
+    if footer:
+        footer_text = footer.get_text(strip=True)
+        copyright_years = re.findall(r"©\s*(20\d{2})|copyright\s*(20\d{2})", footer_text, re.I)
+        for match in copyright_years:
+            year = int(match[0] or match[1])
+            if year < current_year - 1:
+                old_copyright = True
+                penalties += 2
+                break
+
+    # 2. Pattern "as of YYYY" o "in YYYY" con anno stale nel testo
+    stale_refs = re.findall(
+        r"\b(?:as\s+of|in|nel|del|aggiornato\s+al?)\s+(20[12]\d)\b",
+        body_text,
+        re.IGNORECASE,
+    )
+    stale_year_refs = [int(y) for y in stale_refs if int(y) < current_year - 1]
+    if len(stale_year_refs) >= 3:
+        penalties += 2
+    elif len(stale_year_refs) >= 1:
+        penalties += 1
+
+    # Score inverso: 4 se pulito, 0 se molto stale
+    score = max(4 - penalties, 0)
+
+    return MethodScore(
+        name="no_stale_data",
+        label="No Stale Data",
+        detected=penalties == 0,
+        score=min(score, 4),
+        max_score=4,
+        impact="-10%",
+        details={
+            "old_copyright_in_footer": old_copyright,
+            "stale_year_references": stale_year_refs,
+            "penalties": penalties,
+        },
+    )
+
+
+# ─── Social Proof (+8%) — Batch A v3.16.0 ────────────────────────────────────
+
+
+def detect_social_proof(soup) -> MethodScore:
+    """Detect social proof signals: testimonials, ratings, trust badges."""
+    score = 0
+
+    # 1. Testimonial: class="testimonial", blockquote con nome, "as seen in"
+    has_testimonial = False
+    testimonial_divs = soup.find_all(
+        ["div", "section", "aside"],
+        class_=re.compile(r"testimonial|review|customer-quote", re.I),
+    )
+    if testimonial_divs:
+        has_testimonial = True
+
+    # Blockquote con attribuzione (nome persona)
+    blockquotes = soup.find_all("blockquote")
+    for bq in blockquotes:
+        # Cerca cite o footer dentro blockquote
+        cite = bq.find(["cite", "footer", "figcaption"])
+        if cite:
+            has_testimonial = True
+            break
+
+    # Pattern "as seen in" / "as featured in"
+    body_text = _get_clean_text(soup)
+    if re.search(r"\b(?:as\s+seen\s+in|as\s+featured\s+in|featured\s+by|trusted\s+by)\b", body_text, re.I):
+        has_testimonial = True
+
+    if has_testimonial:
+        score += 1
+
+    # 2. AggregateRating nel schema con reviewCount > 10
+    has_rating = False
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if isinstance(item, dict):
+                    rating = item.get("aggregateRating", {})
+                    if isinstance(rating, dict):
+                        review_count = int(rating.get("reviewCount", 0))
+                        if review_count > 10:
+                            has_rating = True
+        except (json.JSONDecodeError, TypeError, ValueError):
+            continue
+
+    if has_rating:
+        score += 1
+
+    # 3. Trust badges, partner logos
+    has_trust_badges = False
+    badge_imgs = soup.find_all(
+        "img",
+        attrs={
+            "alt": re.compile(r"badge|certified|partner|award|trust|seal|logo", re.I),
+        },
+    )
+    if badge_imgs:
+        has_trust_badges = True
+
+    # Sezione trust/partner
+    trust_sections = soup.find_all(
+        ["div", "section"],
+        class_=re.compile(r"partner|trust|badge|certified|award|client-logo", re.I),
+    )
+    if trust_sections:
+        has_trust_badges = True
+
+    if has_trust_badges:
+        score += 1
+
+    return MethodScore(
+        name="social_proof",
+        label="Social Proof",
+        detected=score >= 1,
+        score=min(score, 3),
+        max_score=3,
+        impact="+8%",
+        details={
+            "has_testimonial": has_testimonial,
+            "has_aggregate_rating": has_rating,
+            "has_trust_badges": has_trust_badges,
+        },
+    )
+
+
+# ─── Accessibility as Signal (+5%) — Batch A v3.16.0 ─────────────────────────
+
+
+def detect_accessibility_signals(soup) -> MethodScore:
+    """Detect accessibility signals: semantic HTML, ARIA landmarks, skip links."""
+    score = 0
+
+    # 1. Semantic HTML tags
+    semantic_tags = {"main", "nav", "header", "footer"}
+    found_semantic = set()
+    for tag_name in semantic_tags:
+        if soup.find(tag_name):
+            found_semantic.add(tag_name)
+
+    if len(found_semantic) >= 3:
+        score += 1
+
+    # 2. ARIA landmarks
+    aria_roles = {"main", "navigation", "banner", "contentinfo"}
+    found_aria = set()
+    for role in aria_roles:
+        if soup.find(attrs={"role": role}):
+            found_aria.add(role)
+
+    if found_aria:
+        score += 1
+
+    # 3. Skip link
+    has_skip_link = False
+    for a in soup.find_all("a", href=True):
+        href = a["href"].lower()
+        if href in ("#main", "#content", "#main-content", "#maincontent"):
+            has_skip_link = True
+            break
+        # Cerca anche testo "skip to"
+        link_text = a.get_text(strip=True).lower()
+        if "skip to" in link_text or "vai al contenuto" in link_text:
+            has_skip_link = True
+            break
+
+    if has_skip_link:
+        score += 1
+
+    return MethodScore(
+        name="accessibility_signals",
+        label="Accessibility Signals",
+        detected=score >= 1,
+        score=min(score, 3),
+        max_score=3,
+        impact="+5%",
+        details={
+            "semantic_tags": sorted(found_semantic),
+            "aria_landmarks": sorted(found_aria),
+            "has_skip_link": has_skip_link,
+        },
+    )
+
+
+# ─── AI Conversion Funnel (+8%) — Batch A v3.16.0 ────────────────────────────
+
+# Pattern CTA comuni
+_CTA_RE = re.compile(
+    r"\b(?:try\s+(?:it\s+)?(?:free|now)|start\s+(?:free|now|your)"
+    r"|sign\s+up|get\s+started|request\s+(?:a\s+)?demo"
+    r"|free\s+trial|book\s+(?:a\s+)?demo|inizia\s+(?:ora|gratis)"
+    r"|provalo?\s+(?:gratis|ora)|registrati)\b",
+    re.IGNORECASE,
+)
+
+
+def detect_conversion_funnel(soup) -> MethodScore:
+    """Detect AI conversion funnel signals: CTAs, pricing links, contact info."""
+    score = 0
+
+    # 1. CTA visibile (bottone/link con pattern CTA)
+    has_cta = False
+    for tag in soup.find_all(["a", "button"]):
+        text = tag.get_text(strip=True)
+        if _CTA_RE.search(text):
+            has_cta = True
+            break
+
+    if has_cta:
+        score += 1
+
+    # 2. Pricing page link
+    has_pricing = False
+    for a in soup.find_all("a", href=True):
+        href = a["href"].lower()
+        if "pricing" in href or "plans" in href or "prezzi" in href:
+            has_pricing = True
+            break
+
+    if has_pricing:
+        score += 1
+
+    # 3. Contatto (href con "contact", "mailto:")
+    has_contact = False
+    for a in soup.find_all("a", href=True):
+        href = a["href"].lower()
+        if "contact" in href or "mailto:" in href or "contatti" in href:
+            has_contact = True
+            break
+
+    if has_contact:
+        score += 1
+
+    return MethodScore(
+        name="conversion_funnel",
+        label="AI Conversion Funnel",
+        detected=score >= 1,
+        score=min(score, 3),
+        max_score=3,
+        impact="+8%",
+        details={
+            "has_cta": has_cta,
+            "has_pricing_link": has_pricing,
+            "has_contact": has_contact,
+        },
+    )
+
+
 # ─── Orchestrator ─────────────────────────────────────────────────────────────
 
 # Suggerimenti di miglioramento per ogni metodo non rilevato
@@ -2109,6 +2654,15 @@ _IMPROVEMENT_SUGGESTIONS = {
     "blog_structure": "Add Article/BlogPosting schema with datePublished, author, and categories (+8%)",
     "shopping_readiness": "Add Product schema with price, availability, and AggregateRating (+8%)",
     "chatgpt_shopping": "Complete Product schema with name, price, image, availability, brand for ChatGPT Shopping (+8%)",
+    # Quality Signals Batch A v3.16.0
+    "voice_search_ready": "Add question-format headings with concise answers for voice search (+5%)",
+    "multi_platform": "Add 3+ platform links in sameAs schema (GitHub, LinkedIn, Twitter, etc.) (+10%)",
+    "entity_disambiguation": "Use consistent naming across title, og:title, and schema; add explicit definition (+8%)",
+    "first_party_data": "Include original research signals: 'our data shows', methodology section (+12%)",
+    "no_stale_data": "Remove stale year references and update copyright year (-10%)",
+    "social_proof": "Add testimonials, AggregateRating with reviews, or trust badges (+8%)",
+    "accessibility_signals": "Use semantic HTML (<main>, <nav>), ARIA landmarks, and skip links (+5%)",
+    "conversion_funnel": "Add visible CTAs, pricing page link, and contact information (+8%)",
 }
 
 # Ordine per impatto decrescente (escluso penalità)
@@ -2140,9 +2694,19 @@ _METHOD_ORDER = [
     "blog_structure",
     "shopping_readiness",
     "chatgpt_shopping",
+    # Quality Signals Batch A v3.16.0
+    "first_party_data",
+    "multi_platform",
+    "entity_disambiguation",
+    "social_proof",
+    "conversion_funnel",
+    "voice_search_ready",
+    "accessibility_signals",
+    # Penalità
     "keyword_stuffing",
     "no_negative_signals",
     "no_content_decay",
+    "no_stale_data",
 ]
 
 
@@ -2206,6 +2770,15 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         detect_blog_structure(soup),
         detect_shopping_readiness(soup),
         detect_chatgpt_shopping(soup),
+        # Quality Signals Batch A v3.16.0 (bonus — cappati a 100 dal totale)
+        detect_voice_search(soup),
+        detect_multi_platform(soup),
+        detect_entity_disambiguation(soup),
+        detect_first_party_data(soup, clean_text=clean_text),
+        detect_stale_data(soup, clean_text=clean_text),
+        detect_social_proof(soup),
+        detect_accessibility_signals(soup),
+        detect_conversion_funnel(soup),
     ]
 
     # Somma score (max possibile = 100)
