@@ -23,9 +23,9 @@ from geo_optimizer.utils.validators import validate_public_url
 @click.option(
     "--format",
     "output_format",
-    type=click.Choice(["text", "json", "rich", "html", "github", "sarif", "junit"]),
+    type=click.Choice(["text", "json", "rich", "html", "pdf", "github", "sarif", "junit"]),
     default=None,
-    help="Output format: text (default), json, rich, html, github, sarif, or junit",
+    help="Output format: text (default), json, rich, html, pdf, github, sarif, or junit",
 )
 @click.option("--output", "output_file", default=None, help="Output file path (optional)")
 @click.option("--verbose", is_flag=True, help="Show detailed check output")
@@ -171,6 +171,29 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
         from geo_optimizer.cli.html_formatter import format_audit_html
 
         output = format_audit_html(result)
+    elif output_format == "pdf":
+        from geo_optimizer.cli.pdf_formatter import format_audit_pdf
+
+        # PDF è binario: scrive su file e termina (non passa per click.echo)
+        pdf_path = output_file or "geo-report.pdf"
+        try:
+            pdf_bytes = format_audit_pdf(result)
+        except ImportError as e:
+            click.echo(f"\n❌ {e}", err=True)
+            sys.exit(1)
+        with open(pdf_path, "wb") as f:
+            f.write(pdf_bytes)
+        click.echo(f"✅ PDF report written to: {pdf_path}")
+
+        # Controlla threshold anche per PDF
+        if min_score > 0 and result.score < min_score:
+            click.echo(
+                f"\n❌ Score {result.score}/100 below minimum required ({min_score})",
+                err=True,
+            )
+            exit_code = 1 if threshold is not None else 2
+            sys.exit(exit_code)
+        return result.score
     elif output_format == "github":
         from geo_optimizer.cli.github_formatter import format_audit_github
 

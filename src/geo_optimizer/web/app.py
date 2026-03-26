@@ -567,6 +567,86 @@ async def report(report_id: str):
     return HTMLResponse(content=format_audit_html(result))
 
 
+@app.get("/api/audit/pdf")
+async def audit_pdf(
+    request: Request,
+    url: str = Query(..., description="URL del sito da analizzare — genera report PDF"),
+):
+    """Generate and download PDF report for a URL."""
+    from fastapi.responses import Response
+
+    from geo_optimizer.utils.validators import validate_public_url
+
+    # Rate limit
+    if not await _check_rate_limit(_get_client_ip(request)):
+        raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
+
+    # Normalizza URL
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+
+    # Validazione anti-SSRF
+    safe, reason = validate_public_url(url)
+    if not safe:
+        raise HTTPException(status_code=400, detail=f"Unsafe URL: {reason}")
+
+    # Verifica disponibilità weasyprint
+    try:
+        from geo_optimizer.cli.pdf_formatter import format_audit_pdf  # noqa: F401
+    except Exception:
+        pass
+
+    try:
+        from weasyprint import HTML  # noqa: F401
+    except ImportError as exc:
+        raise HTTPException(
+            status_code=501,
+            detail="PDF generation not available. Install weasyprint: pip install geo-optimizer-skill[pdf]",
+        ) from exc
+
+    # Cache o audit
+    cached = await _get_cached(url)
+    if cached:
+        result = _dict_to_audit_result(cached)
+    else:
+        try:
+            from geo_optimizer.core.audit import run_full_audit
+
+            audit_result = await asyncio.wait_for(
+                asyncio.to_thread(run_full_audit, url),
+                timeout=60.0,
+            )
+            data = _audit_result_to_dict(audit_result)
+            await _set_cached(url, data)
+            result = audit_result
+        except asyncio.TimeoutError as exc:
+            raise HTTPException(
+                status_code=504,
+                detail="Audit timeout: site takes too long to respond.",
+            ) from exc
+        except Exception as e:
+            logger.error("PDF audit error for %s: %s", url, e)
+            raise HTTPException(
+                status_code=500,
+                detail="Internal error during audit. Try again later.",
+            ) from e
+
+    # Genera PDF
+    from geo_optimizer.cli.pdf_formatter import format_audit_pdf
+
+    try:
+        pdf_bytes = await asyncio.to_thread(format_audit_pdf, result)
+    except Exception as e:
+        logger.error("PDF generation error for %s: %s", url, e)
+        raise HTTPException(status_code=500, detail="Error generating PDF report.") from e
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=geo-report.pdf"},
+    )
+
+
 @app.get("/badge")
 async def badge(
     request: Request,

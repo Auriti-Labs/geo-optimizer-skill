@@ -49,6 +49,9 @@ web = [
     "uvicorn[standard]>=0.27.0,<1.0",
     "markdown>=3.5.0,<4.0",
 ]
+pdf = [
+    "weasyprint>=60.0",
+]
 mcp = [
     "mcp>=1.0.0",
 ]
@@ -59,7 +62,7 @@ dev = [
 ]
 # Gruppo convenienza: installa tutte le dipendenze opzionali utente (#136)
 all = [
-    "geo-optimizer-skill[async,web,mcp]",
+    "geo-optimizer-skill[async,web,mcp,pdf]",
 ]
 
 [project.urls]

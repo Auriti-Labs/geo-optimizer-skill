@@ -164,6 +164,13 @@ async function runAudit() {
             a.rel = 'noopener';
             a.textContent = 'View full HTML report';
             reportLinkEl.appendChild(a);
+
+            // Bottone Download PDF
+            const pdfLink = document.createElement('a');
+            pdfLink.href = '/api/audit/pdf?url=' + encodeURIComponent(urlInput.value.trim());
+            pdfLink.textContent = '📄 Download PDF';
+            pdfLink.style.cssText = 'margin-left:1rem;color:#f59e0b;text-decoration:none;font-size:.9rem';
+            reportLinkEl.appendChild(pdfLink);
         }
 
         resultEl.style.display = 'block';

@@ -12,8 +12,8 @@ WORKDIR /build
 COPY pyproject.toml README.md ./
 COPY src/ src/
 
-# Installa con le dipendenze web (FastAPI + uvicorn)
-RUN pip install --no-cache-dir --prefix=/install ".[web]"
+# Installa con le dipendenze web + pdf (FastAPI + uvicorn + weasyprint)
+RUN pip install --no-cache-dir --prefix=/install ".[web,pdf]"
 
 # ─── Stage 2: runtime ───────────────────────────────────────────────────────
 FROM python:3.12-slim
@@ -24,8 +24,10 @@ LABEL org.opencontainers.image.title="GEO Optimizer Web API" \
 
 COPY --from=builder /install /usr/local
 
-# Certificati SSL per richieste HTTPS verso siti esterni
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+# Certificati SSL + dipendenze di sistema per weasyprint (libpango, libcairo)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Utente non-root
 RUN useradd --create-home --shell /bin/bash geo
