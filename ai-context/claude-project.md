@@ -38,10 +38,10 @@ The audit checks:
 - Content signals — headings, statistics, external citations?
 
 **Reading the score:**
-- 0–40: Critical issues. Start with robots.txt and llms.txt.
-- 41–70: Foundation exists. Focus on schema and content.
-- 71–90: Good. Apply Princeton methods to content.
-- 91–100: Excellent. Monitor and maintain.
+- 0–35: Critical issues. Start with robots.txt and llms.txt.
+- 36–67: Foundation exists. Focus on schema and content.
+- 68–85: Good. Apply Princeton methods to content.
+- 86–100: Excellent. Monitor and maintain.
 
 ---
 
@@ -216,7 +216,7 @@ geo schema --type webapp --url https://yoursite.com/tool
 
 ---
 
-## The 9 Princeton GEO Methods
+## The Citability Methods (42 total)
 
 Based on KDD 2024 research — tested on 10,000 queries across real Perplexity.ai responses.
 
@@ -263,6 +263,7 @@ Score: 11/11 = GEO Score 100. Each missing item drops the score.
 | Script | Command | What it does |
 |--------|---------|--------------|
 | `geo audit` | `geo audit --url URL` | Full GEO audit, returns score 0–100 + action list |
+| `geo fix` | `geo fix --url URL --apply` | Auto-generate fixes for robots, llms, schema, meta |
 | `geo llms` | `geo llms --base-url URL --output FILE` | Auto-generate `/llms.txt` from sitemap |
 | `geo schema` | `geo schema --type TYPE --url URL` | Generate or inject JSON-LD schema into HTML |
 

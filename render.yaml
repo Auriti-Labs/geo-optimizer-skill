@@ -1,4 +1,5 @@
 # Render Blueprint — configurazione dichiarativa per deploy automatico
+# NOTA: deploy principale su server dedicato OVH. Render e' un'alternativa.
 # Docs: https://docs.render.com/blueprint-spec
 #
 # Per collegare: Dashboard → New → Blueprint → seleziona repo GitHub

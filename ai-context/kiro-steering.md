@@ -71,7 +71,7 @@ Priority:
 ## Audit
 
 Always run audit before recommending optimizations.
-GEO Score: 0–40 = critical | 41–70 = foundation | 71–90 = good | 91–100 = excellent
+GEO Score: 0–35 = critical | 36–67 = foundation | 68–85 = good | 86–100 = excellent
 
 Run: `geo audit --url https://yoursite.com`
 
