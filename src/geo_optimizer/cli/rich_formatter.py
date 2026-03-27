@@ -837,6 +837,87 @@ def _build_js_card(result: AuditResult) -> Panel | None:
     )
 
 
+def _build_webmcp_card(result: AuditResult) -> Panel | None:
+    """Card per WebMCP Readiness Check (#233)."""
+    wm = result.webmcp
+    if not wm.checked:
+        return None
+
+    content_parts = []
+
+    # Badge readiness level
+    level_colors = {
+        "advanced": _COLORS["excellent"],
+        "ready": _COLORS["good"],
+        "basic": _COLORS["foundation"],
+        "none": _COLORS["dim"],
+    }
+    level_icons = {
+        "advanced": "🚀",
+        "ready": "✅",
+        "basic": "⚡",
+        "none": "—",
+    }
+    level_color = level_colors.get(wm.readiness_level, _COLORS["dim"])
+    level_icon = level_icons.get(wm.readiness_level, "—")
+
+    header = Text()
+    header.append(f"  {level_icon} ", style="default")
+    header.append(wm.readiness_level.upper(), style=f"bold {level_color}")
+    content_parts.append(header)
+    content_parts.append(Text())
+
+    # Segnali WebMCP nativi
+    webmcp_items = [
+        ("registerTool() API", wm.has_register_tool),
+        ("toolname attributes", wm.has_tool_attributes),
+    ]
+    for label, present in webmcp_items:
+        line = Text("  ")
+        if present:
+            line.append(f"✓ {label}", style=_COLORS["excellent"])
+            if label == "toolname attributes" and wm.tool_count:
+                line.append(f" ({wm.tool_count})", style=_COLORS["dim"])
+        else:
+            line.append(f"✗ {label}", style=_COLORS["dim"])
+        content_parts.append(line)
+
+    # Segnali agent-readiness
+    agent_items = [
+        ("potentialAction", wm.has_potential_action),
+        ("Labeled forms", wm.has_labeled_forms),
+        ("OpenAPI spec", wm.has_openapi),
+    ]
+    for label, present in agent_items:
+        line = Text("  ")
+        if present:
+            line.append(f"✓ {label}", style=_COLORS["excellent"])
+            if label == "potentialAction" and wm.potential_actions:
+                line.append(f" ({', '.join(wm.potential_actions[:3])})", style=_COLORS["dim"])
+            elif label == "Labeled forms" and wm.labeled_forms_count:
+                line.append(f" ({wm.labeled_forms_count})", style=_COLORS["dim"])
+        else:
+            line.append(f"✗ {label}", style=_COLORS["dim"])
+        content_parts.append(line)
+
+    color = level_color
+    t = Table(show_header=False, box=None, expand=True, padding=0)
+    t.add_column(ratio=1)
+    for part in content_parts:
+        t.add_row(part)
+
+    return Panel(
+        t,
+        title="[bold]🤖 WebMCP Readiness[/]",
+        title_align="left",
+        subtitle=f"[bold {color}]{wm.readiness_level.upper()}[/]",
+        subtitle_align="right",
+        border_style=color,
+        box=box.ROUNDED,
+        padding=(1, 2),
+    )
+
+
 # ── Main formatter ────────────────────────────────────────────────────────────
 
 
@@ -985,6 +1066,10 @@ def format_audit_rich(result: AuditResult) -> str:
     js_card = _build_js_card(result)
     if js_card:
         console.print(js_card)
+
+    webmcp_card = _build_webmcp_card(result)
+    if webmcp_card:
+        console.print(webmcp_card)
 
     # ── 7. Raccomandazioni ───────────────────────────────────────
     if result.recommendations:

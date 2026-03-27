@@ -102,6 +102,22 @@ def format_audit_json(result: AuditResult) -> str:
         "score_breakdown": result.score_breakdown,
         "recommendations": result.recommendations,
     }
+
+    # WebMCP Readiness (#233) — sezione informativa separata
+    if hasattr(result, "webmcp") and result.webmcp.checked:
+        data["webmcp"] = {
+            "readiness_level": result.webmcp.readiness_level,
+            "agent_ready": result.webmcp.agent_ready,
+            "has_register_tool": result.webmcp.has_register_tool,
+            "has_tool_attributes": result.webmcp.has_tool_attributes,
+            "tool_count": result.webmcp.tool_count,
+            "has_potential_action": result.webmcp.has_potential_action,
+            "potential_actions": result.webmcp.potential_actions,
+            "has_labeled_forms": result.webmcp.has_labeled_forms,
+            "labeled_forms_count": result.webmcp.labeled_forms_count,
+            "has_openapi": result.webmcp.has_openapi,
+        }
+
     return json.dumps(data, indent=2)
 
 

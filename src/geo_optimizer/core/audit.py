@@ -40,6 +40,7 @@ from geo_optimizer.models.results import (
     RobotsResult,
     SchemaResult,
     SignalsResult,
+    WebMcpResult,
 )
 from geo_optimizer.utils.http import fetch_url
 from geo_optimizer.utils.robots_parser import classify_bot, parse_robots_txt
@@ -583,7 +584,7 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
 
 
 def build_recommendations(
-    base_url, robots, llms, schema, meta, content, ai_discovery=None, signals=None, brand_entity=None
+    base_url, robots, llms, schema, meta, content, ai_discovery=None, signals=None, brand_entity=None, webmcp=None
 ) -> list:
     """Build a prioritized list of recommendations.
 
@@ -683,6 +684,20 @@ def build_recommendations(
                 "Add address, telephone or contactPoint to Organization schema for entity validation"
             )
 
+    # WebMCP raccomandazioni (#233)
+    if webmcp is not None and webmcp.checked:
+        if webmcp.readiness_level == "none":
+            recommendations.append("Add potentialAction (SearchAction) to WebSite schema for AI agent discoverability")
+        if not webmcp.has_labeled_forms and not webmcp.has_tool_attributes:
+            recommendations.append(
+                "Add descriptive labels to forms (label, aria-label) to make them usable by AI agents"
+            )
+        if not webmcp.has_register_tool and not webmcp.has_tool_attributes:
+            recommendations.append(
+                "Consider adding WebMCP toolname/tooldescription attributes to interactive elements "
+                "for Chrome AI agent support"
+            )
+
     return recommendations
 
 
@@ -703,6 +718,7 @@ def _build_audit_result(
     cdn_check=None,  # v4.2: CDN AI Crawler check (#225)
     js_rendering=None,  # v4.2: JS Rendering check (#226)
     brand_entity=None,  # v4.3: Brand & Entity signals
+    webmcp=None,  # v4.3: WebMCP Readiness check (#233)
 ) -> AuditResult:
     """Costruisce AuditResult dai sub-audit (fix #97: logica comune sync/async).
 
@@ -738,6 +754,9 @@ def _build_audit_result(
     # v4.3: usa BrandEntityResult vuoto se non fornito
     effective_brand_entity = brand_entity if brand_entity is not None else BrandEntityResult()
 
+    # v4.3: usa WebMcpResult vuoto se non fornito (#233)
+    effective_webmcp = webmcp if webmcp is not None else WebMcpResult()
+
     # Calcola score, breakdown e band (v4.0: include signals, ai_discovery)
     score = compute_geo_score(
         robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity
@@ -749,7 +768,16 @@ def _build_audit_result(
 
     # Raccomandazioni
     recommendations = build_recommendations(
-        base_url, robots, llms, schema, meta, content, effective_ai_discovery, effective_signals, effective_brand_entity
+        base_url,
+        robots,
+        llms,
+        schema,
+        meta,
+        content,
+        effective_ai_discovery,
+        effective_signals,
+        effective_brand_entity,
+        effective_webmcp,
     )
 
     # Fix #104: esegui plugin registrati in CheckRegistry
@@ -813,6 +841,7 @@ def _build_audit_result(
         cdn_check=effective_cdn,
         js_rendering=effective_js,
         brand_entity=effective_brand_entity,
+        webmcp=effective_webmcp,
     )
 
 
@@ -897,6 +926,9 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     # v4.3: Brand & Entity signals (zero richieste HTTP, solo dati già disponibili)
     brand_entity_result = audit_brand_entity(soup, schema, meta, content)
 
+    # v4.3: WebMCP Readiness check (#233) — zero fetch HTTP
+    webmcp_result = audit_webmcp_readiness(soup, r.text, schema)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -914,6 +946,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         js_rendering=js_result,
         signals=signals,
         brand_entity=brand_entity_result,
+        webmcp=webmcp_result,
     )
 
 
@@ -1019,6 +1052,9 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     # v4.3: Brand & Entity signals (zero richieste HTTP, solo dati già disponibili)
     brand_entity_result = audit_brand_entity(soup, schema, meta, content)
 
+    # v4.3: WebMCP Readiness check (#233) — zero fetch HTTP
+    webmcp_result = audit_webmcp_readiness(soup, r_home.text, schema)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -1036,6 +1072,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
         js_rendering=js_result,
         signals=signals,
         brand_entity=brand_entity_result,
+        webmcp=webmcp_result,
     )
 
 
@@ -1657,5 +1694,146 @@ def audit_brand_entity(soup, schema_result, meta_result, content_result) -> Bran
     result.has_recent_articles = schema_result.has_date_modified and (
         schema_result.has_article or any(t in ("BlogPosting", "NewsArticle") for t in schema_result.found_types)
     )
+
+    return result
+
+
+# ─── WebMCP Readiness Check (#233) ───────────────────────────────────────────
+
+
+def _extract_actions(schema_obj, action_types: set) -> None:
+    """Estrae potentialAction da un oggetto schema JSON-LD (ricorsivo).
+
+    Args:
+        schema_obj: Oggetto schema (dict, list o valore primitivo).
+        action_types: Set in cui aggiungere i tipi azione trovati.
+    """
+    if isinstance(schema_obj, dict):
+        # Supporta @graph (Yoast SEO, RankMath)
+        if "@graph" in schema_obj:
+            for item in schema_obj["@graph"]:
+                _extract_actions(item, action_types)
+            return
+
+        potential = schema_obj.get("potentialAction")
+        if potential:
+            if isinstance(potential, dict):
+                action_type = potential.get("@type", "")
+                if action_type:
+                    action_types.add(action_type)
+            elif isinstance(potential, list):
+                for action in potential:
+                    if isinstance(action, dict):
+                        action_type = action.get("@type", "")
+                        if action_type:
+                            action_types.add(action_type)
+    elif isinstance(schema_obj, list):
+        for item in schema_obj:
+            _extract_actions(item, action_types)
+
+
+def audit_webmcp_readiness(soup, raw_html: str, schema_result) -> WebMcpResult:
+    """Verifica WebMCP readiness e agent-readiness signals (#233).
+
+    Analizza:
+    1. WebMCP API: registerTool(), attributi toolname/tooldescription
+    2. Schema potentialAction: SearchAction, BuyAction, OrderAction
+    3. Form accessibili: form con label + aria-label/placeholder
+    4. OpenAPI: link a /api-docs, /swagger, openapi.json
+
+    Zero fetch HTTP — lavora solo su dati già disponibili.
+
+    Args:
+        soup: BeautifulSoup della pagina.
+        raw_html: HTML grezzo della pagina.
+        schema_result: SchemaResult con gli schema JSON-LD trovati.
+
+    Returns:
+        WebMcpResult con i segnali di readiness rilevati.
+    """
+    result = WebMcpResult()
+    if soup is None or not raw_html:
+        return result
+
+    result.checked = True
+
+    # ── 1. WebMCP Detection ──────────────────────────────────────
+    # API imperativa: navigator.modelContext.registerTool()
+    if "modelContext" in raw_html and "registerTool" in raw_html:
+        result.has_register_tool = True
+
+    # API dichiarativa: attributi toolname/tooldescription nei tag HTML
+    tool_elements = soup.find_all(attrs={"toolname": True})
+    if tool_elements:
+        result.has_tool_attributes = True
+        result.tool_count = len(tool_elements)
+
+    # ── 2. Schema potentialAction ────────────────────────────────
+    action_types: set = set()
+    for raw_schema in schema_result.raw_schemas:
+        _extract_actions(raw_schema, action_types)
+
+    if action_types:
+        result.has_potential_action = True
+        result.potential_actions = sorted(action_types)
+
+    # ── 3. Form accessibili (agent-usable) ───────────────────────
+    forms = soup.find_all("form")
+    labeled_count = 0
+    for form in forms:
+        # Un form è "agent-usable" se ha:
+        # - almeno 1 input con label associata O aria-label O placeholder descrittivo
+        # - un action o method definito
+        inputs = form.find_all(["input", "select", "textarea"])
+        has_labels = False
+        for inp in inputs:
+            inp_type = (inp.get("type") or "text").lower()
+            if inp_type in ("hidden", "submit", "button"):
+                continue
+            # Label associata via for/id
+            inp_id = inp.get("id")
+            if inp_id and form.find("label", attrs={"for": inp_id}):
+                has_labels = True
+                break
+            # aria-label o placeholder
+            if inp.get("aria-label") or inp.get("placeholder"):
+                has_labels = True
+                break
+        if has_labels and len(inputs) > 0:
+            labeled_count += 1
+
+    if labeled_count > 0:
+        result.has_labeled_forms = True
+        result.labeled_forms_count = labeled_count
+
+    # ── 4. OpenAPI/Swagger detection ─────────────────────────────
+    openapi_patterns = ["/api-docs", "/swagger", "openapi.json", "openapi.yaml", "swagger.json"]
+    for a_tag in soup.find_all("a", href=True):
+        href = a_tag["href"].lower()
+        if any(pattern in href for pattern in openapi_patterns):
+            result.has_openapi = True
+            break
+    # Anche nei link tag
+    if not result.has_openapi:
+        for link in soup.find_all("link", href=True):
+            href = link["href"].lower()
+            if any(pattern in href for pattern in openapi_patterns):
+                result.has_openapi = True
+                break
+
+    # ── Readiness level ──────────────────────────────────────────
+    webmcp_signals = sum([result.has_register_tool, result.has_tool_attributes])
+    agent_signals = sum([result.has_potential_action, result.has_labeled_forms, result.has_openapi])
+
+    if webmcp_signals > 0 and agent_signals >= 2:
+        result.readiness_level = "advanced"
+        result.agent_ready = True
+    elif webmcp_signals > 0 or agent_signals >= 2:
+        result.readiness_level = "ready"
+        result.agent_ready = True
+    elif agent_signals >= 1:
+        result.readiness_level = "basic"
+    else:
+        result.readiness_level = "none"
 
     return result

@@ -263,6 +263,32 @@ class JsRenderingResult:
     details: str = ""
 
 
+# ─── WebMCP Readiness Check (#233) ────────────────────────────────────────────
+
+
+@dataclass
+class WebMcpResult:
+    """Verifica se il sito è pronto per AI agent via WebMCP e segnali correlati."""
+
+    checked: bool = False
+
+    # WebMCP detection
+    has_register_tool: bool = False  # navigator.modelContext.registerTool()
+    has_tool_attributes: bool = False  # attributi HTML toolname/tooldescription
+    tool_count: int = 0  # numero di tool dichiarati
+
+    # Agent-readiness signals
+    has_potential_action: bool = False  # schema potentialAction (SearchAction, ecc.)
+    potential_actions: list[str] = field(default_factory=list)  # tipi azione trovati
+    has_labeled_forms: bool = False  # form con label + description accessibili
+    labeled_forms_count: int = 0
+    has_openapi: bool = False  # link a OpenAPI/Swagger spec
+
+    # Summary
+    agent_ready: bool = False  # True se almeno 1 segnale WebMCP o 2+ agent-readiness
+    readiness_level: str = "none"  # "none", "basic", "ready", "advanced"
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -298,6 +324,8 @@ class AuditResult:
     js_rendering: JsRenderingResult = field(default_factory=JsRenderingResult)
     # v4.3: Brand & Entity signals
     brand_entity: BrandEntityResult = field(default_factory=BrandEntityResult)
+    # v4.3: WebMCP Readiness check (#233)
+    webmcp: WebMcpResult = field(default_factory=WebMcpResult)
 
 
 # ─── Schema analysis ─────────────────────────────────────────────────────────

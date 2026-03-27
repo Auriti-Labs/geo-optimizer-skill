@@ -1195,6 +1195,25 @@ def _dict_to_audit_result(data: dict):
             has_recent_articles=be.get("has_recent_articles", False),
         )
 
+    # Ricostruisci webmcp se presente nella cache (#233)
+    if "webmcp" in data and isinstance(data["webmcp"], dict):
+        from geo_optimizer.models.results import WebMcpResult
+
+        wm = data["webmcp"]
+        result.webmcp = WebMcpResult(
+            checked=wm.get("checked", False),
+            has_register_tool=wm.get("has_register_tool", False),
+            has_tool_attributes=wm.get("has_tool_attributes", False),
+            tool_count=wm.get("tool_count", 0),
+            has_potential_action=wm.get("has_potential_action", False),
+            potential_actions=wm.get("potential_actions", []),
+            has_labeled_forms=wm.get("has_labeled_forms", False),
+            labeled_forms_count=wm.get("labeled_forms_count", 0),
+            has_openapi=wm.get("has_openapi", False),
+            agent_ready=wm.get("agent_ready", False),
+            readiness_level=wm.get("readiness_level", "none"),
+        )
+
     return result
 
 
