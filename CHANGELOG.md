@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [3.18.4] — 2026-03-27
+
+### Added
+
+- **Negative Signals Detection** — 8 segnali anti-citazione AI (UC Berkeley EMNLP 2024):
+  CTA overload, popup/modal, thin content, broken links, keyword stuffing,
+  assenza autore, boilerplate ratio, mixed signals. 4 livelli severity (clean/low/medium/high).
+- Card `⚠️ Negative Signals` nella CLI Rich + JSON output
+- 12 test dedicati
+
+### Changed
+
+- 924 tests passing (up from 912)
+- Prima feature sviluppata con PR (#318) da feature branch + squash merge
+
+---
+
 ## [3.18.3] — 2026-03-27
 
 ### Added

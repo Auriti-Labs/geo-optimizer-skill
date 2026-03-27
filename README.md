@@ -62,13 +62,23 @@ geo schema --type faq --url https://yoursite.com
 |------|--------|------------------------------|
 | **Robots.txt** | /18 | 22 AI bots across 3 tiers (training, search, user). Citation bots explicitly allowed? |
 | **llms.txt** | /18 | Present, has H1 + blockquote, sections, links, depth. Companion llms-full.txt? |
-| **Schema JSON-LD** | /22 | WebSite, Organization, FAQPage, Article. Schema richness (5+ attributes)? sameAs? |
+| **Schema JSON-LD** | /16 | WebSite, Organization, FAQPage, Article. Schema richness (5+ attributes)? |
 | **Meta Tags** | /14 | Title, description, canonical, Open Graph complete? |
-| **Content** | /14 | H1, statistics, external citations, heading hierarchy, lists/tables, front-loading? |
-| **Signals** | /8 | `<html lang>`, RSS/Atom feed, dateModified freshness? |
+| **Content** | /12 | H1, statistics, external citations, heading hierarchy, lists/tables, front-loading? |
+| **Brand & Entity** | /10 | Brand name coherence, Knowledge Graph links (Wikipedia/Wikidata/LinkedIn/Crunchbase), about page, geo signals, topic authority |
+| **Signals** | /6 | `<html lang>`, RSS/Atom feed, dateModified freshness? |
 | **AI Discovery** | /6 | `.well-known/ai.txt`, `/ai/summary.json`, `/ai/faq.json`, `/ai/service.json`? |
 
 **Score bands:** 86-100 Excellent · 68-85 Good · 36-67 Foundation · 0-35 Critical
+
+**Bonus checks** (informational, do not affect score):
+
+| Check | What it detects |
+|-------|-----------------|
+| **CDN Crawler Access** | Does Cloudflare/Akamai/Vercel block GPTBot, ClaudeBot, PerplexityBot? |
+| **JS Rendering** | Is content accessible without JavaScript? SPA framework detection |
+| **WebMCP Readiness** | Chrome WebMCP support: `registerTool()`, `toolname` attributes, `potentialAction` schema |
+| **Negative Signals** | 8 anti-citation signals: CTA overload, popups, thin content, keyword stuffing, missing author, boilerplate ratio |
 
 Plus a separate **Citability Score** (0-100) measuring content quality across 42 methods:
 Quotation +41% · Statistics +33% · Fluency +29% · Cite Sources +27% · and 38 more.
