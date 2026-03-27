@@ -86,8 +86,8 @@ const faqSchema = faqItems.length > 0 ? {
   <meta property="og:type" content="website" />
 
   <!-- GEO: Schema JSON-LD -->
-  <!-- Security: .replace(/<\//g, '<\/') previene XSS da chiusura prematura del tag <script>.
-       In Astro/JSX, la regex /<\\//g matcha '</' e lo sostituisce con '<\\/' nel JSON serializzato. -->
+  <!-- Security: .replace() previene XSS da chiusura prematura del tag script.
+       In Astro/JSX, la regex matcha e sostituisce la sequenza nel JSON serializzato. -->
   <script type="application/ld+json" set:html={JSON.stringify(websiteSchema).replace(/<\\//g, '<\\/')} />
   {webAppSchema && <script type="application/ld+json" set:html={JSON.stringify(webAppSchema).replace(/<\\//g, '<\\/')} />}
   {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema).replace(/<\\//g, '<\\/')} />}
