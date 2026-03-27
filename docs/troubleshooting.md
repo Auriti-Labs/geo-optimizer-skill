@@ -4,76 +4,71 @@ Solutions to common installation and runtime problems.
 
 ---
 
-## 1. `./geo: No such file or directory`
+## 1. `geo: command not found`
 
-**Cause:** `install.sh` did not complete successfully, or you're running from the wrong directory.
+**Cause:** The package is not installed, or the Python `bin` directory is not in your `PATH`.
 
 **Fix:**
 
 ```bash
-# Check you're in the right directory
-cd ~/geo-optimizer-skill
-ls -la geo
+# Install from PyPI
+pip install geo-optimizer-skill
 
-# If ./geo doesn't exist, re-run the installer
-bash install.sh
+# Or install with all optional dependencies
+pip install "geo-optimizer-skill[all]"
 
-# If install.sh fails, create the wrapper manually
-cat > geo << 'EOF'
-#!/usr/bin/env bash
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/.venv/bin/activate"
-python3 "$@"
-EOF
-chmod +x geo
+# Verify the command is available
+geo --version
 ```
 
-Then verify:
+If `geo` is still not found after installation, your Python scripts directory may not be in `PATH`. On Linux/macOS:
 
 ```bash
-./geo --version
+# Add to PATH (add this line to your ~/.bashrc or ~/.zshrc)
+export PATH="$HOME/.local/bin:$PATH"
+
+# Reload shell
+source ~/.bashrc
 ```
 
 ---
 
 ## 2. `ModuleNotFoundError: requests`
 
-**Cause:** You ran a script directly with `python3` instead of using the `./geo` wrapper. The venv with dependencies is not activated.
+**Cause:** You have an incomplete installation, or you are running `python3 geo_optimizer/...` directly instead of using the installed `geo` command.
 
-**Fix:** Always use `./geo` instead of `python3`:
+**Fix:** Always use the `geo` command installed by pip:
 
 ```diff
-- geo audit --url https://yoursite.com
+- python3 geo_optimizer/cli/audit_cmd.py --url https://yoursite.com
 + geo audit --url https://yoursite.com
 ```
 
-If you need to use the venv directly:
+If the error persists, reinstall the package:
 
 ```bash
-source ~/geo-optimizer-skill/.venv/bin/activate
-geo audit --url https://yoursite.com
+pip install --upgrade geo-optimizer-skill
 ```
 
-Or reinstall dependencies into the venv:
+Or install with all extras to ensure all optional dependencies are present:
 
 ```bash
-cd ~/geo-optimizer-skill
-.venv/bin/pip install -r requirements.txt
+pip install "geo-optimizer-skill[all]"
 ```
 
 ---
 
 ## 3. `--help shows a dependency error`
 
-**Cause:** You're running a version older than 1.3.0. Earlier versions imported dependencies at the top of the file, causing `--help` to fail if the venv wasn't active.
+**Cause:** You are running a version older than 1.3.0. Earlier versions imported dependencies at the top of the file, causing `--help` to fail if the environment was incomplete.
 
-**Fix:**
+**Fix:** Upgrade to the latest version:
 
 ```bash
-bash ~/geo-optimizer-skill/update.sh
+pip install --upgrade geo-optimizer-skill
 ```
 
-After updating, `--help` will always work regardless of venv state:
+After upgrading, `--help` will always work:
 
 ```bash
 geo audit --help
@@ -147,7 +142,7 @@ To be safe, place specific bot entries before the catch-all `User-agent: *` bloc
 
 ## 6. `WebSite schema found but score is still low`
 
-**Cause:** WebSite schema is the baseline (worth ~8 points). The biggest GEO impact comes from FAQPage schema, which is worth another ~8 points and directly feeds into AI-generated answers.
+**Cause:** WebSite schema is the baseline (worth 2 points in v3.18+). The biggest GEO impact comes from FAQPage schema, which is worth 3 points and directly feeds into AI-generated answers. Brand & Entity Signals (10 pts new in v3.18.2) are also a major opportunity.
 
 **Fix:** Add FAQPage schema to pages with Q&A content:
 
@@ -159,7 +154,17 @@ geo schema --type faq --faq-file faqs.json --file page.html --inject
 geo schema --type faq --faq-file faqs.json
 ```
 
-FAQPage schema alone can increase your score by 8 points. Combined with adding external citations (5 points) and a few more statistics (5 points), you can move from 70 to 85.
+Also ensure your `sameAs` links are in place — they now feed `brand_kg_readiness` (3 pts):
+
+```json
+{
+  "@type": "Organization",
+  "sameAs": [
+    "https://www.linkedin.com/company/yourcompany",
+    "https://en.wikipedia.org/wiki/YourCompany"
+  ]
+}
+```
 
 See [Schema Injector](schema-injector.md) and [FAQPage best practices](schema-injector.md#faqpage-best-practices).
 
@@ -216,7 +221,7 @@ curl -I https://yoursite.com
 curl -L -I https://yoursite.com
 ```
 
-If the site consistently times out, wait a few minutes and retry. The audit script does not cache results.
+If the site consistently times out, wait a few minutes and retry. The audit does not cache results between CLI invocations.
 
 ---
 
@@ -254,9 +259,27 @@ Copy the output and paste it manually into your file.
 
 ## 10. Install on Windows
 
-**Issue:** `install.sh` is a bash script and does not run natively on Windows.
+**Issue:** `geo-optimizer-skill` is a standard Python package and installs via pip on any platform, including Windows.
 
-**Solution: Use WSL2 (Windows Subsystem for Linux)**
+**Solution: Install with pip**
+
+```powershell
+pip install geo-optimizer-skill
+geo audit --url https://yoursite.com
+```
+
+If you need to use a virtual environment (recommended):
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+pip install geo-optimizer-skill
+geo audit --url https://yoursite.com
+```
+
+**Alternative: WSL2 (Windows Subsystem for Linux)**
+
+If you prefer a Linux environment:
 
 ```powershell
 # Run in PowerShell as Administrator
@@ -267,22 +290,8 @@ After WSL2 installs and you restart:
 
 ```bash
 # Inside the WSL terminal (Ubuntu by default)
-curl -sSL https://raw.githubusercontent.com/auriti-labs/geo-optimizer-skill/main/install.sh | bash
-cd ~/geo-optimizer-skill
+pip install geo-optimizer-skill
 geo audit --url https://yoursite.com
 ```
 
-WSL2 gives you a full Linux environment. Python 3.8+ is included by default in Ubuntu 20.04+.
-
-If you prefer not to use WSL2, you can run the Python scripts directly in a Windows environment:
-
-```powershell
-git clone https://github.com/auriti-labs/geo-optimizer-skill.git
-cd geo-optimizer-skill
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-geo audit --url https://yoursite.com
-```
-
-Note: the `./geo` wrapper does not work on Windows. Use `python scripts\<script>.py` directly with the venv activated.
+WSL2 gives you a full Linux environment. Python 3.9+ is included by default in Ubuntu 22.04+.
