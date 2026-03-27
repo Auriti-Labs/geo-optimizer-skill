@@ -224,7 +224,7 @@ def detect_cite_sources(soup, base_url: str) -> MethodScore:
 # ─── 2. Quotation Addition (+41%) ────────────────────────────────────────────
 
 
-def detect_quotations(soup) -> MethodScore:
+def detect_quotations(soup, clean_text: str | None = None) -> MethodScore:
     """Detect attributed quotes (blockquote, attributed quoted text)."""
     blockquotes = soup.find_all("blockquote")
     q_tags = soup.find_all("q")
@@ -232,8 +232,8 @@ def detect_quotations(soup) -> MethodScore:
     # Blockquote with cite attribute = formal citation
     bq_with_cite = [bq for bq in blockquotes if bq.get("cite") or bq.find("cite")]
 
-    # Text pattern "..." — Author
-    body_text = soup.get_text(separator=" ")
+    # Text pattern "..." — Author (fix #29: usa clean_text per evitare rumore)
+    body_text = clean_text or _get_clean_text(soup)
     text_attributions = _QUOTE_ATTRIBUTION_RE.findall(body_text)
 
     # Pull quotes (CSS class)
@@ -298,7 +298,7 @@ def detect_statistics(soup, clean_text: str | None = None) -> MethodScore:
 # ─── 4. Fluency Optimization (+29%) ──────────────────────────────────────────
 
 
-def detect_fluency(soup) -> MethodScore:
+def detect_fluency(soup, clean_text: str | None = None) -> MethodScore:
     """Estimate text fluency through structural heuristics."""
     paragraphs = soup.find_all("p")
     if not paragraphs:
@@ -308,8 +308,8 @@ def detect_fluency(soup) -> MethodScore:
     para_lengths = [len(p.get_text().split()) for p in paragraphs if p.get_text().strip()]
     avg_para_len = sum(para_lengths) / max(len(para_lengths), 1)
 
-    # Logical connectives
-    body_text = soup.get_text(separator=" ")
+    # Logical connectives (fix #29: usa clean_text)
+    body_text = clean_text or _get_clean_text(soup)
     connective_count = len(_CONNECTIVES.findall(body_text))
 
     # Text-to-list ratio
@@ -379,9 +379,9 @@ def detect_technical_terms(soup, clean_text: str | None = None) -> MethodScore:
 # ─── 6. Authoritative Tone (+16%) ────────────────────────────────────────────
 
 
-def detect_authoritative_tone(soup) -> MethodScore:
+def detect_authoritative_tone(soup, clean_text: str | None = None) -> MethodScore:
     """Detect authoritative tone signals and author credentials."""
-    body_text = soup.get_text(separator=" ")
+    body_text = clean_text or _get_clean_text(soup)
 
     authority_signals = len(_AUTHORITY_RE.findall(body_text))
     hedge_signals = len(_HEDGE_RE.findall(body_text))
@@ -924,7 +924,7 @@ def detect_image_alt_quality(soup) -> MethodScore:
 # ─── 15. Content Freshness Warning (+10%) ────────────────────────────────────
 
 
-def detect_content_freshness(soup) -> MethodScore:
+def detect_content_freshness(soup, clean_text: str | None = None) -> MethodScore:
     """Detect content freshness via JSON-LD dates and year references in text."""
     now = datetime.now(tz=timezone.utc)
     current_year = now.year
@@ -979,7 +979,7 @@ def detect_content_freshness(soup) -> MethodScore:
             continue
 
     # Cerca riferimenti ad anni nel testo
-    body_text = _get_clean_text(soup)
+    body_text = clean_text or _get_clean_text(soup)
     year_refs = re.findall(r"\b(20[12]\d)\b", body_text)
     year_counts = Counter(year_refs)
 
@@ -1342,7 +1342,7 @@ _PRO_CON_RE = re.compile(
 )
 
 
-def detect_comparison_content(soup) -> MethodScore:
+def detect_comparison_content(soup, clean_text: str | None = None) -> MethodScore:
     """Detect comparison content: tables, pro/con sections, X vs Y headings."""
     score = 0
 
@@ -1359,8 +1359,8 @@ def detect_comparison_content(soup) -> MethodScore:
         h_text = h.get_text(strip=True)
         if _PRO_CON_RE.search(h_text):
             pro_con_sections += 1
-    # Cerca anche nel testo
-    body_text = soup.get_text(separator=" ")
+    # Cerca anche nel testo (fix #30: usa clean_text)
+    body_text = clean_text or _get_clean_text(soup)
     pro_con_in_text = len(_PRO_CON_RE.findall(body_text))
 
     # 3. Tabelle comparative (>3 righe e >2 colonne = bonus)
@@ -1557,14 +1557,17 @@ def detect_content_decay(soup, clean_text: str | None = None) -> MethodScore:
 # ─── 24. Content-to-Boilerplate Ratio (+8%) — Quality Signal Batch 2 ─────────
 
 
-def detect_boilerplate_ratio(soup) -> MethodScore:
+def detect_boilerplate_ratio(soup, soup_clean=None) -> MethodScore:
     """Detect content-to-boilerplate ratio: main/article text vs total page text."""
     import copy
 
-    # Testo totale della pagina (esclusi script/style)
-    total_soup = copy.deepcopy(soup)
-    for tag in total_soup(["script", "style"]):
-        tag.decompose()
+    # Fix #4: usa soup_clean pre-calcolato se disponibile
+    if soup_clean is not None:
+        total_soup = soup_clean
+    else:
+        total_soup = copy.deepcopy(soup)
+        for tag in total_soup(["script", "style"]):
+            tag.decompose()
     total_text = total_soup.get_text(separator=" ", strip=True)
     total_len = len(total_text)
 
@@ -1771,16 +1774,7 @@ def detect_snippet_ready(soup) -> MethodScore:
 
 # ─── 27. Chunk Quotability (#229) ────────────────────────────────────────────
 
-# Pattern per dati concreti in un paragrafo
-_CONCRETE_DATA_RE = re.compile(
-    r"\b\d+(?:\.\d+)?%"  # percentuali
-    r"|\$\d+"  # valute $
-    r"|€\d+"  # valute €
-    r"|\b\d{4}\b"  # anni
-    r"|\b\d+(?:\.\d+)?\s*(?:x|times|volte)\b"  # moltiplicatori
-    r"|\b\d+(?:\.\d+)?\s*(?:million|billion|miliardi|milioni)\b",  # grandi numeri
-    re.IGNORECASE,
-)
+# Fix #7: rimossa _CONCRETE_DATA_RE duplicata — usa _CITABLE_FACT_NUMERIC_RE
 
 
 def detect_chunk_quotability(soup) -> MethodScore:
@@ -1804,7 +1798,7 @@ def detect_chunk_quotability(soup) -> MethodScore:
             continue
         candidate_count += 1
         # Verifica dato concreto
-        if _CONCRETE_DATA_RE.search(text):
+        if _CITABLE_FACT_NUMERIC_RE.search(text):  # fix #7: regex unificata
             quotable_count += 1
 
     ratio = quotable_count / candidate_count if candidate_count > 0 else 0
@@ -2410,7 +2404,7 @@ def detect_stale_data(soup, clean_text: str | None = None) -> MethodScore:
 # ─── Social Proof (+8%) — Batch A v3.16.0 ────────────────────────────────────
 
 
-def detect_social_proof(soup) -> MethodScore:
+def detect_social_proof(soup, clean_text: str | None = None) -> MethodScore:
     """Detect social proof signals: testimonials, ratings, trust badges."""
     score = 0
 
@@ -2433,7 +2427,7 @@ def detect_social_proof(soup) -> MethodScore:
             break
 
     # Pattern "as seen in" / "as featured in"
-    body_text = _get_clean_text(soup)
+    body_text = clean_text or _get_clean_text(soup)
     if re.search(r"\b(?:as\s+seen\s+in|as\s+featured\s+in|featured\s+by|trusted\s+by)\b", body_text, re.I):
         has_testimonial = True
 
@@ -3124,14 +3118,14 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
 
     methods = [
         # Metodi Princeton GEO originali (ricalibrati)
-        detect_quotations(soup),
+        detect_quotations(soup, clean_text=clean_text),
         detect_statistics(soup, clean_text=clean_text),
-        detect_fluency(soup),
+        detect_fluency(soup, clean_text=clean_text),
         detect_cite_sources(soup, base_url),
         detect_answer_first(soup),
         detect_passage_density(soup),
         detect_technical_terms(soup, clean_text=clean_text),
-        detect_authoritative_tone(soup),
+        detect_authoritative_tone(soup, clean_text=clean_text),
         detect_easy_to_understand(soup),
         detect_unique_words(soup, clean_text=clean_text),
         detect_keyword_stuffing(soup, clean_text=clean_text),
@@ -3139,14 +3133,14 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         detect_readability(soup, clean_text=clean_text),
         detect_faq_in_content(soup),
         detect_image_alt_quality(soup),
-        detect_content_freshness(soup),
+        detect_content_freshness(soup, clean_text=clean_text),
         detect_citability_density(soup, clean_text=clean_text),
         detect_definition_patterns(soup),
         detect_format_mix(soup),
         # Quality Signals Batch 2 (bonus — cappati a 100 dal totale)
         detect_attribution(soup, clean_text=clean_text),
         detect_negative_signals(soup, clean_text=clean_text),
-        detect_comparison_content(soup),
+        detect_comparison_content(soup, clean_text=clean_text),
         detect_eeat(soup),
         detect_content_decay(soup, clean_text=clean_text),
         detect_boilerplate_ratio(soup),
@@ -3163,7 +3157,7 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         detect_entity_disambiguation(soup),
         detect_first_party_data(soup, clean_text=clean_text),
         detect_stale_data(soup, clean_text=clean_text),
-        detect_social_proof(soup),
+        detect_social_proof(soup, clean_text=clean_text),
         detect_accessibility_signals(soup),
         detect_conversion_funnel(soup),
         # Quality Signals Batch B v3.16.0
