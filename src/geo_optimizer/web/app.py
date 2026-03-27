@@ -1214,6 +1214,32 @@ def _dict_to_audit_result(data: dict):
             readiness_level=wm.get("readiness_level", "none"),
         )
 
+    # Ricostruisci negative_signals se presente nella cache (v4.3)
+    if "negative_signals" in data and isinstance(data["negative_signals"], dict):
+        from geo_optimizer.models.results import NegativeSignalsResult
+
+        ns = data["negative_signals"]
+        result.negative_signals = NegativeSignalsResult(
+            checked=ns.get("checked", True),
+            cta_density_high=ns.get("cta_density_high", False),
+            cta_count=ns.get("cta_count", 0),
+            has_popup_signals=ns.get("has_popup_signals", False),
+            popup_indicators=ns.get("popup_indicators", []),
+            is_thin_content=ns.get("is_thin_content", False),
+            broken_links_count=ns.get("broken_links_count", 0),
+            has_broken_links=ns.get("has_broken_links", False),
+            has_keyword_stuffing=ns.get("has_keyword_stuffing", False),
+            stuffed_word=ns.get("stuffed_word", ""),
+            stuffed_density=ns.get("stuffed_density", 0.0),
+            has_author_signal=ns.get("has_author_signal", False),
+            boilerplate_ratio=ns.get("boilerplate_ratio", 0.0),
+            boilerplate_high=ns.get("boilerplate_high", False),
+            has_mixed_signals=ns.get("has_mixed_signals", False),
+            mixed_signal_detail=ns.get("mixed_signal_detail", ""),
+            signals_found=ns.get("signals_found", 0),
+            severity=ns.get("severity", "clean"),
+        )
+
     return result
 
 

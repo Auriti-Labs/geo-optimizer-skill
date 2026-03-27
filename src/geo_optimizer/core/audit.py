@@ -37,6 +37,7 @@ from geo_optimizer.models.results import (
     JsRenderingResult,
     LlmsTxtResult,
     MetaResult,
+    NegativeSignalsResult,
     RobotsResult,
     SchemaResult,
     SignalsResult,
@@ -584,7 +585,17 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
 
 
 def build_recommendations(
-    base_url, robots, llms, schema, meta, content, ai_discovery=None, signals=None, brand_entity=None, webmcp=None
+    base_url,
+    robots,
+    llms,
+    schema,
+    meta,
+    content,
+    ai_discovery=None,
+    signals=None,
+    brand_entity=None,
+    webmcp=None,
+    negative_signals=None,
 ) -> list:
     """Build a prioritized list of recommendations.
 
@@ -598,6 +609,8 @@ def build_recommendations(
         ai_discovery: AiDiscoveryResult (opzionale).
         signals: SignalsResult (opzionale, per raccomandazioni machine-readable #263).
         brand_entity: BrandEntityResult (opzionale, v4.3).
+        webmcp: WebMcpResult (opzionale, #233).
+        negative_signals: NegativeSignalsResult (opzionale, v4.3).
     """
     recommendations = []
 
@@ -698,6 +711,30 @@ def build_recommendations(
                 "for Chrome AI agent support"
             )
 
+    # Negative Signals raccomandazioni (v4.3)
+    if negative_signals is not None and negative_signals.checked:
+        if negative_signals.cta_density_high:
+            recommendations.append(
+                f"Reduce promotional CTAs ({negative_signals.cta_count} found) "
+                "— AI engines deprioritize overly promotional content"
+            )
+        if negative_signals.is_thin_content:
+            recommendations.append(
+                "Content is thin for the topic promised by H1 — expand to 500+ words for AI citation eligibility"
+            )
+        if negative_signals.has_keyword_stuffing:
+            recommendations.append(
+                f"Keyword stuffing detected: '{negative_signals.stuffed_word}' "
+                f"at {negative_signals.stuffed_density}% density — diversify vocabulary"
+            )
+        if negative_signals.boilerplate_high:
+            recommendations.append(
+                f"High boilerplate ratio ({int(negative_signals.boilerplate_ratio * 100)}%) "
+                "— use <main> tag to help AI extract core content"
+            )
+        if negative_signals.has_mixed_signals:
+            recommendations.append(f"Mixed signals: {negative_signals.mixed_signal_detail}")
+
     return recommendations
 
 
@@ -719,6 +756,7 @@ def _build_audit_result(
     js_rendering=None,  # v4.2: JS Rendering check (#226)
     brand_entity=None,  # v4.3: Brand & Entity signals
     webmcp=None,  # v4.3: WebMCP Readiness check (#233)
+    negative_signals=None,  # v4.3: Negative Signals detection
 ) -> AuditResult:
     """Costruisce AuditResult dai sub-audit (fix #97: logica comune sync/async).
 
@@ -757,6 +795,9 @@ def _build_audit_result(
     # v4.3: usa WebMcpResult vuoto se non fornito (#233)
     effective_webmcp = webmcp if webmcp is not None else WebMcpResult()
 
+    # v4.3: usa NegativeSignalsResult vuoto se non fornito
+    effective_negative_signals = negative_signals if negative_signals is not None else NegativeSignalsResult()
+
     # Calcola score, breakdown e band (v4.0: include signals, ai_discovery)
     score = compute_geo_score(
         robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity
@@ -778,6 +819,7 @@ def _build_audit_result(
         effective_signals,
         effective_brand_entity,
         effective_webmcp,
+        effective_negative_signals,
     )
 
     # Fix #104: esegui plugin registrati in CheckRegistry
@@ -842,6 +884,7 @@ def _build_audit_result(
         js_rendering=effective_js,
         brand_entity=effective_brand_entity,
         webmcp=effective_webmcp,
+        negative_signals=effective_negative_signals,
     )
 
 
@@ -929,6 +972,9 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     # v4.3: WebMCP Readiness check (#233) — zero fetch HTTP
     webmcp_result = audit_webmcp_readiness(soup, r.text, schema)
 
+    # v4.3: Negative Signals detection — zero fetch HTTP
+    negative_signals_result = audit_negative_signals(soup, r.text, content, meta, schema)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -947,6 +993,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         signals=signals,
         brand_entity=brand_entity_result,
         webmcp=webmcp_result,
+        negative_signals=negative_signals_result,
     )
 
 
@@ -1055,6 +1102,9 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     # v4.3: WebMCP Readiness check (#233) — zero fetch HTTP
     webmcp_result = audit_webmcp_readiness(soup, r_home.text, schema)
 
+    # v4.3: Negative Signals detection — zero fetch HTTP
+    negative_signals_result = audit_negative_signals(soup, r_home.text, content, meta, schema)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -1073,6 +1123,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
         signals=signals,
         brand_entity=brand_entity_result,
         webmcp=webmcp_result,
+        negative_signals=negative_signals_result,
     )
 
 
@@ -1835,5 +1886,245 @@ def audit_webmcp_readiness(soup, raw_html: str, schema_result) -> WebMcpResult:
         result.readiness_level = "basic"
     else:
         result.readiness_level = "none"
+
+    return result
+
+
+def audit_negative_signals(soup, raw_html, content_result, meta_result, schema_result) -> NegativeSignalsResult:
+    """Rileva segnali negativi che riducono la citabilità AI.
+
+    Basato su UC Berkeley EMNLP 2024 e analisi LLM-perspective.
+    Zero fetch HTTP — lavora solo su dati già disponibili.
+
+    Args:
+        soup: BeautifulSoup della pagina.
+        raw_html: HTML grezzo (non usato direttamente, disponibile per future estensioni).
+        content_result: ContentResult già calcolato.
+        meta_result: MetaResult già calcolato.
+        schema_result: SchemaResult già calcolato.
+
+    Returns:
+        NegativeSignalsResult con i segnali negativi rilevati.
+    """
+    from collections import Counter
+
+    result = NegativeSignalsResult()
+    if soup is None:
+        return result
+
+    result.checked = True
+
+    # ── 1. CTA density (auto-promozionale) ───────────────────────
+    # Pattern CTA aggressivi
+    cta_patterns = re.compile(
+        r"\b(buy now|sign up|subscribe|get started|free trial|order now|"
+        r"act now|limited time|don.t miss|hurry|compra ora|iscriviti|"
+        r"prova gratis|acquista|registrati|offerta limitata)\b",
+        re.IGNORECASE,
+    )
+    text = soup.get_text(separator=" ", strip=True)
+    cta_matches = cta_patterns.findall(text)
+    result.cta_count = len(cta_matches)
+    # > 5 CTA in una pagina = eccessivo
+    word_count = content_result.word_count if content_result.word_count > 0 else max(len(text.split()), 1)
+    if result.cta_count > 5 or (word_count > 0 and result.cta_count / word_count > 0.01):
+        result.cta_density_high = True
+
+    # ── 2. Popup/interstitial nel DOM ────────────────────────────
+    popup_classes = ["modal", "popup", "overlay", "interstitial", "lightbox", "cookie-banner"]
+    for cls in popup_classes:
+        elements = soup.find_all(attrs={"class": lambda c, _cls=cls: c and _cls in str(c).lower()})
+        if elements:
+            result.popup_indicators.append(cls)
+    # Anche data attributes
+    for attr in ["data-modal", "data-popup", "data-overlay"]:
+        if soup.find(attrs={attr: True}):
+            result.popup_indicators.append(attr)
+    result.has_popup_signals = len(result.popup_indicators) > 0
+
+    # ── 3. Thin content ──────────────────────────────────────────
+    # < 300 parole E ha un H1 che promette contenuto sostanziale
+    if content_result.word_count < 300:
+        h1 = content_result.h1_text.lower() if content_result.h1_text else ""
+        # H1 che promette contenuto complesso
+        complex_patterns = [
+            "guide",
+            "guida",
+            "tutorial",
+            "how to",
+            "come",
+            "complete",
+            "completa",
+            "definitive",
+            "definitiva",
+            "everything",
+            "tutto",
+        ]
+        if any(p in h1 for p in complex_patterns) or content_result.heading_count >= 3:
+            result.is_thin_content = True
+
+    # ── 4. Broken/empty links ────────────────────────────────────
+    broken_count = 0
+    for a_tag in soup.find_all("a", href=True):
+        href = a_tag["href"].strip()
+        if href in ("", "#", "javascript:void(0)", "javascript:;", "javascript:void(0);"):
+            broken_count += 1
+    result.broken_links_count = broken_count
+    result.has_broken_links = broken_count > 3
+
+    # ── 5. Keyword stuffing ──────────────────────────────────────
+    # Calcola frequenza parole (escluse stop words e parole corte)
+    stop_words = {
+        "the",
+        "a",
+        "an",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "and",
+        "or",
+        "but",
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "of",
+        "with",
+        "it",
+        "this",
+        "that",
+        "not",
+        "no",
+        "as",
+        "by",
+        "from",
+        "il",
+        "la",
+        "le",
+        "lo",
+        "gli",
+        "un",
+        "una",
+        "di",
+        "da",
+        "del",
+        "che",
+        "per",
+        "con",
+        "su",
+        "al",
+        "dei",
+        "nel",
+        "è",
+        "sono",
+        "ha",
+        "hanno",
+        "più",
+        "anche",
+        "come",
+        "se",
+        "non",
+        "i",
+    }
+    words = re.findall(r"\b[a-zA-ZÀ-ÿ]{4,}\b", text.lower())
+    if len(words) > 50:
+        freq = Counter(w for w in words if w not in stop_words)
+        total = len(words)
+        for word, count in freq.most_common(3):
+            density = count / total
+            # > 3% density per una singola parola = stuffing
+            if density > 0.03 and count >= 5:
+                result.has_keyword_stuffing = True
+                result.stuffed_word = word
+                result.stuffed_density = round(density * 100, 1)
+                break
+
+    # ── 6. Assenza autore ────────────────────────────────────────
+    # Cerca Person schema
+    for raw_schema in schema_result.raw_schemas:
+        schemas_to_check = []
+        if isinstance(raw_schema, dict) and "@graph" in raw_schema:
+            schemas_to_check.extend(raw_schema["@graph"])
+        elif isinstance(raw_schema, dict):
+            schemas_to_check.append(raw_schema)
+        for s in schemas_to_check:
+            s_type = s.get("@type", "")
+            if isinstance(s_type, list):
+                s_type = s_type[0] if s_type else ""
+            if s_type == "Person":
+                result.has_author_signal = True
+                break
+            # author nested
+            if s.get("author"):
+                result.has_author_signal = True
+                break
+        if result.has_author_signal:
+            break
+
+    # Anche rel=author o class=author nel HTML
+    if not result.has_author_signal and (
+        soup.find("a", rel="author") or soup.find(attrs={"class": lambda c: c and "author" in str(c).lower()})
+    ):
+        result.has_author_signal = True
+
+    # ── 7. Boilerplate ratio ─────────────────────────────────────
+    # Contenuto in <main>, <article>, role="main" vs totale
+    main_content = soup.find("main") or soup.find("article") or soup.find(attrs={"role": "main"})
+    total_text_len = len(text)
+    if main_content and total_text_len > 0:
+        main_text_len = len(main_content.get_text(separator=" ", strip=True))
+        result.boilerplate_ratio = round(1.0 - (main_text_len / total_text_len), 2)
+    elif total_text_len > 0:
+        # No <main>/<article> — stima nav+footer
+        nav_footer_len = 0
+        for tag in soup.find_all(["nav", "footer", "header"]):
+            nav_footer_len += len(tag.get_text(separator=" ", strip=True))
+        if nav_footer_len > 0:
+            result.boilerplate_ratio = round(nav_footer_len / total_text_len, 2)
+    result.boilerplate_high = result.boilerplate_ratio > 0.6
+
+    # ── 8. Mixed signals ─────────────────────────────────────────
+    # H1 promette molto, contenuto poco
+    h1 = content_result.h1_text.lower() if content_result.h1_text else ""
+    big_promise_words = [
+        "complete",
+        "completa",
+        "ultimate",
+        "definitiva",
+        "comprehensive",
+        "everything",
+        "tutto",
+        "in-depth",
+        "approfondita",
+    ]
+    if any(w in h1 for w in big_promise_words) and content_result.word_count < 1000:
+        result.has_mixed_signals = True
+        result.mixed_signal_detail = f"H1 promises depth but only {content_result.word_count} words"
+
+    # ── Summary ──────────────────────────────────────────────────
+    negatives = [
+        result.cta_density_high,
+        result.has_popup_signals,
+        result.is_thin_content,
+        result.has_broken_links,
+        result.has_keyword_stuffing,
+        not result.has_author_signal,  # assenza autore = negativo
+        result.boilerplate_high,
+        result.has_mixed_signals,
+    ]
+    result.signals_found = sum(negatives)
+
+    if result.signals_found >= 4:
+        result.severity = "high"
+    elif result.signals_found >= 2:
+        result.severity = "medium"
+    elif result.signals_found >= 1:
+        result.severity = "low"
+    else:
+        result.severity = "clean"
 
     return result

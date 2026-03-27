@@ -918,6 +918,95 @@ def _build_webmcp_card(result: AuditResult) -> Panel | None:
     )
 
 
+def _build_negative_signals_card(result: AuditResult) -> Panel | None:
+    """Card per Negative Signals Detection (v4.3)."""
+    ns = result.negative_signals
+    if not ns.checked:
+        return None
+
+    content_parts = []
+
+    # Badge severity
+    sev_colors = {
+        "clean": _COLORS["excellent"],
+        "low": _COLORS["foundation"],
+        "medium": _COLORS["foundation"],
+        "high": _COLORS["critical"],
+    }
+    sev_icons = {"clean": "✅", "low": "⚡", "medium": "⚠️", "high": "🚨"}
+    sev_color = sev_colors.get(ns.severity, _COLORS["dim"])
+
+    header = Text()
+    header.append(f"  {sev_icons.get(ns.severity, '—')} ", style="default")
+    header.append(
+        f"{ns.signals_found} negative signal{'s' if ns.signals_found != 1 else ''}",
+        style=f"bold {sev_color}",
+    )
+    content_parts.append(header)
+    content_parts.append(Text())
+
+    # Dettagli per ogni segnale
+    checks = [
+        ("CTA overload", ns.cta_density_high, f"{ns.cta_count} CTAs" if ns.cta_count else ""),
+        (
+            "Popup/modal",
+            ns.has_popup_signals,
+            ", ".join(ns.popup_indicators[:3]) if ns.popup_indicators else "",
+        ),
+        ("Thin content", ns.is_thin_content, ""),
+        (
+            "Broken links",
+            ns.has_broken_links,
+            f"{ns.broken_links_count} empty hrefs" if ns.broken_links_count else "",
+        ),
+        (
+            "Keyword stuffing",
+            ns.has_keyword_stuffing,
+            f"'{ns.stuffed_word}' {ns.stuffed_density}%" if ns.stuffed_word else "",
+        ),
+        ("Author signal", ns.has_author_signal, ""),  # invertito: True = buono
+        (
+            "Boilerplate",
+            ns.boilerplate_high,
+            f"{int(ns.boilerplate_ratio * 100)}%" if ns.boilerplate_ratio else "",
+        ),
+        ("Mixed signals", ns.has_mixed_signals, ns.mixed_signal_detail),
+    ]
+
+    for label, is_negative, detail in checks:
+        line = Text("  ")
+        if label == "Author signal":
+            # Invertito: has_author = buono
+            if is_negative:
+                line.append(f"✓ {label}", style=_COLORS["excellent"])
+            else:
+                line.append(f"✗ No {label.lower()}", style=_COLORS["critical"])
+        else:
+            if is_negative:
+                line.append(f"✗ {label}", style=_COLORS["critical"])
+                if detail:
+                    line.append(f"  ({detail})", style=_COLORS["dim"])
+            else:
+                line.append(f"✓ {label}", style=_COLORS["excellent"])
+        content_parts.append(line)
+
+    t = Table(show_header=False, box=None, expand=True, padding=0)
+    t.add_column(ratio=1)
+    for part in content_parts:
+        t.add_row(part)
+
+    return Panel(
+        t,
+        title="[bold]⚠️  Negative Signals[/]",
+        title_align="left",
+        subtitle=f"[bold {sev_color}]{ns.severity.upper()}[/]",
+        subtitle_align="right",
+        border_style=sev_color,
+        box=box.ROUNDED,
+        padding=(1, 2),
+    )
+
+
 # ── Main formatter ────────────────────────────────────────────────────────────
 
 
@@ -1070,6 +1159,10 @@ def format_audit_rich(result: AuditResult) -> str:
     webmcp_card = _build_webmcp_card(result)
     if webmcp_card:
         console.print(webmcp_card)
+
+    neg_card = _build_negative_signals_card(result)
+    if neg_card:
+        console.print(neg_card)
 
     # ── 7. Raccomandazioni ───────────────────────────────────────
     if result.recommendations:
