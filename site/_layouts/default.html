@@ -134,7 +134,7 @@ border:1px solid var(--c-border);padding:.25rem .6rem;border-radius:20px;transit
 </script>
 {% endif %}
 
-{%% if page.url == "/" %%}
+{%- if page.url == "/" -%}
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"What is GEO Optimizer?","acceptedAnswer":{"@type":"Answer","text":"GEO Optimizer is an open-source Python toolkit that scores websites 0-100 for AI search visibility based on 42 research-backed methods. Install with pip install geo-optimizer-skill."}},
@@ -142,7 +142,7 @@ border:1px solid var(--c-border);padding:.25rem .6rem;border-radius:20px;transit
 {"@type":"Question","name":"Is GEO Optimizer free?","acceptedAnswer":{"@type":"Answer","text":"Yes, fully free and open-source under MIT License. No API keys required."}}
 ]}
 </script>
-{%% endif %%}
+{% endif %}
 </head>
 <body>
 <div class="shell">
