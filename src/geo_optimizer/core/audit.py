@@ -451,6 +451,7 @@ def audit_content_quality(soup, url: str, soup_clean=None) -> ContentResult:
         # Il primo 30% deve avere almeno 50 parole E contenere numeri/statistiche
         if len(first_30pct) >= 50:
             import re as _re_fl
+
             numeri_nel_30pct = sum(1 for w in first_30pct if _re_fl.search(r"\d", w))
             if numeri_nel_30pct >= 1:
                 result.has_front_loading = True
@@ -581,7 +582,9 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
     return result
 
 
-def build_recommendations(base_url, robots, llms, schema, meta, content, ai_discovery=None, signals=None, brand_entity=None) -> list:
+def build_recommendations(
+    base_url, robots, llms, schema, meta, content, ai_discovery=None, signals=None, brand_entity=None
+) -> list:
     """Build a prioritized list of recommendations.
 
     Args:
@@ -736,8 +739,12 @@ def _build_audit_result(
     effective_brand_entity = brand_entity if brand_entity is not None else BrandEntityResult()
 
     # Calcola score, breakdown e band (v4.0: include signals, ai_discovery)
-    score = compute_geo_score(robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity)
-    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity)
+    score = compute_geo_score(
+        robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity
+    )
+    breakdown = compute_score_breakdown(
+        robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity
+    )
     band = get_score_band(score)
 
     # Raccomandazioni
@@ -1573,12 +1580,14 @@ def audit_brand_entity(soup, schema_result, meta_result, content_result) -> Bran
                 elif "crunchbase.com" in url_lower:
                     result.has_crunchbase = True
                 break
-    result.kg_pillar_count = sum([
-        result.has_wikipedia,
-        result.has_wikidata,
-        result.has_linkedin,
-        result.has_crunchbase,
-    ])
+    result.kg_pillar_count = sum(
+        [
+            result.has_wikipedia,
+            result.has_wikidata,
+            result.has_linkedin,
+            result.has_crunchbase,
+        ]
+    )
 
     # ── 3. About/Contact Signals ─────────────────────────────────
     # Cerca link /about nella pagina
@@ -1646,8 +1655,7 @@ def audit_brand_entity(soup, schema_result, meta_result, content_result) -> Bran
 
     # Article/BlogPosting con dateModified
     result.has_recent_articles = schema_result.has_date_modified and (
-        schema_result.has_article
-        or any(t in ("BlogPosting", "NewsArticle") for t in schema_result.found_types)
+        schema_result.has_article or any(t in ("BlogPosting", "NewsArticle") for t in schema_result.found_types)
     )
 
     return result

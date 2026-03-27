@@ -586,7 +586,7 @@ def _build_signals_card(result: AuditResult, score: int, max_score: int) -> Pane
     # Lang value se presente
     if result.signals.has_lang and result.signals.lang_value:
         lang_text = Text()
-        lang_text.append(f"  lang=\"{result.signals.lang_value}\"", style=f"italic {_COLORS['dim']}")
+        lang_text.append(f'  lang="{result.signals.lang_value}"', style=f"italic {_COLORS['dim']}")
         content_parts.append(lang_text)
 
     color = _score_color(score, max_score)

@@ -433,6 +433,7 @@ def _markdown_to_html(md: str) -> str:
         html = re.sub(r"`([^`]+)`", r"<code>\1</code>", html)
         # Bold
         html = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", html)
+
         # Links — Fix #308: valida href per prevenire XSS (es. javascript:)
         def _safe_link(m: re.Match) -> str:
             text, href = m.group(1), m.group(2)

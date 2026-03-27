@@ -30,7 +30,9 @@ def compute_geo_score(robots, llms, schema, meta, content, signals=None, ai_disc
     return min(total, 100)
 
 
-def compute_score_breakdown(robots, llms, schema, meta, content, signals=None, ai_discovery=None, brand_entity=None) -> dict[str, int]:
+def compute_score_breakdown(
+    robots, llms, schema, meta, content, signals=None, ai_discovery=None, brand_entity=None
+) -> dict[str, int]:
     """Ritorna il breakdown del punteggio per categoria."""
     return {
         "robots": _score_robots(robots),
