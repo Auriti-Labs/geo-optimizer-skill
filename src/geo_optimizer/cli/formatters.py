@@ -186,6 +186,61 @@ def format_audit_text(result: AuditResult) -> str:
     else:
         lines.append("  ⚠️  No links to external sources")
 
+    # Signals (v4.0)
+    if result.signals:
+        lines.append("")
+        lines.append(_section_header("6. TECHNICAL SIGNALS"))
+        if result.signals.has_lang:
+            lines.append(f"  ✅ Language: {result.signals.lang_value}")
+        else:
+            lines.append("  ⚠️  Missing <html lang> attribute")
+        if result.signals.has_rss:
+            lines.append("  ✅ RSS/Atom feed found")
+        else:
+            lines.append("  ⚠️  No RSS/Atom feed")
+        if result.signals.has_freshness:
+            lines.append(f"  ✅ Freshness signal: {result.signals.freshness_date}")
+        else:
+            lines.append("  ⚠️  No dateModified signal")
+
+    # AI Discovery
+    if result.ai_discovery:
+        lines.append("")
+        lines.append(_section_header("7. AI DISCOVERY ENDPOINTS"))
+        if result.ai_discovery.has_well_known_ai:
+            lines.append("  ✅ /.well-known/ai.txt found")
+        else:
+            lines.append("  ⚠️  /.well-known/ai.txt missing")
+        if result.ai_discovery.has_summary and result.ai_discovery.summary_valid:
+            lines.append("  ✅ /ai/summary.json valid")
+        else:
+            lines.append("  ⚠️  /ai/summary.json missing or invalid")
+        if result.ai_discovery.has_faq:
+            lines.append(f"  ✅ /ai/faq.json ({result.ai_discovery.faq_count} FAQs)")
+        else:
+            lines.append("  ⚠️  /ai/faq.json missing")
+
+    # CDN Check
+    if result.cdn_check and result.cdn_check.checked:
+        lines.append("")
+        lines.append(_section_header("8. CDN AI CRAWLER ACCESS"))
+        if result.cdn_check.any_blocked:
+            lines.append("  ❌ AI crawlers blocked by CDN/WAF")
+            for bot in result.cdn_check.bot_results:
+                icon = "✅" if not bot["blocked"] and not bot["challenge_detected"] else "❌"
+                lines.append(f"  {icon} {bot['bot']}: HTTP {bot['status']}")
+        else:
+            lines.append("  ✅ All AI crawlers can access the site")
+
+    # JS Rendering
+    if result.js_rendering and result.js_rendering.checked:
+        lines.append("")
+        lines.append(_section_header("9. JS RENDERING CHECK"))
+        if result.js_rendering.js_dependent:
+            lines.append(f"  ❌ {result.js_rendering.details}")
+        else:
+            lines.append(f"  ✅ {result.js_rendering.details}")
+
     # Score
     lines.append("")
     lines.append(_section_header("📊 FINAL GEO SCORE"))

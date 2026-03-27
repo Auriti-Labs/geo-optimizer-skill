@@ -86,8 +86,8 @@ const faqSchema = faqItems.length > 0 ? {
   <meta property="og:type" content="website" />
 
   <!-- GEO: Schema JSON-LD -->
-  <!-- Security: replace('</', '<\\/') prevents XSS from premature closing of the <script> tag.
-       JSON.stringify() alone does not escape '</script>' — the replace is mandatory. -->
+  <!-- Security: .replace(/<\//g, '<\/') previene XSS da chiusura prematura del tag <script>.
+       In Astro/JSX, la regex /<\\//g matcha '</' e lo sostituisce con '<\\/' nel JSON serializzato. -->
   <script type="application/ld+json" set:html={JSON.stringify(websiteSchema).replace(/<\\//g, '<\\/')} />
   {webAppSchema && <script type="application/ld+json" set:html={JSON.stringify(webAppSchema).replace(/<\\//g, '<\\/')} />}
   {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema).replace(/<\\//g, '<\\/')} />}
@@ -250,7 +250,9 @@ def analyze_html_file(file_path: str) -> SchemaAnalysis:
 
 def generate_faq_schema(faq_items: list[dict[str, str]]) -> dict:
     """Generate FAQPage schema from FAQ items."""
-    schema = SCHEMA_TEMPLATES["faq"].copy()
+    import copy
+
+    schema = copy.deepcopy(SCHEMA_TEMPLATES["faq"])  # fix #17: deepcopy per sicurezza
     schema["mainEntity"] = [
         {
             "@type": "Question",

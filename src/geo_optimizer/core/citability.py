@@ -171,8 +171,6 @@ def _get_clean_text(soup, soup_clean=None) -> str:
     return working.get_text(separator=" ", strip=True)
 
 
-
-
 def _extract_dates_from_soup(soup) -> dict[str, str | None]:
     """Estrae dateModified e datePublished da JSON-LD e meta tag.
 
@@ -208,6 +206,7 @@ def _extract_dates_from_soup(soup) -> dict[str, str | None]:
             dates["datePublished"] = meta_pub["content"]
 
     return dates
+
 
 # ─── 1. Cite Sources (+27%) ──────────────────────────────────────────────────
 

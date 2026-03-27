@@ -100,8 +100,8 @@ def generate_badge_svg(score: int, band: str, label: str = "GEO Score", error: b
     safe_label = _svg_escape(label)
     safe_label = safe_label[:_MAX_LABEL_LENGTH]
 
-    # Calculate widths based on original (unescaped) text, with consistent truncation
-    label_width = len(label[:_MAX_LABEL_LENGTH]) * 6.5 + 12
+    # Fix #15: calcola width su testo post-escape (quello effettivamente renderizzato)
+    label_width = len(safe_label) * 6.5 + 12
     score_width = len(score_text) * 7 + 12
     total_width = label_width + score_width
 

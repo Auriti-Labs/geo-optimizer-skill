@@ -155,15 +155,17 @@ def _print_analysis(analysis, verbose=False):
             data = s["data"]
             click.echo(f"   {idx}. {schema_type}")
 
-            if schema_type == "WebSite" or schema_type == "WebApplication":
+            # Fix #19: gestisci @type come stringa o lista
+            types = schema_type if isinstance(schema_type, list) else [schema_type]
+            if "WebSite" in types or "WebApplication" in types:
                 click.echo(f"      url: {data.get('url', 'N/A')}")
                 click.echo(f"      name: {data.get('name', 'N/A')}")
-            elif schema_type == "FAQPage":
+            elif "FAQPage" in types:
                 faq_count = len(data.get("mainEntity", []))
                 click.echo(f"      questions: {faq_count}")
-            elif schema_type == "Organization":
+            elif "Organization" in types:
                 click.echo(f"      name: {data.get('name', 'N/A')}")
-            elif schema_type == "BreadcrumbList":
+            elif "BreadcrumbList" in types:
                 items = len(data.get("itemListElement", []))
                 click.echo(f"      items: {items}")
 

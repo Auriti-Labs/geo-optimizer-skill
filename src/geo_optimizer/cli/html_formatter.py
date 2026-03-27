@@ -149,8 +149,10 @@ li{{margin-bottom:.4rem;line-height:1.5}}
 
 
 def _escape(text: str) -> str:
-    """Escape special HTML characters."""
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+    """Escape special HTML characters (fix #20: usa html.escape standard)."""
+    import html as _html
+
+    return _html.escape(text, quote=True)
 
 
 # Functions _robots_score, _llms_score, _schema_score, _meta_score, _content_score
