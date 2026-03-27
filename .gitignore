@@ -48,3 +48,4 @@ CLAUDE.md
 # Other
 node_modules/
 docs_dev/
+.claude/
