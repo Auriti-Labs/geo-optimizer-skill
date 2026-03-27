@@ -289,6 +289,51 @@ class WebMcpResult:
     readiness_level: str = "none"  # "none", "basic", "ready", "advanced"
 
 
+# ─── Negative Signals Detection ───────────────────────────────────────────────
+
+
+@dataclass
+class NegativeSignalsResult:
+    """Segnali negativi che riducono la probabilità di citazione AI."""
+
+    checked: bool = False
+
+    # 1. CTA density eccessiva (auto-promozionale)
+    cta_density_high: bool = False
+    cta_count: int = 0
+
+    # 2. Popup/interstitial nel DOM
+    has_popup_signals: bool = False
+    popup_indicators: list[str] = field(default_factory=list)
+
+    # 3. Thin content
+    is_thin_content: bool = False  # < 300 parole con H1 complesso
+
+    # 4. Broken/empty links interni
+    broken_links_count: int = 0
+    has_broken_links: bool = False
+
+    # 5. Keyword stuffing
+    has_keyword_stuffing: bool = False
+    stuffed_word: str = ""
+    stuffed_density: float = 0.0
+
+    # 6. Assenza autore
+    has_author_signal: bool = False  # Person schema, rel=author, class=author
+
+    # 7. Boilerplate ratio
+    boilerplate_ratio: float = 0.0  # 0.0-1.0 (nav+footer+sidebar / totale)
+    boilerplate_high: bool = False  # ratio > 0.6
+
+    # 8. Mixed signals (promessa vs contenuto)
+    has_mixed_signals: bool = False
+    mixed_signal_detail: str = ""
+
+    # Summary
+    signals_found: int = 0  # conteggio segnali negativi trovati
+    severity: str = "clean"  # "clean", "low", "medium", "high"
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -326,6 +371,8 @@ class AuditResult:
     brand_entity: BrandEntityResult = field(default_factory=BrandEntityResult)
     # v4.3: WebMCP Readiness check (#233)
     webmcp: WebMcpResult = field(default_factory=WebMcpResult)
+    # v4.3: Negative Signals detection
+    negative_signals: NegativeSignalsResult = field(default_factory=NegativeSignalsResult)
 
 
 # ─── Schema analysis ─────────────────────────────────────────────────────────

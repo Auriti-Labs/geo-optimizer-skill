@@ -118,6 +118,22 @@ def format_audit_json(result: AuditResult) -> str:
             "has_openapi": result.webmcp.has_openapi,
         }
 
+    # Negative Signals (v4.3) — sezione informativa separata
+    if hasattr(result, "negative_signals") and result.negative_signals.checked:
+        data["negative_signals"] = {
+            "severity": result.negative_signals.severity,
+            "signals_found": result.negative_signals.signals_found,
+            "cta_density_high": result.negative_signals.cta_density_high,
+            "cta_count": result.negative_signals.cta_count,
+            "has_popup_signals": result.negative_signals.has_popup_signals,
+            "is_thin_content": result.negative_signals.is_thin_content,
+            "broken_links_count": result.negative_signals.broken_links_count,
+            "has_keyword_stuffing": result.negative_signals.has_keyword_stuffing,
+            "has_author_signal": result.negative_signals.has_author_signal,
+            "boilerplate_ratio": result.negative_signals.boilerplate_ratio,
+            "has_mixed_signals": result.negative_signals.has_mixed_signals,
+        }
+
     return json.dumps(data, indent=2)
 
 
