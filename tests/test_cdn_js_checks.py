@@ -167,14 +167,16 @@ class TestCdnAiCrawlerCheck:
     """Tests for audit_cdn_ai_crawler()."""
 
     @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
-    @patch("requests.get")
-    def test_no_block_all_pass(self, mock_get, mock_validate):
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_no_block_all_pass(self, mock_session_factory, mock_validate):
         """When all bots get 200 with similar content, no block detected."""
+        mock_session = MagicMock()
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.text = "x" * 5000
         mock_response.headers = {"Content-Type": "text/html"}
-        mock_get.return_value = mock_response
+        mock_session.get.return_value = mock_response
+        mock_session_factory.return_value = mock_session
 
         result = audit_cdn_ai_crawler("https://example.com")
 
@@ -183,10 +185,10 @@ class TestCdnAiCrawlerCheck:
         assert len(result.bot_results) == 3  # GPTBot, ClaudeBot, PerplexityBot
 
     @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
-    @patch("requests.get")
-    def test_bot_403_detected(self, mock_get, mock_validate):
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_bot_403_detected(self, mock_session_factory, mock_validate):
         """403 for AI bot should be detected as blocked."""
-        import requests as real_requests
+        mock_session = MagicMock()
 
         def side_effect(url, **kwargs):
             ua = kwargs.get("headers", {}).get("User-Agent", "")
@@ -200,7 +202,8 @@ class TestCdnAiCrawlerCheck:
                 resp.text = "x" * 5000
             return resp
 
-        mock_get.side_effect = side_effect
+        mock_session.get.side_effect = side_effect
+        mock_session_factory.return_value = mock_session
 
         result = audit_cdn_ai_crawler("https://example.com")
 
@@ -210,9 +213,10 @@ class TestCdnAiCrawlerCheck:
         assert gptbot["blocked"] is True
 
     @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
-    @patch("requests.get")
-    def test_cloudflare_challenge_detected(self, mock_get, mock_validate):
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_cloudflare_challenge_detected(self, mock_session_factory, mock_validate):
         """Cloudflare challenge page should be detected."""
+        mock_session = MagicMock()
 
         def side_effect(url, **kwargs):
             ua = kwargs.get("headers", {}).get("User-Agent", "")
@@ -227,7 +231,8 @@ class TestCdnAiCrawlerCheck:
                 resp.headers = {"cf-ray": "abc123-CDG", "server": "cloudflare"}
             return resp
 
-        mock_get.side_effect = side_effect
+        mock_session.get.side_effect = side_effect
+        mock_session_factory.return_value = mock_session
 
         result = audit_cdn_ai_crawler("https://example.com")
 
@@ -237,9 +242,10 @@ class TestCdnAiCrawlerCheck:
         assert gptbot["challenge_detected"] is True
 
     @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
-    @patch("requests.get")
-    def test_content_length_mismatch_detected(self, mock_get, mock_validate):
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_content_length_mismatch_detected(self, mock_session_factory, mock_validate):
         """Bot receiving <30% of browser content should be detected as blocked."""
+        mock_session = MagicMock()
 
         def side_effect(url, **kwargs):
             ua = kwargs.get("headers", {}).get("User-Agent", "")
@@ -252,7 +258,8 @@ class TestCdnAiCrawlerCheck:
                 resp.text = "x" * 500  # Tiny block page (5% of browser)
             return resp
 
-        mock_get.side_effect = side_effect
+        mock_session.get.side_effect = side_effect
+        mock_session_factory.return_value = mock_session
 
         result = audit_cdn_ai_crawler("https://example.com")
 
@@ -260,14 +267,16 @@ class TestCdnAiCrawlerCheck:
         assert result.any_blocked is True
 
     @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
-    @patch("requests.get")
-    def test_cdn_headers_detected(self, mock_get, mock_validate):
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_cdn_headers_detected(self, mock_session_factory, mock_validate):
         """CDN headers should be captured."""
+        mock_session = MagicMock()
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.text = "x" * 5000
         mock_response.headers = {"X-Vercel-Id": "cdg1::abc", "Server": "Vercel"}
-        mock_get.return_value = mock_response
+        mock_session.get.return_value = mock_response
+        mock_session_factory.return_value = mock_session
 
         result = audit_cdn_ai_crawler("https://example.com")
 

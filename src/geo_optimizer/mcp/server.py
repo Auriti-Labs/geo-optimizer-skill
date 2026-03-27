@@ -29,10 +29,13 @@ Start:
 from __future__ import annotations
 
 import json
+import logging
 from dataclasses import asdict
 from urllib.parse import urlparse
 
 from mcp.server.fastmcp import FastMCP
+
+logger = logging.getLogger(__name__)
 
 mcp = FastMCP("geo-optimizer")
 
@@ -83,7 +86,9 @@ def geo_audit(url: str) -> str:
         result = run_full_audit(url)
         return _to_json(result)
     except Exception as e:
-        return json.dumps({"error": str(e), "url": url})
+        # Fix #314: non esporre str(e) al client — logga internamente
+        logger.error("Errore geo_audit per %s: %s", url, e)
+        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
 
 
 # ─── Tool 2: geo_fix ─────────────────────────────────────────────────────────
@@ -129,7 +134,9 @@ def geo_fix(url: str, only: str = "") -> str:
         plan = run_all_fixes(url=url, only=only_set)
         return _to_json(plan)
     except Exception as e:
-        return json.dumps({"error": str(e), "url": url})
+        # Fix #314: non esporre str(e) al client — logga internamente
+        logger.error("Errore geo_fix per %s: %s", url, e)
+        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
 
 
 # ─── Tool 3: geo_llms_generate ───────────────────────────────────────────────
@@ -219,7 +226,9 @@ def geo_citability(url: str) -> str:
         result = audit_citability(soup, url)
         return _to_json(result)
     except Exception as e:
-        return json.dumps({"error": str(e), "url": url})
+        # Fix #314: non esporre str(e) al client — logga internamente
+        logger.error("Errore geo_citability per %s: %s", url, e)
+        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
 
 
 # ─── Tool 5: geo_schema_validate ─────────────────────────────────────────────
@@ -254,7 +263,9 @@ def geo_schema_validate(json_string: str, schema_type: str = "") -> str:
             }
         )
     except Exception as e:
-        return json.dumps({"valid": False, "error": str(e)})
+        # Fix #314: non esporre str(e) al client — logga internamente
+        logger.error("Errore geo_schema_validate: %s", e)
+        return json.dumps({"valid": False, "error": "Errore interno durante la validazione"})
 
 
 # ─── Tool 6: geo_compare ──────────────────────────────────────────────────────
@@ -298,7 +309,9 @@ def geo_compare(urls: str) -> str:
                 }
             )
         except Exception as e:
-            results.append({"url": u, "error": str(e)})
+            # Fix #314: non esporre str(e) al client — logga internamente
+            logger.error("Errore geo_compare per %s: %s", u, e)
+            results.append({"url": u, "error": "Errore interno durante l'operazione"})
 
     # Ordina per score decrescente
     results.sort(key=lambda x: x.get("score", 0), reverse=True)
@@ -331,7 +344,9 @@ def geo_ai_discovery(url: str) -> str:
         result = audit_ai_discovery(url)
         return _to_json(result)
     except Exception as e:
-        return json.dumps({"error": str(e), "url": url})
+        # Fix #314: non esporre str(e) al client — logga internamente
+        logger.error("Errore geo_ai_discovery per %s: %s", url, e)
+        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
 
 
 # ─── Tool 8: geo_check_bots ──────────────────────────────────────────────────
@@ -391,7 +406,9 @@ def geo_check_bots(url: str) -> str:
             indent=2,
         )
     except Exception as e:
-        return json.dumps({"error": str(e), "url": url})
+        # Fix #314: non esporre str(e) al client — logga internamente
+        logger.error("Errore geo_check_bots per %s: %s", url, e)
+        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
 
 
 # ─── Resource: AI Bots ────────────────────────────────────────────────────────

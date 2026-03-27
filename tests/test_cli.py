@@ -195,6 +195,7 @@ class TestCLIVersionAndHelp:
 class TestAuditCommand:
     """Tests for the `geo audit` CLI command."""
 
+    @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_text_output(self, mock_audit, runner, sample_audit_result):
         """geo audit --url URL produces text output by default."""
@@ -216,6 +217,7 @@ class TestAuditCommand:
         assert call_args[1]["use_cache"] is False
         assert call_args[1]["project_config"] is not None
 
+    @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_json_output(self, mock_audit, runner, sample_audit_result):
         """geo audit --url URL --format json produces valid JSON."""
@@ -264,6 +266,7 @@ class TestAuditCommand:
         finally:
             os.unlink(output_path)
 
+    @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_json_file_output(self, mock_audit, runner, sample_audit_result):
         """geo audit --format json --output FILE writes valid JSON to a file."""
@@ -290,6 +293,7 @@ class TestAuditCommand:
         finally:
             os.unlink(output_path)
 
+    @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_error_text_format(self, mock_audit, runner):
         """Audit errors in text mode print error message and exit 1."""
@@ -302,6 +306,7 @@ class TestAuditCommand:
         assert "ERROR" in combined
         assert "Connection refused" in combined
 
+    @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_error_json_format(self, mock_audit, runner):
         """Audit errors in JSON mode produce a JSON error object on stdout."""
@@ -325,6 +330,7 @@ class TestAuditCommand:
         result = runner.invoke(cli, ["audit", "--url", "https://example.com", "--format", "xml"])
         assert result.exit_code != 0
 
+    @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_minimal_result_text(self, mock_audit, runner, minimal_audit_result):
         """Text output handles a minimal result (mostly empty/default fields)."""
@@ -334,6 +340,7 @@ class TestAuditCommand:
         assert "15/100" in result.output
         assert "CRITICAL" in result.output
 
+    @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_recommendations_listed(self, mock_audit, runner, sample_audit_result):
         """Text output includes the recommendation list."""
@@ -344,6 +351,7 @@ class TestAuditCommand:
         assert "Improve robots.txt coverage" in result.output
         assert "PRIORITY NEXT STEPS" in result.output
 
+    @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_no_recommendations(self, mock_audit, runner):
         """Text output shows 'Great!' when there are no recommendations."""

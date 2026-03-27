@@ -953,7 +953,7 @@ class TestHttpAsync:
         async def run():
             return await fetch_url_async("https://example.com", client=mock_client)
 
-        response, error = asyncio.get_event_loop().run_until_complete(run())
+        response, error = asyncio.run(run())
         assert error is None
         assert response is mock_response
 
@@ -973,7 +973,7 @@ class TestHttpAsync:
         async def run():
             return await fetch_url_async("https://example.com", client=mock_client)
 
-        response, error = asyncio.get_event_loop().run_until_complete(run())
+        response, error = asyncio.run(run())
         assert response is None
         assert "Timeout" in error
 
@@ -993,7 +993,7 @@ class TestHttpAsync:
         async def run():
             return await fetch_url_async("https://example.com", client=mock_client)
 
-        response, error = asyncio.get_event_loop().run_until_complete(run())
+        response, error = asyncio.run(run())
         assert response is None
         assert error is not None
         assert "Connection failed" in error
@@ -1016,7 +1016,7 @@ class TestHttpAsync:
         async def run():
             return await fetch_url_async("https://example.com", client=mock_client, max_size=1000)
 
-        response, error = asyncio.get_event_loop().run_until_complete(run())
+        response, error = asyncio.run(run())
         assert response is None
         assert "too large" in error
 
@@ -1038,7 +1038,7 @@ class TestHttpAsync:
         async def run():
             return await fetch_url_async("https://example.com", client=mock_client, max_size=1000)
 
-        response, error = asyncio.get_event_loop().run_until_complete(run())
+        response, error = asyncio.run(run())
         assert response is None
         assert "too large" in error
 
@@ -1067,7 +1067,7 @@ class TestHttpAsync:
             with patch("httpx.AsyncClient", return_value=mock_client):
                 return await fetch_urls_async(urls)
 
-        results = asyncio.get_event_loop().run_until_complete(run())
+        results = asyncio.run(run())
         assert set(results.keys()) == set(urls)
 
 

@@ -90,6 +90,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        # Fix #315: HSTS — forza HTTPS per 1 anno su tutti i sottodomini
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         # Use 'nonce-{value}' instead of 'unsafe-inline' for XSS protection (fix #75)
         # Nota #287: style-src usa 'unsafe-inline' perché tutti i <style> sono hardcodati
         # nei template (non user-controllabili). Rimuoverlo richiederebbe nonce su ogni
@@ -210,13 +212,16 @@ async def _check_rate_limit(client_ip: str) -> bool:
 
     Fix race condition: usa asyncio.Lock per rendere atomica l'operazione
     read-modify-write sul dizionario condiviso _rate_limit_store (fix #209).
+    Fix #312: IP sconosciuto riceve limite restrittivo (5 req/min) invece del normale.
     """
+    # Fix #312: limite restrittivo per IP sconosciuto (previene bypass con client None)
+    max_requests = 5 if client_ip == "unknown" else _RATE_LIMIT_MAX_REQUESTS
     async with _rate_limit_lock:
         now = time.time()
         timestamps = _rate_limit_store.get(client_ip, [])
         # Remove timestamps outside the time window
         timestamps = [t for t in timestamps if (now - t) < _RATE_LIMIT_WINDOW]
-        if len(timestamps) >= _RATE_LIMIT_MAX_REQUESTS:
+        if len(timestamps) >= max_requests:
             _rate_limit_store[client_ip] = timestamps
             return False
         timestamps.append(now)
@@ -299,17 +304,25 @@ async def homepage(request: Request):
 
 
 @app.get("/roadmap", response_class=HTMLResponse)
-async def roadmap_page():
+async def roadmap_page(request: Request):
     """Public roadmap: Now / Next / Later — no dates, just direction."""
+    # Fix #313: propaga nonce per coerenza CSP (template privo di script al momento)
+    nonce = getattr(request.state, "csp_nonce", "")
+    nonce_attr = f' nonce="{nonce}"' if nonce else ""
     template_path = Path(__file__).parent / "templates" / "roadmap.html"
-    return template_path.read_text(encoding="utf-8")
+    html = template_path.read_text(encoding="utf-8")
+    return html.replace("__NONCE_ATTR__", nonce_attr)
 
 
 @app.get("/research", response_class=HTMLResponse)
-async def research_page():
+async def research_page(request: Request):
     """Research foundation: peer-reviewed papers behind the scoring."""
+    # Fix #313: propaga nonce per coerenza CSP (template privo di script al momento)
+    nonce = getattr(request.state, "csp_nonce", "")
+    nonce_attr = f' nonce="{nonce}"' if nonce else ""
     template_path = Path(__file__).parent / "templates" / "research.html"
-    return template_path.read_text(encoding="utf-8")
+    html = template_path.read_text(encoding="utf-8")
+    return html.replace("__NONCE_ATTR__", nonce_attr)
 
 
 # ─── Documentazione online (Markdown → HTML) ─────────────────────────────────
@@ -333,13 +346,13 @@ _DOCS_PAGES = {
 
 
 @app.get("/docs/", response_class=HTMLResponse)
-async def docs_index():
+async def docs_index(request: Request):
     """Documentation index — redirect to the main docs page."""
-    return await docs_page("index")
+    return await docs_page(request, "index")
 
 
 @app.get("/docs/{slug}", response_class=HTMLResponse)
-async def docs_page(slug: str):
+async def docs_page(request: Request, slug: str):
     """Render a documentation page from docs/*.md as styled HTML."""
     import re as _re
 
@@ -377,6 +390,9 @@ async def docs_page(slug: str):
     description = f"GEO Optimizer documentation: {title}"
 
     # Carica template e sostituisci placeholder
+    # Fix #313: propaga nonce CSP per coerenza (template privo di script al momento)
+    nonce = getattr(request.state, "csp_nonce", "")
+    nonce_attr = f' nonce="{nonce}"' if nonce else ""
     template_path = Path(__file__).parent / "templates" / "docs.html"
     template = template_path.read_text(encoding="utf-8")
     html = (
@@ -385,6 +401,7 @@ async def docs_page(slug: str):
         .replace("__SLUG__", slug)
         .replace("__SIDEBAR__", sidebar_html)
         .replace("__CONTENT__", html_content)
+        .replace("__NONCE_ATTR__", nonce_attr)
     )
     return html
 
@@ -416,8 +433,14 @@ def _markdown_to_html(md: str) -> str:
         html = re.sub(r"`([^`]+)`", r"<code>\1</code>", html)
         # Bold
         html = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", html)
-        # Links
-        html = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', html)
+        # Links — Fix #308: valida href per prevenire XSS (es. javascript:)
+        def _safe_link(m: re.Match) -> str:
+            text, href = m.group(1), m.group(2)
+            if href.startswith(("https://", "http://", "/", "#")):
+                return f'<a href="{href}">{text}</a>'
+            return text
+
+        html = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", _safe_link, html)
         # Paragraphs
         html = re.sub(r"\n\n", r"</p><p>", html)
         html = f"<p>{html}</p>"
@@ -441,6 +464,17 @@ async def compare_page(request: Request):
 _STATS_API_URL = os.environ.get("GEO_STATS_API_URL", "https://agencypilot.it/api/geo-stats")
 _STATS_API_KEY = os.environ.get("GEO_STATS_API_KEY", "")
 
+# Fix #307: validazione anti-SSRF su GEO_STATS_API_URL all'avvio (solo urlparse, no import circolari)
+_STATS_API_URL_SAFE = True
+if _STATS_API_URL:
+    from urllib.parse import urlparse as _urlparse_stats
+
+    _parsed_stats = _urlparse_stats(_STATS_API_URL)
+    if not _parsed_stats.hostname or "." not in _parsed_stats.hostname:
+        _STATS_API_URL_SAFE = False
+    elif not _STATS_API_URL.startswith("https://"):
+        _STATS_API_URL_SAFE = False
+
 
 def _increment_remote_stat(key: str, amount: int = 1) -> None:
     """Incrementa un contatore sull'API esterna (best-effort, non blocca se fallisce)."""
@@ -448,6 +482,9 @@ def _increment_remote_stat(key: str, amount: int = 1) -> None:
     import urllib.request
 
     if not _STATS_API_KEY:
+        return
+    # Fix #307: blocca se URL non è safe (SSRF prevention)
+    if not _STATS_API_URL_SAFE:
         return
     # Fix #36: valida URL stats API (solo HTTPS)
     if not _STATS_API_URL.startswith("https://"):
@@ -503,6 +540,14 @@ async def stats():
         except Exception:
             return None
 
+    # Fix #307: chiama _STATS_API_URL solo se è stata validata come safe all'avvio
+    _stats_fetch_target = _STATS_API_URL if _STATS_API_URL_SAFE else None
+
+    async def _maybe_fetch_stats() -> dict | None:
+        if _stats_fetch_target is None:
+            return None
+        return await asyncio.to_thread(_fetch_json, _stats_fetch_target)
+
     # Esegui le 3 chiamate in parallelo (GitHub, PyPI, AgencyPilot stats)
     github_data, pypi_data, geo_stats = await asyncio.gather(
         asyncio.to_thread(
@@ -514,10 +559,7 @@ async def stats():
             _fetch_json,
             "https://pypistats.org/api/packages/geo-optimizer-skill/system?mirrors=false",
         ),
-        asyncio.to_thread(
-            _fetch_json,
-            _STATS_API_URL,
-        ),
+        _maybe_fetch_stats(),
     )
 
     # GitHub stars (fallback a 13 se API rate limited)
@@ -1095,6 +1137,39 @@ def _dict_to_audit_result(data: dict):
             faq_count=ad.get("faq_count", 0),
             endpoints_found=ad.get("endpoints_found", 0),
         )
+
+    # Fix #309: ricostruisci cdn_check se presente nella cache
+    if "cdn_check" in data and isinstance(data["cdn_check"], dict):
+        from geo_optimizer.models.results import CdnAiCrawlerResult
+
+        cdn = data["cdn_check"]
+        result.cdn_check = CdnAiCrawlerResult(
+            checked=cdn.get("checked", False),
+            browser_status=cdn.get("browser_status", 0),
+            browser_content_length=cdn.get("browser_content_length", 0),
+            bot_results=cdn.get("bot_results", []),
+            any_blocked=cdn.get("any_blocked", False),
+            cdn_detected=cdn.get("cdn_detected", ""),
+            cdn_headers=cdn.get("cdn_headers", {}),
+            error=cdn.get("error", ""),
+        )
+
+    # Fix #309: ricostruisci js_rendering se presente nella cache
+    if "js_rendering" in data and isinstance(data["js_rendering"], dict):
+        from geo_optimizer.models.results import JsRenderingResult
+
+        js = data["js_rendering"]
+        result.js_rendering = JsRenderingResult(
+            checked=js.get("checked", False),
+            raw_word_count=js.get("raw_word_count", 0),
+            raw_heading_count=js.get("raw_heading_count", 0),
+            has_empty_root=js.get("has_empty_root", False),
+            has_noscript_content=js.get("has_noscript_content", False),
+            framework_detected=js.get("framework_detected", ""),
+            js_dependent=js.get("js_dependent", False),
+            details=js.get("details", ""),
+        )
+
     return result
 
 

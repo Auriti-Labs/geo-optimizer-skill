@@ -51,7 +51,7 @@ class RobotsResult:
 class LlmsTxtResult:
     found: bool = False
     has_h1: bool = False
-    has_description: bool = False
+    has_description: bool = False  # alias di has_blockquote, mantenuto per retrocompatibilità API
     has_sections: bool = False
     has_links: bool = False
     word_count: int = 0
@@ -205,6 +205,7 @@ class CdnAiCrawlerResult:
     any_blocked: bool = False
     cdn_detected: str = ""  # "cloudflare", "akamai", "aws", "" if none
     cdn_headers: dict[str, str] = field(default_factory=dict)
+    error: str = ""  # fix #304: messaggio errore (URL non sicura, timeout, ecc.)
 
 
 # ─── JS Rendering Check (#226) ──────────────────────────────────────────────

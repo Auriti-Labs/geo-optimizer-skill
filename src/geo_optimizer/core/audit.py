@@ -184,6 +184,8 @@ def audit_llms_txt(base_url: str) -> LlmsTxtResult:
     # Check blockquote description
     blockquotes = [line for line in lines if line.startswith("> ")]
     if blockquotes:
+        # Fix #317: sincronizza has_description (alias retrocompatibile) con has_blockquote
+        result.has_blockquote = True
         result.has_description = True
 
     # Check H2 sections
@@ -440,12 +442,17 @@ def audit_content_quality(soup, url: str, soup_clean=None) -> ContentResult:
     if lists:
         result.has_lists_or_tables = True
 
-    # Front-loading: primo 30% del testo ha contenuto sostanziale
+    # Front-loading: primo 30% del testo ha contenuto sostanziale con dati concreti
+    # Fix #306: la soglia era calcolata male (sempre >= 50 per pagine >= 50 parole)
     if words:
-        soglia = max(len(words) * 30 // 100, 50)
-        first_30pct = words[:soglia]
+        soglia_30 = max(len(words) * 30 // 100, 1)
+        first_30pct = words[:soglia_30]
+        # Il primo 30% deve avere almeno 50 parole E contenere numeri/statistiche
         if len(first_30pct) >= 50:
-            result.has_front_loading = True
+            import re as _re_fl
+            numeri_nel_30pct = sum(1 for w in first_30pct if _re_fl.search(r"\d", w))
+            if numeri_nel_30pct >= 1:
+                result.has_front_loading = True
 
     return result
 
@@ -1057,6 +1064,8 @@ def _audit_llms_from_response(r, r_full=None) -> LlmsTxtResult:
 
     blockquotes = [line for line in lines if line.startswith("> ")]
     if blockquotes:
+        # Fix #317: sincronizza has_description (alias retrocompatibile) con has_blockquote
+        result.has_blockquote = True
         result.has_description = True
 
     h2_lines = [line for line in lines if line.startswith("## ")]
@@ -1139,22 +1148,23 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
         "server": "",  # check value
     }
 
+    from geo_optimizer.utils.http import create_session_with_retry
     from geo_optimizer.utils.validators import resolve_and_validate_url
 
     # Fix #283: validazione SSRF prima delle richieste CDN
-    # Fix #23: cattura gli IP per DNS pinning nella sessione CDN
-    is_safe, reason, _pinned_ips = resolve_and_validate_url(base_url)
+    # Fix #305: DNS pinning con sessione pinnata (elimina TOCTOU)
+    is_safe, reason, pinned_ips = resolve_and_validate_url(base_url)
     if not is_safe:
         result.error = f"URL non sicura: {reason}"
         return result
 
+    # Sessione con DNS pinning — tutte le richieste usano gli IP già validati
+    session = create_session_with_retry(total_retries=1, pinned_ips=pinned_ips)
+
     try:
         # Step 1: Browser request (baseline)
-        # Fix #23: SSRF validato con resolve_and_validate_url + allow_redirects=False
         try:
-            import requests as _requests_module
-
-            browser_r = _requests_module.get(
+            browser_r = session.get(
                 base_url,
                 headers={"User-Agent": browser_ua},
                 timeout=10,
@@ -1177,8 +1187,8 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
             elif "akamaighost" in server_val or "akamai" in server_val:
                 result.cdn_detected = "akamai"
 
-        except _requests_module.RequestException:
-            # Can't even reach the site as browser — skip entire check
+        except Exception:
+            # Non raggiungibile nemmeno come browser — skip check
             return result
 
         # Step 2: AI bot requests
@@ -1191,7 +1201,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
                 "challenge_detected": False,
             }
             try:
-                bot_r = _requests_module.get(
+                bot_r = session.get(
                     base_url,
                     headers={"User-Agent": bot_ua},
                     timeout=10,
@@ -1221,7 +1231,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
                         # Bot receives <30% of the content → likely a block page
                         bot_entry["blocked"] = True
 
-            except _requests_module.RequestException:
+            except Exception:
                 bot_entry["blocked"] = True
 
             result.bot_results.append(bot_entry)
@@ -1229,7 +1239,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
         result.checked = True
         result.any_blocked = any(b["blocked"] or b["challenge_detected"] for b in result.bot_results)
 
-    except _requests_module.RequestException:
+    except Exception:
         pass
 
     return result

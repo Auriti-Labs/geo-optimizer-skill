@@ -369,7 +369,11 @@ class TestExceptionPaths:
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_geo_audit_eccezione_ritorna_json_errore(self, mock_audit):
-        """geo_audit gestisce eccezioni impreviste ritornando JSON di errore."""
+        """geo_audit gestisce eccezioni impreviste ritornando messaggio generico (fix #314).
+
+        Il dettaglio dell'errore NON deve essere esposto al client per ragioni di sicurezza.
+        L'errore reale viene loggato internamente.
+        """
         # Arrange
         mock_audit.side_effect = RuntimeError("DB unavailable")
 
@@ -377,14 +381,19 @@ class TestExceptionPaths:
         result = geo_audit("https://example.com")
         data = json.loads(result)
 
-        # Assert
+        # Assert — messaggio generico al client, senza dettaglio interno (fix #314)
         assert "error" in data
-        assert "DB unavailable" in data["error"]
+        assert "DB unavailable" not in data["error"]
+        assert "interno" in data["error"].lower() or "errore" in data["error"].lower()
         assert data["url"] == "https://example.com"
 
     @patch("geo_optimizer.core.fixer.run_all_fixes")
     def test_geo_fix_eccezione_ritorna_json_errore(self, mock_fixes):
-        """geo_fix gestisce eccezioni impreviste ritornando JSON di errore."""
+        """geo_fix gestisce eccezioni impreviste ritornando messaggio generico (fix #314).
+
+        Il dettaglio dell'errore NON deve essere esposto al client per ragioni di sicurezza.
+        L'errore reale viene loggato internamente.
+        """
         # Arrange
         mock_fixes.side_effect = RuntimeError("Fixer crashed")
 
@@ -392,9 +401,10 @@ class TestExceptionPaths:
         result = geo_fix("https://example.com")
         data = json.loads(result)
 
-        # Assert
+        # Assert — messaggio generico al client, senza dettaglio interno (fix #314)
         assert "error" in data
-        assert "Fixer crashed" in data["error"]
+        assert "Fixer crashed" not in data["error"]
+        assert "interno" in data["error"].lower() or "errore" in data["error"].lower()
 
     def test_geo_fix_categoria_non_valida_ritorna_errore(self):
         """geo_fix con categoria 'only' non valida ritorna errore senza crash."""

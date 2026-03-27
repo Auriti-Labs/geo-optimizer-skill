@@ -7,6 +7,8 @@ e breakdown per categoria (v4.0).
 
 from __future__ import annotations
 
+import logging
+
 from geo_optimizer.models.config import (
     CONTENT_MIN_WORDS,
     LLMS_DEPTH_HIGH_WORDS,
@@ -15,11 +17,17 @@ from geo_optimizer.models.config import (
     SCORING,
 )
 
+_logger = logging.getLogger(__name__)
+
 
 def compute_geo_score(robots, llms, schema, meta, content, signals=None, ai_discovery=None) -> int:
     """Calcola il punteggio GEO 0-100 dai pesi SCORING (v4.0)."""
     breakdown = compute_score_breakdown(robots, llms, schema, meta, content, signals, ai_discovery)
-    return min(sum(breakdown.values()), 100)
+    total = sum(breakdown.values())
+    # Fix #316: segnala overflow per rilevare disallineamenti nei pesi SCORING
+    if total > 100:
+        _logger.warning("Score overflow: %d > 100 (verificare pesi SCORING)", total)
+    return min(total, 100)
 
 
 def compute_score_breakdown(robots, llms, schema, meta, content, signals=None, ai_discovery=None) -> dict[str, int]:
