@@ -1170,6 +1170,30 @@ def _dict_to_audit_result(data: dict):
             details=js.get("details", ""),
         )
 
+    # Ricostruisci brand_entity se presente nella cache
+    if "brand_entity" in data and isinstance(data["brand_entity"], dict):
+        from geo_optimizer.models.results import BrandEntityResult
+
+        be = data["brand_entity"]
+        result.brand_entity = BrandEntityResult(
+            brand_name_consistent=be.get("brand_name_consistent", False),
+            names_found=be.get("names_found", []),
+            schema_desc_matches_meta=be.get("schema_desc_matches_meta", False),
+            kg_pillar_count=be.get("kg_pillar_count", 0),
+            kg_pillar_urls=be.get("kg_pillar_urls", []),
+            has_wikipedia=be.get("has_wikipedia", False),
+            has_wikidata=be.get("has_wikidata", False),
+            has_linkedin=be.get("has_linkedin", False),
+            has_crunchbase=be.get("has_crunchbase", False),
+            has_about_link=be.get("has_about_link", False),
+            has_contact_info=be.get("has_contact_info", False),
+            has_geo_schema=be.get("has_geo_schema", False),
+            has_hreflang=be.get("has_hreflang", False),
+            hreflang_count=be.get("hreflang_count", 0),
+            faq_depth=be.get("faq_depth", 0),
+            has_recent_articles=be.get("has_recent_articles", False),
+        )
+
     return result
 
 

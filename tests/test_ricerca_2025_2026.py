@@ -105,8 +105,8 @@ class TestSchemaRichness:
         assert result.schema_richness_score == 0
         assert result.avg_attributes_per_schema < 3
 
-    def test_pesi_schema_sommano_22(self):
-        """I pesi schema devono sommare 22 (invariato dal v4.0)."""
+    def test_pesi_schema_sommano_16(self):
+        """I pesi schema devono sommare 16 (v4.3: faq=3, website=2, sameas=0 migrato a brand_kg)."""
         schema_keys = [
             "schema_any_valid",
             "schema_richness",
@@ -117,7 +117,7 @@ class TestSchemaRichness:
             "schema_sameas",
         ]
         total = sum(SCORING[k] for k in schema_keys)
-        assert total == 22
+        assert total == 16
 
 
 # ============================================================================
@@ -354,9 +354,9 @@ class TestPesiCitability:
         assert (
             SCORING["meta_title"] + SCORING["meta_description"] + SCORING["meta_canonical"] + SCORING["meta_og"] == 14
         )
-        # Content: 14 max
+        # Content: 12 max (v4.3: content_numbers=1, content_links=1)
         content_keys = [k for k in SCORING if k.startswith("content_")]
-        assert sum(SCORING[k] for k in content_keys) == 14
-        # Signals: 8 max
+        assert sum(SCORING[k] for k in content_keys) == 12
+        # Signals: 6 max (v4.3: signals_rss=2, signals_freshness=1)
         signals_keys = [k for k in SCORING if k.startswith("signals_")]
-        assert sum(SCORING[k] for k in signals_keys) == 8
+        assert sum(SCORING[k] for k in signals_keys) == 6

@@ -20,9 +20,9 @@ from geo_optimizer.models.config import (
 _logger = logging.getLogger(__name__)
 
 
-def compute_geo_score(robots, llms, schema, meta, content, signals=None, ai_discovery=None) -> int:
+def compute_geo_score(robots, llms, schema, meta, content, signals=None, ai_discovery=None, brand_entity=None) -> int:
     """Calcola il punteggio GEO 0-100 dai pesi SCORING (v4.0)."""
-    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, signals, ai_discovery)
+    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, signals, ai_discovery, brand_entity)
     total = sum(breakdown.values())
     # Fix #316: segnala overflow per rilevare disallineamenti nei pesi SCORING
     if total > 100:
@@ -30,7 +30,7 @@ def compute_geo_score(robots, llms, schema, meta, content, signals=None, ai_disc
     return min(total, 100)
 
 
-def compute_score_breakdown(robots, llms, schema, meta, content, signals=None, ai_discovery=None) -> dict[str, int]:
+def compute_score_breakdown(robots, llms, schema, meta, content, signals=None, ai_discovery=None, brand_entity=None) -> dict[str, int]:
     """Ritorna il breakdown del punteggio per categoria."""
     return {
         "robots": _score_robots(robots),
@@ -40,6 +40,7 @@ def compute_score_breakdown(robots, llms, schema, meta, content, signals=None, a
         "content": _score_content(content),
         "signals": _score_signals(signals) if signals is not None else 0,
         "ai_discovery": _score_ai_discovery(ai_discovery) if ai_discovery is not None else 0,
+        "brand_entity": _score_brand_entity(brand_entity) if brand_entity is not None else 0,
     }
 
 
@@ -141,4 +142,36 @@ def _score_ai_discovery(ai_discovery) -> int:
     s += SCORING["ai_discovery_summary"] if ai_discovery.has_summary and ai_discovery.summary_valid else 0
     s += SCORING["ai_discovery_faq"] if ai_discovery.has_faq else 0
     s += SCORING["ai_discovery_service"] if ai_discovery.has_service else 0
+    return s
+
+
+def _score_brand_entity(brand_entity) -> int:
+    """Calcola il punteggio Brand & Entity (v4.3)."""
+    if brand_entity is None:
+        return 0
+    s = 0
+    # Entity Coherence (3 punti)
+    if brand_entity.brand_name_consistent:
+        s += SCORING["brand_entity_coherence"] - 1  # 2pt per nomi coerenti
+    if brand_entity.schema_desc_matches_meta:
+        s += 1  # 1pt per description match
+    # Knowledge Graph Readiness (3 punti)
+    pillars = brand_entity.kg_pillar_count
+    if pillars >= 3:
+        s += SCORING["brand_kg_readiness"]  # 3pt
+    elif pillars >= 2:
+        s += 2
+    elif pillars >= 1:
+        s += 1
+    # About/Contact (2 punti)
+    if brand_entity.has_about_link:
+        s += 1
+    if brand_entity.has_contact_info:
+        s += 1
+    # Geographic Identity (1 punto)
+    if brand_entity.has_geo_schema or brand_entity.has_hreflang:
+        s += SCORING["brand_geo_identity"]
+    # Topic Authority (1 punto)
+    if brand_entity.faq_depth >= 3 or brand_entity.has_recent_articles:
+        s += SCORING["brand_topic_authority"]
     return s

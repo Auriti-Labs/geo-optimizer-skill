@@ -1088,7 +1088,7 @@ class TestFormatters:
         assert data["url"] == "https://example.com"
         assert data["score"] == 75
         assert data["band"] == "good"
-        assert set(data["checks"].keys()) == {"robots_txt", "llms_txt", "schema_jsonld", "meta_tags", "content", "signals", "ai_discovery"}
+        assert set(data["checks"].keys()) == {"robots_txt", "llms_txt", "schema_jsonld", "meta_tags", "content", "signals", "ai_discovery", "brand_entity"}
 
     def test_format_audit_json_robots_details(self, sample_audit_result):
         """JSON robots_txt check includes correct details."""

@@ -360,9 +360,10 @@ class TestScoringConsistency:
         assert _content_score(r) == expected
 
     def test_somma_totale_100(self):
-        """La somma di tutti i punteggi massimi deve essere 100 (v4.0 + v4.1 ai_discovery)."""
+        """La somma di tutti i punteggi massimi deve essere 100 (v4.3: + brand_entity)."""
         from geo_optimizer.cli.scoring_helpers import signals_score
-        from geo_optimizer.core.scoring import _score_ai_discovery
+        from geo_optimizer.core.scoring import _score_ai_discovery, _score_brand_entity
+        from geo_optimizer.models.results import BrandEntityResult
 
         r = self._make_result(
             **{
@@ -378,7 +379,7 @@ class TestScoringConsistency:
                 "llms.has_links": True,
                 "llms.word_count": 5000,  # depth + depth_high
                 "llms.has_full": True,
-                # schema: 2 + 3 + 5 + 3 + 3 + 3 + 3 = 22
+                # schema: 2 + 3 + 3 + 3 + 3 + 2 + 0 = 16 (v4.3: faq=3, website=2, sameas=0)
                 "schema.any_schema_found": True,
                 "schema.schema_richness_score": 3,
                 "schema.has_website": True,
@@ -386,13 +387,13 @@ class TestScoringConsistency:
                 "schema.has_article": True,
                 "schema.has_organization": True,
                 "schema.has_sameas": True,
-                # meta: 5 + 2 + 3 + 4 = 14 (v4.1: meta_description ridotto a 2)
+                # meta: 5 + 2 + 3 + 4 = 14
                 "meta.has_title": True,
                 "meta.has_description": True,
                 "meta.has_canonical": True,
                 "meta.has_og_title": True,
                 "meta.has_og_description": True,
-                # content: 2 + 2 + 2 + 2 + 2 + 2 + 2 = 14
+                # content: 2 + 1 + 1 + 2 + 2 + 2 + 2 = 12 (v4.3: numbers=1, links=1)
                 "content.has_h1": True,
                 "content.has_numbers": True,
                 "content.has_links": True,
@@ -400,7 +401,7 @@ class TestScoringConsistency:
                 "content.has_heading_hierarchy": True,
                 "content.has_lists_or_tables": True,
                 "content.has_front_loading": True,
-                # signals: 3 + 3 + 2 = 8
+                # signals: 3 + 2 + 1 = 6 (v4.3: rss=2, freshness=1)
                 "signals.has_lang": True,
                 "signals.has_rss": True,
                 "signals.has_freshness": True,
@@ -412,6 +413,16 @@ class TestScoringConsistency:
                 "ai_discovery.has_service": True,
             }
         )
+        # brand_entity massimo: coherence(3) + kg(3) + about_contact(2) + geo(1) + topic(1) = 10
+        brand_max = BrandEntityResult(
+            brand_name_consistent=True,
+            schema_desc_matches_meta=True,
+            kg_pillar_count=3,
+            has_about_link=True,
+            has_contact_info=True,
+            has_geo_schema=True,
+            faq_depth=3,
+        )
         total = (
             _robots_score(r)
             + _llms_score(r)
@@ -420,6 +431,7 @@ class TestScoringConsistency:
             + _content_score(r)
             + signals_score(r)
             + _score_ai_discovery(r.ai_discovery)
+            + _score_brand_entity(brand_max)
         )
         assert total == 100
 

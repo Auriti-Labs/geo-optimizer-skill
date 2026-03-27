@@ -11,6 +11,9 @@ import json
 from dataclasses import asdict
 
 from geo_optimizer.cli.scoring_helpers import (
+    brand_entity_score as _brand_entity_score,
+)
+from geo_optimizer.cli.scoring_helpers import (
     content_score as _content_score,
 )
 from geo_optimizer.cli.scoring_helpers import (
@@ -24,6 +27,9 @@ from geo_optimizer.cli.scoring_helpers import (
 )
 from geo_optimizer.cli.scoring_helpers import (
     schema_score as _schema_score,
+)
+from geo_optimizer.cli.scoring_helpers import (
+    signals_score as _signals_score,
 )
 
 # Fix #127: available for wrapping UI strings in v3.2.0
@@ -53,7 +59,7 @@ def format_audit_json(result: AuditResult) -> str:
             },
             "schema_jsonld": {
                 "score": _schema_score(result),
-                "max": 22,
+                "max": 16,
                 "passed": result.schema.has_website,
                 "details": {
                     "has_website": result.schema.has_website,
@@ -70,13 +76,13 @@ def format_audit_json(result: AuditResult) -> str:
             },
             "content": {
                 "score": _content_score(result),
-                "max": 14,
+                "max": 12,
                 "passed": result.content.has_h1,
                 "details": asdict(result.content),
             },
             "signals": {
-                "score": result.score_breakdown.get("signals", 0),
-                "max": 8,
+                "score": _signals_score(result),
+                "max": 6,
                 "passed": bool(result.signals and result.signals.has_lang),
                 "details": asdict(result.signals) if result.signals else {},
             },
@@ -85,6 +91,12 @@ def format_audit_json(result: AuditResult) -> str:
                 "max": 6,
                 "passed": bool(result.ai_discovery and result.ai_discovery.endpoints_found >= 1),
                 "details": asdict(result.ai_discovery) if result.ai_discovery else {},
+            },
+            "brand_entity": {
+                "score": _brand_entity_score(result),
+                "max": 10,
+                "passed": bool(result.brand_entity and result.brand_entity.brand_name_consistent),
+                "details": asdict(result.brand_entity) if result.brand_entity else {},
             },
         },
         "score_breakdown": result.score_breakdown,
@@ -221,6 +233,38 @@ def format_audit_text(result: AuditResult) -> str:
             lines.append(f"  ✅ /ai/faq.json ({result.ai_discovery.faq_count} FAQs)")
         else:
             lines.append("  ⚠️  /ai/faq.json missing")
+
+    # Brand & Entity Signals
+    if result.brand_entity:
+        lines.append("")
+        lines.append(_section_header("8. BRAND & ENTITY SIGNALS"))
+        be = result.brand_entity
+        be_pts = _brand_entity_score(result)
+        bar_filled = int(be_pts / 2)
+        bar_empty = 5 - bar_filled
+        bar = "█" * bar_filled + "░" * bar_empty
+        lines.append(f"  [{bar}] {be_pts}/10")
+        if be.brand_name_consistent:
+            names = ", ".join(be.names_found[:3]) if be.names_found else ""
+            lines.append(f"  ✅ Brand name coerente{f' ({names})' if names else ''}")
+        else:
+            lines.append("  ⚠️  Brand name incoerente tra schema, meta e contenuto")
+        if be.kg_pillar_count > 0:
+            lines.append(f"  ✅ {be.kg_pillar_count}/4 Knowledge Graph pillars")
+        else:
+            lines.append("  ⚠️  Nessun link a Knowledge Graph (Wikipedia, Wikidata, LinkedIn)")
+        if be.has_about_link:
+            lines.append("  ✅ About page collegata")
+        else:
+            lines.append("  ⚠️  About page non rilevata")
+        if be.has_contact_info:
+            lines.append("  ✅ Informazioni di contatto presenti")
+        else:
+            lines.append("  ⚠️  Informazioni di contatto mancanti")
+        if be.faq_depth > 0:
+            lines.append(f"  ✅ {be.faq_depth} FAQ trovate")
+        if be.has_recent_articles:
+            lines.append("  ✅ Articoli con dateModified trovati")
 
     # CDN Check
     if result.cdn_check and result.cdn_check.checked:

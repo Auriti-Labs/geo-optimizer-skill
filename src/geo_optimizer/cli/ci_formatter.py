@@ -16,13 +16,39 @@ import json
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 from geo_optimizer.cli.scoring_helpers import (
+    brand_entity_score,
     content_score,
     llms_score,
     meta_score,
     robots_score,
     schema_score,
 )
+from geo_optimizer.models.config import SCORING
 from geo_optimizer.models.results import AuditResult
+
+# Massimi per categoria calcolati dinamicamente da SCORING (evita hardcode — v4.3)
+_MAX_ROBOTS = SCORING["robots_found"] + SCORING["robots_citation_ok"]
+_MAX_LLMS = (
+    SCORING["llms_found"] + SCORING["llms_h1"] + SCORING["llms_blockquote"]
+    + SCORING["llms_sections"] + SCORING["llms_links"] + SCORING["llms_depth"]
+    + SCORING["llms_depth_high"] + SCORING["llms_full"]
+)
+_MAX_SCHEMA = (
+    SCORING["schema_any_valid"] + SCORING["schema_richness"] + SCORING["schema_faq"]
+    + SCORING["schema_article"] + SCORING["schema_organization"] + SCORING["schema_website"]
+    + SCORING["schema_sameas"]
+)
+_MAX_META = SCORING["meta_title"] + SCORING["meta_description"] + SCORING["meta_canonical"] + SCORING["meta_og"]
+_MAX_CONTENT = (
+    SCORING["content_h1"] + SCORING["content_numbers"] + SCORING["content_links"]
+    + SCORING["content_word_count"] + SCORING["content_heading_hierarchy"]
+    + SCORING["content_lists_or_tables"] + SCORING["content_front_loading"]
+)
+_MAX_BRAND_ENTITY = (
+    SCORING["brand_entity_coherence"] + SCORING["brand_kg_readiness"]
+    + SCORING["brand_geo_identity"] + SCORING["brand_topic_authority"]
+    + 2  # about_link + contact_info (1pt ciascuno, non in SCORING separato)
+)
 
 # ─── SARIF ────────────────────────────────────────────────────────────────────
 
@@ -220,11 +246,12 @@ def format_audit_junit(result: AuditResult) -> str:
     testsuites.set("tests", "5")
 
     categories = [
-        ("robots_txt", "Robots.txt AI Bot Access", robots_score(result), 18, _robots_findings(result)),
-        ("llms_txt", "llms.txt AI Index File", llms_score(result), 18, _llms_findings(result)),
-        ("schema_jsonld", "JSON-LD Schema Markup", schema_score(result), 22, _schema_findings(result)),
-        ("meta_tags", "SEO Meta Tags", meta_score(result), 14, _meta_findings(result)),
-        ("content_quality", "Content Quality", content_score(result), 14, _content_findings(result)),
+        ("robots_txt", "Robots.txt AI Bot Access", robots_score(result), _MAX_ROBOTS, _robots_findings(result)),
+        ("llms_txt", "llms.txt AI Index File", llms_score(result), _MAX_LLMS, _llms_findings(result)),
+        ("schema_jsonld", "JSON-LD Schema Markup", schema_score(result), _MAX_SCHEMA, _schema_findings(result)),
+        ("meta_tags", "SEO Meta Tags", meta_score(result), _MAX_META, _meta_findings(result)),
+        ("content_quality", "Content Quality", content_score(result), _MAX_CONTENT, _content_findings(result)),
+        ("brand_entity", "Brand & Entity Signals", brand_entity_score(result), _MAX_BRAND_ENTITY, []),
     ]
 
     total_failures = 0

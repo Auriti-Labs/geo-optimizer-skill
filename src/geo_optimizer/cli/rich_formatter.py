@@ -16,6 +16,9 @@ import os
 from urllib.parse import urlparse
 
 from geo_optimizer.cli.scoring_helpers import (
+    brand_entity_score as _brand_entity_score,
+)
+from geo_optimizer.cli.scoring_helpers import (
     content_score as _content_score,
 )
 from geo_optimizer.cli.scoring_helpers import (
@@ -657,6 +660,88 @@ def _build_ai_discovery_card(result: AuditResult) -> Panel | None:
     )
 
 
+def _build_brand_entity_card(result: AuditResult, score: int, max_score: int) -> Panel:
+    """Card dettagliata per Brand & Entity Signals."""
+    content_parts = []
+
+    bar = _micro_bar(score, max_score)
+    content_parts.append(bar)
+    content_parts.append(Text())
+
+    be = result.brand_entity
+
+    # Coerenza brand name
+    coherence = Text("  ")
+    if be.brand_name_consistent:
+        coherence.append("✓ Brand name coerente", style=_COLORS["excellent"])
+    else:
+        coherence.append("✗ Brand name incoerente", style=_COLORS["critical"])
+    if be.names_found:
+        coherence.append(f"  ({', '.join(be.names_found[:3])})", style=_COLORS["dim"])
+    content_parts.append(coherence)
+
+    # Knowledge Graph pillars
+    kg = Text("  ")
+    if be.kg_pillar_count > 0:
+        kg.append(f"✓ {be.kg_pillar_count}/4 KG pillars", style=_COLORS["excellent"])
+        pillars = []
+        if be.has_wikipedia:
+            pillars.append("Wikipedia")
+        if be.has_wikidata:
+            pillars.append("Wikidata")
+        if be.has_linkedin:
+            pillars.append("LinkedIn")
+        if be.has_crunchbase:
+            pillars.append("Crunchbase")
+        kg.append(f"  ({', '.join(pillars)})", style=_COLORS["dim"])
+    else:
+        kg.append("✗ No Knowledge Graph links", style=_COLORS["dim"])
+    content_parts.append(kg)
+
+    # About, Contact, Geo
+    signals_text = Text("  ")
+    items = [
+        ("About page", be.has_about_link),
+        ("Contact info", be.has_contact_info),
+        ("Geo schema", be.has_geo_schema or be.has_hreflang),
+    ]
+    for label, present in items:
+        if present:
+            signals_text.append(f"✓ {label}", style=_COLORS["excellent"])
+        else:
+            signals_text.append(f"✗ {label}", style=_COLORS["dim"])
+        signals_text.append("  ", style="default")
+    content_parts.append(signals_text)
+
+    # Topic authority: FAQ + articoli recenti
+    if be.faq_depth > 0 or be.has_recent_articles:
+        topic = Text("  ")
+        if be.faq_depth > 0:
+            topic.append(f"{be.faq_depth} FAQ", style=f"bold {_COLORS['brand_2']}")
+        if be.has_recent_articles:
+            if be.faq_depth > 0:
+                topic.append("  •  ", style=_COLORS["dim"])
+            topic.append("Articles with dateModified", style=_COLORS["dim"])
+        content_parts.append(topic)
+
+    color = _score_color(score, max_score)
+    t = Table(show_header=False, box=None, expand=True, padding=0)
+    t.add_column(ratio=1)
+    for part in content_parts:
+        t.add_row(part)
+
+    return Panel(
+        t,
+        title="[bold]🏢 Brand & Entity[/]",
+        title_align="left",
+        subtitle=f"[bold {color}]{score}[/][dim]/{max_score}[/]",
+        subtitle_align="right",
+        border_style=color,
+        box=box.ROUNDED,
+        padding=(1, 2),
+    )
+
+
 def _build_cdn_card(result: AuditResult) -> Panel | None:
     """Card per CDN AI Crawler Access."""
     cdn = result.cdn_check
@@ -845,6 +930,7 @@ def format_audit_rich(result: AuditResult) -> str:
     m_score = _meta_score(result)
     c_score = _content_score(result)
     sig_score = _signals_score(result)
+    be_score = _brand_entity_score(result)
     from geo_optimizer.core.scoring import _score_ai_discovery
 
     ai_score = _score_ai_discovery(result.ai_discovery) if result.ai_discovery else 0
@@ -852,11 +938,12 @@ def format_audit_rich(result: AuditResult) -> str:
     categories = [
         ("Robots", r_score, 18),
         ("llms.txt", l_score, 18),
-        ("Schema", s_score, 22),
+        ("Schema", s_score, 16),
         ("Meta", m_score, 14),
-        ("Content", c_score, 14),
-        ("Signals", sig_score, 8),
+        ("Content", c_score, 12),
+        ("Signals", sig_score, 6),
         ("AI Disc.", ai_score, 6),
+        ("Brand", be_score, 10),
     ]
 
     stacked = _render_stacked_bar(categories, width=68)
@@ -883,11 +970,12 @@ def format_audit_rich(result: AuditResult) -> str:
     console.print()
     console.print(_build_robots_card(result, r_score, 18))
     console.print(_build_llms_card(result, l_score, 18))
-    console.print(_build_schema_card(result, s_score, 22))
+    console.print(_build_schema_card(result, s_score, 16))
     console.print(_build_meta_card(result, m_score, 14))
-    console.print(_build_content_card(result, c_score, 14))
-    console.print(_build_signals_card(result, sig_score, 8))
+    console.print(_build_content_card(result, c_score, 12))
+    console.print(_build_signals_card(result, sig_score, 6))
     console.print(_build_ai_discovery_card(result))
+    console.print(_build_brand_entity_card(result, be_score, 10))
 
     # ── 6. Card opzionali ────────────────────────────────────────
     cdn_card = _build_cdn_card(result)

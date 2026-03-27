@@ -121,7 +121,7 @@ def geo_fix(url: str, only: str = "") -> str:
     only_set = None
     if only:
         only_set = {c.strip().lower() for c in only.split(",")}
-        valid = {"robots", "llms", "schema", "meta", "ai_discovery"}
+        valid = {"robots", "llms", "schema", "meta", "ai_discovery", "brand_entity"}
         invalid = only_set - valid
         if invalid:
             return json.dumps(

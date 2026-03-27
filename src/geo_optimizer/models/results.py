@@ -143,6 +143,40 @@ class SignalsResult:
     freshness_date: str = ""
 
 
+# ─── Brand & Entity (v4.3) ────────────────────────────────────────────────────
+
+
+@dataclass
+class BrandEntityResult:
+    """Segnali di identità brand ed entity per la percezione AI."""
+
+    # Entity Coherence (3 punti)
+    brand_name_consistent: bool = False
+    names_found: list[str] = field(default_factory=list)
+    schema_desc_matches_meta: bool = False
+
+    # Knowledge Graph Readiness (3 punti)
+    kg_pillar_count: int = 0
+    kg_pillar_urls: list[str] = field(default_factory=list)
+    has_wikipedia: bool = False
+    has_wikidata: bool = False
+    has_linkedin: bool = False
+    has_crunchbase: bool = False
+
+    # About/Contact Signals (2 punti)
+    has_about_link: bool = False
+    has_contact_info: bool = False  # Organization con address/telephone/email o Person con jobTitle
+
+    # Geographic Identity (1 punto)
+    has_geo_schema: bool = False  # address/areaServed/LocalBusiness
+    has_hreflang: bool = False
+    hreflang_count: int = 0
+
+    # Topic Authority (1 punto)
+    faq_depth: int = 0  # numero FAQ nel FAQPage schema
+    has_recent_articles: bool = False  # Article/BlogPosting con dateModified
+
+
 # ─── Citability (Princeton GEO Methods) ─────────────────────────────────────
 
 
@@ -262,6 +296,8 @@ class AuditResult:
     cdn_check: CdnAiCrawlerResult = field(default_factory=CdnAiCrawlerResult)
     # v4.2: JS Rendering check (#226)
     js_rendering: JsRenderingResult = field(default_factory=JsRenderingResult)
+    # v4.3: Brand & Entity signals
+    brand_entity: BrandEntityResult = field(default_factory=BrandEntityResult)
 
 
 # ─── Schema analysis ─────────────────────────────────────────────────────────

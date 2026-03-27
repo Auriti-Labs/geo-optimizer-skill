@@ -570,9 +570,12 @@ class TestConfig:
             assert key in SCORING, f"SCORING missing key: {key}"
 
     def test_scoring_values_are_positive_ints(self):
+        # schema_sameas è 0 per retrocompatibilità — migrato a brand_kg_readiness (v4.3)
+        deprecated_zero_keys = {"schema_sameas"}
         for key, val in SCORING.items():
             assert isinstance(val, int), f"SCORING[{key}] should be int"
-            assert val > 0, f"SCORING[{key}] should be positive"
+            if key not in deprecated_zero_keys:
+                assert val > 0, f"SCORING[{key}] should be positive"
 
     def test_score_bands_cover_full_range(self):
         """Score bands should cover 0-100 without gaps."""

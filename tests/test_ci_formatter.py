@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 from geo_optimizer.cli.ci_formatter import format_audit_junit, format_audit_sarif
 from geo_optimizer.models.results import (
     AuditResult,
+    BrandEntityResult,
     ContentResult,
     LlmsTxtResult,
     MetaResult,
@@ -140,12 +141,12 @@ class TestJunitFormatter:
         assert root.tag == "testsuites"
 
     def test_junit_contiene_test_suites(self):
-        """JUnit contiene 5 test suite (una per categoria)."""
+        """JUnit contiene 6 test suite (5 originali + brand_entity v4.3)."""
         result = _make_result()
         root = ET.fromstring(format_audit_junit(result))
 
         testsuites = root.findall("testsuite")
-        assert len(testsuites) == 5
+        assert len(testsuites) == 6
 
     def test_junit_contiene_failures(self):
         """JUnit contiene failures per check non superati."""
@@ -193,6 +194,15 @@ class TestJunitFormatter:
                 "content.has_links": True,
                 "content.word_count": 500,
             }
+        )
+        # v4.3: sito ottimizzato ha brand_entity con segnali forti (score >= 50%)
+        result.brand_entity = BrandEntityResult(
+            brand_name_consistent=True,
+            kg_pillar_count=3,
+            has_about_link=True,
+            has_contact_info=True,
+            has_geo_schema=True,
+            faq_depth=3,
         )
         root = ET.fromstring(format_audit_junit(result))
 

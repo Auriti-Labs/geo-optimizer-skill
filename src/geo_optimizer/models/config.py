@@ -319,11 +319,11 @@ SCORING = {
     # Schema JSON-LD — 22 punti (era 25) — qualsiasi tipo valido + sameAs + richness
     "schema_any_valid": 2,  # qualsiasi JSON-LD schema valido trovato (era 5, ridotto per richness)
     "schema_richness": 3,  # NUOVO: schema con 5+ attributi rilevanti (Growth Marshal 2026)
-    "schema_faq": 5,  # era 7 — ancora il tipo singolo più alto
+    "schema_faq": 3,  # era 5 — ridotto, migrato a brand_topic_authority
     "schema_article": 3,  # era 4
     "schema_organization": 3,  # era 3
-    "schema_website": 3,  # era 8
-    "schema_sameas": 3,  # NUOVO: link sameAs a Wikipedia/Wikidata/LinkedIn
+    "schema_website": 2,  # era 3
+    "schema_sameas": 0,  # era 3, migrato a brand KG — mantenuto a 0 per retrocompat
     # Meta tags — 14 punti
     "meta_title": 5,
     "meta_description": 2,
@@ -331,21 +331,27 @@ SCORING = {
     "meta_og": 4,
     # Content quality — 14 punti (era 15) — controlli struttura
     "content_h1": 2,  # era 3
-    "content_numbers": 2,  # era 4
-    "content_links": 2,  # era 4
+    "content_numbers": 1,  # era 2
+    "content_links": 1,  # era 2
     "content_word_count": 2,  # era 4
     "content_heading_hierarchy": 2,  # NUOVO: ha H2 + H3 in gerarchia corretta
     "content_lists_or_tables": 2,  # NUOVO: ha <ul>/<ol>/<table>
     "content_front_loading": 2,  # NUOVO: info chiave nel primo 30% del contenuto
     # Signals — 8 punti (NUOVA categoria)
     "signals_lang": 3,  # NUOVO: <html lang="...">
-    "signals_rss": 3,  # NUOVO: feed RSS/Atom trovato
-    "signals_freshness": 2,  # NUOVO: dateModified nello schema o header Last-Modified
+    "signals_rss": 2,  # era 3
+    "signals_freshness": 1,  # era 2
     # AI Discovery — 6 punti (geo-checklist.dev standard)
     "ai_discovery_well_known": 2,  # /.well-known/ai.txt presente
     "ai_discovery_summary": 2,  # /ai/summary.json valido
     "ai_discovery_faq": 1,  # /ai/faq.json presente
     "ai_discovery_service": 1,  # /ai/service.json presente
+    # Brand & Entity — 10 punti (NUOVA categoria v4.3)
+    "brand_entity_coherence": 3,  # nome coerente tra H1/title/og:title/schema
+    "brand_kg_readiness": 3,  # sameAs verso Wikipedia/Wikidata/LinkedIn/Crunchbase
+    "brand_about_contact": 2,  # link /about + Organization con address/telephone
+    "brand_geo_identity": 1,  # hreflang + schema geo (address, areaServed)
+    "brand_topic_authority": 1,  # FAQ depth + Article con dateModified
 }
 
 # Minimum word threshold for content_word_count (300 parole = contenuto sostanziale)
@@ -365,6 +371,14 @@ SAMEAS_AUTHORITATIVE_DOMAINS = {
     "twitter.com",
     "x.com",
     "facebook.com",
+}
+
+# Domini pillar per Knowledge Graph (disambiguazione AI — i 4 più rilevanti)
+KG_PILLAR_DOMAINS = {
+    "wikipedia.org",
+    "wikidata.org",
+    "linkedin.com",
+    "crunchbase.com",
 }
 
 SCORE_BANDS = {

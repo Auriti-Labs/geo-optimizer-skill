@@ -6,6 +6,9 @@ v4.0: delega a core/scoring.py per consistenza e breakdown per categoria.
 from __future__ import annotations
 
 from geo_optimizer.core.scoring import (
+    _score_brand_entity as brand_entity_score_impl,
+)
+from geo_optimizer.core.scoring import (
     _score_content as content_score_impl,
 )
 from geo_optimizer.core.scoring import (
@@ -54,3 +57,8 @@ def content_score(r: AuditResult) -> int:
 def signals_score(r: AuditResult) -> int:
     """Punteggio segnali tecnici v4.0 — delega a core/scoring.py."""
     return signals_score_impl(r.signals) if r.signals else 0
+
+
+def brand_entity_score(r: AuditResult) -> int:
+    """Punteggio Brand & Entity v4.3 — delega a core/scoring.py."""
+    return brand_entity_score_impl(r.brand_entity) if r.brand_entity else 0

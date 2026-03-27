@@ -307,7 +307,15 @@ class TestAiDiscoveryScoring:
             + SCORING["ai_discovery_service"]
         )
 
-        total = max_robots + max_llms + max_schema + max_meta + max_content + max_signals + max_ai_disc
+        max_brand_entity = (
+            SCORING["brand_entity_coherence"]
+            + SCORING["brand_kg_readiness"]
+            + SCORING["brand_about_contact"]
+            + SCORING["brand_geo_identity"]
+            + SCORING["brand_topic_authority"]
+        )
+
+        total = max_robots + max_llms + max_schema + max_meta + max_content + max_signals + max_ai_disc + max_brand_entity
         assert total == 100, f"Totale massimo SCORING è {total}, dovrebbe essere 100"
 
 

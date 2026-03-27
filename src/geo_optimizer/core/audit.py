@@ -29,6 +29,7 @@ from geo_optimizer.models.config import (  # noqa: F401 (VALUABLE_SCHEMAS re-exp
 from geo_optimizer.models.results import (
     AiDiscoveryResult,
     AuditResult,
+    BrandEntityResult,
     CachedResponse,
     CdnAiCrawlerResult,
     CitabilityResult,
@@ -580,7 +581,7 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
     return result
 
 
-def build_recommendations(base_url, robots, llms, schema, meta, content, ai_discovery=None, signals=None) -> list:
+def build_recommendations(base_url, robots, llms, schema, meta, content, ai_discovery=None, signals=None, brand_entity=None) -> list:
     """Build a prioritized list of recommendations.
 
     Args:
@@ -592,6 +593,7 @@ def build_recommendations(base_url, robots, llms, schema, meta, content, ai_disc
         content: ContentResult.
         ai_discovery: AiDiscoveryResult (opzionale).
         signals: SignalsResult (opzionale, per raccomandazioni machine-readable #263).
+        brand_entity: BrandEntityResult (opzionale, v4.3).
     """
     recommendations = []
 
@@ -657,6 +659,27 @@ def build_recommendations(base_url, robots, llms, schema, meta, content, ai_disc
                 "Rich Product schema improves AI shopping visibility."
             )
 
+    # Brand & Entity raccomandazioni (v4.3)
+    if brand_entity is not None:
+        if not brand_entity.brand_name_consistent and len(brand_entity.names_found) >= 2:
+            recommendations.append("Use consistent brand name across title, og:title, H1, and schema Organization")
+        if brand_entity.kg_pillar_count == 0:
+            recommendations.append(
+                "Add sameAs links in Organization schema to Wikipedia, Wikidata, LinkedIn, or Crunchbase "
+                "for Knowledge Graph disambiguation"
+            )
+        elif brand_entity.kg_pillar_count < 3:
+            recommendations.append(
+                f"Add more sameAs links to Knowledge Graph pillars "
+                f"(currently {brand_entity.kg_pillar_count}/4: Wikipedia, Wikidata, LinkedIn, Crunchbase)"
+            )
+        if not brand_entity.has_about_link:
+            recommendations.append("Add a visible /about or /chi-siamo link to build trust signals for AI")
+        if not brand_entity.has_contact_info:
+            recommendations.append(
+                "Add address, telephone or contactPoint to Organization schema for entity validation"
+            )
+
     return recommendations
 
 
@@ -676,6 +699,7 @@ def _build_audit_result(
     ai_discovery=None,  # Standard AI discovery endpoints (.well-known/ai.txt, ecc.)
     cdn_check=None,  # v4.2: CDN AI Crawler check (#225)
     js_rendering=None,  # v4.2: JS Rendering check (#226)
+    brand_entity=None,  # v4.3: Brand & Entity signals
 ) -> AuditResult:
     """Costruisce AuditResult dai sub-audit (fix #97: logica comune sync/async).
 
@@ -708,14 +732,17 @@ def _build_audit_result(
 
     effective_ai_discovery = ai_discovery if ai_discovery is not None else AiDiscoveryResult()
 
+    # v4.3: usa BrandEntityResult vuoto se non fornito
+    effective_brand_entity = brand_entity if brand_entity is not None else BrandEntityResult()
+
     # Calcola score, breakdown e band (v4.0: include signals, ai_discovery)
-    score = compute_geo_score(robots, llms, schema, meta, content, effective_signals, effective_ai_discovery)
-    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, effective_signals, effective_ai_discovery)
+    score = compute_geo_score(robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity)
+    breakdown = compute_score_breakdown(robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity)
     band = get_score_band(score)
 
     # Raccomandazioni
     recommendations = build_recommendations(
-        base_url, robots, llms, schema, meta, content, effective_ai_discovery, effective_signals
+        base_url, robots, llms, schema, meta, content, effective_ai_discovery, effective_signals, effective_brand_entity
     )
 
     # Fix #104: esegui plugin registrati in CheckRegistry
@@ -778,6 +805,7 @@ def _build_audit_result(
         score_breakdown=breakdown,
         cdn_check=effective_cdn,
         js_rendering=effective_js,
+        brand_entity=effective_brand_entity,
     )
 
 
@@ -859,6 +887,9 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     # Fix #281: calcolo segnali tecnici (lang, RSS, freshness)
     signals = audit_signals(soup, schema)
 
+    # v4.3: Brand & Entity signals (zero richieste HTTP, solo dati già disponibili)
+    brand_entity_result = audit_brand_entity(soup, schema, meta, content)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -875,6 +906,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         cdn_check=cdn_result,
         js_rendering=js_result,
         signals=signals,
+        brand_entity=brand_entity_result,
     )
 
 
@@ -977,6 +1009,9 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     # Fix #281: calcolo segnali tecnici (lang, RSS, freshness)
     signals = audit_signals(soup, schema)
 
+    # v4.3: Brand & Entity signals (zero richieste HTTP, solo dati già disponibili)
+    brand_entity_result = audit_brand_entity(soup, schema, meta, content)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -993,6 +1028,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
         cdn_check=cdn_result,
         js_rendering=js_result,
         signals=signals,
+        brand_entity=brand_entity_result,
     )
 
 
@@ -1416,3 +1452,202 @@ def audit_signals(soup, schema_result) -> SignalsResult:
             signals.freshness_date = meta_mod["content"].strip()
 
     return signals
+
+
+# ─── Brand & Entity Signals (v4.3) ───────────────────────────────────────────
+
+
+def audit_brand_entity(soup, schema_result, meta_result, content_result) -> BrandEntityResult:
+    """Analizza segnali di brand identity ed entity per la percezione AI (v4.3).
+
+    Lavora solo su dati già fetchati, zero richieste HTTP.
+
+    Args:
+        soup: BeautifulSoup della homepage.
+        schema_result: SchemaResult già calcolato.
+        meta_result: MetaResult già calcolato.
+        content_result: ContentResult già calcolato.
+
+    Returns:
+        BrandEntityResult con i segnali brand/entity popolati.
+    """
+    from collections import Counter
+
+    from geo_optimizer.models.config import KG_PILLAR_DOMAINS
+
+    result = BrandEntityResult()
+    if soup is None:
+        return result
+
+    # ── 1. Entity Coherence ──────────────────────────────────────
+    # Raccoglie nomi brand da varie fonti
+    names = []
+
+    # H1
+    h1 = soup.find("h1")
+    if h1 and h1.get_text(strip=True):
+        h1_text = h1.get_text(strip=True)
+        # Prende la prima parte prima di separatori comuni
+        for sep in (" — ", " - ", " | ", " · "):
+            if sep in h1_text:
+                h1_text = h1_text.split(sep)[0].strip()
+                break
+        if h1_text:
+            names.append(h1_text)
+
+    # Title tag
+    if meta_result.title_text:
+        title_name = meta_result.title_text
+        for sep in (" — ", " - ", " | ", " · "):
+            if sep in title_name:
+                title_name = title_name.split(sep)[0].strip()
+                break
+        if title_name:
+            names.append(title_name)
+
+    # og:title
+    og_title = soup.find("meta", property="og:title")
+    if og_title and og_title.get("content", ""):
+        og_name = og_title["content"]
+        for sep in (" — ", " - ", " | ", " · "):
+            if sep in og_name:
+                og_name = og_name.split(sep)[0].strip()
+                break
+        if og_name:
+            names.append(og_name)
+
+    # Schema Organization name
+    for raw_schema in schema_result.raw_schemas:
+        schemas_to_check = []
+        if "@graph" in raw_schema:
+            schemas_to_check.extend(raw_schema["@graph"])
+        else:
+            schemas_to_check.append(raw_schema)
+        for s in schemas_to_check:
+            s_type = s.get("@type", "")
+            if isinstance(s_type, list):
+                s_type = s_type[0] if s_type else ""
+            if s_type == "Organization" and s.get("name"):
+                names.append(s["name"])
+
+    result.names_found = names[:10]
+
+    # Consistenza: almeno 2 nomi, e i più comuni sono uguali (case-insensitive)
+    if len(names) >= 2:
+        lower_names = [n.lower().strip() for n in names]
+        freq = Counter(lower_names)
+        most_common_name, most_common_count = freq.most_common(1)[0]
+        if most_common_count >= 2:
+            result.brand_name_consistent = True
+
+    # Schema description vs meta description
+    if meta_result.description_text:
+        meta_desc_lower = meta_result.description_text.lower()[:100]
+        for raw_schema in schema_result.raw_schemas:
+            schemas_to_check = []
+            if "@graph" in raw_schema:
+                schemas_to_check.extend(raw_schema["@graph"])
+            else:
+                schemas_to_check.append(raw_schema)
+            for s in schemas_to_check:
+                schema_desc = s.get("description", "")
+                if schema_desc and isinstance(schema_desc, str):
+                    schema_desc_lower = schema_desc.lower()[:100]
+                    # Overlap significativo: almeno 30 char in comune
+                    if meta_desc_lower[:30] in schema_desc_lower or schema_desc_lower[:30] in meta_desc_lower:
+                        result.schema_desc_matches_meta = True
+                        break
+
+    # ── 2. Knowledge Graph Readiness ─────────────────────────────
+    for url in schema_result.sameas_urls:
+        url_lower = url.lower()
+        for domain in KG_PILLAR_DOMAINS:
+            if domain in url_lower:
+                result.kg_pillar_urls.append(url)
+                if "wikipedia.org" in url_lower:
+                    result.has_wikipedia = True
+                elif "wikidata.org" in url_lower:
+                    result.has_wikidata = True
+                elif "linkedin.com" in url_lower:
+                    result.has_linkedin = True
+                elif "crunchbase.com" in url_lower:
+                    result.has_crunchbase = True
+                break
+    result.kg_pillar_count = sum([
+        result.has_wikipedia,
+        result.has_wikidata,
+        result.has_linkedin,
+        result.has_crunchbase,
+    ])
+
+    # ── 3. About/Contact Signals ─────────────────────────────────
+    # Cerca link /about nella pagina
+    for a_tag in soup.find_all("a", href=True):
+        href = a_tag["href"].lower()
+        if "/about" in href or "/chi-siamo" in href or "/team" in href:
+            result.has_about_link = True
+            break
+
+    # Cerca Organization con address/telephone/email o Person con jobTitle
+    for raw_schema in schema_result.raw_schemas:
+        schemas_to_check = []
+        if "@graph" in raw_schema:
+            schemas_to_check.extend(raw_schema["@graph"])
+        else:
+            schemas_to_check.append(raw_schema)
+        for s in schemas_to_check:
+            s_type = s.get("@type", "")
+            if isinstance(s_type, list):
+                s_type = s_type[0] if s_type else ""
+            if s_type == "Organization" and (
+                s.get("address") or s.get("telephone") or s.get("email") or s.get("contactPoint")
+            ):
+                result.has_contact_info = True
+            elif s_type == "Person" and (s.get("jobTitle") or s.get("hasCredential") or s.get("alumniOf")):
+                result.has_contact_info = True
+
+    # ── 4. Geographic Identity ───────────────────────────────────
+    # hreflang tags
+    hreflang_tags = soup.find_all("link", attrs={"rel": "alternate", "hreflang": True})
+    result.hreflang_count = len(hreflang_tags)
+    result.has_hreflang = result.hreflang_count > 0
+
+    # Schema geo (address, areaServed, LocalBusiness)
+    for raw_schema in schema_result.raw_schemas:
+        schemas_to_check = []
+        if "@graph" in raw_schema:
+            schemas_to_check.extend(raw_schema["@graph"])
+        else:
+            schemas_to_check.append(raw_schema)
+        for s in schemas_to_check:
+            s_type = s.get("@type", "")
+            if isinstance(s_type, list):
+                s_type = s_type[0] if s_type else ""
+            if s_type == "LocalBusiness" or s.get("areaServed") or (s_type == "Organization" and s.get("address")):
+                result.has_geo_schema = True
+                break
+
+    # ── 5. Topic Authority ───────────────────────────────────────
+    # FAQ depth dal FAQPage schema
+    for raw_schema in schema_result.raw_schemas:
+        schemas_to_check = []
+        if "@graph" in raw_schema:
+            schemas_to_check.extend(raw_schema["@graph"])
+        else:
+            schemas_to_check.append(raw_schema)
+        for s in schemas_to_check:
+            s_type = s.get("@type", "")
+            if isinstance(s_type, list):
+                s_type = s_type[0] if s_type else ""
+            if s_type == "FAQPage":
+                main_entity = s.get("mainEntity", [])
+                if isinstance(main_entity, list):
+                    result.faq_depth += len(main_entity)
+
+    # Article/BlogPosting con dateModified
+    result.has_recent_articles = schema_result.has_date_modified and (
+        schema_result.has_article
+        or any(t in ("BlogPosting", "NewsArticle") for t in schema_result.found_types)
+    )
+
+    return result
