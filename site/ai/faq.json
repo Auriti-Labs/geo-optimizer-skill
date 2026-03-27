@@ -1,0 +1,28 @@
+{
+  "faqs": [
+    {
+      "question": "What is GEO Optimizer?",
+      "answer": "GEO Optimizer is an open-source Python toolkit that audits websites for AI search engine visibility. It scores sites 0-100 based on 42 research-backed methods and generates fixes for robots.txt, llms.txt, JSON-LD schema, and meta tags. Install with: pip install geo-optimizer-skill"
+    },
+    {
+      "question": "How is the GEO score calculated?",
+      "answer": "The GEO score (0-100) is calculated across 7 categories: robots.txt AI bot access (18 points), llms.txt presence and quality (18), JSON-LD schema richness (22), meta tags (14), content quality (14), technical signals like lang and RSS (8), and AI discovery endpoints (6). Bands: 86-100 excellent, 68-85 good, 36-67 foundation, 0-35 critical."
+    },
+    {
+      "question": "What are the 42 GEO methods?",
+      "answer": "GEO Optimizer measures content citability using 42 methods based on Princeton KDD 2024, AutoGEO ICLR 2026, and SE Ranking 2025 research. Top methods by impact: Quotation Addition +41%, Statistics +33%, Fluency +29%, Cite Sources +27%, Answer-First +25%, Passage Density +23%."
+    },
+    {
+      "question": "How do I use GEO Optimizer with Claude or Cursor?",
+      "answer": "GEO Optimizer includes an MCP server with 8 tools. Install with: pip install geo-optimizer-skill[mcp], then: claude mcp add geo-optimizer -- geo-mcp. You can then ask Claude to audit sites, generate fixes, and analyze citability directly."
+    },
+    {
+      "question": "Can I run GEO audits in CI/CD?",
+      "answer": "Yes. Use the GitHub Action: uses: Auriti-Labs/geo-optimizer-skill@v1 with url and threshold inputs. Supports SARIF output for GitHub Security tab and JUnit for Jenkins/GitLab. Fails the build if score drops below threshold."
+    },
+    {
+      "question": "What AI bots does GEO Optimizer track?",
+      "answer": "GEO Optimizer tracks 22 AI bots across 3 tiers: training (GPTBot, anthropic-ai, Google-Extended), search/citation (OAI-SearchBot, ClaudeBot, PerplexityBot, Bingbot), and user-fetch (ChatGPT-User, Perplexity-User). Critical citation bots: OAI-SearchBot, ClaudeBot, Claude-SearchBot, PerplexityBot."
+    }
+  ]
+}

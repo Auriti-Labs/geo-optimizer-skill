@@ -1,0 +1,20 @@
+{
+  "name": "GEO Optimizer Documentation",
+  "description": "Complete documentation for GEO Optimizer \u2014 the open-source toolkit to audit, fix, and optimize websites for AI search engine visibility. Covers CLI commands, MCP server, CI/CD integration, 42 citability methods, and 22 AI bot configurations.",
+  "url": "https://auriti-labs.github.io/geo-optimizer-skill/",
+  "lastModified": "2026-03-27",
+  "category": "Developer Documentation",
+  "topics": [
+    "Generative Engine Optimization",
+    "AI search visibility",
+    "robots.txt for AI bots",
+    "llms.txt specification",
+    "JSON-LD schema markup",
+    "MCP server integration",
+    "CI/CD pipeline integration"
+  ],
+  "author": {
+    "name": "Auriti Labs",
+    "url": "https://github.com/Auriti-Labs"
+  }
+}

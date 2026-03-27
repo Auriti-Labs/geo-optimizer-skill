@@ -1,0 +1,36 @@
+# GEO Optimizer
+
+> Open-source toolkit to audit, fix, and optimize websites for AI search engine visibility. Based on Princeton KDD 2024 and AutoGEO ICLR 2026 research. Scores websites 0-100 across 7 categories with 42 citability methods.
+
+The main documentation is available at: [GEO Optimizer Docs](https://auriti-labs.github.io/geo-optimizer-skill/)
+
+## Getting Started
+
+- [Getting Started](https://auriti-labs.github.io/geo-optimizer-skill/getting-started/): Install the toolkit and run your first GEO audit in 5 minutes
+- [Scoring Rubric](https://auriti-labs.github.io/geo-optimizer-skill/scoring-rubric/): How the 0-100 score is calculated across 7 categories (robots, llms, schema, meta, content, signals, AI discovery)
+
+## CLI Commands
+
+- [geo audit](https://auriti-labs.github.io/geo-optimizer-skill/geo-audit/): Full GEO audit with score 0-100, 7 output formats (text, json, rich, html, sarif, junit, github)
+- [geo fix](https://auriti-labs.github.io/geo-optimizer-skill/geo-fix/): Auto-generate robots.txt, llms.txt, JSON-LD schema, and meta tag fixes
+- [geo llms](https://auriti-labs.github.io/geo-optimizer-skill/llms-txt/): Generate llms.txt from XML sitemap for AI content discovery
+- [geo schema](https://auriti-labs.github.io/geo-optimizer-skill/schema-injector/): Generate and inject JSON-LD structured data (WebSite, FAQPage, Article, Organization)
+
+## Integrations
+
+- [MCP Server](https://auriti-labs.github.io/geo-optimizer-skill/mcp-server/): Use from Claude Code, Cursor, Windsurf — 8 tools and 5 resources
+- [CI/CD Integration](https://auriti-labs.github.io/geo-optimizer-skill/ci-cd/): GitHub Actions, GitLab CI, Jenkins — SARIF and JUnit output
+- [AI Context Files](https://auriti-labs.github.io/geo-optimizer-skill/ai-context/): Load GEO expertise into Claude, ChatGPT, Cursor, Windsurf, Kiro
+
+## Reference
+
+- [AI Bots Reference](https://auriti-labs.github.io/geo-optimizer-skill/ai-bots-reference/): 22 AI crawlers with 3-tier classification (training, search, user)
+- [42 GEO Methods](https://auriti-labs.github.io/geo-optimizer-skill/geo-methods/): Research-backed citability methods — Quotation +41%, Statistics +33%, Fluency +29%, Cite Sources +27%
+- [Troubleshooting](https://auriti-labs.github.io/geo-optimizer-skill/troubleshooting/): Solutions to common installation and runtime problems
+
+## Optional
+
+- [GitHub Repository](https://github.com/Auriti-Labs/geo-optimizer-skill): Source code, issues, discussions
+- [PyPI Package](https://pypi.org/project/geo-optimizer-skill/): Latest release
+- [Live Demo](https://geo-optimizer-web.onrender.com): Audit any website online
+- [Changelog](https://github.com/Auriti-Labs/geo-optimizer-skill/blob/main/CHANGELOG.md): All version changes

@@ -1,0 +1,9 @@
+# AI Crawler Permissions — GEO Optimizer Documentation
+# https://auriti-labs.github.io/geo-optimizer-skill/
+
+User-Agent: *
+Allow: /
+
+# This documentation site welcomes all AI crawlers for indexing and citation.
+# All content is open-source under MIT License.
+# Contact: juancamilo.auriti@gmail.com

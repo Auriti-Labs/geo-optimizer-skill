@@ -1,0 +1,18 @@
+{
+  "name": "GEO Optimizer",
+  "description": "Open-source AI search visibility audit and optimization toolkit",
+  "capabilities": [
+    "Audit website GEO score (0-100) across 7 categories",
+    "Auto-generate fix files (robots.txt, llms.txt, schema, meta)",
+    "Content citability analysis with 42 research-backed methods",
+    "MCP server for Claude Code, Cursor, Windsurf",
+    "CI/CD integration with GitHub Actions, SARIF, JUnit",
+    "Side-by-side GEO score comparison",
+    "Dynamic SVG badge generation",
+    "PDF and HTML report export"
+  ],
+  "installation": "pip install geo-optimizer-skill",
+  "documentation": "https://auriti-labs.github.io/geo-optimizer-skill/",
+  "repository": "https://github.com/Auriti-Labs/geo-optimizer-skill",
+  "license": "MIT"
+}
