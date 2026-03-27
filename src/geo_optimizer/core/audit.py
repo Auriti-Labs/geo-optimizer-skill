@@ -721,7 +721,7 @@ def _build_audit_result(
             for r in check_results
         }
 
-    # Citability Score: analisi contenuto con i 9 metodi Princeton GEO
+    # Citability Score: analisi contenuto con 42 metodi (fix #31)
     # Fix #285: passa soup_clean pre-calcolato per evitare re-parse in citability
     from geo_optimizer.core.citability import audit_citability
 
@@ -1296,13 +1296,9 @@ def audit_js_rendering(soup, raw_html: str) -> JsRenderingResult:
                 result.has_empty_root = True
                 break
 
-    # Check for <noscript> content (fallback for JS-only sites)
-    noscript_tags = soup.find_all("noscript")  # Re-parse since we decomposed earlier
-    # Re-parse to check noscript properly
-    from bs4 import BeautifulSoup as BS
-
-    fresh_soup = BS(raw_html, "html.parser")
-    noscript_tags = fresh_soup.find_all("noscript")
+    # Check for <noscript> content
+    # Fix #27: usa soup originale (non mutato grazie a fix #24)
+    noscript_tags = soup.find_all("noscript")
     for ns in noscript_tags:
         ns_text = ns.get_text(strip=True)
         if len(ns_text) > 20:

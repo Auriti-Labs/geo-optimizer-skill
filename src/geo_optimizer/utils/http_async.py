@@ -66,9 +66,9 @@ async def fetch_url_async(
     own_client = client is None
 
     try:
-        # Force safe client: always create our own to ensure follow_redirects=False (fix #196)
-        if own_client or getattr(client, "_transport", None) is None:
-            own_client = True
+        # Fix #8: usa il client passato se disponibile (connection pooling)
+        # Fix #196: crea nuovo client solo se non ne abbiamo uno
+        if own_client:
             client = httpx.AsyncClient(
                 headers=HEADERS,
                 follow_redirects=False,  # Manual redirect with SSRF revalidation (fix #179)

@@ -171,6 +171,44 @@ def _get_clean_text(soup, soup_clean=None) -> str:
     return working.get_text(separator=" ", strip=True)
 
 
+
+
+def _extract_dates_from_soup(soup) -> dict[str, str | None]:
+    """Estrae dateModified e datePublished da JSON-LD e meta tag.
+
+    Fix #5/#9: logica condivisa tra detect_content_freshness e detect_content_decay.
+
+    Returns:
+        Dict con chiavi "dateModified" e "datePublished" (None se non trovate).
+    """
+    dates: dict[str, str | None] = {"dateModified": None, "datePublished": None}
+
+    # JSON-LD schema
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if isinstance(item, dict):
+                    if "dateModified" in item and not dates["dateModified"]:
+                        dates["dateModified"] = item["dateModified"]
+                    if "datePublished" in item and not dates["datePublished"]:
+                        dates["datePublished"] = item["datePublished"]
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+    # Meta tag fallback
+    if not dates["dateModified"]:
+        meta_mod = soup.find("meta", attrs={"property": "article:modified_time"})
+        if meta_mod and meta_mod.get("content"):
+            dates["dateModified"] = meta_mod["content"]
+    if not dates["datePublished"]:
+        meta_pub = soup.find("meta", attrs={"property": "article:published_time"})
+        if meta_pub and meta_pub.get("content"):
+            dates["datePublished"] = meta_pub["content"]
+
+    return dates
+
 # ─── 1. Cite Sources (+27%) ──────────────────────────────────────────────────
 
 
@@ -929,32 +967,10 @@ def detect_content_freshness(soup, clean_text: str | None = None) -> MethodScore
     now = datetime.now(tz=timezone.utc)
     current_year = now.year
 
-    # Cerca date nello schema JSON-LD
-    date_modified = None
-    date_published = None
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            # Gestisci sia oggetto singolo che array
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if isinstance(item, dict):
-                    if "dateModified" in item:
-                        date_modified = item["dateModified"]
-                    if "datePublished" in item:
-                        date_published = item["datePublished"]
-        except (json.JSONDecodeError, TypeError):
-            continue
-
-    # Cerca anche meta tag
-    if not date_modified:
-        meta_mod = soup.find("meta", attrs={"property": "article:modified_time"})
-        if meta_mod and meta_mod.get("content"):
-            date_modified = meta_mod["content"]
-    if not date_published:
-        meta_pub = soup.find("meta", attrs={"property": "article:published_time"})
-        if meta_pub and meta_pub.get("content"):
-            date_published = meta_pub["content"]
+    # Fix #5: usa helper condiviso per estrarre date
+    _dates = _extract_dates_from_soup(soup)
+    date_modified = _dates["dateModified"]
+    date_published = _dates["datePublished"]
 
     # Analizza le date trovate
     is_fresh = False
@@ -1483,21 +1499,9 @@ def detect_content_decay(soup, clean_text: str | None = None) -> MethodScore:
     old_years = [int(y) for y in year_refs if int(y) < current_year - 1]
     current_years = [int(y) for y in year_refs if int(y) >= current_year]
 
-    # Controlla dateModified
-    date_modified = None
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if isinstance(item, dict) and "dateModified" in item:
-                    date_modified = item["dateModified"]
-        except (json.JSONDecodeError, TypeError):
-            continue
-    if not date_modified:
-        meta_mod = soup.find("meta", attrs={"property": "article:modified_time"})
-        if meta_mod and meta_mod.get("content"):
-            date_modified = meta_mod["content"]
+    # Fix #9: usa helper condiviso per estrarre date
+    _dates = _extract_dates_from_soup(soup)
+    date_modified = _dates["dateModified"]
 
     # Verifica se dateModified è recente
     is_recently_modified = False
