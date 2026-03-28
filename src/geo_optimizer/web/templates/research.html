@@ -27,8 +27,21 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .nav-cta:hover{color:var(--text)}
 .nav-cta svg{width:14px;height:14px;fill:currentColor;flex-shrink:0}
 .nav-cta .star-count{font-family:var(--mono);font-size:.75rem}
-@media(max-width:768px){.nav-links{overflow-x:auto;gap:.9rem;scrollbar-width:none}.nav-links::-webkit-scrollbar{display:none}.nav-logo .ver{display:none}.nav-cta .star-count{display:none}}
-@media(max-width:480px){.nav-logo span:not(.dot){display:none}}
+.nav-hamburger{display:none;background:none;border:1px solid var(--border);color:var(--text-dim);padding:.3rem .5rem;border-radius:6px;cursor:pointer;font-size:1.1rem;line-height:1;transition:all .2s}
+.nav-hamburger:hover{border-color:var(--border-hover);color:var(--text)}
+@media(max-width:768px){
+  nav{flex-wrap:wrap;gap:.5rem;padding:.6rem .75rem}
+  .nav-links{display:none;width:100%;flex-direction:column;gap:0;border-top:1px solid var(--border);padding-top:.5rem;margin-top:.25rem}
+  .nav-links.open{display:flex}
+  .nav-links a{padding:.55rem .25rem;border-bottom:1px solid var(--border);font-size:.9rem}
+  .nav-links a:last-child{border-bottom:none}
+  .nav-hamburger{display:block}
+  .nav-logo .ver{display:none}
+  .nav-cta .star-count{display:none}
+}
+@media(max-width:480px){
+  .nav-cta span:not(.star-count){font-size:.8rem}
+}
 .hero{text-align:center;margin-bottom:2.5rem}
 .hero h1{font-size:2.4rem;font-weight:700;letter-spacing:-.03em;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hero p{color:var(--text-dim);margin-top:.4rem}
@@ -59,6 +72,7 @@ footer a{color:var(--text-muted)}
       <span>GEO Optimizer</span>
       <span class="ver">v3.18.5</span>
     </div>
+    <button class="nav-hamburger" id="nav-ham" aria-label="Menu">&#9776;</button>
     <div class="nav-links">
       <a href="/">Audit</a>
       <a href="/compare">Compare</a>
@@ -137,6 +151,10 @@ footer a{color:var(--text-muted)}
 </div>
 <script__NONCE_ATTR__>
 fetch('/api/stats').then(function(r){return r.json()}).then(function(d){var ns=document.getElementById('nav-stars');if(ns&&d.github_stars)ns.textContent='★ '+d.github_stars}).catch(function(){});
+document.getElementById('nav-ham').addEventListener('click',function(){
+  document.querySelector('.nav-links').classList.toggle('open');
+  this.textContent=this.textContent==='☰'?'✕':'☰';
+});
 </script>
 </body>
 </html>
