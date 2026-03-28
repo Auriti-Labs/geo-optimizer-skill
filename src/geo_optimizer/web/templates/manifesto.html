@@ -161,10 +161,20 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
 }
 </style>
 
+<!-- Schema JSON-LD: WebSite (root entity) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"GEO Optimizer","url":"https://geo-optimizer-web.onrender.com","description":"Open-source toolkit to audit and optimize websites for AI search engine visibility.","author":{"@type":"Organization","name":"Auriti Labs","url":"https://github.com/Auriti-Labs","sameAs":["https://github.com/Auriti-Labs","https://pypi.org/project/geo-optimizer-skill/","https://www.linkedin.com/in/juanauriti/"],"contactPoint":{"@type":"ContactPoint","contactType":"technical support","url":"https://github.com/Auriti-Labs/geo-optimizer-skill/issues"}},"potentialAction":{"@type":"SearchAction","target":"https://geo-optimizer-web.onrender.com/?url={url}","query-input":"required name=url"}}
+</script>
 <!-- Schema JSON-LD: WebPage -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","name":"The GEO Optimizer Manifesto","url":"https://geo-optimizer-web.onrender.com/manifesto","description":"Why AI search visibility should be auditable, open, and accessible to every website on the internet.","isPartOf":{"@type":"WebSite","name":"GEO Optimizer","url":"https://geo-optimizer-web.onrender.com"},"author":{"@type":"Organization","name":"Auriti Labs","url":"https://github.com/Auriti-Labs"},"datePublished":"2025-01-01","inLanguage":"en"}
+{"@context":"https://schema.org","@type":"WebPage","name":"The GEO Optimizer Manifesto","url":"https://geo-optimizer-web.onrender.com/manifesto","description":"Why AI search visibility should be auditable, open, and accessible to every website on the internet.","isPartOf":{"@type":"WebSite","name":"GEO Optimizer","url":"https://geo-optimizer-web.onrender.com"},"author":{"@type":"Organization","name":"Auriti Labs","url":"https://github.com/Auriti-Labs"},"datePublished":"2026-03-28","dateModified":"2026-03-28","inLanguage":"en"}
 </script>
+<!-- Schema JSON-LD: FAQPage -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is GEO Optimizer?","acceptedAnswer":{"@type":"Answer","text":"GEO Optimizer is an open-source toolkit that audits websites for AI search engine visibility. It scores sites 0-100 based on 8 categories and 42 research-backed methods, covering robots.txt, llms.txt, Schema JSON-LD, meta tags, content quality, technical signals, AI discovery, and brand entity signals."}},{"@type":"Question","name":"Why does AI search visibility matter?","acceptedAnswer":{"@type":"Answer","text":"AI search engines like ChatGPT, Perplexity, and Claude synthesize answers from cited sources. Sites not optimized for AI visibility are invisible in these answers. Princeton KDD 2024 research shows source citations increase AI visibility by 27-115%, statistics by 33%, and authoritative tone by 29%."}},{"@type":"Question","name":"Is GEO Optimizer free and open source?","acceptedAnswer":{"@type":"Answer","text":"Yes. GEO Optimizer is MIT-licensed open source software. Install with: pip install geo-optimizer-skill. The scoring rubric, algorithms, and all weights are publicly documented."}},{"@type":"Question","name":"What websites does GEO Optimizer work with?","acceptedAnswer":{"@type":"Answer","text":"GEO Optimizer works with any publicly accessible URL regardless of the underlying technology. It audits the HTTP response that AI engines see, so it works with static sites, WordPress, Next.js, custom backends, headless architectures, and anything else that responds to HTTP requests."}}]}
+</script>
+<!-- GEO: RSS feed discovery -->
+<link rel="alternate" type="application/rss+xml" title="GEO Optimizer Releases" href="https://github.com/Auriti-Labs/geo-optimizer-skill/releases.atom">
 </head>
 <body>
 <div class="glow-orb blue"></div>
@@ -175,7 +185,7 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
     <div class="nav-logo">
       <span class="dot"></span>
       <span>GEO Optimizer</span>
-      <span class="ver" id="nav-ver">v3.18.6</span>
+      <span class="ver" id="nav-ver">v3.18.7</span>
     </div>
     <button class="nav-hamburger" id="nav-ham" aria-label="Menu">&#9776;</button>
     <div class="nav-links">
