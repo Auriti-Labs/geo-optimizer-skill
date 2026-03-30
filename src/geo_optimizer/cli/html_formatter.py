@@ -66,8 +66,18 @@ def format_audit_html(result: AuditResult) -> str:
         ("Meta Tags", _meta_score(result), 14, result.meta.has_title and result.meta.has_description),
         ("Content Quality", _content_score(result), _MAX_CONTENT, result.content.has_h1),
         ("Signals", _signals_score(result), _MAX_SIGNALS, bool(result.signals and result.signals.has_lang)),
-        ("AI Discovery", result.score_breakdown.get("ai_discovery", 0), _MAX_AI_DISC, bool(result.ai_discovery and result.ai_discovery.has_well_known_ai)),
-        ("Brand & Entity", _brand_entity_score(result), _MAX_BRAND, bool(result.brand_entity and result.brand_entity.brand_name_consistent)),
+        (
+            "AI Discovery",
+            result.score_breakdown.get("ai_discovery", 0),
+            _MAX_AI_DISC,
+            bool(result.ai_discovery and result.ai_discovery.has_well_known_ai),
+        ),
+        (
+            "Brand & Entity",
+            _brand_entity_score(result),
+            _MAX_BRAND,
+            bool(result.brand_entity and result.brand_entity.brand_name_consistent),
+        ),
     ]
 
     check_rows = ""

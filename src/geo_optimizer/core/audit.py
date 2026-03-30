@@ -945,7 +945,9 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
             http_status=r.status_code,
             error=f"HTTP {r.status_code}",
         )
-        result.recommendations = [f"Site returned HTTP {r.status_code}. Check for Cloudflare/WAF blocks or server errors."]
+        result.recommendations = [
+            f"Site returned HTTP {r.status_code}. Check for Cloudflare/WAF blocks or server errors."
+        ]
         return result
 
     import copy
@@ -1082,7 +1084,9 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
             http_status=r_home.status_code,
             error=f"HTTP {r_home.status_code}",
         )
-        result.recommendations = [f"Site returned HTTP {r_home.status_code}. Check for Cloudflare/WAF blocks or server errors."]
+        result.recommendations = [
+            f"Site returned HTTP {r_home.status_code}. Check for Cloudflare/WAF blocks or server errors."
+        ]
         return result
 
     import copy
