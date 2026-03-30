@@ -167,7 +167,7 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
 </script>
 <!-- Schema JSON-LD: WebPage -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","name":"The GEO Optimizer Manifesto","url":"https://geo-optimizer-web.onrender.com/manifesto","description":"Why AI search visibility should be auditable, open, and accessible to every website on the internet.","isPartOf":{"@type":"WebSite","name":"GEO Optimizer","url":"https://geo-optimizer-web.onrender.com"},"author":{"@type":"Organization","name":"Auriti Labs","url":"https://github.com/Auriti-Labs"},"datePublished":"2026-03-28","dateModified":"2026-03-28","inLanguage":"en"}
+{"@context":"https://schema.org","@type":"WebPage","name":"The GEO Optimizer Manifesto","url":"https://geo-optimizer-web.onrender.com/manifesto","description":"Why AI search visibility should be auditable, open, and accessible to every website on the internet.","isPartOf":{"@type":"WebSite","name":"GEO Optimizer","url":"https://geo-optimizer-web.onrender.com"},"author":{"@type":"Organization","name":"Auriti Labs","url":"https://github.com/Auriti-Labs"},"datePublished":"2026-03-28","dateModified":"2026-03-30","inLanguage":"en"}
 </script>
 <!-- Schema JSON-LD: FAQPage -->
 <script type="application/ld+json">
@@ -218,6 +218,7 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
       <li><a href="#s2">The visibility gap is a tooling problem.</a></li>
       <li><a href="#s3">What GEO Optimizer stands for.</a></li>
       <li><a href="#s4">The eight signals that determine AI visibility.</a></li>
+      <li><a href="#s4b">Beyond the score: what no competitor tells you.</a></li>
       <li><a href="#s5">Who this is for.</a></li>
       <li><a href="#s6">What we commit to.</a></li>
       <li><a href="#s7">The bottom line.</a></li>
@@ -342,6 +343,44 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
         <p class="signal-desc">AI engines don't just index pages. They build models of entities. Brand name coherence across H1, title, og:title, and schema Organization name is the foundation. Knowledge graph connections via <code>sameAs</code> to Wikipedia, Wikidata, LinkedIn, and Crunchbase establish that your brand is a known, recognized entity, not an unknown string of text. About and contact pages signal that a real organization stands behind the content. Geographic identity and topic authority round out the entity model that AI engines use to decide how much to trust and cite your content.</p>
       </div>
     </div>
+  </section>
+
+  <!-- Section 4b: Beyond the Score -->
+  <section id="s4b">
+    <span class="section-num">04b —</span>
+    <h2>Beyond the score: what no competitor tells you.</h2>
+    <p>The 0-100 score is one dimension. But real-world AI visibility depends on factors that aren't easily reducible to points. GEO Optimizer runs six additional informational checks that surface risks and signals no competitor currently detects:</p>
+    <div class="signals-grid">
+      <div class="signal-row">
+        <div class="signal-meta">
+          <span class="signal-name">Prompt Injection Detection</span>
+          <span class="signal-pts high">security</span>
+        </div>
+        <p class="signal-desc">Eight patterns of AI manipulation: hidden text via CSS, invisible Unicode characters, direct LLM instructions embedded in content, prompt injection in HTML comments, monochrome cloaking text, micro-font injection, data attribute abuse, and aria-hidden exploitation. Based on UC Berkeley EMNLP 2024 research. Severity: clean, suspicious, or critical.</p>
+      </div>
+      <div class="signal-row">
+        <div class="signal-meta">
+          <span class="signal-name">Trust Stack Score</span>
+          <span class="signal-pts med">5 layers</span>
+        </div>
+        <p class="signal-desc">A composite trust assessment across five dimensions: technical trust (HTTPS, security headers), identity trust (authorship, organization, about page), social trust (sameAs links, testimonials, social profiles), academic trust (citations, statistics, authoritative sources), and consistency trust (no contradictions between title, H1, schema, and meta). Grade A through F.</p>
+      </div>
+      <div class="signal-row">
+        <div class="signal-meta">
+          <span class="signal-name">Negative Signals</span>
+          <span class="signal-pts high">anti-citation</span>
+        </div>
+        <p class="signal-desc">Eight signals that actively reduce your chances of being cited: excessive CTAs, popup/modal interference, thin content, broken links, keyword stuffing, missing author attribution, high boilerplate ratio, and mixed signals between promise and delivery. Based on UC Berkeley research on what AI engines actively avoid citing.</p>
+      </div>
+      <div class="signal-row">
+        <div class="signal-meta">
+          <span class="signal-name">CDN Crawler Access</span>
+          <span class="signal-pts low">access</span>
+        </div>
+        <p class="signal-desc">Tests whether Cloudflare, Akamai, Vercel, or other CDN/WAF configurations are silently blocking AI crawlers. Many sites think they allow GPTBot because their robots.txt says so — but their CDN serves a 403 or CAPTCHA to the actual crawler. This check sends requests with real bot User-Agents and compares the responses.</p>
+      </div>
+    </div>
+    <p>These checks don't add to the score. They surface problems that the score alone can't capture — and that your competitors' tools don't look for at all.</p>
   </section>
 
   <!-- Section 5 -->
