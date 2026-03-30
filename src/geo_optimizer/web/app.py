@@ -1309,6 +1309,35 @@ def _dict_to_audit_result(data: dict):
             risk_level=pi.get("risk_level", "none"),
         )
 
+    # Ricostruisci trust_stack se presente nella cache (#273)
+    if "trust_stack" in data and isinstance(data["trust_stack"], dict):
+        from geo_optimizer.models.results import TrustLayerScore, TrustStackResult
+
+        ts = data["trust_stack"]
+
+        def _rebuild_layer(layer_data: dict) -> TrustLayerScore:
+            return TrustLayerScore(
+                name=layer_data.get("name", ""),
+                label=layer_data.get("label", ""),
+                score=layer_data.get("score", 0),
+                max_score=layer_data.get("max_score", 5),
+                signals_found=layer_data.get("signals_found", []),
+                signals_missing=layer_data.get("signals_missing", []),
+                details=layer_data.get("details", {}),
+            )
+
+        result.trust_stack = TrustStackResult(
+            checked=ts.get("checked", True),
+            technical=_rebuild_layer(ts.get("technical", {})),
+            identity=_rebuild_layer(ts.get("identity", {})),
+            social=_rebuild_layer(ts.get("social", {})),
+            academic=_rebuild_layer(ts.get("academic", {})),
+            consistency=_rebuild_layer(ts.get("consistency", {})),
+            composite_score=ts.get("composite_score", 0),
+            grade=ts.get("grade", "F"),
+            trust_level=ts.get("trust_level", "low"),
+        )
+
     return result
 
 

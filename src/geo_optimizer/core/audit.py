@@ -776,6 +776,7 @@ def _build_audit_result(
     webmcp=None,  # v4.3: WebMCP Readiness check (#233)
     negative_signals=None,  # v4.3: Negative Signals detection
     prompt_injection=None,  # v4.4: Prompt Injection Detection (#276)
+    trust_stack=None,  # v4.5: Trust Stack Score (#273)
 ) -> AuditResult:
     """Costruisce AuditResult dai sub-audit (fix #97: logica comune sync/async).
 
@@ -821,6 +822,11 @@ def _build_audit_result(
     from geo_optimizer.models.results import PromptInjectionResult
 
     effective_prompt_injection = prompt_injection if prompt_injection is not None else PromptInjectionResult()
+
+    # v4.5: usa TrustStackResult vuoto se non fornito (#273)
+    from geo_optimizer.models.results import TrustStackResult
+
+    effective_trust_stack = trust_stack if trust_stack is not None else TrustStackResult()
 
     # Calcola score, breakdown e band (v4.0: include signals, ai_discovery)
     score = compute_geo_score(
@@ -911,6 +917,7 @@ def _build_audit_result(
         webmcp=effective_webmcp,
         negative_signals=effective_negative_signals,
         prompt_injection=effective_prompt_injection,
+        trust_stack=effective_trust_stack,
     )
 
 
@@ -1018,6 +1025,24 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
 
     prompt_injection_result = audit_prompt_injection(soup, r.text)
 
+    # v4.5: Trust Stack Score (#273) — aggregazione 5-layer, zero fetch HTTP
+    from geo_optimizer.core.trust_stack import audit_trust_stack
+
+    try:
+        resp_headers = dict(r.headers)
+    except (TypeError, AttributeError):
+        resp_headers = {}
+    trust_stack_result = audit_trust_stack(
+        soup=soup,
+        base_url=base_url,
+        response_headers=resp_headers,
+        brand_entity=brand_entity_result,
+        schema=schema,
+        meta=meta,
+        content=content,
+        negative_signals=negative_signals_result,
+    )
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -1038,6 +1063,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         webmcp=webmcp_result,
         negative_signals=negative_signals_result,
         prompt_injection=prompt_injection_result,
+        trust_stack=trust_stack_result,
     )
 
 
@@ -1166,6 +1192,24 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
 
     prompt_injection_result = audit_prompt_injection(soup, r_home.text)
 
+    # v4.5: Trust Stack Score (#273) — aggregazione 5-layer, zero fetch HTTP
+    from geo_optimizer.core.trust_stack import audit_trust_stack
+
+    try:
+        resp_headers_async = dict(r_home.headers)
+    except (TypeError, AttributeError):
+        resp_headers_async = {}
+    trust_stack_result = audit_trust_stack(
+        soup=soup,
+        base_url=base_url,
+        response_headers=resp_headers_async,
+        brand_entity=brand_entity_result,
+        schema=schema,
+        meta=meta,
+        content=content,
+        negative_signals=negative_signals_result,
+    )
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -1186,6 +1230,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
         webmcp=webmcp_result,
         negative_signals=negative_signals_result,
         prompt_injection=prompt_injection_result,
+        trust_stack=trust_stack_result,
     )
 
 

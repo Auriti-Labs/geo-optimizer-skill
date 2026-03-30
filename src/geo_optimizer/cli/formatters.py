@@ -345,6 +345,18 @@ def format_audit_text(result: AuditResult) -> str:
         if pi.aria_hidden_injection_found:
             lines.append(f"  ❌ aria-hidden injection: {pi.aria_hidden_injection_count} found")
 
+    # Trust Stack Score (#273)
+    if result.trust_stack and result.trust_stack.checked:
+        lines.append("")
+        lines.append(_section_header("12. TRUST STACK SCORE"))
+        ts = result.trust_stack
+        lines.append(f"  Grade: {ts.grade} ({ts.composite_score}/25) — Trust level: {ts.trust_level}")
+        for layer in [ts.technical, ts.identity, ts.social, ts.academic, ts.consistency]:
+            bar_filled = layer.score
+            bar_empty = 5 - bar_filled
+            bar = "█" * bar_filled + "░" * bar_empty
+            lines.append(f"  [{bar}] {layer.label}: {layer.score}/5")
+
     # Score
     lines.append("")
     lines.append(_section_header("📊 FINAL GEO SCORE"))

@@ -414,6 +414,58 @@ PROMPT_INJECTION_UNICODE_THRESHOLD = 5
 PROMPT_INJECTION_COMMENT_MAX_LEN = 500
 MICROFONT_SIZE_THRESHOLD_PX = 2.0
 
+# ─── Trust Stack Score (#273) ─────────────────────────────────────────────────
+
+# Soglie grading composito (0-25): (soglia_minima, grade, trust_level)
+TRUST_STACK_GRADE_BANDS = [
+    (22, "A", "excellent"),
+    (17, "B", "high"),
+    (11, "C", "medium"),
+    (6, "D", "low"),
+    (0, "F", "low"),
+]
+
+# Domini fonti autorevoli per Academic Trust
+ACADEMIC_AUTHORITY_DOMAINS = [
+    "ncbi.nlm.nih.gov",
+    "pubmed.ncbi.nlm.nih.gov",
+    "doi.org",
+    "scholar.google.com",
+    "arxiv.org",
+    "researchgate.net",
+    "nature.com",
+    "science.org",
+    "jstor.org",
+    "ssrn.com",
+]
+
+# Domini social riconosciuti per Social Trust
+SOCIAL_PROOF_DOMAINS = [
+    "twitter.com",
+    "x.com",
+    "instagram.com",
+    "facebook.com",
+    "linkedin.com",
+    "youtube.com",
+    "tiktok.com",
+    "threads.net",
+]
+
+# Pattern heading per sezione References/Fonti
+REFERENCES_HEADING_PATTERNS = [
+    "references",
+    "fonti",
+    "sources",
+    "bibliography",
+    "note",
+    "citazioni",
+    "riferimenti",
+    "bibliografia",
+]
+
+# Soglia minima match statistici per Academic Trust
+ACADEMIC_STATISTICS_MIN_MATCHES = 2
+
 # ─── Score bands ─────────────────────────────────────────────────────────────
 
 SCORE_BANDS = {

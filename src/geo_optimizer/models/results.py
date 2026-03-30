@@ -386,6 +386,42 @@ class NegativeSignalsResult:
     severity: str = "clean"  # "clean", "low", "medium", "high"
 
 
+# ─── Trust Stack Score (#273) ─────────────────────────────────────────────────
+
+
+@dataclass
+class TrustLayerScore:
+    """Score per un singolo layer del Trust Stack."""
+
+    name: str  # "technical", "identity", "social", "academic", "consistency"
+    label: str  # "Technical Trust"
+    score: int = 0
+    max_score: int = 5
+    signals_found: list[str] = field(default_factory=list)
+    signals_missing: list[str] = field(default_factory=list)
+    details: dict[str, Any] = field(default_factory=dict)
+
+
+def _make_layer(name: str, label: str) -> TrustLayerScore:
+    """Factory per creare un TrustLayerScore con default puliti."""
+    return TrustLayerScore(name=name, label=label)
+
+
+@dataclass
+class TrustStackResult:
+    """Aggregazione 5-layer trust signals (v4.5, #273). Informativo — non impatta GEO score."""
+
+    checked: bool = False
+    technical: TrustLayerScore = field(default_factory=lambda: _make_layer("technical", "Technical Trust"))
+    identity: TrustLayerScore = field(default_factory=lambda: _make_layer("identity", "Identity Trust"))
+    social: TrustLayerScore = field(default_factory=lambda: _make_layer("social", "Social Trust"))
+    academic: TrustLayerScore = field(default_factory=lambda: _make_layer("academic", "Academic Trust"))
+    consistency: TrustLayerScore = field(default_factory=lambda: _make_layer("consistency", "Consistency Trust"))
+    composite_score: int = 0  # 0-25
+    grade: str = "F"  # A/B/C/D/F
+    trust_level: str = "low"  # "low" | "medium" | "high" | "excellent"
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -427,6 +463,8 @@ class AuditResult:
     negative_signals: NegativeSignalsResult = field(default_factory=NegativeSignalsResult)
     # v4.4: Prompt Injection Pattern Detection (#276)
     prompt_injection: PromptInjectionResult = field(default_factory=PromptInjectionResult)
+    # v4.5: Trust Stack Score — informativo, non impatta GEO score (#273)
+    trust_stack: TrustStackResult = field(default_factory=TrustStackResult)
 
 
 # ─── Schema analysis ─────────────────────────────────────────────────────────
