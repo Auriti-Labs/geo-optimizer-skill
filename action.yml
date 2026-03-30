@@ -109,7 +109,7 @@ runs:
     # 6. Upload SARIF (solo se formato sarif)
     - name: Upload SARIF results
       if: inputs.format == 'sarif'
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: ${{ steps.audit.outputs.report_path }}
       continue-on-error: true
