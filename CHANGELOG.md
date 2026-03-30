@@ -5,6 +5,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [3.19.2] — 2026-03-30
+
+### Fixed
+
+- 15 improvements to existing features (#387–#401):
+  - Prompt Injection: added 5 patterns (Llama3, Gemma, jailbreak, prompt leaking)
+  - Keyword stuffing: centralized threshold (2.5%), removed hardcoded duplicates
+  - AI Discovery: stricter validation (summary min 20 chars, FAQ requires question+answer, service requires name+capabilities)
+  - Trust Stack: academic links exclude social domains, CSP frame-ancestors accepted as X-Frame-Options alt
+  - Brand Entity: about link patterns expanded (/company, /mission, /our-story), legal suffix normalization (Inc., Ltd., S.r.l.)
+  - Schema: TechArticle/ScholarlyArticle detected, richness intermediate step (avg 4 = 2pt), JSON-LD parse errors tracked
+  - AI Bots: added xAI-Bot, Applebot, PetalBot (27 bots total)
+  - Citability: answer_first detects text in div/li (WordPress), freshness differentiated (< 3mo = 4pt, 3-6mo = 3pt)
+
+### Added
+
+- 2 new MCP tools: `geo_trust_score` (5-layer trust grade A-F) and `geo_negative_signals` (8 anti-citation signals)
+- MCP server now exposes 10 tools (up from 8)
+
+---
+
 ## [3.19.1] — 2026-03-30
 
 ### Added
