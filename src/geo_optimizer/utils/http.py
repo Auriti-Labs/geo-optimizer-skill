@@ -84,52 +84,50 @@ def create_session_with_retry(
     return session
 
 
+# Fix #330: DNS pinning via thread-local invece di lock globale.
+# Ogni thread configura i propri IP pinnati, il getaddrinfo patchato li legge
+# senza serializzare le connessioni HTTP concorrenti.
+_original_getaddrinfo = socket.getaddrinfo
+_pinning_local = threading.local()
+
+
+def _pinned_getaddrinfo(host, port, *args, **kwargs):
+    """getaddrinfo patchato: usa IP pinnati dal thread-local se disponibili."""
+    pin = getattr(_pinning_local, "pin", None)
+    if pin and host == pin["host"]:
+        pinned_ip = pin["ip"]
+        family = socket.AF_INET6 if ":" in pinned_ip else socket.AF_INET
+        return [(family, socket.SOCK_STREAM, 6, "", (pinned_ip, port or pin["port"]))]
+    return _original_getaddrinfo(host, port, *args, **kwargs)
+
+
+# Installa il patch una sola volta all'import (no race condition, no lock necessario)
+socket.getaddrinfo = _pinned_getaddrinfo
+
+
 class _PinnedIPAdapter(HTTPAdapter):
-    """HTTPAdapter that forces the connection to a pre-resolved IP.
+    """HTTPAdapter che forza la connessione a un IP pre-validato.
 
-    Prevents TOCTOU DNS rebinding attacks: after URL validation,
-    the IP is fixed and used directly without a second DNS resolution.
+    Previene attacchi TOCTOU DNS rebinding: dopo la validazione URL,
+    l'IP è fisso e usato direttamente senza una seconda risoluzione DNS.
 
-    Thread-safe: uses a global Lock to protect the temporary monkeypatching
-    of socket.getaddrinfo (fix #178).
+    Thread-safe via threading.local() — nessun lock globale (fix #330).
     """
 
-    _lock = threading.Lock()
-
     def __init__(self, pinned_ips: list[str], *args, **kwargs):
-        """
-        Args:
-            pinned_ips: List of validated IPs to force the connection to.
-                        The first available IP is used.
-        """
         self._pinned_ip = pinned_ips[0] if pinned_ips else None
         super().__init__(*args, **kwargs)
 
     def send(self, request, *args, **kwargs):
-        """Override send: replaces the hostname with the pinned IP in the socket.
-
-        Thread-safe: the Lock serializes access to socket.getaddrinfo
-        to prevent race conditions between concurrent audits (fix #178).
-        """
+        """Override send: configura il thread-local con l'IP pinnati."""
         if self._pinned_ip:
-            pinned_ip = self._pinned_ip
             parsed = urlparse(request.url)
-            target_host = parsed.hostname
             target_port = parsed.port or (443 if parsed.scheme == "https" else 80)
-
-            def _patched_getaddrinfo(host, port, *a, **kw):
-                if host == target_host:
-                    family = socket.AF_INET6 if ":" in pinned_ip else socket.AF_INET
-                    return [(family, socket.SOCK_STREAM, 6, "", (pinned_ip, port or target_port))]
-                return _original_getaddrinfo(host, port, *a, **kw)
-
-            with _PinnedIPAdapter._lock:
-                _original_getaddrinfo = socket.getaddrinfo
-                socket.getaddrinfo = _patched_getaddrinfo
-                try:
-                    return super().send(request, *args, **kwargs)
-                finally:
-                    socket.getaddrinfo = _original_getaddrinfo
+            _pinning_local.pin = {"host": parsed.hostname, "ip": self._pinned_ip, "port": target_port}
+            try:
+                return super().send(request, *args, **kwargs)
+            finally:
+                _pinning_local.pin = None
         else:
             return super().send(request, *args, **kwargs)
 
