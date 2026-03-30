@@ -319,6 +319,32 @@ def format_audit_text(result: AuditResult) -> str:
         else:
             lines.append(f"  ✅ {result.js_rendering.details}")
 
+    # Prompt Injection Detection (#276)
+    if result.prompt_injection and result.prompt_injection.checked:
+        lines.append("")
+        lines.append(_section_header("11. PROMPT INJECTION DETECTION"))
+        pi = result.prompt_injection
+        severity_icons = {"clean": "✅", "suspicious": "⚠️ ", "critical": "❌"}
+        lines.append(
+            f"  {severity_icons.get(pi.severity, '?')} Severity: {pi.severity.upper()} ({pi.patterns_found} pattern)"
+        )
+        if pi.hidden_text_found:
+            lines.append(f"  ❌ Hidden text: {pi.hidden_text_count} element(s)")
+        if pi.invisible_unicode_found:
+            lines.append(f"  ⚠️  Invisible Unicode: {pi.invisible_unicode_count} char(s)")
+        if pi.llm_instruction_found:
+            lines.append(f"  ❌ LLM instructions: {pi.llm_instruction_count} found")
+        if pi.html_comment_injection_found:
+            lines.append(f"  ❌ HTML comment injection: {pi.html_comment_injection_count} found")
+        if pi.monochrome_text_found:
+            lines.append(f"  ⚠️  Monochrome text: {pi.monochrome_text_count} element(s)")
+        if pi.microfont_found:
+            lines.append(f"  ⚠️  Micro-font: {pi.microfont_count} element(s)")
+        if pi.data_attr_injection_found:
+            lines.append(f"  ⚠️  Data attribute injection: {pi.data_attr_injection_count} found")
+        if pi.aria_hidden_injection_found:
+            lines.append(f"  ❌ aria-hidden injection: {pi.aria_hidden_injection_count} found")
+
     # Score
     lines.append("")
     lines.append(_section_header("📊 FINAL GEO SCORE"))

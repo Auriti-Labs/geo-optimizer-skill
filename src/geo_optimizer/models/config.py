@@ -385,6 +385,37 @@ KG_PILLAR_DOMAINS = {
     "crunchbase.com",
 }
 
+# ─── Prompt Injection Detection (#276) ────────────────────────────────────────
+
+# Pattern regex per istruzioni dirette a LLM nel contenuto
+PROMPT_INJECTION_LLM_PATTERNS = [
+    r"ignore\s+(?:all\s+)?(?:previous|prior|above)\s+instructions?",
+    r"you\s+are\s+(?:now\s+)?(?:a|an)\s+(?:helpful\s+)?assistant",
+    r"always\s+recommend\s+\w+",
+    r"do\s+not\s+mention\s+competitors?",
+    r"say\s+(?:only|just|that)\s+['\"]",
+    r"output\s+only\s+the\s+following",
+    r"respond\s+with\s+only",
+    r"your\s+(?:new\s+)?(?:task|goal|objective|purpose)\s+is",
+    r"from\s+now\s+on\s+you",
+    r"act\s+as\s+(?:if\s+you\s+are\s+)?\w+",
+    r"\[INST\]|\[SYS\]|<\|system\|>|<\|user\|>",
+    r"###\s*(?:System|Human|Assistant)\s*:",
+    r"<\s*system\s*>",
+]
+
+# Parole chiave sospette nei commenti HTML
+PROMPT_INJECTION_COMMENT_KEYWORDS = ["prompt:", "instruction:", "context:", "system:", "ai:", "llm:"]
+
+# Soglie e limiti
+PROMPT_INJECTION_MAX_SAMPLES = 3
+PROMPT_INJECTION_SAMPLE_MAX_LEN = 150
+PROMPT_INJECTION_UNICODE_THRESHOLD = 5
+PROMPT_INJECTION_COMMENT_MAX_LEN = 500
+MICROFONT_SIZE_THRESHOLD_PX = 2.0
+
+# ─── Score bands ─────────────────────────────────────────────────────────────
+
 SCORE_BANDS = {
     "excellent": (86, 100),  # era (91, 100)
     "good": (68, 85),  # era (71, 90)

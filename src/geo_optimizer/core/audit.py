@@ -596,6 +596,7 @@ def build_recommendations(
     brand_entity=None,
     webmcp=None,
     negative_signals=None,
+    prompt_injection=None,
 ) -> list:
     """Build a prioritized list of recommendations.
 
@@ -735,6 +736,23 @@ def build_recommendations(
         if negative_signals.has_mixed_signals:
             recommendations.append(f"Mixed signals: {negative_signals.mixed_signal_detail}")
 
+    # v4.4: Prompt Injection raccomandazioni (#276)
+    if prompt_injection is not None and prompt_injection.checked and prompt_injection.severity != "clean":
+        if prompt_injection.llm_instruction_found:
+            recommendations.append(
+                "⚠️ CRITICAL: LLM prompt instructions detected in page content — "
+                "this is a manipulation pattern that AI engines actively penalize"
+            )
+        if prompt_injection.html_comment_injection_found:
+            recommendations.append(
+                "⚠️ Prompt injection in HTML comments detected — AI crawlers read comments, remove them"
+            )
+        if prompt_injection.hidden_text_found:
+            recommendations.append(
+                "Hidden text detected (display:none/visibility:hidden with content) — "
+                "AI crawlers can read it and may penalize this cloaking pattern"
+            )
+
     return recommendations
 
 
@@ -757,6 +775,7 @@ def _build_audit_result(
     brand_entity=None,  # v4.3: Brand & Entity signals
     webmcp=None,  # v4.3: WebMCP Readiness check (#233)
     negative_signals=None,  # v4.3: Negative Signals detection
+    prompt_injection=None,  # v4.4: Prompt Injection Detection (#276)
 ) -> AuditResult:
     """Costruisce AuditResult dai sub-audit (fix #97: logica comune sync/async).
 
@@ -798,6 +817,11 @@ def _build_audit_result(
     # v4.3: usa NegativeSignalsResult vuoto se non fornito
     effective_negative_signals = negative_signals if negative_signals is not None else NegativeSignalsResult()
 
+    # v4.4: usa PromptInjectionResult vuoto se non fornito (#276)
+    from geo_optimizer.models.results import PromptInjectionResult
+
+    effective_prompt_injection = prompt_injection if prompt_injection is not None else PromptInjectionResult()
+
     # Calcola score, breakdown e band (v4.0: include signals, ai_discovery)
     score = compute_geo_score(
         robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity
@@ -820,6 +844,7 @@ def _build_audit_result(
         effective_brand_entity,
         effective_webmcp,
         effective_negative_signals,
+        effective_prompt_injection,
     )
 
     # Fix #104: esegui plugin registrati in CheckRegistry
@@ -885,6 +910,7 @@ def _build_audit_result(
         brand_entity=effective_brand_entity,
         webmcp=effective_webmcp,
         negative_signals=effective_negative_signals,
+        prompt_injection=effective_prompt_injection,
     )
 
 
@@ -987,6 +1013,11 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     # v4.3: Negative Signals detection — zero fetch HTTP
     negative_signals_result = audit_negative_signals(soup, r.text, content, meta, schema)
 
+    # v4.4: Prompt Injection Pattern Detection (#276) — zero fetch HTTP
+    from geo_optimizer.core.injection_detector import audit_prompt_injection
+
+    prompt_injection_result = audit_prompt_injection(soup, r.text)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -1006,6 +1037,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         brand_entity=brand_entity_result,
         webmcp=webmcp_result,
         negative_signals=negative_signals_result,
+        prompt_injection=prompt_injection_result,
     )
 
 
@@ -1129,6 +1161,11 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     # v4.3: Negative Signals detection — zero fetch HTTP
     negative_signals_result = audit_negative_signals(soup, r_home.text, content, meta, schema)
 
+    # v4.4: Prompt Injection Pattern Detection (#276) — zero fetch HTTP
+    from geo_optimizer.core.injection_detector import audit_prompt_injection
+
+    prompt_injection_result = audit_prompt_injection(soup, r_home.text)
+
     # Fix #97 + #104: usa _build_audit_result per logica comune e integrazione plugin
     return _build_audit_result(
         base_url=base_url,
@@ -1148,6 +1185,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
         brand_entity=brand_entity_result,
         webmcp=webmcp_result,
         negative_signals=negative_signals_result,
+        prompt_injection=prompt_injection_result,
     )
 
 

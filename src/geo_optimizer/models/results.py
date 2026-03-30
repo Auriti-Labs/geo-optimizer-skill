@@ -289,6 +289,58 @@ class WebMcpResult:
     readiness_level: str = "none"  # "none", "basic", "ready", "advanced"
 
 
+# ─── Prompt Injection Detection (#276) ────────────────────────────────────────
+
+
+@dataclass
+class PromptInjectionResult:
+    """Rilevamento pattern di prompt injection nel contenuto web (v4.4)."""
+
+    checked: bool = False
+
+    # Cat 1: testo nascosto tramite CSS inline
+    hidden_text_found: bool = False
+    hidden_text_count: int = 0
+    hidden_text_samples: list[str] = field(default_factory=list)
+
+    # Cat 2: caratteri Unicode invisibili
+    invisible_unicode_found: bool = False
+    invisible_unicode_count: int = 0
+
+    # Cat 3: istruzioni dirette a LLM
+    llm_instruction_found: bool = False
+    llm_instruction_count: int = 0
+    llm_instruction_samples: list[str] = field(default_factory=list)
+
+    # Cat 4: prompt nei commenti HTML
+    html_comment_injection_found: bool = False
+    html_comment_injection_count: int = 0
+    html_comment_samples: list[str] = field(default_factory=list)
+
+    # Cat 5: testo monocromatico (colore ≈ sfondo)
+    monochrome_text_found: bool = False
+    monochrome_text_count: int = 0
+
+    # Cat 6: micro-font injection (font-size < 2px)
+    microfont_found: bool = False
+    microfont_count: int = 0
+
+    # Cat 7: data attribute injection (data-ai-*, data-prompt-*)
+    data_attr_injection_found: bool = False
+    data_attr_injection_count: int = 0
+    data_attr_samples: list[str] = field(default_factory=list)
+
+    # Cat 8: aria-hidden con contenuto istruttivo
+    aria_hidden_injection_found: bool = False
+    aria_hidden_injection_count: int = 0
+    aria_hidden_samples: list[str] = field(default_factory=list)
+
+    # Summary
+    patterns_found: int = 0  # categorie attive (0-8)
+    severity: str = "clean"  # "clean" | "suspicious" | "critical"
+    risk_level: str = "none"  # "none" | "low" | "medium" | "high"
+
+
 # ─── Negative Signals Detection ───────────────────────────────────────────────
 
 
@@ -373,6 +425,8 @@ class AuditResult:
     webmcp: WebMcpResult = field(default_factory=WebMcpResult)
     # v4.3: Negative Signals detection
     negative_signals: NegativeSignalsResult = field(default_factory=NegativeSignalsResult)
+    # v4.4: Prompt Injection Pattern Detection (#276)
+    prompt_injection: PromptInjectionResult = field(default_factory=PromptInjectionResult)
 
 
 # ─── Schema analysis ─────────────────────────────────────────────────────────

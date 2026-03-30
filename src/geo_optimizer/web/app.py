@@ -1276,6 +1276,39 @@ def _dict_to_audit_result(data: dict):
             severity=ns.get("severity", "clean"),
         )
 
+    # Ricostruisci prompt_injection se presente nella cache (#276)
+    if "prompt_injection" in data and isinstance(data["prompt_injection"], dict):
+        from geo_optimizer.models.results import PromptInjectionResult
+
+        pi = data["prompt_injection"]
+        result.prompt_injection = PromptInjectionResult(
+            checked=pi.get("checked", True),
+            hidden_text_found=pi.get("hidden_text_found", False),
+            hidden_text_count=pi.get("hidden_text_count", 0),
+            hidden_text_samples=pi.get("hidden_text_samples", []),
+            invisible_unicode_found=pi.get("invisible_unicode_found", False),
+            invisible_unicode_count=pi.get("invisible_unicode_count", 0),
+            llm_instruction_found=pi.get("llm_instruction_found", False),
+            llm_instruction_count=pi.get("llm_instruction_count", 0),
+            llm_instruction_samples=pi.get("llm_instruction_samples", []),
+            html_comment_injection_found=pi.get("html_comment_injection_found", False),
+            html_comment_injection_count=pi.get("html_comment_injection_count", 0),
+            html_comment_samples=pi.get("html_comment_samples", []),
+            monochrome_text_found=pi.get("monochrome_text_found", False),
+            monochrome_text_count=pi.get("monochrome_text_count", 0),
+            microfont_found=pi.get("microfont_found", False),
+            microfont_count=pi.get("microfont_count", 0),
+            data_attr_injection_found=pi.get("data_attr_injection_found", False),
+            data_attr_injection_count=pi.get("data_attr_injection_count", 0),
+            data_attr_samples=pi.get("data_attr_samples", []),
+            aria_hidden_injection_found=pi.get("aria_hidden_injection_found", False),
+            aria_hidden_injection_count=pi.get("aria_hidden_injection_count", 0),
+            aria_hidden_samples=pi.get("aria_hidden_samples", []),
+            patterns_found=pi.get("patterns_found", 0),
+            severity=pi.get("severity", "clean"),
+            risk_level=pi.get("risk_level", "none"),
+        )
+
     return result
 
 
