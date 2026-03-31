@@ -1,6 +1,6 @@
 """
 GEO scoring calculation functions shared across all CLI formatters.
-v4.0: delega a core/scoring.py per consistenza e breakdown per categoria.
+v4.0: delegates to core/scoring.py for consistency and per-category breakdown.
 """
 
 from __future__ import annotations
@@ -30,35 +30,35 @@ from geo_optimizer.models.results import AuditResult
 
 
 def robots_score(r: AuditResult) -> int:
-    """Punteggio robots.txt — delega a core/scoring.py."""
+    """robots.txt score — delegates to core/scoring.py."""
     return robots_score_impl(r.robots)
 
 
 def llms_score(r: AuditResult) -> int:
-    """Punteggio llms.txt — delega a core/scoring.py."""
+    """llms.txt score — delegates to core/scoring.py."""
     return llms_score_impl(r.llms)
 
 
 def schema_score(r: AuditResult) -> int:
-    """Punteggio schema JSON-LD — delega a core/scoring.py."""
+    """JSON-LD schema score — delegates to core/scoring.py."""
     return schema_score_impl(r.schema)
 
 
 def meta_score(r: AuditResult) -> int:
-    """Punteggio meta tag — delega a core/scoring.py."""
+    """Meta tag score — delegates to core/scoring.py."""
     return meta_score_impl(r.meta)
 
 
 def content_score(r: AuditResult) -> int:
-    """Punteggio qualità contenuto — delega a core/scoring.py."""
+    """Content quality score — delegates to core/scoring.py."""
     return content_score_impl(r.content)
 
 
 def signals_score(r: AuditResult) -> int:
-    """Punteggio segnali tecnici v4.0 — delega a core/scoring.py."""
+    """Technical signals score v4.0 — delegates to core/scoring.py."""
     return signals_score_impl(r.signals) if r.signals else 0
 
 
 def brand_entity_score(r: AuditResult) -> int:
-    """Punteggio Brand & Entity v4.3 — delega a core/scoring.py."""
+    """Brand & Entity score v4.3 — delegates to core/scoring.py."""
     return brand_entity_score_impl(r.brand_entity) if r.brand_entity else 0

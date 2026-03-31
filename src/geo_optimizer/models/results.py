@@ -56,7 +56,7 @@ class LlmsTxtResult:
     has_links: bool = False
     word_count: int = 0
     has_full: bool = False  # /llms-full.txt present
-    # #247: llms.txt Policy Intelligence — analisi contenuto
+    # #247: llms.txt Policy Intelligence — content analysis
     sections_count: int = 0
     links_count: int = 0
     # #39: llms.txt v2 validation — full spec conformance

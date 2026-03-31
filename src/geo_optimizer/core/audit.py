@@ -797,10 +797,10 @@ def _build_audit_result(
     prompt_injection=None,  # v4.4: Prompt Injection Detection (#276)
     trust_stack=None,  # v4.5: Trust Stack Score (#273)
 ) -> AuditResult:
-    """Costruisce AuditResult dai sub-audit (fix #97: logica comune sync/async).
+    """Build AuditResult from sub-audits (fix #97: shared sync/async logic).
 
-    Calcola score, band e raccomandazioni, poi esegue i plugin registrati
-    in CheckRegistry (fix #104). I risultati dei plugin non influenzano il punteggio base.
+    Computes score, band and recommendations, then runs plugins registered
+    in CheckRegistry (fix #104). Plugin results do not affect the base score.
 
     Args:
         base_url: URL del sito normalizzato.
@@ -1634,7 +1634,7 @@ def audit_js_rendering(soup, raw_html: str) -> JsRenderingResult:
 
 
 def audit_signals(soup, schema_result) -> SignalsResult:
-    """Calcola i segnali tecnici: lang, RSS, freshness.
+    """Compute technical signals: lang, RSS, freshness.
 
     Args:
         soup: BeautifulSoup del documento HTML.
@@ -2031,7 +2031,7 @@ def audit_webmcp_readiness(soup, raw_html: str, schema_result) -> WebMcpResult:
 
 
 def audit_negative_signals(soup, raw_html, content_result, meta_result, schema_result) -> NegativeSignalsResult:
-    """Rileva segnali negativi che riducono la citabilità AI.
+    """Detect negative signals that reduce AI citability.
 
     Basato su UC Berkeley EMNLP 2024 e analisi LLM-perspective.
     Zero fetch HTTP — lavora solo su dati già disponibili.

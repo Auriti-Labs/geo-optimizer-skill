@@ -92,7 +92,7 @@ def fetch_sitemap(
 
     # Anti-bomb protection: limit recursion depth
     if _depth >= _MAX_SITEMAP_DEPTH:
-        logger.warning("Profondità massima sitemap raggiunta (%d), skip: %s", _depth, sitemap_url)
+        logger.warning("Maximum sitemap depth reached (%d), skipping: %s", _depth, sitemap_url)
         if on_status:
             on_status(f"Max sitemap depth reached ({_depth}), skipping: {sitemap_url}")
         return urls

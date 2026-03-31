@@ -86,9 +86,9 @@ def geo_audit(url: str) -> str:
         result = run_full_audit(url)
         return _to_json(result)
     except Exception as e:
-        # Fix #314: non esporre str(e) al client — logga internamente
-        logger.error("Errore geo_audit per %s: %s", url, e)
-        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
+        # Fix #314: do not expose str(e) to the client — log internally
+        logger.error("Error in geo_audit for %s: %s", url, e)
+        return json.dumps({"error": "Internal error during operation", "url": url})
 
 
 # ─── Tool 2: geo_fix ─────────────────────────────────────────────────────────
@@ -134,9 +134,9 @@ def geo_fix(url: str, only: str = "") -> str:
         plan = run_all_fixes(url=url, only=only_set)
         return _to_json(plan)
     except Exception as e:
-        # Fix #314: non esporre str(e) al client — logga internamente
-        logger.error("Errore geo_fix per %s: %s", url, e)
-        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
+        # Fix #314: do not expose str(e) to the client — log internally
+        logger.error("Error in geo_fix for %s: %s", url, e)
+        return json.dumps({"error": "Internal error during operation", "url": url})
 
 
 # ─── Tool 3: geo_llms_generate ───────────────────────────────────────────────
@@ -186,9 +186,9 @@ def geo_llms_generate(url: str) -> str:
         )
         return content
     except Exception as e:
-        # Fix #329: non esporre str(e) al client — logga internamente
-        logger.error("Errore geo_llms_generate per %s: %s", url, e)
-        return json.dumps({"error": "Errore interno nella generazione llms.txt", "url": url})
+        # Fix #329: do not expose str(e) to the client — log internally
+        logger.error("Error in geo_llms_generate for %s: %s", url, e)
+        return json.dumps({"error": "Internal error generating llms.txt", "url": url})
 
 
 # ─── Tool 4: geo_citability ───────────────────────────────────────────────────
@@ -228,9 +228,9 @@ def geo_citability(url: str) -> str:
         result = audit_citability(soup, url)
         return _to_json(result)
     except Exception as e:
-        # Fix #314: non esporre str(e) al client — logga internamente
-        logger.error("Errore geo_citability per %s: %s", url, e)
-        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
+        # Fix #314: do not expose str(e) to the client — log internally
+        logger.error("Error in geo_citability for %s: %s", url, e)
+        return json.dumps({"error": "Internal error during operation", "url": url})
 
 
 # ─── Tool 5: geo_schema_validate ─────────────────────────────────────────────
@@ -265,9 +265,9 @@ def geo_schema_validate(json_string: str, schema_type: str = "") -> str:
             }
         )
     except Exception as e:
-        # Fix #314: non esporre str(e) al client — logga internamente
-        logger.error("Errore geo_schema_validate: %s", e)
-        return json.dumps({"valid": False, "error": "Errore interno durante la validazione"})
+        # Fix #314: do not expose str(e) to the client — log internally
+        logger.error("Error in geo_schema_validate: %s", e)
+        return json.dumps({"valid": False, "error": "Internal error during validation"})
 
 
 # ─── Tool 6: geo_compare ──────────────────────────────────────────────────────
@@ -286,16 +286,16 @@ def geo_compare(urls: str) -> str:
 
     url_list = [u.strip() for u in urls.split(",") if u.strip()]
     if not url_list:
-        return json.dumps({"error": "Nessuna URL fornita"})
+        return json.dumps({"error": "No URLs provided"})
     if len(url_list) > 5:
-        return json.dumps({"error": "Massimo 5 URL per confronto"})
+        return json.dumps({"error": "Maximum 5 URLs per comparison"})
 
     results = []
     for u in url_list:
         u = _normalize_url(u)
         safe, reason = validate_public_url(u)
         if not safe:
-            results.append({"url": u, "error": f"URL non sicura: {reason}"})
+            results.append({"url": u, "error": f"Unsafe URL: {reason}"})
             continue
         try:
             from geo_optimizer.core.audit import run_full_audit
@@ -311,11 +311,11 @@ def geo_compare(urls: str) -> str:
                 }
             )
         except Exception as e:
-            # Fix #314: non esporre str(e) al client — logga internamente
-            logger.error("Errore geo_compare per %s: %s", u, e)
-            results.append({"url": u, "error": "Errore interno durante l'operazione"})
+            # Fix #314: do not expose str(e) to the client — log internally
+            logger.error("Error in geo_compare for %s: %s", u, e)
+            results.append({"url": u, "error": "Internal error during operation"})
 
-    # Ordina per score decrescente
+    # Sort by score descending
     results.sort(key=lambda x: x.get("score", 0), reverse=True)
     return json.dumps({"comparison": results, "total_sites": len(results)}, indent=2)
 
@@ -338,7 +338,7 @@ def geo_ai_discovery(url: str) -> str:
     url = _normalize_url(url)
     safe, reason = validate_public_url(url)
     if not safe:
-        return json.dumps({"error": f"URL non sicura: {reason}"})
+        return json.dumps({"error": f"Unsafe URL: {reason}"})
 
     try:
         from geo_optimizer.core.audit import audit_ai_discovery
@@ -346,9 +346,9 @@ def geo_ai_discovery(url: str) -> str:
         result = audit_ai_discovery(url)
         return _to_json(result)
     except Exception as e:
-        # Fix #314: non esporre str(e) al client — logga internamente
-        logger.error("Errore geo_ai_discovery per %s: %s", url, e)
-        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
+        # Fix #314: do not expose str(e) to the client — log internally
+        logger.error("Error in geo_ai_discovery for %s: %s", url, e)
+        return json.dumps({"error": "Internal error during operation", "url": url})
 
 
 # ─── Tool 8: geo_check_bots ──────────────────────────────────────────────────
@@ -369,7 +369,7 @@ def geo_check_bots(url: str) -> str:
     url = _normalize_url(url)
     safe, reason = validate_public_url(url)
     if not safe:
-        return json.dumps({"error": f"URL non sicura: {reason}"})
+        return json.dumps({"error": f"Unsafe URL: {reason}"})
 
     try:
         from geo_optimizer.core.audit import audit_robots_txt
@@ -377,7 +377,7 @@ def geo_check_bots(url: str) -> str:
 
         result = audit_robots_txt(url)
 
-        # Costruisci dettaglio per-bot con tier
+        # Build per-bot detail with tier
         bot_details = {}
         for bot, desc in AI_BOTS.items():
             tier = "unknown"
@@ -408,9 +408,9 @@ def geo_check_bots(url: str) -> str:
             indent=2,
         )
     except Exception as e:
-        # Fix #314: non esporre str(e) al client — logga internamente
-        logger.error("Errore geo_check_bots per %s: %s", url, e)
-        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
+        # Fix #314: do not expose str(e) to the client — log internally
+        logger.error("Error in geo_check_bots for %s: %s", url, e)
+        return json.dumps({"error": "Internal error during operation", "url": url})
 
 
 # ─── Tool 9: geo_trust_score (fix #396) ──────────────────────────────────────
@@ -431,7 +431,7 @@ def geo_trust_score(url: str) -> str:
     url = _normalize_url(url)
     safe, reason = validate_public_url(url)
     if not safe:
-        return json.dumps({"error": f"URL non sicura: {reason}"})
+        return json.dumps({"error": f"Unsafe URL: {reason}"})
 
     try:
         from geo_optimizer.core.audit import run_full_audit
@@ -457,8 +457,8 @@ def geo_trust_score(url: str) -> str:
             indent=2,
         )
     except Exception as e:
-        logger.error("Errore geo_trust_score per %s: %s", url, e)
-        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
+        logger.error("Error in geo_trust_score for %s: %s", url, e)
+        return json.dumps({"error": "Internal error during operation", "url": url})
 
 
 # ─── Tool 10: geo_negative_signals (fix #396) ────────────────────────────────
@@ -479,7 +479,7 @@ def geo_negative_signals(url: str) -> str:
     url = _normalize_url(url)
     safe, reason = validate_public_url(url)
     if not safe:
-        return json.dumps({"error": f"URL non sicura: {reason}"})
+        return json.dumps({"error": f"Unsafe URL: {reason}"})
 
     try:
         from geo_optimizer.core.audit import run_full_audit
@@ -487,8 +487,8 @@ def geo_negative_signals(url: str) -> str:
         result = run_full_audit(url, use_cache=True)
         return _to_json(result.negative_signals)
     except Exception as e:
-        logger.error("Errore geo_negative_signals per %s: %s", url, e)
-        return json.dumps({"error": "Errore interno durante l'operazione", "url": url})
+        logger.error("Error in geo_negative_signals for %s: %s", url, e)
+        return json.dumps({"error": "Internal error during operation", "url": url})
 
 
 # ─── Resource: AI Bots ────────────────────────────────────────────────────────
@@ -521,19 +521,19 @@ def get_score_bands() -> str:
     return json.dumps(SCORE_BANDS, indent=2)
 
 
-# Fix #282: rimossa prima registrazione duplicata di geo://methods
+# Fix #282: removed first duplicate registration of geo://methods
 
 # ─── Resource: Citability Methods ─────────────────────────────────────────────
 
 
 @mcp.resource("geo://methods")
 def get_citability_methods() -> str:
-    """All 42 citability methods with measured impact (fix #1: generati dinamicamente dal motore)."""
+    """All 42 citability methods with measured impact (fix #1: generated dynamically from the engine)."""
     from bs4 import BeautifulSoup
 
     from geo_optimizer.core.citability import audit_citability
 
-    # Genera i metodi da un soup vuoto per ottenere nomi, label, max_score e impact reali
+    # Generate methods from an empty soup to get real names, labels, max_score and impact
     empty_soup = BeautifulSoup("<html><body></body></html>", "html.parser")
     result = audit_citability(empty_soup, "http://example.com")
 

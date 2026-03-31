@@ -321,7 +321,7 @@ def _score_consistency(
     else:
         layer.signals_missing.append("Schema description differs from meta description")
 
-    # dateModified presente (+1)
+    # dateModified present (+1)
     if schema.has_date_modified:
         layer.score += 1
         layer.signals_found.append("dateModified present")

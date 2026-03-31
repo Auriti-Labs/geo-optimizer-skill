@@ -33,8 +33,8 @@ from geo_optimizer import __version__
 
 logger = logging.getLogger(__name__)
 
-# Regex per validare report_id: esattamente 32 caratteri esadecimali minuscoli
-# corrispondente all'output di sha256().hexdigest()[:32] (fix #210)
+# Regex to validate report_id: exactly 32 lowercase hex characters
+# matching the output of sha256().hexdigest()[:32] (fix #210)
 _HEX_ID_RE = re.compile(r"^[0-9a-f]{32}$")
 
 app = FastAPI(
@@ -91,11 +91,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        # Fix #315: HSTS — forza HTTPS per 1 anno su tutti i sottodomini
+        # Fix #315: HSTS — force HTTPS for 1 year on all subdomains
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         # Use 'nonce-{value}' instead of 'unsafe-inline' for XSS protection (fix #75)
         # Note #287: style-src uses 'unsafe-inline' because all <style> tags are hardcoded
-        # nei template (non user-controllabili). Rimuoverlo richiederebbe nonce su ogni
         # in templates (not user-controllable). Removing it would require nonce on every style tag.
         response.headers["Content-Security-Policy"] = (
             f"default-src 'self'; script-src 'self' 'nonce-{nonce}'; "
@@ -153,7 +152,7 @@ _rate_limit_store: dict = {}  # {ip: [timestamp, ...]}
 _RATE_LIMIT_WINDOW = 60  # seconds
 _RATE_LIMIT_MAX_REQUESTS = 30  # requests per window per IP
 _RATE_LIMIT_MAX_IPS = 10000  # maximum number of tracked IPs
-_rate_limit_lock = asyncio.Lock()  # protezione race condition su _rate_limit_store
+_rate_limit_lock = asyncio.Lock()  # race condition protection on _rate_limit_store
 
 # ─── Proxy trust: list of trusted proxy CIDRs/IPs ─────────────────────────────
 # Configurable via TRUSTED_PROXIES environment variable (CSV of IPs/CIDRs).
@@ -180,14 +179,14 @@ def _get_client_ip(request: Request) -> str:
         if forwarded_for:
             # Take the first IP in the chain (original client IP)
             real_ip = forwarded_for.split(",")[0].strip()
-            # Fix #14: valida che sia un formato IP valido
+            # Fix #14: validate that it is a valid IP format
             import ipaddress as _ipaddress
 
             try:
                 _ipaddress.ip_address(real_ip)
                 return real_ip
             except ValueError:
-                pass  # IP non valido, usa proxy_ip
+                pass  # Invalid IP, fall back to proxy_ip
 
     return proxy_ip
 
@@ -212,11 +211,11 @@ def _evict_oldest_rate_limit_entries(count: int = 1) -> None:
 async def _check_rate_limit(client_ip: str) -> bool:
     """Check rate limit for IP. Returns True if allowed.
 
-    Fix race condition: usa asyncio.Lock per rendere atomica l'operazione
-    read-modify-write sul dizionario condiviso _rate_limit_store (fix #209).
-    Fix #312: IP sconosciuto riceve limite restrittivo (5 req/min) invece del normale.
+    Fix race condition: uses asyncio.Lock to make the read-modify-write
+    operation on the shared _rate_limit_store dict atomic (fix #209).
+    Fix #312: unknown IP receives a stricter limit (5 req/min) instead of the normal one.
     """
-    # Fix #312: limite restrittivo per IP sconosciuto (previene bypass con client None)
+    # Fix #312: stricter limit for unknown IP (prevents bypass with client None)
     max_requests = 5 if client_ip == "unknown" else _RATE_LIMIT_MAX_REQUESTS
     async with _rate_limit_lock:
         now = time.time()
@@ -239,7 +238,7 @@ async def _check_rate_limit(client_ip: str) -> bool:
 _audit_cache: dict = {}
 _CACHE_TTL = 3600
 _MAX_CACHE_SIZE = 500
-_audit_cache_lock = asyncio.Lock()  # protezione race condition su _audit_cache (fix #209)
+_audit_cache_lock = asyncio.Lock()  # race condition protection on _audit_cache (fix #209)
 
 
 def _cache_key(url: str) -> str:
@@ -254,8 +253,8 @@ def _cache_key(url: str) -> str:
 async def _get_cached(url: str) -> dict | None:
     """Retrieve result from cache if valid.
 
-    Fix race condition: usa asyncio.Lock per proteggere lettura/rimozione
-    atomica su _audit_cache (fix #209).
+    Fix race condition: uses asyncio.Lock to protect the atomic
+    read/remove on _audit_cache (fix #209).
     """
     async with _audit_cache_lock:
         key = _cache_key(url)
@@ -279,8 +278,8 @@ def _evict_expired() -> None:
 async def _set_cached(url: str, data: dict) -> str:
     """Save result in cache with size limit. Returns the report ID.
 
-    Fix race condition: usa asyncio.Lock per proteggere il blocco
-    check-size / evict / insert su _audit_cache (fix #209).
+    Fix race condition: uses asyncio.Lock to protect the
+    check-size / evict / insert block on _audit_cache (fix #209).
     """
     async with _audit_cache_lock:
         key = _cache_key(url)
@@ -368,27 +367,27 @@ async def docs_page(request: Request, slug: str):
     """Render a documentation page from docs/*.md as styled HTML."""
     import re as _re
 
-    # Validazione slug: solo alfanumerici e trattini (previene path traversal)
+    # Slug validation: only alphanumerics and hyphens (prevents path traversal)
     if not _re.match(r"^[a-z0-9\-]+$", slug):
         raise HTTPException(status_code=404, detail="Page not found")
 
-    # Cerca il file markdown: prima nella directory web/docs/ (pacchetto installato),
-    # poi nella root docs/ del progetto (sviluppo locale)
+    # Look for the markdown file: first in the web/docs/ directory (installed package),
+    # then in the project root docs/ directory (local development)
     docs_dir = Path(__file__).resolve().parent / "docs"
     md_path = docs_dir / f"{slug}.md"
     if not md_path.exists():
-        # Fallback: directory docs/ nella root del progetto (per sviluppo locale)
+        # Fallback: docs/ directory in the project root (for local development)
         docs_dir = Path(__file__).resolve().parent.parent.parent.parent / "docs"
         md_path = docs_dir / f"{slug}.md"
 
     if not md_path.exists():
         raise HTTPException(status_code=404, detail="Page not found")
 
-    # Converti Markdown in HTML
+    # Convert Markdown to HTML
     md_content = md_path.read_text(encoding="utf-8")
     html_content = _markdown_to_html(md_content)
 
-    # Costruisci sidebar con link a tutte le pagine
+    # Build sidebar with links to all pages
     sidebar_links = []
     for page_slug, page_title in _DOCS_PAGES.items():
         if page_slug == "index":
@@ -397,11 +396,11 @@ async def docs_page(request: Request, slug: str):
         sidebar_links.append(f'<a href="/docs/{page_slug}" class="{active}">{page_title}</a>')
     sidebar_html = "\n".join(sidebar_links)
 
-    # Titolo e descrizione dalla mappa
+    # Title and description from the map
     title = _DOCS_PAGES.get(slug, slug.replace("-", " ").title())
     description = f"GEO Optimizer documentation: {title}"
 
-    # Carica template e sostituisci placeholder
+    # Load template and replace placeholders
     # Fix #313: propaga nonce CSP per coerenza (template privo di script al momento)
     nonce = getattr(request.state, "csp_nonce", "")
     nonce_attr = f' nonce="{nonce}"' if nonce else ""
@@ -419,7 +418,7 @@ async def docs_page(request: Request, slug: str):
 
 
 def _markdown_to_html(md: str) -> str:
-    """Converti Markdown in HTML. Usa la libreria markdown se disponibile, altrimenti regex base."""
+    """Convert Markdown to HTML. Uses the markdown library if available, otherwise basic regex."""
     try:
         import markdown
 
@@ -429,11 +428,11 @@ def _markdown_to_html(md: str) -> str:
             output_format="html",
         )
     except ImportError:
-        # Fallback: conversione base con regex
+        # Fallback: basic conversion with regex
         import html as _html_mod
         import re
 
-        # Fix #35: escapa HTML prima della conversione per prevenire XSS
+        # Fix #35: escape HTML before conversion to prevent XSS
         html = _html_mod.escape(md)
         # Headers
         html = re.sub(r"^### (.+)$", r"<h3>\1</h3>", html, flags=re.MULTILINE)
@@ -477,7 +476,7 @@ async def compare_page(request: Request):
 _STATS_API_URL = os.environ.get("GEO_STATS_API_URL", "https://agencypilot.it/api/geo-stats")
 _STATS_API_KEY = os.environ.get("GEO_STATS_API_KEY", "")
 
-# Fix #307/#349: validazione anti-SSRF su GEO_STATS_API_URL all'avvio
+# Fix #307/#349: anti-SSRF validation on GEO_STATS_API_URL at startup
 _STATS_API_URL_SAFE = True
 if _STATS_API_URL:
     from urllib.parse import urlparse as _urlparse_stats
@@ -488,7 +487,7 @@ if _STATS_API_URL:
     elif not _STATS_API_URL.startswith("https://"):
         _STATS_API_URL_SAFE = False
     else:
-        # Fix #349: validazione anti-SSRF completa (blocca IP privati/metadata)
+        # Fix #349: full anti-SSRF validation (blocks private IPs/metadata endpoints)
         try:
             from geo_optimizer.utils.validators import validate_public_url
 
@@ -500,7 +499,7 @@ if _STATS_API_URL:
 
 
 def _increment_remote_stat(key: str, amount: int = 1) -> None:
-    """Incrementa un contatore sull'API esterna (best-effort, non blocca se fallisce)."""
+    """Increment a counter on the external API (best-effort, does not block on failure)."""
     import json as _json
     import urllib.request
 
@@ -509,7 +508,7 @@ def _increment_remote_stat(key: str, amount: int = 1) -> None:
     # Fix #307: block if URL is not safe (SSRF prevention)
     if not _STATS_API_URL_SAFE:
         return
-    # Fix #36: valida URL stats API (solo HTTPS)
+    # Fix #36: validate stats API URL (HTTPS only)
     if not _STATS_API_URL.startswith("https://"):
         return
     try:
@@ -537,16 +536,16 @@ async def stats():
 
     Fetches GitHub and PyPI data with in-memory cache (1h TTL).
     Used by the homepage for social proof counters.
-    Usa urllib (standard library) per evitare dipendenza da httpx.
+    Uses urllib (standard library) to avoid dependency on httpx.
     """
     import json as _json
     import time as _time
     import urllib.request
 
     cache_key = "_stats_cache"
-    cache_ttl = 3600  # 1 ora
+    cache_ttl = 3600  # 1 hour
 
-    # Cache semplice in-memory tramite attributo della funzione
+    # Simple in-memory cache via function attribute
     cached = getattr(stats, cache_key, None)
     if cached and (_time.time() - cached["ts"]) < cache_ttl:
         return cached["data"]
@@ -554,7 +553,7 @@ async def stats():
     result = {"github_stars": 0, "pypi_downloads_month": 0, "audits_run": 0}
 
     def _fetch_json(url: str, headers: dict | None = None) -> dict | None:
-        """Fetch JSON da URL con timeout 5s. Ritorna None se fallisce."""
+        """Fetch JSON from URL with 5s timeout. Returns None on failure."""
         try:
             req = urllib.request.Request(url, headers=headers or {"User-Agent": "GEO-Optimizer"})
             with urllib.request.urlopen(req, timeout=5) as resp:
@@ -571,7 +570,7 @@ async def stats():
             return None
         return await asyncio.to_thread(_fetch_json, _stats_fetch_target)
 
-    # Esegui le 3 chiamate in parallelo (GitHub, PyPI, AgencyPilot stats)
+    # Run the 3 calls in parallel (GitHub, PyPI, AgencyPilot stats)
     github_data, pypi_data, geo_stats = await asyncio.gather(
         asyncio.to_thread(
             _fetch_json,
@@ -585,20 +584,20 @@ async def stats():
         _maybe_fetch_stats(),
     )
 
-    # GitHub stars (fallback a 13 se API rate limited)
+    # GitHub stars (fallback to 13 if API rate limited)
     if github_data and github_data.get("stargazers_count"):
         result["github_stars"] = github_data["stargazers_count"]
     else:
-        result["github_stars"] = 13  # Fallback: ultimo valore noto
+        result["github_stars"] = 13  # Fallback: last known value
 
-    # PyPI downloads — solo utenti reali (senza mirror, senza null/bot)
+    # PyPI downloads — real users only (no mirrors, no null/bots)
     if pypi_data:
         downloads = sum(
             item.get("downloads", 0) for item in pypi_data.get("data", []) if item.get("category") not in (None, "null")
         )
         result["pypi_downloads_month"] = downloads
 
-    # Audit counter dal DB persistente su AgencyPilot
+    # Audit counter from persistent DB on AgencyPilot
     if geo_stats and "stats" in geo_stats:
         result["audits_run"] = geo_stats["stats"].get("audits", 0)
 
@@ -625,7 +624,7 @@ async def audit_get(
     url: str = Query(..., description="URL del sito da analizzare"),
 ):
     """Run GEO audit via GET."""
-    # Fix #42: verifica token anche su GET (stessa policy del POST)
+    # Fix #42: verify token on GET too (same policy as POST)
     if not _verify_bearer_token(request):
         raise HTTPException(
             status_code=401,
@@ -661,13 +660,13 @@ async def audit_post(request: Request, body: AuditRequest):
 @app.get("/report/{report_id}", response_class=HTMLResponse)
 async def report(report_id: str):
     """Temporary report valid for 1 hour, kept in memory. Restarting the server clears all reports."""
-    # Valida che report_id sia esattamente 32 caratteri esadecimali minuscoli
-    # corrispondente all'output di _cache_key() — fix #210: isalnum() era
-    # troppo permissivo (accettava maiuscole e altri charset non validi)
+    # Validate that report_id is exactly 32 lowercase hex characters
+    # matching the output of _cache_key() — fix #210: isalnum() was
+    # too permissive (accepted uppercase and other invalid charsets)
     if not _HEX_ID_RE.match(report_id):
         raise HTTPException(status_code=400, detail="Invalid report ID format")
 
-    # Fix #286: accesso alla cache protetto da lock per evitare race condition
+    # Fix #286: cache access protected by lock to avoid race condition
     # Fix #343: check TTL — expired reports are no longer served
     async with _audit_cache_lock:
         entry = _audit_cache.get(report_id)
@@ -908,7 +907,7 @@ async def badge_endpoint(
                 status_code=503,
             )
 
-    # Colore basato sulla banda
+    # Color based on band
     color_map = {"excellent": "brightgreen", "good": "green", "foundation": "yellow", "critical": "red"}
     color = color_map.get(band, "lightgrey")
 
@@ -919,9 +918,9 @@ async def badge_endpoint(
 
 
 def _normalize_url(raw: str) -> tuple[str | None, str]:
-    """Normalizza e valida formato URL.
+    """Normalize and validate URL format.
 
-    Ritorna (url_normalizzato, errore). Se errore è non-vuoto, l'URL è invalido.
+    Returns (normalized_url, error). If error is non-empty, the URL is invalid.
     """
     from urllib.parse import urlparse
 
@@ -931,11 +930,11 @@ def _normalize_url(raw: str) -> tuple[str | None, str]:
     if not url or " " in url:
         return None, "Invalid input: please enter a URL (e.g. https://example.com)"
 
-    # Aggiungi https:// se manca il protocollo
+    # Add https:// if protocol is missing
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
 
-    # Deve avere hostname con almeno un punto (dominio reale)
+    # Must have a hostname with at least one dot (real domain)
     parsed = urlparse(url)
     if not parsed.hostname or "." not in parsed.hostname:
         return None, "Invalid URL: a valid domain is required (e.g. https://example.com)"
@@ -1148,7 +1147,7 @@ def _dict_to_audit_result(data: dict):
         score_breakdown=data.get("score_breakdown", {}),
     )
 
-    # Fix #34: ricostruisci campi aggiuntivi se presenti nella cache
+    # Fix #34: reconstruct additional fields if present in cache
     if "signals" in data and isinstance(data["signals"], dict):
         from geo_optimizer.models.results import SignalsResult
 
@@ -1175,7 +1174,7 @@ def _dict_to_audit_result(data: dict):
             endpoints_found=ad.get("endpoints_found", 0),
         )
 
-    # Fix #309: ricostruisci cdn_check se presente nella cache
+    # Fix #309: rebuild cdn_check if present in cache
     if "cdn_check" in data and isinstance(data["cdn_check"], dict):
         from geo_optimizer.models.results import CdnAiCrawlerResult
 
@@ -1191,7 +1190,7 @@ def _dict_to_audit_result(data: dict):
             error=cdn.get("error", ""),
         )
 
-    # Fix #309: ricostruisci js_rendering se presente nella cache
+    # Fix #309: rebuild js_rendering if present in cache
     if "js_rendering" in data and isinstance(data["js_rendering"], dict):
         from geo_optimizer.models.results import JsRenderingResult
 
@@ -1207,7 +1206,7 @@ def _dict_to_audit_result(data: dict):
             details=js.get("details", ""),
         )
 
-    # Ricostruisci brand_entity se presente nella cache
+    # Rebuild brand_entity if present in cache
     if "brand_entity" in data and isinstance(data["brand_entity"], dict):
         from geo_optimizer.models.results import BrandEntityResult
 
@@ -1231,7 +1230,7 @@ def _dict_to_audit_result(data: dict):
             has_recent_articles=be.get("has_recent_articles", False),
         )
 
-    # Ricostruisci webmcp se presente nella cache (#233)
+    # Rebuild webmcp if present in cache (#233)
     if "webmcp" in data and isinstance(data["webmcp"], dict):
         from geo_optimizer.models.results import WebMcpResult
 
@@ -1250,7 +1249,7 @@ def _dict_to_audit_result(data: dict):
             readiness_level=wm.get("readiness_level", "none"),
         )
 
-    # Ricostruisci negative_signals se presente nella cache (v4.3)
+    # Rebuild negative_signals if present in cache (v4.3)
     if "negative_signals" in data and isinstance(data["negative_signals"], dict):
         from geo_optimizer.models.results import NegativeSignalsResult
 
@@ -1276,7 +1275,7 @@ def _dict_to_audit_result(data: dict):
             severity=ns.get("severity", "clean"),
         )
 
-    # Ricostruisci prompt_injection se presente nella cache (#276)
+    # Rebuild prompt_injection if present in cache (#276)
     if "prompt_injection" in data and isinstance(data["prompt_injection"], dict):
         from geo_optimizer.models.results import PromptInjectionResult
 
@@ -1309,7 +1308,7 @@ def _dict_to_audit_result(data: dict):
             risk_level=pi.get("risk_level", "none"),
         )
 
-    # Ricostruisci trust_stack se presente nella cache (#273)
+    # Rebuild trust_stack if present in cache (#273)
     if "trust_stack" in data and isinstance(data["trust_stack"], dict):
         from geo_optimizer.models.results import TrustLayerScore, TrustStackResult
 

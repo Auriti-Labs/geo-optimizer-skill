@@ -381,10 +381,10 @@ class TestExceptionPaths:
         result = geo_audit("https://example.com")
         data = json.loads(result)
 
-        # Assert — messaggio generico al client, senza dettaglio interno (fix #314)
+        # Assert — generic message to client, without internal detail (fix #314)
         assert "error" in data
         assert "DB unavailable" not in data["error"]
-        assert "interno" in data["error"].lower() or "errore" in data["error"].lower()
+        assert "internal" in data["error"].lower() or "error" in data["error"].lower()
         assert data["url"] == "https://example.com"
 
     @patch("geo_optimizer.core.fixer.run_all_fixes")
@@ -401,10 +401,10 @@ class TestExceptionPaths:
         result = geo_fix("https://example.com")
         data = json.loads(result)
 
-        # Assert — messaggio generico al client, senza dettaglio interno (fix #314)
+        # Assert — generic message to client, without internal detail (fix #314)
         assert "error" in data
         assert "Fixer crashed" not in data["error"]
-        assert "interno" in data["error"].lower() or "errore" in data["error"].lower()
+        assert "internal" in data["error"].lower() or "error" in data["error"].lower()
 
     def test_geo_fix_categoria_non_valida_ritorna_errore(self):
         """geo_fix con categoria 'only' non valida ritorna errore senza crash."""

@@ -177,7 +177,7 @@ def _render_stacked_bar(categories: list[tuple[str, int, int]], width: int = 68)
         _COLORS["brand_3"],  # ai_discovery - viola chiaro
     ]
 
-    # Calcola la larghezza di ogni segmento
+    # Calculate the width of each segment
     if total_score == 0:
         bar.append("━" * width, style=f"dim {_COLORS['dim']}")
         return bar
@@ -196,7 +196,7 @@ def _render_stacked_bar(categories: list[tuple[str, int, int]], width: int = 68)
         if seg_width > 0:
             bar.append("━" * seg_width, style=f"bold {color}")
 
-    # Riempi il resto fino a 100 punti
+    # Fill the remainder up to 100 points
     sum(mx for _, _, mx in categories)
     filled_width = sum(sw for sw, _ in segments)
     empty_width = width - filled_width
@@ -258,7 +258,7 @@ _LOGO_LINES = [
 ]
 
 
-# ── Builder card per ogni check ───────────────────────────────────────────────
+# ── Builder card for each check ───────────────────────────────────────────────
 
 
 def _check_status_text(passed: bool) -> Text:
@@ -477,7 +477,7 @@ def _build_meta_card(result: AuditResult, score: int, max_score: int) -> Panel:
         row2.append("  ", style="default")
     content_parts.append(row2)
 
-    # Anteprima title (se presente)
+    # Title preview (if present)
     if result.meta.title_text:
         title_preview = result.meta.title_text[:50]
         if len(result.meta.title_text) > 50:
@@ -585,7 +585,7 @@ def _build_signals_card(result: AuditResult, score: int, max_score: int) -> Pane
         sig_text.append("  ", style="default")
     content_parts.append(sig_text)
 
-    # Lang value se presente
+    # Lang value if present
     if result.signals.has_lang and result.signals.lang_value:
         lang_text = Text()
         lang_text.append(f'  lang="{result.signals.lang_value}"', style=f"italic {_COLORS['dim']}")
@@ -618,7 +618,7 @@ def _build_ai_discovery_card(result: AuditResult) -> Panel | None:
 
     content_parts = []
 
-    # Punteggio AI Discovery
+    # AI Discovery score
     from geo_optimizer.core.scoring import _score_ai_discovery
 
     score = _score_ai_discovery(ai)
@@ -947,7 +947,7 @@ def _build_negative_signals_card(result: AuditResult) -> Panel | None:
     content_parts.append(header)
     content_parts.append(Text())
 
-    # Dettagli per ogni segnale
+    # Details for each signal
     checks = [
         ("CTA overload", ns.cta_density_high, f"{ns.cta_count} CTAs" if ns.cta_count else ""),
         (
@@ -1201,13 +1201,13 @@ def format_audit_rich(result: AuditResult) -> str:
     footer.append("github.com/Auriti-Labs/geo-optimizer-skill", style=f"{_COLORS['dim']} underline")
     console.print(Align.center(footer))
 
-    # Messaggio motivazionale basato sulla banda
+    # Motivational message based on band
     console.print()
     motiv_messages = {
-        "excellent": "Il tuo sito è pronto per i motori AI. Continua così! 🚀",
-        "good": "Buon lavoro! Pochi ritocchi per raggiungere l'eccellenza.",
-        "foundation": "Le basi ci sono. Segui le raccomandazioni per scalare.",
-        "critical": "Inizia dalle raccomandazioni — ogni punto conta.",
+        "excellent": "Your site is ready for AI engines. Keep it up! 🚀",
+        "good": "Great work! A few tweaks to reach excellence.",
+        "foundation": "The foundations are there. Follow the recommendations to scale.",
+        "critical": "Start from the recommendations — every point counts.",
     }
     motiv = motiv_messages.get(result.band, "")
     if motiv:
