@@ -5,24 +5,32 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
-## [3.19.2] — 2026-03-30
+## [4.0.0-beta.1] — 2026-03-31
+
+### Changed (BREAKING)
+
+- **Architecture**: audit.py split into 12 focused sub-audit modules (#402)
+  - 9 Phase 1 modules (zero-risk, no fetch_url): meta, signals, content, js, schema, brand, cdn, webmcp, negative
+  - 3 Phase 2 modules (fetch_url-dependent): robots, llms, ai_discovery
+  - audit.py reduced from 2270 to 740 lines (orchestration only)
+  - 100% backward compatible via re-exports
+- **Codebase**: complete IT→EN conversion — all comments, docstrings, error messages now in English
 
 ### Fixed
 
-- 15 improvements to existing features (#387–#401):
-  - Prompt Injection: added 5 patterns (Llama3, Gemma, jailbreak, prompt leaking)
-  - Keyword stuffing: centralized threshold (2.5%), removed hardcoded duplicates
-  - AI Discovery: stricter validation (summary min 20 chars, FAQ requires question+answer, service requires name+capabilities)
-  - Trust Stack: academic links exclude social domains, CSP frame-ancestors accepted as X-Frame-Options alt
-  - Brand Entity: about link patterns expanded (/company, /mission, /our-story), legal suffix normalization (Inc., Ltd., S.r.l.)
-  - Schema: TechArticle/ScholarlyArticle detected, richness intermediate step (avg 4 = 2pt), JSON-LD parse errors tracked
-  - AI Bots: added xAI-Bot, Applebot, PetalBot (27 bots total)
-  - Citability: answer_first detects text in div/li (WordPress), freshness differentiated (< 3mo = 4pt, 3-6mo = 3pt)
+- **#393**: robots.txt web endpoint synced with AI_BOTS (5 missing bots: Google-CloudVertexBot, Applebot, AI2Bot-Dolma, xAI-Bot, PetalBot)
+- **#392**: schema Article detection now includes TechArticle and ScholarlyArticle subtypes; ARTICLE_TYPES constant added
+- **#391**: parametrized test coverage for all 9 ABOUT_LINK_PATTERNS
+- **#388**: keyword stuffing threshold centralized as KEYWORD_STUFFING_THRESHOLD (0.025) in config.py; citability.py no longer hardcodes 0.03
+- **#400**: detect_answer_first handles empty elements (WordPress/Elementor div wrappers)
+- **#399**: JSON-LD parse errors tracked with json_parse_errors counter + recommendation
+- **#395**: CSP frame-ancestors recognized as equivalent to X-Frame-Options in Technical Trust
+- **#390**: Academic Trust excludes social media links from external sources count
 
-### Added
+### Tests
 
-- 2 new MCP tools: `geo_trust_score` (5-layer trust grade A-F) and `geo_negative_signals` (8 anti-citation signals)
-- MCP server now exposes 10 tools (up from 8)
+- Test suite: 1007 → 1030 (+23 new tests)
+- All tests pass, zero regressions
 
 ---
 
