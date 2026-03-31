@@ -173,6 +173,41 @@ class TestAnswerFirst:
         assert result.max_score == 5
         assert result.impact == "+25%"
 
+    def test_wordpress_elementor_div_wrapper(self):
+        """Fix #400: H2 seguito da <div><p>testo</p></div> (WordPress/Elementor) → rilevato."""
+        # WordPress/Elementor wraps content in div containers;
+        # the <p> is not a direct sibling of H2, but nested inside a <div>
+        html = """
+        <html><body>
+            <h2>Quanto costa il SEO?</h2>
+            <div class="elementor-widget-container">
+                <p>Il costo medio del SEO nel 2026 è di $2,500 al mese per le PMI,
+                con un ROI medio del 275% nel primo anno.</p>
+            </div>
+            <h2>Come funziona</h2>
+            <div class="wp-block-group">
+                <p>Il 73% dei siti ottimizzati vede miglioramenti entro 90 giorni.</p>
+            </div>
+        </body></html>
+        """
+        result = detect_answer_first(_soup(html))
+        assert result.detected is True
+        assert result.details["answer_first_count"] == 2
+        assert result.details["h2_count"] == 2
+
+    def test_div_vuoto_non_conta(self):
+        """Fix #400: div vuoto dopo H2 non genera falso positivo."""
+        html = """
+        <html><body>
+            <h2>Titolo sezione</h2>
+            <div class="spacer"></div>
+            <p>Testo generico senza fatti concreti o dati numerici qui.</p>
+        </body></html>
+        """
+        result = detect_answer_first(_soup(html))
+        # The empty div is skipped; the plain paragraph has no concrete facts
+        assert result.details["h2_count"] == 1
+
 
 # ============================================================================
 # TEST: Passage Density (Stanford Nature Communications 2025)
@@ -288,7 +323,9 @@ class TestPesiCitability:
         html = "<html><body><p>Test content.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
         total_max = sum(m.max_score for m in result.methods)
-        assert total_max == 189, f"Max totale citability: {total_max}, atteso 189 (100 base + 31 batch2 + 18 batch3+4 + 27 batchA + 13 batchB)"
+        assert total_max == 189, (
+            f"Max totale citability: {total_max}, atteso 189 (100 base + 31 batch2 + 18 batch3+4 + 27 batchA + 13 batchB)"
+        )
 
     def test_metodi_sono_25(self):
         """Devono esserci 30 metodi (18 base + 7 Batch 2 + 5 Batch 3+4)."""

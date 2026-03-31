@@ -666,12 +666,15 @@ def detect_answer_first(soup) -> MethodScore:
 
     answer_first_count = 0
     for h2 in h2_tags:
-        # Fix #400: find the first text after H2 in p, div, li (WordPress/Elementor)
+        # Fix #400: find the first text after H2 in p, div, li (WordPress/Elementor wraps
+        # content in <div><p>...</p></div>, so direct sibling <p> is not always present)
         next_el = h2.find_next(["p", "div", "li"])
         if not next_el:
             continue
-        # Check only the first 150 characters
+        # Skip empty elements (empty divs without text content)
         first_text = next_el.get_text(strip=True)[:150]
+        if not first_text:
+            continue
         if _FACT_RE.search(first_text):
             answer_first_count += 1
 

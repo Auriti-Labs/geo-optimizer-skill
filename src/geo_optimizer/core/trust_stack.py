@@ -68,7 +68,7 @@ def _score_technical(base_url: str, response_headers: dict[str, str]) -> TrustLa
     else:
         layer.signals_missing.append("Content-Security-Policy header missing")
 
-    # X-Frame-Options o CSP frame-ancestors (+1) — fix #395
+    # X-Frame-Options or CSP frame-ancestors are equivalent (#395)
     csp_value = headers.get("content-security-policy", "")
     if "x-frame-options" in headers or "frame-ancestors" in csp_value.lower():
         layer.score += 1
@@ -151,7 +151,7 @@ def _detect_testimonials(soup) -> bool:
 
 
 def _detect_social_links(soup) -> list[str]:
-    """Detect links to social profiles in the DOM."""
+    """Detect unique social domains linked in the DOM (used for Social Trust layer)."""
     found_domains: list[str] = []
     for a_tag in soup.find_all("a", href=True):
         href = a_tag["href"].lower()
@@ -159,6 +159,20 @@ def _detect_social_links(soup) -> list[str]:
             if domain in href and domain not in found_domains:
                 found_domains.append(domain)
     return found_domains
+
+
+def _count_social_links(soup) -> int:
+    """Count total <a> tags pointing to social media domains (fix #390).
+
+    Unlike _detect_social_links (which returns unique domains), this counts
+    every individual link, matching the cardinality of external_links_count.
+    """
+    count = 0
+    for a_tag in soup.find_all("a", href=True):
+        href = a_tag["href"].lower()
+        if any(domain in href for domain in SOCIAL_PROOF_DOMAINS):
+            count += 1
+    return count
 
 
 def _score_social(
@@ -251,8 +265,10 @@ def _score_academic(content: ContentResult, soup) -> TrustLayerScore:
         layer.signals_missing.append("Few or no statistics/numbers in content")
 
     # External source links (+1) — fix #390: exclude social links from the count
-    # Social links belong in Social Trust, not Academic Trust
-    social_link_count = len(_detect_social_links(soup)) if soup else 0
+    # Social links belong in Social Trust, not Academic Trust.
+    # Use _count_social_links (counts individual <a> tags) to match the
+    # cardinality of content.external_links_count.
+    social_link_count = _count_social_links(soup) if soup else 0
     academic_external_count = max(content.external_links_count - social_link_count, 0)
     if academic_external_count >= 2:
         layer.score += 1

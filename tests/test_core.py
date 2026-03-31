@@ -1068,6 +1068,30 @@ class TestAuditSchema:
         result = audit_schema(soup, "https://example.com")
         assert result.found_types == []
 
+    def test_invalid_json_increments_parse_error_counter(self):
+        """JSON-LD con sintassi errata deve incrementare json_parse_errors (#399)."""
+        html = """<html><head><script type="application/ld+json">
+        {not valid json at all!!!}
+        </script></head><body></body></html>"""
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_schema(soup, "https://example.com")
+        assert result.json_parse_errors == 1
+
+    def test_multiple_invalid_json_blocks_counted(self):
+        """Più blocchi JSON-LD invalidi devono incrementare il contatore per ognuno (#399)."""
+        html = (
+            '<html><head>'
+            '<script type="application/ld+json">{broken one}</script>'
+            '<script type="application/ld+json">{broken two}</script>'
+            '<script type="application/ld+json">{"@type":"WebSite","name":"T"}</script>'
+            '</head><body></body></html>'
+        )
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_schema(soup, "https://example.com")
+        # Two invalid blocks, one valid
+        assert result.json_parse_errors == 2
+        assert result.has_website is True
+
     def test_array_type_schema(self):
         html = """<html><head><script type="application/ld+json">
         {"@context":"https://schema.org","@type":["WebSite","SearchAction"],"name":"T","url":"https://example.com"}
@@ -1431,6 +1455,33 @@ class TestBuildRecommendations:
         )
         assert len(recs) == 1
         assert "llms.txt" in recs[0]
+
+    def test_json_parse_errors_generates_recommendation(self):
+        """json_parse_errors > 0 deve generare raccomandazione con schema.org/validator (#399)."""
+        recs = build_recommendations(
+            "https://example.com",
+            RobotsResult(citation_bots_ok=True),
+            LlmsTxtResult(found=True, has_sections=True, sections_count=3, has_links=True, links_count=5),
+            SchemaResult(has_website=True, has_faq=True, json_parse_errors=2),
+            MetaResult(has_description=True),
+            ContentResult(has_numbers=True, has_links=True),
+        )
+        assert len(recs) == 1
+        assert "JSON-LD" in recs[0]
+        assert "2" in recs[0]
+        assert "schema.org/validator" in recs[0]
+
+    def test_no_recommendation_when_no_parse_errors(self):
+        """Nessuna raccomandazione JSON-LD parse error quando json_parse_errors == 0 (#399)."""
+        recs = build_recommendations(
+            "https://example.com",
+            RobotsResult(citation_bots_ok=True),
+            LlmsTxtResult(found=True, has_sections=True, sections_count=3, has_links=True, links_count=5),
+            SchemaResult(has_website=True, has_faq=True, json_parse_errors=0),
+            MetaResult(has_description=True),
+            ContentResult(has_numbers=True, has_links=True),
+        )
+        assert not any("JSON-LD" in r and "parse" in r.lower() for r in recs)
 
 
 # ============================================================================

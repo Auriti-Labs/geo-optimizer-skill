@@ -68,16 +68,31 @@ class TestTechnicalTrust:
         result = audit_trust_stack(**_defaults(response_headers=headers))
         assert "X-Frame-Options" in result.technical.signals_found
 
+    def test_csp_frame_ancestors_equivale_a_xframe(self):
+        # CSP frame-ancestors must be accepted as equivalent to X-Frame-Options (#395)
+        headers = {"Content-Security-Policy": "default-src 'self'; frame-ancestors 'none'"}
+        result = audit_trust_stack(**_defaults(response_headers=headers))
+        assert "X-Frame-Options" in result.technical.signals_found
+
+    def test_nessun_header_frame_segnala_mancante(self):
+        # Neither X-Frame-Options nor CSP frame-ancestors → signal must be missing
+        headers = {"Content-Security-Policy": "default-src 'self'"}
+        result = audit_trust_stack(**_defaults(response_headers=headers))
+        assert "X-Frame-Options" not in result.technical.signals_found
+        assert any("X-Frame-Options" in s for s in result.technical.signals_missing)
+
     def test_massimo_cinque_punti(self):
         headers = {
             "Strict-Transport-Security": "max-age=31536000",
             "Content-Security-Policy": "default-src 'self'",
             "X-Frame-Options": "DENY",
         }
-        result = audit_trust_stack(**_defaults(
-            base_url="https://example.com",
-            response_headers=headers,
-        ))
+        result = audit_trust_stack(
+            **_defaults(
+                base_url="https://example.com",
+                response_headers=headers,
+            )
+        )
         assert result.technical.score == 5
 
 
@@ -177,9 +192,39 @@ class TestAcademicTrust:
         assert "References section" in result.academic.signals_found
 
     def test_statistiche_originali(self):
-        html = "<html><body><p>42% degli utenti secondo lo studio. Il 78% dei report conferma il dato.</p></body></html>"
+        html = (
+            "<html><body><p>42% degli utenti secondo lo studio. Il 78% dei report conferma il dato.</p></body></html>"
+        )
         result = audit_trust_stack(**_defaults(soup=_soup(html)))
         assert any("Original statistics" in s for s in result.academic.signals_found)
+
+    def test_link_accademici_ottengono_punto(self):
+        """Fix #390: academic links (non-social) grant the External sources point."""
+        html = (
+            '<html><body>'
+            '<a href="https://scholar.google.com/article1">Scholar</a>'
+            '<a href="https://pubmed.ncbi.nlm.nih.gov/12345">PubMed</a>'
+            '</body></html>'
+        )
+        content = ContentResult(external_links_count=2)
+        result = audit_trust_stack(**_defaults(content=content, soup=_soup(html)))
+        assert any("External sources" in s for s in result.academic.signals_found)
+
+    def test_solo_social_non_ottengono_punto(self):
+        """Fix #390: a site with only social links must NOT get the External sources point."""
+        html = (
+            '<html><body>'
+            '<a href="https://twitter.com/brand">Twitter</a>'
+            '<a href="https://instagram.com/brand">Instagram</a>'
+            '<a href="https://facebook.com/brand">Facebook</a>'
+            '<a href="https://linkedin.com/company/brand">LinkedIn</a>'
+            '<a href="https://youtube.com/channel/brand">YouTube</a>'
+            '</body></html>'
+        )
+        # external_links_count = 5, but all are social — academic count must be 0
+        content = ContentResult(external_links_count=5)
+        result = audit_trust_stack(**_defaults(content=content, soup=_soup(html)))
+        assert not any("External sources" in s for s in result.academic.signals_found)
 
 
 # ============================================================================
