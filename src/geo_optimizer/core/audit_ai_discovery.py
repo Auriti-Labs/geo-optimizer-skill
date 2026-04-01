@@ -10,6 +10,13 @@ from __future__ import annotations
 import json
 from urllib.parse import urljoin
 
+from geo_optimizer.models.config import (
+    AI_DISCOVERY_FAQ_ANSWER_MIN_LEN,
+    AI_DISCOVERY_FAQ_QUESTION_MIN_LEN,
+    AI_DISCOVERY_SERVICE_NAME_MIN_LEN,
+    AI_DISCOVERY_SUMMARY_DESC_MIN_LEN,
+    AI_DISCOVERY_SUMMARY_NAME_MIN_LEN,
+)
 from geo_optimizer.models.results import AiDiscoveryResult
 from geo_optimizer.utils.http import fetch_url
 
@@ -46,11 +53,11 @@ def audit_ai_discovery(base_url: str) -> AiDiscoveryResult:
             data = json.loads(r.text)
             result.has_summary = True
             result.endpoints_found += 1
-            # Fix #389: validazione più strict — name >= 2 char, description >= 20 char
+            # Fix #389: name >= 3 char, description >= 20 char
             if (
                 isinstance(data, dict)
-                and len(str(data.get("name", ""))) >= 2
-                and len(str(data.get("description", ""))) >= 20
+                and len(str(data.get("name", ""))) >= AI_DISCOVERY_SUMMARY_NAME_MIN_LEN
+                and len(str(data.get("description", ""))) >= AI_DISCOVERY_SUMMARY_DESC_MIN_LEN
             ):
                 result.summary_valid = True
         except (json.JSONDecodeError, ValueError):
@@ -64,11 +71,15 @@ def audit_ai_discovery(base_url: str) -> AiDiscoveryResult:
             data = json.loads(r.text)
             result.has_faq = True
             result.endpoints_found += 1
-            # Fix #389: valida struttura FAQ — ogni item deve avere question + answer >= 20 char
+            # Fix #389: faqs lista non vuota, ogni item con question >= 10 char e answer >= 20 char
             faqs = data if isinstance(data, list) else data.get("faqs", []) if isinstance(data, dict) else []
             if isinstance(faqs, list):
                 valid = [
-                    f for f in faqs if isinstance(f, dict) and f.get("question") and len(str(f.get("answer", ""))) >= 20
+                    f
+                    for f in faqs
+                    if isinstance(f, dict)
+                    and len(str(f.get("question", ""))) >= AI_DISCOVERY_FAQ_QUESTION_MIN_LEN
+                    and len(str(f.get("answer", ""))) >= AI_DISCOVERY_FAQ_ANSWER_MIN_LEN
                 ]
                 result.faq_count = len(valid)
         except (json.JSONDecodeError, ValueError):
@@ -80,8 +91,13 @@ def audit_ai_discovery(base_url: str) -> AiDiscoveryResult:
     if r and not err and r.status_code == 200:
         try:
             data = json.loads(r.text)
-            # Fix #389: valida campi obbligatori — name + lista capabilities
-            if isinstance(data, dict) and data.get("name") and isinstance(data.get("capabilities"), list):
+            # Fix #389: name >= 3 char + capabilities lista non vuota
+            if (
+                isinstance(data, dict)
+                and len(str(data.get("name", ""))) >= AI_DISCOVERY_SERVICE_NAME_MIN_LEN
+                and isinstance(data.get("capabilities"), list)
+                and len(data["capabilities"]) > 0
+            ):
                 result.has_service = True
                 result.endpoints_found += 1
         except (json.JSONDecodeError, ValueError):
@@ -115,7 +131,12 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
             data = json.loads(r_summary.text)
             result.has_summary = True
             result.endpoints_found += 1
-            if isinstance(data, dict) and data.get("name") and data.get("description"):
+            # Fix #389: name >= 3 char, description >= 20 char
+            if (
+                isinstance(data, dict)
+                and len(str(data.get("name", ""))) >= AI_DISCOVERY_SUMMARY_NAME_MIN_LEN
+                and len(str(data.get("description", ""))) >= AI_DISCOVERY_SUMMARY_DESC_MIN_LEN
+            ):
                 result.summary_valid = True
         except (json.JSONDecodeError, ValueError):
             pass
@@ -126,19 +147,33 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
             data = json.loads(r_faq.text)
             result.has_faq = True
             result.endpoints_found += 1
-            if isinstance(data, list):
-                result.faq_count = len(data)
-            elif isinstance(data, dict) and isinstance(data.get("faqs"), list):
-                result.faq_count = len(data["faqs"])
+            # Fix #389: faqs lista non vuota, ogni item con question >= 10 char e answer >= 20 char
+            faqs = data if isinstance(data, list) else data.get("faqs", []) if isinstance(data, dict) else []
+            if isinstance(faqs, list):
+                valid = [
+                    f
+                    for f in faqs
+                    if isinstance(f, dict)
+                    and len(str(f.get("question", ""))) >= AI_DISCOVERY_FAQ_QUESTION_MIN_LEN
+                    and len(str(f.get("answer", ""))) >= AI_DISCOVERY_FAQ_ANSWER_MIN_LEN
+                ]
+                result.faq_count = len(valid)
         except (json.JSONDecodeError, ValueError):
             pass
 
     # /ai/service.json
     if r_service and r_service.status_code == 200:
         try:
-            json.loads(r_service.text)
-            result.has_service = True
-            result.endpoints_found += 1
+            data = json.loads(r_service.text)
+            # Fix #389: name >= 3 char + capabilities lista non vuota
+            if (
+                isinstance(data, dict)
+                and len(str(data.get("name", ""))) >= AI_DISCOVERY_SERVICE_NAME_MIN_LEN
+                and isinstance(data.get("capabilities"), list)
+                and len(data["capabilities"]) > 0
+            ):
+                result.has_service = True
+                result.endpoints_found += 1
         except (json.JSONDecodeError, ValueError):
             pass
 

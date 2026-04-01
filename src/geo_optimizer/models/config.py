@@ -433,6 +433,9 @@ PROMPT_INJECTION_LLM_PATTERNS = [
     r"\bDAN\s+mode\b|\bdeveloper\s+mode\b",
     r"pretend\s+(?:you\s+have\s+no|there\s+are\s+no)\s+restrictions?",
     r"(?:reveal|repeat|show|tell)\s+(?:me\s+)?(?:your|the)\s+(?:system\s+)?(?:prompt|instructions?)",
+    # fix #387: "jailbreak" keyword and "repeat the above" prompt-leaking variant
+    r"\bjailbreak\b",
+    r"repeat\s+the\s+above",
 ]
 
 # Suspicious keywords in HTML comments
@@ -515,6 +518,19 @@ REFERENCES_HEADING_PATTERNS = [
 
 # Minimum statistical match count for Academic Trust
 ACADEMIC_STATISTICS_MIN_MATCHES = 2
+
+# ─── AI Discovery validation thresholds (#389) ───────────────────────────────
+
+# Minimum length for summary.json fields
+AI_DISCOVERY_SUMMARY_NAME_MIN_LEN: int = 3
+AI_DISCOVERY_SUMMARY_DESC_MIN_LEN: int = 20
+
+# Minimum length for faq.json item fields
+AI_DISCOVERY_FAQ_QUESTION_MIN_LEN: int = 10
+AI_DISCOVERY_FAQ_ANSWER_MIN_LEN: int = 20
+
+# Minimum length for service.json name field
+AI_DISCOVERY_SERVICE_NAME_MIN_LEN: int = 3
 
 # ─── Score bands ─────────────────────────────────────────────────────────────
 
