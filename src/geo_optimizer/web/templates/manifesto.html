@@ -42,21 +42,25 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .wrapper{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:2rem 1.5rem}
 
 /* ─── Professional Nav ─── */
-nav{
-  position:sticky;top:0;z-index:100;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:.65rem 1rem;margin-bottom:3rem;
-  background:rgba(6,8,15,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-  border-radius:0 0 var(--radius-sm) var(--radius-sm);
-}
-.nav-logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:.95rem;color:var(--text);white-space:nowrap}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.25rem;margin-bottom:2.5rem;background:rgba(6,8,15,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);border-radius:0 0 var(--radius-sm) var(--radius-sm)}
+.nav-logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:.95rem;color:var(--text);white-space:nowrap;text-decoration:none}
 .nav-logo .dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 6px var(--green)}
 .nav-logo .ver{font-family:var(--mono);font-size:.65rem;color:var(--accent);background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);padding:.1rem .4rem;border-radius:20px;margin-left:.25rem}
-.nav-links{display:flex;align-items:center;gap:1.25rem}
-.nav-links a{color:var(--text-dim);font-size:.82rem;font-weight:500;letter-spacing:.02em;transition:color .2s;white-space:nowrap}
+.nav-links{display:flex;align-items:center;gap:1.75rem}
+.nav-links a{color:var(--text-dim);font-size:.82rem;font-weight:500;letter-spacing:.02em;transition:color .2s;white-space:nowrap;text-decoration:none}
 .nav-links a:hover,.nav-links a.active{color:var(--text)}
-.nav-cta{display:flex;align-items:center;gap:.4rem;color:var(--text-dim);font-size:.82rem;font-weight:500;border:1px solid var(--border);padding:.3rem .7rem;border-radius:20px;transition:all .2s;white-space:nowrap}
+.nav-sep{width:1px;height:16px;background:var(--border);flex-shrink:0}
+.nav-dropdown{position:relative}
+.nav-dropdown-toggle{display:flex;align-items:center;gap:.3rem;color:var(--text-dim);font-size:.82rem;font-weight:500;letter-spacing:.02em;cursor:pointer;transition:color .2s;white-space:nowrap;background:none;border:none;font-family:inherit;padding:0}
+.nav-dropdown-toggle:hover,.nav-dropdown.open .nav-dropdown-toggle{color:var(--text)}
+.nav-dropdown-toggle svg{width:10px;height:10px;fill:currentColor;transition:transform .2s}
+.nav-dropdown.open .nav-dropdown-toggle svg{transform:rotate(180deg)}
+.nav-dropdown-menu{display:none;position:absolute;top:calc(100% + .75rem);right:0;min-width:160px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.35rem;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.nav-dropdown.open .nav-dropdown-menu{display:block}
+.nav-dropdown-menu a{display:block;padding:.5rem .75rem;color:var(--text-dim);font-size:.82rem;font-weight:500;border-radius:6px;transition:all .15s;text-decoration:none}
+.nav-dropdown-menu a:hover{color:var(--text);background:var(--bg-card-hover)}
+.nav-dropdown-menu a.active{color:var(--text)}
+.nav-cta{display:flex;align-items:center;gap:.4rem;color:var(--text-dim);font-size:.82rem;font-weight:500;border:1px solid var(--border);padding:.35rem .75rem;border-radius:20px;transition:all .2s;white-space:nowrap;text-decoration:none}
 .nav-cta:hover{color:var(--text);border-color:var(--border-hover)}
 .nav-cta svg{width:14px;height:14px;fill:currentColor;flex-shrink:0}
 .nav-cta .star-count{font-family:var(--mono);font-size:.75rem}
@@ -68,6 +72,12 @@ nav{
   .nav-links.open{display:flex}
   .nav-links a{padding:.55rem .25rem;border-bottom:1px solid var(--border);font-size:.9rem}
   .nav-links a:last-child{border-bottom:none}
+  .nav-sep{display:none}
+  .nav-dropdown{width:100%}
+  .nav-dropdown-toggle{padding:.55rem .25rem;border-bottom:1px solid var(--border);font-size:.9rem;width:100%}
+  .nav-dropdown-menu{position:static;border:none;box-shadow:none;background:transparent;padding:0 0 0 1rem;display:none}
+  .nav-dropdown.open .nav-dropdown-menu{display:block}
+  .nav-dropdown-menu a{padding:.45rem .25rem;border-bottom:1px solid var(--border);border-radius:0}
   .nav-hamburger{display:block}
   .nav-logo .ver{display:none}
   .nav-cta .star-count{display:none}
@@ -185,19 +195,25 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
     <div class="nav-logo">
       <span class="dot"></span>
       <span>GEO Optimizer</span>
-      <span class="ver" id="nav-ver">v3.18.7</span>
+      <span class="ver" id="nav-ver">v4.0.0-beta.1</span>
     </div>
     <button class="nav-hamburger" id="nav-ham" aria-label="Menu">&#9776;</button>
     <div class="nav-links">
       <a href="/">Audit</a>
       <a href="/compare">Compare</a>
-      <a href="/research">Research</a>
-      <a href="/roadmap">Roadmap</a>
       <a href="https://auriti-labs.github.io/geo-optimizer-skill/">Docs</a>
-      <a href="/manifesto" class="active">Manifesto</a>
+      <span class="nav-sep"></span>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" aria-expanded="false">More <svg viewBox="0 0 10 6" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="nav-dropdown-menu">
+          <a href="/research">Research</a>
+          <a href="/roadmap">Roadmap</a>
+          <a href="/manifesto" class="active">Manifesto</a>
+        </div>
+      </div>
     </div>
     <a class="nav-cta" href="https://github.com/Auriti-Labs/geo-optimizer-skill" target="_blank" rel="noopener">
-      <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 .25a7.75 7.75 0 1 0 0 15.5A7.75 7.75 0 0 0 8 .25Zm3.89 4.74-1.67 7.9c-.12.54-.44.67-.9.42L7.9 11.84l-1.16 1.12c-.13.13-.24.24-.49.24l.18-2.5 4.56-4.12c.2-.17-.04-.27-.3-.1L3.43 11.1 1.13 10.4c-.53-.16-.54-.53.11-.78l10.57-4.08c.44-.16.83.11.08.4Z"/></svg>
+      <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" fill="currentColor"/></svg>
       GitHub
       <span class="star-count" id="nav-stars"></span>
     </a>
@@ -458,6 +474,20 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
 document.getElementById('nav-ham').addEventListener('click',function(){
   document.querySelector('.nav-links').classList.toggle('open');
   this.textContent=this.textContent==='☰'?'✕':'☰';
+});
+document.querySelectorAll('.nav-dropdown-toggle').forEach(function(btn){
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();
+    var dd=this.closest('.nav-dropdown');
+    dd.classList.toggle('open');
+    this.setAttribute('aria-expanded',dd.classList.contains('open'));
+  });
+});
+document.addEventListener('click',function(){
+  document.querySelectorAll('.nav-dropdown.open').forEach(function(dd){
+    dd.classList.remove('open');
+    dd.querySelector('.nav-dropdown-toggle').setAttribute('aria-expanded','false');
+  });
 });
 </script>
 </body>
