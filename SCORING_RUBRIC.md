@@ -71,7 +71,7 @@ This document defines the stable, public criteria used to score `geo-optimizer-s
 
 ---
 
-## Score Progression (Corrected)
+## Score Progression
 
 | Version | Score | Improvement | Key Achievement |
 |---------|-------|-------------|-----------------|
@@ -80,9 +80,14 @@ This document defines the stable, public criteria used to score `geo-optimizer-s
 | v1.2.0 | 8.8/10 | +0.5 | JSON output + 22 tests |
 | v1.3.0 | 9.0/10 | +0.2 | Network retry + 67 tests |
 | v1.4.0 | 9.15/10 | +0.15 | Schema validation (9/9 audit fixes) |
-| **v1.5.0** | **9.25/10** | **+0.10** | **Verbose mode + doc cleanup** |
-
-**Note:** v1.4.0 was initially scored 9.6 (too optimistic). Corrected to 9.15 with stable rubric.
+| v1.5.0 | 9.25/10 | +0.10 | Verbose mode + doc cleanup |
+| v2.0.0 | 9.4/10 | +0.15 | PyPI package, GitHub Action, HTML reports |
+| v3.0.0 | 9.5/10 | +0.10 | 5 scoring categories, web demo, badge SVG |
+| v3.14.x | 9.6/10 | +0.10 | 7→8 categories (Signals + AI Discovery), graduated llms.txt, content structure checks |
+| v3.17.x | 9.65/10 | +0.05 | Security hardening (anti-SSRF, HSTS, rate limiting), @graph JSON-LD parser |
+| v3.18.x | 9.7/10 | +0.05 | Brand & Entity category (10pt), MCP server (8 tools), rich formatter v2 |
+| v3.19.x | 9.75/10 | +0.05 | Trust Stack Score (5-layer), Prompt Injection Detection, Negative Signals, 1007 tests |
+| **v4.0.0-beta.1** | **9.8/10** | **+0.05** | **Architecture split (audit.py → 12 sub-modules), 27 AI bots, 1030 tests, IT→EN conversion** |
 
 ---
 
@@ -95,13 +100,22 @@ This document defines the stable, public criteria used to score `geo-optimizer-s
 
 ---
 
+## Current Status (v4.0.0-beta.1)
+
+- **1030 tests** (all mocked, zero network)
+- **8 scoring categories**, 100 points total
+- **27 AI bots** with 3-tier classification
+- **42 citability methods** from Princeton KDD 2024 + AutoGEO ICLR 2026
+- **7 output formats** (text, json, rich, html, sarif, junit, github)
+- **MCP server** with 8 tools and 5 resources
+- **Web demo** on Render, Docker images on GHCR + Docker Hub
+
 ## Future Targets
 
-- **v1.6.0 target:** 9.4/10 (HTML report + batch mode → UX +0.5, Growth +0.5)
-- **v2.0.0 target:** 9.7/10 (GitHub Action + PyPI → Growth +1.0, Distribution viral)
-- **Long-term ceiling:** 9.8–9.9/10 (10.0 is reserved for perfect, industry-standard tools)
+- **v4.0.0 stable target:** 9.85/10 (complete i18n EN/IT, full async audit pipeline)
+- **Long-term ceiling:** 9.9/10 (10.0 is reserved for perfect, industry-standard tools)
 
 ---
 
-**Last updated:** 2026-02-21  
+**Last updated:** 2026-04-01
 **Maintained by:** geo-optimizer-skill core team

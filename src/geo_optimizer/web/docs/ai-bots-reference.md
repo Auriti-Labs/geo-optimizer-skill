@@ -21,12 +21,13 @@ This is the most important distinction in GEO robot configuration.
 
 ### 🔴 Critical Citation Bots
 
-These three bots directly determine whether AI search engines cite your site. **Never block them.**
+These four bots directly determine whether AI search engines cite your site. **Never block them.**
 
 | Bot | Vendor | Type | Purpose | Crawl Frequency |
 |-----|--------|------|---------|----------------|
 | `OAI-SearchBot` | OpenAI | **Citation** | ChatGPT Search index — determines citation eligibility | Daily |
 | `ClaudeBot` | Anthropic | **Citation** | Claude.ai real-time web citations | On-demand + regular crawl |
+| `Claude-SearchBot` | Anthropic | **Citation** | Claude search-specific crawler | On-demand |
 | `PerplexityBot` | Perplexity | **Citation** | Perplexity AI citation index | Several times per week |
 
 ### OpenAI (ChatGPT)

@@ -108,7 +108,7 @@ Generate automatic GEO fixes for a website. Audits the site and produces correct
   "fixes": [
     {
       "category": "robots",
-      "description": "Create robots.txt with access for all 24 AI bots",
+      "description": "Create robots.txt with access for all 27 AI bots",
       "file_name": "robots.txt",
       "action": "create"
     },

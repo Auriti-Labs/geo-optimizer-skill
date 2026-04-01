@@ -15,7 +15,7 @@ How the GEO Score (0–100) is computed. Based on the Princeton KDD 2024 researc
 
 ---
 
-## Categories and Weights (v3.18.3)
+## Categories and Weights (v4.0.0)
 
 The total score is the sum of all points earned across **8 categories**, capped at 100.
 

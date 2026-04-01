@@ -24,7 +24,7 @@ The main documentation is available at: [GEO Optimizer Docs](https://auriti-labs
 
 ## Reference
 
-- [AI Bots Reference](https://auriti-labs.github.io/geo-optimizer-skill/ai-bots-reference/): 24 AI crawlers with 3-tier classification (training, search, user)
+- [AI Bots Reference](https://auriti-labs.github.io/geo-optimizer-skill/ai-bots-reference/): 27 AI crawlers with 3-tier classification (training, search, user)
 - [42 GEO Methods](https://auriti-labs.github.io/geo-optimizer-skill/geo-methods/): Research-backed citability methods — Quotation +41%, Statistics +33%, Fluency +29%, Cite Sources +27%
 - [Troubleshooting](https://auriti-labs.github.io/geo-optimizer-skill/troubleshooting/): Solutions to common installation and runtime problems
 

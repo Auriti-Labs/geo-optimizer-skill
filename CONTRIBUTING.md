@@ -36,29 +36,51 @@ git push origin feature/your-feature-name
 ```
 src/geo_optimizer/
 ├── cli/             # Click commands — handles display, I/O
-│   ├── main.py      # CLI group: geo audit, geo llms, geo schema
-│   ├── audit_cmd.py # Audit command with multiple output formats
-│   ├── fix_cmd.py   # Auto-fix command (robots, llms, schema, meta, ai_discovery)
-│   ├── formatters.py, rich_formatter.py, html_formatter.py
-│   └── github_formatter.py  # GitHub Actions annotations
+│   ├── main.py      # CLI group: geo audit, geo fix, geo llms, geo schema
+│   ├── audit_cmd.py # Audit command with 7 output formats
+│   ├── fix_cmd.py   # Auto-fix (robots, llms, schema, meta, ai_discovery)
+│   ├── formatters.py        # text + json formatters
+│   ├── rich_formatter.py    # Colored terminal (ASCII art dashboard)
+│   ├── html_formatter.py    # Self-contained HTML report
+│   ├── github_formatter.py  # GitHub Actions annotations
+│   └── scoring_helpers.py   # Score display helpers
 ├── core/            # Business logic — returns dataclasses, NEVER prints
-│   ├── audit.py     # run_full_audit() + run_full_audit_async()
-│   ├── registry.py  # Plugin system (CheckRegistry + AuditCheck Protocol)
-│   └── ...
+│   ├── audit.py             # Orchestrator: run_full_audit() + async variant
+│   ├── audit_meta.py        # Meta tags audit
+│   ├── audit_signals.py     # Signals (lang, RSS, freshness)
+│   ├── audit_content.py     # Content quality checks
+│   ├── audit_js.py          # JS rendering detection
+│   ├── audit_schema.py      # JSON-LD schema analysis
+│   ├── audit_brand.py       # Brand & Entity signals
+│   ├── audit_cdn.py         # CDN crawler access
+│   ├── audit_webmcp.py      # WebMCP readiness
+│   ├── audit_negative.py    # Negative signals detection
+│   ├── audit_robots.py      # robots.txt analysis (fetch_url)
+│   ├── audit_llms.py        # llms.txt analysis (fetch_url)
+│   ├── audit_ai_discovery.py # AI discovery endpoints (fetch_url)
+│   ├── citability.py        # 42 citability methods (3200 lines)
+│   ├── scoring.py           # Engine scoring (weights from config.py)
+│   ├── injection_detector.py # Prompt Injection Detection (8 categories)
+│   ├── fixer.py             # Fix generation (robots, llms, schema, meta)
+│   ├── llms_generator.py    # Sitemap → llms.txt
+│   ├── schema_injector.py   # HTML analysis + JSON-LD injection
+│   ├── schema_validator.py  # JSON-LD validation
+│   └── registry.py          # Plugin system (CheckRegistry + AuditCheck Protocol)
 ├── models/
-│   ├── config.py    # ALL constants: AI_BOTS, SCORING, SCHEMA_TEMPLATES
-│   ├── results.py   # Result dataclasses (AuditResult, RobotsResult, etc.)
-│   └── project_config.py  # YAML project configuration
+│   ├── config.py        # ALL constants: AI_BOTS (27), SCORING, SCHEMA_TEMPLATES
+│   ├── results.py       # Result dataclasses (AuditResult, RobotsResult, etc.)
+│   └── project_config.py # YAML project configuration
 ├── utils/
-│   ├── http.py          # requests Session with retry + backoff
+│   ├── http.py          # fetch_url() with anti-SSRF + DNS pinning + retry
 │   ├── http_async.py    # httpx async client
 │   ├── cache.py         # FileCache with TTL
 │   ├── validators.py    # Anti-SSRF, path validation
 │   └── robots_parser.py # RFC 9309 compliant parser
 ├── web/             # FastAPI web demo
-│   ├── app.py       # Endpoints: /, /api/audit, /badge, /report
+│   ├── app.py       # Endpoints: /, /api/audit, /badge, /report, /compare
 │   ├── badge.py     # SVG badge generator
 │   └── cli.py       # geo-web CLI entry point
+├── mcp/             # MCP server (8 tools, 5 resources)
 └── i18n/            # Internationalization (gettext IT/EN)
 ```
 

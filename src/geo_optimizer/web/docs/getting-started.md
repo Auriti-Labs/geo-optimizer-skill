@@ -1,6 +1,6 @@
 # Getting Started
 
-Get the toolkit installed and run your first GEO audit in under 10 minutes.
+Get the toolkit installed and run your first GEO audit in under 5 minutes.
 
 ---
 
@@ -71,67 +71,50 @@ That's it. The script fetches your homepage, `robots.txt`, and checks for `/llms
 
 ## 4. Reading the Output
 
-The audit output is divided into 5 sections plus a final score.
+The audit output is divided into **8 scored categories** plus bonus checks and a final score.
 
-**Section 1 — ROBOTS.TXT**
+The 8 categories are: **Robots.txt** (18pt), **llms.txt** (18pt), **Schema JSON-LD** (16pt), **Meta Tags** (14pt), **Content Quality** (12pt), **Brand & Entity** (10pt), **Signals** (6pt), **AI Discovery** (6pt).
 
-Shows which AI bots are explicitly configured in your `robots.txt`. Each bot is shown as allowed or missing.
-
-```
-▸ ROBOTS.TXT ─────────────────────────────────────────────
-  ✅ GPTBot          allowed  (OpenAI — ChatGPT training)
-  ✅ OAI-SearchBot   allowed  (OpenAI — ChatGPT citations)  ← critical
-  ❌ ClaudeBot        MISSING                               ← critical
-  ❌ PerplexityBot    MISSING                               ← critical
-```
-
-**Section 2 — LLMS.TXT**
-
-Checks whether `/llms.txt` exists at the root of your site and whether it has content.
+Each section shows what passed and what's missing:
 
 ```
-▸ LLMS.TXT ───────────────────────────────────────────────
+▸ ROBOTS.TXT ─────────────────────────── 5 / 18
+  ✅ robots.txt found
+  ❌ OAI-SearchBot   MISSING   ← critical
+  ❌ ClaudeBot        MISSING   ← critical
+
+▸ LLMS.TXT ───────────────────────────── 0 / 18
   ❌ Not found at https://yoursite.com/llms.txt
-```
 
-**Section 3 — SCHEMA JSON-LD**
-
-Lists which schema types were found in the page's `<head>`.
-
-```
-▸ SCHEMA JSON-LD ─────────────────────────────────────────
+▸ SCHEMA JSON-LD ─────────────────────── 4 / 16
   ✅ WebSite schema
   ❌ FAQPage schema missing
-  ❌ WebApplication schema missing
-```
+  ❌ Organization schema missing
 
-**Section 4 — META TAGS**
-
-Checks for title, meta description, canonical URL, and Open Graph tags.
-
-```
-▸ META TAGS ──────────────────────────────────────────────
+▸ META TAGS ──────────────────────────── 14 / 14
   ✅ Title · Meta description · Canonical · OG tags
-```
 
-**Section 5 — CONTENT QUALITY**
+▸ CONTENT QUALITY ────────────────────── 5 / 12
+  ✅ 12 headings · H2+H3 hierarchy
+  ❌ 1 statistic (target: 5+) · 0 external citations
 
-Counts headings, statistics (numbers/percentages), and external citation links.
+▸ BRAND & ENTITY ─────────────────────── 3 / 10
+  ✅ Brand name coherent
+  ❌ No sameAs Knowledge Graph links
 
-```
-▸ CONTENT QUALITY ────────────────────────────────────────
-  ✅ 12 headings  ·  3 statistics  ·  0 external citations
-```
+▸ SIGNALS ────────────────────────────── 3 / 6
+  ✅ <html lang="en">
+  ❌ No RSS/Atom feed
 
-**GEO Score:**
+▸ AI DISCOVERY ───────────────────────── 0 / 6
+  ❌ No AI discovery endpoints
 
-```
 ──────────────────────────────────────────────────────────
-  GEO SCORE   [████████░░░░░░░░░░░░]   55 / 100   ⚠️  NEEDS WORK
+  GEO SCORE   [████████░░░░░░░░░░░░]   34 / 100   ❌ CRITICAL
 ──────────────────────────────────────────────────────────
 ```
 
-Score ranges: `0–40` Critical · `41–70` Fair · `71–90` Good · `91–100` Excellent
+**Score bands:** `0–35` Critical · `36–67` Foundation · `68–85` Good · `86–100` Excellent
 
 ---
 
@@ -139,10 +122,12 @@ Score ranges: `0–40` Critical · `41–70` Fair · `71–90` Good · `91–100
 
 Follow this priority order — each step has the highest ROI before moving to the next:
 
-1. **robots.txt** — Add all AI bots. Takes 5 minutes. Affects whether bots can crawl you at all. → [AI Bots Reference](ai-bots-reference.md)
+1. **robots.txt** — Add all 27 AI bots. Takes 5 minutes. Affects whether bots can crawl you at all. → [AI Bots Reference](ai-bots-reference.md)
 2. **llms.txt** — Generate it from your sitemap. Takes 2 minutes. → [Generating llms.txt](llms-txt.md)
-3. **Schema** — Add WebSite, FAQPage, WebApplication. → [Schema Injector](schema-injector.md)
-4. **Content** — Add statistics, external citations, expert quotes. → [The 9 Princeton GEO Methods](geo-methods.md)
+3. **Schema** — Add WebSite, Organization, FAQPage, Article. → [Schema Injector](schema-injector.md)
+4. **Brand & Entity** — Add sameAs KG links, about/contact pages. → [Scoring Rubric](scoring-rubric.md#8-brand--entity-signals--max-10-pts-new-in-v3182)
+5. **AI Discovery** — Generate ai.txt and /ai/*.json endpoints. Use `geo fix` to auto-generate.
+6. **Content** — Add statistics, external citations, expert quotes. → [42 GEO Methods](geo-methods.md)
 
 ---
 

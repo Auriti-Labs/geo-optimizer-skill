@@ -2,7 +2,7 @@
 
 ## Panoramica
 
-**GEO Optimizer** (v3.19.x) è un toolkit Python open-source per Generative Engine Optimization: rende i siti web visibili e citabili dai motori di ricerca AI (ChatGPT, Perplexity, Claude, Gemini).
+**GEO Optimizer** (v4.0.0-beta.1) è un toolkit Python open-source per Generative Engine Optimization: rende i siti web visibili e citabili dai motori di ricerca AI (ChatGPT, Perplexity, Claude, Gemini).
 
 Basato su Princeton KDD 2024, AutoGEO ICLR 2026, SE Ranking 2025, Growth Marshal 2026.
 
@@ -12,7 +12,7 @@ Basato su Princeton KDD 2024, AutoGEO ICLR 2026, SE Ranking 2025, Growth Marshal
 
 ```bash
 pip install -e ".[dev]"              # Installazione editable
-pytest tests/ -v                     # 1007+ test (tutti mockati, no rete)
+pytest tests/ -v                     # 1030+ test (tutti mockati, no rete)
 pytest tests/ -v --cov=geo_optimizer # Con coverage
 ruff check src/geo_optimizer/        # Lint
 ruff format src/geo_optimizer/       # Format
@@ -61,7 +61,7 @@ i18n/         → Traduzioni it/en (parziale)
 3. **Streaming con size check** — `MAX_RESPONSE_SIZE` (10 MB), `_stream_response()` in chunks
 4. **Costanti in config.py** — AI_BOTS, SCORING, SCHEMA_TEMPLATES. MAI hardcodare valori
 5. **Python 3.9 compat** — `from __future__ import annotations` in tutti i file. `entry_points()` ha API diversa pre-3.10
-6. **Test senza rete** — 1007+ test tutti con `unittest.mock.patch`, zero HTTP reali
+6. **Test senza rete** — 1030+ test tutti con `unittest.mock.patch`, zero HTTP reali
 7. **Plugin via CheckRegistry** — `entry_points("geo_optimizer.checks")`, Protocol `AuditCheck`, `run_all()` passa `deepcopy(soup)` ai plugin
 8. **JSON-LD @graph** — il parser supporta sia `@type` diretto che `@graph: [{...}]` (Yoast/RankMath)
 9. **Ruff** — line-length 120, target py39, regole E/F/W/I/UP/B/C4/SIM
@@ -86,7 +86,7 @@ i18n/         → Traduzioni it/en (parziale)
 | `GET /badge` | Badge SVG dinamico |
 | `GET /badge/endpoint` | Shields.io compatible endpoint |
 | `GET /compare` | Pagina confronto |
-| `GET /robots.txt` | Robots.txt con 24 AI bot |
+| `GET /robots.txt` | Robots.txt con 27 AI bot |
 | `GET /llms.txt` | llms.txt per AI discovery |
 | `GET /.well-known/ai.txt` | AI crawler permissions |
 | `GET /ai/summary.json` | Site summary per AI |

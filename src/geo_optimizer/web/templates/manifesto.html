@@ -395,8 +395,22 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
         </div>
         <p class="signal-desc">Tests whether Cloudflare, Akamai, Vercel, or other CDN/WAF configurations are silently blocking AI crawlers. Many sites think they allow GPTBot because their robots.txt says so — but their CDN serves a 403 or CAPTCHA to the actual crawler. This check sends requests with real bot User-Agents and compares the responses.</p>
       </div>
+      <div class="signal-row">
+        <div class="signal-meta">
+          <span class="signal-name">JS Rendering</span>
+          <span class="signal-pts low">access</span>
+        </div>
+        <p class="signal-desc">Detects whether critical content is only available after JavaScript execution. SPA frameworks (React, Vue, Angular) often render content client-side — invisible to crawlers that don't execute JS. This check compares the raw HTML response against expected content signals and flags framework-specific patterns that indicate JS-dependent rendering.</p>
+      </div>
+      <div class="signal-row">
+        <div class="signal-meta">
+          <span class="signal-name">WebMCP Readiness</span>
+          <span class="signal-pts low">future</span>
+        </div>
+        <p class="signal-desc">Measures how well a site exposes machine-readable context for MCP-compatible AI agents. Checks for <code>registerTool()</code> patterns, <code>toolname</code> attributes, and <code>potentialAction</code> schema. Four readiness levels: none, basic, ready, advanced. This signal anticipates the next generation of AI agents that consume structured context — not just crawled content — before generating responses.</p>
+      </div>
     </div>
-    <p>These checks don't add to the score. They surface problems that the score alone can't capture — and that your competitors' tools don't look for at all.</p>
+    <p>These six checks don't add to the score. They surface problems that the score alone can't capture — and that your competitors' tools don't look for at all.</p>
   </section>
 
   <!-- Section 5 -->

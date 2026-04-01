@@ -60,7 +60,7 @@ geo schema --type faq --url https://yoursite.com
 
 | Area | Points | What GEO Optimizer looks for |
 |------|--------|------------------------------|
-| **Robots.txt** | /18 | 24 AI bots across 3 tiers (training, search, user). Citation bots explicitly allowed? |
+| **Robots.txt** | /18 | 27 AI bots across 3 tiers (training, search, user). Citation bots explicitly allowed? |
 | **llms.txt** | /18 | Present, has H1 + blockquote, sections, links, depth. Companion llms-full.txt? |
 | **Schema JSON-LD** | /16 | WebSite, Organization, FAQPage, Article. Schema richness (5+ attributes)? |
 | **Meta Tags** | /14 | Title, description, canonical, Open Graph complete? |
@@ -224,7 +224,7 @@ All URL inputs are validated against private IP ranges (RFC 1918, loopback, link
 ```bash
 git clone https://github.com/YOUR_USERNAME/geo-optimizer-skill.git
 cd geo-optimizer-skill && pip install -e ".[dev]"
-pytest tests/ -v   # 1007+ tests, all mocked
+pytest tests/ -v   # 1030+ tests, all mocked
 ```
 
 [Bug reports](https://github.com/Auriti-Labs/geo-optimizer-skill/issues/new?template=bug_report.yml) · [Feature requests](https://github.com/Auriti-Labs/geo-optimizer-skill/issues/new?template=feature_request.yml) · [CONTRIBUTING.md](CONTRIBUTING.md)

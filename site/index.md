@@ -52,7 +52,7 @@ geo fix --url https://yoursite.com --apply
 
 | Page | Description |
 |------|-------------|
-| [AI Bots](ai-bots-reference/) | 24 AI crawlers across 3 tiers — training, search, user |
+| [AI Bots](ai-bots-reference/) | 27 AI crawlers across 3 tiers — training, search, user |
 | [42 GEO Methods](geo-methods/) | Research-backed citability methods with measured impact |
 | [Scoring Rubric](scoring-rubric/) | How the score is calculated: 8 categories, 100 points total |
 | [Troubleshooting](troubleshooting/) | Solutions to common issues |
