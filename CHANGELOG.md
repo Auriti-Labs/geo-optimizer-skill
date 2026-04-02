@@ -5,6 +5,28 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.0.0-beta.3] — 2026-04-02
+
+### Security
+- **PDF auth bypass**: `/api/audit/pdf` now verifies Bearer token (#403)
+- **XSS markdown**: sanitize `javascript:` links, `<script>` tags, event handlers in markdown output (#404)
+- **Stats SSRF**: `_increment_remote_stat` uses `fetch_url` with DNS pinning instead of bare `urllib.request.urlopen` (#406)
+- **Chunked bypass**: `BodySizeLimitMiddleware` enforces size limit on chunked/streaming bodies (#411)
+- **Permissions-Policy**: added header restricting camera, microphone, geolocation, payment APIs (#413)
+- **Async DNS pinning**: `http_async.py` uses `resolve_and_validate_url` + thread-local DNS pinning (#414)
+
+### Fixed
+- **_dict_to_audit_result**: added 7 LlmsTxt + 8 Schema + 3 Content missing fields — fixes score divergence from cache (#452, #415)
+- **Robots parser**: wildcard `*` no longer treated as root match per RFC 9309 §2.2.2 (#428)
+- **Freshness threshold**: aligned to `current_year - 1` consistently (#426)
+- **Definition patterns**: fallback `find_next("p")` now reachable with wrapper divs (#421)
+- **Score estimate**: `_estimate_score_after` includes all llms SCORING keys (was missing 7pts) (#420)
+- **Boilerplate ratio**: removes `<script>`/`<style>` from content tag before text extraction (#419)
+- **Copyright range**: regex handles `© 2020-2026` year ranges — uses end year (#418)
+- **Footnote double-count**: `_FOOTNOTE_RE` no longer includes `<sup>` pattern counted separately (#417)
+
+---
+
 ## [4.0.0-beta.2] — 2026-04-02
 
 ### Security
