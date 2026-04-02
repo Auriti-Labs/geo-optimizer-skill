@@ -108,7 +108,7 @@ geo audit --url https://example.com --format github    # GitHub Actions annotati
 - uses: Auriti-Labs/geo-optimizer-skill@v1
   with:
     url: https://yoursite.com
-    threshold: 70        # Fail if score drops below 70
+    min-score: 70        # Fail if score drops below 70
     format: sarif        # Upload to GitHub Security tab
 ```
 
@@ -137,6 +137,8 @@ Then ask: *"audit my site and fix what's missing"*
 | `geo_compare` | Compare multiple sites |
 | `geo_ai_discovery` | Check AI discovery endpoints |
 | `geo_check_bots` | Check bot access via robots.txt |
+| `geo_trust_score` | 5-layer trust signal aggregation |
+| `geo_negative_signals` | 8 anti-citation signal detection |
 
 ---
 
@@ -224,7 +226,7 @@ All URL inputs are validated against private IP ranges (RFC 1918, loopback, link
 ```bash
 git clone https://github.com/YOUR_USERNAME/geo-optimizer-skill.git
 cd geo-optimizer-skill && pip install -e ".[dev]"
-pytest tests/ -v   # 1030+ tests, all mocked
+pytest tests/ -v   # 1120+ tests, all mocked
 ```
 
 [Bug reports](https://github.com/Auriti-Labs/geo-optimizer-skill/issues/new?template=bug_report.yml) · [Feature requests](https://github.com/Auriti-Labs/geo-optimizer-skill/issues/new?template=feature_request.yml) · [CONTRIBUTING.md](CONTRIBUTING.md)
