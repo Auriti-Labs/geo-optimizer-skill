@@ -598,3 +598,17 @@ SCORE_BANDS = {
     "foundation": (36, 67),  # was (41, 70)
     "critical": (0, 35),  # was (0, 40)
 }
+
+# ─── Citability thresholds (#433) ───────────────────────────────────────────
+
+# Flesch-Kincaid Grade Level formula constants (published formula, not magic numbers)
+FLESCH_KINCAID_A = 0.39
+FLESCH_KINCAID_B = 11.8
+FLESCH_KINCAID_C = -15.59
+
+# TTR (Type-Token Ratio) sliding window for vocabulary diversity
+TTR_WINDOW_SIZE = 200
+TTR_THRESHOLD = 0.40
+
+# Front-loading: keyword density threshold in first 30% of content
+FRONT_LOADING_DENSITY_THRESHOLD = 0.05

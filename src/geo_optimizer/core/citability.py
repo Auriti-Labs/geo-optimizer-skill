@@ -20,7 +20,10 @@ from geo_optimizer.models.config import (
     FRESHNESS_AGING_DAYS,
     FRESHNESS_FRESH_DAYS,
     FRESHNESS_VERY_FRESH_DAYS,
+    FRONT_LOADING_DENSITY_THRESHOLD,
     KEYWORD_STUFFING_THRESHOLD,
+    TTR_THRESHOLD,
+    TTR_WINDOW_SIZE,
 )
 from geo_optimizer.models.results import CitabilityResult, MethodScore
 
@@ -545,7 +548,7 @@ def detect_unique_words(soup, clean_text: str | None = None) -> MethodScore:
         return MethodScore(name="unique_words", label="Unique Words", max_score=3, impact="+7%")
 
     # TTR with sliding window of 200 words
-    window = 200
+    window = TTR_WINDOW_SIZE
     ttr_scores = []
     for i in range(0, max(len(words) - window, 1), 50):
         w = words[i : i + window]
@@ -559,7 +562,7 @@ def detect_unique_words(soup, clean_text: str | None = None) -> MethodScore:
     return MethodScore(
         name="unique_words",
         label="Unique Words",
-        detected=avg_ttr >= 0.40,
+        detected=avg_ttr >= TTR_THRESHOLD,
         score=score,
         max_score=3,
         impact="+7%",
@@ -607,7 +610,9 @@ def detect_keyword_stuffing(soup, clean_text: str | None = None) -> MethodScore:
         front_freq = Counter(first_200)
         front_total = len(first_200)
         front_suspicious = {
-            w: c for w, c in front_freq.most_common(10) if c / front_total > 0.05 and w not in _STOP_WORDS
+            w: c
+            for w, c in front_freq.most_common(10)
+            if c / front_total > FRONT_LOADING_DENSITY_THRESHOLD and w not in _STOP_WORDS
         }
         if len(front_suspicious) >= 2:
             front_loading_warning = True

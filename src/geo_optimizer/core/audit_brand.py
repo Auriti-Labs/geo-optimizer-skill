@@ -12,6 +12,13 @@ from geo_optimizer.models.config import ABOUT_LINK_PATTERNS, BRAND_LEGAL_SUFFIXE
 from geo_optimizer.models.results import BrandEntityResult, ContentResult, MetaResult, SchemaResult
 
 
+def _flatten_graph(raw_schema: dict) -> list[dict]:
+    """Extract schemas from @graph if present, otherwise return as single-item list (#412)."""
+    if "@graph" in raw_schema:
+        return list(raw_schema["@graph"])
+    return [raw_schema]
+
+
 def _normalize_brand_name(name: str) -> str:
     """Normalize a brand name for comparison by stripping legal suffixes (#397).
 
@@ -96,11 +103,7 @@ def audit_brand_entity(
 
     # Schema Organization name
     for raw_schema in schema_result.raw_schemas:
-        schemas_to_check = []
-        if "@graph" in raw_schema:
-            schemas_to_check.extend(raw_schema["@graph"])
-        else:
-            schemas_to_check.append(raw_schema)
+        schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
             s_type = s.get("@type", "")
             if isinstance(s_type, list):
@@ -170,11 +173,7 @@ def audit_brand_entity(
 
     # Look for Organization with address/telephone/email or Person with jobTitle
     for raw_schema in schema_result.raw_schemas:
-        schemas_to_check = []
-        if "@graph" in raw_schema:
-            schemas_to_check.extend(raw_schema["@graph"])
-        else:
-            schemas_to_check.append(raw_schema)
+        schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
             s_type = s.get("@type", "")
             if isinstance(s_type, list):
@@ -194,11 +193,7 @@ def audit_brand_entity(
 
     # Geo signals from Schema (address, areaServed, LocalBusiness)
     for raw_schema in schema_result.raw_schemas:
-        schemas_to_check = []
-        if "@graph" in raw_schema:
-            schemas_to_check.extend(raw_schema["@graph"])
-        else:
-            schemas_to_check.append(raw_schema)
+        schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
             s_type = s.get("@type", "")
             if isinstance(s_type, list):
@@ -210,11 +205,7 @@ def audit_brand_entity(
     # ── 5. Topic Authority ───────────────────────────────────────
     # FAQ depth from FAQPage schema
     for raw_schema in schema_result.raw_schemas:
-        schemas_to_check = []
-        if "@graph" in raw_schema:
-            schemas_to_check.extend(raw_schema["@graph"])
-        else:
-            schemas_to_check.append(raw_schema)
+        schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
             s_type = s.get("@type", "")
             if isinstance(s_type, list):

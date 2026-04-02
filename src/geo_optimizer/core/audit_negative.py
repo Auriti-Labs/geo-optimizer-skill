@@ -169,12 +169,10 @@ def audit_negative_signals(
 
     # ── 6. Missing author signal ─────────────────────────────────
     # Look for Person schema
+    from geo_optimizer.core.audit_brand import _flatten_graph
+
     for raw_schema in schema_result.raw_schemas:
-        schemas_to_check = []
-        if isinstance(raw_schema, dict) and "@graph" in raw_schema:
-            schemas_to_check.extend(raw_schema["@graph"])
-        elif isinstance(raw_schema, dict):
-            schemas_to_check.append(raw_schema)
+        schemas_to_check = _flatten_graph(raw_schema) if isinstance(raw_schema, dict) else []
         for s in schemas_to_check:
             s_type = s.get("@type", "")
             if isinstance(s_type, list):
