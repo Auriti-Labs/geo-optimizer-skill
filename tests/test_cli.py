@@ -305,7 +305,8 @@ class TestAuditCommand:
         # CliRunner merges stderr into output by default.
         combined = result.output
         assert "ERROR" in combined
-        assert "Connection refused" in combined
+        # Fix #431: error message shows class name, not internal details
+        assert "ConnectionError" in combined
 
     @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.validate_public_url", return_value=(True, None))

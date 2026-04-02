@@ -197,7 +197,6 @@ def _render_stacked_bar(categories: list[tuple[str, int, int]], width: int = 68)
             bar.append("━" * seg_width, style=f"bold {color}")
 
     # Fill the remainder up to 100 points
-    sum(mx for _, _, mx in categories)
     filled_width = sum(sw for sw, _ in segments)
     empty_width = width - filled_width
     if empty_width > 0:

@@ -31,9 +31,6 @@ from geo_optimizer.cli.scoring_helpers import (
 from geo_optimizer.cli.scoring_helpers import (
     signals_score as _signals_score,
 )
-
-# Fix #127: available for wrapping UI strings in v3.2.0
-from geo_optimizer.i18n import _  # noqa: F401
 from geo_optimizer.models.config import SCORING
 from geo_optimizer.models.results import AuditResult
 

@@ -9,6 +9,7 @@ Paper: "GEO: Generative Engine Optimization" (arxiv.org/abs/2311.09735)
 
 from __future__ import annotations
 
+import functools
 import json
 import re
 from collections import Counter
@@ -757,8 +758,9 @@ def detect_passage_density(soup) -> MethodScore:
 # ─── 12. Readability Score (+15%) — SE Ranking 2025 ───────────────────────────
 
 
+@functools.lru_cache(maxsize=512)
 def _count_syllables(word: str) -> int:
-    """Conta sillabe approssimative in una parola inglese/italiana."""
+    """Approximate syllable count for English/Italian words (cached)."""
     word = word.lower().strip()
     if len(word) <= 3:
         return 1

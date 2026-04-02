@@ -14,9 +14,6 @@ import click
 
 from geo_optimizer.cli.formatters import format_audit_json, format_audit_text
 from geo_optimizer.core.audit import run_full_audit
-
-# Fix #127: import _() for translations (i18n system partially implemented — v3.2.0 for full localization)
-from geo_optimizer.i18n import _  # noqa: F401
 from geo_optimizer.utils.validators import validate_public_url
 
 
@@ -153,10 +150,12 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
         if output_format == "json":
             import json
 
-            error_data = {"error": str(e), "url": url}
+            # Fix #431: sanitize exception message (don't leak internal details)
+            error_msg = type(e).__name__ if not str(e) else str(e).split("\n")[0][:200]
+            error_data = {"error": error_msg, "url": url}
             click.echo(json.dumps(error_data, indent=2))
         else:
-            click.echo(f"\n❌ ERROR: {e}", err=True)
+            click.echo(f"\n❌ ERROR: {type(e).__name__}", err=True)
         sys.exit(1)
 
     if output_format == "json":
