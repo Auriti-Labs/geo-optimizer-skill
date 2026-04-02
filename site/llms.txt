@@ -18,7 +18,7 @@ The main documentation is available at: [GEO Optimizer Docs](https://auriti-labs
 
 ## Integrations
 
-- [MCP Server](https://auriti-labs.github.io/geo-optimizer-skill/mcp-server/): Use from Claude Code, Cursor, Windsurf — 8 tools and 5 resources
+- [MCP Server](https://auriti-labs.github.io/geo-optimizer-skill/mcp-server/): Use from Claude Code, Cursor, Windsurf — 10 tools and 5 resources
 - [CI/CD Integration](https://auriti-labs.github.io/geo-optimizer-skill/ci-cd/): GitHub Actions, GitLab CI, Jenkins — SARIF and JUnit output
 - [AI Context Files](https://auriti-labs.github.io/geo-optimizer-skill/ai-context/): Load GEO expertise into Claude, ChatGPT, Cursor, Windsurf, Kiro
 

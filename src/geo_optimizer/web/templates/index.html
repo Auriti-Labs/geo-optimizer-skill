@@ -270,12 +270,13 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
 
   <div class="audit-form">
     <input type="url" id="url-input" placeholder="https://example.com" required autocomplete="url"
-      pattern="https?://.*\..*" title="Insert a valid URL (es. https://example.com)">
+      pattern="https?://.*\..*" title="Insert a valid URL (es. https://example.com)"
+      aria-label="Website URL to audit">
     <button class="btn-primary" id="btn">Run Audit</button>
     <div class="input-hint" id="url-hint" style="display:none"></div>
   </div>
 
-  <div class="spinner" id="spinner">
+  <div class="spinner" id="spinner" aria-live="polite" role="status">
     <div class="spinner-ring"></div>
     <div class="spinner-text" id="spin-text">Connecting...</div>
   </div>

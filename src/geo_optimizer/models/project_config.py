@@ -10,8 +10,11 @@ Requires PyYAML as an optional dependency:
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 # Name of the configuration file searched in the current directory
 CONFIG_FILENAME = ".geo-optimizer.yml"
@@ -101,7 +104,9 @@ def load_config(config_path: Path | None = None) -> ProjectConfig:
 
     try:
         raw = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    except (yaml.YAMLError, OSError):
+    except (yaml.YAMLError, OSError) as e:
+        # Fix #461: log warning so users know config wasn't applied
+        logger.warning("Failed to load %s: %s — using defaults", config_path, e)
         return ProjectConfig()
 
     if not isinstance(raw, dict):

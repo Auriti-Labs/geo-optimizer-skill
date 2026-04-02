@@ -950,8 +950,8 @@ async def badge_endpoint(
                 status_code=503,
             )
 
-    # Color based on band
-    color_map = {"excellent": "brightgreen", "good": "green", "foundation": "yellow", "critical": "red"}
+    # Fix #459: use hex codes to match direct SVG badge colors (cyan for "good", not green)
+    color_map = {"excellent": "22c55e", "good": "06b6d4", "foundation": "eab308", "critical": "ef4444"}
     color = color_map.get(band, "lightgrey")
 
     return JSONResponse(

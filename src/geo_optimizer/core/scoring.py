@@ -154,11 +154,12 @@ def _score_brand_entity(brand_entity) -> int:
     if brand_entity is None:
         return 0
     s = 0
-    # Entity Coherence (3 points)
+    # Entity Coherence (3 points total = 2pt name + 1pt description)
+    # Fix #410: use explicit values instead of SCORING[key] - 1
     if brand_entity.brand_name_consistent:
-        s += SCORING["brand_entity_coherence"] - 1  # 2pt for consistent names
+        s += 2
     if brand_entity.schema_desc_matches_meta:
-        s += 1  # 1pt for description match
+        s += 1
     # Knowledge Graph Readiness (3 points)
     pillars = brand_entity.kg_pillar_count
     if pillars >= 3:

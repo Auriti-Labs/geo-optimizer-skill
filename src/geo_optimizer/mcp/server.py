@@ -4,7 +4,7 @@ MCP Server for GEO Optimizer.
 Exposes core functionality as MCP tools usable from
 Claude Code, Cursor, Windsurf and any MCP client.
 
-Available tools:
+Available tools (10):
     geo_audit            — Full GEO audit (score 0-100)
     geo_fix              — Generate automatic fixes (robots, llms, schema, meta)
     geo_llms_generate    — Generate llms.txt content from sitemap

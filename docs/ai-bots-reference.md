@@ -44,6 +44,7 @@ These four bots directly determine whether AI search engines cite your site. **N
 |-----|------|---------|----------------|
 | `anthropic-ai` | Training | Claude model training | Periodic |
 | `ClaudeBot` | **Citation** | Claude.ai web citations | On-demand + regular |
+| `Claude-SearchBot` | **Citation** | Claude search-specific crawler | On-demand |
 | `claude-web` | Crawl | General Claude web crawling | Periodic |
 
 ### Perplexity AI
@@ -81,8 +82,15 @@ There is no separate `CopilotBot` — Copilot reads the Bing index, so allowing 
 
 | Bot | Type | Purpose | Crawl Frequency |
 |-----|------|---------|----------------|
-| `FacebookBot` | Preview | Facebook/Instagram link preview | On-demand |
-| `meta-externalagent` | Backup | Meta backup fetcher | Periodic |
+| `meta-externalagent` | AI | Meta AI (Facebook/Instagram AI features) | Periodic |
+| `Meta-ExternalFetcher` | On-demand | Meta content fetch on-demand | As needed |
+| `facebookexternalhit` | Preview | Meta social preview and AI features | On-demand |
+
+### Amazon (Alexa AI)
+
+| Bot | Type | Purpose | Crawl Frequency |
+|-----|------|---------|----------------|
+| `Amazonbot` | Search AI | Amazon Alexa and search AI features | Periodic |
 
 ### Other AI Bots
 
@@ -92,6 +100,10 @@ There is no separate `CopilotBot` — Copilot reads the Bing index, so allowing 
 | `DuckAssistBot` | DuckDuckGo | Citation | DuckAssist AI answers |
 | `cohere-ai` | Cohere | Training | Cohere language model training |
 | `AI2Bot` | Allen Institute | Academic | Semantic Scholar, research AI |
+| `AI2Bot-Dolma` | Allen Institute | Training | Allen Institute Dolma dataset collection |
+| `xAI-Bot` | xAI | Citation | Grok search citations |
+| `PetalBot` | Huawei | Search AI | Huawei PetalSearch AI (EU/Asia markets) |
+| `YouBot` | You.com | Citation | You.com AI search index |
 | `CCBot` | Common Crawl | Training | Open dataset used by many models |
 
 ---

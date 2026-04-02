@@ -62,7 +62,7 @@ _MAX_BRAND_ENTITY = (
     + SCORING["brand_kg_readiness"]
     + SCORING["brand_geo_identity"]
     + SCORING["brand_topic_authority"]
-    + 2  # about_link + contact_info (1pt ciascuno, non in SCORING separato)
+    + 2  # about_link (1pt) + contact_info (1pt) — scored inline in scoring.py
 )
 
 # ─── SARIF ────────────────────────────────────────────────────────────────────
@@ -258,7 +258,8 @@ def format_audit_junit(result: AuditResult) -> str:
     """
     testsuites = Element("testsuites")
     testsuites.set("name", "GEO Optimizer Audit")
-    testsuites.set("tests", "5")
+    # Fix #430: initial value overwritten at line 316 with actual count
+    testsuites.set("tests", "0")
 
     categories = [
         ("robots_txt", "Robots.txt AI Bot Access", robots_score(result), _MAX_ROBOTS, _robots_findings(result)),

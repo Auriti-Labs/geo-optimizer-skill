@@ -44,6 +44,14 @@ User-agent: Amazonbot
 Allow: /
 User-agent: AI2Bot
 Allow: /
+User-agent: AI2Bot-Dolma
+Allow: /
+User-agent: xAI-Bot
+Allow: /
+User-agent: Applebot
+Allow: /
+User-agent: PetalBot
+Allow: /
 User-agent: YouBot
 Allow: /
 User-agent: CCBot

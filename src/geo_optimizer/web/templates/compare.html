@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Compare GEO Scores — GEO Optimizer</title>
 <meta name="description" content="Compare GEO scores between two websites side by side.">
+<meta property="og:title" content="GEO Optimizer — Compare">
+<meta property="og:description" content="Compare GEO scores across multiple websites">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#06080f;--bg-card:#0d1117;--border:#1b2332;--border-hover:#2d3a4f;
@@ -123,9 +125,9 @@ footer a{color:var(--text-muted)}
   </nav>
   <div class="hero"><h1>Compare GEO Scores</h1><p>Side-by-side — see who's more visible to AI</p></div>
   <div class="form-wrap">
-    <input type="url" id="url1" placeholder="https://site-a.com" required>
+    <input type="url" id="url1" placeholder="https://site-a.com" required aria-label="First website URL to compare">
     <div class="vs">VS</div>
-    <input type="url" id="url2" placeholder="https://site-b.com" required>
+    <input type="url" id="url2" placeholder="https://site-b.com" required aria-label="Second website URL to compare">
     <button class="btn" id="btn">Compare</button>
   </div>
   <div class="spinner" id="spinner">Analyzing both sites... this may take up to 60 seconds.</div>

@@ -14,7 +14,7 @@
     },
     {
       "question": "How do I use GEO Optimizer with Claude or Cursor?",
-      "answer": "GEO Optimizer includes an MCP server with 8 tools. Install with: pip install geo-optimizer-skill[mcp], then: claude mcp add geo-optimizer -- geo-mcp. You can then ask Claude to audit sites, generate fixes, and analyze citability directly."
+      "answer": "GEO Optimizer includes an MCP server with 10 tools. Install with: pip install geo-optimizer-skill[mcp], then: claude mcp add geo-optimizer -- geo-mcp. You can then ask Claude to audit sites, generate fixes, and analyze citability directly."
     },
     {
       "question": "Can I run GEO audits in CI/CD?",

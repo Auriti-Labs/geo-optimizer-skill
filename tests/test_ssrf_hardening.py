@@ -391,7 +391,7 @@ class TestPinnedIPAdapter:
         adapter = _PinnedIPAdapter(["93.184.216.34", "93.184.216.35"])
         assert adapter._pinned_ip == "93.184.216.34"
 
-    def test_adapter_con_lista_vuota(self):
-        """Lista IP vuota → _pinned_ip è None."""
-        adapter = _PinnedIPAdapter([])
-        assert adapter._pinned_ip is None
+    def test_adapter_ipv6_sets_pinned_ip(self):
+        """IPv6 address is accepted as pinned IP."""
+        adapter = _PinnedIPAdapter(["2606:2800:220:1:248:1893:25c8:1946"])
+        assert adapter._pinned_ip == "2606:2800:220:1:248:1893:25c8:1946"
