@@ -44,9 +44,9 @@ _AUTHORITATIVE_DOMAINS = {
 }
 
 # Attribution quote pattern: "text" — Author
+# Fix #429: removed DOTALL to prevent cross-paragraph false positives
 _QUOTE_ATTRIBUTION_RE = re.compile(
-    r'["\u201c].{10,300}["\u201d]\s*(?:[-\u2014\u2013]|—|–)\s*\w+',
-    re.DOTALL,
+    r'["\u201c][^"\u201d]{10,300}["\u201d]\s*(?:[-\u2014\u2013]|—|–)\s*\w+',
 )
 
 # Statistics patterns
@@ -2448,8 +2448,9 @@ def detect_stale_data(soup, clean_text: str | None = None) -> MethodScore:
                 break
 
     # 2. Pattern "as of YYYY" or "in YYYY" with a stale year in the text
+    # Fix #455: expanded to cover 2000-2009 (was 20[12]\d = 2010-2029 only)
     stale_refs = re.findall(
-        r"\b(?:as\s+of|in|nel|del|aggiornato\s+al?)\s+(20[12]\d)\b",
+        r"\b(?:as\s+of|in|nel|del|aggiornato\s+al?)\s+(20[0-2]\d)\b",
         body_text,
         re.IGNORECASE,
     )

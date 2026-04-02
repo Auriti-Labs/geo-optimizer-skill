@@ -34,7 +34,18 @@ from geo_optimizer.cli.scoring_helpers import (
 
 # Fix #127: available for wrapping UI strings in v3.2.0
 from geo_optimizer.i18n import _  # noqa: F401
+from geo_optimizer.models.config import SCORING
 from geo_optimizer.models.results import AuditResult
+
+# Fix #409: max scores computed dynamically from SCORING (not hardcoded)
+_MAX_ROBOTS = sum(v for k, v in SCORING.items() if k.startswith("robots_"))
+_MAX_LLMS = sum(v for k, v in SCORING.items() if k.startswith("llms_"))
+_MAX_SCHEMA = sum(v for k, v in SCORING.items() if k.startswith("schema_"))
+_MAX_META = sum(v for k, v in SCORING.items() if k.startswith("meta_"))
+_MAX_CONTENT = sum(v for k, v in SCORING.items() if k.startswith("content_"))
+_MAX_SIGNALS = sum(v for k, v in SCORING.items() if k.startswith("signals_"))
+_MAX_AI_DISC = sum(v for k, v in SCORING.items() if k.startswith("ai_discovery_"))
+_MAX_BRAND = sum(v for k, v in SCORING.items() if k.startswith("brand_"))
 
 
 def format_audit_json(result: AuditResult) -> str:
@@ -47,19 +58,19 @@ def format_audit_json(result: AuditResult) -> str:
         "checks": {
             "robots_txt": {
                 "score": _robots_score(result),
-                "max": 18,
+                "max": _MAX_ROBOTS,
                 "passed": result.robots.citation_bots_ok,
                 "details": asdict(result.robots),
             },
             "llms_txt": {
                 "score": _llms_score(result),
-                "max": 18,
+                "max": _MAX_LLMS,
                 "passed": result.llms.found and result.llms.has_h1,
                 "details": asdict(result.llms),
             },
             "schema_jsonld": {
                 "score": _schema_score(result),
-                "max": 16,
+                "max": _MAX_SCHEMA,
                 "passed": result.schema.has_website,
                 "details": {
                     "has_website": result.schema.has_website,
@@ -70,31 +81,31 @@ def format_audit_json(result: AuditResult) -> str:
             },
             "meta_tags": {
                 "score": _meta_score(result),
-                "max": 14,
+                "max": _MAX_META,
                 "passed": result.meta.has_title and result.meta.has_description,
                 "details": asdict(result.meta),
             },
             "content": {
                 "score": _content_score(result),
-                "max": 12,
+                "max": _MAX_CONTENT,
                 "passed": result.content.has_h1,
                 "details": asdict(result.content),
             },
             "signals": {
                 "score": _signals_score(result),
-                "max": 6,
+                "max": _MAX_SIGNALS,
                 "passed": bool(result.signals and result.signals.has_lang),
                 "details": asdict(result.signals) if result.signals else {},
             },
             "ai_discovery": {
                 "score": result.score_breakdown.get("ai_discovery", 0),
-                "max": 6,
+                "max": _MAX_AI_DISC,
                 "passed": bool(result.ai_discovery and result.ai_discovery.endpoints_found >= 1),
                 "details": asdict(result.ai_discovery) if result.ai_discovery else {},
             },
             "brand_entity": {
                 "score": _brand_entity_score(result),
-                "max": 10,
+                "max": _MAX_BRAND,
                 "passed": bool(result.brand_entity and result.brand_entity.brand_name_consistent),
                 "details": asdict(result.brand_entity) if result.brand_entity else {},
             },
