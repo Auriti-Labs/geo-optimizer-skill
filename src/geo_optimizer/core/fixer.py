@@ -178,7 +178,7 @@ def generate_schema_fix(result: AuditResult, base_url: str) -> list[FixItem]:
             )
         )
 
-    # FAQPage schema — genera struttura FAQ di esempio se assente (#fix-faq-schema)
+    # FAQPage schema — generate example FAQ structure if missing (#fix-faq-schema)
     if not result.schema.has_faq:
         faq_schema = {
             "@context": "https://schema.org",

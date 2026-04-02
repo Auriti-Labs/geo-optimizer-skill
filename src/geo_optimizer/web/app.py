@@ -702,12 +702,12 @@ async def audit_pdf(
     if not await _check_rate_limit(_get_client_ip(request)):
         raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
 
-    # Validazione formato URL
+    # URL format validation
     url, error = _normalize_url(url)
     if error:
         raise HTTPException(status_code=400, detail=error)
 
-    # Validazione anti-SSRF
+    # Anti-SSRF validation
     safe, reason = validate_public_url(url)
     if not safe:
         raise HTTPException(status_code=400, detail=f"Unsafe URL: {reason}")
@@ -788,7 +788,7 @@ async def badge(
     if not await _check_rate_limit(_get_client_ip(request)):
         raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
 
-    # Validazione formato URL
+    # URL format validation
     url, error = _normalize_url(url)
     if error:
         raise HTTPException(status_code=400, detail=error)
@@ -874,7 +874,7 @@ async def badge_endpoint(
             status_code=429,
         )
 
-    # Validazione formato URL
+    # URL format validation
     url, error = _normalize_url(url)
     if error:
         return JSONResponse(
@@ -882,7 +882,7 @@ async def badge_endpoint(
             status_code=400,
         )
 
-    # Validazione anti-SSRF
+    # Anti-SSRF validation
     safe, reason = validate_public_url(url)
     if not safe:
         return JSONResponse(

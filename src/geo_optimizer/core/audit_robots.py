@@ -1,8 +1,8 @@
 """
-Audit robots.txt per AI bot access.
+Audit robots.txt for AI bot access.
 
-Estratto da audit.py (#402-bis) — separazione responsabilità.
-Tutte le funzioni ritornano dataclass, MAI stampano.
+Extracted from audit.py (#402-bis) — separation of concerns.
+All functions return dataclasses, NEVER print.
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ def audit_robots_txt(base_url: str, bots: dict = None) -> RobotsResult:
     if err or not r:
         return result
 
-    # Solo le risposte 200 contengono un robots.txt valido (403, 500, ecc. non lo sono)
+    # Only 200 responses contain a valid robots.txt (403, 500, etc. do not)
     if r.status_code != 200:
         return result
 
@@ -39,13 +39,13 @@ def audit_robots_txt(base_url: str, bots: dict = None) -> RobotsResult:
 
     content = r.text
 
-    # Analisi robots.txt in regole strutturate
+    # Parse robots.txt into structured rules
     agent_rules = parse_robots_txt(content)
 
-    # Usa i bot passati oppure AI_BOTS di default
+    # Use provided bots or fall back to AI_BOTS default
     effective_bots = bots if bots is not None else AI_BOTS
 
-    # Classifica ogni AI bot
+    # Classify each AI bot
     for bot, description in effective_bots.items():
         bot_status = classify_bot(bot, description, agent_rules)
 
@@ -54,19 +54,19 @@ def audit_robots_txt(base_url: str, bots: dict = None) -> RobotsResult:
         elif bot_status.status == "blocked":
             result.bots_blocked.append(bot)
         elif bot_status.status == "partial":
-            # #106 — Parzialmente bloccato: trattato come allowed per compatibilità
-            # ma tracciato separatamente in bots_partial
+            # #106 — Partially blocked: treated as allowed for compatibility
+            # but tracked separately in bots_partial
             result.bots_allowed.append(bot)
             result.bots_partial.append(bot)
         else:
-            # "allowed" (completamente permesso)
+            # "allowed" (fully permitted)
             result.bots_allowed.append(bot)
 
     # Check citation bots (allowed includes partial matches)
     result.citation_bots_ok = all(b in result.bots_allowed for b in CITATION_BOTS)
 
-    # #111 — Verifica che i citation bots siano ESPLICITAMENTE permessi (non solo via wildcard)
-    # Punteggio pieno solo con regole specifiche per i citation bots
+    # #111 — Check that citation bots are EXPLICITLY allowed (not just via wildcard)
+    # Full score only with specific rules for citation bots
     citation_explicit = []
     for bot in CITATION_BOTS:
         bot_status = classify_bot(bot, "", agent_rules)
@@ -111,7 +111,7 @@ def _audit_robots_from_response(r, bots: dict = None) -> RobotsResult:
 
     result.citation_bots_ok = all(b in result.bots_allowed for b in CITATION_BOTS)
 
-    # #111 — Distingue permesso esplicito da fallback wildcard
+    # #111 — Distinguish explicit permission from wildcard fallback
     citation_explicit = []
     for bot in CITATION_BOTS:
         bot_status = classify_bot(bot, "", agent_rules)

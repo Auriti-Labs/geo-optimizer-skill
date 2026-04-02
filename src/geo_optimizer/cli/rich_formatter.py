@@ -249,7 +249,7 @@ def _micro_bar(score: int, max_score: int, width: int = 20) -> Text:
 
 # ── Header branding ──────────────────────────────────────────────────────────
 
-# Logo minimale ma d'impatto
+# Minimal but impactful logo
 _LOGO_LINES = [
     ("  ╔══╗  ╔══╗  ╔══╗  ", _COLORS["brand_1"]),
     ("  ║ ═╣  ║╔═╝  ║  ║  ", _COLORS["brand_2"]),
@@ -269,7 +269,7 @@ def _check_status_text(passed: bool) -> Text:
 
 
 def _build_robots_card(result: AuditResult, score: int, max_score: int) -> Panel:
-    """Card dettagliata per Robots.txt."""
+    """Detailed card for Robots.txt."""
     content_parts = []
 
     bar = _micro_bar(score, max_score)
@@ -279,7 +279,7 @@ def _build_robots_card(result: AuditResult, score: int, max_score: int) -> Panel
     if not result.robots.found:
         content_parts.append(Text("  File non trovato", style=f"italic {_COLORS['dim']}"))
     else:
-        # Info bot con dettaglio
+        # Bot info with detail
         info = Text()
         info.append(f"  ✓ {len(result.robots.bots_allowed)}", style=f"bold {_COLORS['excellent']}")
         info.append(" allowed", style=_COLORS["dim"])
@@ -320,7 +320,7 @@ def _build_robots_card(result: AuditResult, score: int, max_score: int) -> Panel
 
 
 def _build_llms_card(result: AuditResult, score: int, max_score: int) -> Panel:
-    """Card dettagliata per llms.txt."""
+    """Detailed card for llms.txt."""
     content_parts = []
 
     bar = _micro_bar(score, max_score)
@@ -330,7 +330,7 @@ def _build_llms_card(result: AuditResult, score: int, max_score: int) -> Panel:
     if not result.llms.found:
         content_parts.append(Text("  File non trovato", style=f"italic {_COLORS['dim']}"))
     else:
-        # Dettagli struttura
+        # Structure details
         features = []
         if result.llms.has_h1:
             features.append(("H1", True))
@@ -384,7 +384,7 @@ def _build_llms_card(result: AuditResult, score: int, max_score: int) -> Panel:
 
 
 def _build_schema_card(result: AuditResult, score: int, max_score: int) -> Panel:
-    """Card dettagliata per Schema JSON-LD."""
+    """Detailed card for Schema JSON-LD."""
     content_parts = []
 
     bar = _micro_bar(score, max_score)
@@ -394,7 +394,7 @@ def _build_schema_card(result: AuditResult, score: int, max_score: int) -> Panel
     if not result.schema.found_types:
         content_parts.append(Text("  Nessuno schema trovato", style=f"italic {_COLORS['dim']}"))
     else:
-        # Schema trovati come tag inline
+        # Schemas found as inline tags
         types_text = Text("  ")
         for i, schema_type in enumerate(result.schema.found_types[:6]):
             if i > 0:
@@ -447,14 +447,14 @@ def _build_schema_card(result: AuditResult, score: int, max_score: int) -> Panel
 
 
 def _build_meta_card(result: AuditResult, score: int, max_score: int) -> Panel:
-    """Card dettagliata per Meta Tags."""
+    """Detailed card for Meta Tags."""
     content_parts = []
 
     bar = _micro_bar(score, max_score)
     content_parts.append(bar)
     content_parts.append(Text())
 
-    # Griglia meta tag 2x2
+    # 2x2 meta tag grid
     checks = [
         ("Title", result.meta.has_title),
         ("Description", result.meta.has_description),
@@ -505,14 +505,14 @@ def _build_meta_card(result: AuditResult, score: int, max_score: int) -> Panel:
 
 
 def _build_content_card(result: AuditResult, score: int, max_score: int) -> Panel:
-    """Card dettagliata per Content Quality."""
+    """Detailed card for Content Quality."""
     content_parts = []
 
     bar = _micro_bar(score, max_score)
     content_parts.append(bar)
     content_parts.append(Text())
 
-    # Metriche principali
+    # Main metrics
     metrics = Text("  ")
     metrics.append(f"{result.content.word_count:,}", style=f"bold {_COLORS['brand_2']}")
     metrics.append(" parole", style=_COLORS["dim"])
@@ -525,7 +525,7 @@ def _build_content_card(result: AuditResult, score: int, max_score: int) -> Pane
         metrics.append(" stats", style=_COLORS["dim"])
     content_parts.append(metrics)
 
-    # Feature check compatti
+    # Compact feature checks
     features = [
         ("H1", result.content.has_h1),
         ("Hierarchy", result.content.has_heading_hierarchy),
@@ -663,7 +663,7 @@ def _build_ai_discovery_card(result: AuditResult) -> Panel | None:
 
 
 def _build_brand_entity_card(result: AuditResult, score: int, max_score: int) -> Panel:
-    """Card dettagliata per Brand & Entity Signals."""
+    """Detailed card for Brand & Entity Signals."""
     content_parts = []
 
     bar = _micro_bar(score, max_score)
@@ -672,7 +672,7 @@ def _build_brand_entity_card(result: AuditResult, score: int, max_score: int) ->
 
     be = result.brand_entity
 
-    # Coerenza brand name
+    # Brand name consistency
     coherence = Text("  ")
     if be.brand_name_consistent:
         coherence.append("✓ Brand name coerente", style=_COLORS["excellent"])
@@ -715,7 +715,7 @@ def _build_brand_entity_card(result: AuditResult, score: int, max_score: int) ->
         signals_text.append("  ", style="default")
     content_parts.append(signals_text)
 
-    # Topic authority: FAQ + articoli recenti
+    # Topic authority: FAQ + recent articles
     if be.faq_depth > 0 or be.has_recent_articles:
         topic = Text("  ")
         if be.faq_depth > 0:
@@ -869,7 +869,7 @@ def _build_webmcp_card(result: AuditResult) -> Panel | None:
     content_parts.append(header)
     content_parts.append(Text())
 
-    # Segnali WebMCP nativi
+    # Native WebMCP signals
     webmcp_items = [
         ("registerTool() API", wm.has_register_tool),
         ("toolname attributes", wm.has_tool_attributes),
@@ -884,7 +884,7 @@ def _build_webmcp_card(result: AuditResult) -> Panel | None:
             line.append(f"✗ {label}", style=_COLORS["dim"])
         content_parts.append(line)
 
-    # Segnali agent-readiness
+    # Agent-readiness signals
     agent_items = [
         ("potentialAction", wm.has_potential_action),
         ("Labeled forms", wm.has_labeled_forms),
@@ -966,7 +966,7 @@ def _build_negative_signals_card(result: AuditResult) -> Panel | None:
             ns.has_keyword_stuffing,
             f"'{ns.stuffed_word}' {ns.stuffed_density}%" if ns.stuffed_word else "",
         ),
-        ("Author signal", ns.has_author_signal, ""),  # invertito: True = buono
+        ("Author signal", ns.has_author_signal, ""),  # inverted: True = good
         (
             "Boilerplate",
             ns.boilerplate_high,
@@ -978,7 +978,7 @@ def _build_negative_signals_card(result: AuditResult) -> Panel | None:
     for label, is_negative, detail in checks:
         line = Text("  ")
         if label == "Author signal":
-            # Invertito: has_author = buono
+            # Inverted: has_author = good
             if is_negative:
                 line.append(f"✓ {label}", style=_COLORS["excellent"])
             else:
@@ -1066,19 +1066,19 @@ def format_audit_rich(result: AuditResult) -> str:
 
     console.print()
 
-    # Numero grande ASCII art
+    # Large ASCII art number
     big_lines = _render_big_number(result.score, main_color)
     for line in big_lines:
-        # Aggiungi " / 100" accanto alla riga centrale
+        # Add " / 100" next to the center row
         console.print(Align.center(line))
 
-    # Sottotitolo score
+    # Score subtitle
     score_sub = Text()
     score_sub.append("/ 100", style=f"bold {_COLORS['dim']}")
     console.print(Align.center(score_sub))
     console.print()
 
-    # Barra score principale (gradient)
+    # Main score bar (gradient)
     main_width = 60
     main_filled = int(result.score * main_width / 100)
     main_empty = main_width - main_filled
@@ -1087,7 +1087,7 @@ def format_audit_rich(result: AuditResult) -> str:
     main_bar.append("░" * main_empty, style=_COLORS["dim"])
     console.print(Align.center(main_bar))
 
-    # Band label con icona e descrizione
+    # Band label with icon and description
     band_text = Text()
     band_text.append(f"{band_cfg['icon']}  ", style="default")
     band_text.append(band_cfg["label"], style=f"bold {main_color}")
@@ -1138,7 +1138,7 @@ def format_audit_rich(result: AuditResult) -> str:
         )
     )
 
-    # ── 5. Check card dettagliate ────────────────────────────────
+    # ── 5. Detailed check cards ──────────────────────────────────
     console.print()
     console.print(_build_robots_card(result, r_score, 18))
     console.print(_build_llms_card(result, l_score, 18))
@@ -1149,7 +1149,7 @@ def format_audit_rich(result: AuditResult) -> str:
     console.print(_build_ai_discovery_card(result))
     console.print(_build_brand_entity_card(result, be_score, 10))
 
-    # ── 6. Card opzionali ────────────────────────────────────────
+    # ── 6. Optional cards ────────────────────────────────────────
     cdn_card = _build_cdn_card(result)
     if cdn_card:
         console.print(cdn_card)

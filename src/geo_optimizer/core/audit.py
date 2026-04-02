@@ -283,20 +283,20 @@ def _build_audit_result(
     in CheckRegistry (fix #104). Plugin results do not affect the base score.
 
     Args:
-        base_url: URL del sito normalizzato.
-        robots: Risultato audit robots.txt.
-        llms: Risultato audit llms.txt.
-        schema: Risultato audit schema JSON-LD.
-        meta: Risultato audit meta tag.
-        content: Risultato audit contenuto.
-        http_status: HTTP status code della homepage.
-        page_size: Dimensione della homepage in byte.
-        soup: BeautifulSoup della homepage (opzionale, passato ai plugin).
-        extra_checks: Dizionario con risultati pre-calcolati (non usato internamente).
-        signals: Segnali tecnici v4.0 (lang, RSS, freshness).
+        base_url: Normalized site URL.
+        robots: robots.txt audit result.
+        llms: llms.txt audit result.
+        schema: JSON-LD schema audit result.
+        meta: Meta tag audit result.
+        content: Content audit result.
+        http_status: HTTP status code of the homepage.
+        page_size: Homepage size in bytes.
+        soup: BeautifulSoup of the homepage (optional, passed to plugins).
+        extra_checks: Dict with pre-computed results (not used internally).
+        signals: Technical signals v4.0 (lang, RSS, freshness).
 
     Returns:
-        AuditResult completo con score, band, raccomandazioni e plugin.
+        Complete AuditResult with score, band, recommendations and plugins.
     """
     from geo_optimizer.core.registry import CheckRegistry
 
@@ -494,8 +494,8 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     for tag in soup_clean(["script", "style"]):
         tag.decompose()
 
-    # Fetch robots.txt, llms.txt, llms-full.txt e AI discovery con fetch_url locale
-    # (pattern identico alla versione async — permette mock con patch su audit.fetch_url)
+    # Fetch robots.txt, llms.txt, llms-full.txt and AI discovery with local fetch_url
+    # (identical pattern to the async version — allows mocking with patch on audit.fetch_url)
     robots_url_full = urljoin(base_url, "/robots.txt")
     llms_url_full = urljoin(base_url, "/llms.txt")
     llms_full_url = urljoin(base_url, "/llms-full.txt")
@@ -512,7 +512,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     r_ai_faq, _ = fetch_url(ai_faq_url)
     r_ai_service, _ = fetch_url(ai_service_url)
 
-    # Run all sub-audits usando le risposte pre-scaricate
+    # Run all sub-audits using the pre-downloaded responses
     # Fix #120: pass effective_bots which includes any extra_bots from project_config
     robots = _audit_robots_from_response(r_robots, bots=effective_bots)
     llms = _audit_llms_from_response(r_llms, r_full=r_llms_full)

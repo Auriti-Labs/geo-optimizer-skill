@@ -1,26 +1,26 @@
-"""Audit WebMCP Readiness — agent-readiness signals per AI e MCP (#233).
+"""Audit WebMCP Readiness — agent-readiness signals for AI and MCP (#233).
 
-Estratto da audit.py per separazione delle responsabilità.
-Zero fetch HTTP — lavora solo su dati già disponibili.
+Extracted from audit.py — separation of concerns.
+Zero HTTP fetches — works only on already-available data.
 """
 
 from __future__ import annotations
 
-import json  # noqa: F401 (disponibile per future estensioni)
-import re  # noqa: F401 (disponibile per future estensioni)
+import json  # noqa: F401 (available for future extensions)
+import re  # noqa: F401 (available for future extensions)
 
 from geo_optimizer.models.results import WebMcpResult
 
 
 def _extract_actions(schema_obj, action_types: set) -> None:
-    """Estrae potentialAction da un oggetto schema JSON-LD (ricorsivo).
+    """Extract potentialAction from a JSON-LD schema object (recursive).
 
     Args:
-        schema_obj: Oggetto schema (dict, list o valore primitivo).
-        action_types: Set in cui aggiungere i tipi azione trovati.
+        schema_obj: Schema object (dict, list or primitive value).
+        action_types: Set to add found action types to.
     """
     if isinstance(schema_obj, dict):
-        # Supporta @graph (Yoast SEO, RankMath)
+        # Support @graph (Yoast SEO, RankMath)
         if "@graph" in schema_obj:
             for item in schema_obj["@graph"]:
                 _extract_actions(item, action_types)
@@ -44,23 +44,23 @@ def _extract_actions(schema_obj, action_types: set) -> None:
 
 
 def audit_webmcp_readiness(soup, raw_html: str, schema_result) -> WebMcpResult:
-    """Verifica WebMCP readiness e agent-readiness signals (#233).
+    """Check WebMCP readiness and agent-readiness signals (#233).
 
-    Analizza:
-    1. WebMCP API: registerTool(), attributi toolname/tooldescription
+    Analyzes:
+    1. WebMCP API: registerTool(), toolname/tooldescription attributes
     2. Schema potentialAction: SearchAction, BuyAction, OrderAction
-    3. Form accessibili: form con label + aria-label/placeholder
-    4. OpenAPI: link a /api-docs, /swagger, openapi.json
+    3. Accessible forms: form with label + aria-label/placeholder
+    4. OpenAPI: link to /api-docs, /swagger, openapi.json
 
-    Zero fetch HTTP — lavora solo su dati già disponibili.
+    Zero HTTP fetches — works only on already-available data.
 
     Args:
-        soup: BeautifulSoup della pagina.
-        raw_html: HTML grezzo della pagina.
-        schema_result: SchemaResult con gli schema JSON-LD trovati.
+        soup: BeautifulSoup of the page.
+        raw_html: Raw HTML of the page.
+        schema_result: SchemaResult with the JSON-LD schemas found.
 
     Returns:
-        WebMcpResult con i segnali di readiness rilevati.
+        WebMcpResult with detected readiness signals.
     """
     result = WebMcpResult()
     if soup is None or not raw_html:
@@ -88,25 +88,25 @@ def audit_webmcp_readiness(soup, raw_html: str, schema_result) -> WebMcpResult:
         result.has_potential_action = True
         result.potential_actions = sorted(action_types)
 
-    # ── 3. Form accessibili (usabili da agent) ───────────────────
+    # ── 3. Accessible forms (agent-usable) ──────────────────────
     forms = soup.find_all("form")
     labeled_count = 0
     for form in forms:
         # A form is "agent-usable" if it has:
-        # - almeno 1 input con label associata OPPURE aria-label OPPURE placeholder descrittivo
-        # - una action o method definiti
+        # - at least 1 input with an associated label OR aria-label OR descriptive placeholder
+        # - an action or method defined
         inputs = form.find_all(["input", "select", "textarea"])
         has_labels = False
         for inp in inputs:
             inp_type = (inp.get("type") or "text").lower()
             if inp_type in ("hidden", "submit", "button"):
                 continue
-            # Label associata via for/id
+            # Label associated via for/id
             inp_id = inp.get("id")
             if inp_id and form.find("label", attrs={"for": inp_id}):
                 has_labels = True
                 break
-            # aria-label o placeholder
+            # aria-label or placeholder
             if inp.get("aria-label") or inp.get("placeholder"):
                 has_labels = True
                 break
@@ -117,7 +117,7 @@ def audit_webmcp_readiness(soup, raw_html: str, schema_result) -> WebMcpResult:
         result.has_labeled_forms = True
         result.labeled_forms_count = labeled_count
 
-    # ── 4. Rilevazione OpenAPI/Swagger ───────────────────────────
+    # ── 4. OpenAPI/Swagger detection ─────────────────────────────
     openapi_patterns = ["/api-docs", "/swagger", "openapi.json", "openapi.yaml", "swagger.json"]
     for a_tag in soup.find_all("a", href=True):
         href = a_tag["href"].lower()
@@ -132,7 +132,7 @@ def audit_webmcp_readiness(soup, raw_html: str, schema_result) -> WebMcpResult:
                 result.has_openapi = True
                 break
 
-    # ── Livello di readiness ─────────────────────────────────────
+    # ── Readiness level ──────────────────────────────────────────
     webmcp_signals = sum([result.has_register_tool, result.has_tool_attributes])
     agent_signals = sum([result.has_potential_action, result.has_labeled_forms, result.has_openapi])
 

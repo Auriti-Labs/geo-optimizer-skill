@@ -86,7 +86,7 @@ def audit_schema(soup, url: str) -> SchemaResult:
         except json.JSONDecodeError as exc:
             # Parsing failed: log at debug (not critical, third-party scripts) — fix #81
             logging.debug("Invalid JSON schema ignored: %s", exc)
-            result.json_parse_errors += 1  # fix #399: traccia errori per raccomandazioni
+            result.json_parse_errors += 1  # fix #399: track errors for recommendations
 
     # Schema richness (Growth Marshal Feb 2026): count attributes per schema
     # Generic schema (@type + name + url = 3 attrs) performs WORSE than no schema

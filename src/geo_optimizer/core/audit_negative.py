@@ -1,8 +1,8 @@
-"""Audit Negative Signals — segnali negativi che riducono la citabilità AI.
+"""Audit Negative Signals — negative signals that reduce AI citability.
 
-Estratto da audit.py per separazione delle responsabilità.
-Basato su UC Berkeley EMNLP 2024 e analisi LLM-perspective.
-Zero fetch HTTP — lavora solo su dati già disponibili.
+Extracted from audit.py — separation of concerns.
+Based on UC Berkeley EMNLP 2024 and LLM-perspective analysis.
+Zero HTTP fetches — works only on already-available data.
 """
 
 from __future__ import annotations
@@ -19,18 +19,18 @@ def audit_negative_signals(
 ) -> NegativeSignalsResult:
     """Detect negative signals that reduce AI citability.
 
-    Basato su UC Berkeley EMNLP 2024 e analisi LLM-perspective.
-    Zero fetch HTTP — lavora solo su dati già disponibili.
+    Based on UC Berkeley EMNLP 2024 and LLM-perspective analysis.
+    Zero HTTP fetches — works only on already-available data.
 
     Args:
-        soup: BeautifulSoup della pagina.
-        raw_html: HTML grezzo (non usato direttamente, disponibile per future estensioni).
-        content_result: ContentResult già calcolato.
-        meta_result: MetaResult già calcolato.
-        schema_result: SchemaResult già calcolato.
+        soup: BeautifulSoup of the page.
+        raw_html: Raw HTML (not used directly, available for future extensions).
+        content_result: Already-computed ContentResult.
+        meta_result: Already-computed MetaResult.
+        schema_result: Already-computed SchemaResult.
 
     Returns:
-        NegativeSignalsResult con i segnali negativi rilevati.
+        NegativeSignalsResult with detected negative signals.
     """
     result = NegativeSignalsResult()
     if soup is None:
@@ -38,8 +38,8 @@ def audit_negative_signals(
 
     result.checked = True
 
-    # ── 1. CTA density (auto-promozionale) ───────────────────────
-    # Pattern CTA aggressivi
+    # ── 1. CTA density (self-promotional) ───────────────────────
+    # Aggressive CTA patterns
     cta_patterns = re.compile(
         r"\b(buy now|sign up|subscribe|get started|free trial|order now|"
         r"act now|limited time|don.t miss|hurry|compra ora|iscriviti|"
@@ -49,12 +49,12 @@ def audit_negative_signals(
     text = soup.get_text(separator=" ", strip=True)
     cta_matches = cta_patterns.findall(text)
     result.cta_count = len(cta_matches)
-    # > 5 CTA su una pagina = eccessivo
+    # > 5 CTAs on a page = excessive
     word_count = content_result.word_count if content_result.word_count > 0 else max(len(text.split()), 1)
     if result.cta_count > 5 or (word_count > 0 and result.cta_count / word_count > 0.01):
         result.cta_density_high = True
 
-    # ── 2. Popup/interstitial nel DOM ────────────────────────────
+    # ── 2. Popup/interstitial in DOM ─────────────────────────────
     popup_classes = ["modal", "popup", "overlay", "interstitial", "lightbox", "cookie-banner"]
     for cls in popup_classes:
         elements = soup.find_all(attrs={"class": lambda c, _cls=cls: c and _cls in str(c).lower()})
@@ -67,10 +67,10 @@ def audit_negative_signals(
     result.has_popup_signals = len(result.popup_indicators) > 0
 
     # ── 3. Thin content ──────────────────────────────────────────
-    # < 300 parole E un H1 che promette contenuto sostanziale
+    # < 300 words AND an H1 that promises substantial content
     if content_result.word_count < 300:
         h1 = content_result.h1_text.lower() if content_result.h1_text else ""
-        # H1 che promette contenuto complesso
+        # H1 that promises complex content
         complex_patterns = [
             "guide",
             "guida",
@@ -167,8 +167,8 @@ def audit_negative_signals(
                 result.stuffed_density = round(density * 100, 1)
                 break
 
-    # ── 6. Segnale autore mancante ───────────────────────────────
-    # Cerca schema Person
+    # ── 6. Missing author signal ─────────────────────────────────
+    # Look for Person schema
     for raw_schema in schema_result.raw_schemas:
         schemas_to_check = []
         if isinstance(raw_schema, dict) and "@graph" in raw_schema:
@@ -182,7 +182,7 @@ def audit_negative_signals(
             if s_type == "Person":
                 result.has_author_signal = True
                 break
-            # author annidato
+            # nested author
             if s.get("author"):
                 result.has_author_signal = True
                 break
@@ -195,15 +195,15 @@ def audit_negative_signals(
     ):
         result.has_author_signal = True
 
-    # ── 7. Rapporto boilerplate ──────────────────────────────────
-    # Contenuto in <main>, <article>, role="main" vs totale
+    # ── 7. Boilerplate ratio ─────────────────────────────────────
+    # Content in <main>, <article>, role="main" vs total
     main_content = soup.find("main") or soup.find("article") or soup.find(attrs={"role": "main"})
     total_text_len = len(text)
     if main_content and total_text_len > 0:
         main_text_len = len(main_content.get_text(separator=" ", strip=True))
         result.boilerplate_ratio = round(1.0 - (main_text_len / total_text_len), 2)
     elif total_text_len > 0:
-        # Nessun <main>/<article> — stima nav+footer
+        # No <main>/<article> — estimate from nav+footer
         nav_footer_len = 0
         for tag in soup.find_all(["nav", "footer", "header"]):
             nav_footer_len += len(tag.get_text(separator=" ", strip=True))
@@ -211,7 +211,7 @@ def audit_negative_signals(
             result.boilerplate_ratio = round(nav_footer_len / total_text_len, 2)
     result.boilerplate_high = result.boilerplate_ratio > 0.6
 
-    # ── 8. Segnali misti ─────────────────────────────────────────
+    # ── 8. Mixed signals ─────────────────────────────────────────
     # H1 promises a lot, but the content is thin
     h1 = content_result.h1_text.lower() if content_result.h1_text else ""
     big_promise_words = [
@@ -229,14 +229,14 @@ def audit_negative_signals(
         result.has_mixed_signals = True
         result.mixed_signal_detail = f"H1 promises depth but only {content_result.word_count} words"
 
-    # ── Riepilogo ────────────────────────────────────────────────
+    # ── Summary ──────────────────────────────────────────────────
     negatives = [
         result.cta_density_high,
         result.has_popup_signals,
         result.is_thin_content,
         result.has_broken_links,
         result.has_keyword_stuffing,
-        not result.has_author_signal,  # autore mancante = segnale negativo
+        not result.has_author_signal,  # missing author = negative signal
         result.boilerplate_high,
         result.has_mixed_signals,
     ]

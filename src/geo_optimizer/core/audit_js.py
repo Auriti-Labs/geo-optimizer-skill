@@ -34,15 +34,15 @@ def audit_js_rendering(soup, raw_html: str) -> JsRenderingResult:
 
     result.checked = True
 
-    # Estrai il testo del body (escludendo tag script/style)
+    # Extract body text (excluding script/style tags)
     body = soup.find("body")
     if not body:
         result.js_dependent = True
         result.details = "No <body> tag found in raw HTML"
         return result
 
-    # Fix #24: usa deepcopy per evitare di mutare il soup originale
-    # (audit_citability ha bisogno dei tag <script type="application/ld+json"> intatti)
+    # Fix #24: use deepcopy to avoid mutating the original soup
+    # (audit_citability needs the <script type="application/ld+json"> tags intact)
     body_clean = copy.deepcopy(body)
     for tag in body_clean.find_all(["script", "style", "noscript"]):
         tag.decompose()
@@ -50,7 +50,7 @@ def audit_js_rendering(soup, raw_html: str) -> JsRenderingResult:
     body_text = body_clean.get_text(separator=" ", strip=True)
     result.raw_word_count = len(body_text.split())
 
-    # Conta le intestazioni nell'HTML grezzo (dal body pulito, fix #24)
+    # Count headings in raw HTML (from clean body, fix #24)
     headings = body_clean.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])
     result.raw_heading_count = len(headings)
 
@@ -72,7 +72,7 @@ def audit_js_rendering(soup, raw_html: str) -> JsRenderingResult:
                 break
 
     # Check <noscript> content
-    # Fix #27: usa il soup originale (non mutato, grazie al fix #24)
+    # Fix #27: use the original soup (not mutated, thanks to fix #24)
     noscript_tags = soup.find_all("noscript")
     for ns in noscript_tags:
         ns_text = ns.get_text(strip=True)
@@ -80,7 +80,7 @@ def audit_js_rendering(soup, raw_html: str) -> JsRenderingResult:
             result.has_noscript_content = True
             break
 
-    # Rileva framework JS dall'HTML grezzo
+    # Detect JS framework from raw HTML
     html_lower = raw_html[:10000].lower()
     if "/__next/" in html_lower or "_next/static" in html_lower or "__next" in html_lower:
         result.framework_detected = "next.js"
@@ -97,8 +97,8 @@ def audit_js_rendering(soup, raw_html: str) -> JsRenderingResult:
     elif "astro" in html_lower or "_astro/" in html_lower:
         result.framework_detected = "astro"
 
-    # Determina se il contenuto dipende da JS
-    # Soglie: < 100 parole nel body E 0 intestazioni → probabilmente SPA
+    # Determine if content depends on JS
+    # Thresholds: < 100 words in body AND 0 headings → likely SPA
     if result.raw_word_count < 100 and result.raw_heading_count == 0:
         result.js_dependent = True
         result.details = (

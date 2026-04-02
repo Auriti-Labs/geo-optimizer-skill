@@ -21,7 +21,7 @@ def audit_signals(soup, schema_result) -> SignalsResult:
     """
     signals = SignalsResult()
 
-    # 1. Controlla attributo lang su <html>
+    # 1. Check lang attribute on <html>
     html_tag = soup.find("html")
     if html_tag:
         lang_val = html_tag.get("lang", "").strip()
@@ -29,14 +29,14 @@ def audit_signals(soup, schema_result) -> SignalsResult:
             signals.has_lang = True
             signals.lang_value = lang_val
 
-    # 2. Controlla feed RSS/Atom
+    # 2. Check RSS/Atom feed
     rss_link = soup.find("link", attrs={"type": lambda t: t and ("rss" in t.lower() or "atom" in t.lower())})
     if rss_link:
         signals.has_rss = True
         signals.rss_url = rss_link.get("href", "")
 
-    # 3. Controlla freshness (dateModified nello schema o nel meta tag)
-    # Cerca dateModified negli schemi JSON-LD
+    # 3. Check freshness (dateModified in schema or meta tag)
+    # Look for dateModified in JSON-LD schemas
     if schema_result and schema_result.raw_schemas:
         for s in schema_result.raw_schemas:
             date_mod = s.get("dateModified", "") or s.get("datePublished", "")

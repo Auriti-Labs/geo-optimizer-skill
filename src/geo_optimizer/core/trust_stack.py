@@ -306,8 +306,8 @@ def _score_academic(content: ContentResult, soup) -> TrustLayerScore:
 
     layer.score = min(layer.score, 5)
     layer.details["authoritative_domains"] = auth_links
-    # statistics_count = pattern statistici specifici da regex (_count_statistics)
-    # numbers_count = contatore generico di numeri trovati da citability
+    # statistics_count = specific statistical patterns from regex (_count_statistics)
+    # numbers_count = generic number counter from citability
     layer.details["statistics_count"] = stats_count
     layer.details["numbers_count"] = content.numbers_count
     return layer

@@ -33,7 +33,7 @@ from geo_optimizer.cli.scoring_helpers import (
 from geo_optimizer.models.config import SCORING
 from geo_optimizer.models.results import AuditResult
 
-# Massimi calcolati dinamicamente da SCORING (fix #325)
+# Max scores computed dynamically from SCORING (fix #325)
 _MAX_SCHEMA = sum(v for k, v in SCORING.items() if k.startswith("schema_"))
 _MAX_CONTENT = sum(v for k, v in SCORING.items() if k.startswith("content_"))
 _MAX_SIGNALS = sum(v for k, v in SCORING.items() if k.startswith("signals_"))

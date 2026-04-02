@@ -1,8 +1,8 @@
 """
 Audit AI discovery endpoints (geo-checklist.dev standard).
 
-Estratto da audit.py (#402-bis) — separazione responsabilità.
-Tutte le funzioni ritornano dataclass, MAI stampano.
+Extracted from audit.py (#402-bis) — separation of concerns.
+All functions return dataclasses, NEVER print.
 """
 
 from __future__ import annotations
@@ -26,15 +26,15 @@ def audit_ai_discovery(base_url: str) -> AiDiscoveryResult:
 
     Checks for:
     - /.well-known/ai.txt (HTTP 200)
-    - /ai/summary.json (HTTP 200 + JSON valido con name e description)
-    - /ai/faq.json (HTTP 200 + JSON valido)
-    - /ai/service.json (HTTP 200 + JSON valido)
+    - /ai/summary.json (HTTP 200 + valid JSON with name and description)
+    - /ai/faq.json (HTTP 200 + valid JSON)
+    - /ai/service.json (HTTP 200 + valid JSON)
 
     Args:
-        base_url: URL base del sito (normalizzato).
+        base_url: Base URL of the site (normalized).
 
     Returns:
-        AiDiscoveryResult con i risultati dei check.
+        AiDiscoveryResult with check results.
     """
     result = AiDiscoveryResult()
 
@@ -71,7 +71,7 @@ def audit_ai_discovery(base_url: str) -> AiDiscoveryResult:
             data = json.loads(r.text)
             result.has_faq = True
             result.endpoints_found += 1
-            # Fix #389: faqs lista non vuota, ogni item con question >= 10 char e answer >= 20 char
+            # Fix #389: faqs list must be non-empty, each item needs question >= 10 chars and answer >= 20 chars
             faqs = data if isinstance(data, list) else data.get("faqs", []) if isinstance(data, dict) else []
             if isinstance(faqs, list):
                 valid = [
@@ -91,7 +91,7 @@ def audit_ai_discovery(base_url: str) -> AiDiscoveryResult:
     if r and not err and r.status_code == 200:
         try:
             data = json.loads(r.text)
-            # Fix #389: name >= 3 char + capabilities lista non vuota
+            # Fix #389: name >= 3 chars + capabilities list must be non-empty
             if (
                 isinstance(data, dict)
                 and len(str(data.get("name", ""))) >= AI_DISCOVERY_SERVICE_NAME_MIN_LEN
@@ -116,7 +116,7 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
         r_service: HTTP response for /ai/service.json (or None).
 
     Returns:
-        AiDiscoveryResult con i risultati dei check.
+        AiDiscoveryResult with check results.
     """
     result = AiDiscoveryResult()
 
@@ -147,7 +147,7 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
             data = json.loads(r_faq.text)
             result.has_faq = True
             result.endpoints_found += 1
-            # Fix #389: faqs lista non vuota, ogni item con question >= 10 char e answer >= 20 char
+            # Fix #389: faqs list must be non-empty, each item needs question >= 10 chars and answer >= 20 chars
             faqs = data if isinstance(data, list) else data.get("faqs", []) if isinstance(data, dict) else []
             if isinstance(faqs, list):
                 valid = [
@@ -165,7 +165,7 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
     if r_service and r_service.status_code == 200:
         try:
             data = json.loads(r_service.text)
-            # Fix #389: name >= 3 char + capabilities lista non vuota
+            # Fix #389: name >= 3 chars + capabilities list must be non-empty
             if (
                 isinstance(data, dict)
                 and len(str(data.get("name", ""))) >= AI_DISCOVERY_SERVICE_NAME_MIN_LEN

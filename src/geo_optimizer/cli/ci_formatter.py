@@ -26,7 +26,7 @@ from geo_optimizer.cli.scoring_helpers import (
 from geo_optimizer.models.config import SCORING
 from geo_optimizer.models.results import AuditResult
 
-# Massimi per categoria calcolati dinamicamente da SCORING (evita hardcode — v4.3)
+# Per-category max scores computed dynamically from SCORING (avoids hardcoding — v4.3)
 _MAX_ROBOTS = SCORING["robots_found"] + SCORING["robots_citation_ok"]
 _MAX_LLMS = (
     SCORING["llms_found"]

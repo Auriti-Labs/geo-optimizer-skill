@@ -1,7 +1,7 @@
-"""Audit Brand & Entity — segnali di brand identity per la percezione AI.
+"""Audit Brand & Entity — brand identity signals for AI perception.
 
-Estratto da audit.py per separazione delle responsabilità.
-Lavora solo su dati già fetchati, zero richieste HTTP.
+Extracted from audit.py — separation of concerns.
+Works only on already-fetched data, zero HTTP requests.
 """
 
 from __future__ import annotations
@@ -40,32 +40,32 @@ def _normalize_brand_name(name: str) -> str:
 def audit_brand_entity(
     soup, schema_result: SchemaResult, meta_result: MetaResult, content_result: ContentResult
 ) -> BrandEntityResult:
-    """Analizza segnali di brand identity ed entity per la percezione AI (v4.3).
+    """Analyze brand identity and entity signals for AI perception (v4.3).
 
-    Lavora solo su dati già fetchati, zero richieste HTTP.
+    Works only on already-fetched data, zero HTTP requests.
 
     Args:
-        soup: BeautifulSoup della homepage.
-        schema_result: SchemaResult già calcolato.
-        meta_result: MetaResult già calcolato.
-        content_result: ContentResult già calcolato.
+        soup: BeautifulSoup of the homepage.
+        schema_result: Already-computed SchemaResult.
+        meta_result: Already-computed MetaResult.
+        content_result: Already-computed ContentResult.
 
     Returns:
-        BrandEntityResult con i segnali brand/entity popolati.
+        BrandEntityResult with brand/entity signals populated.
     """
     result = BrandEntityResult()
     if soup is None:
         return result
 
     # ── 1. Entity Coherence ──────────────────────────────────────
-    # Raccoglie nomi brand da diverse sorgenti
+    # Collect brand names from different sources
     names = []
 
     # H1
     h1 = soup.find("h1")
     if h1 and h1.get_text(strip=True):
         h1_text = h1.get_text(strip=True)
-        # Prende la prima parte prima dei separatori comuni
+        # Take the first part before common separators
         for sep in (" — ", " - ", " | ", " · "):
             if sep in h1_text:
                 h1_text = h1_text.split(sep)[0].strip()
@@ -161,14 +161,14 @@ def audit_brand_entity(
     )
 
     # ── 3. About/Contact Signals ─────────────────────────────────
-    # Cerca link /about nella pagina
+    # Look for /about link in the page
     for a_tag in soup.find_all("a", href=True):
         href = a_tag["href"].lower()
         if any(pattern in href for pattern in ABOUT_LINK_PATTERNS):
             result.has_about_link = True
             break
 
-    # Cerca Organization con address/telephone/email o Person con jobTitle
+    # Look for Organization with address/telephone/email or Person with jobTitle
     for raw_schema in schema_result.raw_schemas:
         schemas_to_check = []
         if "@graph" in raw_schema:
@@ -192,7 +192,7 @@ def audit_brand_entity(
     result.hreflang_count = len(hreflang_tags)
     result.has_hreflang = result.hreflang_count > 0
 
-    # Segnali geo da Schema (address, areaServed, LocalBusiness)
+    # Geo signals from Schema (address, areaServed, LocalBusiness)
     for raw_schema in schema_result.raw_schemas:
         schemas_to_check = []
         if "@graph" in raw_schema:
@@ -224,7 +224,7 @@ def audit_brand_entity(
                 if isinstance(main_entity, list):
                     result.faq_depth += len(main_entity)
 
-    # Article/BlogPosting con dateModified
+    # Article/BlogPosting with dateModified
     result.has_recent_articles = schema_result.has_date_modified and (
         schema_result.has_article or any(t in ("BlogPosting", "NewsArticle") for t in schema_result.found_types)
     )

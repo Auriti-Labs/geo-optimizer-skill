@@ -1580,7 +1580,7 @@ def detect_content_decay(soup, clean_text: str | None = None) -> MethodScore:
     if old_years and not is_recently_modified and not current_years:
         penalties += min(len(set(old_years)), 3)
 
-    # 2. Pattern "last updated" / "aggiornato" con data vecchia
+    # 2. "last updated" / "aggiornato" pattern with old date
     update_patterns = re.findall(
         r"(?:last\s+updated|updated\s+on|aggiornato\s+(?:il|a|al))\s*:?\s*"
         r"(?:(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})|(\w+)\s+(\d{1,2}),?\s+(\d{4}))",

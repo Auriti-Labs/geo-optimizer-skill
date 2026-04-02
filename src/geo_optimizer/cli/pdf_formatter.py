@@ -1,9 +1,9 @@
 """
 PDF formatter for GEO audit reports.
 
-Genera un report PDF a partire dall'HTML self-contained prodotto da
-html_formatter, convertito tramite weasyprint (dipendenza opzionale).
-Installazione: ``pip install geo-optimizer-skill[pdf]``
+Generates a PDF report from the self-contained HTML produced by
+html_formatter, converted via weasyprint (optional dependency).
+Install with: ``pip install geo-optimizer-skill[pdf]``
 """
 
 from __future__ import annotations
