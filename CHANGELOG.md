@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.0.0] — 2026-04-02
+
+First stable release of the v4 architecture.
+
+### Summary
+- **60+ issues resolved** across 4 beta releases
+- **Architecture**: audit.py split into 12 focused sub-audit modules
+- **Security**: DNS pinning, SSRF prevention, XSS sanitization, CSP hardening, Permissions-Policy, chunked body limits, PDF auth
+- **Scoring**: 8 categories (100 pts), dynamic max scores, consistent thresholds
+- **Citability**: 42 research-backed methods, false positives eliminated
+- **AI Discovery**: 27 AI bots tracked, 10 MCP tools
+- **i18n**: full English codebase (comments, docstrings, UI strings)
+- **Tests**: 1120 tests, 85% coverage, lint clean
+
+---
+
 ## [4.0.0-beta.4] — 2026-04-02
 
 ### Fixed
