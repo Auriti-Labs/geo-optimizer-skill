@@ -5,6 +5,35 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.0.0-beta.2] — 2026-04-02
+
+### Security
+- **SSRF bypass** in `llms_generator.py`: `fetch_sitemap`/`discover_sitemap` now use DNS pinning (#447)
+- **TOCTOU DNS rebinding**: NXDOMAIN no longer silently disables pinning (#427)
+- **CSP hardened**: added `object-src`, `base-uri`, `form-action` directives (#470)
+- **requests CVE**: minimum bumped to >=2.33.0 (CVE-2026-25645) (#463)
+
+### Fixed
+- **Python 3.9 crash**: added `from __future__ import annotations` to 8 missing files (#446)
+- **Race conditions**: report endpoint data read inside lock (#457), stats cache protected with `asyncio.Lock` (#456)
+- **Plugin loading**: `CheckRegistry.load_entry_points()` called in core, not just CLI (#460)
+- **Robots fixer**: `generate_robots_fix` now uses `extra_bots` from project config (#422)
+- **Recommendations**: added 10 missing SCORING signal recommendations, split robots create/update message (#453)
+- **Regex false positives**: `_STATISTICS_RE` (#450), `_TECH_RE` (#425), `_CITABLE_PROPER_NAME_RE` (#449)
+- **JSON formatter**: added `cdn_check`, `js_rendering`, `trust_stack`, `prompt_injection`, `http_status`, `page_size` (#451)
+- **PyPI classifier**: changed from Production/Stable to Beta (#436)
+- **CI workflows**: artifact version alignment, `setup-python` v6, POSIX-portable sed (#438)
+- **GitHub Action**: `threshold`→`min-score`, `report-path`→`report` (#435)
+- **Bot count**: llms.txt endpoint now shows 27 (was 24) (#434)
+- **SECURITY.md**: supported version updated to 4.x (#440)
+- **Band descriptions**: translated from Italian to English (#462)
+- **Session leak**: `discover_sitemap` session closed in `finally` block (#454)
+
+### Changed
+- **i18n**: all remaining Italian comments and docstrings translated to English across 19 files (#441)
+
+---
+
 ## [4.0.0-beta.1] — 2026-03-31
 
 ### Changed (BREAKING)
