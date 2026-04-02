@@ -41,8 +41,9 @@ jobs:
           echo "| Band | \`${{ steps.geo.outputs.band }}\` |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Report | \`${{ steps.geo.outputs.report }}\` |" >> "$GITHUB_STEP_SUMMARY"
 
-      # Upload report as artifact
+      # Upload report as artifact (skip if audit produced no report)
       - name: Upload report
+        if: steps.geo.outputs.report != ''
         uses: actions/upload-artifact@v4
         with:
           name: geo-report
