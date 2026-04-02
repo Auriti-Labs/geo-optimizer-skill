@@ -430,18 +430,18 @@ SCORING = {
 ROBOTS_PARTIAL_SCORE = 10
 
 # Schema richness thresholds — graduated scoring (#394)
-SCHEMA_RICHNESS_HIGH = 5     # avg >= 5 attrs → full points (3pt)
-SCHEMA_RICHNESS_MED = 4      # avg >= 4 attrs → 2pt
-SCHEMA_RICHNESS_LOW = 3      # avg >= 3 attrs → 1pt
+SCHEMA_RICHNESS_HIGH = 5  # avg >= 5 attrs → full points (3pt)
+SCHEMA_RICHNESS_MED = 4  # avg >= 4 attrs → 2pt
+SCHEMA_RICHNESS_LOW = 3  # avg >= 3 attrs → 1pt
 
 # Minimum word threshold for content_word_count (300 words = substantial content)
 CONTENT_MIN_WORDS = 300
 
 # Content freshness thresholds in days (#401)
 # AutoGEO ICLR 2026: tech content < 3 months strongly preferred by AI search engines
-FRESHNESS_VERY_FRESH_DAYS = 90    # < 3 months → very_fresh
-FRESHNESS_FRESH_DAYS = 180        # 3-6 months → fresh
-FRESHNESS_AGING_DAYS = 365        # 6-12 months → aging (> 12 months = stale)
+FRESHNESS_VERY_FRESH_DAYS = 90  # < 3 months → very_fresh
+FRESHNESS_FRESH_DAYS = 180  # 3-6 months → fresh
+FRESHNESS_AGING_DAYS = 365  # 6-12 months → aging (> 12 months = stale)
 
 # Depth thresholds for llms.txt
 LLMS_DEPTH_WORDS = 1000

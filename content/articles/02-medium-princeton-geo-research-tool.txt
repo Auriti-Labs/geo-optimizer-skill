@@ -1,0 +1,145 @@
+We Built an Open-Source Tool Based on Princeton's AI Search Research — Here's What We Learned
+
+Published: April 1, 2026
+Reading time: ~10 minutes
+Tags: AI, SEO, Open Source, Research, Generative Engine Optimization
+
+---
+
+When Princeton researchers published "GEO: Generative Engine Optimization" at KDD 2024 (arxiv.org/abs/2311.09735), most of the SEO industry shrugged. The paper was academic, dense, and written in the measured language of computer science conferences. But buried inside it were numbers that should have stopped every digital marketer cold: certain content techniques increased AI-generated citation rates by up to 77 percent.
+
+We read that paper carefully. Then we built a tool around it.
+
+GEO Optimizer (github.com/Auriti-Labs/geo-optimizer-skill) is an open-source Python toolkit that takes the findings from Princeton's KDD research — and subsequent work from AutoGEO (ICLR 2026), SE Ranking, and Growth Marshal — and turns them into automated, actionable checks any developer or content strategist can run against a real website. This is the story of what we built, why, and what we learned by operationalizing academic research into production-grade software.
+
+
+THE RESEARCH THAT CHANGED HOW WE THINK ABOUT AI SEARCH
+
+To understand why GEO Optimizer exists, you need to understand what the Princeton team actually found.
+
+The core premise of the KDD 2024 paper is deceptively simple: AI-powered search engines — systems like Perplexity, SearchGPT, and AI-enhanced Google — do not retrieve and rank documents the same way traditional search engines do. Traditional search is retrieval-first: find documents, rank by relevance signals, present ten blue links. Generative search is synthesis-first: generate a coherent answer, cite sources as supporting evidence.
+
+That shift has enormous consequences for how content needs to be structured.
+
+The Princeton team ran controlled experiments using nine retrieval-augmented generation (RAG) frameworks across 10,000 queries across ten domains. They systematically tested which content modifications — applied to the same base content — caused an AI engine to cite that content more frequently in its generated answers. The results were striking:
+
+- Citing authoritative sources within your content: +77% increase in AI citation rate
+- Including specific statistics and numerical data: +34% increase
+- Using quotations from recognized experts or documents: +28% increase
+- Fluency and clarity optimizations: +15% increase
+- Structured content with clear hierarchies: +12% increase
+
+The paper also found, critically, that techniques borrowed from traditional SEO often had neutral or even negative effects in generative contexts. Keyword density optimizations, for instance, did not move the needle. What moved the needle was epistemic trust: content that demonstrates it knows what it is talking about, has verified its claims against external sources, and presents information in a format a language model can reason over cleanly.
+
+This was not incremental. This was a different paradigm.
+
+
+FROM RESEARCH TO REALITY: THE IMPLEMENTATION GAP
+
+Academic papers identify what works. They are generally silent on how to systematically check whether your site does it.
+
+The Princeton paper tells you that citing sources improves AI visibility by 77%. It does not tell you how to audit 200 pages of a corporate website to find which ones lack citations, or how to generate a structured report that a developer can act on in a sprint cycle.
+
+That gap — between academic finding and practical tooling — is where GEO Optimizer lives.
+
+The translation process was not straightforward. Academic research is designed to isolate variables in controlled conditions. Production websites are messy, inconsistent, and built across years by multiple teams with different conventions. Building a tool that could reliably detect "does this page cite authoritative sources?" required us to think carefully about what "citing sources" actually means in HTML.
+
+Does it mean external links? Links to specific domain types (academic, government, news)? Structured references in a bibliography format? Inline citations with anchor text that signals authority? The answer, we found, is a weighted combination of all of these — and the weighting depends on the content domain.
+
+This process of operationalizing fuzzy academic findings into concrete, automatable checks taught us as much about content strategy as the original papers did.
+
+
+THE 42 CITABILITY METHODS: MAPPING RESEARCH TO CODE
+
+The centerpiece of GEO Optimizer's analytical engine is a citability module with 42 distinct checks derived directly from the research literature. Each check maps to at least one finding in the underlying papers.
+
+Here is how the primary Princeton findings translate into code-level checks:
+
+Source citation (Princeton +77%)
+
+The tool scans page content for outbound links to authoritative domains, counts inline references, checks for structured bibliography sections, and looks for citation patterns in academic and journalistic style. It distinguishes between decorative external links (a "learn more" link to a marketing page) and substantive citations (a linked reference to a study or primary source). The check assigns a weighted score based on citation count, domain authority type, and placement within the content hierarchy.
+
+Statistical density (Princeton +34%)
+
+The tool uses regular expressions tuned to recognize numerical claims in context: percentages, research figures, dated statistics, comparative quantities. It distinguishes between decorative numbers ("our 10-step process") and evidentiary numbers ("a 2024 study found a 34% improvement"). It checks whether statistics are sourced — an unsourced statistic scores lower than one with an inline reference to its origin.
+
+Expert quotations (Princeton +28%)
+
+The tool detects quotation markup (blockquote elements, quotation marks followed by attribution patterns, structured pullquote formats) and scores based on whether attribution is present and whether the quoted source is identifiable. An anonymous quote scores near zero. A named, titled expert with an institutional affiliation scores highly.
+
+Content fluency and structure (Princeton +15%, +12%)
+
+These checks look at readability scores (Flesch-Kincaid), heading hierarchy consistency, paragraph length distribution, and the presence of front-loaded key claims — the research finding that AI engines weight early content more heavily is reflected in a "front-loading" check that evaluates whether the page's most important claim appears in the first 100 words.
+
+The 42 methods also incorporate findings from the AutoGEO ICLR 2026 paper, which extended the Princeton work by identifying that AI engines treat certain structured signals — particularly FAQ schema, Organization schema, and Well-Known endpoints for AI discovery — as high-trust content anchors. AutoGEO found that pages with structured FAQ sections were cited 23% more frequently in information-seeking queries than equivalent pages without them.
+
+
+THE TRUST STACK: A FIVE-LAYER SCORING MODEL
+
+Beyond the citability module, GEO Optimizer implements what we call the Trust Stack — a five-layer scoring model that evaluates a website's AI visibility across the dimensions the research identifies as most consequential:
+
+Layer 1: Technical foundation
+Can AI crawlers even reach your content? This layer checks robots.txt for AI bot permissions, validates llms.txt existence and structure, confirms Well-Known endpoint availability, and verifies that the site does not inadvertently block Perplexity, Anthropic's crawler, or ChatGPT's web browsing agent.
+
+The SE Ranking 2025 analysis of 10,000 top-ranking sites found that 34% of sites that ranked well in traditional search were actively blocking at least one major AI crawler in their robots.txt — often by inheriting blanket bot-blocking rules set years before generative search existed. This is a silent visibility killer.
+
+Layer 2: Content structure
+Is your content organized in a way that a language model can reason over? This layer evaluates heading hierarchy, list usage, content front-loading, word count adequacy, and the presence of summary or key-takeaway sections. The research is consistent: AI engines favor content that presents its structure explicitly rather than relying on implicit flow.
+
+Layer 3: Academic and epistemic signals
+Does your content demonstrate that it knows what it is talking about? This layer runs the citability checks described above — source citations, statistical density, expert quotations, and reference diversity.
+
+Layer 4: Authority and entity signals
+Can AI systems confidently identify who you are? This layer checks for Organization schema, brand name consistency across pages, About and Contact page presence, geographic identity signals, and Knowledge Graph readiness indicators. The Growth Marshal 2026 report found that entity disambiguation — clearly establishing what your organization is, what it does, and where it operates — correlates strongly with AI citation rates for informational queries.
+
+Layer 5: Social and freshness signals
+Is your content recent and socially validated? This layer checks for publication and modification date markup, RSS feed availability, and language attribute correctness. AI engines have been documented to prefer content with explicit freshness signals when the query has temporal relevance.
+
+The five layers are weighted and combined into a 100-point score, with grade bands: 86-100 (excellent), 68-85 (good), 36-67 (needs work), 0-35 (critical). The weighting reflects the research consensus on relative importance — technical access is a prerequisite, so its absence penalizes the score significantly, but content quality signals carry the most weight for sites that clear the technical baseline.
+
+
+WHAT WE LEARNED BUILDING THIS
+
+Translating academic research into production tooling is harder than it looks from the outside, and the process revealed several things the papers did not — and could not — tell us.
+
+AI engines are not monolithic. The Princeton paper studied nine RAG frameworks and found consistent trends, but the variance between frameworks was substantial. What Perplexity weights differently than ChatGPT's browsing agent, and both differ from how Claude or Gemini approach retrieval. GEO Optimizer takes a conservative approach: it checks for signals that the research shows improve citation rates across multiple systems, rather than optimizing for any single engine's quirks. This is analogous to how good traditional SEO focuses on user value rather than gaming a specific ranking factor.
+
+The robots.txt problem is underappreciated. In practice, the single highest-impact change most sites can make is auditing their robots.txt for AI crawler blocking. This is not because robots.txt is the most sophisticated optimization — it is because it is the most commonly broken baseline. A site with brilliant content and perfect schema markup gets zero AI visibility benefit if its robots.txt is blocking Perplexity's crawler. We added this check to the highest-priority category precisely because we kept finding it in real audits.
+
+Schema markup is dramatically underutilized. The AutoGEO ICLR 2026 findings on structured data were the most actionable translation from research to tool. FAQ schema, Organization schema, and Article schema with proper citation markup are well-supported by every major CMS, require no content changes, and have measurable impact on AI citation rates. Yet Growth Marshal's 2026 survey found that fewer than 12% of content sites have correctly implemented FAQ schema even on pages that are explicitly FAQ pages. This is a massive implementation gap that no ranking algorithm has sufficiently incentivized — until generative search.
+
+The llms.txt standard is gaining traction faster than expected. When Anthropic and others proposed the llms.txt convention — a structured file at /llms.txt that tells AI systems what your site contains and how to navigate it — adoption was minimal. The SE Ranking 2025 data suggested fewer than 2% of top-100,000 sites had the file. GEO Optimizer's audit data, collected across its web demo since launch, shows a meaningful uptick in 2026: developers are adding llms.txt files at a rate that suggests the convention is transitioning from early-adopter curiosity to baseline practice. We expect this to accelerate.
+
+Content quality and AI visibility are increasingly aligned. The most encouraging finding from building this tool is that optimizing for AI visibility and optimizing for human readers are not in tension — they are increasingly the same thing. The research-backed techniques that improve AI citation rates (clear structure, specific evidence, expert citations, fresh dates, authoritative sourcing) are also the techniques that make content better for human readers. This is a meaningful contrast with certain traditional SEO practices that optimized for crawler signals at the expense of reader experience.
+
+
+THE BROADER SHIFT: WHY THIS MATTERS FOR THE WEB
+
+AI search is not a niche phenomenon. By early 2026, multiple independent analyses estimate that between 25% and 40% of information-seeking queries in major markets are being answered — at least partially — by AI-generated responses rather than traditional SERP clicks. For certain query types (how-to, comparison, definition, research synthesis), the AI-answer rate is substantially higher.
+
+This has distribution consequences. When an AI engine generates an answer and cites three sources, those three sources receive visibility and attribution. The other ten, twenty, or one hundred pages that cover the same topic receive nothing. The traditional SEO model — where ten blue links give ten sites roughly equal opportunity to earn a click — is being replaced by a model where synthesis concentrates authority into a small number of cited sources per query.
+
+For content creators, researchers, and publishers, this means the stakes for being citeable — not just rankable — have never been higher. And unlike traditional ranking factors, which are black-box signals inferred from Google's behavior, the factors that drive AI citation rates are grounded in explicit, peer-reviewed research that we can read, test, and implement.
+
+That is the opportunity GEO Optimizer is built to capture.
+
+
+GETTING STARTED
+
+GEO Optimizer is open source under the MIT license. You can:
+
+Run an audit in 30 seconds:
+pip install geo-optimizer-skill
+geo audit --url https://yoursite.com
+
+Try the web demo without installing anything:
+https://geo-optimizer-web.onrender.com
+
+Read the source code, file issues, or contribute:
+https://github.com/Auriti-Labs/geo-optimizer-skill
+
+The codebase is structured around four CLI commands (geo audit, geo fix, geo llms, geo schema), a FastAPI web demo, and an MCP server for integration with AI-assisted development workflows. The test suite covers 1,007+ scenarios, all fully mocked with no live network dependencies, so contributing is straightforward.
+
+If the Princeton research convinced you that generative engine optimization is real, GEO Optimizer is the fastest way to find out where your site stands — and what to do about it.
+
+Star the repo if you find it useful. File an issue if you find something wrong. And if you are using GEO techniques and have data on what is working, open a discussion — the research is still young, and the best findings come from practitioners comparing notes.

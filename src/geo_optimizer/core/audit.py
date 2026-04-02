@@ -128,7 +128,7 @@ def build_recommendations(
     if not meta.has_description:
         recommendations.append("Add optimized meta description (150-160 characters)")
     if not meta.has_canonical:
-        recommendations.append("Add <link rel=\"canonical\"> to prevent duplicate content issues in AI indexing")
+        recommendations.append('Add <link rel="canonical"> to prevent duplicate content issues in AI indexing')
     if not meta.has_og_title or not meta.has_og_description:
         recommendations.append("Add Open Graph tags (og:title, og:description, og:image) for AI and social previews")
     if not content.has_h1:
@@ -146,7 +146,7 @@ def build_recommendations(
 
     # Fix #453: lang attribute recommendation (3 pts)
     if signals is not None and not signals.has_lang:
-        recommendations.append("Add lang attribute to <html> tag (e.g., lang=\"en\") for AI language detection")
+        recommendations.append('Add lang attribute to <html> tag (e.g., lang="en") for AI language detection')
 
     # #263: Machine-Readable Presence recommendations (RSS + sitemap)
     if signals is not None and not signals.has_rss:

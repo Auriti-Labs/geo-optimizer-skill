@@ -87,9 +87,7 @@ _HEDGE_RE = re.compile(
 )
 
 # Common English uppercase words excluded from tech acronym matching (#425)
-_UPPER_STOPWORDS = (
-    r"AM|AN|AS|AT|BE|BY|DO|GO|HE|IF|IN|IS|IT|ME|MY|NO|OF|ON|OR|SO|TO|UP|US|WE"
-)
+_UPPER_STOPWORDS = r"AM|AN|AS|AT|BE|BY|DO|GO|HE|IF|IN|IS|IT|ME|MY|NO|OF|ON|OR|SO|TO|UP|US|WE"
 
 # Technical terminology patterns (#425: excluded common words from acronym pattern)
 _TECH_PATTERNS = [

@@ -24,9 +24,7 @@ from geo_optimizer.models.results import AuditResult, FixItem, FixPlan
 logger = logging.getLogger(__name__)
 
 
-def generate_robots_fix(
-    result: AuditResult, base_url: str, project_config=None
-) -> FixItem | None:
+def generate_robots_fix(result: AuditResult, base_url: str, project_config=None) -> FixItem | None:
     """Generate robots.txt patch with missing AI bots.
 
     If robots.txt not found: generates complete file with all bots.
