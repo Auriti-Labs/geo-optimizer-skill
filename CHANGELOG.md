@@ -5,6 +5,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.0.0-beta.4] — 2026-04-02
+
+### Fixed
+- **Quote attribution**: removed `re.DOTALL` to prevent cross-paragraph false positives (#429)
+- **Stale refs**: regex now covers years 2000-2009, not just 2010-2029 (#455)
+- **JSON formatter**: max scores computed dynamically from SCORING dict (#409)
+- **A11y**: input labels, spinner aria-live, compare.html og: tags (#468)
+- **Badge**: Shields.io endpoint uses hex colors matching SVG; error branch width fixed (#459, #458)
+- **Config**: YAML parse errors logged as warnings (#461)
+- **Scoring**: explicit brand coherence values instead of SCORING[key]-1 (#410)
+- **CI formatter**: initial testsuites count fixed, comment translated (#430)
+- **MCP**: docstring updated to 10 tools (#424)
+- **Roadmap**: Prompt Injection marked as shipped (#432)
+- **Wiki**: bot count 24→27, v3.0 scoring marked as legacy (#469)
+- **Docs**: robots.txt + ai-bots-reference updated with all 27 bots (#408, #407)
+- **Tautological test**: replaced duplicate with IPv6 adapter test (#437)
+
+---
+
 ## [4.0.0-beta.3] — 2026-04-02
 
 ### Security
