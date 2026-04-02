@@ -132,7 +132,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_ALLOWED_ORIGINS,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", "Authorization"],
     max_age=3600,
 )
 
@@ -576,67 +576,64 @@ async def stats():
     cache_key = "_stats_cache"
     cache_ttl = 3600  # 1 hour
 
-    # Fix #456: protect cache read with lock (like _audit_cache)
+    # Fix #456 + thundering herd: hold lock for the entire check-fetch-write cycle
+    # so only one coroutine fetches while others wait for the cached result
     async with _stats_cache_lock:
         cached = getattr(stats, cache_key, None)
         if cached and (_time.time() - cached["ts"]) < cache_ttl:
             return cached["data"]
 
-    result = {"github_stars": 0, "pypi_downloads_month": 0, "audits_run": 0}
+        result = {"github_stars": 0, "pypi_downloads_month": 0, "audits_run": 0}
 
-    def _fetch_json(url: str, headers: dict | None = None) -> dict | None:
-        """Fetch JSON from URL with 5s timeout. Returns None on failure."""
-        try:
-            req = urllib.request.Request(url, headers=headers or {"User-Agent": "GEO-Optimizer"})
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                if resp.status == 200:
-                    return _json.loads(resp.read())
-        except Exception:
-            return None
+        def _fetch_json(url: str, headers: dict | None = None) -> dict | None:
+            """Fetch JSON from URL with 5s timeout. Returns None on failure."""
+            try:
+                req = urllib.request.Request(url, headers=headers or {"User-Agent": "GEO-Optimizer"})
+                with urllib.request.urlopen(req, timeout=5) as resp:
+                    if resp.status == 200:
+                        return _json.loads(resp.read())
+            except Exception:
+                return None
 
-    # Fix #307: call _STATS_API_URL only if validated as safe at startup
-    _stats_fetch_target = _STATS_API_URL if _STATS_API_URL_SAFE else None
+        _stats_fetch_target = _STATS_API_URL if _STATS_API_URL_SAFE else None
 
-    async def _maybe_fetch_stats() -> dict | None:
-        if _stats_fetch_target is None:
-            return None
-        return await asyncio.to_thread(_fetch_json, _stats_fetch_target)
+        async def _maybe_fetch_stats() -> dict | None:
+            if _stats_fetch_target is None:
+                return None
+            return await asyncio.to_thread(_fetch_json, _stats_fetch_target)
 
-    # Run the 3 calls in parallel (GitHub, PyPI, AgencyPilot stats)
-    github_data, pypi_data, geo_stats = await asyncio.gather(
-        asyncio.to_thread(
-            _fetch_json,
-            "https://api.github.com/repos/Auriti-Labs/geo-optimizer-skill",
-            {"User-Agent": "GEO-Optimizer", "Accept": "application/vnd.github.v3+json"},
-        ),
-        asyncio.to_thread(
-            _fetch_json,
-            "https://pypistats.org/api/packages/geo-optimizer-skill/system?mirrors=false",
-        ),
-        _maybe_fetch_stats(),
-    )
-
-    # GitHub stars (fallback to 13 if API rate limited)
-    if github_data and github_data.get("stargazers_count"):
-        result["github_stars"] = github_data["stargazers_count"]
-    else:
-        result["github_stars"] = 13  # Fallback: last known value
-
-    # PyPI downloads — real users only (no mirrors, no null/bots)
-    if pypi_data:
-        downloads = sum(
-            item.get("downloads", 0) for item in pypi_data.get("data", []) if item.get("category") not in (None, "null")
+        # Run the 3 calls in parallel (GitHub, PyPI, AgencyPilot stats)
+        github_data, pypi_data, geo_stats = await asyncio.gather(
+            asyncio.to_thread(
+                _fetch_json,
+                "https://api.github.com/repos/Auriti-Labs/geo-optimizer-skill",
+                {"User-Agent": "GEO-Optimizer", "Accept": "application/vnd.github.v3+json"},
+            ),
+            asyncio.to_thread(
+                _fetch_json,
+                "https://pypistats.org/api/packages/geo-optimizer-skill/system?mirrors=false",
+            ),
+            _maybe_fetch_stats(),
         )
-        result["pypi_downloads_month"] = downloads
 
-    # Audit counter from persistent DB on AgencyPilot
-    if geo_stats and "stats" in geo_stats:
-        result["audits_run"] = geo_stats["stats"].get("audits", 0)
+        if github_data and github_data.get("stargazers_count"):
+            result["github_stars"] = github_data["stargazers_count"]
+        else:
+            result["github_stars"] = 13  # Fallback: last known value
 
-    # Fix #456: protect cache write with lock
-    async with _stats_cache_lock:
+        if pypi_data:
+            downloads = sum(
+                item.get("downloads", 0)
+                for item in pypi_data.get("data", [])
+                if item.get("category") not in (None, "null")
+            )
+            result["pypi_downloads_month"] = downloads
+
+        if geo_stats and "stats" in geo_stats:
+            result["audits_run"] = geo_stats["stats"].get("audits", 0)
+
         setattr(stats, cache_key, {"data": result, "ts": _time.time()})
-    return result
+        return result
 
 
 # ─── Pydantic model for POST body validation ─────────────────────────────────
@@ -1104,6 +1101,10 @@ def _audit_result_to_dict(result) -> dict:
             "h1_text": result.content.h1_text,
             "numbers_count": result.content.numbers_count,
             "external_links_count": result.content.external_links_count,
+            # These 3 fields are worth 6pts in scoring — must be serialized for cache
+            "has_heading_hierarchy": result.content.has_heading_hierarchy,
+            "has_lists_or_tables": result.content.has_lists_or_tables,
+            "has_front_loading": result.content.has_front_loading,
         },
     }
 
