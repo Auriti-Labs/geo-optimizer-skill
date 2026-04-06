@@ -44,7 +44,7 @@ jobs:
       # Upload report as artifact (skip if audit produced no report)
       - name: Upload report
         if: steps.geo.outputs.report != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: geo-report
           path: ${{ steps.geo.outputs.report }}
