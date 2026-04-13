@@ -42,14 +42,25 @@ geo audit --url https://yoursite.com
 
 # Choose output format
 geo audit --url https://yoursite.com --format rich
+
+# Batch audit from sitemap
+geo audit --sitemap https://yoursite.com/sitemap.xml --max-urls 25
+
+# Batch audit as JSON
+geo audit --sitemap https://yoursite.com/sitemap.xml --format json
 ```
 
 ### Flags
 
 | Flag | Required | Description |
 |------|----------|-------------|
-| `--url` | Yes | Full URL of the site to audit (must include `https://`) |
+| `--url` | Yes* | Full URL of the site to audit (must include `https://`) |
+| `--sitemap` | Yes* | XML sitemap URL to audit multiple pages in one run |
 | `--format` | No | Output format: `text` (default), `json`, `rich`, `html`, `sarif`, `junit`, `github` |
+| `--max-urls` | No | Maximum number of sitemap URLs to audit in batch mode (default: `50`) |
+| `--concurrency` | No | Concurrent page audits in batch mode (default: `5`) |
+
+\* Use either `--url` or `--sitemap`.
 
 ### Output Formats
 
@@ -62,6 +73,8 @@ geo audit --url https://yoursite.com --format rich
 | `sarif` | GitHub Code Scanning (upload to Security tab) |
 | `junit` | Jenkins, GitLab CI test reports |
 | `github` | GitHub Actions step summary annotations |
+
+When using `--sitemap`, only `text` and `json` are supported.
 
 ---
 

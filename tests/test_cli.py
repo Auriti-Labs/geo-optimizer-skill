@@ -17,6 +17,8 @@ from geo_optimizer import __version__
 from geo_optimizer.cli.main import cli
 from geo_optimizer.models.results import (
     AuditResult,
+    BatchAuditPageResult,
+    BatchAuditResult,
     ContentResult,
     LlmsTxtResult,
     MetaResult,
@@ -109,6 +111,49 @@ def minimal_audit_result():
 
 
 @pytest.fixture
+def sample_batch_audit_result():
+    """Create a representative BatchAuditResult for sitemap-mode testing."""
+    pages = [
+        BatchAuditPageResult(
+            url="https://example.com/",
+            score=82,
+            band="good",
+            http_status=200,
+            score_breakdown={"robots": 18, "llms": 14, "schema": 12, "meta": 11, "content": 10},
+            recommendations_count=2,
+        ),
+        BatchAuditPageResult(
+            url="https://example.com/blog/post-1",
+            score=55,
+            band="foundation",
+            http_status=200,
+            score_breakdown={"robots": 18, "llms": 8, "schema": 6, "meta": 9, "content": 8},
+            recommendations_count=5,
+        ),
+        BatchAuditPageResult(
+            url="https://example.com/pricing",
+            error="HTTP 500",
+            http_status=500,
+        ),
+    ]
+    return BatchAuditResult(
+        sitemap_url="https://example.com/sitemap.xml",
+        timestamp="2026-01-15T12:00:00+00:00",
+        discovered_urls=12,
+        audited_urls=3,
+        successful_urls=2,
+        failed_urls=1,
+        average_score=68.5,
+        average_band="good",
+        band_counts={"good": 1, "foundation": 1},
+        average_score_breakdown={"robots": 18.0, "llms": 11.0, "schema": 9.0, "meta": 10.0, "content": 9.0},
+        pages=pages,
+        top_pages=[pages[0], pages[1]],
+        worst_pages=[pages[1], pages[0]],
+    )
+
+
+@pytest.fixture
 def sample_schema_analysis():
     """Create a SchemaAnalysis result for testing."""
     return SchemaAnalysis(
@@ -157,6 +202,7 @@ class TestCLIVersionAndHelp:
         result = runner.invoke(cli, ["audit", "--help"])
         assert result.exit_code == 0
         assert "--url" in result.output
+        assert "--sitemap" in result.output
         assert "--format" in result.output
         assert "--output" in result.output
         assert "--verbose" in result.output
@@ -259,7 +305,7 @@ class TestAuditCommand:
             assert result.exit_code == 0
             assert "Report written to" in result.output
             assert output_path in result.output
-            with open(output_path, "r", encoding="utf-8") as f:
+            with open(output_path, encoding="utf-8") as f:
                 content = f.read()
             assert "GEO AUDIT" in content
             assert "example.com" in content
@@ -287,7 +333,7 @@ class TestAuditCommand:
                 ],
             )
             assert result.exit_code == 0
-            with open(output_path, "r", encoding="utf-8") as f:
+            with open(output_path, encoding="utf-8") as f:
                 data = json.load(f)
             assert data["score"] == 75
         finally:
@@ -333,6 +379,57 @@ class TestAuditCommand:
         result = runner.invoke(cli, ["audit", "--url", "https://example.com", "--format", "xml"])
         assert result.exit_code != 0
 
+    @patch("geo_optimizer.cli.audit_cmd.validate_public_url", return_value=(True, None))
+    @patch("geo_optimizer.cli.audit_cmd.run_batch_audit")
+    def test_audit_sitemap_text_output(self, mock_batch_audit, _mock_validate, runner, sample_batch_audit_result):
+        """geo audit --sitemap produces aggregated text output."""
+        mock_batch_audit.return_value = sample_batch_audit_result
+        result = runner.invoke(cli, ["audit", "--sitemap", "https://example.com/sitemap.xml"])
+        assert result.exit_code == 0
+        assert "GEO BATCH AUDIT" in result.output
+        assert "URLs discovered: 12" in result.output
+        assert "Average score: 68.50/100" in result.output
+        assert "WORST PAGES" in result.output
+        mock_batch_audit.assert_called_once()
+        call_args = mock_batch_audit.call_args
+        assert call_args[0][0] == "https://example.com/sitemap.xml"
+        assert call_args[1]["max_urls"] == 50
+        assert call_args[1]["concurrency"] == 5
+
+    @patch("geo_optimizer.cli.audit_cmd.validate_public_url", return_value=(True, None))
+    @patch("geo_optimizer.cli.audit_cmd.run_batch_audit")
+    def test_audit_sitemap_json_output(self, mock_batch_audit, _mock_validate, runner, sample_batch_audit_result):
+        """geo audit --sitemap --format json emits valid batch JSON."""
+        mock_batch_audit.return_value = sample_batch_audit_result
+        result = runner.invoke(
+            cli,
+            ["audit", "--sitemap", "https://example.com/sitemap.xml", "--format", "json", "--max-urls", "10"],
+        )
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+        assert data["mode"] == "batch"
+        assert data["sitemap_url"] == "https://example.com/sitemap.xml"
+        assert data["average_score"] == 68.5
+        assert data["successful_urls"] == 2
+        assert len(data["pages"]) == 3
+        mock_batch_audit.assert_called_once()
+        assert mock_batch_audit.call_args[1]["max_urls"] == 10
+
+    def test_audit_sitemap_rejects_unsupported_formats(self, runner):
+        """Sitemap mode allows only text/json output formats."""
+        result = runner.invoke(cli, ["audit", "--sitemap", "https://example.com/sitemap.xml", "--format", "html"])
+        assert result.exit_code != 0
+        assert "supports only" in result.output
+
+    def test_audit_rejects_url_and_sitemap_together(self, runner):
+        """URL mode and sitemap mode are mutually exclusive."""
+        result = runner.invoke(
+            cli,
+            ["audit", "--url", "https://example.com", "--sitemap", "https://example.com/sitemap.xml"],
+        )
+        assert result.exit_code != 0
+        assert "either '--url' or '--sitemap'" in result.output
+
     @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.validate_public_url", return_value=(True, None))
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
@@ -373,6 +470,8 @@ class TestAuditCommand:
         result = runner.invoke(cli, ["audit", "--url", "https://perfect.example.com"])
         assert result.exit_code == 0
         assert "Excellent" in result.output or "implemented" in result.output
+
+
 
 
 # ============================================================================
@@ -446,7 +545,7 @@ class TestLlmsCommand:
             result = runner.invoke(cli, ["llms", "--base-url", "https://example.com", "--output", output_path])
             assert result.exit_code == 0
             assert "Minimal llms.txt written to" in result.output
-            with open(output_path, "r") as f:
+            with open(output_path) as f:
                 content = f.read()
             assert "Homepage" in content
             assert "https://example.com" in content
@@ -468,7 +567,7 @@ class TestLlmsCommand:
             result = runner.invoke(cli, ["llms", "--base-url", "https://example.com", "--output", output_path])
             assert result.exit_code == 0
             assert "llms.txt written to" in result.output
-            with open(output_path, "r") as f:
+            with open(output_path) as f:
                 written = f.read()
             assert written == content_str
         finally:

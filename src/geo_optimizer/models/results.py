@@ -469,6 +469,41 @@ class AuditResult:
     trust_stack: TrustStackResult = field(default_factory=TrustStackResult)
 
 
+# ─── Batch audit ─────────────────────────────────────────────────────────────
+
+
+@dataclass
+class BatchAuditPageResult:
+    """Sintesi di un audit pagina all'interno di un audit batch da sitemap."""
+
+    url: str
+    score: int = 0
+    band: str = "critical"
+    http_status: int = 0
+    error: str | None = None
+    score_breakdown: dict[str, int] = field(default_factory=dict)
+    recommendations_count: int = 0
+
+
+@dataclass
+class BatchAuditResult:
+    """Risultato aggregato di un audit batch eseguito su una sitemap."""
+
+    sitemap_url: str
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    discovered_urls: int = 0
+    audited_urls: int = 0
+    successful_urls: int = 0
+    failed_urls: int = 0
+    average_score: float = 0.0
+    average_band: str = "critical"
+    band_counts: dict[str, int] = field(default_factory=dict)
+    average_score_breakdown: dict[str, float] = field(default_factory=dict)
+    pages: list[BatchAuditPageResult] = field(default_factory=list)
+    top_pages: list[BatchAuditPageResult] = field(default_factory=list)
+    worst_pages: list[BatchAuditPageResult] = field(default_factory=list)
+
+
 # ─── Schema analysis ─────────────────────────────────────────────────────────
 
 

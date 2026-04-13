@@ -6,19 +6,25 @@ Runs the full GEO audit on a website and displays results.
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import sys
 
 import click
 
-from geo_optimizer.cli.formatters import format_audit_json, format_audit_text
+from geo_optimizer.cli.formatters import (
+    format_audit_json,
+    format_audit_text,
+    format_batch_audit_json,
+    format_batch_audit_text,
+)
 from geo_optimizer.core.audit import run_full_audit
+from geo_optimizer.core.batch_audit import run_batch_audit
 from geo_optimizer.utils.validators import validate_public_url
 
 
 @click.command()
 @click.option("--url", default=None, help="URL of the site to audit (e.g. https://example.com)")
+@click.option("--sitemap", default=None, help="XML sitemap URL for batch auditing (e.g. https://example.com/sitemap.xml)")
 @click.option(
     "--format",
     "output_format",
@@ -32,13 +38,15 @@ from geo_optimizer.utils.validators import validate_public_url
 @click.option("--clear-cache", is_flag=True, help="Clear the local HTTP cache and exit")
 @click.option("--config", "config_file", default=None, help="Path to .geo-optimizer.yml config file")
 @click.option("--no-plugins", is_flag=True, help="Disable loading of third-party check plugins")
+@click.option("--max-urls", default=50, type=int, show_default=True, help="Maximum number of sitemap URLs to audit")
+@click.option("--concurrency", default=5, type=int, show_default=True, help="Concurrent page audits in sitemap mode")
 @click.option(
     "--threshold",
     default=None,
     type=int,
     help="Minimum score threshold (0-100). Exit code 1 if score is below.",
 )
-def audit(url, output_format, output_file, verbose, cache, clear_cache, config_file, no_plugins, threshold):
+def audit(url, sitemap, output_format, output_file, verbose, cache, clear_cache, config_file, no_plugins, max_urls, concurrency, threshold):
     """Audit a website's GEO (Generative Engine Optimization) readiness."""
     # Load project configuration (if available)
     from geo_optimizer.models.project_config import load_config
@@ -77,8 +85,10 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
     else:
         min_score = project_config.audit.min_score
 
-    if not url and not clear_cache:
-        raise click.UsageError("Missing '--url' option. Specify via CLI or in .geo-optimizer.yml")
+    if not url and not sitemap and not clear_cache:
+        raise click.UsageError("Missing '--url' or '--sitemap' option. Specify via CLI or in .geo-optimizer.yml")
+    if url and sitemap:
+        raise click.UsageError("Use either '--url' or '--sitemap', not both")
 
     # Handle --clear-cache
     if clear_cache:
@@ -95,55 +105,71 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
 
         CheckRegistry.load_entry_points()
 
-    # Anti-SSRF validation: block URLs pointing to private/internal networks
-    safe, reason = validate_public_url(url if url.startswith(("http://", "https://")) else f"https://{url}")
+    if sitemap and output_format not in {"text", "json"}:
+        raise click.UsageError("Batch audit via '--sitemap' supports only '--format text' or '--format json'")
+
+    target_url = sitemap or url
+    safe, reason = validate_public_url(target_url if target_url.startswith(("http://", "https://")) else f"https://{target_url}")
     if not safe:
         click.echo(f"\n❌ Unsafe URL: {reason}", err=True)
         sys.exit(1)
 
-    # Visual feedback during audit (on stderr to avoid polluting stdout)
-    _use_spinner = output_format == "rich"
-    if _use_spinner:
-        try:
-            from rich.console import Console as _RichConsole
-
-            _use_spinner = True
-        except ImportError:
-            _use_spinner = False
-
-    # Fix #284: use async path if httpx is available and cache is not used
-    # Async path does parallel fetches and is 2-3x faster
-    _use_async = False
-    if not cache:
-        try:
-            import httpx  # noqa: F401
-
-            from geo_optimizer.core.audit import run_full_audit_async
-
-            _use_async = True
-        except ImportError:
-            pass
-
     try:
-        if _use_spinner:
-            _stderr = _RichConsole(stderr=True)
-            with _stderr.status("[bold bright_blue]  Analyzing...[/]", spinner="dots"):
+        if sitemap:
+            if output_format != "json":
+                click.echo("⏳ Starting GEO batch analysis from sitemap...", err=True)
+                click.echo("⏳ Discovering URLs and aggregating category scores...", err=True)
+            result = run_batch_audit(
+                sitemap,
+                use_cache=cache,
+                project_config=project_config,
+                max_urls=max_urls,
+                concurrency=concurrency,
+            )
+            if output_format != "json":
+                click.echo("✅ Batch analysis complete.\n", err=True)
+        else:
+            import asyncio
+
+            _use_spinner = output_format == "rich"
+            if _use_spinner:
+                try:
+                    from rich.console import Console as _RichConsole
+
+                    _use_spinner = True
+                except ImportError:
+                    _use_spinner = False
+
+            _use_async = False
+            if not cache:
+                try:
+                    import httpx  # noqa: F401
+
+                    from geo_optimizer.core.audit import run_full_audit_async
+
+                    _use_async = True
+                except ImportError:
+                    pass
+
+            if _use_spinner:
+                _stderr = _RichConsole(stderr=True)
+                with _stderr.status("[bold bright_blue]  Analyzing...[/]", spinner="dots"):
+                    if _use_async:
+                        result = asyncio.run(run_full_audit_async(url, project_config=project_config))
+                    else:
+                        result = run_full_audit(url, use_cache=cache, project_config=project_config)
+            else:
+                if output_format != "json":
+                    click.echo("⏳ Starting GEO analysis...", err=True)
+                    click.echo("⏳ Checking robots.txt and AI bot access...", err=True)
+                    click.echo("⏳ Analyzing llms.txt...", err=True)
                 if _use_async:
                     result = asyncio.run(run_full_audit_async(url, project_config=project_config))
                 else:
                     result = run_full_audit(url, use_cache=cache, project_config=project_config)
-        else:
-            if output_format != "json":
-                click.echo("⏳ Starting GEO analysis...", err=True)
-                click.echo("⏳ Checking robots.txt and AI bot access...", err=True)
-                click.echo("⏳ Analyzing llms.txt...", err=True)
-            if _use_async:
-                result = asyncio.run(run_full_audit_async(url, project_config=project_config))
-            else:
-                result = run_full_audit(url, use_cache=cache, project_config=project_config)
-            if output_format != "json":
-                click.echo("⏳ Analyzing JSON-LD schema, meta tags and content...", err=True)
-                click.echo("✅ Analysis complete.\n", err=True)
+                if output_format != "json":
+                    click.echo("⏳ Analyzing JSON-LD schema, meta tags and content...", err=True)
+                    click.echo("✅ Analysis complete.\n", err=True)
     except SystemExit:
         raise
     except Exception as e:
@@ -152,13 +178,17 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
 
             # Fix #431: sanitize exception message (don't leak internal details)
             error_msg = type(e).__name__ if not str(e) else str(e).split("\n")[0][:200]
-            error_data = {"error": error_msg, "url": url}
+            error_data = {"error": error_msg, "url": target_url}
             click.echo(json.dumps(error_data, indent=2))
         else:
             click.echo(f"\n❌ ERROR: {type(e).__name__}", err=True)
         sys.exit(1)
 
-    if output_format == "json":
+    if sitemap and output_format == "json":
+        output = format_batch_audit_json(result)
+    elif sitemap:
+        output = format_batch_audit_text(result)
+    elif output_format == "json":
         output = format_audit_json(result)
     elif output_format == "rich":
         from geo_optimizer.cli.rich_formatter import format_audit_rich, is_rich_available
@@ -220,12 +250,14 @@ def audit(url, output_format, output_file, verbose, cache, clear_cache, config_f
     # Fix #145/#121: exit code if score < minimum threshold
     # --threshold CLI → exit 1 (standard CI convention)
     # min_score from .geo-optimizer.yml → exit 2 (to distinguish from CLI)
-    if min_score > 0 and result.score < min_score:
+    result_score = result.average_score if sitemap else result.score
+
+    if min_score > 0 and result_score < min_score:
         click.echo(
-            f"\n❌ Score {result.score}/100 below minimum required ({min_score})",
+            f"\n❌ Score {result_score}/100 below minimum required ({min_score})",
             err=True,
         )
         exit_code = 1 if threshold is not None else 2
         sys.exit(exit_code)
 
-    return result.score
+    return result_score

@@ -32,7 +32,7 @@ from geo_optimizer.cli.scoring_helpers import (
     signals_score as _signals_score,
 )
 from geo_optimizer.models.config import SCORE_BANDS, SCORING
-from geo_optimizer.models.results import AuditResult
+from geo_optimizer.models.results import AuditResult, BatchAuditResult
 
 # Fix #409: max scores computed dynamically from SCORING (not hardcoded)
 _MAX_ROBOTS = sum(v for k, v in SCORING.items() if k.startswith("robots_"))
@@ -416,6 +416,94 @@ def format_audit_text(result: AuditResult) -> str:
 
     lines.append("")
     return "\n".join(lines)
+
+
+def format_batch_audit_json(result: BatchAuditResult) -> str:
+    """Formatta BatchAuditResult come JSON."""
+    data = {
+        "mode": "batch",
+        "sitemap_url": result.sitemap_url,
+        "timestamp": result.timestamp,
+        "discovered_urls": result.discovered_urls,
+        "audited_urls": result.audited_urls,
+        "successful_urls": result.successful_urls,
+        "failed_urls": result.failed_urls,
+        "average_score": result.average_score,
+        "average_band": result.average_band,
+        "band_counts": result.band_counts,
+        "average_score_breakdown": result.average_score_breakdown,
+        "top_pages": [asdict(page) for page in result.top_pages],
+        "worst_pages": [asdict(page) for page in result.worst_pages],
+        "pages": [asdict(page) for page in result.pages],
+    }
+    return json.dumps(data, indent=2)
+
+
+def format_batch_audit_text(result: BatchAuditResult) -> str:
+    """Formatta BatchAuditResult come report testuale leggibile."""
+    lines = []
+
+    lines.append("")
+    lines.append("🔍 " * 20)
+    lines.append(f"  GEO BATCH AUDIT — {result.sitemap_url}")
+    lines.append("  github.com/auriti-labs/geo-optimizer-skill")
+    lines.append("🔍 " * 20)
+    lines.append("")
+    lines.append(
+        "   "
+        f"URLs discovered: {result.discovered_urls} | "
+        f"Audited: {result.audited_urls} | "
+        f"Success: {result.successful_urls} | "
+        f"Failed: {result.failed_urls}"
+    )
+    lines.append(f"   Average score: {result.average_score:.2f}/100 ({result.average_band.upper()})")
+
+    lines.append("")
+    lines.append(_section_header("1. CATEGORY AVERAGES"))
+    if result.average_score_breakdown:
+        category_labels = {
+            "robots": ("Robots.txt", _MAX_ROBOTS),
+            "llms": ("llms.txt", _MAX_LLMS),
+            "schema": ("Schema", _MAX_SCHEMA),
+            "meta": ("Meta", _MAX_META),
+            "content": ("Content", _MAX_CONTENT),
+            "signals": ("Signals", _MAX_SIGNALS),
+            "ai_discovery": ("AI Discovery", _MAX_AI_DISC),
+            "brand_entity": ("Brand & Entity", _MAX_BRAND),
+        }
+        for category, score in result.average_score_breakdown.items():
+            label, max_score = category_labels.get(category, (category.replace("_", " ").title(), 0))
+            suffix = f"/{max_score}" if max_score else ""
+            lines.append(f"  • {label}: {score:.2f}{suffix}")
+    else:
+        lines.append("  ⚠️  No successful page audits available")
+
+    lines.append("")
+    lines.append(_section_header("2. WORST PAGES"))
+    if result.worst_pages:
+        for index, page in enumerate(result.worst_pages, start=1):
+            lines.append(f"  {index}. {page.url} — {page.score}/100 ({page.band})")
+    else:
+        lines.append("  ⚠️  No failing pages identified")
+
+    lines.append("")
+    lines.append(_section_header("3. TOP PAGES"))
+    if result.top_pages:
+        for index, page in enumerate(result.top_pages, start=1):
+            lines.append(f"  {index}. {page.url} — {page.score}/100 ({page.band})")
+    else:
+        lines.append("  ⚠️  No successful pages audited")
+
+    if result.failed_urls:
+        lines.append("")
+        lines.append(_section_header("4. FAILURES"))
+        for page in result.pages:
+            if page.error:
+                lines.append(f"  • {page.url} — {page.error}")
+
+    return "\n".join(lines)
+
+
 
 
 def _section_header(text: str) -> str:

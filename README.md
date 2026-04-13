@@ -44,6 +44,9 @@ pip install geo-optimizer-skill
 # Audit any site — get a score 0-100 with actionable recommendations
 geo audit --url https://yoursite.com
 
+# Audit a full sitemap and surface weakest pages first
+geo audit --sitemap https://yoursite.com/sitemap.xml --max-urls 25
+
 # Auto-generate all missing files (robots.txt, llms.txt, schema, meta)
 geo fix --url https://yoursite.com --apply
 
@@ -92,6 +95,8 @@ Quotation +41% · Statistics +33% · Fluency +29% · Cite Sources +27% · and 43
 ```bash
 geo audit --url https://example.com --format text     # Human-readable (default)
 geo audit --url https://example.com --format json      # Machine-readable
+geo audit --sitemap https://example.com/sitemap.xml    # Batch sitemap audit (text)
+geo audit --sitemap https://example.com/sitemap.xml --format json  # Batch sitemap audit (JSON)
 geo audit --url https://example.com --format rich      # Colored terminal
 geo audit --url https://example.com --format html      # Self-contained report
 geo audit --url https://example.com --format sarif     # GitHub Code Scanning
