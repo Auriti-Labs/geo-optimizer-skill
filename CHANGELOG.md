@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.3.0] — 2026-04-13
+
+### Added
+- **`geo diff` command** — A/B comparison between two URLs across all GEO dimensions; outputs delta scores, per-category breakdown, and actionable recommendations (#369)
+- **`geo batch` command** — bulk sitemap audit: reads a sitemap XML, audits every URL in parallel, and produces an aggregated report with ranking and export (#363)
+- **Skill: `geo_trust_signal_review`** — validates trust signals (author markup, E-E-A-T signals, About/Contact pages, organizational schema) via catalog
+- **Skill: `geo_ai_discovery_readiness`** — assesses AI-crawler discoverability (ai.txt, summary.json, FAQ endpoint, well-known paths) via catalog
+- **Skill: `geo_schema_readiness`** — evaluates JSON-LD schema completeness (Organization, Article, FAQ, BreadcrumbList) via catalog
+
+---
+
 ## [4.2.0] — 2026-04-13
 
 ### Added
