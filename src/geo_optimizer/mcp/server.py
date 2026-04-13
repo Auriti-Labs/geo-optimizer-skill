@@ -4,13 +4,14 @@ MCP Server for GEO Optimizer.
 Exposes core functionality as MCP tools usable from
 Claude Code, Cursor, Windsurf and any MCP client.
 
-Available tools (10):
+Available tools (11):
     geo_audit            — Full GEO audit (score 0-100)
     geo_fix              — Generate automatic fixes (robots, llms, schema, meta)
     geo_llms_generate    — Generate llms.txt content from sitemap
     geo_citability       — Citability score (47 research-backed methods)
     geo_schema_validate  — Validate JSON-LD schema
     geo_compare          — Compare GEO scores across multiple sites
+    geo_gap_analysis     — Interpret competitive gaps and suggest priorities
     geo_ai_discovery     — Check AI discovery endpoints (.well-known/ai.txt, etc.)
     geo_check_bots       — Check which AI bots can access via robots.txt
     geo_trust_score      — Trust Stack Score (5-layer trust signal aggregation)
@@ -322,7 +323,41 @@ def geo_compare(urls: str) -> str:
     return json.dumps({"comparison": results, "total_sites": len(results)}, indent=2)
 
 
-# ─── Tool 7: geo_ai_discovery ────────────────────────────────────────────────
+# ─── Tool 7: geo_gap_analysis ────────────────────────────────────────────────
+
+
+@mcp.tool()
+def geo_gap_analysis(url1: str, url2: str) -> str:
+    """Analyze the meaningful GEO gap between two sites.
+
+    Identifies the weaker site, estimates the score gap, and returns
+    prioritized actions with impact estimates and CLI commands where possible.
+
+    Args:
+        url1: First URL to compare.
+        url2: Second URL to compare.
+    """
+    from geo_optimizer.utils.validators import validate_public_url
+
+    normalized = [_normalize_url(url1), _normalize_url(url2)]
+    for url in normalized:
+        safe, reason = validate_public_url(url)
+        if not safe:
+            return json.dumps({"error": f"Unsafe URL: {reason}", "url": url})
+
+    try:
+        from geo_optimizer.core.gap_analysis import run_gap_analysis
+
+        result = run_gap_analysis(normalized[0], normalized[1])
+        return _to_json(result)
+    except Exception as e:
+        logger.error("Error in geo_gap_analysis for %s vs %s: %s", normalized[0], normalized[1], e)
+        return json.dumps(
+            {"error": "Internal error during operation", "url1": normalized[0], "url2": normalized[1]}
+        )
+
+
+# ─── Tool 8: geo_ai_discovery ────────────────────────────────────────────────
 
 
 @mcp.tool()
@@ -353,7 +388,7 @@ def geo_ai_discovery(url: str) -> str:
         return json.dumps({"error": "Internal error during operation", "url": url})
 
 
-# ─── Tool 8: geo_check_bots ──────────────────────────────────────────────────
+# ─── Tool 9: geo_check_bots ──────────────────────────────────────────────────
 
 
 @mcp.tool()

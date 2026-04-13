@@ -217,7 +217,34 @@ Compare GEO scores across multiple websites (max 5). Returns a ranked comparison
 }
 ```
 
-### 7. `geo_ai_discovery`
+### 7. `geo_gap_analysis`
+
+Interpret the GEO gap between two sites. Identifies the weaker site, estimates the score delta, and returns prioritized actions with estimated point impact and CLI commands where available.
+
+| Argument | Type | Required | Description |
+|----------|------|----------|-------------|
+| `url1` | string | yes | First URL to compare |
+| `url2` | string | yes | Second URL to compare |
+
+**Example output:**
+
+```json
+{
+  "weaker_url": "https://mysite.com",
+  "stronger_url": "https://competitor.com",
+  "score_gap": 23,
+  "action_plan": [
+    {
+      "category": "llms",
+      "title": "Publish llms.txt",
+      "impact_points": 5,
+      "command": "geo llms --base-url https://mysite.com"
+    }
+  ]
+}
+```
+
+### 8. `geo_ai_discovery`
 
 Check AI discovery endpoints on a website. Verifies the presence of `/.well-known/ai.txt`, `/ai/summary.json`, `/ai/faq.json`, and `/ai/service.json` based on the [geo-checklist.dev](https://geo-checklist.dev) emerging standard.
 

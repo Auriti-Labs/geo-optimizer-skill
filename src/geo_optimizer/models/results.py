@@ -544,6 +544,37 @@ class AuditDiffResult:
     unchanged_categories: list[CategoryDelta] = field(default_factory=list)
 
 
+# ─── Gap analysis ────────────────────────────────────────────────────────────
+
+
+@dataclass
+class GapAction:
+    """Azione consigliata per colmare un gap GEO rispetto a un competitor."""
+
+    category: str
+    title: str
+    rationale: str
+    impact_points: int = 0
+    priority: str = "medium"
+    command: str = ""
+
+
+@dataclass
+class GapAnalysisResult:
+    """Gap analysis interpretativa tra due siti GEO."""
+
+    weaker_url: str
+    stronger_url: str
+    weaker_score: int = 0
+    stronger_score: int = 0
+    score_gap: int = 0
+    weaker_band: str = "critical"
+    stronger_band: str = "critical"
+    category_deltas: list[CategoryDelta] = field(default_factory=list)
+    action_plan: list[GapAction] = field(default_factory=list)
+    strengths: list[CategoryDelta] = field(default_factory=list)
+
+
 # ─── Schema analysis ─────────────────────────────────────────────────────────
 
 

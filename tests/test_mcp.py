@@ -16,6 +16,7 @@ pytest.importorskip("mcp", reason="mcp non installato (pip install geo-optimizer
 from geo_optimizer.mcp.server import (
     geo_audit,
     geo_fix,
+    geo_gap_analysis,
     geo_llms_generate,
     geo_schema_validate,
     get_ai_bots,
@@ -26,12 +27,13 @@ from geo_optimizer.models.results import (
     ContentResult,
     FixItem,
     FixPlan,
+    GapAction,
+    GapAnalysisResult,
     LlmsTxtResult,
     MetaResult,
     RobotsResult,
     SchemaResult,
 )
-
 
 # ============================================================================
 # FIXTURES
@@ -160,6 +162,49 @@ class TestGeoFixTool:
         assert "error" in data
 
 
+class TestGeoGapAnalysisTool:
+    """Test per il tool MCP geo_gap_analysis."""
+
+    @patch("geo_optimizer.utils.validators.validate_public_url", return_value=(True, None))
+    @patch("geo_optimizer.core.gap_analysis.run_gap_analysis")
+    def test_gap_analysis_ritorna_json_valido(self, mock_gap_analysis, _mock_validate):
+        """geo_gap_analysis serializza una gap analysis con piano d'azione."""
+        mock_gap_analysis.return_value = GapAnalysisResult(
+            weaker_url="https://weaker.example.com",
+            stronger_url="https://stronger.example.com",
+            weaker_score=55,
+            stronger_score=82,
+            score_gap=27,
+            weaker_band="foundation",
+            stronger_band="good",
+            action_plan=[
+                GapAction(
+                    category="llms",
+                    title="Publish llms.txt",
+                    rationale="The stronger site has llms.txt and the weaker site does not.",
+                    impact_points=5,
+                    priority="high",
+                    command="geo llms --base-url https://weaker.example.com",
+                )
+            ],
+        )
+
+        result = geo_gap_analysis("https://weaker.example.com", "https://stronger.example.com")
+        data = json.loads(result)
+
+        assert data["score_gap"] == 27
+        assert data["weaker_url"] == "https://weaker.example.com"
+        assert data["action_plan"][0]["title"] == "Publish llms.txt"
+
+    def test_gap_analysis_blocca_url_non_sicuro(self):
+        """geo_gap_analysis rifiuta URL verso reti private."""
+        result = geo_gap_analysis("http://192.168.0.1", "https://example.com")
+        data = json.loads(result)
+
+        assert "error" in data
+        assert "Unsafe URL" in data["error"]
+
+
 # ============================================================================
 # TEST: geo_llms_generate
 # ============================================================================
@@ -271,8 +316,9 @@ class TestGeoCitabilityTool:
     @patch("geo_optimizer.core.citability.audit_citability")
     def test_citability_happy_path_ritorna_json(self, mock_citability, mock_fetch):
         """geo_citability con fetch OK e citability audit ritorna JSON valido."""
-        from geo_optimizer.models.results import CitabilityResult, MethodScore
         from unittest.mock import MagicMock
+
+        from geo_optimizer.models.results import CitabilityResult, MethodScore
 
         # Arrange: risposta HTTP mock
         mock_resp = MagicMock()

@@ -143,6 +143,7 @@ Then ask: *"audit my site and fix what's missing"*
 | `geo_citability` | Content citability analysis (47 methods) |
 | `geo_schema_validate` | Validate JSON-LD |
 | `geo_compare` | Compare multiple sites |
+| `geo_gap_analysis` | Explain the gap between two sites and prioritize fixes |
 | `geo_ai_discovery` | Check AI discovery endpoints |
 | `geo_check_bots` | Check bot access via robots.txt |
 | `geo_trust_score` | 5-layer trust signal aggregation |
