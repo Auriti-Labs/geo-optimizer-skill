@@ -26,7 +26,7 @@ from geo_optimizer.utils.validators import validate_public_url
 @click.option(
     "--only",
     default=None,
-    help="Filter categories: robots,llms,schema,meta (comma-separated)",
+    help="Filter categories: robots,llms,schema,meta,ai_discovery,content (comma-separated)",
 )
 @click.option("--config", "config_file", default=None, help="Path to .geo-optimizer.yml")
 def fix(url, output_dir, dry_run, do_apply, only, config_file):
@@ -35,23 +35,23 @@ def fix(url, output_dir, dry_run, do_apply, only, config_file):
     if do_apply:
         dry_run = False
 
+    # Parse --only filter
+    only_set = None
+    if only:
+        only_set = {c.strip().lower() for c in only.split(",")}
+        valid_categories = {"robots", "llms", "schema", "meta", "ai_discovery", "content"}
+        invalid = only_set - valid_categories
+        if invalid:
+            click.echo(f"❌ Invalid categories: {', '.join(invalid)}", err=True)
+            click.echo(f"   Valid categories: {', '.join(sorted(valid_categories))}", err=True)
+            sys.exit(1)
+
     # Anti-SSRF validation
     safe_url = url if url.startswith(("http://", "https://")) else f"https://{url}"
     safe, reason = validate_public_url(safe_url)
     if not safe:
         click.echo(f"\n❌ Unsafe URL: {reason}", err=True)
         sys.exit(1)
-
-    # Parse --only filter
-    only_set = None
-    if only:
-        only_set = {c.strip().lower() for c in only.split(",")}
-        valid_categories = {"robots", "llms", "schema", "meta", "ai_discovery"}
-        invalid = only_set - valid_categories
-        if invalid:
-            click.echo(f"❌ Invalid categories: {', '.join(invalid)}", err=True)
-            click.echo(f"   Valid categories: {', '.join(sorted(valid_categories))}", err=True)
-            sys.exit(1)
 
     # Run audit
     click.echo("⏳ Running GEO audit...", err=True)

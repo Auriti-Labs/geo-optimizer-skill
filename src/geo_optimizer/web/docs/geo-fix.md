@@ -1,6 +1,6 @@
 # geo fix Command
 
-`geo fix` audits a URL and generates all missing files in one shot: robots.txt patches, llms.txt, JSON-LD schemas, meta tag recommendations, and AI discovery templates.
+`geo fix` audits a URL and generates all missing files in one shot: robots.txt patches, llms.txt, JSON-LD schemas, meta tag recommendations, AI discovery templates, and deterministic content rewrite guidance.
 
 ---
 
@@ -16,6 +16,7 @@ geo fix --url https://yoursite.com --apply
 # Target only specific categories
 geo fix --url https://yoursite.com --only robots,llms
 geo fix --url https://yoursite.com --only schema,meta
+geo fix --url https://yoursite.com --only content
 ```
 
 ---
@@ -30,6 +31,7 @@ geo fix --url https://yoursite.com --only schema,meta
 | **meta** | `meta-tags.html` | Description, canonical, Open Graph snippets |
 | **ai-discovery** | `ai/summary.json` | Site summary for AI systems |
 | **ai-discovery** | `ai/faq.json` | Structured FAQ for AI |
+| **content** | `content-rewrite.md` | Deterministic rewrite checklist for weak content signals |
 
 ---
 
@@ -39,7 +41,7 @@ geo fix --url https://yoursite.com --only schema,meta
 |------|---------|-------------|
 | `--url` | (required) | URL of the site to fix |
 | `--apply` | `false` | Write files to disk (default is dry-run preview) |
-| `--only` | all | Comma-separated categories: `robots,llms,schema,meta` |
+| `--only` | all | Comma-separated categories: `robots,llms,schema,meta,ai_discovery,content` |
 | `--output-dir` | `.` | Directory to write fix files |
 
 ---
@@ -75,6 +77,12 @@ Score before: 52/100
 
 📄 ai/summary.json:
    {"name": "Your Site", "description": "...", "url": "..."}
+
+📄 content-rewrite.md:
+   # Content Rewrite Plan
+   - Rewrite the opening 150 characters to answer the main question directly
+   - Add 2-3 authoritative citations near factual claims
+   - Split the page into H2/H3 sections with one takeaway each
 
 Estimated score after fixes: 85/100 (+33 points)
 

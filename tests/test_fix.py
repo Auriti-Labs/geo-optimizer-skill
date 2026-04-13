@@ -11,6 +11,7 @@ from click.testing import CliRunner
 
 from geo_optimizer.cli.main import cli
 from geo_optimizer.core.fixer import (
+    generate_content_rewrite_fix,
     generate_llms_fix,
     generate_meta_fix,
     generate_robots_fix,
@@ -97,6 +98,13 @@ def _make_optimized_result():
             "meta.has_og_title": True,
             "meta.has_og_description": True,
             "meta.has_og_image": True,
+            "content.has_h1": True,
+            "content.has_numbers": True,
+            "content.has_links": True,
+            "content.word_count": 600,
+            "content.has_heading_hierarchy": True,
+            "content.has_lists_or_tables": True,
+            "content.has_front_loading": True,
             "ai_discovery.has_well_known_ai": True,
             "ai_discovery.has_summary": True,
             "ai_discovery.summary_valid": True,
@@ -314,6 +322,39 @@ class TestGenerateMetaFix:
         assert fix is None
 
 
+class TestGenerateContentRewriteFix:
+    """Test per i suggerimenti di rewrite del contenuto."""
+
+    def test_contenuto_debole_genera_piano_rewrite(self):
+        """Con segnali contenuto deboli, genera un markdown di rewrite."""
+        result = _make_result(
+            **{
+                "content.has_h1": False,
+                "content.word_count": 120,
+                "content.has_links": False,
+                "content.has_numbers": False,
+                "content.has_heading_hierarchy": False,
+                "content.has_front_loading": False,
+            }
+        )
+
+        fix = generate_content_rewrite_fix(result, "https://example.com")
+
+        assert fix is not None
+        assert fix.category == "content"
+        assert fix.file_name == "content-rewrite.md"
+        assert "Priority Suggestions" in fix.content
+        assert "opening 150 characters" in fix.content
+
+    def test_contenuto_forte_non_genera_fix(self):
+        """Se i segnali contenuto sono solidi, non serve rewrite guidance."""
+        result = _make_optimized_result()
+
+        fix = generate_content_rewrite_fix(result, "https://example.com")
+
+        assert fix is None
+
+
 # ============================================================================
 # TEST: run_all_fixes
 # ============================================================================
@@ -338,6 +379,7 @@ class TestRunAllFixes:
         assert "llms" in categories
         assert "schema" in categories
         assert "meta" in categories
+        assert "content" in categories
 
     def test_sito_ottimizzato_nessun_fix(self):
         """Con sito già ottimizzato, non genera fix."""
@@ -359,6 +401,7 @@ class TestRunAllFixes:
         assert "llms" not in categories
         assert "schema" not in categories
         assert "meta" not in categories
+        assert "content" not in categories
 
 
 # ============================================================================
@@ -369,8 +412,9 @@ class TestRunAllFixes:
 class TestFixCommand:
     """Test per il comando CLI geo fix."""
 
+    @patch("geo_optimizer.cli.fix_cmd.validate_public_url", return_value=(True, None))
     @patch("geo_optimizer.core.audit.run_full_audit")
-    def test_fix_dry_run_mostra_preview(self, mock_audit):
+    def test_fix_dry_run_mostra_preview(self, mock_audit, _mock_validate):
         """geo fix --url URL mostra preview senza scrivere file."""
         mock_audit.return_value = _make_result()
         runner = CliRunner()
@@ -384,8 +428,9 @@ class TestFixCommand:
         assert result.exit_code == 0
         assert "PREVIEW" in result.output or "Fix plan" in result.output
 
+    @patch("geo_optimizer.cli.fix_cmd.validate_public_url", return_value=(True, None))
     @patch("geo_optimizer.core.audit.run_full_audit")
-    def test_fix_apply_scrive_file(self, mock_audit, tmp_path):
+    def test_fix_apply_scrive_file(self, mock_audit, _mock_validate, tmp_path):
         """geo fix --url URL --apply scrive i file nella directory."""
         mock_audit.return_value = _make_result()
         runner = CliRunner()
@@ -416,8 +461,9 @@ class TestFixCommand:
         files = list(output.iterdir())
         assert len(files) > 0
 
+    @patch("geo_optimizer.cli.fix_cmd.validate_public_url", return_value=(True, None))
     @patch("geo_optimizer.core.audit.run_full_audit")
-    def test_fix_sito_ottimizzato(self, mock_audit):
+    def test_fix_sito_ottimizzato(self, mock_audit, _mock_validate):
         """geo fix su sito già ottimizzato mostra messaggio positivo."""
         mock_audit.return_value = _make_optimized_result()
         runner = CliRunner()

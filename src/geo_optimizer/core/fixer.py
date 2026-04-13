@@ -6,6 +6,7 @@ Analyzes an AuditResult and generates corrective artifacts:
 - Complete llms.txt via sitemap
 - Missing JSON-LD schemas (WebSite, FAQPage, Organization)
 - Missing HTML meta tags
+- Content rewrite guidance for weak citation signals
 
 All functions return dataclasses (FixItem/FixPlan), NEVER print.
 """
@@ -349,6 +350,74 @@ def generate_ai_discovery_fix(result: AuditResult, base_url: str) -> list[FixIte
     return fixes
 
 
+def generate_content_rewrite_fix(result: AuditResult, base_url: str) -> FixItem | None:
+    """Generate deterministic rewrite guidance for content weaknesses.
+
+    Returns:
+        FixItem or None if content signals are already strong.
+    """
+    suggestions: list[str] = []
+    page_label = result.content.h1_text or result.meta.title_text or base_url
+
+    if not result.content.has_h1:
+        suggestions.append(
+            "- Add a single H1 that states the page topic explicitly and matches the user's likely query intent."
+        )
+    if result.content.word_count < 300:
+        suggestions.append(
+            "- Expand the page to at least 300 words with one intro, 2-3 H2 sections, and one concise closing summary."
+        )
+    if not result.content.has_front_loading:
+        suggestions.append(
+            "- Rewrite the opening 150 characters so they answer the core question immediately before any background context."
+        )
+    if not result.content.has_heading_hierarchy:
+        suggestions.append(
+            "- Split the body into H2/H3 sections so each section has one focused takeaway and one supporting paragraph."
+        )
+    if not result.content.has_lists_or_tables:
+        suggestions.append(
+            "- Add at least one bullet list or comparison table to make the page easier to chunk and quote."
+        )
+    if not result.content.has_numbers:
+        suggestions.append(
+            "- Add concrete numbers, benchmarks, or dated facts instead of purely generic claims."
+        )
+    if not result.content.has_links:
+        suggestions.append(
+            "- Add 2-3 authoritative outbound citations near factual claims to improve credibility and extractability."
+        )
+
+    if not suggestions:
+        return None
+
+    content = "\n".join(
+        [
+            f"# Content Rewrite Plan — {page_label}",
+            "",
+            "Use this deterministic rewrite checklist before publishing the next revision.",
+            "",
+            "## Priority Suggestions",
+            *suggestions,
+            "",
+            "## Recommended Section Shape",
+            "- Intro: answer the main question in one direct sentence.",
+            "- H2 1: explain the key concept with one concrete example.",
+            "- H2 2: add evidence, numbers, or source-backed support.",
+            "- H2 3: compare options, tradeoffs, or implementation steps.",
+            "- Close: summarize the decision or takeaway in one citation-ready sentence.",
+        ]
+    )
+
+    return FixItem(
+        category="content",
+        description="Generate deterministic rewrite suggestions for weak content signals",
+        content=content,
+        file_name="content-rewrite.md",
+        action="snippet",
+    )
+
+
 def _estimate_score_after(result: AuditResult, fixes: list[FixItem]) -> int:
     """Estimate the score after applying the fixes.
 
@@ -408,6 +477,22 @@ def _estimate_score_after(result: AuditResult, fixes: list[FixItem]) -> int:
         if not result.ai_discovery.has_faq:
             bonus += SCORING["ai_discovery_faq"]
 
+    if "content" in categories_fixed:
+        if not result.content.has_h1:
+            bonus += SCORING["content_h1"]
+        if not result.content.has_numbers:
+            bonus += SCORING["content_numbers"]
+        if not result.content.has_links:
+            bonus += SCORING["content_links"]
+        if result.content.word_count < 300:
+            bonus += SCORING["content_word_count"]
+        if not result.content.has_heading_hierarchy:
+            bonus += SCORING.get("content_heading_hierarchy", 0)
+        if not result.content.has_lists_or_tables:
+            bonus += SCORING.get("content_lists_or_tables", 0)
+        if not result.content.has_front_loading:
+            bonus += SCORING.get("content_front_loading", 0)
+
     return min(100, result.score + bonus)
 
 
@@ -438,7 +523,7 @@ def run_all_fixes(
 
     fixes: list[FixItem] = []
     skipped: list[str] = []
-    all_categories = {"robots", "llms", "schema", "meta", "ai_discovery"}
+    all_categories = {"robots", "llms", "schema", "meta", "ai_discovery", "content"}
     active = only if only else all_categories
 
     # Robots fix
@@ -488,6 +573,16 @@ def run_all_fixes(
             skipped.append("meta: all meta tags are present")
     else:
         skipped.append("meta: excluded by --only filter")
+
+    # Content rewrite suggestions
+    if "content" in active:
+        fix = generate_content_rewrite_fix(audit_result, base_url)
+        if fix:
+            fixes.append(fix)
+        else:
+            skipped.append("content: content signals are already strong")
+    else:
+        skipped.append("content: excluded by --only filter")
 
     score_after = _estimate_score_after(audit_result, fixes)
 
