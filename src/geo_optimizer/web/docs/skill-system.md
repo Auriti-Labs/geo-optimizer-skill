@@ -59,12 +59,17 @@ Skills can reference `doc:` surfaces so prompt behavior stays tied to versioned 
 
 The repository test suite validates the whole catalog.
 
+For catalog direction and priority, see [Skill Roadmap](skill-roadmap.md).
+
 ## Catalog v1
 
 Initial foundational skills:
 
 - `geo_audit_orchestrator`
 - `geo_foundation_repair`
+- `geo_citation_readiness`
+- `geo_competitor_comparison`
+- `geo_schema_readiness`
 
 These are intentionally narrow. They define the contract for future skills without introducing a runtime agent engine.
 

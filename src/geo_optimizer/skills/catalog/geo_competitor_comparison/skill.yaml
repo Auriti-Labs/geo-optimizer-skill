@@ -1,0 +1,76 @@
+schema_version: 1
+id: geo_competitor_comparison
+name: GEO Competitor Comparison
+version: 1.0.0
+kind: analysis
+summary: >
+  Compare the GEO posture of two or more sites using existing audit, scoring,
+  trust, and citability evidence, then normalize the most meaningful deltas
+  into actionable priorities for the weaker site.
+when_to_use:
+  - You need to compare two or more sites to understand which one is stronger from a GEO perspective.
+  - You need a normalized explanation of the most meaningful GEO gaps behind a comparative disadvantage.
+required_inputs:
+  - target_site_list
+expected_outputs:
+  - comparison_summary
+  - strongest_advantages_by_site
+  - prioritized_gap_list
+  - closing_gap_priorities
+  - next_step_recommendation
+engine_surfaces:
+  - python_api:audit
+  - python_api:AuditResult
+  - mcp:geo_audit
+  - mcp:geo_compare
+  - mcp:geo_trust_score
+  - mcp:geo_citability
+  - doc:docs/geo-audit.md
+  - doc:docs/scoring-rubric.md
+  - doc:docs/mcp-server.md
+workflow:
+  - id: collect_comparison_evidence
+    title: Collect comparison evidence
+    goal: Use the existing comparison and audit surfaces to establish the score, band, and category-level posture of each site.
+    uses:
+      - mcp:geo_compare
+      - mcp:geo_audit
+      - python_api:audit
+      - python_api:AuditResult
+      - doc:docs/mcp-server.md
+    outputs:
+      - normalized_site_comparison_evidence
+  - id: explain_meaningful_deltas
+    title: Explain meaningful deltas
+    goal: Interpret the most important cross-site differences using the existing scoring rubric rather than ad hoc comparison logic.
+    uses:
+      - doc:docs/geo-audit.md
+      - doc:docs/scoring-rubric.md
+    outputs:
+      - strongest_advantages_by_site
+      - prioritized_gap_list
+  - id: enrich_relative_positioning
+    title: Enrich relative positioning
+    goal: Use trust and citability evidence only where they clarify why one site is easier to trust, quote, or surface than another.
+    uses:
+      - mcp:geo_trust_score
+      - mcp:geo_citability
+      - doc:docs/mcp-server.md
+    outputs:
+      - comparative_trust_citability_findings
+  - id: recommend_gap_closing_path
+    title: Recommend gap-closing path
+    goal: Convert the normalized deltas into a short closing-gap priority list for the weaker site and route to the next focused workflow.
+    uses:
+      - doc:docs/geo-audit.md
+      - doc:docs/scoring-rubric.md
+    outputs:
+      - comparison_summary
+      - closing_gap_priorities
+      - next_step_recommendation
+guardrails:
+  - Do not turn this into a generic market or content-strategy analysis.
+  - Do not just restate two audits side by side without normalizing the most meaningful differences.
+  - Use trust and citability evidence only to explain comparative GEO posture, not to invent a new scoring system.
+  - Keep the recommendations focused on the weaker site and the highest-leverage deltas it can realistically close.
+prompt_file: prompt.md

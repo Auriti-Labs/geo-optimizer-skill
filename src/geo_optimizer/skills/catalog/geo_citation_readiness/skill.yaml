@@ -1,0 +1,79 @@
+schema_version: 1
+id: geo_citation_readiness
+name: GEO Citation Readiness
+version: 1.0.0
+kind: analysis
+summary: >
+  Evaluate whether a page or site is realistically ready to be cited, reused,
+  or surfaced by AI systems by interpreting existing GEO audit, citability,
+  trust, and citation-risk evidence.
+when_to_use:
+  - You already have GEO audit evidence and need a narrower judgment about citation readiness.
+  - You need to separate general GEO posture from citation-specific strengths, blockers, and remediation priorities.
+required_inputs:
+  - target_url
+  - audit_evidence_input
+expected_outputs:
+  - citation_readiness_summary
+  - prioritized_citation_risks
+  - remediation_focus_list
+  - next_step_recommendation
+engine_surfaces:
+  - python_api:audit
+  - python_api:AuditResult
+  - mcp:geo_audit
+  - mcp:geo_citability
+  - mcp:geo_trust_score
+  - mcp:geo_negative_signals
+  - doc:docs/geo-audit.md
+  - doc:docs/geo-methods.md
+  - doc:docs/scoring-rubric.md
+  - doc:docs/ai-bots-reference.md
+  - doc:docs/mcp-server.md
+workflow:
+  - id: anchor_on_existing_evidence
+    title: Anchor on existing evidence
+    goal: Confirm the citation-readiness assessment starts from authoritative GEO audit evidence rather than generic prompt reasoning.
+    uses:
+      - python_api:audit
+      - python_api:AuditResult
+      - mcp:geo_audit
+      - doc:docs/geo-audit.md
+    outputs:
+      - normalized_citation_evidence
+  - id: evaluate_citability_and_extractability
+    title: Evaluate citability and extractability
+    goal: Interpret the existing citability signals and structural content cues that affect whether useful facts are easy for AI systems to quote, summarize, or reuse.
+    uses:
+      - mcp:geo_citability
+      - doc:docs/geo-methods.md
+      - doc:docs/scoring-rubric.md
+    outputs:
+      - citability_extractability_findings
+  - id: assess_trust_and_citation_risks
+    title: Assess trust and citation risks
+    goal: Combine trust-stack evidence, citation-bot accessibility, and negative anti-citation signals into a focused risk judgment.
+    uses:
+      - mcp:geo_trust_score
+      - mcp:geo_negative_signals
+      - doc:docs/ai-bots-reference.md
+      - doc:docs/scoring-rubric.md
+    outputs:
+      - citation_risk_findings
+  - id: produce_citation_readiness_view
+    title: Produce citation-readiness view
+    goal: Summarize citation readiness, rank the main citation-specific weaknesses, and point to the next remediation path.
+    uses:
+      - doc:docs/geo-audit.md
+      - doc:docs/mcp-server.md
+    outputs:
+      - citation_readiness_summary
+      - prioritized_citation_risks
+      - remediation_focus_list
+      - next_step_recommendation
+guardrails:
+  - Do not restate the full GEO audit as if that were a citation-readiness analysis.
+  - Do not treat generic content quality advice as a substitute for citation-specific evidence.
+  - Keep the interpretation anchored to existing citability, trust, crawler-access, and negative-signal surfaces.
+  - If technical foundations are still the primary blocker, route to foundation repair instead of forcing a content-first answer.
+prompt_file: prompt.md

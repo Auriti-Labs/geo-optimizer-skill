@@ -1,0 +1,76 @@
+schema_version: 1
+id: geo_schema_readiness
+name: GEO Schema Readiness
+version: 1.0.0
+kind: analysis
+summary: >
+  Evaluate whether a page or site is structurally ready from a schema /
+  structured-data perspective for GEO-related discoverability, extractability,
+  attribution clarity, and machine-readable understanding.
+when_to_use:
+  - You already have GEO audit evidence and need a narrower judgment about schema and structured-data readiness.
+  - You need to identify which schema weaknesses most reduce extractability, attribution clarity, or AI-facing interpretation quality.
+required_inputs:
+  - target_url
+  - audit_evidence_input
+expected_outputs:
+  - schema_readiness_summary
+  - prioritized_schema_gaps
+  - schema_signal_strengths
+  - schema_improvement_priorities
+  - next_step_recommendation
+engine_surfaces:
+  - python_api:audit
+  - python_api:AuditResult
+  - mcp:geo_audit
+  - mcp:geo_schema_validate
+  - doc:docs/geo-audit.md
+  - doc:docs/schema-injector.md
+  - doc:docs/scoring-rubric.md
+  - doc:docs/mcp-server.md
+workflow:
+  - id: anchor_on_schema_evidence
+    title: Anchor on schema evidence
+    goal: Start from authoritative GEO audit evidence so schema interpretation is grounded in the current structured-data findings, not a generic checklist.
+    uses:
+      - python_api:audit
+      - python_api:AuditResult
+      - mcp:geo_audit
+      - doc:docs/geo-audit.md
+    outputs:
+      - normalized_schema_evidence
+  - id: interpret_schema_signal_strength
+    title: Interpret schema signal strength
+    goal: Evaluate schema coverage, type fit, richness, and attribution-supporting signals using the existing rubric and audit semantics.
+    uses:
+      - doc:docs/geo-audit.md
+      - doc:docs/scoring-rubric.md
+    outputs:
+      - schema_signal_strengths
+      - prioritized_schema_gaps
+  - id: validate_schema_assumptions
+    title: Validate schema assumptions
+    goal: Use the existing validation surface to separate absent schema from malformed or underspecified JSON-LD when concrete schema payloads are available.
+    uses:
+      - mcp:geo_schema_validate
+      - doc:docs/schema-injector.md
+      - doc:docs/mcp-server.md
+    outputs:
+      - schema_validation_findings
+  - id: produce_schema_readiness_view
+    title: Produce schema-readiness view
+    goal: Summarize schema readiness, rank the highest-leverage schema gaps, and point to the next focused remediation path.
+    uses:
+      - doc:docs/geo-audit.md
+      - doc:docs/schema-injector.md
+      - doc:docs/scoring-rubric.md
+    outputs:
+      - schema_readiness_summary
+      - schema_improvement_priorities
+      - next_step_recommendation
+guardrails:
+  - Do not turn this into a generic schema validator wrapper or a broad SEO schema checklist.
+  - Do not reduce schema readiness to simple pass/fail validity when the bigger issue is weak type coverage or poor attribute richness.
+  - Do not generate a broad repair workflow; route to foundation repair if the user needs implementation planning.
+  - Keep every claim anchored to existing audit evidence, schema validation surfaces, or repository docs.
+prompt_file: prompt.md
