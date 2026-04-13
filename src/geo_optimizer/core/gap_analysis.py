@@ -147,8 +147,10 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             SCORING["meta_title"],
             f"geo fix --url {weaker_url} --only meta",
         )
-    if stronger.meta.has_og_title and stronger.meta.has_og_description and not (
-        weaker.meta.has_og_title and weaker.meta.has_og_description
+    if (
+        stronger.meta.has_og_title
+        and stronger.meta.has_og_description
+        and not (weaker.meta.has_og_title and weaker.meta.has_og_description)
     ):
         add_action(
             "meta",

@@ -352,9 +352,7 @@ def geo_gap_analysis(url1: str, url2: str) -> str:
         return _to_json(result)
     except Exception as e:
         logger.error("Error in geo_gap_analysis for %s vs %s: %s", normalized[0], normalized[1], e)
-        return json.dumps(
-            {"error": "Internal error during operation", "url1": normalized[0], "url2": normalized[1]}
-        )
+        return json.dumps({"error": "Internal error during operation", "url1": normalized[0], "url2": normalized[1]})
 
 
 # ─── Tool 8: geo_ai_discovery ────────────────────────────────────────────────

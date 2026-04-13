@@ -380,9 +380,7 @@ def generate_content_rewrite_fix(result: AuditResult, base_url: str) -> FixItem 
             "- Add at least one bullet list or comparison table to make the page easier to chunk and quote."
         )
     if not result.content.has_numbers:
-        suggestions.append(
-            "- Add concrete numbers, benchmarks, or dated facts instead of purely generic claims."
-        )
+        suggestions.append("- Add concrete numbers, benchmarks, or dated facts instead of purely generic claims.")
     if not result.content.has_links:
         suggestions.append(
             "- Add 2-3 authoritative outbound citations near factual claims to improve credibility and extractability."
