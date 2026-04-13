@@ -5,6 +5,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.5.0] — 2026-04-13
+
+### Added
+- **Local GEO history and tracking workflows** — new SQLite-backed local storage for saved audit snapshots, with retention support and per-category score history (#237, #54)
+- **`geo history` command** — inspect saved score trends, best/worst snapshots, and score deltas over time from the local tracking database (#237)
+- **`geo track` command** — monitoring-oriented workflow to run recurring audits, persist snapshots, and generate a lightweight HTML trend report (#54)
+- **`geo audit --save-history`** — persist single-URL audit results into the local tracking store for later trend analysis (#237)
+- **`geo audit --regression`** — CI-friendly regression gate that exits with code `1` when the score drops vs the previous saved snapshot (#237)
+
+### Changed
+- **Web demo trend summary** — `/api/audit` now enriches audit responses with local history trend metadata when snapshots are available, enabling score-change messaging in the demo
+- **Documentation coverage** — added dedicated docs for `geo history` and `geo track`, and updated audit/CI docs in both packaged docs and the web-doc mirror used by GitHub Pages
+
+### Fixed
+- **Release lint formatting** — applied `ruff format` to the previously unformatted release files so CI passes cleanly after `v4.4.0`
+
+### Tests
+- Added dedicated tests for history storage, web history summaries, CLI save-history/regression flows, and tracking HTML report generation
+
+---
+
 ## [4.4.0] — 2026-04-13
 
 ### Added
