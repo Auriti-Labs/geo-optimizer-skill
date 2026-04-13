@@ -1,0 +1,72 @@
+schema_version: 1
+id: geo_foundation_repair
+name: GEO Foundation Repair
+version: 1.0.0
+kind: repair
+summary: >
+  Convert an authoritative GEO audit into a deterministic remediation plan for
+  technical discoverability, AI crawler access, llms.txt, schema, and AI discovery endpoints.
+when_to_use:
+  - An audit shows foundational gaps in robots.txt, llms.txt, schema, metadata, or AI discovery.
+  - You need a practical repair plan before editing a site or codebase.
+required_inputs:
+  - target_url
+  - audit_result_or_gap_list
+expected_outputs:
+  - remediation_plan
+  - generated_artifact_list
+  - verification_checklist
+engine_surfaces:
+  - python_api:audit
+  - mcp:geo_fix
+  - mcp:geo_schema_validate
+  - mcp:geo_check_bots
+  - mcp:geo_ai_discovery
+  - doc:docs/geo-fix.md
+  - doc:docs/llms-txt.md
+  - doc:docs/ai-bots-reference.md
+  - doc:docs/schema-injector.md
+  - doc:docs/geo-audit.md
+workflow:
+  - id: anchor_on_audit
+    title: Anchor on audit evidence
+    goal: Confirm the repair scope from the existing GEO audit before generating fixes.
+    uses:
+      - python_api:audit
+      - doc:docs/geo-audit.md
+    outputs:
+      - confirmed_gap_list
+  - id: generate_foundation_artifacts
+    title: Generate foundation artifacts
+    goal: Use the existing fix surface to propose concrete artifacts and snippets.
+    uses:
+      - mcp:geo_fix
+      - doc:docs/geo-fix.md
+      - doc:docs/llms-txt.md
+      - doc:docs/schema-injector.md
+    outputs:
+      - remediation_plan
+      - generated_artifact_list
+  - id: verify_crawler_and_discovery
+    title: Verify crawler and discovery surfaces
+    goal: Check that crawler access and AI discovery endpoints are covered by the plan.
+    uses:
+      - mcp:geo_check_bots
+      - mcp:geo_ai_discovery
+      - doc:docs/ai-bots-reference.md
+    outputs:
+      - crawler_access_verification
+      - ai_discovery_verification
+  - id: validate_schema_and_finalize
+    title: Validate schema and finalize plan
+    goal: Validate JSON-LD payloads and emit the final verification checklist.
+    uses:
+      - mcp:geo_schema_validate
+      - doc:docs/schema-injector.md
+    outputs:
+      - verification_checklist
+guardrails:
+  - Do not propose repairs that contradict the authoritative audit evidence.
+  - Prefer generated artifacts and validation steps over generic advice.
+  - Keep repair scope on technical foundations before broader content rewrites.
+prompt_file: prompt.md

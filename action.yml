@@ -5,7 +5,7 @@
 #   - uses: Auriti-Labs/geo-optimizer-skill@v1
 #     with:
 #       url: https://mysite.com
-#       threshold: 70
+#       min-score: 70
 #       format: sarif
 
 name: "GEO Optimizer Audit"
@@ -20,8 +20,12 @@ inputs:
   url:
     description: "URL to audit"
     required: true
+  min-score:
+    description: "Preferred minimum score (0-100). The step fails if the score is below this value."
+    required: false
+    default: "0"
   threshold:
-    description: "Minimum score (0-100). The step fails if the score is below this value."
+    description: "Deprecated alias for min-score."
     required: false
     default: "0"
   format:
@@ -116,16 +120,21 @@ runs:
 
     # 7. Controlla soglia score
     - name: Check score threshold
-      if: inputs.threshold != '0'
       shell: bash
       run: |
         SCORE=${{ steps.extract.outputs.score }}
-        THRESHOLD=${{ inputs.threshold }}
-        if [ "${SCORE}" -lt "${THRESHOLD}" ]; then
-          echo "::error::GEO score ${SCORE} is below threshold ${THRESHOLD}"
+        MIN_SCORE="${{ inputs.min-score }}"
+        if [ "${MIN_SCORE}" = "0" ] && [ "${{ inputs.threshold }}" != "0" ]; then
+          MIN_SCORE="${{ inputs.threshold }}"
+        fi
+        if [ "${MIN_SCORE}" = "0" ]; then
+          exit 0
+        fi
+        if [ "${SCORE}" -lt "${MIN_SCORE}" ]; then
+          echo "::error::GEO score ${SCORE} is below minimum score ${MIN_SCORE}"
           exit 1
         fi
-        echo "✅ GEO score ${SCORE} meets threshold ${THRESHOLD}"
+        echo "✅ GEO score ${SCORE} meets minimum score ${MIN_SCORE}"
 
     # 8. Controlla warning (se abilitato)
     - name: Check warnings

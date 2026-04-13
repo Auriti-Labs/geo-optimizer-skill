@@ -216,7 +216,7 @@ geo schema --type webapp --url https://yoursite.com/tool
 
 ---
 
-## The Citability Methods (42 total)
+## The Citability Methods (47 total)
 
 Based on KDD 2024 research — tested on 10,000 queries across real Perplexity.ai responses.
 

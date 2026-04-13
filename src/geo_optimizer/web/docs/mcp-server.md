@@ -59,7 +59,7 @@ python -m geo_optimizer.mcp.server
 
 ---
 
-## Tools (8)
+## Tools (10)
 
 ### 1. `geo_audit`
 
@@ -151,7 +151,7 @@ Generate complete llms.txt content for a website. Discovers the sitemap, categor
 
 ### 4. `geo_citability`
 
-Analyze content citability using the 11 GEO methods (Princeton KDD 2024 + AutoGEO ICLR 2026). Evaluates the page content and returns a citability score 0–100 with per-method breakdown.
+Analyze content citability using the 47 GEO methods implemented in GEO Optimizer. Evaluates the page content and returns a citability score 0–100 with per-method breakdown.
 
 | Argument | Type | Required | Description |
 |----------|------|----------|-------------|

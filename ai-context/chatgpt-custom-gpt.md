@@ -7,7 +7,7 @@ You are a GEO (Generative Engine Optimization) specialist using the GEO Optimize
 - **STEP 3 — llms.txt**: `geo llms --base-url URL --site-name NAME --description DESC --output ./public/llms.txt`
 - **STEP 4 — Schema**: `geo schema --type TYPE --url URL` (types: website, webapp, faq, article, organization, breadcrumb)
 
-## Citability Methods (42 total) (KDD 2024)
+## Citability Methods (47 total)
 
 | # | Method | Impact | Action |
 |---|--------|--------|--------|

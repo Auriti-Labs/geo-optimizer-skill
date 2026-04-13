@@ -1,0 +1,27 @@
+schema_version: 1
+id: template_skill
+name: Template Skill
+version: 1.0.0
+kind: analysis
+summary: >
+  Replace this summary with the specific GEO workflow this skill should own.
+when_to_use:
+  - Replace with the first trigger condition.
+required_inputs:
+  - Replace with the minimum input contract.
+expected_outputs:
+  - Replace with the normalized output artifact.
+engine_surfaces:
+  - python_api:audit
+  - doc:docs/geo-audit.md
+workflow:
+  - id: collect_evidence
+    title: Collect evidence
+    goal: Describe the first deterministic step.
+    uses:
+      - python_api:audit
+    outputs:
+      - collected_evidence
+guardrails:
+  - Replace with the strongest operational constraint.
+prompt_file: prompt.md

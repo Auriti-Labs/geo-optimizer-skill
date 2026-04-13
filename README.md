@@ -156,6 +156,12 @@ Load the right file into your AI assistant for GEO expertise:
 
 ---
 
+## Internal Skill System
+
+The repository now includes a structured internal skill catalog for maintainers at [`src/geo_optimizer/skills/catalog/`](src/geo_optimizer/skills/catalog/) plus validation rules and examples. See [`docs/skill-system.md`](docs/skill-system.md) for the v1 architecture.
+
+---
+
 ## Python API
 
 ```python

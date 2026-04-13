@@ -59,10 +59,11 @@ dev = [
     "pytest>=7.0,<10.0",
     "pytest-cov>=4.0,<8.0",
     "ruff>=0.8.0",
+    "pyyaml>=6.0,<7.0",
 ]
 # Gruppo convenienza: installa tutte le dipendenze opzionali utente (#136)
 all = [
-    "geo-optimizer-skill[async,web,mcp,pdf]",
+    "geo-optimizer-skill[async,web,mcp,pdf,config]",
 ]
 
 [project.urls]
@@ -81,7 +82,15 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 # Solo i file compilati .mo — i sorgenti .po non appartengono al pacchetto distribuito (#135)
-"geo_optimizer" = ["py.typed", "i18n/locales/*/LC_MESSAGES/*.mo", "web/templates/*.html", "web/docs/*.md"]
+"geo_optimizer" = [
+    "py.typed",
+    "i18n/locales/*/LC_MESSAGES/*.mo",
+    "web/templates/*.html",
+    "web/docs/*.md",
+    "skills/catalog/README.md",
+    "skills/catalog/*/skill.yaml",
+    "skills/catalog/*/prompt.md",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

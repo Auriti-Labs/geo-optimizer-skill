@@ -19,6 +19,7 @@ This documentation covers every tool and concept in the toolkit. → [README](..
 | [Scoring Rubric](scoring-rubric.md) | How the GEO Score (0–100) is computed across 8 categories |
 | [geo fix Command](geo-fix.md) | Automatic fix generation — robots.txt, llms.txt, schema, meta |
 | [MCP Server](mcp-server.md) | Use GEO Optimizer as an MCP server in Claude Code, Cursor, etc. |
+| [Skill System](skill-system.md) | Internal skill catalog, contracts, and validation rules for maintainers |
 | [CI/CD Integration](ci-cd.md) | Run GEO audits in GitHub Actions, GitLab CI, and other pipelines |
 | [Troubleshooting](troubleshooting.md) | Solutions to 10 common installation and runtime problems |
 

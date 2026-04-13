@@ -1,0 +1,65 @@
+schema_version: 1
+id: geo_audit_orchestrator
+name: GEO Audit Orchestrator
+version: 1.0.0
+kind: orchestrator
+summary: >
+  Run a deterministic first-pass GEO assessment and normalize the result into a
+  handoff artifact for downstream repair or comparative workflows.
+when_to_use:
+  - You need the authoritative first assessment of a site's GEO posture.
+  - You need a normalized issue list before proposing remediations.
+required_inputs:
+  - target_url
+expected_outputs:
+  - normalized_geo_audit_summary
+  - prioritized_issue_list
+  - downstream_skill_recommendation
+engine_surfaces:
+  - python_api:audit
+  - python_api:AuditResult
+  - mcp:geo_audit
+  - plugin_hook:geo_optimizer.checks
+  - doc:docs/geo-audit.md
+  - doc:docs/scoring-rubric.md
+  - doc:docs/mcp-server.md
+workflow:
+  - id: validate_target
+    title: Validate target
+    goal: Normalize the site target and choose a single authoritative audit surface.
+    uses:
+      - mcp:geo_audit
+      - doc:docs/mcp-server.md
+    outputs:
+      - validated_target_url
+  - id: run_authoritative_audit
+    title: Run authoritative audit
+    goal: Execute the existing audit engine and preserve the full evidence payload.
+    uses:
+      - python_api:audit
+      - python_api:AuditResult
+      - plugin_hook:geo_optimizer.checks
+    outputs:
+      - raw_audit_result
+  - id: interpret_score
+    title: Interpret score and evidence
+    goal: Map the raw result to score bands, category gaps, and highest-leverage fixes.
+    uses:
+      - python_api:AuditResult
+      - doc:docs/geo-audit.md
+      - doc:docs/scoring-rubric.md
+    outputs:
+      - normalized_geo_audit_summary
+      - prioritized_issue_list
+  - id: recommend_next_skill
+    title: Recommend next skill
+    goal: Route the user to the next focused skill only after the audit is normalized.
+    uses:
+      - doc:docs/geo-audit.md
+    outputs:
+      - downstream_skill_recommendation
+guardrails:
+  - Do not replace the audit engine with subjective prompt-only reasoning.
+  - Do not skip score interpretation or evidence normalization.
+  - Treat AuditResult as the source of truth for recommendations and banding.
+prompt_file: prompt.md

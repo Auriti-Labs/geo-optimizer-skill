@@ -60,10 +60,11 @@ cp ~/geo-optimizer-skill/ai-context/kiro-steering.md .kiro/steering/geo-optimize
 
 ## About GEO Optimizer
 
-GEO Optimizer is a Python toolkit to make websites visible and citable by AI search engines (ChatGPT, Perplexity, Claude, Gemini). It implements the 9 GEO methods from the Princeton KDD 2024 research paper and provides 3 automation scripts:
+GEO Optimizer is a Python toolkit to make websites visible and citable by AI search engines (ChatGPT, Perplexity, Claude, Gemini). It implements the GEO audit framework plus a 47-method citability engine and provides 4 primary CLI commands:
 
-- `geo_audit.py` — scores your site 0–100, lists what's missing
-- `generate_llms_txt.py` — auto-generates `/llms.txt` from your sitemap
-- `schema_injector.py` — generates or injects JSON-LD schema into HTML
+- `geo audit` — scores your site 0–100 and lists what's missing
+- `geo fix` — generates foundational remediation artifacts
+- `geo llms` — auto-generates `/llms.txt` from your sitemap
+- `geo schema` — generates or injects JSON-LD schema into HTML
 
 *GEO Optimizer by Juan Camilo Auriti — https://github.com/auriti-labs/geo-optimizer-skill*

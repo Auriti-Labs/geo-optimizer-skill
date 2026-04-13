@@ -27,7 +27,8 @@ That's it. The action installs Python, installs `geo-optimizer-skill`, runs the 
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
 | `url` | ✅ | — | URL to audit |
-| `threshold` | ❌ | `0` | Minimum score (0-100). Fails if score is below. |
+| `min-score` | ❌ | `0` | Preferred minimum score (0-100). Fails if score is below. |
+| `threshold` | ❌ | `0` | Deprecated alias for `min-score`. |
 | `format` | ❌ | `json` | Output format: `json`, `sarif`, `junit`, `text` |
 | `output-file` | ❌ | `geo-report` | Base name for the output file (no extension) |
 | `fail-on-warning` | ❌ | `false` | Fail on warnings too |
@@ -48,7 +49,7 @@ That's it. The action installs Python, installs `geo-optimizer-skill`, runs the 
 - uses: Auriti-Labs/geo-optimizer-skill@v1
   with:
     url: https://yoursite.com
-    threshold: 70
+    min-score: 70
 ```
 
 The step fails if the score drops below 70.
@@ -121,7 +122,7 @@ jobs:
         id: geo
         with:
           url: https://yoursite.com
-          threshold: 60
+          min-score: 60
 
       - name: Summary
         run: |
