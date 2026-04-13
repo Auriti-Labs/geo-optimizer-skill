@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.2.0] — 2026-04-13
+
+### Added
+- **Internal skill catalog v1**: structured maintainer-facing skill framework under `geo_optimizer.skills` with typed metadata, prompt contracts, and a canonical catalog
+- **Foundational skills**: `geo_audit_orchestrator` and `geo_foundation_repair` as the first validated GEO workflow skills
+- **Skill validation**: loader and validator for catalog integrity, engine surface references, prompt structure, and packaged-resource checks
+- **Skill maintainer docs**: new `docs/skill-system.md` plus catalog template for future skill additions
+
+### Changed
+- **GitHub Action input**: added preferred `min-score` input while keeping `threshold` as a deprecated compatibility alias
+- **Docs alignment**: MCP tool count, citability counts, and AI-context references updated to match the current codebase
+
+### Tests
+- Added dedicated skill-system coverage for catalog loading, packaged validation, custom `prompt_file`, and MCP tool discovery
+
+---
+
 ## [4.1.0] — 2026-04-03
 
 ### Added
