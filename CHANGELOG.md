@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.5.1] — 2026-04-13
+
+### Fixed
+- **CI test stability** — stabilized offline URL validation across CLI, MCP, core HTTP, async HTTP, sitemap, and coverage-oriented test modules so the matrix no longer depends on real DNS resolution for `example.com`
+- **Web test collection without extras** — `tests/test_web_history.py` now skips cleanly when the optional `web` extra is not installed, instead of failing collection due to missing `fastapi`
+- **MCP fixer validation order** — `geo_fix` in the MCP server now validates `only` categories before URL safety checks, aligning its behavior with the CLI and avoiding masked input errors in tests
+
+### Tests
+- Hardened the CI suite by making mocked network-related tests deterministic across Python 3.9, 3.11, 3.12, and 3.13
+
+---
+
 ## [4.5.0] — 2026-04-13
 
 ### Added
