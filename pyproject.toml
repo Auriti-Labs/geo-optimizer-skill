@@ -36,7 +36,7 @@ dependencies = [
 
 [project.optional-dependencies]
 rich = [
-    "rich>=13.0,<15.0",
+    "rich>=13.0,<16.0",
 ]
 config = [
     "pyyaml>=6.0,<7.0",
