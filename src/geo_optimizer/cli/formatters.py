@@ -39,6 +39,7 @@ from geo_optimizer.models.results import (
     AuditDiffResult,
     AuditResult,
     BatchAuditResult,
+    CitationQualityReport,
     HistoryResult,
     MonitorResult,
 )
@@ -829,6 +830,47 @@ def format_snapshot_archive_text(result: AnswerSnapshotArchive) -> str:
         if len(preview) > 120:
             preview = preview[:117].rstrip() + "..."
         lines.append(f"    Answer: {preview}")
+
+    return "\n".join(lines)
+
+
+def format_citation_quality_json(result: CitationQualityReport) -> str:
+    """Formatta il report di quality score come JSON."""
+    return json.dumps(asdict(result), indent=2)
+
+
+def format_citation_quality_text(result: CitationQualityReport) -> str:
+    """Formatta il report di quality score come testo leggibile."""
+    lines = []
+    lines.append("")
+    lines.append("🔍 " * 20)
+    lines.append("  GEO CITATION QUALITY — SNAPSHOT ANALYSIS")
+    lines.append("  github.com/auriti-labs/geo-optimizer-skill")
+    lines.append("🔍 " * 20)
+    lines.append("")
+    lines.append(f"   Snapshot ID: {result.snapshot_id}")
+    lines.append(f"   Query: {result.query}")
+    lines.append(f"   Model: {result.model}" + (f" | Provider: {result.provider}" if result.provider else ""))
+    lines.append(f"   Recorded at: {result.recorded_at}")
+    if result.target_domain:
+        lines.append(f"   Target domain: {result.target_domain}")
+    lines.append(f"   Citations analyzed: {result.analyzed_citations}/{result.total_citations}")
+
+    if not result.entries:
+        lines.append("")
+        lines.append("  No citations matched the selected filters.")
+        return "\n".join(lines)
+
+    lines.append("")
+    lines.append(_section_header("1. CITATION TIERS"))
+    for entry in result.entries:
+        cue = f" | cue: {entry.cue}" if entry.cue else ""
+        lines.append(
+            f"  • #{entry.position} — T{entry.tier} {entry.tier_label.upper()} | "
+            f"score {entry.overall_score} | pos {entry.position_score}{cue}"
+        )
+        lines.append(f"    {entry.url}")
+        lines.append(f"    {entry.context_snippet}")
 
     return "\n".join(lines)
 

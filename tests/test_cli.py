@@ -318,6 +318,8 @@ class TestCLIVersionAndHelp:
         result = runner.invoke(cli, ["snapshots", "--help"])
         assert result.exit_code == 0
         assert "--query" in result.output
+        assert "--quality" in result.output
+        assert "--snapshot-id" in result.output
         assert "--answer-text" in result.output
         assert "--from" in result.output
         assert "--to" in result.output
@@ -908,6 +910,47 @@ class TestSnapshotsCommand:
         assert result.exit_code == 0
         assert data["total_snapshots"] == 1
         assert data["entries"][0]["query"] == "ai visibility tools"
+
+    def test_snapshots_quality_output(self, runner):
+        """geo snapshots --quality analizza i tier delle citazioni archiviate."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "snapshots.db")
+            save_result = runner.invoke(
+                cli,
+                [
+                    "snapshots",
+                    "--query",
+                    "best GEO tool",
+                    "--model",
+                    "gpt-5.4",
+                    "--answer-text",
+                    (
+                        "We recommend GEO Optimizer at https://example.com/report. "
+                        "Tools like https://other.example.net/app also exist."
+                    ),
+                    "--snapshots-db",
+                    db_path,
+                ],
+            )
+            snapshot_id = int(save_result.output.split("Snapshot ID: ")[1].splitlines()[0].strip())
+            quality_result = runner.invoke(
+                cli,
+                [
+                    "snapshots",
+                    "--quality",
+                    "--snapshot-id",
+                    str(snapshot_id),
+                    "--target-domain",
+                    "example.com",
+                    "--snapshots-db",
+                    db_path,
+                ],
+            )
+
+        assert quality_result.exit_code == 0
+        assert "GEO CITATION QUALITY" in quality_result.output
+        assert "T1 RECOMMENDED" in quality_result.output
+        assert "example.com/report" in quality_result.output
 
 
 # ============================================================================

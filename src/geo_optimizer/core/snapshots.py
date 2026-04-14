@@ -185,6 +185,17 @@ class SnapshotStore:
             citations=citations,
         )
 
+    def get_snapshot(self, snapshot_id: int) -> AnswerSnapshot | None:
+        """Recupera uno snapshot singolo con le relative citazioni."""
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM answer_snapshots WHERE id = ?",
+                (int(snapshot_id),),
+            ).fetchone()
+            if row is None:
+                return None
+            return self._row_to_snapshot(conn, row)
+
     def list_snapshots(
         self,
         query: str = "",

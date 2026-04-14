@@ -54,6 +54,22 @@ geo snapshots --query "best GEO tool" --from 2026-03-01 --to 2026-03-30
 geo snapshots --model "gpt-5.4" --format json
 ```
 
+## Citation quality scoring
+
+Once a snapshot is archived, you can score the quality of each citation:
+
+```bash
+geo snapshots --quality --snapshot-id 12
+geo snapshots --quality --snapshot-id 12 --target-domain example.com
+```
+
+The quality report assigns:
+
+- a tier (`T1` recommended → `T5` mentioned)
+- a position score (first citations rank higher)
+- a context snippet around the citation
+- an overall score combining tier + position
+
 ---
 
 ## Options
@@ -64,6 +80,9 @@ geo snapshots --model "gpt-5.4" --format json
 | `--prompt` | No | Full prompt used when saving |
 | `--model` | Save mode: Yes | Model/version used to generate the answer |
 | `--provider` | No | Provider label such as `openai`, `anthropic`, `google` |
+| `--quality` | No | Analyze citation quality for a saved snapshot |
+| `--snapshot-id` | Quality mode: Yes | Snapshot ID to analyze |
+| `--target-domain` | No | Restrict quality analysis to one cited domain |
 | `--answer-text` | Save mode: Yes* | Full answer text inline |
 | `--answer-file` | Save mode: Yes* | File containing the full answer text |
 | `--citation-url` | No | Extra cited URL to store explicitly |

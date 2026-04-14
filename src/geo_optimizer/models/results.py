@@ -665,6 +665,39 @@ class AnswerSnapshotArchive:
     entries: list[AnswerSnapshot] = field(default_factory=list)
 
 
+# ─── Citation quality ───────────────────────────────────────────────────────
+
+
+@dataclass
+class CitationQualityResult:
+    """Valutazione qualitativa di una singola citazione dentro una risposta AI."""
+
+    url: str
+    domain: str = ""
+    position: int = 0
+    tier: int = 5
+    tier_label: str = "mentioned"
+    cue: str = ""
+    position_score: int = 0
+    overall_score: int = 0
+    context_snippet: str = ""
+
+
+@dataclass
+class CitationQualityReport:
+    """Analisi qualitativa delle citazioni per uno snapshot archiviato."""
+
+    snapshot_id: int = 0
+    query: str = ""
+    model: str = ""
+    provider: str = ""
+    recorded_at: str = ""
+    target_domain: str = ""
+    total_citations: int = 0
+    analyzed_citations: int = 0
+    entries: list[CitationQualityResult] = field(default_factory=list)
+
+
 # ─── History / tracking ─────────────────────────────────────────────────────
 
 

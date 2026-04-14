@@ -7,10 +7,13 @@ from pathlib import Path
 import click
 
 from geo_optimizer.cli.formatters import (
+    format_citation_quality_json,
+    format_citation_quality_text,
     format_snapshot_archive_json,
     format_snapshot_archive_text,
     format_snapshot_saved_text,
 )
+from geo_optimizer.core.citation_quality import analyze_snapshot_citation_quality
 from geo_optimizer.core.snapshots import SnapshotStore
 from geo_optimizer.models.config import DEFAULT_SNAPSHOT_LIMIT
 
@@ -20,6 +23,9 @@ from geo_optimizer.models.config import DEFAULT_SNAPSHOT_LIMIT
 @click.option("--prompt", default="", help="Prompt used to produce the answer snapshot")
 @click.option("--model", default="", help="Model/version used to generate the answer")
 @click.option("--provider", default="", help="Provider name (OpenAI, Anthropic, Google, etc.)")
+@click.option("--quality", "show_quality", is_flag=True, help="Analyze citation quality for an archived snapshot")
+@click.option("--snapshot-id", default=None, type=int, help="Snapshot ID to inspect in quality mode")
+@click.option("--target-domain", default="", help="Optional citation domain to focus on in quality mode")
 @click.option("--answer-text", default=None, help="Answer text to archive directly")
 @click.option("--answer-file", default=None, help="Path to a file containing the full answer text")
 @click.option("--citation-url", "citation_urls", multiple=True, help="Extra cited URL to store explicitly")
@@ -44,6 +50,9 @@ def snapshots(
     prompt,
     model,
     provider,
+    show_quality,
+    snapshot_id,
+    target_domain,
     answer_text,
     answer_file,
     citation_urls,
@@ -61,8 +70,22 @@ def snapshots(
 
     store = SnapshotStore(Path(snapshots_db) if snapshots_db else None)
     save_mode = bool(answer_text or answer_file)
+    quality_mode = bool(show_quality)
 
-    if save_mode:
+    if quality_mode and save_mode:
+        raise click.UsageError("'--quality' cannot be combined with snapshot save options")
+
+    if quality_mode:
+        if snapshot_id is None:
+            raise click.UsageError("'--snapshot-id' is required in quality mode")
+        snapshot = store.get_snapshot(snapshot_id)
+        if snapshot is None:
+            raise click.UsageError(f"Snapshot {snapshot_id} not found")
+        report = analyze_snapshot_citation_quality(snapshot, target_domain=target_domain)
+        output = (
+            format_citation_quality_json(report) if output_format == "json" else format_citation_quality_text(report)
+        )
+    elif save_mode:
         if not query:
             raise click.UsageError("'--query' is required when saving a snapshot")
         if not model:
