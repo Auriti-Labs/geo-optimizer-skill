@@ -59,6 +59,9 @@ geo history --url https://yoursite.com
 # Passive AI visibility snapshot for a domain
 geo monitor --domain yoursite.com
 
+# Save or query archived AI answer snapshots
+geo snapshots --query "best GEO tool" --from 2026-03-01 --to 2026-03-30
+
 # Run recurring monitoring and generate an HTML trend report
 geo track --url https://yoursite.com --report --output ./geo-track-report.html
 
@@ -118,6 +121,7 @@ geo audit --url https://example.com --format sarif     # GitHub Code Scanning
 geo audit --url https://example.com --format junit     # Jenkins, GitLab CI
 geo audit --url https://example.com --format github    # GitHub Actions annotations
 geo monitor --domain example.com                       # Passive AI visibility readiness
+geo snapshots --query "best GEO tool"                 # Saved AI answer archive
 geo history --url https://example.com                  # Saved score trend
 geo track --url https://example.com --report           # Monitoring HTML report
 ```

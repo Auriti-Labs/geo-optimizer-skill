@@ -33,7 +33,15 @@ from geo_optimizer.cli.scoring_helpers import (
     signals_score as _signals_score,
 )
 from geo_optimizer.models.config import SCORE_BANDS, SCORING
-from geo_optimizer.models.results import AuditDiffResult, AuditResult, BatchAuditResult, HistoryResult, MonitorResult
+from geo_optimizer.models.results import (
+    AnswerSnapshot,
+    AnswerSnapshotArchive,
+    AuditDiffResult,
+    AuditResult,
+    BatchAuditResult,
+    HistoryResult,
+    MonitorResult,
+)
 
 # Fix #409: max scores computed dynamically from SCORING (not hardcoded)
 _MAX_ROBOTS = sum(v for k, v in SCORING.items() if k.startswith("robots_"))
@@ -762,6 +770,66 @@ def format_monitor_text(result: MonitorResult) -> str:
 
     lines.append("")
     lines.append("  Note: passive mode does not query LLM APIs or verify direct brand mentions in answers.")
+    return "\n".join(lines)
+
+
+def format_snapshot_archive_json(result) -> str:
+    """Formatta snapshot singolo o archivio come JSON."""
+    return json.dumps(asdict(result), indent=2)
+
+
+def format_snapshot_saved_text(result: AnswerSnapshot) -> str:
+    """Formatta il risultato di salvataggio di uno snapshot."""
+    lines = []
+    lines.append("")
+    lines.append("🔍 " * 20)
+    lines.append("  GEO SNAPSHOTS — SAVED ANSWER")
+    lines.append("  github.com/auriti-labs/geo-optimizer-skill")
+    lines.append("🔍 " * 20)
+    lines.append("")
+    lines.append(f"   Snapshot ID: {result.snapshot_id}")
+    lines.append(f"   Query: {result.query}")
+    lines.append(f"   Model: {result.model}" + (f" | Provider: {result.provider}" if result.provider else ""))
+    lines.append(f"   Timestamp: {result.recorded_at}")
+    lines.append(f"   Citations stored: {len(result.citations)}")
+    if result.citations:
+        lines.append("")
+        lines.append(_section_header("1. CITATIONS"))
+        for citation in result.citations[:10]:
+            lines.append(f"  • #{citation.position} — {citation.url}")
+    return "\n".join(lines)
+
+
+def format_snapshot_archive_text(result: AnswerSnapshotArchive) -> str:
+    """Formatta una query sull'archivio snapshot come testo."""
+    lines = []
+    lines.append("")
+    lines.append("🔍 " * 20)
+    lines.append("  GEO SNAPSHOTS — ANSWER ARCHIVE")
+    lines.append("  github.com/auriti-labs/geo-optimizer-skill")
+    lines.append("🔍 " * 20)
+    lines.append("")
+    lines.append(f"   Query: {result.query or 'all'}")
+    lines.append(f"   Range: {result.date_from or 'beginning'} → {result.date_to or 'now'}")
+    lines.append(f"   Snapshots: {result.total_snapshots}")
+
+    if not result.entries:
+        lines.append("")
+        lines.append("  No saved answer snapshots found for these filters.")
+        return "\n".join(lines)
+
+    lines.append("")
+    lines.append(_section_header("1. SNAPSHOTS"))
+    for entry in result.entries:
+        lines.append(
+            f"  • #{entry.snapshot_id} — {entry.recorded_at[:19]} | {entry.model} | citations: {len(entry.citations)}"
+        )
+        lines.append(f"    Query: {entry.query}")
+        preview = entry.answer_text.replace("\n", " ").strip()
+        if len(preview) > 120:
+            preview = preview[:117].rstrip() + "..."
+        lines.append(f"    Answer: {preview}")
+
     return "\n".join(lines)
 
 

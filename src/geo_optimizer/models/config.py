@@ -28,8 +28,10 @@ MAX_TOTAL_URLS: int = 10_000
 
 GEO_OPTIMIZER_HOME = Path.home() / ".geo-optimizer"
 TRACKING_DB_PATH = GEO_OPTIMIZER_HOME / "tracking.db"
+SNAPSHOTS_DB_PATH = GEO_OPTIMIZER_HOME / "snapshots.db"
 DEFAULT_HISTORY_RETENTION_DAYS = 90
 DEFAULT_HISTORY_LIMIT = 12
+DEFAULT_SNAPSHOT_LIMIT = 20
 
 # ─── Passive AI visibility monitoring ────────────────────────────────────────
 

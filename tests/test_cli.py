@@ -271,6 +271,7 @@ class TestCLIVersionAndHelp:
         assert "llms" in result.output
         assert "monitor" in result.output
         assert "schema" in result.output
+        assert "snapshots" in result.output
         assert "track" in result.output
         assert "GEO Optimizer" in result.output
 
@@ -311,6 +312,15 @@ class TestCLIVersionAndHelp:
         assert "--domain" in result.output
         assert "--save-history" in result.output
         assert "--retention-days" in result.output
+
+    def test_snapshots_help(self, runner):
+        """geo snapshots --help mostra le opzioni di archive e query."""
+        result = runner.invoke(cli, ["snapshots", "--help"])
+        assert result.exit_code == 0
+        assert "--query" in result.output
+        assert "--answer-text" in result.output
+        assert "--from" in result.output
+        assert "--to" in result.output
 
     def test_schema_help(self, runner):
         """geo schema --help shows schema-specific options."""
@@ -820,6 +830,84 @@ class TestMonitorCommand:
         assert result.exit_code == 0
         assert data["domain"] == "example.com"
         assert data["visibility_score"] == 61
+
+
+class TestSnapshotsCommand:
+    """Tests for `geo snapshots`."""
+
+    def test_snapshots_save_and_list(self, runner):
+        """geo snapshots salva uno snapshot e lo recupera filtrando per query."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "snapshots.db")
+            save_result = runner.invoke(
+                cli,
+                [
+                    "snapshots",
+                    "--query",
+                    "best GEO tool",
+                    "--prompt",
+                    "What is the best GEO tool?",
+                    "--model",
+                    "gpt-5.4",
+                    "--provider",
+                    "openai",
+                    "--answer-text",
+                    "GEO Optimizer is listed at https://example.com/report",
+                    "--timestamp",
+                    "2026-03-10",
+                    "--snapshots-db",
+                    db_path,
+                ],
+            )
+            list_result = runner.invoke(
+                cli,
+                [
+                    "snapshots",
+                    "--query",
+                    "best GEO tool",
+                    "--from",
+                    "2026-03-01",
+                    "--to",
+                    "2026-03-31",
+                    "--snapshots-db",
+                    db_path,
+                ],
+            )
+
+        assert save_result.exit_code == 0
+        assert "GEO SNAPSHOTS — SAVED ANSWER" in save_result.output
+        assert "Citations stored: 1" in save_result.output
+        assert list_result.exit_code == 0
+        assert "GEO SNAPSHOTS — ANSWER ARCHIVE" in list_result.output
+        assert "best GEO tool" in list_result.output
+
+    def test_snapshots_json_output(self, runner):
+        """geo snapshots --format json serializza l'archivio filtrato."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "snapshots.db")
+            runner.invoke(
+                cli,
+                [
+                    "snapshots",
+                    "--query",
+                    "ai visibility tools",
+                    "--model",
+                    "claude-4",
+                    "--answer-text",
+                    "References https://example.com/a and https://example.com/b",
+                    "--snapshots-db",
+                    db_path,
+                ],
+            )
+            result = runner.invoke(
+                cli,
+                ["snapshots", "--query", "ai visibility tools", "--format", "json", "--snapshots-db", db_path],
+            )
+
+        data = json.loads(result.output)
+        assert result.exit_code == 0
+        assert data["total_snapshots"] == 1
+        assert data["entries"][0]["query"] == "ai visibility tools"
 
 
 # ============================================================================

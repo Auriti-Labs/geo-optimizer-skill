@@ -628,6 +628,43 @@ class MonitorResult:
     recommendations: list[str] = field(default_factory=list)
 
 
+# ─── Answer snapshots ───────────────────────────────────────────────────────
+
+
+@dataclass
+class AnswerCitation:
+    """Citazione estratta o registrata per uno snapshot di risposta AI."""
+
+    url: str
+    position: int = 0
+    domain: str = ""
+
+
+@dataclass
+class AnswerSnapshot:
+    """Snapshot completo di una risposta AI archiviata localmente."""
+
+    snapshot_id: int = 0
+    query: str = ""
+    prompt: str = ""
+    model: str = ""
+    provider: str = ""
+    answer_text: str = ""
+    recorded_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    citations: list[AnswerCitation] = field(default_factory=list)
+
+
+@dataclass
+class AnswerSnapshotArchive:
+    """Risultato query sull'archivio locale di snapshot AI."""
+
+    query: str = ""
+    date_from: str | None = None
+    date_to: str | None = None
+    total_snapshots: int = 0
+    entries: list[AnswerSnapshot] = field(default_factory=list)
+
+
 # ─── History / tracking ─────────────────────────────────────────────────────
 
 
