@@ -556,6 +556,27 @@ class LogAnalysisResult:
     top_pages: list[CrawledPage] = field(default_factory=list)
 
 
+# ─── Multi-Platform Citation Profile (v4.7) ─────────────────────────────────
+
+
+@dataclass
+class PlatformScore:
+    """Readiness score for a specific AI platform (#228)."""
+
+    platform: str = ""
+    score: int = 0
+    strengths: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
+
+
+@dataclass
+class PlatformCitationResult:
+    """Multi-platform citation readiness profile (#228)."""
+
+    checked: bool = False
+    platforms: list[PlatformScore] = field(default_factory=list)
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -607,6 +628,8 @@ class AuditResult:
     embedding_proximity: EmbeddingProximityResult = field(default_factory=EmbeddingProximityResult)
     # v4.7: Content decay prediction (#383)
     content_decay: ContentDecayResult = field(default_factory=ContentDecayResult)
+    # v4.7: Multi-platform citation profile (#228)
+    platform_citation: PlatformCitationResult = field(default_factory=PlatformCitationResult)
 
 
 # ─── Batch audit ─────────────────────────────────────────────────────────────

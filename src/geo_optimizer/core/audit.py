@@ -282,6 +282,7 @@ def _build_audit_result(
     rag_chunk=None,  # v4.7: RAG Chunk Readiness (#353)
     embedding_proximity=None,  # v4.7: Embedding Proximity Score (#354)
     content_decay=None,  # v4.7: Content Decay Predictor (#383)
+    platform_citation=None,  # v4.7: Multi-Platform Citation Profile (#228)
 ) -> AuditResult:
     """Build AuditResult from sub-audits (fix #97: shared sync/async logic).
 
@@ -437,7 +438,7 @@ def _build_audit_result(
             "AI crawlers don't execute JS. Implement SSR, SSG, or pre-rendering."
         )
 
-    return AuditResult(
+    result = AuditResult(
         url=base_url,
         score=score,
         band=band,
@@ -465,6 +466,25 @@ def _build_audit_result(
         embedding_proximity=effective_embedding,
         content_decay=effective_decay,
     )
+
+    # v4.7: Multi-Platform Citation Profile (#228) — computed post-construction
+    if platform_citation is not None:
+        result.platform_citation = platform_citation
+    else:
+        from geo_optimizer.core.audit_platform import audit_platform_citation
+
+        result.platform_citation = audit_platform_citation(
+            robots=robots,
+            llms=llms,
+            schema=schema,
+            meta=meta,
+            content=content,
+            citability=citability,
+            signals=effective_signals,
+            ai_discovery=effective_ai_discovery,
+        )
+
+    return result
 
 
 def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> AuditResult:

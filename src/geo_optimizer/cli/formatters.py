@@ -180,6 +180,10 @@ def format_audit_json(result: AuditResult) -> str:
     if hasattr(result, "content_decay") and result.content_decay and result.content_decay.checked:
         data["content_decay"] = asdict(result.content_decay)
 
+    # v4.7: Multi-Platform Citation Profile (#228)
+    if hasattr(result, "platform_citation") and result.platform_citation and result.platform_citation.checked:
+        data["platform_citation"] = asdict(result.platform_citation)
+
     # Metadata
     data["http_status"] = result.http_status
     data["page_size"] = result.page_size
@@ -444,6 +448,18 @@ def format_audit_text(result: AuditResult) -> str:
             lines.append(f"  Earliest decay: ~{cd.earliest_decay_days} days")
         for sig in cd.signals[:5]:
             lines.append(f"  [{sig.decay_type}] {sig.text[:80]}")
+
+    # Multi-Platform Citation Profile (#228)
+    pc = getattr(result, "platform_citation", None)
+    if pc and pc.checked and pc.platforms:
+        lines.append("")
+        lines.append(_section_header("16. PLATFORM CITATION PROFILE"))
+        for p in pc.platforms:
+            lines.append(f"  {p.platform.upper()}: {p.score}/100")
+            for s in p.strengths[:3]:
+                lines.append(f"    ✅ {s}")
+            for r in p.recommendations[:2]:
+                lines.append(f"    💡 {r}")
 
     # Score
     lines.append("")
