@@ -597,6 +597,34 @@ class BrandSentimentResult:
     raw_response: str = ""
 
 
+# ─── Citation Attribution Chain (v4.7) ───────────────────────────────────────
+
+
+@dataclass
+class AttributionSegment:
+    """A segment of LLM response matched to source content (#375)."""
+
+    llm_text: str = ""
+    source_text: str = ""
+    similarity: float = 0.0
+    faithfulness: str = ""  # faithful | paraphrased | altered | hallucinated
+
+
+@dataclass
+class CitationAttributionResult:
+    """Citation attribution chain analysis (#375)."""
+
+    checked: bool = False
+    skipped_reason: str | None = None
+    query: str = ""
+    segments: list[AttributionSegment] = field(default_factory=list)
+    faithfulness_score: float = 0.0  # 0-1
+    details_lost: list[str] = field(default_factory=list)
+    details_added: list[str] = field(default_factory=list)
+    llm_provider: str = ""
+    llm_model: str = ""
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
