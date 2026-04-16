@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.7.0] — 2026-04-16
+
+### Added
+- **RAG Chunk Analyzer** (#353) — analyzes content segmentation for RAG retrieval: section word counts (optimal 100–150), definition openings, heading boundaries, anchor sentences, composite readiness score 0–100. New `RagChunkResult` in audit output (section 13)
+- **Embedding Proximity Score** (#354) — optional `sentence-transformers` integration that simulates RAG retrieval via cosine similarity between page chunks and representative queries. Graceful skip when not installed. New `[embedding]` pip extra
+- **Semantic Coherence Analysis** (#253) — cross-page terminology consistency via new `geo coherence --sitemap URL` command. Detects conflicting definitions, duplicate titles, and mixed languages across up to 20 pages. New modules: `term_extractor`, `coherence_analyzer`, `site_coherence`
+- **Audit performance budget** (#290) — `audit_duration_ms` field on `AuditResult`, `AUDIT_TIMEOUT_SECONDS` (10 s) with warning log, duration in text and JSON output
+
+### Tests
+- 1222 tests (all mocked, zero network), up from 1189
+- 33 new tests across RAG chunk, embedding proximity, coherence, and performance budget
+
+---
+
 ## [4.6.1] — 2026-04-16
 
 ### Security
