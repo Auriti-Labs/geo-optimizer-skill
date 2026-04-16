@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -11,6 +12,13 @@ from geo_optimizer.models.results import AuditResult
 pytest.importorskip("fastapi", reason="fastapi non installato (pip install geo-optimizer-skill[web])")
 
 from geo_optimizer.web.app import _load_history_summary, _save_and_load_history_summary
+
+_NOW = datetime.now(timezone.utc)
+
+
+def _ts(days_ago: int) -> str:
+    """Return an ISO timestamp *days_ago* days before now."""
+    return (_NOW - timedelta(days=days_ago)).isoformat()
 
 
 def _make_result(score: int, timestamp: str) -> AuditResult:
@@ -33,8 +41,8 @@ def test_save_and_load_history_summary(monkeypatch, tmp_path):
     monkeypatch.setattr("geo_optimizer.models.config.TRACKING_DB_PATH", db_path)
     monkeypatch.setattr("geo_optimizer.core.history.TRACKING_DB_PATH", db_path)
 
-    first = _save_and_load_history_summary(_make_result(62, "2026-01-15T12:00:00+00:00"))
-    second = _save_and_load_history_summary(_make_result(77, "2026-01-22T12:00:00+00:00"))
+    first = _save_and_load_history_summary(_make_result(62, _ts(14)))
+    second = _save_and_load_history_summary(_make_result(77, _ts(7)))
 
     assert first is not None
     assert first["total_snapshots"] == 1

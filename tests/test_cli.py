@@ -8,6 +8,7 @@ with all external dependencies mocked via unittest.mock.patch.
 import json
 import os
 import tempfile
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import urlparse
@@ -37,6 +38,13 @@ from geo_optimizer.models.results import (
 # ============================================================================
 # FIXTURES
 # ============================================================================
+
+_NOW = datetime.now(timezone.utc)
+
+
+def _ts(days_ago: int) -> str:
+    """Return an ISO timestamp *days_ago* days before now."""
+    return (_NOW - timedelta(days=days_ago)).isoformat()
 
 
 @pytest.fixture
@@ -69,7 +77,7 @@ def sample_audit_result():
     """Create a fully populated AuditResult for testing."""
     return AuditResult(
         url="https://example.com",
-        timestamp="2026-01-15T12:00:00+00:00",
+        timestamp=_ts(14),
         score=75,
         band="good",
         http_status=200,
@@ -595,7 +603,7 @@ class TestAuditCommand:
         """--regression fallisce quando il punteggio scende rispetto allo snapshot precedente."""
         baseline = AuditResult(
             url="https://example.com",
-            timestamp="2026-01-15T12:00:00+00:00",
+            timestamp=_ts(14),
             score=80,
             band="good",
             http_status=200,
@@ -604,7 +612,7 @@ class TestAuditCommand:
         )
         regression = AuditResult(
             url="https://example.com",
-            timestamp="2026-01-22T12:00:00+00:00",
+            timestamp=_ts(7),
             score=71,
             band="good",
             http_status=200,
@@ -714,6 +722,7 @@ class TestHistoryAndTrackCommands:
         """geo history mostra il trend salvato per una URL."""
         from geo_optimizer.core.history import HistoryStore
 
+        recent_ts = _ts(7)
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = os.path.join(tmpdir, "tracking.db")
             store = HistoryStore(Path(db_path))
@@ -724,7 +733,7 @@ class TestHistoryAndTrackCommands:
             store.save_audit_result(
                 AuditResult(
                     url="https://example.com",
-                    timestamp="2026-01-22T12:00:00+00:00",
+                    timestamp=recent_ts,
                     score=81,
                     band="good",
                     http_status=200,
@@ -739,7 +748,7 @@ class TestHistoryAndTrackCommands:
         assert result.exit_code == 0
         assert "GEO HISTORY" in result.output
         assert "Snapshots: 2" in result.output
-        assert "2026-01-22" in result.output
+        assert recent_ts[:10] in result.output
 
     @patch("geo_optimizer.cli.track_cmd.validate_public_url", return_value=(True, None))
     @patch("geo_optimizer.cli.track_cmd.run_full_audit")

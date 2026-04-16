@@ -2,10 +2,18 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from geo_optimizer.core.history import HistoryStore, canonicalize_history_url
 from geo_optimizer.models.results import AuditResult
+
+_NOW = datetime.now(timezone.utc)
+
+
+def _ts(days_ago: int) -> str:
+    """Return an ISO timestamp *days_ago* days before now."""
+    return (_NOW - timedelta(days=days_ago)).isoformat()
 
 
 def _make_result(url: str, timestamp: str, score: int, band: str) -> AuditResult:
@@ -37,8 +45,8 @@ class TestHistoryStore:
     def test_save_and_read_history(self, tmp_path):
         """Gli snapshot vengono salvati e letti in ordine corretto con delta."""
         store = HistoryStore(Path(tmp_path / "tracking.db"))
-        store.save_audit_result(_make_result("https://example.com/", "2026-01-15T12:00:00+00:00", 65, "foundation"))
-        store.save_audit_result(_make_result("https://example.com", "2026-01-22T12:00:00+00:00", 78, "good"))
+        store.save_audit_result(_make_result("https://example.com/", _ts(14), 65, "foundation"))
+        store.save_audit_result(_make_result("https://example.com", _ts(7), 78, "good"))
 
         result = store.build_history_result("https://example.com")
 
