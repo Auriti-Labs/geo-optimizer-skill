@@ -8,6 +8,7 @@ Requires LLM API key (opt-in).
 
 from __future__ import annotations
 
+import re
 from difflib import SequenceMatcher
 
 from geo_optimizer.core.llm_client import query_llm
@@ -107,8 +108,6 @@ def _analyze_attribution(
 
 def _split_sentences(text: str) -> list[str]:
     """Split text into sentences (simple heuristic)."""
-    import re
-
     sentences = re.split(r"(?<=[.!?])\s+", text.strip())
     return [s.strip() for s in sentences if len(s.strip()) > 15]
 

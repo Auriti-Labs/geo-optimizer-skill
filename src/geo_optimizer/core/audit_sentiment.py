@@ -29,8 +29,8 @@ _POSITIVE_WORDS = frozenset(
         "outstanding",
         "superior",
         "well-known",
-        "widely used",
-        "highly rated",
+        "widespread",
+        "acclaimed",
     }
 )
 
@@ -127,7 +127,7 @@ def _analyze_response(brand: str, response: LLMResponse) -> BrandSentimentResult
         else:
             sentiment = "neutral"
 
-    strength = _classify_strength(text, score)
+    strength = _classify_strength(text)
 
     return BrandSentimentResult(
         checked=True,
@@ -143,7 +143,7 @@ def _analyze_response(brand: str, response: LLMResponse) -> BrandSentimentResult
     )
 
 
-def _classify_strength(text: str, score: int) -> str:
+def _classify_strength(text: str) -> str:
     """Classify how strongly the LLM recommends the brand."""
     if any(p in text for p in ["strongly recommend", "highly recommend", "definitely recommend"]):
         return "strongly_recommended"

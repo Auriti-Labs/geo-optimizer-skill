@@ -21,10 +21,9 @@ from geo_optimizer.models.results import ContentDecayResult, DecaySignal
 _YEAR_RE = re.compile(r"\b(20[2-3]\d)\b")
 _STAT_RE = re.compile(r"\b(\d{1,3}(?:\.\d+)?%)\s+(?:of|increase|decrease|growth|decline|more|less)\b", re.IGNORECASE)
 _VERSION_RE = re.compile(
-    r"\b(?:v(?:ersion)?\s*)?(\d+\.\d+(?:\.\d+)?)\b"
-    r"(?:\s+(?:of|for|in)\s+)?"
-    r"|(?:Python|Node|Java|PHP|Ruby|Go|Rust|React|Angular|Vue|Next\.?js|Django|Laravel|Rails|Swift|Kotlin)"
-    r"\s+(\d+(?:\.\d+)+)",
+    r"\b(?:Python|Node|Java|PHP|Ruby|Go|Rust|React|Angular|Vue|Next\.?js|Django|Laravel|Rails|Swift|Kotlin|TypeScript)"
+    r"\s+(\d+(?:\.\d+)+)"
+    r"|\bv(?:ersion)?\s*(\d+\.\d+(?:\.\d+)?)\b",
     re.IGNORECASE,
 )
 _EVENT_RE = re.compile(

@@ -112,11 +112,12 @@ def _extract_chunks(body) -> list[str]:
     headings = body.find_all(re.compile(r"^h[1-6]$"))
 
     if headings:
+        headings_set = set(headings)
         chunks: list[str] = []
         for heading in headings:
             parts: list[str] = []
             for sibling in heading.next_siblings:
-                if sibling in headings:
+                if sibling in headings_set:
                     break
                 t = (
                     sibling.get_text(separator=" ", strip=True)

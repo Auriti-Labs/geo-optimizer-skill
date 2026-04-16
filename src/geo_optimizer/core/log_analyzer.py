@@ -22,6 +22,7 @@ _COMBINED_RE = re.compile(
 )
 
 _TOP_PAGES_LIMIT = 10
+_DEFAULT_MAX_LINES = 1_000_000
 
 # Build lowercase UA fragments for matching
 _BOT_UA_FRAGMENTS: dict[str, str] = {}
@@ -29,7 +30,7 @@ for bot_name in AI_BOTS:
     _BOT_UA_FRAGMENTS[bot_name.lower()] = bot_name
 
 
-def analyze_log_file(file_path: str | Path) -> LogAnalysisResult:
+def analyze_log_file(file_path: str | Path, *, max_lines: int = _DEFAULT_MAX_LINES) -> LogAnalysisResult:
     """Analyze a server log file for AI crawler activity.
 
     Supports Apache/Nginx combined format and JSON lines format.
@@ -51,6 +52,8 @@ def analyze_log_file(file_path: str | Path) -> LogAnalysisResult:
     with path.open(encoding="utf-8", errors="replace") as f:
         for line in f:
             total_lines += 1
+            if total_lines > max_lines:
+                break
             entry = _parse_line(line)
             if not entry:
                 continue

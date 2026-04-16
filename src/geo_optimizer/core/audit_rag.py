@@ -83,11 +83,12 @@ def _split_by_headings(body, headings) -> list[str]:
         text = body.get_text(separator=" ", strip=True)
         return [text] if text else []
 
+    headings_set = set(headings)
     sections: list[str] = []
     for heading in headings:
         text_parts: list[str] = []
         for sibling in heading.next_siblings:
-            if sibling in headings:
+            if sibling in headings_set:
                 break
             t = sibling.get_text(separator=" ", strip=True) if hasattr(sibling, "get_text") else str(sibling).strip()
             if t:
