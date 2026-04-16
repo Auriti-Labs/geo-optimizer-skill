@@ -100,19 +100,18 @@ This document defines the stable, public criteria used to score `geo-optimizer-s
 
 ---
 
-## Current Status (v4.0.0-beta.1)
+## Current Status (v4.6.0)
 
-- **1030 tests** (all mocked, zero network)
+- **1189 tests** (all mocked, zero network)
 - **8 scoring categories**, 100 points total
 - **27 AI bots** with 3-tier classification
 - **47 citability methods** from Princeton KDD 2024 + AutoGEO ICLR 2026
 - **7 output formats** (text, json, rich, html, sarif, junit, github)
-- **MCP server** with 8 tools and 5 resources
+- **MCP server** with 12 tools and 5 resources
 - **Web demo** on Render, Docker images on GHCR + Docker Hub
 
 ## Future Targets
 
-- **v4.0.0 stable target:** 9.85/10 (complete i18n EN/IT, full async audit pipeline)
 - **Long-term ceiling:** 9.9/10 (10.0 is reserved for perfect, industry-standard tools)
 
 ---

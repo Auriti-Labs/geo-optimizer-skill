@@ -8,6 +8,7 @@ before performing network or filesystem operations.
 from __future__ import annotations
 
 import ipaddress
+import os
 import socket
 from pathlib import Path
 from urllib.parse import urlparse
@@ -173,16 +174,19 @@ def validate_safe_path(
     file_path: str,
     allowed_extensions: set[str] | None = None,
     must_exist: bool = False,
+    base_dir: str | Path | None = None,
 ) -> tuple[bool, str | None]:
     """
     Verify that a file path is safe.
 
-    Resolves symlinks and path traversal, checks the extension.
+    Resolves symlinks and path traversal, checks the extension,
+    and optionally verifies the resolved path stays within *base_dir*.
 
     Args:
         file_path: Path to validate.
         allowed_extensions: Set of allowed extensions (e.g. {".html", ".htm"}).
         must_exist: If True, verifies that the file exists.
+        base_dir: If provided, the resolved path must be inside this directory.
 
     Returns:
         (True, None) if safe, (False, error_message) otherwise.
@@ -191,6 +195,11 @@ def validate_safe_path(
         resolved = Path(file_path).resolve()
     except (OSError, ValueError) as e:
         return False, f"Invalid path: {e}"
+
+    if base_dir is not None:
+        base_resolved = Path(base_dir).resolve()
+        if not str(resolved).startswith(str(base_resolved) + os.sep) and resolved != base_resolved:
+            return False, f"Path escapes base directory: {resolved}"
 
     if must_exist and not resolved.exists():
         return False, f"File not found: {resolved}"

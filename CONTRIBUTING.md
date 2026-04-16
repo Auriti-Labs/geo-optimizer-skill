@@ -80,7 +80,7 @@ src/geo_optimizer/
 │   ├── app.py       # Endpoints: /, /api/audit, /badge, /report, /compare
 │   ├── badge.py     # SVG badge generator
 │   └── cli.py       # geo-web CLI entry point
-├── mcp/             # MCP server (10 tools, 5 resources)
+├── mcp/             # MCP server (12 tools, 5 resources)
 └── i18n/            # Internationalization (gettext IT/EN)
 ```
 

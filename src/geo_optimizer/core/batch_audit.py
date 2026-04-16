@@ -109,7 +109,7 @@ async def _audit_single_url(url: str, *, use_cache: bool, project_config) -> Bat
         else:
             result = await run_full_audit_async(url, project_config=project_config)
     except Exception as exc:  # pragma: no cover - rete/eccezioni inattese
-        result = AuditResult(url=url, error=str(exc) or type(exc).__name__)
+        result = AuditResult(url=url, error=type(exc).__name__)
     return _summarize_audit_result(result)
 
 

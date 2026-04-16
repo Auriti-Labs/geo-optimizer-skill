@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -58,7 +59,9 @@ def load_skill(skill_dir: Path) -> SkillSpec:
         raise ValueError(f"Skill spec must be a mapping: {spec_path}")
 
     prompt_file = str(raw.get("prompt_file", "prompt.md"))
-    prompt_path = skill_dir / prompt_file
+    prompt_path = (skill_dir / prompt_file).resolve()
+    if not str(prompt_path).startswith(str(skill_dir.resolve()) + os.sep):
+        raise ValueError(f"prompt_file escapes skill directory: {prompt_file}")
     if not prompt_path.is_file():
         raise FileNotFoundError(f"Missing prompt file: {prompt_path}")
 

@@ -141,6 +141,12 @@ app.add_middleware(
 # the "Authorization: Bearer <token>" header. If not set, no auth.
 _API_TOKEN: str | None = os.environ.get("GEO_API_TOKEN") or None
 
+if _API_TOKEN and "*" in _ALLOWED_ORIGINS:
+    logging.getLogger(__name__).warning(
+        "GEO_API_TOKEN is set but CORS allows all origins (*). "
+        "Set ALLOWED_ORIGINS to restrict cross-origin access."
+    )
+
 
 def _verify_bearer_token(request: Request) -> bool:
     """Verify the Bearer token if GEO_API_TOKEN is configured.

@@ -42,7 +42,7 @@ geo fix --url https://yoursite.com --apply
 
 | Platform | Guide |
 |----------|-------|
-| [MCP Server](mcp-server/) | Use from Claude Code, Cursor, Windsurf — 10 tools, 5 resources |
+| [MCP Server](mcp-server/) | Use from Claude Code, Cursor, Windsurf — 12 tools, 5 resources |
 | [CI/CD](ci-cd/) | GitHub Actions, GitLab CI, Jenkins — fail builds on low score |
 | [AI Context](ai-context/) | Load GEO expertise into Claude, ChatGPT, Cursor, Windsurf, Kiro |
 
