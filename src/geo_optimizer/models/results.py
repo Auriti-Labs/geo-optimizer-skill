@@ -682,6 +682,35 @@ class CitationMapResult:
     overall_visibility: float = 0.0  # 0-1
 
 
+# ─── Prompt Library (v4.7) ───────────────────────────────────────────────────
+
+
+@dataclass
+class PromptResult:
+    """Result of executing a single prompt (#379)."""
+
+    intent: str = ""
+    prompt: str = ""
+    brand_mentioned: bool = False
+    mention_count: int = 0
+    sentiment: str = ""
+    response_snippet: str = ""
+
+
+@dataclass
+class PromptLibraryResult:
+    """Batch prompt execution results (#379)."""
+
+    checked: bool = False
+    skipped_reason: str | None = None
+    brand: str = ""
+    results: list[PromptResult] = field(default_factory=list)
+    mention_rate: float = 0.0  # 0-1
+    avg_sentiment_score: float = 0.0
+    llm_provider: str = ""
+    llm_model: str = ""
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
