@@ -5,6 +5,38 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.8.0] — 2026-04-16
+
+### Added
+- **Content Decay Predictor** (#383) — detects 5 decay patterns (temporal, statistical, version, event, price) with evergreen score 0–100 and risk classification
+- **Server Log Analyzer** (#227) — `geo logs --file access.log` parses Apache/Nginx combined and JSON logs for AI crawler activity, per-bot stats, top crawled pages
+- **Multi-Platform Citation Profile** (#228) — per-platform readiness scores for ChatGPT, Perplexity, Google AI based on existing audit data (zero additional HTTP)
+- **LLM Client Infrastructure** — provider-agnostic LLM queries (OpenAI, Anthropic, Groq) with auto-detection and graceful skip. New `[llm]` optional dependency extra
+- **Brand Sentiment Analysis** (#378) — keyword sentiment on LLM responses, score -100 to +100, recommendation strength classification
+- **Citation Attribution Chain** (#375) — sentence-level faithfulness analysis comparing LLM responses with source content
+- **Multi-Turn Persistence** (#376) — tracks brand mentions across multi-turn LLM conversations (5 turns default)
+- **Cross-Platform Citation Map** (#356) — queries multiple LLM providers with same prompts, aggregates brand visibility
+- **Prompt Library** (#379) — intent-based prompt library (discovery, comparison, recommendation, alternative, how_to) with batch LLM execution
+
+### Fixed
+- **Version regex false positives** — `_VERSION_RE` in content decay now requires software name or `v`/`version` prefix; no longer matches "section 2.1" or "9.99"
+- **Language consistency** — coherence analyzer now uses base language code (`en`) instead of full tag (`en-US`) for consistency ratio
+- **Dead sentiment phrases** — removed multi-word entries from sentiment word sets that couldn't match word-level regex
+- **Unused parameter** — removed dead `score` parameter from `_classify_strength`
+- **Heading lookup performance** — converted heading list to set for O(1) membership check in RAG and embedding chunk extraction
+- **Log analyzer safety** — added `max_lines` (1M default) to prevent OOM on large files
+
+### Documentation
+- **Wiki** updated to v4.7.0: 3 new pages (GEO Coherence, GEO Logs, RAG & Citation Intelligence), Home/Sidebar refreshed, methods count 42→47
+- **GitHub Pages** — 2 new doc pages (geo-coherence, geo-logs), index updated
+- **README** — added RAG, Decay, Platform Citation to "What it checks", new tools section, test count updated
+
+### Tests
+- 1309 tests (all mocked, zero network), up from 1222
+- 87 new tests across decay, logs, platform citation, LLM sentiment, attribution, multi-turn, citation map, prompt library
+
+---
+
 ## [4.7.0] — 2026-04-16
 
 ### Added
