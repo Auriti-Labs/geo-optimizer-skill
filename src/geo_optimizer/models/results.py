@@ -711,6 +711,24 @@ class PromptLibraryResult:
     llm_model: str = ""
 
 
+# ─── Context Window Optimization (v4.9) ─────────────────────────────────────
+
+
+@dataclass
+class ContextWindowResult:
+    """Context window utilization analysis (#370). Informational — does not affect GEO score."""
+
+    checked: bool = False
+    total_words: int = 0
+    total_tokens_estimate: int = 0
+    front_loaded_ratio: float = 0.0  # % of key info in first 30% of content
+    key_info_tokens: int = 0  # tokens containing key information
+    filler_ratio: float = 0.0  # % of tokens that are boilerplate/filler
+    optimal_for: list[str] = field(default_factory=list)  # ["rag_chunk", "perplexity", "chatgpt", ...]
+    truncation_risk: str = "none"  # none | low | medium | high
+    context_efficiency_score: int = 0  # 0-100
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -766,6 +784,8 @@ class AuditResult:
     platform_citation: PlatformCitationResult = field(default_factory=PlatformCitationResult)
     # v4.7: Brand sentiment analysis (#378) — opt-in, requires LLM API key
     brand_sentiment: BrandSentimentResult = field(default_factory=BrandSentimentResult)
+    # v4.9: Context window optimization (#370)
+    context_window: ContextWindowResult = field(default_factory=ContextWindowResult)
 
 
 # ─── Batch audit ─────────────────────────────────────────────────────────────

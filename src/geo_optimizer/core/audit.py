@@ -283,6 +283,7 @@ def _build_audit_result(
     embedding_proximity=None,  # v4.7: Embedding Proximity Score (#354)
     content_decay=None,  # v4.7: Content Decay Predictor (#383)
     platform_citation=None,  # v4.7: Multi-Platform Citation Profile (#228)
+    context_window=None,  # v4.9: Context Window Optimization (#370)
 ) -> AuditResult:
     """Build AuditResult from sub-audits (fix #97: shared sync/async logic).
 
@@ -368,6 +369,18 @@ def _build_audit_result(
         from geo_optimizer.models.results import ContentDecayResult
 
         effective_decay = ContentDecayResult()
+
+    # v4.9: Context Window Optimization (#370)
+    if context_window is not None:
+        effective_context_window = context_window
+    elif soup is not None:
+        from geo_optimizer.core.audit_context_window import audit_context_window
+
+        effective_context_window = audit_context_window(soup, soup_clean)
+    else:
+        from geo_optimizer.models.results import ContextWindowResult
+
+        effective_context_window = ContextWindowResult()
 
     # Compute score, breakdown, and band (v4.0: includes signals, ai_discovery)
     score = compute_geo_score(
@@ -465,6 +478,7 @@ def _build_audit_result(
         rag_chunk=effective_rag_chunk,
         embedding_proximity=effective_embedding,
         content_decay=effective_decay,
+        context_window=effective_context_window,
     )
 
     # v4.7: Multi-Platform Citation Profile (#228) — computed post-construction
