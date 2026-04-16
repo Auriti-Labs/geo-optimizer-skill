@@ -41,7 +41,7 @@ def analyze_coherence(extracts: list[PageTermExtract]) -> SemanticCoherenceResul
         score -= _PENALTY.get(issue.severity, 2)
     score = max(score, 0)
 
-    langs = [e.language for e in extracts if e.language]
+    langs = [e.language.split("-")[0] for e in extracts if e.language]
     if langs:
         most_common = max(set(langs), key=langs.count)
         lang_consistency = langs.count(most_common) / len(langs)
