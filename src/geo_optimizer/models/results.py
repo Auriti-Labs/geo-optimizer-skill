@@ -625,6 +625,35 @@ class CitationAttributionResult:
     llm_model: str = ""
 
 
+# ─── Multi-Turn Persistence (v4.7) ──────────────────────────────────────────
+
+
+@dataclass
+class TurnResult:
+    """Result of a single conversation turn (#376)."""
+
+    turn: int = 0
+    query: str = ""
+    brand_mentioned: bool = False
+    mention_count: int = 0
+    response_snippet: str = ""
+
+
+@dataclass
+class MultiTurnResult:
+    """Multi-turn conversation persistence analysis (#376)."""
+
+    checked: bool = False
+    skipped_reason: str | None = None
+    brand: str = ""
+    turns: list[TurnResult] = field(default_factory=list)
+    persistence_score: int = 0  # 0-100
+    last_mentioned_turn: int = 0
+    total_turns: int = 0
+    llm_provider: str = ""
+    llm_model: str = ""
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
