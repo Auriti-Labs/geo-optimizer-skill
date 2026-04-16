@@ -58,6 +58,10 @@ mcp = [
 embedding = [
     "sentence-transformers>=2.2.0,<4.0",
 ]
+llm = [
+    "openai>=1.0.0,<3.0",
+    "anthropic>=0.30.0,<2.0",
+]
 dev = [
     "pytest>=7.0,<10.0",
     "pytest-cov>=4.0,<8.0",

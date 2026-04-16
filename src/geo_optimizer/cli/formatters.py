@@ -184,6 +184,12 @@ def format_audit_json(result: AuditResult) -> str:
     if hasattr(result, "platform_citation") and result.platform_citation and result.platform_citation.checked:
         data["platform_citation"] = asdict(result.platform_citation)
 
+    # v4.7: Brand Sentiment (#378)
+    if hasattr(result, "brand_sentiment") and result.brand_sentiment and result.brand_sentiment.checked:
+        bs = asdict(result.brand_sentiment)
+        bs.pop("raw_response", None)  # exclude verbose raw response from JSON
+        data["brand_sentiment"] = bs
+
     # Metadata
     data["http_status"] = result.http_status
     data["page_size"] = result.page_size

@@ -577,6 +577,26 @@ class PlatformCitationResult:
     platforms: list[PlatformScore] = field(default_factory=list)
 
 
+# ─── Brand Sentiment Analysis (v4.7) ────────────────────────────────────────
+
+
+@dataclass
+class BrandSentimentResult:
+    """Brand sentiment analysis from LLM responses (#378)."""
+
+    checked: bool = False
+    skipped_reason: str | None = None
+    brand: str = ""
+    overall_score: int = 0  # -100 (negative) to +100 (positive)
+    sentiment: str = "unknown"  # positive | neutral | negative | unknown
+    positive_phrases: list[str] = field(default_factory=list)
+    negative_phrases: list[str] = field(default_factory=list)
+    recommendation_strength: str = ""  # strongly_recommended | mentioned | neutral | warned_against
+    llm_provider: str = ""
+    llm_model: str = ""
+    raw_response: str = ""
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -630,6 +650,8 @@ class AuditResult:
     content_decay: ContentDecayResult = field(default_factory=ContentDecayResult)
     # v4.7: Multi-platform citation profile (#228)
     platform_citation: PlatformCitationResult = field(default_factory=PlatformCitationResult)
+    # v4.7: Brand sentiment analysis (#378) — opt-in, requires LLM API key
+    brand_sentiment: BrandSentimentResult = field(default_factory=BrandSentimentResult)
 
 
 # ─── Batch audit ─────────────────────────────────────────────────────────────
