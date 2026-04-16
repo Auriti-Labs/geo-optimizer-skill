@@ -49,3 +49,7 @@ CLAUDE.md
 node_modules/
 docs_dev/
 .claude/
+
+# Local caches
+local_cache/
+.codex
