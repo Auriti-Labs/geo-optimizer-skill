@@ -458,6 +458,43 @@ class EmbeddingProximityResult:
     total_chunks: int = 0
 
 
+# ─── Semantic Coherence (v4.7) ───────────────────────────────────────────────
+
+
+@dataclass
+class PageTermExtract:
+    """Terminology extracted from a single page for cross-page analysis (#253)."""
+
+    url: str = ""
+    title: str = ""
+    h1: str = ""
+    definitions: list[str] = field(default_factory=list)
+    key_terms: list[str] = field(default_factory=list)
+    language: str = ""
+
+
+@dataclass
+class CoherenceIssue:
+    """A single cross-page coherence problem (#253)."""
+
+    issue_type: str = ""  # conflicting_definition | duplicate_title | mixed_language
+    severity: str = "low"  # high | medium | low
+    description: str = ""
+    pages: list[str] = field(default_factory=list)
+    terms: list[str] = field(default_factory=list)
+
+
+@dataclass
+class SemanticCoherenceResult:
+    """Aggregated cross-page semantic coherence analysis (#253)."""
+
+    checked: bool = False
+    pages_analyzed: int = 0
+    issues: list[CoherenceIssue] = field(default_factory=list)
+    coherence_score: int = 100
+    language_consistency: float = 1.0
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 

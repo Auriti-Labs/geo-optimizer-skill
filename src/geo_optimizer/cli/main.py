@@ -33,6 +33,7 @@ def cli(lang):
 
 # Import and register subcommands
 from geo_optimizer.cli.audit_cmd import audit  # noqa: E402
+from geo_optimizer.cli.coherence_cmd import coherence  # noqa: E402
 from geo_optimizer.cli.diff_cmd import diff  # noqa: E402
 from geo_optimizer.cli.fix_cmd import fix  # noqa: E402
 from geo_optimizer.cli.history_cmd import history  # noqa: E402
@@ -43,6 +44,7 @@ from geo_optimizer.cli.snapshots_cmd import snapshots  # noqa: E402
 from geo_optimizer.cli.track_cmd import track  # noqa: E402
 
 cli.add_command(audit)
+cli.add_command(coherence)
 cli.add_command(diff)
 cli.add_command(fix)
 cli.add_command(history)
