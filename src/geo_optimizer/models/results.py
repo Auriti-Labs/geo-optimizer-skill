@@ -424,6 +424,23 @@ class TrustStackResult:
     trust_level: str = "low"  # "low" | "medium" | "high" | "excellent"
 
 
+# ─── RAG Chunk Readiness (v4.7) ──────────────────────────────────────────────
+
+
+@dataclass
+class RagChunkResult:
+    """RAG chunking readiness analysis (#353)."""
+
+    checked: bool = False
+    total_sections: int = 0
+    sections_in_range: int = 0
+    avg_section_words: float = 0.0
+    has_definition_opening: bool = False
+    heading_as_boundary_ratio: float = 0.0
+    anchor_sentences: int = 0
+    chunk_readiness_score: int = 0
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -469,6 +486,8 @@ class AuditResult:
     trust_stack: TrustStackResult = field(default_factory=TrustStackResult)
     # v4.7: audit wall-clock duration in milliseconds (#290)
     audit_duration_ms: int | None = None
+    # v4.7: RAG chunk readiness (#353)
+    rag_chunk: RagChunkResult = field(default_factory=RagChunkResult)
 
 
 # ─── Batch audit ─────────────────────────────────────────────────────────────

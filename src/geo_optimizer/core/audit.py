@@ -279,6 +279,7 @@ def _build_audit_result(
     negative_signals=None,  # v4.3: Negative Signals detection
     prompt_injection=None,  # v4.4: Prompt Injection Detection (#276)
     trust_stack=None,  # v4.5: Trust Stack Score (#273)
+    rag_chunk=None,  # v4.7: RAG Chunk Readiness (#353)
 ) -> AuditResult:
     """Build AuditResult from sub-audits (fix #97: shared sync/async logic).
 
@@ -328,6 +329,18 @@ def _build_audit_result(
     from geo_optimizer.models.results import TrustStackResult
 
     effective_trust_stack = trust_stack if trust_stack is not None else TrustStackResult()
+
+    # v4.7: RAG Chunk Readiness (#353) — compute if not pre-computed
+    if rag_chunk is not None:
+        effective_rag_chunk = rag_chunk
+    elif soup is not None:
+        from geo_optimizer.core.audit_rag import audit_rag_readiness
+
+        effective_rag_chunk = audit_rag_readiness(soup, soup_clean)
+    else:
+        from geo_optimizer.models.results import RagChunkResult
+
+        effective_rag_chunk = RagChunkResult()
 
     # Compute score, breakdown, and band (v4.0: includes signals, ai_discovery)
     score = compute_geo_score(
@@ -422,6 +435,7 @@ def _build_audit_result(
         negative_signals=effective_negative_signals,
         prompt_injection=effective_prompt_injection,
         trust_stack=effective_trust_stack,
+        rag_chunk=effective_rag_chunk,
     )
 
 

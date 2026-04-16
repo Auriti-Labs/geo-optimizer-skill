@@ -168,6 +168,10 @@ def format_audit_json(result: AuditResult) -> str:
     if hasattr(result, "prompt_injection") and result.prompt_injection and result.prompt_injection.checked:
         data["prompt_injection"] = asdict(result.prompt_injection)
 
+    # v4.7: RAG Chunk Readiness (#353)
+    if hasattr(result, "rag_chunk") and result.rag_chunk and result.rag_chunk.checked:
+        data["rag_chunk"] = asdict(result.rag_chunk)
+
     # Metadata
     data["http_status"] = result.http_status
     data["page_size"] = result.page_size
@@ -399,6 +403,18 @@ def format_audit_text(result: AuditResult) -> str:
             bar_empty = 5 - bar_filled
             bar = "█" * bar_filled + "░" * bar_empty
             lines.append(f"  [{bar}] {layer.label}: {layer.score}/5")
+
+    # RAG Chunk Readiness (#353)
+    if result.rag_chunk and result.rag_chunk.checked and result.rag_chunk.total_sections > 0:
+        lines.append("")
+        lines.append(_section_header("13. RAG CHUNK READINESS"))
+        rc = result.rag_chunk
+        lines.append(f"  Sections: {rc.total_sections} ({rc.sections_in_range} in 100-150 word range)")
+        lines.append(f"  Avg section words: {rc.avg_section_words}")
+        lines.append(f"  Definition opening: {'✅' if rc.has_definition_opening else '❌'}")
+        lines.append(f"  Heading boundaries: {rc.heading_as_boundary_ratio:.0%}")
+        lines.append(f"  Anchor sentences: {rc.anchor_sentences}")
+        lines.append(f"  Chunk readiness: {rc.chunk_readiness_score}/100")
 
     # Score
     lines.append("")
