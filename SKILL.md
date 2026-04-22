@@ -1,70 +1,105 @@
-# GEO Optimizer — AI Context Files
+---
+name: geo-optimizer
+description: "Optimize websites for AI search engine visibility and citation. Audits robots.txt, llms.txt, JSON-LD schema, and content quality using the Princeton GEO framework (KDD 2024). Use when auditing a site for AI discoverability, generating llms.txt, injecting JSON-LD schema, fixing AI crawler access, or improving content citability for ChatGPT, Perplexity, Claude, and Gemini."
+---
 
-Choose the file for your platform:
+# GEO Optimizer
 
-| Platform | File | How to use |
-|----------|------|------------|
-| Claude Projects | `ai-context/claude-project.md` | Project → Add as Knowledge |
-| ChatGPT Custom GPT | `ai-context/chatgpt-custom-gpt.md` | GPT Builder → System prompt (requires paid plan) |
-| ChatGPT Custom Instructions | `ai-context/chatgpt-instructions.md` | Settings → Personalization → Custom Instructions |
-| Cursor | `ai-context/cursor.mdc` | Copy to `.cursor/rules/geo-optimizer.mdc` |
-| Windsurf | `ai-context/windsurf.md` | Copy to `.windsurf/rules/geo-optimizer.md` |
-| Kiro | `ai-context/kiro-steering.md` | Copy to `.kiro/steering/geo-optimizer.md` |
+Make websites visible and citable by AI search engines (ChatGPT Search, Perplexity, Claude, Gemini AI Overviews). Implements the GEO audit framework plus a 47-method citability engine based on Princeton KDD 2024 research.
 
-## Why different files?
+## Workflow
 
-Each platform has different limits and formats:
+### Step 1 — Audit the site
 
-- **Claude Projects**: no practical limit — full context with workflow, examples, framework code
-- **ChatGPT Custom Instructions**: 1,500 character limit per field — ultra-compressed essentials only
-- **ChatGPT Custom GPT**: 8,000 character limit (paid plan required) — compressed but complete
-- **Cursor**: `.mdc` with YAML frontmatter (`description`, `globs`, `alwaysApply`); glob activates only on matching files
-- **Windsurf**: plain `.md`, no YAML frontmatter — activation configured via Windsurf UI (Always On / Glob / Manual)
-- **Kiro**: YAML frontmatter with `inclusion: fileMatch` + `fileMatchPattern` array; file goes in `.kiro/steering/`
-
-## Quick copy commands
+Run `geo audit` first. It scores the site 0–100 and generates a prioritized action list.
 
 ```bash
-# Claude Projects — upload via web UI (claude.ai → Projects → Add content)
-# File: ai-context/claude-project.md
-
-# ChatGPT Custom Instructions — paste content via web UI
-# File: ai-context/chatgpt-instructions.md (804 chars — fits in one field)
-
-# ChatGPT Custom GPT — paste in GPT Builder → Configure → Instructions
-# File: ai-context/chatgpt-custom-gpt.md (~4,500 chars — well within 8,000 limit)
-
-# Cursor
-mkdir -p .cursor/rules
-cp ~/geo-optimizer-skill/ai-context/cursor.mdc .cursor/rules/geo-optimizer.mdc
-
-# Windsurf
-mkdir -p .windsurf/rules
-cp ~/geo-optimizer-skill/ai-context/windsurf.md .windsurf/rules/geo-optimizer.md
-
-# Kiro
-mkdir -p .kiro/steering
-cp ~/geo-optimizer-skill/ai-context/kiro-steering.md .kiro/steering/geo-optimizer.md
+geo audit --url https://yoursite.com
 ```
 
-## File sizes at a glance
+Score interpretation: 0–40 = critical gaps, 41–70 = foundation exists, 71–90 = good, 91–100 = excellent.
 
-| File | Size | Platform limit | Status |
-|------|------|---------------|--------|
-| `claude-project.md` | ~11,700 chars | No limit | ✅ Full context |
-| `chatgpt-custom-gpt.md` | ~4,500 chars | 8,000 chars | ✅ Safe |
-| `chatgpt-instructions.md` | ~800 chars | 1,500 chars/field | ✅ Fits in one field |
-| `cursor.mdc` | ~4,200 chars | No limit | ✅ Optimized format |
-| `windsurf.md` | ~4,500 chars | 12,000 chars (UI activation) | ✅ Optimized format |
-| `kiro-steering.md` | ~3,300 chars | No limit | ✅ fileMatch inclusion |
+For batch auditing: `geo audit --sitemap https://yoursite.com/sitemap.xml --max-urls 25`
 
-## About GEO Optimizer
+### Step 2 — Fix AI crawler access (robots.txt)
 
-GEO Optimizer is a Python toolkit to make websites visible and citable by AI search engines (ChatGPT, Perplexity, Claude, Gemini). It implements the GEO audit framework plus a 47-method citability engine and provides 4 primary CLI commands:
+Ensure all AI citation bots can access the site. Add these user-agents with `Allow: /`:
 
-- `geo audit` — scores your site 0–100 and lists what's missing
-- `geo fix` — generates foundational remediation artifacts
-- `geo llms` — auto-generates `/llms.txt` from your sitemap
-- `geo schema` — generates or injects JSON-LD schema into HTML
+- **Critical citation bots**: `OAI-SearchBot`, `PerplexityBot`, `ClaudeBot`, `Google-Extended`
+- **Additional bots**: `GPTBot`, `ChatGPT-User`, `anthropic-ai`, `claude-web`, `Googlebot`, `Bingbot`, `Applebot`, `Applebot-Extended`, `meta-externalagent`, `Bytespider`, `cohere-ai`, `DuckAssistBot`
 
-*GEO Optimizer by Juan Camilo Auriti — https://github.com/auriti-labs/geo-optimizer-skill*
+To block training while keeping citations: `Disallow: /` for `GPTBot` and `anthropic-ai`, but always keep `OAI-SearchBot`, `ClaudeBot`, `PerplexityBot` at `Allow: /`.
+
+### Step 3 — Generate llms.txt
+
+Create `/llms.txt` so AI engines discover site content:
+
+```bash
+geo llms --base-url https://yoursite.com --site-name "Site Name" --description "One-sentence description." --output ./public/llms.txt
+```
+
+Required structure: H1 (site name) → blockquote (description) → sections with descriptive links (`- [Title](URL): Description`). Keep under 200 lines.
+
+### Step 4 — Inject JSON-LD schema
+
+Add structured data so AI engines understand page types:
+
+```bash
+geo schema --type website --url https://yoursite.com
+geo schema --type faq --url https://yoursite.com/faq
+geo schema --type webapp --url https://yoursite.com/tool
+```
+
+Schema types: `website` (all pages), `webapp` (tools/calculators), `faq` (Q&A content), `article` (blog/guides), `organization`, `breadcrumb`.
+
+### Step 5 — Optimize content (Princeton GEO methods)
+
+Apply evidence-based content improvements, ordered by measured impact:
+
+1. **Cite sources** (+30–115% AI visibility) — add authoritative external links
+2. **Add statistics** (+40%) — include concrete numbers, percentages, dates
+3. **Add quotations** (+30–40%) — use expert quotes with attribution: `"Text" — Name, Role, Organization, Year`
+4. **Fluency optimization** (+15–30%) — clear, direct language
+5. **Authoritative tone** (+6–12%) — confident, expert framing
+
+Never keyword-stuff — Princeton research shows ~0% impact with possible negative effect.
+
+### Step 6 — Auto-fix all gaps
+
+Generate all missing files at once:
+
+```bash
+geo fix --url https://yoursite.com --apply
+```
+
+This creates robots.txt entries, llms.txt, JSON-LD schema, and meta tags based on audit results.
+
+## Additional Commands
+
+```bash
+# Compare before/after versions of a page
+geo diff --before https://yoursite.com/old --after https://yoursite.com/new
+
+# Track score history and detect regressions
+geo audit --url https://yoursite.com --save-history --regression
+geo history --url https://yoursite.com
+
+# Passive AI visibility monitoring
+geo monitor --domain yoursite.com
+
+# Recurring monitoring with HTML trend report
+geo track --url https://yoursite.com --report --output ./geo-track-report.html
+```
+
+## Platform-Specific Context Files
+
+For platform-optimized versions of this skill, see `ai-context/`:
+
+| Platform | File | Limit |
+|----------|------|-------|
+| Claude Projects | `ai-context/claude-project.md` | No limit — full context |
+| Cursor | `ai-context/cursor.mdc` | Glob-activated |
+| Windsurf | `ai-context/windsurf.md` | 12,000 chars |
+| Kiro | `ai-context/kiro-steering.md` | fileMatch inclusion |
+| ChatGPT Custom GPT | `ai-context/chatgpt-custom-gpt.md` | 8,000 chars |
+| ChatGPT Instructions | `ai-context/chatgpt-instructions.md` | 1,500 chars/field |
