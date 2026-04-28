@@ -30,6 +30,12 @@ from pydantic import BaseModel
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from geo_optimizer import __version__
+from geo_optimizer.core.telemetry import (
+    _telemetry,
+    geo_audit_run,
+    geo_badge_generated,
+    geo_score_improved,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -880,6 +886,9 @@ async def badge(
 
     from geo_optimizer.web.badge import generate_badge_svg
 
+    # v4.10: emit geo_badge_generated telemetry event
+    geo_badge_generated(url=url, score=score, band=band)
+
     svg = generate_badge_svg(score, band, label=label)
     return Response(
         content=svg,
@@ -1011,6 +1020,8 @@ async def _run_audit(url: str) -> JSONResponse:
             response_data["history"] = history_summary
         return JSONResponse(content=response_data)
 
+    # v4.10: telemetry — capture duration for geo_audit_run event
+    t_start = time.perf_counter()
     # Run audit
     try:
         from geo_optimizer.core.audit import run_full_audit
@@ -1033,11 +1044,31 @@ async def _run_audit(url: str) -> JSONResponse:
             detail="Internal error during audit. Try again later.",
         ) from e
 
+    duration_ms = int((time.perf_counter() - t_start) * 1000)
+
     # Serialize result
     data = _audit_result_to_dict(result)
     history_summary = await asyncio.to_thread(_save_and_load_history_summary, result)
     if history_summary:
         data["history"] = history_summary
+
+    # v4.10: emit geo_audit_run telemetry event (singleton store)
+    geo_audit_run(
+        url=result.url,
+        score=result.score,
+        band=result.band,
+        duration_ms=duration_ms,
+        score_breakdown=dict(result.score_breakdown),
+    )
+
+    # v4.10: emit geo_score_improved if score increased vs previous
+    previous = _telemetry().get_latest_audit_score(result.url)
+    if previous is not None and result.score > previous:
+        geo_score_improved(
+            url=result.url,
+            previous_score=previous,
+            current_score=result.score,
+        )
 
     # Incrementa contatore audit sul DB persistente (AgencyPilot)
     await asyncio.to_thread(_increment_remote_stat, "audits")
