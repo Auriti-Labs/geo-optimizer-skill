@@ -280,7 +280,7 @@ This project follows a deliberate release cadence — focused waves, not noisy p
 
 | Version | Window | Codename |
 |---------|--------|----------|
-| v4.10.0 | Late May / Early Jun 2026 | Veil |
+| v4.10.0 | Late Apr 2026 | Veil |
 | v4.11.0 | Mid / Late Jul 2026 | Static |
 | v4.12.0 | Sep 2026 | Ledger |
 | v4.13.0 | Nov 2026 | Quiet Glass |
