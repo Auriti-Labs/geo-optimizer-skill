@@ -287,6 +287,7 @@ def _build_audit_result(
     context_window=None,  # v4.9: Context Window Optimization (#370)
     instruction_readiness=None,  # v4.9: Instruction Following Readiness (#371)
     intent_mapping=None,  # v4.10: AI Search Intent Mapping (#385)
+    hallucination_bait=None,  # v4.10: Hallucination Bait Detection (#377)
 ) -> AuditResult:
     """Build AuditResult from sub-audits (fix #97: shared sync/async logic).
 
@@ -409,6 +410,20 @@ def _build_audit_result(
 
         effective_intent = IntentMappingResult()
 
+    # v4.10: Hallucination Bait Detection (#377) — compute if not pre-computed
+    if hallucination_bait is not None:
+        effective_hallucination = hallucination_bait
+    elif soup is not None:
+        from geo_optimizer.core.hallucination_bait import audit_hallucination_bait
+
+        effective_hallucination = audit_hallucination_bait(
+            soup, "", content, meta, schema
+        )
+    else:
+        from geo_optimizer.models.results import HallucinationBaitResult
+
+        effective_hallucination = HallucinationBaitResult()
+
     # Compute score, breakdown, and band (v4.0: includes signals, ai_discovery)
     score = compute_geo_score(
         robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity
@@ -508,6 +523,7 @@ def _build_audit_result(
         context_window=effective_context_window,
         instruction_readiness=effective_instruction,
         intent_mapping=effective_intent,
+        hallucination_bait=effective_hallucination,
     )
 
     # v4.7: Multi-Platform Citation Profile (#228) — computed post-construction

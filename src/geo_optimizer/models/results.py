@@ -780,6 +780,38 @@ class IntentMappingResult:
     total_intents_missing: int = 0
 
 
+# ─── Hallucination Bait Detection (v4.10) ────────────────────────────────────
+
+
+@dataclass
+class HallucinationBaitResult:
+    """Hallucination bait pattern detection (#377). Informational — does not affect GEO score."""
+
+    checked: bool = False
+    total_baits: int = 0
+    severity: str = "clean"  # clean | low | medium | high
+    # Per-category counts
+    unsourced_stats: int = 0
+    absolute_claims: int = 0
+    speculative_statements: int = 0
+    vague_ranges: int = 0
+    ai_generated_signals: int = 0
+    self_citations: int = 0
+    missing_units: int = 0
+    medical_claims: int = 0
+    # Samples (max 3 per category)
+    unsourced_stats_samples: list[str] = field(default_factory=list)
+    absolute_claims_samples: list[str] = field(default_factory=list)
+    speculative_samples: list[str] = field(default_factory=list)
+    vague_range_samples: list[str] = field(default_factory=list)
+    ai_generated_samples: list[str] = field(default_factory=list)
+    self_citation_samples: list[str] = field(default_factory=list)
+    missing_units_samples: list[str] = field(default_factory=list)
+    medical_claim_samples: list[str] = field(default_factory=list)
+    # Human-readable detail strings
+    details: list[str] = field(default_factory=list)
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -841,6 +873,8 @@ class AuditResult:
     instruction_readiness: InstructionReadinessResult = field(default_factory=InstructionReadinessResult)
     # v4.10: AI Search Intent Mapping (#385)
     intent_mapping: IntentMappingResult = field(default_factory=IntentMappingResult)
+    # v4.10: Hallucination Bait Detection (#377)
+    hallucination_bait: HallucinationBaitResult = field(default_factory=HallucinationBaitResult)
 
 
 # ─── Batch audit ─────────────────────────────────────────────────────────────
