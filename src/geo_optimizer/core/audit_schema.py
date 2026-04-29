@@ -37,6 +37,10 @@ def audit_schema(soup, url: str) -> SchemaResult:
                 schemas = [data]
 
             for schema in schemas:
+                # Fix: skip non-dict items in JSON-LD arrays (ad trackers, malformed scripts)
+                if not isinstance(schema, dict):
+                    continue
+
                 schema_type = schema.get("@type", "unknown")
                 if isinstance(schema_type, list):
                     schema_types = schema_type
@@ -83,7 +87,7 @@ def audit_schema(soup, url: str) -> SchemaResult:
                 if schema.get("dateModified"):
                     result.has_date_modified = True
 
-        except json.JSONDecodeError as exc:
+        except (json.JSONDecodeError, AttributeError, TypeError) as exc:
             # Parsing failed: log at debug (not critical, third-party scripts) — fix #81
             logging.debug("Invalid JSON schema ignored: %s", exc)
             result.json_parse_errors += 1  # fix #399: track errors for recommendations
@@ -120,6 +124,8 @@ def audit_schema(soup, url: str) -> SchemaResult:
                 offers = schema_obj.get("offers") or schema_obj.get("offer", {})
                 if isinstance(offers, list):
                     offers = offers[0] if offers else {}
+                if not isinstance(offers, dict):
+                    offers = {}
                 result.ecommerce_signals = {
                     "has_price": bool(offers.get("price") or offers.get("lowPrice")),
                     "has_availability": bool(offers.get("availability")),

@@ -14,12 +14,19 @@ Requires httpx as an optional dependency:
 from __future__ import annotations
 
 import asyncio
+import contextvars
 
 from geo_optimizer.models.config import HEADERS
 from geo_optimizer.utils.http import MAX_RESPONSE_SIZE
 
 # Maximum number of redirects to follow manually
 _MAX_REDIRECTS = 10
+
+# Fix H-1: use contextvars instead of threading.local for async-safe DNS pinning.
+# threading.local is per-thread, NOT per-coroutine. In asyncio, multiple coroutines
+# share the same thread, so the last coroutine to set the pin before an await wins.
+# contextvars.ContextVar is per-task in asyncio, preventing cross-coroutine leaks.
+_pinning_ctx: contextvars.ContextVar[dict | None] = contextvars.ContextVar("_pinning_ctx", default=None)
 
 
 def is_httpx_available() -> bool:
@@ -66,8 +73,7 @@ async def fetch_url_async(
     own_client = client is None
 
     try:
-        # Fix #414: install DNS pinning via thread-local (same mechanism as http.py)
-        # Import triggers the global getaddrinfo patch
+        # Fix H-1: use contextvars for async-safe DNS pinning instead of threading.local
         from urllib.parse import urlparse as _urlparse
 
         from geo_optimizer.utils.http import _pinning_local
@@ -76,7 +82,10 @@ async def fetch_url_async(
         _pinned_ip = pinned_ips[0] if pinned_ips else None
         if _pinned_ip:
             _target_port = _parsed.port or (443 if _parsed.scheme == "https" else 80)
-            _pinning_local.pin = {"host": _parsed.hostname, "ip": _pinned_ip, "port": _target_port}
+            pin_data = {"host": _parsed.hostname, "ip": _pinned_ip, "port": _target_port}
+            # Set both: threading.local for the patched getaddrinfo, contextvar for safety
+            _pinning_local.pin = pin_data
+            _pinning_ctx.set(pin_data)
 
         if own_client:
             client = httpx.AsyncClient(
@@ -140,8 +149,9 @@ async def fetch_url_async(
     except Exception as e:
         return None, str(e)
     finally:
-        # Fix #414: clear DNS pin
+        # Fix H-1: clear both pin stores
         _pinning_local.pin = None
+        _pinning_ctx.set(None)
         if own_client and client:
             await client.aclose()
 

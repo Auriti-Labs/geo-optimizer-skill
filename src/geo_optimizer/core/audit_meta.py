@@ -13,6 +13,10 @@ def audit_meta_tags(soup, url: str) -> MetaResult:
     """Check SEO/GEO meta tags. Returns MetaResult."""
     result = MetaResult()
 
+    # Fix H-8: guard against None soup
+    if soup is None:
+        return result
+
     # Title
     title_tag = soup.find("title")
     if title_tag and title_tag.text.strip():

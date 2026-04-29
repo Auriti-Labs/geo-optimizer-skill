@@ -46,7 +46,7 @@ class TestResolveAndValidateUrl:
             mock_dns.return_value = [(2, 1, 6, "", ("10.0.0.1", 0))]
             ok, err, ips = resolve_and_validate_url("https://evil.example.com")
             assert ok is False
-            assert "private" in err.lower()
+            assert "non-public" in err.lower()
             assert ips == []
 
     def test_dns_unresolvable_rejected(self):
@@ -126,11 +126,8 @@ class TestRedirectSsrfProtection:
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_redirect_verso_ip_privato_bloccato(self, mock_create, mock_dns):
         """Redirect verso IP privato viene bloccato prima della connessione."""
-        # DNS per l'URL iniziale: IP pubblico
-        # DNS per il redirect: IP privato (simulato dentro resolve_and_validate_url)
         mock_session = MagicMock()
 
-        # Prima risposta: 301 redirect verso http://internal.corp/secret
         redirect_response = Mock()
         redirect_response.status_code = 301
         redirect_response.headers = {"Location": "http://internal.corp/secret"}
@@ -139,7 +136,6 @@ class TestRedirectSsrfProtection:
         mock_session.get.return_value = redirect_response
         mock_create.return_value = mock_session
 
-        # DNS: esempio.com → IP pubblico; internal.corp → IP privato
         def dns_side_effect(host, port, *args, **kwargs):
             if host == "example.com":
                 return [(2, 1, 6, "", ("93.184.216.34", 0))]
@@ -152,7 +148,7 @@ class TestRedirectSsrfProtection:
         resp, err = fetch_url("https://example.com/page")
         assert resp is None
         assert err is not None
-        assert "unsafe" in err.lower() or "private" in err.lower()
+        assert "unsafe" in err.lower() or "non-public" in err.lower()
 
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
@@ -182,13 +178,11 @@ class TestRedirectSsrfProtection:
         """Redirect verso URL pubblica viene seguito normalmente."""
         mock_session = MagicMock()
 
-        # Prima risposta: 301 verso URL pubblica
         redirect_response = Mock()
         redirect_response.status_code = 301
         redirect_response.headers = {"Location": "https://www.example.com/new-page"}
         redirect_response.close = Mock()
 
-        # Risposta finale: 200 OK
         final_response = Mock()
         final_response.status_code = 200
         final_response.headers = {}
@@ -212,7 +206,6 @@ class TestRedirectSsrfProtection:
 
         mock_dns.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
 
-        # Ogni risposta è un redirect (simulando un loop infinito)
         def make_redirect(n):
             r = Mock()
             r.status_code = 302
@@ -220,7 +213,6 @@ class TestRedirectSsrfProtection:
             r.close = Mock()
             return r
 
-        # Crea _MAX_REDIRECTS + 2 risposte redirect
         mock_session.get.side_effect = [make_redirect(i) for i in range(_MAX_REDIRECTS + 2)]
         mock_create.return_value = mock_session
 

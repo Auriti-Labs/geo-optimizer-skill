@@ -53,7 +53,8 @@ def llms(base_url, output, sitemap, site_name, description, fetch_titles, max_pe
         desc = description or f"Website available at {base_url}"
         minimal = f"# {site_label}\n\n> {desc}\n\n## Main Pages\n\n- [Homepage]({base_url})\n"
         if output:
-            with open(output, "w") as f:
+            # Fix H-12: always specify encoding to prevent corruption on Windows
+            with open(output, "w", encoding="utf-8") as f:
                 f.write(minimal)
             click.echo(f"✅ Minimal llms.txt written to: {output}", err=True)
         else:

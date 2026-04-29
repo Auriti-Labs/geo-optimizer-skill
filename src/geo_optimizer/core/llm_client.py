@@ -18,6 +18,8 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
+_LLM_TIMEOUT = 30  # seconds — prevent indefinite hangs on unresponsive providers
+
 _PROVIDER_DEFAULTS = {
     "openai": "gpt-4o-mini",
     "anthropic": "claude-sonnet-4-20250514",
@@ -112,7 +114,7 @@ def _query_openai(prompt: str, *, system: str, api_key: str, model: str, max_tok
         return LLMResponse(error="openai not installed (pip install geo-optimizer-skill[llm])")
 
     try:
-        client = OpenAI(api_key=api_key)
+        client = OpenAI(api_key=api_key, timeout=_LLM_TIMEOUT)
         messages: list[dict] = []
         if system:
             messages.append({"role": "system", "content": system})
@@ -128,8 +130,8 @@ def _query_openai(prompt: str, *, system: str, api_key: str, model: str, max_tok
             completion_tokens=usage.completion_tokens if usage else 0,
         )
     except Exception as exc:
-        logger.warning("OpenAI query failed: %s", type(exc).__name__)
-        return LLMResponse(error=type(exc).__name__, provider="openai", model=model)
+        logger.warning("OpenAI query failed: %s: %s", type(exc).__name__, exc)
+        return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="openai", model=model)
 
 
 def _query_anthropic(prompt: str, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
@@ -139,7 +141,7 @@ def _query_anthropic(prompt: str, *, system: str, api_key: str, model: str, max_
         return LLMResponse(error="anthropic not installed (pip install geo-optimizer-skill[llm])")
 
     try:
-        client = Anthropic(api_key=api_key)
+        client = Anthropic(api_key=api_key, timeout=_LLM_TIMEOUT)
         kwargs: dict = {"model": model, "max_tokens": max_tokens, "messages": [{"role": "user", "content": prompt}]}
         if system:
             kwargs["system"] = system
@@ -153,8 +155,8 @@ def _query_anthropic(prompt: str, *, system: str, api_key: str, model: str, max_
             completion_tokens=resp.usage.output_tokens if resp.usage else 0,
         )
     except Exception as exc:
-        logger.warning("Anthropic query failed: %s", type(exc).__name__)
-        return LLMResponse(error=type(exc).__name__, provider="anthropic", model=model)
+        logger.warning("Anthropic query failed: %s: %s", type(exc).__name__, exc)
+        return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="anthropic", model=model)
 
 
 def _query_groq(prompt: str, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
@@ -164,7 +166,7 @@ def _query_groq(prompt: str, *, system: str, api_key: str, model: str, max_token
         return LLMResponse(error="groq not installed (pip install groq)")
 
     try:
-        client = Groq(api_key=api_key)
+        client = Groq(api_key=api_key, timeout=_LLM_TIMEOUT)
         messages: list[dict] = []
         if system:
             messages.append({"role": "system", "content": system})
@@ -180,5 +182,5 @@ def _query_groq(prompt: str, *, system: str, api_key: str, model: str, max_token
             completion_tokens=usage.completion_tokens if usage else 0,
         )
     except Exception as exc:
-        logger.warning("Groq query failed: %s", type(exc).__name__)
-        return LLMResponse(error=type(exc).__name__, provider="groq", model=model)
+        logger.warning("Groq query failed: %s: %s", type(exc).__name__, exc)
+        return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="groq", model=model)

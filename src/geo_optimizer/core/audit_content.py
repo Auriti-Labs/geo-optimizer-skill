@@ -19,6 +19,10 @@ def audit_content_quality(soup, url: str, soup_clean=None) -> ContentResult:
 
     result = ContentResult()
 
+    # Fix H-8: guard against None soup (defensive — called from plugins/tests)
+    if soup is None:
+        return result
+
     # H1
     h1 = soup.find("h1")
     if h1:
@@ -52,7 +56,13 @@ def audit_content_quality(soup, url: str, soup_clean=None) -> ContentResult:
     parsed = urlparse(url)
     base_domain = parsed.netloc
     all_links = soup.find_all("a", href=True)
-    external_links = [link for link in all_links if link["href"].startswith("http") and base_domain not in link["href"]]
+    # Fix F-08: guard against empty base_domain (malformed URL)
+    if base_domain:
+        external_links = [
+            link for link in all_links if link["href"].startswith("http") and base_domain not in link["href"]
+        ]
+    else:
+        external_links = [link for link in all_links if link["href"].startswith("http")]
     result.external_links_count = len(external_links)
     if external_links:
         result.has_links = True
@@ -75,9 +85,7 @@ def audit_content_quality(soup, url: str, soup_clean=None) -> ContentResult:
         first_30pct = words[:soglia_30]
         # First 30% must have at least 50 words AND contain numbers/statistics
         if len(first_30pct) >= 50:
-            import re as _re_fl
-
-            numeri_nel_30pct = sum(1 for w in first_30pct if _re_fl.search(r"\d", w))
+            numeri_nel_30pct = sum(1 for w in first_30pct if re.search(r"\d", w))
             if numeri_nel_30pct >= 1:
                 result.has_front_loading = True
 

@@ -86,7 +86,7 @@ class TestValidatePublicUrl:
             ]
             ok, err = validate_public_url("https://evil.example.com")
             assert ok is False
-            assert "private" in err.lower()
+            assert "non-public" in err.lower()
 
     def test_dns_unresolvable_rejected(self):
         """DNS unresolvable → rejected to prevent TOCTOU (#427)."""
@@ -241,7 +241,7 @@ class TestAuditSchemaScriptStringNone:
         """Tag <script> con solo whitespace non causa errore."""
         html = """
         <html><head>
-        <script type="application/ld+json">   \n\t  </script>
+        <script type="application/ld+json">   \\n\\t  </script>
         </head></html>
         """
         soup = BeautifulSoup(html, "html.parser")

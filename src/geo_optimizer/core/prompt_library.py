@@ -8,10 +8,13 @@ Requires LLM API key (opt-in).
 
 from __future__ import annotations
 
+import logging
 import re
 
 from geo_optimizer.core.llm_client import query_llm
 from geo_optimizer.models.results import PromptLibraryResult, PromptResult
+
+logger = logging.getLogger(__name__)
 
 _POSITIVE = frozenset({"best", "leading", "recommended", "excellent", "top", "great", "trusted", "popular"})
 _NEGATIVE = frozenset({"lacks", "limited", "poor", "avoid", "outdated", "weak", "inferior"})
@@ -66,6 +69,7 @@ def run_prompt_library(
     results: list[PromptResult] = []
     resp_provider = ""
     resp_model = ""
+    error_count = 0
 
     for intent, templates in library.items():
         for template in templates:
@@ -73,7 +77,11 @@ def run_prompt_library(
             response = query_llm(prompt_text, provider=provider, api_key=api_key, model=model)
 
             if response.error:
-                return PromptLibraryResult(checked=True, skipped_reason=response.error, brand=brand)
+                # Fix H-6: skip errored prompts instead of aborting the entire batch.
+                # A transient error on one prompt should not kill all results.
+                logger.warning("Prompt library: skipping '%s' — %s", prompt_text[:60], response.error)
+                error_count += 1
+                continue
 
             resp_provider = response.provider
             resp_model = response.model
@@ -90,6 +98,10 @@ def run_prompt_library(
                     response_snippet=response.text[:200],
                 )
             )
+
+    # If ALL prompts failed, report as skipped
+    if not results and error_count > 0:
+        return PromptLibraryResult(checked=True, skipped_reason=f"All {error_count} prompts failed", brand=brand)
 
     mention_rate = sum(1 for r in results if r.brand_mentioned) / len(results) if results else 0.0
     avg_sentiment = _avg_sentiment(results)

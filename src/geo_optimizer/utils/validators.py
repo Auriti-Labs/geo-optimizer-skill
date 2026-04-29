@@ -8,17 +8,20 @@ before performing network or filesystem operations.
 from __future__ import annotations
 
 import ipaddress
+import logging
 import os
 import socket
 from pathlib import Path
 from urllib.parse import urlparse
+
+logger = logging.getLogger(__name__)
 
 # Private/reserved networks to block (RFC 1918, loopback, link-local, cloud metadata)
 # Fix #80: explicit IPv6 ranges to prevent SSRF bypass via IPv6 addresses.
 # Note: ::ffff:0:0/96 covers all ::ffff:* sub-ranges (IPv4-mapped),
 # but ranges are listed explicitly for clarity and security auditing.
 _BLOCKED_NETWORKS = [
-    # ── IPv4 ──────────────────────────────────────────────────────────────────
+    # ── IPv4 ────────────────────────────────────────────────────────────────────
     ipaddress.ip_network("0.0.0.0/8"),  # "this network" RFC 1122
     ipaddress.ip_network("127.0.0.0/8"),  # loopback IPv4
     ipaddress.ip_network("10.0.0.0/8"),  # private RFC 1918
@@ -28,7 +31,7 @@ _BLOCKED_NETWORKS = [
     ipaddress.ip_network("192.0.0.0/24"),  # IETF Protocol Assignments
     ipaddress.ip_network("198.18.0.0/15"),  # benchmark testing RFC 2544
     ipaddress.ip_network("169.254.0.0/16"),  # link-local (AWS/GCP/Azure metadata)
-    # ── IPv6 ──────────────────────────────────────────────────────────────────
+    # ── IPv6 ────────────────────────────────────────────────────────────────────
     ipaddress.ip_network("::1/128"),  # loopback IPv6
     ipaddress.ip_network("fc00::/7"),  # unique local (ULA) RFC 4193: fc00:: - fdff::
     ipaddress.ip_network("fe80::/10"),  # link-local IPv6 RFC 4291
@@ -104,11 +107,14 @@ def _check_ip_blocked(ip_str: str) -> tuple[bool, str | None]:
     # Check explicit blocklist
     for network in _BLOCKED_NETWORKS:
         if ip_obj in network:
-            return True, (f"Address '{ip_str}' is in a private/reserved network.")
+            # Fix M-3: generic message to user, detailed log at DEBUG only
+            logger.debug("Blocked IP %s in network %s", ip_str, network)
+            return True, "URL points to a non-public address."
 
     # Fallback: catch private networks not in the explicit blocklist
     if _is_ip_blocked(ip_obj):
-        return True, (f"Address '{ip_str}' is in a private/reserved network.")
+        logger.debug("Blocked IP %s (private/reserved per stdlib)", ip_str)
+        return True, "URL points to a non-public address."
 
     return False, None
 
@@ -143,11 +149,11 @@ def resolve_and_validate_url(url: str) -> tuple[bool, str | None, list[str]]:
         ip_str = str(sockaddr[0])
         bloccato, msg = _check_ip_blocked(ip_str)
         if bloccato:
-            hostname_display = hostname or "unknown"
-            # Reformat the message with the original hostname
+            # Fix M-3: do not include resolved IP in user-facing error message
+            logger.debug("SSRF blocked: %s resolved to %s", hostname, ip_str)
             return (
                 False,
-                (f"Address '{ip_str}' resolved for '{hostname_display}' is in a private/reserved network."),
+                "URL points to a non-public address.",
                 [],
             )
         ip_validi.append(ip_str)

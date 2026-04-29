@@ -8,6 +8,7 @@ from collections import Counter
 from geo_optimizer.core.audit import run_full_audit, run_full_audit_async
 from geo_optimizer.core.llms_generator import fetch_sitemap
 from geo_optimizer.core.scoring import get_score_band
+from geo_optimizer.models.config import AUDIT_TIMEOUT_SECONDS
 from geo_optimizer.models.results import AuditResult, BatchAuditPageResult, BatchAuditResult
 
 _DEFAULT_BATCH_MAX_URLS = 50
@@ -96,7 +97,15 @@ async def _audit_urls(
 
     async def _worker(url: str) -> BatchAuditPageResult:
         async with semaphore:
-            return await _audit_single_url(url, use_cache=use_cache, project_config=project_config)
+            # Fix H-2: per-URL timeout prevents a single hanging URL from blocking the batch
+            try:
+                return await asyncio.wait_for(
+                    _audit_single_url(url, use_cache=use_cache, project_config=project_config),
+                    timeout=AUDIT_TIMEOUT_SECONDS,
+                )
+            except asyncio.TimeoutError:
+                result = AuditResult(url=url, error=f"Timeout ({AUDIT_TIMEOUT_SECONDS}s)", band="critical")
+                return _summarize_audit_result(result)
 
     return await asyncio.gather(*(_worker(url) for url in urls))
 
@@ -109,7 +118,7 @@ async def _audit_single_url(url: str, *, use_cache: bool, project_config) -> Bat
         else:
             result = await run_full_audit_async(url, project_config=project_config)
     except Exception as exc:  # pragma: no cover - rete/eccezioni inattese
-        result = AuditResult(url=url, error=type(exc).__name__)
+        result = AuditResult(url=url, error=f"{type(exc).__name__}: {exc}", band="critical")
     return _summarize_audit_result(result)
 
 

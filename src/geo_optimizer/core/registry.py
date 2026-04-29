@@ -65,7 +65,7 @@ class CheckRegistry:
 
     _checks: dict[str, AuditCheck] = {}
     _loaded_entry_points: bool = False
-    _lock = threading.Lock()  # Thread-safe entry point loading (fix #189)
+    _lock = threading.Lock()  # Thread-safe operations (fix #189, fix H-3)
 
     @classmethod
     def register(cls, check: AuditCheck) -> None:
@@ -81,15 +81,17 @@ class CheckRegistry:
         if not isinstance(check, AuditCheck):
             raise TypeError(f"{type(check).__name__} does not implement the AuditCheck Protocol")
 
-        if check.name in cls._checks:
-            raise ValueError(f"Check '{check.name}' already registered")
-
-        cls._checks[check.name] = check
+        # Fix H-3: acquire lock to prevent race conditions in multi-threaded servers
+        with cls._lock:
+            if check.name in cls._checks:
+                raise ValueError(f"Check '{check.name}' already registered")
+            cls._checks[check.name] = check
 
     @classmethod
     def unregister(cls, name: str) -> None:
         """Remove a check from the registry."""
-        cls._checks.pop(name, None)
+        with cls._lock:
+            cls._checks.pop(name, None)
 
     @classmethod
     def get(cls, name: str) -> AuditCheck | None:
@@ -99,18 +101,21 @@ class CheckRegistry:
     @classmethod
     def all(cls) -> list[AuditCheck]:
         """Return all registered checks."""
-        return list(cls._checks.values())
+        with cls._lock:
+            return list(cls._checks.values())
 
     @classmethod
     def names(cls) -> list[str]:
         """Return the names of all registered checks."""
-        return list(cls._checks.keys())
+        with cls._lock:
+            return list(cls._checks.keys())
 
     @classmethod
     def clear(cls) -> None:
         """Clear the registry (useful in tests)."""
-        cls._checks.clear()
-        cls._loaded_entry_points = False
+        with cls._lock:
+            cls._checks.clear()
+            cls._loaded_entry_points = False
 
     @classmethod
     def load_entry_points(cls) -> int:
@@ -148,7 +153,14 @@ class CheckRegistry:
                     check_class = ep.load()
                     # Instantiate if it is a class, otherwise use directly
                     check = check_class() if isinstance(check_class, type) else check_class
-                    cls.register(check)
+                    # register() acquires lock, but we already hold it — use direct insert
+                    if not isinstance(check, AuditCheck):
+                        logger.warning("Plugin '%s' does not implement AuditCheck Protocol", ep.name)
+                        continue
+                    if check.name in cls._checks:
+                        logger.warning("Plugin '%s' already registered, skipping", ep.name)
+                        continue
+                    cls._checks[check.name] = check
                     loaded += 1
                 except Exception as exc:
                     # Failed plugins do not block the audit, but log for debugging (fix #202)
@@ -161,6 +173,7 @@ class CheckRegistry:
         """Run all registered checks and return results.
 
         Fix #55: passes a deepcopy of soup to each plugin to prevent mutation.
+        Fix H-3: snapshot checks under lock to prevent dict mutation during iteration.
 
         Args:
             url: URL of the site to check.
@@ -172,8 +185,12 @@ class CheckRegistry:
         """
         import copy
 
+        # Fix H-3: snapshot under lock, then iterate without lock
+        with cls._lock:
+            checks_snapshot = list(cls._checks.values())
+
         results = []
-        for check in cls._checks.values():
+        for check in checks_snapshot:
             try:
                 # Fix #55: each plugin receives an isolated copy of soup
                 plugin_soup = copy.deepcopy(soup) if soup is not None else None

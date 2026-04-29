@@ -21,6 +21,14 @@ CONFIG_FILENAME = ".geo-optimizer.yml"
 CONFIG_FILENAME_ALT = ".geo-optimizer.yaml"
 
 
+def _safe_int(value, default: int = 0) -> int:
+    """Convert value to int with fallback to default on error (fix H-11)."""
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
+
+
 @dataclass
 class AuditConfig:
     """Default configuration for the audit command."""
@@ -122,11 +130,12 @@ def _parse_config(raw: dict) -> ProjectConfig:
     # audit section
     audit_raw = raw.get("audit", {})
     if isinstance(audit_raw, dict):
+        # Fix H-11: use _safe_int to prevent crash on non-numeric YAML values
         config.audit = AuditConfig(
             url=audit_raw.get("url"),
             format=str(audit_raw.get("format", "text")),
             output=audit_raw.get("output"),
-            min_score=int(audit_raw.get("min_score", 0)),
+            min_score=_safe_int(audit_raw.get("min_score", 0)),
             cache=bool(audit_raw.get("cache", False)),
             verbose=bool(audit_raw.get("verbose", False)),
         )
@@ -138,7 +147,7 @@ def _parse_config(raw: dict) -> ProjectConfig:
             base_url=llms_raw.get("base_url"),
             title=llms_raw.get("title"),
             description=llms_raw.get("description"),
-            max_urls=int(llms_raw.get("max_urls", 50)),
+            max_urls=_safe_int(llms_raw.get("max_urls", 50), default=50),
         )
 
     # schema section

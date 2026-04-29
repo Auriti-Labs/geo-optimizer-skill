@@ -202,6 +202,16 @@ class MyCheck:
 4. **Describe the problem** — what issue does this solve?
 5. **Show the impact** — example output, before/after screenshots if applicable
 
+### What We Don't Accept
+
+The following types of PRs will be declined without review:
+
+- **Vendor integrations:** PRs that add third-party commercial tools, GitHub Actions, or services to our CI/CD pipeline. We build and choose our own tooling.
+- **Promotional rewrites:** PRs that restructure project files to conform to a specific vendor's format or ecosystem, even if presented as improvements.
+- **Undiscussed rewrites:** Large-scale rewrites of existing files without a prior issue discussion. Open an issue first to align on scope and direction.
+
+If you work for a company and want to contribute, that's welcome — just contribute code or fixes that stand on their own merit, independent of your employer's products.
+
 ### PR Checklist
 
 Before submitting:

@@ -28,7 +28,8 @@ def compute_geo_score(robots, llms, schema, meta, content, signals=None, ai_disc
     # Fix #316: report overflow to detect misalignments in SCORING weights
     if total > 100:
         _logger.warning("Score overflow: %d > 100 (check SCORING weights)", total)
-    return min(total, 100)
+    # Fix M-5: floor guard — score can never go negative
+    return max(0, min(total, 100))
 
 
 def compute_score_breakdown(
@@ -98,7 +99,8 @@ def _score_schema(schema) -> int:
     s = SCORING["schema_any_valid"] if schema.any_schema_found else 0
     # Schema richness: rewards rich attribute schemas, penalizes generic ones
     # Fix #394: intermediate step for richness (avg >= 4 → 2pt)
-    s += min(schema.schema_richness_score, SCORING["schema_richness"])
+    # Fix M-5: floor guard on richness score
+    s += max(0, min(schema.schema_richness_score, SCORING["schema_richness"]))
     s += SCORING["schema_faq"] if schema.has_faq else 0
     s += SCORING["schema_article"] if schema.has_article else 0
     s += SCORING["schema_organization"] if schema.has_organization else 0

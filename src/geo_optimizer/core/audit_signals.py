@@ -21,6 +21,10 @@ def audit_signals(soup, schema_result) -> SignalsResult:
     """
     signals = SignalsResult()
 
+    # Fix H-8: guard against None soup
+    if soup is None:
+        return signals
+
     # 1. Check lang attribute on <html>
     html_tag = soup.find("html")
     if html_tag:
