@@ -778,6 +778,13 @@ class IntentMappingResult:
     ai_unready_count: int = 0
     total_intents_found: int = 0
     total_intents_missing: int = 0
+    # v4.10: gap analysis + radar + recommendations
+    primary_intent: str = ""  # strongest intent category
+    gap_summary: str = ""  # human-readable one-liner
+    recommendations: list[str] = field(default_factory=list)  # actionable fixes
+    radar_data: list[dict[str, Any]] = field(default_factory=list)  # [{axis, value}, ...]
+    # Prompt library alignment (#385)
+    prompt_library_intents: dict[str, str] = field(default_factory=dict)  # {prompt_category: standard_intent}
 
 
 # ─── Hallucination Bait Detection (v4.10) ────────────────────────────────────

@@ -16,6 +16,25 @@ from geo_optimizer.models.results import ContentResult, IntentMappingResult, Met
 
 # ─── Pattern di intenti ──────────────────────────────────────────────────────
 
+# Mapping prompt library → standard intent taxonomy
+_PROMPT_CATEGORY_INTENT_MAP: dict[str, str] = {
+    "discovery": "informational",
+    "how_to": "informational",
+    "comparison": "commercial",
+    "alternative": "commercial",
+    "recommendation": "transactional",
+}
+
+
+def map_prompt_library_intents() -> dict[str, str]:
+    """Restituisce il mapping tra categorie prompt library e intent standard.
+
+    Returns:
+        dict {prompt_category: standard_intent}
+    """
+    return dict(_PROMPT_CATEGORY_INTENT_MAP)
+
+
 _INTENT_PATTERNS: dict[str, dict[str, Any]] = {
     "informational": {
         "patterns": [
@@ -245,4 +264,128 @@ def audit_intent_mapping(
     else:
         result.band = "critical"
 
+    # Gap analysis + radar + recommendations
+    result.primary_intent = _find_primary_intent(result.intent_details)
+    result.gap_summary = _build_gap_summary(result.intents_found, result.intents_missing, result.primary_intent)
+    result.recommendations = _generate_recommendations(result.intents_missing, result.intent_details)
+    result.radar_data = _generate_radar_data(result.intent_details, result.intents_missing)
+    result.prompt_library_intents = dict(_PROMPT_CATEGORY_INTENT_MAP)
+
     return result
+
+
+def _find_primary_intent(intent_details: dict[str, dict[str, Any]]) -> str:
+    """Identifica l'intento dominante basandosi sul coverage score piu alto.
+
+    Considera solo intenti effettivamente trovati (presenti in intent_details).
+    """
+    if not intent_details:
+        return ""
+    return max(intent_details, key=lambda k: intent_details[k].get("coverage_score", 0))
+
+
+def _build_gap_summary(intents_found: list[str], intents_missing: list[str], primary: str) -> str:
+    """Genera una frase riassuntiva del gap.
+
+    Esempio: "Strong on informational, missing commercial and transactional."
+    """
+    if not intents_found:
+        return "no intent signals detected"
+
+    total = len(intents_found) + len(intents_missing)
+    pct = len(intents_found) / total if total else 0
+
+    parts: list[str] = []
+    if primary:
+        parts.append(f"dominance on {primary}")
+    if intents_missing:
+        parts.append(f"gaps in {', '.join(sorted(intents_missing))}")
+
+    coverage_tag = "high coverage" if pct >= 0.75 else "partial coverage" if pct >= 0.5 else "low coverage"
+    human_labels = {
+        "informational": "informational queries",
+        "navigational": "brand/navigational queries",
+        "transactional": "transactional queries",
+        "commercial": "comparison/commercial queries",
+    }
+
+    detail_parts = []
+    if intents_found:
+        labels = [human_labels.get(i, i) for i in sorted(intents_found)]
+        detail_parts.append(f"serves {', '.join(labels)}")
+    if intents_missing:
+        labels = [human_labels.get(i, i) for i in sorted(intents_missing)]
+        detail_parts.append(f"missing {', '.join(labels)}")
+
+    return f"{coverage_tag} ({', '.join(parts)}): " + "; ".join(detail_parts) + "."
+
+
+def _generate_recommendations(
+    intents_missing: list[str],
+    intent_details: dict[str, dict[str, Any]],
+) -> list[str]:
+    """Genera raccomandazioni azionabili per colmare i gap di intento.
+
+    Returns:
+        list[str]: una azione concreta per ogni intento mancante o debole.
+    """
+    recommendations: list[str] = []
+
+    # Raccomandazioni per intenti assenti
+    missing_advice = {
+        "informational": {
+            "page": "Add an educational blog, guide, or FAQ page with clear definitions and how-to steps.",
+            "schema": "Use FAQPage, HowTo, or Article schema on informational pages.",
+        },
+        "commercial": {
+            "page": "Create comparison content: 'X vs Y', top-N lists, pros/cons with specific criteria.",
+            "schema": "Use Product or Article schema on comparison pages.",
+        },
+        "transactional": {
+            "page": "Add clear CTAs: pricing page, free trial signup, demo request with machine-readable forms.",
+            "schema": "Use Product, Offer, or WebApplication schema on transactional pages.",
+        },
+        "navigational": {
+            "page": "Ensure login, contact, about, and dashboard pages have explicit anchor text and labels.",
+            "schema": "Use WebSite, Organization, or BreadcrumbList schema across navigational pages.",
+        },
+    }
+
+    for intent in sorted(intents_missing):
+        advice = missing_advice.get(intent, {})
+        if advice:
+            recommendations.append(f"[{intent}] Missing: {advice['page']}")
+
+    # Raccomandazioni per intenti trovati ma senza schema
+    for intent, detail in sorted(intent_details.items()):
+        if not detail.get("schema_matched") and detail.get("coverage_score", 0) > 0:
+            advice = missing_advice.get(intent, {})
+            if advice:
+                recommendations.append(
+                    f"[{intent}] Schema missing (score {detail['coverage_score']}/100): {advice['schema']}"
+                )
+
+    return recommendations
+
+
+def _generate_radar_data(
+    intent_details: dict[str, dict[str, Any]],
+    intents_missing: list[str],
+) -> list[dict[str, Any]]:
+    """Genera dati per visualizzazione radar chart.
+
+    Returns:
+        list[dict]: [{axis: str, value: int}, ...] per tutte e 4 le categorie.
+    """
+    radar: list[dict[str, Any]] = []
+    all_categories = ["informational", "navigational", "transactional", "commercial"]
+
+    for cat in all_categories:
+        if cat in intent_details:
+            radar.append({"axis": cat, "value": intent_details[cat].get("coverage_score", 0)})
+        elif cat in intents_missing:
+            radar.append({"axis": cat, "value": 0})
+        else:
+            radar.append({"axis": cat, "value": 0})
+
+    return radar

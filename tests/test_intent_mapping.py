@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from bs4 import BeautifulSoup
 
-from geo_optimizer.core.intent_mapping import audit_intent_mapping
+from geo_optimizer.core.intent_mapping import audit_intent_mapping, map_prompt_library_intents
 from geo_optimizer.models.results import ContentResult, MetaResult, SchemaResult
 
 
@@ -222,3 +222,136 @@ class TestIntentMapping:
         assert isinstance(detail["coverage_score"], int)
         assert isinstance(detail["signals_found"], list)
         assert isinstance(detail["signals_count"], int)
+
+
+class TestGapAnalysis:
+    """Gap analysis, raccomandazioni e radar chart (v4.10 completion)."""
+
+    def test_primary_intent_assigned(self):
+        """L'intento col punteggio piu alto e' il primary."""
+        html = (
+            "<html><body><main>"
+            "<h1>How to Bake Bread: Complete Guide and Tutorial</h1>"
+            "</main></body></html>"
+        )
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_intent_mapping(soup, html, _content(h1="How to Bake Bread"), _meta(), _schema("HowTo"))
+
+        assert result.primary_intent == "informational"
+
+    def test_gap_summary_generated(self):
+        """gap_summary descrive la situazione in linguaggio umano."""
+        html = (
+            "<html><body><main>"
+            "<h1>How to Bake Bread: Complete Guide</h1>"
+            "</main></body></html>"
+        )
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_intent_mapping(soup, html, _content(h1="How to Bake Bread"), _meta(), _schema("HowTo"))
+
+        assert result.gap_summary
+        assert "informational" in result.gap_summary.lower()
+        assert len(result.gap_summary) > 20
+
+    def test_gap_summary_empty_page(self):
+        """Pagina senza intenti → messaggio chiaro."""
+        html = "<html><body><main><p>hello</p></main></body></html>"
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_intent_mapping(soup, html, _content(), _meta(), _schema())
+
+        assert result.gap_summary == "no intent signals detected"
+        assert result.primary_intent == ""
+
+    def test_recommendations_for_missing(self):
+        """Ogni intento mancante genera una raccomandazione."""
+        html = (
+            "<html><body><main>"
+            "<h1>How to Bake Bread</h1>"
+            "</main></body></html>"
+        )
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_intent_mapping(soup, html, _content(h1="How to Bake Bread"), _meta(), _schema("HowTo"))
+
+        missing = set(result.intents_missing)
+        recs_lower = " ".join(result.recommendations).lower()
+
+        # Deve coprire tutte le categorie mancanti
+        for intent in missing:
+            assert f"[{intent}]" in recs_lower, f"No recommendation for missing intent: {intent}"
+
+    def test_recommendations_schema_missing_boost(self):
+        """Schema mancante su intento rilevato → raccomandazione."""
+        html = (
+            "<html><body><main>"
+            "<h1>How to do SEO: Complete Guide</h1>"
+            "</main></body></html>"
+        )
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_intent_mapping(soup, html, _content(h1="How to do SEO"), _meta(), _schema())
+
+        # informational found ma senza schema → deve generare raccomandazione
+        has_schema_rec = any(
+            "schema" in r.lower() and "informational" in r.lower() for r in result.recommendations
+        )
+        assert has_schema_rec, f"Expected schema recommendation for informational, got: {result.recommendations}"
+
+    def test_radar_data_all_categories(self):
+        """Radar copre tutte e 4 le categorie con valore 0-100."""
+        html = (
+            "<html><body><main>"
+            "<h1>How to Bake Bread</h1>"
+            "</main></body></html>"
+        )
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_intent_mapping(soup, html, _content(h1="How to Bake Bread"), _meta(), _schema("HowTo"))
+
+        assert len(result.radar_data) == 4
+        axes = {d["axis"] for d in result.radar_data}
+        assert axes == {"informational", "navigational", "transactional", "commercial"}
+
+        for entry in result.radar_data:
+            assert "axis" in entry
+            assert "value" in entry
+            assert 0 <= entry["value"] <= 100
+
+    def test_radar_data_missing_intents_zero(self):
+        """Intenti mancanti hanno value=0 nel radar."""
+        html = "<html><body><main><p>hello</p></main></body></html>"
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_intent_mapping(soup, html, _content(), _meta(), _schema())
+
+        for entry in result.radar_data:
+            assert entry["value"] == 0, f"Expected 0 for {entry['axis']} on empty page"
+
+    def test_prompt_library_intents_mapping(self):
+        """Prompt library intent mapping allineato alla tassonomia standard."""
+        # Test function pubblica
+        mapping = map_prompt_library_intents()
+        assert mapping["discovery"] == "informational"
+        assert mapping["how_to"] == "informational"
+        assert mapping["comparison"] == "commercial"
+        assert mapping["alternative"] == "commercial"
+        assert mapping["recommendation"] == "transactional"
+
+    def test_full_coverage_page_has_recommendations(self):
+        """Anche una pagina ben coperta puo' avere raccomandazioni per schema mancante."""
+        html = (
+            "<html><body><main>"
+            "<h1>Complete SEO Guide: Tutorial and How-To</h1>"
+            "<h2>Best Tools 2026: Top 10 Review and Comparison</h2>"
+            "<p>Buy now! Get started with our free trial pricing plans</p>"
+            "<a href='/login'>Sign In</a>"
+            "</main></body></html>"
+        )
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_intent_mapping(
+            soup, html,
+            _content(h1="Complete SEO Guide"),
+            _meta(),
+            _schema(),  # nessuno schema → raccomandazioni per tutti
+        )
+
+        # Tutti gli intenti dovrebbero essere trovati (pagina ricca)
+        assert result.total_intents_found >= 3
+        # Almeno una raccomandazione per schema mancante
+        assert len(result.recommendations) >= 1
