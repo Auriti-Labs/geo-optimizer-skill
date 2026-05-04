@@ -12,7 +12,7 @@ from __future__ import annotations
 import json as _json
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from geo_optimizer.core.audit import run_full_audit
 from geo_optimizer.core.llm_client import query_llm
@@ -58,7 +58,7 @@ class CompetitiveNarrativeResult:
     competitive_gaps: list[CompetitiveGap] = field(default_factory=list)
     summary: str = ""  # executive summary
     llm_usage: dict[str, int] = field(default_factory=dict)  # provider -> token count
-    target_audit: Optional[AuditResult] = None
+    target_audit: AuditResult | None = None
 
 
 # ─── LLM Prompts ──────────────────────────────────────────────────────────────
