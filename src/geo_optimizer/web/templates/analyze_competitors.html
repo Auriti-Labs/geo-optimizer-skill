@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Compare GEO Scores — GEO Optimizer</title>
-<meta name="description" content="Compare GEO scores between two websites side by side.">
-<link rel="canonical" href="https://geoready.dev/compare">
+<title>Analyze Competitors — GEO Optimizer</title>
+<meta name="description" content="See how AI search engines describe your competitors vs your brand.">
+<link rel="canonical" href="https://geoready.dev/analyze-competitors">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Compare GEO Scores — GEO Optimizer">
-<meta property="og:description" content="Compare GEO scores between two websites side by side.">
-<meta property="og:url" content="https://geoready.dev/compare">
+<meta property="og:title" content="Analyze Competitors — GEO Optimizer">
+<meta property="og:description" content="See how AI search engines describe your competitors vs your brand.">
+<meta property="og:url" content="https://geoready.dev/analyze-competitors">
 <meta property="og:image" content="https://geoready.dev/assets/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -26,7 +26,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.03;
 background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 a{color:var(--accent);text-decoration:none}
-.wrapper{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:2rem 1.5rem}
+.wrapper{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2rem 1.5rem}
 /* ─── Professional Nav ─── */
 nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.25rem;margin-bottom:2.5rem;background:rgba(6,8,15,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);border-radius:0 0 var(--radius-sm) var(--radius-sm)}
 .nav-logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:.95rem;color:var(--text);white-space:nowrap;text-decoration:none}
@@ -75,28 +75,61 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .hero h1{font-size:2.4rem;font-weight:700;letter-spacing:-.03em;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hero p{color:var(--text-dim);margin-top:.4rem}
 .form-wrap{margin-bottom:1.5rem}
-.form-wrap input{width:100%;padding:.8rem 1rem;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-card);color:var(--text);font-family:var(--font);font-size:.95rem;outline:none;transition:border-color .2s}
+.form-wrap input{width:100%;padding:.8rem 1rem;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-card);color:var(--text);font-family:var(--font);font-size:.95rem;outline:none;transition:border-color .2s;margin-bottom:.75rem}
 .form-wrap input:focus{border-color:var(--accent)}
+.form-wrap label{display:block;color:var(--text-dim);font-size:.85rem;margin-bottom:.4rem}
+.form-wrap small{display:block;color:var(--text-muted);font-size:.75rem;margin-top:.25rem}
 .vs{text-align:center;color:var(--text-muted);font-size:.8rem;padding:.4rem 0;letter-spacing:.1em}
 .btn{display:block;width:100%;padding:.8rem;border:none;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:var(--font);font-size:1rem;font-weight:600;cursor:pointer;margin-top:.75rem;transition:opacity .2s}
 .btn:hover{opacity:.9}
 .btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.secondary{background:var(--bg-card);border:1px solid var(--border);color:var(--text)}
+.btn.secondary:hover{border-color:var(--border-hover)}
 .spinner{display:none;text-align:center;padding:1.5rem 0;color:var(--text-dim);font-size:.85rem}
 .spinner.active{display:block}
 .error{display:none;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:var(--radius-sm);padding:.75rem 1rem;color:var(--red);font-size:.9rem;margin-bottom:1rem}
-.results{display:none;margin-top:1.5rem}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:center;transition:border-color .3s}
+.success{display:none;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:var(--radius-sm);padding:.75rem 1rem;color:var(--green);font-size:.9rem;margin-bottom:1rem}
+/* ─── Results sections ─── */
+.results{display:none;margin-top:2rem}
+.section{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.section h2{font-size:1.1rem;margin-bottom:1rem;color:#f8fafc;border-bottom:1px solid var(--border);padding-bottom:.75rem}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1rem}
 .card.winner{border-color:var(--green);box-shadow:0 0 20px rgba(34,197,94,.08)}
-.card-url{font-size:.75rem;color:var(--text-muted);word-break:break-all;margin-bottom:.75rem;font-family:var(--mono)}
-.card-score{font-family:var(--mono);font-size:2.5rem;font-weight:700}
-.card-band{font-size:.8rem;font-weight:600;letter-spacing:.05em;margin-top:.25rem;text-transform:uppercase}
-.bars{margin-top:1rem}
-.bar-row{display:flex;align-items:center;gap:.4rem;padding:.3rem 0;font-size:.75rem}
-.bar-lbl{width:65px;text-align:right;color:var(--text-dim);flex-shrink:0}
-.bar-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
-.bar-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
-.bar-val{width:24px;font-family:var(--mono);color:var(--text-dim);font-size:.7rem}
+.card-url{font-size:.75rem;color:var(--text-muted);word-break:break-all;margin-bottom:.5rem;font-family:var(--mono)}
+.card-score{font-family:var(--mono);font-size:1.8rem;font-weight:700;margin-bottom:.5rem}
+.card-band{font-size:.7rem;font-weight:600;letter-spacing:.05em;margin-bottom:.75rem;text-transform:uppercase}
+/* ─── Narrative cards ─── */
+.narrative-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1.25rem}
+.narrative-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.narrative-brand{font-weight:600;color:var(--text)}
+.narrative-brand span{font-family:var(--mono);font-size:.7rem;color:var(--text-muted);margin-left:.5rem}
+.adjectives{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem}
+.adjective{background:rgba(59,130,246,.1);color:var(--accent);padding:.35rem .6rem;border-radius:20px;font-size:.75rem;font-weight:500}
+.frames{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem}
+.frame{background:rgba(139,92,246,.1);color:var(--accent2);padding:.35rem .6rem;border-radius:20px;font-size:.75rem;font-weight:500}
+.positioning{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:.75rem;font-size:.85rem;color:var(--text-muted);font-style:italic}
+.credibility{margin-top:1rem}
+.credibility h4{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.credibility ul{list-style:none;display:flex;flex-wrap:wrap;gap:.4rem}
+.credibility li{background:rgba(34,197,94,.08);color:var(--green);padding:.3rem .5rem;border-radius:12px;font-size:.75rem}
+.gaps{margin-top:1rem}
+.gaps h4{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.gaps ul{list-style:none;padding-left:0}
+.gaps li{background:rgba(239,68,68,..05);border-left:3px solid var(--red);padding:.5rem .75rem;margin-bottom:.5rem;font-size:.8rem;color:var(--red)}
+/* ─── Gap table ─── */
+.gap-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.gap-table th{text-align:left;color:var(--text-dim);padding:.5rem .75rem;border-bottom:1px solid var(--border)}
+.gap-table td{padding:.5rem .75rem;border-bottom:1px solid var(--border);color:var(--text)}
+.gap-table tr:last-child td{border-bottom:none}
+.gap-type{display:inline-block;padding:.25rem .5rem;border-radius:4px;font-size:.65rem}
+.gap-missing{background:rgba(239,68,68,.1);color:var(--red)}
+.gap-weak{background:rgba(234,179,8,.1);color:var(--yellow)}
+.suggestion{color:var(--green);font-size:.8rem}
+/* ─── Summary ─── */
+.summary-box{background:linear-gradient(135deg,rgba(59,130,246,.05),rgba(139,92,246,.05));border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.summary-text{color:var(--text);line-height:1.6}
+.summary-text strong{color:var(--text-dim)}
+/* ─── Footer ─── */
 footer{text-align:center;padding:2rem 0 1rem;border-top:1px solid var(--border);margin-top:2rem;color:var(--text-muted);font-size:.8rem}
 footer a{color:var(--text-muted)}
 @media(max-width:600px){.grid{grid-template-columns:1fr}.wrapper{padding:1.25rem 1rem}.hero h1{font-size:1.8rem}}
@@ -108,12 +141,13 @@ footer a{color:var(--text-muted)}
     <div class="nav-logo">
       <span class="dot"></span>
       <span>GEO Optimizer</span>
-      <span class="ver" id="nav-ver">v4.0.0</span>
+      <span class="ver" id="nav-ver">v4.10.0</span>
     </div>
     <button class="nav-hamburger" id="nav-ham" aria-label="Menu">&#9776;</button>
     <div class="nav-links">
       <a href="/">Audit</a>
-      <a href="/compare" class="active">Compare</a>
+      <a href="/compare">Compare</a>
+      <a href="/analyze-competitors" class="active">Analyze</a>
       <a href="https://auriti-labs.github.io/geo-optimizer-skill/">Docs</a>
       <span class="nav-sep"></span>
       <div class="nav-dropdown">
@@ -131,16 +165,48 @@ footer a{color:var(--text-muted)}
       <span class="star-count" id="nav-stars"></span>
     </a>
   </nav>
-  <div class="hero"><h1>Compare GEO Scores</h1><p>Side-by-side — see who's more visible to AI</p></div>
+  <div class="hero"><h1>Analyze Competitive Narratives</h1><p>See how AI search engines describe your competitors vs your brand</p></div>
   <div class="form-wrap">
-    <input type="url" id="url1" placeholder="https://site-a.com" required aria-label="First website URL to compare">
-    <div class="vs">VS</div>
-    <input type="url" id="url2" placeholder="https://site-b.com" required aria-label="Second website URL to compare">
-    <button class="btn" id="btn">Compare</button>
+    <input type="url" id="targetUrl" placeholder="https://your-website.com" required aria-label="Your website URL">
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <div style="flex:1">
+        <label for="competitorUrls">Competitor URLs (comma-separated)</label>
+        <input type="text" id="competitorUrls" placeholder="https://competitor-a.com,https://competitor-b.com" aria-label="Competitor URLs">
+        <small>Enter up to 5 competitors</small>
+      </div>
+      <button class="btn" id="btn" style="flex-shrink:0">Analyze</button>
+    </div>
   </div>
-  <div class="spinner" id="spinner">Analyzing both sites... this may take up to 60 seconds.</div>
+  <div class="spinner" id="spinner">Analyzing... this may take up to 90 seconds.</div>
   <div class="error" id="error"></div>
-  <div class="results" id="results"><div class="grid" id="grid"></div></div>
+  <div class="success" id="success"></div>
+  <div class="results" id="results">
+    <div class="summary-box">
+      <h2>Executive Summary</h2>
+      <div class="summary-text" id="summaryText"></div>
+    </div>
+
+    <div class="section">
+      <h2>Competitor Narratives</h2>
+      <div id="competitorList"></div>
+    </div>
+
+    <div class="section" id="gapSection" style="display:none">
+      <h2>Competitive Gaps</h2>
+      <table class="gap-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Competitor</th>
+            <th>Gap Type</th>
+            <th>Missing From Your Content</th>
+            <th>Suggestion</th>
+          </tr>
+        </thead>
+        <tbody id="gapTableBody"></tbody>
+      </table>
+    </div>
+  </div>
   <footer>
     <a href="https://github.com/auriti-labs/geo-optimizer-skill">GitHub</a> &middot;
     <a href="https://auriti-labs.github.io/geo-optimizer-skill/">Docs</a> &middot;
@@ -149,12 +215,11 @@ footer a{color:var(--text-muted)}
 </div>
 <script__NONCE_ATTR__>
 fetch('/api/stats').then(function(r){return r.json()}).then(function(d){var ns=document.getElementById('nav-stars');if(ns&&d.github_stars)ns.textContent='★ '+d.github_stars}).catch(function(){});
-const BANDS={excellent:'#22c55e',good:'#06b6d4',foundation:'#eab308',critical:'#ef4444'};
-const CATS=[{k:'robots',l:'Robots',m:18},{k:'llms',l:'llms.txt',m:18},{k:'schema',l:'Schema',m:16},{k:'meta',l:'Meta',m:14},{k:'content',l:'Content',m:12},{k:'signals',l:'Signals',m:6},{k:'ai_discovery',l:'AI Disc.',m:6},{k:'brand_entity',l:'Brand',m:10}];
 const $=id=>document.getElementById(id);
+const $in=$tag=>$('input[type="text"]')&&$.prototype.addEventListener.call(document.querySelector($tag),arguments[1],arguments[2]);
 
 $('btn').addEventListener('click',run);
-$('url2').addEventListener('keypress',e=>{if(e.key==='Enter')run()});
+$('competitorUrls').addEventListener('keypress',e=>{if(e.key==='Enter')run()});
 
 function isValidUrl(str){
   if(/^https?:\/\/.+\..+/.test(str))return true;
@@ -163,51 +228,74 @@ function isValidUrl(str){
 }
 
 async function run(){
-  let u1=$('url1').value.trim(),u2=$('url2').value.trim();
-  if(!u1||!u2)return;
-  if(!isValidUrl(u1)){$('error').textContent='Site A: please enter a valid URL';$('error').style.display='block';return}
-  if(!isValidUrl(u2)){$('error').textContent='Site B: please enter a valid URL';$('error').style.display='block';return}
-  if(!/^https?:\/\//i.test(u1))u1='https://'+u1;$('url1').value=u1;
-  if(!/^https?:\/\//i.test(u2))u2='https://'+u2;$('url2').value=u2;
+  const targetUrl=$('targetUrl').value.trim();
+  const competitorText=$('competitorUrls').value.trim();
+  if(!targetUrl)return;
+  if(!competitorText)return;
+  if(!isValidUrl(targetUrl)){$('error').textContent='Please enter a valid URL for your website';$('error').style.display='block';return}
+  if(!/^https?:\/\//i.test(targetUrl)){$('targetUrl').value='https://'+targetUrl;targetUrl=$('targetUrl').value}
+
+  const competitors=competitorText.split(',').map(u=>u.trim()).filter(u=>u&&isValidUrl(u));
+  if(competitors.length===0){$('error').textContent='Please enter at least one valid competitor URL';$('error').style.display='block';return}
+
   $('btn').disabled=true;$('spinner').classList.add('active');$('error').style.display='none';$('results').style.display='none';
+
   try{
-    const [s1,s2]=await Promise.allSettled([fetch('/api/audit?url='+encodeURIComponent(u1)),fetch('/api/audit?url='+encodeURIComponent(u2))]);
-    const errs=[];
-    let d1=null,d2=null;
-    if(s1.status==='fulfilled'&&s1.value.ok){d1=await s1.value.json()}else{errs.push('Site A: '+(s1.reason?.message||'Error'))}
-    if(s2.status==='fulfilled'&&s2.value.ok){d2=await s2.value.json()}else{errs.push('Site B: '+(s2.reason?.message||'Error'))}
-    if(!d1&&!d2)throw new Error(errs.join('; '));
-    if(d1&&d2){render(d1,d2);$('results').style.display='block'}
-    else{if(d1||d2){render(d1||{score:0,band:'critical',url:u1},d2||{score:0,band:'critical',url:u2});$('results').style.display='block'}if(errs.length){$('error').textContent=errs.join('; ');$('error').style.display='block'}}
+    const response=await fetch('/api/analyze-competitors',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({target_url:targetUrl,competitor_urls:competitors})
+    });
+
+    if(!response.ok){throw new Error('Analysis failed: '+response.statusText);}
+    const data=await response.json();
+    render(data);
+    $('results').style.display='block';
+    if(data.summary){$('summaryText').textContent=data.summary;}
   }catch(e){$('error').textContent=e.message;$('error').style.display='block'}
   finally{$('btn').disabled=false;$('spinner').classList.remove('active')}
 }
 
-function render(a,b){
-  const g=$('grid');g.textContent='';
-  [a,b].forEach((d,i)=>{
-    const win=(i===0?a.score>b.score:b.score>a.score);
-    const c=document.createElement('div');c.className='card'+(win?' winner':'');
-    const color=BANDS[d.band]||'#888';
-    const url=document.createElement('div');url.className='card-url';url.textContent=d.url||(i===0?$('url1').value:$('url2').value);c.appendChild(url);
-    const sc=document.createElement('div');sc.className='card-score';sc.style.color=color;sc.textContent=d.score+'/100';c.appendChild(sc);
-    const bd=document.createElement('div');bd.className='card-band';bd.style.color=color;bd.textContent=(d.band||'').toUpperCase();c.appendChild(bd);
-    const bars=document.createElement('div');bars.className='bars';
-    const br=d.score_breakdown||{};
-    for(const cat of CATS){
-      const v=br[cat.k]||0;const pct=Math.min(v/cat.m*100,100);
-      const row=document.createElement('div');row.className='bar-row';
-      const lbl=document.createElement('span');lbl.className='bar-lbl';lbl.textContent=cat.l;
-      const track=document.createElement('div');track.className='bar-track';
-      const fill=document.createElement('div');fill.className='bar-fill';fill.style.width='0%';fill.style.background=color;
-      track.appendChild(fill);
-      const val=document.createElement('span');val.className='bar-val';val.textContent=v;
-      row.appendChild(lbl);row.appendChild(track);row.appendChild(val);bars.appendChild(row);
-      requestAnimationFrame(()=>{requestAnimationFrame(()=>{fill.style.width=pct+'%'})});
-    }
-    c.appendChild(bars);g.appendChild(c);
+function render(data){
+  const competitorList=$('competitorList');
+  competitorList.textContent='';
+  data.competitors.forEach(function(c){
+    const card=document.createElement('div');
+    card.className='narrative-card';
+    card.innerHTML='<div class="narrative-header">'+
+      '<span class="narrative-brand">'+(c.brand_name||c.url)+'<span class="badge">Score '+(c.score||'N/A')+'</span></span>'+
+      '</div>'+
+      '<div class="adjectives"><span class="adjective-label">Adjectives:</span>'+
+      c.dominant_adjectives.map(a=>'<span class="adjective">'+a+'</span>').join('')+
+      '</div>'+
+      '<div class="frames"><span class="frame-label">Frames:</span>'+
+      c.key_frames.map(f=>'<span class="frame">'+f+'</span>').join('')+
+      '</div>'+
+      (c.positioning?'<div class="positioning" dir="ltr">\"'+c.positioning+'\"</div>':'')+
+      (c.credibility_signals.length?'<div class="credibility"><h4>Credibility Signals</h4><ul><li>'+
+      c.credibility_signals.join('</li><li>')+'</li></ul></div>':'')+
+      (c.content_gaps.length?'<div class="gaps"><h4>Content Gaps</h4><ul>'+
+      c.content_gaps.map(g=>'<li>'+g+'</li>').join('')+'</ul></div>':'');
+    competitorList.appendChild(card);
   });
+
+  // Render gaps table if available
+  if(data.competitive_gaps&&data.competitive_gaps.length>0){
+    const gapTableBody=$('gapTableBody');
+    gapTableBody.textContent='';
+    $('gapSection').style.display='block';
+    data.competitive_gaps.forEach(function(g){
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+g.category+'</td>'+
+        '<td><a href="'+g.competitor_url+'" target="_blank" rel="noopener">'+new URL(g.competitor_url).hostname+'</a></td>'+
+        '<td><span class="gap-type gap-'+g.gap_type+'">'+g.gap_type+'</span></td>'+
+        '<td>'+g.target_missing+'</td>'+
+        '<td class="suggestion">'+g.suggested_content+'</td>';
+      gapTableBody.appendChild(tr);
+    });
+  }
 }
+
 document.getElementById('nav-ham').addEventListener('click',function(){
   document.querySelector('.nav-links').classList.toggle('open');
   this.textContent=this.textContent==='☰'?'✕':'☰';

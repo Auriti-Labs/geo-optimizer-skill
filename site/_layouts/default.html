@@ -127,7 +127,7 @@ border:1px solid var(--c-border);padding:.25rem .6rem;border-radius:20px;transit
 
 <!-- Schema.org JSON-LD -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","name":"{{ site.title }}","url":"{{ site.url }}{{ site.baseurl }}/","description":"{{ site.description }}","potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://geo-optimizer-web.onrender.com/?url={search_term_string}"},"query-input":"required name=search_term_string"},"author":{"@type":"Organization","name":"{{ site.author.name }}","url":"{{ site.author.url }}","sameAs":["https://github.com/Auriti-Labs","https://pypi.org/project/geo-optimizer-skill/","https://www.linkedin.com/company/auriti-labs"],"contactPoint":{"@type":"ContactPoint","contactType":"technical support","url":"https://github.com/Auriti-Labs/geo-optimizer-skill/issues"}}}
+{"@context":"https://schema.org","@type":"WebSite","name":"{{ site.title }}","url":"{{ site.url }}{{ site.baseurl }}/","description":"{{ site.description }}","potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://geoready.dev/?url={search_term_string}"},"query-input":"required name=search_term_string"},"author":{"@type":"Organization","name":"{{ site.author.name }}","url":"{{ site.author.url }}","sameAs":["https://github.com/Auriti-Labs","https://pypi.org/project/geo-optimizer-skill/","https://www.linkedin.com/company/auriti-labs"],"contactPoint":{"@type":"ContactPoint","contactType":"technical support","url":"https://github.com/Auriti-Labs/geo-optimizer-skill/issues"}}}
 </script>
 {% if page.title and page.title != "Documentation" %}
 <script type="application/ld+json">
@@ -153,7 +153,7 @@ border:1px solid var(--c-border);padding:.25rem .6rem;border-radius:20px;transit
       <a href="{{ '/' | relative_url }}" class="logo"><span>GEO Optimizer</span> <span class="dot"></span></a>
       <div class="toplinks">
         <a href="{{ '/' | relative_url }}">Docs</a>
-        <a href="https://geo-optimizer-web.onrender.com">Demo</a>
+        <a href="https://geoready.dev">Demo</a>
         <a href="https://github.com/{{ site.repository }}">GitHub</a>
         <a href="https://pypi.org/project/geo-optimizer-skill/" class="pip">pip install geo-optimizer-skill</a>
       </div>

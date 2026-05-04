@@ -14,7 +14,7 @@
 
 **Audit, fix, and optimize any website to be cited by ChatGPT, Perplexity, Claude, and Gemini.**
 
-[Quick Start](#quick-start) · [Live Demo](https://geo-optimizer-web.onrender.com) · [Documentation](https://auriti-labs.github.io/geo-optimizer-skill/) · [Changelog](CHANGELOG.md)
+[Quick Start](#quick-start) · [Live Demo](https://geoready.dev) · [Documentation](https://auriti-labs.github.io/geo-optimizer-skill/) · [Changelog](CHANGELOG.md)
 
 </div>
 
@@ -242,7 +242,7 @@ result = await audit_async("https://example.com")
 Show your GEO score in your README:
 
 ```markdown
-![GEO Score](https://geo-optimizer-web.onrender.com/badge?url=https://yoursite.com)
+![GEO Score](https://geoready.dev/badge?url=https://yoursite.com)
 ```
 
 Colors: 86-100 green · 68-85 cyan · 36-67 yellow · 0-35 red. Cached 1h.

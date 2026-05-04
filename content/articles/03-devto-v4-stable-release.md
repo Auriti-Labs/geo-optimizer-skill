@@ -258,7 +258,7 @@ If any of these is a priority for your use case, open an issue and we will prior
 
 Web demo (no install):
 
-**[geo-optimizer-web.onrender.com](https://geo-optimizer-web.onrender.com)**
+**[geoready.dev](https://geoready.dev)**
 
 CLI:
 

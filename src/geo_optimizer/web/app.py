@@ -507,6 +507,16 @@ async def compare_page(request: Request):
     return html.replace("__NONCE_ATTR__", nonce_attr)
 
 
+@app.get("/analyze-competitors", response_class=HTMLResponse)
+async def analyze_competitors_page(request: Request):
+    """Competitive narrative analysis page."""
+    nonce = getattr(request.state, "csp_nonce", "")
+    template_path = Path(__file__).parent / "templates" / "analyze_competitors.html"
+    html = template_path.read_text(encoding="utf-8")
+    nonce_attr = f' nonce="{nonce}"' if nonce else ""
+    return html.replace("__NONCE_ATTR__", nonce_attr)
+
+
 # ─── Stats API esterna (AgencyPilot) ─────────────────────────────────────────
 # Audit counter persisted on an external SQLite DB via REST API
 _STATS_API_URL = os.environ.get("GEO_STATS_API_URL", "https://agencypilot.it/api/geo-stats")
@@ -908,7 +918,7 @@ async def badge_endpoint(
     """Endpoint compatibile con shields.io per badge dinamico.
 
     Usage with shields.io:
-        ![GEO Score](https://img.shields.io/endpoint?url=https://geo-optimizer-web.onrender.com/badge/endpoint?url=https://yoursite.com)
+        ![GEO Score](https://img.shields.io/endpoint?url=https://geoready.dev/badge/endpoint?url=https://yoursite.com)
 
     Returns JSON in shields.io schema:
         {"schemaVersion": 1, "label": "GEO Score", "message": "77/100", "color": "green"}
@@ -1543,12 +1553,12 @@ async def llms_txt():
         "8. Brand & Entity Signals (10pt) — Knowledge graph, sameAs, About/Contact, geographic identity\n\n"
         "Score bands: 86-100 Excellent | 68-85 Good | 36-67 Foundation | 0-35 Critical\n\n"
         "## Tools\n\n"
-        "- [GEO Audit Web](https://geo-optimizer-web.onrender.com/): Audit any URL — score 0-100 with breakdown\n"
-        "- [Compare](https://geo-optimizer-web.onrender.com/compare): Side-by-side GEO score comparison of two URLs\n"
-        "- [Badge](https://geo-optimizer-web.onrender.com/badge?url=https://example.com): Dynamic SVG GEO score badge\n"
-        "- [Manifesto](https://geo-optimizer-web.onrender.com/manifesto): Why AI search visibility should be open\n"
-        "- [Research](https://geo-optimizer-web.onrender.com/research): Scientific papers behind the scoring\n"
-        "- [Roadmap](https://geo-optimizer-web.onrender.com/roadmap): Upcoming features and milestones\n\n"
+        "- [GEO Audit Web](https://geoready.dev/): Audit any URL — score 0-100 with breakdown\n"
+        "- [Compare](https://geoready.dev/compare): Side-by-side GEO score comparison of two URLs\n"
+        "- [Badge](https://geoready.dev/badge?url=https://example.com): Dynamic SVG GEO score badge\n"
+        "- [Manifesto](https://geoready.dev/manifesto): Why AI search visibility should be open\n"
+        "- [Research](https://geoready.dev/research): Scientific papers behind the scoring\n"
+        "- [Roadmap](https://geoready.dev/roadmap): Upcoming features and milestones\n\n"
         "## CLI Install\n\n"
         "```\n"
         "pip install geo-optimizer-skill\n"
@@ -1631,7 +1641,7 @@ async def ai_summary():
             " search engine visibility. Scores 0-100 based on 47"
             " research-backed methods."
         ),
-        "url": "https://geo-optimizer-web.onrender.com",
+        "url": "https://geoready.dev",
         "lastModified": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
     }
 
@@ -1686,3 +1696,241 @@ def _render_homepage(nonce: str = "") -> str:
     # Without nonce: "<script__NONCE_ATTR__>" → "<script>"
     nonce_attr = f' nonce="{nonce}"' if nonce else ""
     return html.replace("__NONCE_ATTR__", nonce_attr)
+
+
+# ─── Competitive Narrative Analysis API ───────────────────────────────────────
+
+
+class CompetitorRequest(BaseModel):
+    """Schema per la richiesta di competitive narrative analysis."""
+
+    target_url: str
+    competitor_urls: list[str]
+
+
+@app.post("/api/analyze-competitors")
+async def analyze_competitors(request: Request, body: CompetitorRequest):
+    """Analisi competitiva narrativa: come LLM descrivono i competitor.
+
+    Esegue audit su target e competitor, poi usa LLM per estrarre:
+    - Adjectives dominanti (es. "enterprise", "budget", "premium")
+    - Key frames (es. "AI-first", "developer-friendly")
+    - Positioning statement
+    - Segnali di credibilità
+    - Content gaps
+
+    Poi confronta target vs competitor e genera azioni concrete.
+
+    Fix #382: Competitive Narrative Analysis
+    """
+    from geo_optimizer.utils.validators import validate_public_url
+
+    # Verify Bearer token
+    if not _verify_bearer_token(request):
+        raise HTTPException(
+            status_code=401,
+            detail="Missing or invalid authentication token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Rate limit
+    if not await _check_rate_limit(_get_client_ip(request)):
+        raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
+
+    # URL validation
+    target_url, error = _normalize_url(body.target_url)
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+
+    safe, reason = validate_public_url(target_url)
+    if not safe:
+        raise HTTPException(status_code=400, detail=f"Invalid target URL: {reason}")
+
+    # Validate competitor URLs
+    valid_competitors = []
+    for url in body.competitor_urls:
+        normalized, err = _normalize_url(url)
+        if not err:
+            competitor_safe, reason = validate_public_url(normalized)
+            if competitor_safe:
+                valid_competitors.append(normalized)
+            else:
+                logger.warning("Skipping invalid competitor URL: %s - %s", url, reason)
+        else:
+            logger.warning("Skipping invalid competitor URL format: %s", url)
+
+    if not valid_competitors:
+        raise HTTPException(
+            status_code=400,
+            detail="No valid competitor URLs provided. Please enter at least one valid competitor URL.",
+        )
+
+    # Run competitive narrative analysis
+    try:
+        from geo_optimizer.core.competitive_narrative import run_competitive_narrative_analysis
+
+        result = await asyncio.to_thread(
+            run_competitive_narrative_analysis,
+            target_url=target_url,
+            competitor_urls=valid_competitors,
+        )
+    except Exception as exc:
+        logger.error("Competitive narrative analysis error: %s", exc)
+        raise HTTPException(
+            status_code=500,
+            detail="Internal error during competitive analysis. Try again later.",
+        ) from exc
+
+    # Format response
+    from geo_optimizer.core.competitive_narrative import format_competitive_narrative
+
+    response_data = format_competitive_narrative(result)
+    response_data["competitor_count"] = len(valid_competitors)
+
+    return JSONResponse(content=response_data)
+
+
+@app.get("/api/analyze-competitors")
+async def analyze_competitors_get(
+    request: Request,
+    target_url: str = Query(..., description="Target website URL"),
+    competitor_urls: str = Query(..., description="Competitor URLs, comma-separated"),
+):
+    """Analisi competitiva narrativa via GET (query params).
+
+    Usage:
+        /api/analyze-competitors?target=https://example.com&competitors=https://a.com,https://b.com
+    """
+    # Verify Bearer token
+    if not _verify_bearer_token(request):
+        raise HTTPException(
+            status_code=401,
+            detail="Missing or invalid authentication token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Rate limit
+    if not await _check_rate_limit(_get_client_ip(request)):
+        raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
+
+    # Parse competitor URLs from comma-separated string
+    competitors_list = [u.strip() for u in competitor_urls.split(",") if u.strip()]
+
+    if not competitors_list:
+        raise HTTPException(
+            status_code=400,
+            detail="At least one competitor URL is required.",
+        )
+
+    # Build request and call POST handler
+    # Re-use POST handler via direct call
+    body = CompetitorRequest(target_url=target_url, competitor_urls=competitors_list)
+    return await analyze_competitors(request, body)
+
+
+# ─── Gap analysis endpoint per confronto semplificato ─────────────────────────
+
+
+class GapAnalysisRequest(BaseModel):
+    """Schema per gap analysis tra due URL."""
+
+    url1: str
+    url2: str
+
+
+@app.post("/api/gap-analysis")
+async def gap_analysis(request: Request, body: GapAnalysisRequest):
+    """Confronto semplice tra due URL (gap analysis).
+
+    Fix #382: Competitive Narrative Analysis
+    """
+    # Verify Bearer token
+    if not _verify_bearer_token(request):
+        raise HTTPException(
+            status_code=401,
+            detail="Missing or invalid authentication token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Rate limit
+    if not await _check_rate_limit(_get_client_ip(request)):
+        raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
+
+    # URL validation
+    url1, error = _normalize_url(body.url1)
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+
+    url2, error = _normalize_url(body.url2)
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+
+    # Anti-SSRF validation
+    safe1, reason1 = validate_public_url(url1)
+    if not safe1:
+        raise HTTPException(status_code=400, detail=f"Invalid URL 1: {reason1}")
+
+    safe2, reason2 = validate_public_url(url2)
+    if not safe2:
+        raise HTTPException(status_code=400, detail=f"Invalid URL 2: {reason2}")
+
+    # Run gap analysis
+    try:
+        from geo_optimizer.core.gap_analysis import run_gap_analysis
+
+        result = await asyncio.to_thread(run_gap_analysis, url1=url1, url2=url2)
+
+        from geo_optimizer.core.audit import run_full_audit
+        from geo_optimizer.core.gap_analysis import build_gap_analysis
+
+        # Full audit for both
+        result1 = await asyncio.to_thread(run_full_audit, url1)
+        result2 = await asyncio.to_thread(run_full_audit, url2)
+        result = build_gap_analysis(result1, result2)
+    except Exception as exc:
+        logger.error("Gap analysis error: %s", exc)
+        raise HTTPException(
+            status_code=500,
+            detail="Internal error during gap analysis. Try again later.",
+        ) from exc
+
+    # Format response
+    from geo_optimizer.core.gap_analysis import build_gap_analysis
+
+    response_data = {
+        "weaker_url": result.weaker_url,
+        "stronger_url": result.stronger_url,
+        "weaker_score": result.weaker_score,
+        "stronger_score": result.stronger_score,
+        "score_gap": result.score_gap,
+        "weaker_band": result.weaker_band,
+        "stronger_band": result.stronger_band,
+        "category_deltas": [
+            {
+                "category": c.category,
+                "label": c.label,
+                "before_score": c.before_score,
+                "after_score": c.after_score,
+                "delta": c.delta,
+                "max_score": c.max_score,
+            }
+            for c in result.category_deltas
+        ],
+        "action_plan": [
+            {
+                "category": a.category,
+                "title": a.title,
+                "rationale": a.rationale,
+                "impact_points": a.impact_points,
+                "priority": a.priority,
+                "command": a.command,
+            }
+            for a in result.action_plan
+        ],
+        "summary": f"Weaker site: {result.weaker_url} (score {result.weaker_score}). "
+        f"Stronger site: {result.stronger_url} (score {result.stronger_score}). "
+        f"Gap: {result.score_gap} points. "
+        f"Found {len(result.action_plan)} actionable recommendations.",
+    }
+
+    return JSONResponse(content=response_data)
