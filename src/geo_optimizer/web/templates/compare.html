@@ -100,6 +100,30 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 footer{text-align:center;padding:2rem 0 1rem;border-top:1px solid var(--border);margin-top:2rem;color:var(--text-muted);font-size:.8rem}
 footer a{color:var(--text-muted)}
 @media(max-width:600px){.grid{grid-template-columns:1fr}.wrapper{padding:1.25rem 1rem}.hero h1{font-size:1.8rem}}
+
+/* ─── Floating cookie settings button ─── */
+.cookie-float-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 9990;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(13, 17, 23, 0.9);
+  border: 1px solid #1b2332;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  color: #64748b;
+  transition: color 0.2s, border-color 0.2s;
+}
+.cookie-float-btn:hover { color: #e2e8f0; border-color: #3b82f6; }
+.cookie-float-btn svg { width: 20px; height: 20px; }
 </style>
 </head>
 <body>
@@ -227,5 +251,18 @@ document.addEventListener('click',function(){
   });
 });
 </script>
+
+<!-- Floating cookie settings button: link alle impostazioni cookie -->
+<a href="/privacy#cookies" class="cookie-float-btn" title="Cookie settings" aria-label="Cookie settings">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="8" cy="9" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="8" r="1" fill="currentColor"/>
+    <circle cx="14" cy="14" r="1.5" fill="currentColor"/>
+    <circle cx="9" cy="15" r="1" fill="currentColor"/>
+    <circle cx="17" cy="13" r="1" fill="currentColor"/>
+  </svg>
+</a>
+
 </body>
 </html>

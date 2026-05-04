@@ -226,6 +226,30 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
   .bar-label{width:80px;font-size:.75rem}
   nav{gap:.75rem;flex-wrap:wrap}
 }
+
+/* ─── Floating cookie settings button ─── */
+.cookie-float-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 9990;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(13, 17, 23, 0.9);
+  border: 1px solid #1b2332;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  color: #64748b;
+  transition: color 0.2s, border-color 0.2s;
+}
+.cookie-float-btn:hover { color: #e2e8f0; border-color: #3b82f6; }
+.cookie-float-btn svg { width: 20px; height: 20px; }
 </style>
 
 <!-- GEO: Schema JSON-LD -->
@@ -907,5 +931,51 @@ document.addEventListener('click',function(){
   });
 });
 </script>
+
+<!-- Floating cookie settings button: apre il modal delle preferenze -->
+<button type="button" id="cookie-float-btn" class="cookie-float-btn" title="Cookie settings" aria-label="Cookie settings" style="display:none">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="8" cy="9" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="8" r="1" fill="currentColor"/>
+    <circle cx="14" cy="14" r="1.5" fill="currentColor"/>
+    <circle cx="9" cy="15" r="1" fill="currentColor"/>
+    <circle cx="17" cy="13" r="1" fill="currentColor"/>
+  </svg>
+</button>
+<script>
+(function() {
+  var floatBtn = document.getElementById('cookie-float-btn');
+  var banner = document.getElementById('cookie-banner');
+
+  // Mostra il pulsante solo quando il banner non è visibile
+  function updateFloatBtnVisibility() {
+    if (!floatBtn) return;
+    var bannerVisible = banner && banner.style.display !== 'none' && !banner.hidden;
+    floatBtn.style.display = bannerVisible ? 'none' : 'flex';
+  }
+
+  // Controlla dopo breve delay (il banner usa display/hidden)
+  setTimeout(updateFloatBtnVisibility, 500);
+
+  // Osserva cambiamenti al banner
+  if (banner && window.MutationObserver) {
+    var obs = new MutationObserver(updateFloatBtnVisibility);
+    obs.observe(banner, { attributes: true, attributeFilter: ['style', 'hidden'] });
+  }
+
+  // Al click apre il modal cookie se disponibile
+  if (floatBtn) {
+    floatBtn.addEventListener('click', function() {
+      if (typeof openModal === 'function') {
+        openModal();
+      } else if (typeof openCookieSettings === 'function') {
+        openCookieSettings();
+      }
+    });
+  }
+})();
+</script>
+
 </body>
 </html>

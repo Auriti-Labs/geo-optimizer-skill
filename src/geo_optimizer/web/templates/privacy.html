@@ -283,6 +283,46 @@ footer .links a {
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+
+/* ─── Floating cookie button ─── */
+.cookie-float-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 9990;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(13, 17, 23, 0.9);
+  border: 1px solid #1b2332;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  color: #64748b;
+  transition: color 0.2s, border-color 0.2s;
+  position: fixed;
+}
+.cookie-float-btn:hover { color: #e2e8f0; border-color: #3b82f6; }
+.cookie-float-btn svg { width: 20px; height: 20px; }
+.cookie-float-btn[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 48px;
+  bottom: 50%;
+  transform: translateY(50%);
+  background: rgba(13,17,23,0.95);
+  border: 1px solid #1b2332;
+  color: #e2e8f0;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -320,271 +360,270 @@ footer .links a {
       <span class="gdpr-badge">GDPR Compliant</span>
     </div>
     <p class="text-muted" style="margin-top: 1rem; max-width: 540px; margin-inline: auto;">
-      Ultima modifica: <span class="text-bold">4 maggio 2026</span><br>
-      Titolare del trattamento: <span class="text-bold">Auriti Labs</span>
+      Last updated: <span class="text-bold">May 4, 2026</span><br>
+      Data Controller: <span class="text-bold">Auriti Labs</span>
     </p>
   </div>
 
   <div class="legal-content">
-    <h2 id="intro">1. Introduzione</h2>
+    <h2 id="intro">1. Introduction</h2>
     <p>
-      Questa Privacy Policy descrive come raccogliamo, utilizziamo e proteggiamo i tuoi dati personali
-      quando utilizzi il sito web <strong>geoready.dev</strong> (il "Sito"), appartenente a
+      This Privacy Policy describes how we collect, use, and protect your personal data
+      when you use the website <strong>geoready.dev</strong> (the &ldquo;Site&rdquo;), owned by
       <strong>Auriti Labs</strong>.
     </p>
     <p>
-      Il rispetto della tua privacy è la nostra priorità assoluta. Questa politica è conforme al
-      <strong>Regolamento Generale sulla Protezione dei Dati (GDPR)</strong> dell'Unione Europea
-      e a tutte le normative vigenti in materia di privacy.
+      Respecting your privacy is our top priority. This policy complies with the
+      <strong>General Data Protection Regulation (GDPR)</strong> of the European Union
+      and all applicable privacy regulations.
     </p>
     <p>
-      Se hai domande su questa Privacy Policy, contattaci a:
+      If you have questions about this Privacy Policy, contact us at:
       <a href="mailto:juancamilo.auriti@gmail.com">juancamilo.auriti@gmail.com</a>
     </p>
 
-    <h2 id="data-collection">2. Dati che Raccogliamo</h2>
+    <h2 id="data-collection">2. Data We Collect</h2>
     <p>
-      Raccogliamo solo i dati strettamente necessari al funzionamento del Sito e alla fornitura
-      dei nostri servizi.
+      We collect only the data strictly necessary for the operation of the Site and the provision
+      of our services.
     </p>
 
-    <h3>2.1 Dati di navigazione automatici</h3>
+    <h3>2.1 Automatic browsing data</h3>
     <p>
-      Quando visiti il Sito, raccogliamo automaticamente alcune informazioni di navigazione:
+      When you visit the Site, we automatically collect some browsing information:
     </p>
     <ul>
-      <li><strong>Cookie tecnici:</strong> per mantenere la sessione e le tue preferenze</li>
-      <li><strong>Indirizzo IP:</strong> (solo per finalità di sicurezza, non per tracciamento)</li>
-      <li><strong>Informazioni sul dispositivo:</strong> tipo di browser, sistema operativo</li>
-      <li><strong>Dati di log:</strong> pagine visitate, orario di accesso, durata della visita</li>
+      <li><strong>Technical cookies:</strong> to maintain the session and your preferences</li>
+      <li><strong>IP address:</strong> (for security purposes only, not for tracking)</li>
+      <li><strong>Device information:</strong> browser type, operating system</li>
+      <li><strong>Log data:</strong> pages visited, access time, visit duration</li>
     </ul>
 
-    <h3>2.2 Dati forniti dall'utente</h3>
+    <h3>2.2 User-provided data</h3>
     <p>
-      Quando utilizzi i nostri servizi, possono essere raccolti:
+      When you use our services, the following data may be collected:
     </p>
     <ul>
-      <li><strong>URL da auditare:</strong> per fornire il servizio di analisi SEO</li>
-      <li><strong>Commenti e feedback:</strong> inviati tramite form di contatto</li>
-      <li><strong>Dati di contatto:</strong> se ci contatti, solo se自愿 forniti</li>
+      <li><strong>URLs to audit:</strong> to provide the SEO analysis service</li>
+      <li><strong>Comments and feedback:</strong> submitted via contact form</li>
+      <li><strong>Contact details:</strong> if you reach out to us, only if voluntarily provided</li>
     </ul>
 
-    <h2 id="cookies">3. Cookie e Tracciamento</h2>
+    <h2 id="cookies">3. Cookies and Tracking</h2>
     <p>
-      Utilizziamo cookie tecnici e di analisi per migliorare la tua esperienza di navigazione.
+      We use technical and analytics cookies to improve your browsing experience.
     </p>
     <p>
-      <strong> cookie essenziali (necessari):</strong>
+      <strong>Essential cookies (required):</strong>
       <span class="text-muted">
-        Questi cookie sono indispensabili per il funzionamento del Sito e non possono essere
-        disattivati. includono cookie per l'autenticazione, la sicurezza e le preferenze di sessione.
+        These cookies are essential for the operation of the Site and cannot be
+        disabled. They include cookies for authentication, security, and session preferences.
       </span>
     </p>
     <p>
-      <strong> cookie analytics (Google Analytics):</strong>
+      <strong>Analytics cookies (Google Analytics):</strong>
       <span class="text-muted">
-        Utilizziamo Google Analytics per analizzare l'uso del Sito. I dati sono aggregati e
-        anonimizzati. Non eseguiamo alcuna identificazione personale.
-        Puoi disabilitare questi cookie tramite il banner dei cookie in basso a sinistra.
+        We use Google Analytics to analyze Site usage. Data is aggregated and
+        anonymized. We do not perform any personal identification.
+        You can disable these cookies via the cookie settings button in the bottom-left corner.
       </span>
     </p>
     <p>
-      <strong> cookie di marketing (Google Ads):</strong>
+      <strong>Marketing cookies (Google Ads):</strong>
       <span class="text-muted">
-        Utilizzati solo con tuo esplicito consenso per mostrare annunci personalizzati.
-        Disabilitabili in qualsiasi momento.
+        Used only with your explicit consent to show personalized ads.
+        Can be disabled at any time.
       </span>
     </p>
     <div class="info-box">
-      <strong>Come gestire i cookie:</strong>
+      <strong>How to manage cookies:</strong>
       <p class="text-muted">
-        Puoi accettare, rifiutare o gestire i tuoi preferenze cookie in qualsiasi momento
-        cliccando sul link "Gestisci" nel banner in basso a sinistra quando visiti il Sito.
+        You can accept, reject, or manage your cookie preferences at any time
+        by clicking the cookie settings button in the bottom-left corner of the page.
       </p>
     </div>
 
     <h2 id="google-analytics">4. Google Analytics</h2>
     <p>
-      Il Sito utilizza Google Analytics, un servizio di analisi web fornito da Google LLC
-      ("Google"). Google utilizza i cookie raccolti per analizzare il comportamento degli
-      utenti sul Sito.
+      The Site uses Google Analytics, a web analytics service provided by Google LLC
+      (&ldquo;Google&rdquo;). Google uses the collected cookies to analyze user behavior on the Site.
     </p>
     <p>
-      <strong>Cosa raccogliamo:</strong>
+      <strong>What we collect:</strong>
       <span class="text-muted">
-        - Pagine visitate<br>
-        - Tempo trascorso sulle pagine<br>
-        - Pagina di provenienza (referral)<br>
-        - Tipo di dispositivo e browser<br>
-        - Luogo geografico (solo a livello di paese/regione, non indirizzo IP completo)
+        - Pages visited<br>
+        - Time spent on pages<br>
+        - Referral source<br>
+        - Device type and browser<br>
+        - Geographic location (country/region level only, not full IP address)
       </span>
     </p>
     <p>
-      <strong>Cos' NON raccogliamo:</strong>
+      <strong>What we do NOT collect:</strong>
       <span class="text-muted">
-        - Indirizzi IP completi (vengono anonimizzati)<br>
-        - Dati di identificazione personale<br>
-        - Informazioni finanziarie o bancarie<br>
-        - Dati sensibili (salute, religione, politica, ecc.)
+        - Full IP addresses (they are anonymized)<br>
+        - Personally identifiable information<br>
+        - Financial or banking information<br>
+        - Sensitive data (health, religion, politics, etc.)
       </span>
     </p>
     <p>
-      <strong>Anonimizzazione:</strong>
+      <strong>Anonymization:</strong>
       <span class="text-muted">
-        Google Analytics è configurato per anonimizzare l'indirizzo IP degli utenti prima
-        che venga trasmesso a Google. I dati sono conservati per 24 mesi.
+        Google Analytics is configured to anonymize users' IP addresses before
+        transmission to Google. Data is retained for 24 months.
       </span>
     </p>
     <p>
       <strong>Opt-out:</strong>
       <span class="text-muted">
-        Puoi disabilitare Google Analytics installando l'<a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">
-        add-on di disabilitazione di Google Analytics</a> per il tuo browser.
+        You can disable Google Analytics by installing the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">
+        Google Analytics opt-out add-on</a> for your browser.
       </span>
     </p>
 
-    <h2 id="security">5. Sicurezza dei Dati</h2>
+    <h2 id="security">5. Data Security</h2>
     <p>
-      Adottiamo misure tecniche e organizzative appropriate per proteggere i tuoi dati
-      personali contro:
+      We implement appropriate technical and organizational measures to protect your personal
+      data against:
     </p>
     <ul>
-      <li><strong>Accesso non autorizzato:</strong> protezione con autenticazione a due fattori</li>
-      <li><strong>Divulgazione o distruzione:</strong> crittografia TLS 1.3 per tutte le connessioni</li>
-      <li><strong>Alterazione:</strong> verifica dell'integrità dei dati tramite checksum</li>
-      <li><strong>Perdita:</strong> backup regolari e procedure di disaster recovery</li>
+      <li><strong>Unauthorized access:</strong> protection with two-factor authentication</li>
+      <li><strong>Disclosure or destruction:</strong> TLS 1.3 encryption for all connections</li>
+      <li><strong>Alteration:</strong> data integrity verification via checksums</li>
+      <li><strong>Loss:</strong> regular backups and disaster recovery procedures</li>
     </ul>
     <p>
-      I dati vengono conservati sui server di <strong>Render.com</strong> e <strong>GitHub Pages</strong>,
-      entrambi conformi al GDPR con sedi nell'Unione Europea.
+      Data is stored on <strong>Render.com</strong> and <strong>GitHub Pages</strong> servers,
+      both GDPR-compliant with infrastructure in the European Union.
     </p>
 
-    <h2 id="retention">6. Conservazione dei Dati</h2>
+    <h2 id="retention">6. Data Retention</h2>
     <table class="legal-table">
       <thead>
         <tr>
-          <th>Tipo di dato</th>
-          <th>Periodo di conservazione</th>
-          <th>Base giuridica</th>
+          <th>Data type</th>
+          <th>Retention period</th>
+          <th>Legal basis</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="text-bold">Dati di navigazione</td>
-          <td>6 mesi</td>
-          <td>Interesse legittimo (art. 6 GDPR)</td>
+          <td class="text-bold">Browsing data</td>
+          <td>6 months</td>
+          <td>Legitimate interest (Art. 6 GDPR)</td>
         </tr>
         <tr>
-          <td class="text-bold">Cookie analytics</td>
-          <td>24 mesi</td>
-          <td>Consenso (art. 9 GDPR)</td>
+          <td class="text-bold">Analytics cookies</td>
+          <td>24 months</td>
+          <td>Consent (Art. 9 GDPR)</td>
         </tr>
         <tr>
-          <td class="text-bold">Feedback utente</td>
-          <td>24 mesi</td>
-          <td>Interesse legittimo</td>
+          <td class="text-bold">User feedback</td>
+          <td>24 months</td>
+          <td>Legitimate interest</td>
         </tr>
         <tr>
-          <td class="text-bold">URL auditati</td>
-          <td>24 mesi (anonymized)</td>
-          <td>Interesse legittimo</td>
+          <td class="text-bold">Audited URLs</td>
+          <td>24 months (anonymized)</td>
+          <td>Legitimate interest</td>
         </tr>
       </tbody>
     </table>
 
-    <h2 id="third-party">7. Condivisione con Terze Parti</h2>
+    <h2 id="third-party">7. Third-Party Sharing</h2>
     <p>
-      Non vendiamo né affittiamo i tuoi dati personali a terzi.
-      Condividiamo dati solo nei seguenti casi:
+      We do not sell or rent your personal data to third parties.
+      We share data only in the following cases:
     </p>
     <table class="legal-table">
       <thead>
         <tr>
-          <th>Destinatario</th>
-          <th>Finalità</th>
-          <th>Paese</th>
+          <th>Recipient</th>
+          <th>Purpose</th>
+          <th>Country</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="text-bold">Google LLC</td>
-          <td>Google Analytics (analisi traffico)</td>
-          <td>UE (data center</td>
+          <td>Google Analytics (traffic analysis)</td>
+          <td>EU (data centers)</td>
         </tr>
         <tr>
           <td class="text-bold">GitHub Inc.</td>
-          <td>Ospitazione Sito (GitHub Pages)</td>
-          <td>UE (Francia)</td>
+          <td>Site hosting (GitHub Pages)</td>
+          <td>EU (France)</td>
         </tr>
         <tr>
           <td class="text-bold">Render.com</td>
-          <td>Ospitazione Backend (API)</td>
-          <td>UE (Germania)</td>
+          <td>Backend hosting (API)</td>
+          <td>EU (Germany)</td>
         </tr>
       </tbody>
     </table>
     <p>
-      Tutti i soggetti sopra indicati sono <strong>subprocessori</strong> registrati
-      e garantiscono livelli di protezione dei dati conformi al GDPR.
+      All the above parties are registered <strong>sub-processors</strong>
+      and guarantee levels of data protection compliant with the GDPR.
     </p>
 
-    <h2 id="rights">8. I Tuoi Diritti (GDPR)</h2>
+    <h2 id="rights">8. Your Rights (GDPR)</h2>
     <p>
-      Secondo il GDPR, hai il diritto di:
+      Under the GDPR, you have the right to:
     </p>
     <ul>
-      <li><strong>Accesso:</strong> ottenere conferma dell'esistenza dei tuoi dati e chiederne l'accesso</li>
-      <li><strong>Rettifica:</strong> richiedere la correzione di dati inesatti o incompleti</li>
-      <li><strong>Cancellazione:</strong> chiedere la cancellazione dei tuoi dati (diritto all'oblio)</li>
-      <li><strong>Limitazione:</strong> limitare l'elaborazione dei tuoi dati in determinate circostanze</li>
-      <li><strong>Portabilità:</strong> ricevere i tuoi dati in formato strutturato, comune e di uso comune</li>
-      <li><strong>Opposizione:</strong> opporsi al trattamento dei tuoi dati per motivi legittimi</li>
-      <li><strong>Revoca consenso:</strong> revocare il consenso in qualsiasi momento (non pregiudica la legalità delle basi precedenti)</li>
-      <li><strong>Reclamo:</strong> presentare un reclamo all'Autorità di controllo (Garante per la protezione dei dati personali in Italia)</li>
+      <li><strong>Access:</strong> obtain confirmation that your data exists and request access to it</li>
+      <li><strong>Rectification:</strong> request correction of inaccurate or incomplete data</li>
+      <li><strong>Erasure:</strong> request deletion of your data (right to be forgotten)</li>
+      <li><strong>Restriction:</strong> restrict the processing of your data in certain circumstances</li>
+      <li><strong>Portability:</strong> receive your data in a structured, commonly used, machine-readable format</li>
+      <li><strong>Objection:</strong> object to the processing of your data on legitimate grounds</li>
+      <li><strong>Withdraw consent:</strong> withdraw consent at any time (without affecting the lawfulness of prior processing)</li>
+      <li><strong>Lodge a complaint:</strong> submit a complaint to the supervisory authority (the Italian Data Protection Authority &mdash; Garante per la protezione dei dati personali)</li>
     </ul>
     <p>
-      Per esercitare i tuoi diritti, scrivi a: <a href="mailto:juancamilo.auriti@gmail.com">juancamilo.auriti@gmail.com</a>
+      To exercise your rights, write to: <a href="mailto:juancamilo.auriti@gmail.com">juancamilo.auriti@gmail.com</a>
     </p>
     <p>
-      Risponderemo entro <strong>30 giorni</strong> dalla ricezione della richiesta.
-      Potremmo richiederti la verifica della tua identità per motivi di sicurezza.
-    </p>
-
-    <h2 id="children">9. Minorenni</h2>
-    <p>
-      Il Sito non è rivolto a persone di età inferiore ai 16 anni.
-      Non raccogliamo intenzionalmente dati personali di minori.
-      Se scopriamo di aver raccolto dati di un minore, procederemo alla loro cancellazione entro 30 giorni.
+      We will respond within <strong>30 days</strong> of receiving your request.
+      We may ask you to verify your identity for security reasons.
     </p>
 
-    <h2 id="changes">10. Modifiche alla Policy</h2>
+    <h2 id="children">9. Minors</h2>
     <p>
-      Ci riserviamo il diritto di modificare questa Privacy Policy in qualsiasi momento.
-      Le modifiche diventeranno effettive alla pubblicazione sulla pagina.
-    </p>
-    <p>
-      Ti informeremo via email (se hai fornito un indirizzo) o tramite avviso sul Sito
-      in caso di modifiche significative.
-    </p>
-    <p>
-      Ti invitiamo a rileggere periodicamente questa policy per rimanere informato su come
-      proteggiamo i tuoi dati.
+      The Site is not directed at persons under the age of 16.
+      We do not intentionally collect personal data from minors.
+      If we discover that we have collected data from a minor, we will delete it within 30 days.
     </p>
 
-    <h2 id="contact">11. Contatti</h2>
+    <h2 id="changes">10. Policy Updates</h2>
     <p>
-      Per qualsiasi domanda riguardante questa Privacy Policy o il trattamento dei tuoi dati:
+      We reserve the right to modify this Privacy Policy at any time.
+      Changes will take effect upon publication on this page.
+    </p>
+    <p>
+      We will notify you by email (if you have provided an address) or via a notice on the Site
+      in case of significant changes.
+    </p>
+    <p>
+      We encourage you to periodically review this policy to stay informed about how
+      we protect your data.
+    </p>
+
+    <h2 id="contact">11. Contact</h2>
+    <p>
+      For any questions regarding this Privacy Policy or the processing of your data:
     </p>
     <div class="info-box">
       <strong>Auriti Labs</strong><br>
-      <span class="text-muted">Titolare del trattamento</span><br><br>
+      <span class="text-muted">Data Controller</span><br><br>
       Email: <a href="mailto:juancamilo.auriti@gmail.com">juancamilo.auriti@gmail.com</a><br>
       GitHub: <a href="https://github.com/Auriti-Labs" target="_blank" rel="noopener">github.com/Auriti-Labs</a>
     </div>
 
     <p style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center;">
-      <span class="text-muted">Questa Privacy Policy è stata creata il 4 maggio 2026.</span><br>
-      <span class="text-muted">Ultima modifica: 4 maggio 2026</span>
+      <span class="text-muted">This Privacy Policy was created on May 4, 2026.</span><br>
+      <span class="text-muted">Last updated: May 4, 2026</span>
     </p>
   </div>
 
@@ -596,10 +635,22 @@ footer .links a {
       <a href="https://pypi.org/project/geo-optimizer-skill/">PyPI</a>
     </div>
     <div class="text-muted">
-      &copy; 2026 Auriti Labs. Tutti i diritti riservati.
+      &copy; 2026 Auriti Labs. All rights reserved.
     </div>
   </footer>
 </div>
+
+<!-- Floating cookie settings button: link to privacy#cookies (no modal on this page) -->
+<a href="/privacy#cookies" class="cookie-float-btn" title="Cookie settings" aria-label="Cookie settings">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="8" cy="9" r="1.5" fill="currentColor"/>
+    <circle cx="15" cy="8" r="1" fill="currentColor"/>
+    <circle cx="14" cy="14" r="1.5" fill="currentColor"/>
+    <circle cx="9" cy="15" r="1" fill="currentColor"/>
+    <circle cx="17" cy="13" r="1" fill="currentColor"/>
+  </svg>
+</a>
 
 <script>
 document.getElementById('nav-ham').addEventListener('click', function() {
