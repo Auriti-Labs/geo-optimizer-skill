@@ -228,28 +228,151 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
 }
 
 /* ─── Floating cookie settings button ─── */
-.cookie-float-btn {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 1.5rem;
-  z-index: 9990;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(13, 17, 23, 0.9);
-  border: 1px solid #1b2332;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  text-decoration: none;
-  color: #64748b;
-  transition: color 0.2s, border-color 0.2s;
+/* ─── Cookie Banner ─── */
+@keyframes cookieSlideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.cookie-banner{
+  position:fixed;bottom:0;left:0;right:0;z-index:9999;
+  padding:1.25rem 2rem;
+  background:linear-gradient(135deg,rgba(13,17,23,0.97) 0%,rgba(17,24,40,0.97) 100%);
+  border-top:1px solid rgba(59,130,246,0.18);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  box-shadow:0 -8px 40px rgba(0,0,0,0.5),0 -1px 0 rgba(59,130,246,0.08);
+  animation:cookieSlideUp .4s cubic-bezier(.16,1,.3,1) both;
 }
-.cookie-float-btn:hover { color: #e2e8f0; border-color: #3b82f6; }
-.cookie-float-btn svg { width: 20px; height: 20px; }
+.cookie-banner-content{
+  max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;
+}
+.cookie-banner-icon{
+  flex-shrink:0;width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.15));
+  border:1px solid rgba(59,130,246,0.2);
+  display:flex;align-items:center;justify-content:center;
+  color:#3b82f6;
+}
+.cookie-banner-icon svg{width:22px;height:22px}
+.cookie-banner-text{flex:1;min-width:220px}
+.cookie-banner-title{
+  font-size:.95rem;font-weight:600;color:#e2e8f0;margin-bottom:.25rem;
+  background:linear-gradient(90deg,#e2e8f0,#94a3b8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.cookie-banner-description{font-size:.82rem;color:#64748b;line-height:1.55}
+.cookie-banner-link{color:#3b82f6;text-decoration:none;border-bottom:1px solid rgba(59,130,246,0.3);transition:border-color .2s}
+.cookie-banner-link:hover{border-color:#3b82f6}
+.cookie-banner-actions{display:flex;gap:.75rem;flex-shrink:0;align-items:center}
+
+/* ─── Cookie Buttons ─── */
+.cookie-btn{
+  padding:.55rem 1.25rem;border-radius:8px;font-size:.85rem;font-weight:600;
+  cursor:pointer;border:none;font-family:inherit;transition:all .2s;white-space:nowrap;
+}
+.cookie-btn-primary{
+  background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;
+  box-shadow:0 2px 12px rgba(59,130,246,0.3);
+}
+.cookie-btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(59,130,246,0.45)}
+.cookie-btn-secondary{
+  background:transparent;color:#94a3b8;
+  border:1px solid rgba(255,255,255,0.1);
+}
+.cookie-btn-secondary:hover{background:rgba(255,255,255,0.05);color:#e2e8f0;border-color:rgba(255,255,255,0.2)}
+
+/* ─── Cookie Modal ─── */
+.cookie-modal{
+  position:fixed;inset:0;z-index:10000;
+  display:flex;align-items:center;justify-content:center;padding:1rem;
+  opacity:0;transition:opacity .3s;
+}
+.cookie-modal:not([hidden]){display:flex}
+.cookie-modal.active{opacity:1}
+.cookie-modal-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.cookie-modal-content{
+  position:relative;z-index:1;width:100%;max-width:480px;
+  background:linear-gradient(145deg,#0d1117,#111820);
+  border:1px solid rgba(59,130,246,0.15);border-radius:18px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.04);
+  overflow:hidden;
+  transform:translateY(16px) scale(.98);transition:transform .3s cubic-bezier(.16,1,.3,1);
+}
+.cookie-modal.active .cookie-modal-content{transform:none}
+.cookie-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.5rem 1.5rem 1rem;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.cookie-modal-header h2{
+  font-size:1.1rem;font-weight:700;
+  background:linear-gradient(90deg,#e2e8f0 0%,#8b5cf6 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.cookie-modal-close{
+  width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.04);color:#64748b;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.cookie-modal-close:hover{background:rgba(255,255,255,0.08);color:#e2e8f0;border-color:rgba(255,255,255,0.15)}
+.cookie-modal-close svg{width:16px;height:16px}
+.cookie-modal-body{padding:1rem 1.5rem;display:flex;flex-direction:column;gap:.75rem}
+.cookie-category{
+  padding:1rem;border-radius:12px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.06);
+  transition:border-color .2s;
+}
+.cookie-category:hover{border-color:rgba(59,130,246,0.15)}
+.cookie-category-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem}
+.cookie-category-header h3{font-size:.875rem;font-weight:600;color:#e2e8f0}
+.cookie-category-desc{font-size:.78rem;color:#475569;line-height:1.6}
+.cookie-modal-footer{
+  display:flex;gap:.75rem;padding:1rem 1.5rem 1.5rem;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.cookie-modal-footer .cookie-btn{flex:1}
+
+/* ─── Toggle Switch ─── */
+.cookie-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+.cookie-switch input{opacity:0;width:0;height:0;position:absolute}
+.cookie-slider{
+  position:absolute;inset:0;border-radius:24px;cursor:pointer;
+  background:#1b2332;border:1px solid rgba(255,255,255,0.08);
+  transition:all .25s;
+}
+.cookie-slider:before{
+  content:'';position:absolute;height:16px;width:16px;
+  left:3px;top:50%;transform:translateY(-50%);
+  border-radius:50%;background:#475569;transition:all .25s;
+}
+input:checked + .cookie-slider{
+  background:linear-gradient(135deg,#3b82f6,#6366f1);
+  border-color:transparent;box-shadow:0 0 12px rgba(59,130,246,0.35);
+}
+input:checked + .cookie-slider:before{transform:translateY(-50%) translateX(20px);background:#fff}
+input:disabled + .cookie-slider{opacity:.5;cursor:not-allowed}
+
+/* ─── Floating cookie button ─── */
+.cookie-float-btn{
+  position:fixed;bottom:1.5rem;left:1.5rem;z-index:9990;
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(13,17,23,0.92);
+  border:1px solid rgba(59,130,246,0.2);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;text-decoration:none;color:#64748b;
+  transition:all .25s;box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+.cookie-float-btn:hover{color:#3b82f6;border-color:#3b82f6;box-shadow:0 4px 20px rgba(59,130,246,0.2);transform:scale(1.08)}
+.cookie-float-btn svg{width:18px;height:18px}
+
+@media(max-width:640px){
+  .cookie-banner{padding:1rem}
+  .cookie-banner-content{flex-direction:column;align-items:flex-start;gap:1rem}
+  .cookie-banner-actions{width:100%;justify-content:flex-end}
+  .cookie-modal-content{border-radius:14px}
+}
 </style>
 
 <!-- GEO: Schema JSON-LD -->
@@ -420,18 +543,18 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
       </svg>
     </div>
     <div class="cookie-banner-text">
-      <p class="cookie-banner-title">Noi rispettiamo la tua privacy</p>
+      <p class="cookie-banner-title">We respect your privacy</p>
       <p class="cookie-banner-description">
-        Questo sito utilizza cookie tecnici e di analisi per fornire una migliore esperienza di navigazione.
-        <a href="/privacy" class="cookie-banner-link">Scopri di più</a>
+        This site uses essential and analytics cookies to deliver a better browsing experience.
+        <a href="/privacy" class="cookie-banner-link">Learn more</a>
       </p>
     </div>
     <div class="cookie-banner-actions">
       <button type="button" class="cookie-btn cookie-btn-secondary" id="cookie-manage">
-        Gestisci
+        Manage
       </button>
       <button type="button" class="cookie-btn cookie-btn-primary" id="cookie-accept-all">
-        Accetta tutto
+        Accept all
       </button>
     </div>
   </div>
@@ -442,7 +565,7 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
   <div class="cookie-modal-overlay" id="cookie-modal-overlay"></div>
   <div class="cookie-modal-content">
     <div class="cookie-modal-header">
-      <h2>Impostazioni Cookie</h2>
+      <h2>Cookie Settings</h2>
       <button type="button" class="cookie-modal-close" id="cookie-modal-close">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -454,52 +577,50 @@ footer .credit{font-size:.72rem;color:var(--text-muted)}
     <div class="cookie-modal-body">
       <div class="cookie-category">
         <div class="cookie-category-header">
-          <h3>Cookie Essenziali (Necessari)</h3>
+          <h3>Essential Cookies</h3>
           <label class="cookie-switch">
             <input type="checkbox" id="cookie-essential" checked disabled>
             <span class="cookie-slider"></span>
           </label>
         </div>
         <p class="cookie-category-desc">
-          Questi cookie sono strettamente necessari per il funzionamento del sito e non possono essere disattivati.
-          includono cookie per l'autenticazione, la sicurezza e le preferenze di sessione.
+          Strictly necessary for the site to function. They cannot be disabled and include session, security, and preference cookies.
         </p>
       </div>
 
       <div class="cookie-category">
         <div class="cookie-category-header">
-          <h3>Cookie Analitici (Google Analytics)</h3>
+          <h3>Analytics Cookies</h3>
           <label class="cookie-switch">
             <input type="checkbox" id="cookie-analytics">
             <span class="cookie-slider"></span>
           </label>
         </div>
         <p class="cookie-category-desc">
-          Aiutano a capire come i visitatori interagiscono con il sito. I dati sono aggregati e anonimi,
-          senza alcuna identificazione personale. Disabilitandoli, non verrà caricato Google Analytics.
+          Help us understand how visitors interact with the site. Data is aggregated and anonymous. Disabling them prevents Google Analytics from loading.
         </p>
       </div>
 
       <div class="cookie-category">
         <div class="cookie-category-header">
-          <h3>Cookie Marketing/Targeting</h3>
+          <h3>Marketing Cookies</h3>
           <label class="cookie-switch">
             <input type="checkbox" id="cookie-marketing">
             <span class="cookie-slider"></span>
           </label>
         </div>
         <p class="cookie-category-desc">
-          Utilizzati per mostrare annunci rilevanti. Disabilitandoli, vedrai annunci meno personalizzati.
+          Used to serve relevant ads. Disabling them results in less personalised advertising.
         </p>
       </div>
     </div>
 
     <div class="cookie-modal-footer">
       <button type="button" class="cookie-btn cookie-btn-secondary" id="cookie-save">
-        Salva preferenze
+        Save preferences
       </button>
       <button type="button" class="cookie-btn cookie-btn-primary" id="cookie-reject-all">
-        Rifiuta tutto
+        Reject all
       </button>
     </div>
   </div>
