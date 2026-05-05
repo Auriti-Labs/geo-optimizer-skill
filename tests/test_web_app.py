@@ -23,7 +23,6 @@ from geo_optimizer.web.app import (
     app,
 )
 
-
 # ─── Fixture: AuditResult mock ───────────────────────────────────────────────
 
 
@@ -264,7 +263,7 @@ def test_post_audit_usa_cache_per_secondo_request(client):
 
 def test_rate_limit_429_dopo_troppe_richieste(client):
     """Dopo aver superato il rate limit, deve restituire 429."""
-    from geo_optimizer.web.app import _RATE_LIMIT_MAX_REQUESTS, _RATE_LIMIT_WINDOW
+    from geo_optimizer.web.app import _RATE_LIMIT_MAX_REQUESTS
 
     mock_result = _make_mock_audit_result()
 
@@ -285,8 +284,9 @@ def test_rate_limit_429_dopo_troppe_richieste(client):
 
 def test_check_rate_limit_blocca_dopo_limite():
     """_check_rate_limit() ritorna False dopo aver superato il limite."""
-    from geo_optimizer.web.app import _RATE_LIMIT_MAX_REQUESTS, _RATE_LIMIT_WINDOW
     import time
+
+    from geo_optimizer.web.app import _RATE_LIMIT_MAX_REQUESTS
 
     test_ip = "10.0.0.99_test_rate_limit"
     now = time.time()
@@ -522,7 +522,6 @@ def test_verify_bearer_token_senza_geo_api_token_ritorna_true():
     """_verify_bearer_token ritorna True quando GEO_API_TOKEN non è configurato."""
     import geo_optimizer.web.app as app_module
     from geo_optimizer.web.app import _verify_bearer_token
-    from unittest.mock import MagicMock
 
     # Arrange: simula _API_TOKEN = None
     original = app_module._API_TOKEN
@@ -545,7 +544,6 @@ def test_verify_bearer_token_con_token_corretto_ritorna_true():
     """_verify_bearer_token ritorna True con token valido nell'header Authorization."""
     import geo_optimizer.web.app as app_module
     from geo_optimizer.web.app import _verify_bearer_token
-    from unittest.mock import MagicMock
 
     # Arrange: imposta un token di test
     original = app_module._API_TOKEN
@@ -567,7 +565,6 @@ def test_verify_bearer_token_con_token_sbagliato_ritorna_false():
     """_verify_bearer_token ritorna False con token errato."""
     import geo_optimizer.web.app as app_module
     from geo_optimizer.web.app import _verify_bearer_token
-    from unittest.mock import MagicMock
 
     # Arrange
     original = app_module._API_TOKEN
@@ -589,7 +586,6 @@ def test_verify_bearer_token_senza_header_authorization_ritorna_false():
     """_verify_bearer_token ritorna False se manca l'header Authorization."""
     import geo_optimizer.web.app as app_module
     from geo_optimizer.web.app import _verify_bearer_token
-    from unittest.mock import MagicMock
 
     # Arrange
     original = app_module._API_TOKEN
@@ -609,7 +605,6 @@ def test_verify_bearer_token_senza_header_authorization_ritorna_false():
 
 def test_post_audit_con_token_valido_restituisce_200(client):
     """POST /api/audit con GEO_API_TOKEN impostato e token corretto ritorna 200."""
-    import os
     import geo_optimizer.web.app as app_module
 
     original_token = app_module._API_TOKEN
@@ -671,7 +666,11 @@ def test_ai_faq_json_punteggi_coerenti_con_config(client):
 
     # Trova la FAQ sul calcolo del punteggio
     score_faq = next(
-        (f for f in faq_list if "score" in f.get("question", "").lower() or "calculat" in f.get("question", "").lower()),
+        (
+            f
+            for f in faq_list
+            if "score" in f.get("question", "").lower() or "calculat" in f.get("question", "").lower()
+        ),
         None,
     )
     assert score_faq is not None, "Nessuna FAQ sul calcolo del punteggio trovata"

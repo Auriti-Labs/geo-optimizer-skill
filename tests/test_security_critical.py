@@ -10,12 +10,11 @@ from unittest.mock import patch
 
 from geo_optimizer.utils.validators import validate_public_url
 from geo_optimizer.web.badge import (
-    BAND_COLORS,
     _MAX_LABEL_LENGTH,
+    BAND_COLORS,
     _svg_escape,
     generate_badge_svg,
 )
-
 
 # ============================================================================
 # #55 — XSS nel badge SVG

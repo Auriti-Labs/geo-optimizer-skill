@@ -143,7 +143,11 @@ def audit(
         target_url if target_url.startswith(("http://", "https://")) else f"https://{target_url}"
     )
     if not safe:
-        hint = " Please use a public URL (e.g., https://example.com)." if "Host not allowed" in reason or "localhost" in reason or "non-public" in reason else ""
+        hint = (
+            " Please use a public URL (e.g., https://example.com)."
+            if "Host not allowed" in reason or "localhost" in reason or "non-public" in reason
+            else ""
+        )
         click.echo(f"\n❌ Unsafe URL: {reason}{hint}", err=True)
         sys.exit(1)
 

@@ -53,8 +53,19 @@ class TestAuditAiDiscovery:
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_tutti_endpoint_presenti(self, mock_fetch):
         """Verifica che tutti e 4 gli endpoint vengano rilevati."""
-        summary = json.dumps({"name": "Test Site", "description": "A test site with enough description length for validation", "url": "https://example.com"})
-        faq = json.dumps([{"question": "What is this service?", "answer": "This is a valid answer with enough text"}, {"question": "How does it work exactly?", "answer": "Another answer that meets the minimum length"}])
+        summary = json.dumps(
+            {
+                "name": "Test Site",
+                "description": "A test site with enough description length for validation",
+                "url": "https://example.com",
+            }
+        )
+        faq = json.dumps(
+            [
+                {"question": "What is this service?", "answer": "This is a valid answer with enough text"},
+                {"question": "How does it work exactly?", "answer": "Another answer that meets the minimum length"},
+            ]
+        )
         service = json.dumps({"name": "Test Service", "capabilities": ["search", "chat"]})
 
         # Mappa URL → risposta
@@ -130,11 +141,21 @@ class TestAuditAiDiscovery:
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_faq_formato_dict_con_faqs(self, mock_fetch):
         """faq.json con formato {faqs: [...]} conta correttamente."""
-        faq_data = json.dumps({"faqs": [
-            {"question": "What is GEO Optimizer?", "answer": "A valid answer with enough text for the check"},
-            {"question": "How does scoring work?", "answer": "Another answer meeting minimum length requirement"},
-            {"question": "What bots are supported?", "answer": "Third answer also meeting the validation threshold"},
-        ]})
+        faq_data = json.dumps(
+            {
+                "faqs": [
+                    {"question": "What is GEO Optimizer?", "answer": "A valid answer with enough text for the check"},
+                    {
+                        "question": "How does scoring work?",
+                        "answer": "Another answer meeting minimum length requirement",
+                    },
+                    {
+                        "question": "What bots are supported?",
+                        "answer": "Third answer also meeting the validation threshold",
+                    },
+                ]
+            }
+        )
 
         responses = {
             "https://example.com/.well-known/ai.txt": (_mock_response(404), None),
@@ -187,8 +208,12 @@ class TestAuditAiDiscoveryFromResponses:
     def test_tutte_risposte_valide(self):
         """Risposte HTTP 200 valide → tutti gli endpoint rilevati."""
         r_ai = _mock_response(200, "User-agent: *\nAllow: /")
-        r_summary = _mock_response(200, json.dumps({"name": "Test Site", "description": "A full description for the test site"}))
-        r_faq = _mock_response(200, json.dumps([{"question": "What is this?", "answer": "This is a valid answer with enough length"}]))
+        r_summary = _mock_response(
+            200, json.dumps({"name": "Test Site", "description": "A full description for the test site"})
+        )
+        r_faq = _mock_response(
+            200, json.dumps([{"question": "What is this?", "answer": "This is a valid answer with enough length"}])
+        )
         r_service = _mock_response(200, json.dumps({"name": "Test API", "capabilities": ["search"]}))
 
         result = _audit_ai_discovery_from_responses(r_ai, r_summary, r_faq, r_service)
@@ -323,7 +348,9 @@ class TestAiDiscoveryScoring:
             + SCORING["brand_topic_authority"]
         )
 
-        total = max_robots + max_llms + max_schema + max_meta + max_content + max_signals + max_ai_disc + max_brand_entity
+        total = (
+            max_robots + max_llms + max_schema + max_meta + max_content + max_signals + max_ai_disc + max_brand_entity
+        )
         assert total == 100, f"Totale massimo SCORING è {total}, dovrebbe essere 100"
 
 
@@ -477,10 +504,12 @@ class TestFaqJsonValidation:
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_faq_valido_lista_con_question_e_answer(self, mock_fetch):
         """faq.json lista con question >= 10 char e answer >= 20 char → faq_count corretto."""
-        payload = json.dumps([
-            {"question": "What is this service?", "answer": "This service provides optimization for AI engines"},
-            {"question": "How does it work?", "answer": "It analyzes your site and returns scored recommendations"},
-        ])
+        payload = json.dumps(
+            [
+                {"question": "What is this service?", "answer": "This service provides optimization for AI engines"},
+                {"question": "How does it work?", "answer": "It analyzes your site and returns scored recommendations"},
+            ]
+        )
         mock_fetch.side_effect = self._make_responses(payload)
 
         result = audit_ai_discovery("https://example.com")
@@ -502,9 +531,11 @@ class TestFaqJsonValidation:
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_faq_item_senza_question(self, mock_fetch):
         """faq.json con item senza question → non contato."""
-        payload = json.dumps([
-            {"answer": "A valid answer with enough length for this test"},
-        ])
+        payload = json.dumps(
+            [
+                {"answer": "A valid answer with enough length for this test"},
+            ]
+        )
         mock_fetch.side_effect = self._make_responses(payload)
 
         result = audit_ai_discovery("https://example.com")
@@ -515,9 +546,11 @@ class TestFaqJsonValidation:
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_faq_item_senza_answer(self, mock_fetch):
         """faq.json con item senza answer → non contato."""
-        payload = json.dumps([
-            {"question": "What is this service?"},
-        ])
+        payload = json.dumps(
+            [
+                {"question": "What is this service?"},
+            ]
+        )
         mock_fetch.side_effect = self._make_responses(payload)
 
         result = audit_ai_discovery("https://example.com")
@@ -528,9 +561,11 @@ class TestFaqJsonValidation:
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_faq_question_troppo_corta(self, mock_fetch):
         """faq.json con question < 10 char → item non contato."""
-        payload = json.dumps([
-            {"question": "Short?", "answer": "A valid answer that is long enough for the validation check"},
-        ])
+        payload = json.dumps(
+            [
+                {"question": "Short?", "answer": "A valid answer that is long enough for the validation check"},
+            ]
+        )
         mock_fetch.side_effect = self._make_responses(payload)
 
         result = audit_ai_discovery("https://example.com")
@@ -541,9 +576,11 @@ class TestFaqJsonValidation:
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_faq_answer_troppo_corta(self, mock_fetch):
         """faq.json con answer < 20 char → item non contato."""
-        payload = json.dumps([
-            {"question": "What is this service?", "answer": "Short answer."},
-        ])
+        payload = json.dumps(
+            [
+                {"question": "What is this service?", "answer": "Short answer."},
+            ]
+        )
         mock_fetch.side_effect = self._make_responses(payload)
 
         result = audit_ai_discovery("https://example.com")
@@ -554,16 +591,18 @@ class TestFaqJsonValidation:
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_faq_mix_validi_e_invalidi(self, mock_fetch):
         """faq.json con item validi e invalidi → conta solo i validi."""
-        payload = json.dumps([
-            # Valido
-            {"question": "What is this service?", "answer": "A complete and valid answer for the validation check"},
-            # Question troppo corta
-            {"question": "Why?", "answer": "A complete and valid answer for the validation check"},
-            # Answer troppo corta
-            {"question": "What is this service?", "answer": "Too short"},
-            # Entrambi mancanti
-            {},
-        ])
+        payload = json.dumps(
+            [
+                # Valido
+                {"question": "What is this service?", "answer": "A complete and valid answer for the validation check"},
+                # Question troppo corta
+                {"question": "Why?", "answer": "A complete and valid answer for the validation check"},
+                # Answer troppo corta
+                {"question": "What is this service?", "answer": "Too short"},
+                # Entrambi mancanti
+                {},
+            ]
+        )
         mock_fetch.side_effect = self._make_responses(payload)
 
         result = audit_ai_discovery("https://example.com")
@@ -574,9 +613,16 @@ class TestFaqJsonValidation:
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_faq_formato_dict_con_faqs_validi(self, mock_fetch):
         """faq.json {faqs: [...]} con item validi → faq_count corretto."""
-        payload = json.dumps({"faqs": [
-            {"question": "What is GEO Optimizer?", "answer": "GEO Optimizer is a toolkit for Generative Engine Optimization"},
-        ]})
+        payload = json.dumps(
+            {
+                "faqs": [
+                    {
+                        "question": "What is GEO Optimizer?",
+                        "answer": "GEO Optimizer is a toolkit for Generative Engine Optimization",
+                    },
+                ]
+            }
+        )
         mock_fetch.side_effect = self._make_responses(payload)
 
         result = audit_ai_discovery("https://example.com")

@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
-from geo_optimizer.core.audit_embedding import audit_embedding_proximity, _extract_chunks
+from geo_optimizer.core.audit_embedding import _extract_chunks, audit_embedding_proximity
 
 
 def _soup(html: str) -> BeautifulSoup:

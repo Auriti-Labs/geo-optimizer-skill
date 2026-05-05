@@ -9,10 +9,7 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as ET
 
-import pytest
-
 from geo_optimizer.web.badge import BAND_COLORS, generate_badge_svg
-
 
 # ─── Test: badge normale ──────────────────────────────────────────────────────
 

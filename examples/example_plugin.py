@@ -54,6 +54,7 @@ class WordCountCheck:
         # Remove script/style tags before counting
         # IMPORTANTE: usa deepcopy per non mutare il soup originale
         import copy
+
         clean = copy.deepcopy(soup)
         for tag in clean(["script", "style", "nav", "footer"]):
             tag.decompose()

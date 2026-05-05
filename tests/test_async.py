@@ -7,7 +7,7 @@ _audit_llms_from_response(), and async/sync parity (fix #194).
 
 from __future__ import annotations
 
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 
@@ -18,7 +18,6 @@ from geo_optimizer.core.audit import (
     _audit_robots_from_response,
 )
 from geo_optimizer.models.config import AI_BOTS
-
 
 # ============================================================================
 # _audit_robots_from_response

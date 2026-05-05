@@ -88,8 +88,12 @@ class TestPlatformCitation:
         result = audit_platform_citation(
             robots=RobotsResult(bots_allowed=["GPTBot", "PerplexityBot", "Google-Extended"]),
             llms=LlmsTxtResult(found=True, has_links=True, has_h1=True),
-            schema=SchemaResult(any_schema_found=True, schema_richness_score=6, has_faq=True, has_organization=True, has_sameas=True),
-            meta=MetaResult(has_title=True, has_description=True, has_canonical=True, has_og_title=True, has_og_description=True),
+            schema=SchemaResult(
+                any_schema_found=True, schema_richness_score=6, has_faq=True, has_organization=True, has_sameas=True
+            ),
+            meta=MetaResult(
+                has_title=True, has_description=True, has_canonical=True, has_og_title=True, has_og_description=True
+            ),
             content=ContentResult(has_h1=True, word_count=600, has_links=True, external_links_count=5),
             citability=CitabilityResult(total_score=75),
             signals=SignalsResult(has_freshness=True, has_rss=True),

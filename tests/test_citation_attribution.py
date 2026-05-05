@@ -5,10 +5,10 @@ from __future__ import annotations
 from unittest.mock import patch
 
 from geo_optimizer.core.audit_attribution import (
-    audit_citation_attribution,
     _analyze_attribution,
     _classify_faithfulness,
     _split_sentences,
+    audit_citation_attribution,
 )
 from geo_optimizer.core.llm_client import LLMResponse
 

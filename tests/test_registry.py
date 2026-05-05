@@ -8,8 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from geo_optimizer.core.registry import AuditCheck, CheckRegistry, CheckResult
-
+from geo_optimizer.core.registry import CheckRegistry, CheckResult
 
 # ─── Fixture: check valido che implementa il Protocol ────────────────────────
 

@@ -90,9 +90,7 @@ class TestIntentMapping:
             "</main></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
-        result = audit_intent_mapping(
-            soup, html, _content(h1="Pricing Plans"), _meta(), _schema("Product")
-        )
+        result = audit_intent_mapping(soup, html, _content(h1="Pricing Plans"), _meta(), _schema("Product"))
 
         assert "transactional" in result.intents_found
         assert result.intent_details["transactional"]["schema_matched"] is True
@@ -146,21 +144,13 @@ class TestIntentMapping:
 
     def test_coverage_boost_with_schema(self):
         """Schema adatto aumenta coverage score."""
-        html = (
-            "<html><body><main>"
-            "<h1>How to Bake Bread</h1>"
-            "</main></body></html>"
-        )
+        html = "<html><body><main><h1>How to Bake Bread</h1></main></body></html>"
         soup = BeautifulSoup(html, "html.parser")
 
         # Con schema appropriato → score piu alto
-        result_with = audit_intent_mapping(
-            soup, html, _content(h1="How to Bake Bread"), _meta(), _schema("HowTo")
-        )
+        result_with = audit_intent_mapping(soup, html, _content(h1="How to Bake Bread"), _meta(), _schema("HowTo"))
         # Senza schema
-        result_without = audit_intent_mapping(
-            soup, html, _content(h1="How to Bake Bread"), _meta(), _schema()
-        )
+        result_without = audit_intent_mapping(soup, html, _content(h1="How to Bake Bread"), _meta(), _schema())
 
         assert result_with.score > result_without.score
         assert result_with.intent_details["informational"]["schema_matched"] is True
@@ -205,11 +195,7 @@ class TestIntentMapping:
 
     def test_intent_details_structure(self):
         """Ogni intento in intent_details ha la struttura corretta."""
-        html = (
-            "<html><body><main>"
-            "<h1>How to do SEO</h1>"
-            "</main></body></html>"
-        )
+        html = "<html><body><main><h1>How to do SEO</h1></main></body></html>"
         soup = BeautifulSoup(html, "html.parser")
         result = audit_intent_mapping(soup, html, _content(h1="How to do SEO"), _meta(), _schema("HowTo"))
 
@@ -229,11 +215,7 @@ class TestGapAnalysis:
 
     def test_primary_intent_assigned(self):
         """L'intento col punteggio piu alto e' il primary."""
-        html = (
-            "<html><body><main>"
-            "<h1>How to Bake Bread: Complete Guide and Tutorial</h1>"
-            "</main></body></html>"
-        )
+        html = "<html><body><main><h1>How to Bake Bread: Complete Guide and Tutorial</h1></main></body></html>"
         soup = BeautifulSoup(html, "html.parser")
         result = audit_intent_mapping(soup, html, _content(h1="How to Bake Bread"), _meta(), _schema("HowTo"))
 
@@ -241,11 +223,7 @@ class TestGapAnalysis:
 
     def test_gap_summary_generated(self):
         """gap_summary descrive la situazione in linguaggio umano."""
-        html = (
-            "<html><body><main>"
-            "<h1>How to Bake Bread: Complete Guide</h1>"
-            "</main></body></html>"
-        )
+        html = "<html><body><main><h1>How to Bake Bread: Complete Guide</h1></main></body></html>"
         soup = BeautifulSoup(html, "html.parser")
         result = audit_intent_mapping(soup, html, _content(h1="How to Bake Bread"), _meta(), _schema("HowTo"))
 
@@ -264,11 +242,7 @@ class TestGapAnalysis:
 
     def test_recommendations_for_missing(self):
         """Ogni intento mancante genera una raccomandazione."""
-        html = (
-            "<html><body><main>"
-            "<h1>How to Bake Bread</h1>"
-            "</main></body></html>"
-        )
+        html = "<html><body><main><h1>How to Bake Bread</h1></main></body></html>"
         soup = BeautifulSoup(html, "html.parser")
         result = audit_intent_mapping(soup, html, _content(h1="How to Bake Bread"), _meta(), _schema("HowTo"))
 
@@ -281,27 +255,17 @@ class TestGapAnalysis:
 
     def test_recommendations_schema_missing_boost(self):
         """Schema mancante su intento rilevato → raccomandazione."""
-        html = (
-            "<html><body><main>"
-            "<h1>How to do SEO: Complete Guide</h1>"
-            "</main></body></html>"
-        )
+        html = "<html><body><main><h1>How to do SEO: Complete Guide</h1></main></body></html>"
         soup = BeautifulSoup(html, "html.parser")
         result = audit_intent_mapping(soup, html, _content(h1="How to do SEO"), _meta(), _schema())
 
         # informational found ma senza schema → deve generare raccomandazione
-        has_schema_rec = any(
-            "schema" in r.lower() and "informational" in r.lower() for r in result.recommendations
-        )
+        has_schema_rec = any("schema" in r.lower() and "informational" in r.lower() for r in result.recommendations)
         assert has_schema_rec, f"Expected schema recommendation for informational, got: {result.recommendations}"
 
     def test_radar_data_all_categories(self):
         """Radar copre tutte e 4 le categorie con valore 0-100."""
-        html = (
-            "<html><body><main>"
-            "<h1>How to Bake Bread</h1>"
-            "</main></body></html>"
-        )
+        html = "<html><body><main><h1>How to Bake Bread</h1></main></body></html>"
         soup = BeautifulSoup(html, "html.parser")
         result = audit_intent_mapping(soup, html, _content(h1="How to Bake Bread"), _meta(), _schema("HowTo"))
 
@@ -345,7 +309,8 @@ class TestGapAnalysis:
         )
         soup = BeautifulSoup(html, "html.parser")
         result = audit_intent_mapping(
-            soup, html,
+            soup,
+            html,
             _content(h1="Complete SEO Guide"),
             _meta(),
             _schema(),  # nessuno schema → raccomandazioni per tutti

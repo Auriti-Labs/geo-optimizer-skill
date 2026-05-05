@@ -8,20 +8,16 @@ Copre:
 """
 
 import socket
-from unittest.mock import MagicMock, Mock, call, patch
-
-import pytest
-import requests
+from unittest.mock import MagicMock, Mock, patch
 
 from geo_optimizer.utils.http import (
-    MAX_RESPONSE_SIZE,
     _MAX_REDIRECTS,
+    MAX_RESPONSE_SIZE,
     _PinnedIPAdapter,
     _stream_response,
     fetch_url,
 )
 from geo_optimizer.utils.validators import resolve_and_validate_url, validate_public_url
-
 
 # ============================================================================
 # #71 — DNS Rebinding TOCTOU: resolve_and_validate_url

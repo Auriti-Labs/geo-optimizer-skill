@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
-from geo_optimizer.core.log_analyzer import analyze_log_file, _parse_line, _match_bot
-
+from geo_optimizer.core.log_analyzer import _match_bot, _parse_line, analyze_log_file
 
 _COMBINED_LINES = [
     '1.2.3.4 - - [16/Apr/2026:10:00:00 +0200] "GET /blog/guide HTTP/1.1" 200 5432 "-" "Mozilla/5.0 (compatible; GPTBot/1.0)"',

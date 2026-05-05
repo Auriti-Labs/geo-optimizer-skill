@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+from geo_optimizer.core.audit_sentiment import _analyze_response, audit_brand_sentiment
 from geo_optimizer.core.llm_client import LLMResponse, detect_provider, query_llm
-from geo_optimizer.core.audit_sentiment import audit_brand_sentiment, _analyze_response
-
 
 # ─── LLM Client ──────────────────────────────────────────────────────────────
 

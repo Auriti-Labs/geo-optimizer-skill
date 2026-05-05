@@ -31,7 +31,7 @@ class TestInstructionReadiness:
     # ─── Action clarity ──────────────────────────────────────────────────
 
     def test_labeled_button(self):
-        html = '<html><body><button>Buy Now</button></body></html>'
+        html = "<html><body><button>Buy Now</button></body></html>"
         result = audit_instruction_readiness(_soup(html))
         assert result.labeled_buttons == 1
         assert result.unlabeled_buttons == 0
@@ -108,7 +108,7 @@ class TestInstructionReadiness:
         assert result.labeled_inputs == 1
 
     def test_unlabeled_input(self):
-        html = '<html><body><input></body></html>'
+        html = "<html><body><input></body></html>"
         result = audit_instruction_readiness(_soup(html))
         assert result.total_inputs == 1
         assert result.labeled_inputs == 0
@@ -144,12 +144,12 @@ class TestInstructionReadiness:
         assert result.form_readability_score == 100
 
     def test_form_readability_score_zero(self):
-        html = '<html><body><input><input></body></html>'
+        html = "<html><body><input><input></body></html>"
         result = audit_instruction_readiness(_soup(html))
         assert result.form_readability_score == 0
 
     def test_no_forms_score_100(self):
-        html = '<html><body><p>Just text</p></body></html>'
+        html = "<html><body><p>Just text</p></body></html>"
         result = audit_instruction_readiness(_soup(html))
         assert result.form_readability_score == 100
 
@@ -193,7 +193,7 @@ class TestInstructionReadiness:
         assert result.has_error_roles is True
 
     def test_no_error_recovery(self):
-        html = '<html><body><p>Plain page</p></body></html>'
+        html = "<html><body><p>Plain page</p></body></html>"
         result = audit_instruction_readiness(_soup(html))
         assert result.has_aria_live is False
         assert result.has_error_roles is False
@@ -201,7 +201,7 @@ class TestInstructionReadiness:
     # ─── Readiness levels ────────────────────────────────────────────────
 
     def test_level_none(self):
-        html = '<html><body><button><i></i></button><input></body></html>'
+        html = "<html><body><button><i></i></button><input></body></html>"
         result = audit_instruction_readiness(_soup(html))
         assert result.readiness_level == "none"
 

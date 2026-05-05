@@ -89,23 +89,31 @@ class TestSchemaRichnessGraduatedScoring:
         # Due schema: uno con 5 e uno con 4 → media 4.5
         html = f"""<html><head>
         <script type="application/ld+json">
-        [{json.dumps({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "Acme",
-            "url": "https://acme.com",
-            "description": "Desc",
-            "logo": "https://acme.com/logo.png",
-            "telephone": "+39 02 12345",
-        })},
-        {json.dumps({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "Acme Site",
-            "url": "https://acme.com",
-            "description": "Desc",
-            "inLanguage": "it",
-        })}]
+        [{
+            json.dumps(
+                {
+                    "@context": "https://schema.org",
+                    "@type": "Organization",
+                    "name": "Acme",
+                    "url": "https://acme.com",
+                    "description": "Desc",
+                    "logo": "https://acme.com/logo.png",
+                    "telephone": "+39 02 12345",
+                }
+            )
+        },
+        {
+            json.dumps(
+                {
+                    "@context": "https://schema.org",
+                    "@type": "WebSite",
+                    "name": "Acme Site",
+                    "url": "https://acme.com",
+                    "description": "Desc",
+                    "inLanguage": "it",
+                }
+            )
+        }]
         </script></head><body></body></html>"""
         result = audit_schema(_soup(html), "https://example.com")
         assert result.schema_richness_score == 2
@@ -116,21 +124,29 @@ class TestSchemaRichnessGraduatedScoring:
         # Due schema: uno con 4 e uno con 3 → media 3.5
         html = f"""<html><head>
         <script type="application/ld+json">
-        [{json.dumps({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "Example",
-            "url": "https://example.com",
-            "description": "Test",
-            "potentialAction": {},
-        })},
-        {json.dumps({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "Example Org",
-            "url": "https://example.com",
-            "description": "Org desc",
-        })}]
+        [{
+            json.dumps(
+                {
+                    "@context": "https://schema.org",
+                    "@type": "WebSite",
+                    "name": "Example",
+                    "url": "https://example.com",
+                    "description": "Test",
+                    "potentialAction": {},
+                }
+            )
+        },
+        {
+            json.dumps(
+                {
+                    "@context": "https://schema.org",
+                    "@type": "Organization",
+                    "name": "Example Org",
+                    "url": "https://example.com",
+                    "description": "Org desc",
+                }
+            )
+        }]
         </script></head><body></body></html>"""
         result = audit_schema(_soup(html), "https://example.com")
         assert result.schema_richness_score == 1

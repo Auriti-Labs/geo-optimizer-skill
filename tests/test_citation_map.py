@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from geo_optimizer.core.audit_citation_map import audit_citation_map, _quick_sentiment
+from geo_optimizer.core.audit_citation_map import _quick_sentiment, audit_citation_map
 from geo_optimizer.core.llm_client import LLMResponse
 
 

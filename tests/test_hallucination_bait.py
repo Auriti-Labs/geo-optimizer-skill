@@ -47,9 +47,7 @@ class TestHallucinationBait:
 
     def test_none_soup_returns_unchecked(self):
         """None soup → checked=False, zero baits."""
-        result = audit_hallucination_bait(
-            None, "", _content(), _meta(), _schema()
-        )
+        result = audit_hallucination_bait(None, "", _content(), _meta(), _schema())
         assert result.checked is False
         assert result.total_baits == 0
         assert result.severity == "clean"
@@ -63,9 +61,7 @@ class TestHallucinationBait:
             "</main></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
-        result = audit_hallucination_bait(
-            soup, html, _content(h1="Welcome"), _meta(), _schema()
-        )
+        result = audit_hallucination_bait(soup, html, _content(h1="Welcome"), _meta(), _schema())
         assert result.checked is True
         assert result.total_baits == 0
         assert result.severity == "clean"
@@ -80,9 +76,7 @@ class TestHallucinationBait:
             "</main></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
-        result = audit_hallucination_bait(
-            soup, html, _content(h1="SEO Statistics"), _meta(), _schema()
-        )
+        result = audit_hallucination_bait(soup, html, _content(h1="SEO Statistics"), _meta(), _schema())
         assert result.unsourced_stats >= 2
         assert result.total_baits > 0
         assert len(result.unsourced_stats_samples) > 0
@@ -97,9 +91,7 @@ class TestHallucinationBait:
             "</main></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
-        result = audit_hallucination_bait(
-            soup, html, _content(h1="Health Facts"), _meta(), _schema()
-        )
+        result = audit_hallucination_bait(soup, html, _content(h1="Health Facts"), _meta(), _schema())
         assert result.absolute_claims >= 2
         assert len(result.absolute_claims_samples) > 0
 
@@ -114,9 +106,7 @@ class TestHallucinationBait:
             "</main></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
-        result = audit_hallucination_bait(
-            soup, html, _content(h1="Future of AI"), _meta(), _schema()
-        )
+        result = audit_hallucination_bait(soup, html, _content(h1="Future of AI"), _meta(), _schema())
         assert result.speculative_statements >= 2
 
     def test_ai_generated_without_disclaimer(self):
@@ -129,9 +119,7 @@ class TestHallucinationBait:
             "</main></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
-        result = audit_hallucination_bait(
-            soup, html, _content(h1="AI Content"), _meta(), _schema()
-        )
+        result = audit_hallucination_bait(soup, html, _content(h1="AI Content"), _meta(), _schema())
         assert result.ai_generated_signals > 0
 
     def test_ai_generated_with_disclaimer(self):
@@ -145,9 +133,7 @@ class TestHallucinationBait:
             "</main></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
-        result = audit_hallucination_bait(
-            soup, html, _content(h1="AI Content"), _meta(), _schema()
-        )
+        result = audit_hallucination_bait(soup, html, _content(h1="AI Content"), _meta(), _schema())
         assert result.ai_generated_signals == 0
 
     def test_medical_claims(self):
@@ -161,9 +147,7 @@ class TestHallucinationBait:
             "</main></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
-        result = audit_hallucination_bait(
-            soup, html, _content(h1="Natural Cures"), _meta(), _schema()
-        )
+        result = audit_hallucination_bait(soup, html, _content(h1="Natural Cures"), _meta(), _schema())
         assert result.medical_claims > 0
         assert len(result.medical_claim_samples) > 0
 
@@ -205,9 +189,7 @@ class TestHallucinationBait:
             "</main></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
-        result = audit_hallucination_bait(
-            soup, html, _content("Bad"), _meta(), _schema()
-        )
+        result = audit_hallucination_bait(soup, html, _content("Bad"), _meta(), _schema())
         assert len(result.details) > 0
         assert "source" in result.details[0].lower() or "claim" in result.details[0].lower()
 
@@ -221,8 +203,6 @@ class TestHallucinationBait:
             "</main></body></html>"
         )
         soup = BeautifulSoup(html, "html.parser")
-        result = audit_hallucination_bait(
-            soup, html, _content("Stats"), _meta(), _schema()
-        )
+        result = audit_hallucination_bait(soup, html, _content("Stats"), _meta(), _schema())
         assert result.unsourced_stats >= 6
         assert len(result.unsourced_stats_samples) <= 3

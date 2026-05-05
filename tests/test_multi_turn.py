@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch, call
+from unittest.mock import patch
 
-from geo_optimizer.core.audit_persistence import audit_multi_turn_persistence, _count_mentions, _compute_persistence
+from geo_optimizer.core.audit_persistence import _compute_persistence, _count_mentions, audit_multi_turn_persistence
 from geo_optimizer.core.llm_client import LLMResponse
 from geo_optimizer.models.results import TurnResult
 

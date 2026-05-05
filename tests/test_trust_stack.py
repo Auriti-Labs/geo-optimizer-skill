@@ -207,10 +207,10 @@ class TestAcademicTrust:
     def test_link_accademici_ottengono_punto(self):
         """Fix #390: academic links (non-social) grant the External sources point."""
         html = (
-            '<html><body>'
+            "<html><body>"
             '<a href="https://scholar.google.com/article1">Scholar</a>'
             '<a href="https://pubmed.ncbi.nlm.nih.gov/12345">PubMed</a>'
-            '</body></html>'
+            "</body></html>"
         )
         content = ContentResult(external_links_count=2)
         result = audit_trust_stack(**_defaults(content=content, soup=_soup(html)))
@@ -219,13 +219,13 @@ class TestAcademicTrust:
     def test_solo_social_non_ottengono_punto(self):
         """Fix #390: a site with only social links must NOT get the External sources point."""
         html = (
-            '<html><body>'
+            "<html><body>"
             '<a href="https://twitter.com/brand">Twitter</a>'
             '<a href="https://instagram.com/brand">Instagram</a>'
             '<a href="https://facebook.com/brand">Facebook</a>'
             '<a href="https://linkedin.com/company/brand">LinkedIn</a>'
             '<a href="https://youtube.com/channel/brand">YouTube</a>'
-            '</body></html>'
+            "</body></html>"
         )
         # external_links_count = 5, but all are social — academic count must be 0
         content = ContentResult(external_links_count=5)

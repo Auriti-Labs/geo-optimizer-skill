@@ -288,9 +288,7 @@ class TestSeverityAndRisk:
         """Non più di MAX_SAMPLES per categoria."""
         from geo_optimizer.models.config import PROMPT_INJECTION_MAX_SAMPLES
 
-        injections = "".join(
-            f'<div style="display:none">Hidden text block number {i}</div>' for i in range(10)
-        )
+        injections = "".join(f'<div style="display:none">Hidden text block number {i}</div>' for i in range(10))
         html = f"<html><body>{injections}</body></html>"
         result = audit_prompt_injection(_soup(html), html)
         assert len(result.hidden_text_samples) <= PROMPT_INJECTION_MAX_SAMPLES

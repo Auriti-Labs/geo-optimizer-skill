@@ -11,6 +11,9 @@ from bs4 import BeautifulSoup
 
 from geo_optimizer.core.citability import (
     audit_citability,
+    detect_accessibility_signals,
+    detect_anchor_text_quality,
+    detect_answer_capsule,
     detect_attribution,
     detect_authoritative_tone,
     detect_blog_structure,
@@ -22,40 +25,37 @@ from geo_optimizer.core.citability import (
     detect_comparison_content,
     detect_content_decay,
     detect_content_freshness,
+    detect_conversion_funnel,
+    detect_crawl_budget,
     detect_definition_patterns,
     detect_easy_to_understand,
     detect_eeat,
+    detect_entity_disambiguation,
+    detect_entity_resolution,
     detect_faq_in_content,
+    detect_first_party_data,
     detect_fluency,
     detect_format_mix,
     detect_image_alt_quality,
+    detect_international_geo,
     detect_keyword_stuffing,
+    detect_kg_density,
+    detect_multi_platform,
     detect_negative_signals,
     detect_nuance_signals,
     detect_quotations,
     detect_readability,
+    detect_retrieval_triggers,
     detect_shopping_readiness,
     detect_snippet_ready,
+    detect_social_proof,
+    detect_stale_data,
     detect_statistics,
     detect_technical_terms,
+    detect_temporal_coherence,
+    detect_token_efficiency,
     detect_unique_words,
     detect_voice_search,
-    detect_multi_platform,
-    detect_entity_disambiguation,
-    detect_first_party_data,
-    detect_stale_data,
-    detect_social_proof,
-    detect_accessibility_signals,
-    detect_conversion_funnel,
-    detect_temporal_coherence,
-    detect_anchor_text_quality,
-    detect_international_geo,
-    detect_crawl_budget,
-    detect_answer_capsule,
-    detect_token_efficiency,
-    detect_entity_resolution,
-    detect_kg_density,
-    detect_retrieval_triggers,
 )
 
 
@@ -308,9 +308,9 @@ class TestUniqueWords:
     def test_vocabolario_ricco(self):
         # Genera testo con parole diverse
         words = [
-            f"technology innovation digital transformation artificial intelligence"
-            f" machine learning neural network optimization algorithm performance"
-            f" database infrastructure architecture deployment monitoring"
+            "technology innovation digital transformation artificial intelligence"
+            " machine learning neural network optimization algorithm performance"
+            " database infrastructure architecture deployment monitoring"
             for _ in range(10)
         ]
         html = f"<html><body><p>{' '.join(words)}</p></body></html>"

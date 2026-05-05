@@ -65,8 +65,9 @@ class TestWithRetryDecorator:
             raise requests.exceptions.ConnectionError("Simulated failure")
 
         counter = {"calls": 0}
-        with patch("geo_optimizer.utils.http.time.sleep") as mock_sleep, pytest.raises(
-            requests.exceptions.ConnectionError
+        with (
+            patch("geo_optimizer.utils.http.time.sleep") as mock_sleep,
+            pytest.raises(requests.exceptions.ConnectionError),
         ):
             _func(counter)
 
@@ -99,9 +100,7 @@ class TestWithRetryDecorator:
             raise requests.exceptions.Timeout("timeout")
 
         counter = {"calls": 0}
-        with patch("geo_optimizer.utils.http.time.sleep") as mock_sleep, pytest.raises(
-            requests.exceptions.Timeout
-        ):
+        with patch("geo_optimizer.utils.http.time.sleep") as mock_sleep, pytest.raises(requests.exceptions.Timeout):
             _func(counter)
 
         assert mock_sleep.call_count == 3
@@ -117,9 +116,7 @@ class TestWithRetryDecorator:
             raise requests.exceptions.Timeout("timeout")
 
         counter = {"calls": 0}
-        with patch("geo_optimizer.utils.http.time.sleep") as mock_sleep, pytest.raises(
-            requests.exceptions.Timeout
-        ):
+        with patch("geo_optimizer.utils.http.time.sleep") as mock_sleep, pytest.raises(requests.exceptions.Timeout):
             _func(counter)
 
         assert mock_sleep.call_count == 3
@@ -135,9 +132,7 @@ class TestWithRetryDecorator:
             raise requests.exceptions.Timeout("timeout")
 
         counter = {"calls": 0}
-        with patch("geo_optimizer.utils.http.time.sleep") as mock_sleep, pytest.raises(
-            requests.exceptions.Timeout
-        ):
+        with patch("geo_optimizer.utils.http.time.sleep") as mock_sleep, pytest.raises(requests.exceptions.Timeout):
             _func(counter)
 
         assert counter["calls"] == 1
@@ -304,6 +299,7 @@ class TestFetchUrlRetryIntegration:
 # ============================================================================
 # Helpers
 # ============================================================================
+
 
 def _fetch_url_testable(url: str) -> tuple:
     """Wrapper testabile per fetch_url che bypassa il controllo SSRF."""

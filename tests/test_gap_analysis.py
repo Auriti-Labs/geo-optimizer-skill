@@ -89,7 +89,10 @@ class TestGapAnalysis:
         assert result.score_gap == 32
         assert result.action_plan[0].impact_points >= result.action_plan[-1].impact_points
         assert any(action.title == "Allow critical citation bots" for action in result.action_plan)
-        assert any(action.command.startswith("geo fix --url https://weaker.example.com --only robots") for action in result.action_plan)
+        assert any(
+            action.command.startswith("geo fix --url https://weaker.example.com --only robots")
+            for action in result.action_plan
+        )
 
     def test_build_gap_analysis_exposes_weaker_strengths(self):
         """Le categorie in cui il sito debole è avanti vengono riportate come strengths."""
