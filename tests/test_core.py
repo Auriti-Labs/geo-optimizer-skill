@@ -1222,6 +1222,13 @@ class TestAuditMetaTags:
         assert result.title_length == len("Test Title")
         assert result.description_length == len("This is the description")
 
+    def test_soup_none_returns_empty_result(self):
+        result = audit_meta_tags(None, "https://example.com")
+        assert result.has_title is False
+        assert result.has_description is False
+        assert result.has_canonical is False
+        assert result.has_og_title is False
+
 
 class TestAuditContentQuality:
     """Tests for audit_content_quality()."""
@@ -1267,6 +1274,13 @@ class TestAuditContentQuality:
         result = audit_content_quality(soup, "https://example.com")
         assert result.numbers_count == 2
         assert result.has_numbers is False
+
+    def test_soup_none_returns_empty_result(self):
+        result = audit_content_quality(None, "https://example.com")
+        assert result.has_h1 is False
+        assert result.word_count == 0
+        assert result.has_numbers is False
+        assert result.has_links is False
 
 
 # ============================================================================
