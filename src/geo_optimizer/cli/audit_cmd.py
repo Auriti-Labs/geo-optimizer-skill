@@ -50,15 +50,15 @@ from geo_optimizer.utils.validators import validate_public_url
 @click.option(
     "--retention-days",
     default=DEFAULT_HISTORY_RETENTION_DAYS,
-    type=int,
+    type=click.IntRange(1),
     show_default=True,
-    help="Retention window for local history snapshots",
+    help="Retention window for local history snapshots (minimum 1 day)",
 )
 @click.option("--history-db", default=None, hidden=True, help="Override local tracking DB path")
 @click.option(
     "--threshold",
     default=None,
-    type=int,
+    type=click.IntRange(0, 100),
     help="Minimum score threshold (0-100). Exit code 1 if score is below.",
 )
 def audit(
