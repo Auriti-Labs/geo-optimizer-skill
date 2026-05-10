@@ -122,9 +122,7 @@ def build_recommendations(
                 "this is a manipulation pattern that AI engines actively penalize"
             )
         if prompt_injection.html_comment_injection_found:
-            _critical.append(
-                "⚠️ Prompt injection in HTML comments detected — AI crawlers read comments, remove them"
-            )
+            _critical.append("⚠️ Prompt injection in HTML comments detected — AI crawlers read comments, remove them")
         if prompt_injection.hidden_text_found:
             _critical.append(
                 "Hidden text detected (display:none/visibility:hidden with content) — "
@@ -194,9 +192,7 @@ def build_recommendations(
         if not brand_entity.has_about_link:
             _medium.append("Add a visible /about or /chi-siamo link to build trust signals for AI")
         if not brand_entity.has_contact_info:
-            _medium.append(
-                "Add address, telephone or contactPoint to Organization schema for entity validation"
-            )
+            _medium.append("Add address, telephone or contactPoint to Organization schema for entity validation")
 
     # Schema JSON-LD (up to 13pt)
     if schema.json_parse_errors > 0:
@@ -292,9 +288,7 @@ def build_recommendations(
         if webmcp.readiness_level == "none":
             _low.append("Add potentialAction (SearchAction) to WebSite schema for AI agent discoverability")
         if not webmcp.has_labeled_forms and not webmcp.has_tool_attributes:
-            _low.append(
-                "Add descriptive labels to forms (label, aria-label) to make them usable by AI agents"
-            )
+            _low.append("Add descriptive labels to forms (label, aria-label) to make them usable by AI agents")
         if not webmcp.has_register_tool and not webmcp.has_tool_attributes:
             _low.append(
                 "Consider adding WebMCP toolname/tooldescription attributes to interactive elements "
@@ -467,11 +461,25 @@ def _build_audit_result(
 
     # Compute score, breakdown, and band (v4.0: includes signals, ai_discovery, negative_penalty)
     score = compute_geo_score(
-        robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity,
+        robots,
+        llms,
+        schema,
+        meta,
+        content,
+        effective_signals,
+        effective_ai_discovery,
+        effective_brand_entity,
         effective_negative_signals,
     )
     breakdown = compute_score_breakdown(
-        robots, llms, schema, meta, content, effective_signals, effective_ai_discovery, effective_brand_entity,
+        robots,
+        llms,
+        schema,
+        meta,
+        content,
+        effective_signals,
+        effective_ai_discovery,
+        effective_brand_entity,
         effective_negative_signals,
     )
     band = get_score_band(score)
@@ -892,9 +900,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     meta = audit_meta_tags(soup, base_url)
     # gap #2: X-Robots-Tag HTTP header — blocks AI indexing even when robots.txt allows it
     try:
-        _x_robots_async = (
-            dict(r_home.headers).get("x-robots-tag") or dict(r_home.headers).get("X-Robots-Tag") or ""
-        )
+        _x_robots_async = dict(r_home.headers).get("x-robots-tag") or dict(r_home.headers).get("X-Robots-Tag") or ""
     except (TypeError, AttributeError):
         _x_robots_async = ""
     if _x_robots_async:

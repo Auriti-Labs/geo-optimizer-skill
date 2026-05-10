@@ -10,7 +10,9 @@ if TYPE_CHECKING:
     from bs4 import BeautifulSoup
 
 
-def audit_content_quality(soup: BeautifulSoup | None, url: str, soup_clean: BeautifulSoup | None = None) -> ContentResult:
+def audit_content_quality(
+    soup: BeautifulSoup | None, url: str, soup_clean: BeautifulSoup | None = None
+) -> ContentResult:
     """Check content quality for GEO. Returns ContentResult.
 
     Args:

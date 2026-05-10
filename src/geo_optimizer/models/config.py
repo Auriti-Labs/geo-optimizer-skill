@@ -483,18 +483,18 @@ BOILERPLATE_RATIO_THRESHOLD: float = 0.6  # page flagged as boilerplate-heavy ab
 MIXED_SIGNALS_WORD_THRESHOLD: int = 1000  # H1 promises depth but body is below this word count
 
 # Negative-signals score penalties (gap #1 — applied in scoring.py)
-NEGATIVE_PENALTY_HIGH: int = 5   # severity == "high" (4+ signals): -5pt
-NEGATIVE_PENALTY_MED: int = 3    # severity == "medium" (2-3 signals): -3pt
-NEGATIVE_PENALTY_LOW: int = 1    # severity == "low" (1 signal): -1pt
+NEGATIVE_PENALTY_HIGH: int = 5  # severity == "high" (4+ signals): -5pt
+NEGATIVE_PENALTY_MED: int = 3  # severity == "medium" (2-3 signals): -3pt
+NEGATIVE_PENALTY_LOW: int = 1  # severity == "low" (1 signal): -1pt
 
 # X-Robots-Tag penalty (gap #2 — page marked noindex via HTTP header)
 XROBOTS_NOINDEX_PENALTY: int = 5
 
 # JS rendering thresholds — used in audit_js to detect SPA / JS-only pages
-JS_EMPTY_ROOT_CHARS: int = 50    # SPA root element considered empty below this char count
-JS_SPA_WORDS: int = 100          # body word count + 0 headings → likely SPA
-JS_EMPTY_ROOT_WORDS: int = 200   # empty root + low word count → JS-dependent
-JS_CRITICAL_WORDS: int = 50      # critically low content threshold
+JS_EMPTY_ROOT_CHARS: int = 50  # SPA root element considered empty below this char count
+JS_SPA_WORDS: int = 100  # body word count + 0 headings → likely SPA
+JS_EMPTY_ROOT_WORDS: int = 200  # empty root + low word count → JS-dependent
+JS_CRITICAL_WORDS: int = 50  # critically low content threshold
 
 # Content freshness thresholds in days (#401)
 # AutoGEO ICLR 2026: tech content < 3 months strongly preferred by AI search engines

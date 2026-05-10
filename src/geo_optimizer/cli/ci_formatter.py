@@ -263,11 +263,20 @@ def _signals_findings(result: AuditResult) -> list[dict]:
     if not result.signals:
         return findings
     if not result.signals.has_lang:
-        findings.append({"level": "warning", "message": 'Add lang attribute to <html> (e.g., lang="en") for AI language detection (3pt)'})
+        findings.append(
+            {
+                "level": "warning",
+                "message": 'Add lang attribute to <html> (e.g., lang="en") for AI language detection (3pt)',
+            }
+        )
     if not result.signals.has_rss:
-        findings.append({"level": "note", "message": "Add RSS/Atom feed linked in <head> for AI content discovery (2pt)"})
+        findings.append(
+            {"level": "note", "message": "Add RSS/Atom feed linked in <head> for AI content discovery (2pt)"}
+        )
     if not result.signals.has_freshness:
-        findings.append({"level": "note", "message": "Add lastmod/dateModified signal for content freshness detection (1pt)"})
+        findings.append(
+            {"level": "note", "message": "Add lastmod/dateModified signal for content freshness detection (1pt)"}
+        )
     return findings
 
 
@@ -276,13 +285,24 @@ def _ai_discovery_findings(result: AuditResult) -> list[dict]:
     if not result.ai_discovery:
         return findings
     if not result.ai_discovery.has_well_known_ai:
-        findings.append({"level": "warning", "message": "Create /.well-known/ai.txt to define AI crawler permissions (2pt)"})
+        findings.append(
+            {"level": "warning", "message": "Create /.well-known/ai.txt to define AI crawler permissions (2pt)"}
+        )
     if not result.ai_discovery.has_summary or not result.ai_discovery.summary_valid:
-        findings.append({"level": "warning", "message": "Create /ai/summary.json with site name and description for AI engines (2pt)"})
+        findings.append(
+            {
+                "level": "warning",
+                "message": "Create /ai/summary.json with site name and description for AI engines (2pt)",
+            }
+        )
     if not result.ai_discovery.has_faq:
-        findings.append({"level": "note", "message": "Create /ai/faq.json with structured FAQ for AI search visibility (1pt)"})
+        findings.append(
+            {"level": "note", "message": "Create /ai/faq.json with structured FAQ for AI search visibility (1pt)"}
+        )
     if not result.ai_discovery.has_service:
-        findings.append({"level": "note", "message": "Create /ai/service.json to describe service capabilities for AI (1pt)"})
+        findings.append(
+            {"level": "note", "message": "Create /ai/service.json to describe service capabilities for AI (1pt)"}
+        )
     return findings
 
 
@@ -308,7 +328,13 @@ def format_audit_junit(result: AuditResult) -> str:
         ("content_quality", "Content Quality", content_score(result), _MAX_CONTENT, _content_findings(result)),
         ("brand_entity", "Brand & Entity Signals", brand_entity_score(result), _MAX_BRAND_ENTITY, []),
         ("signals", "Technical Signals", signals_score(result), _MAX_SIGNALS, _signals_findings(result)),
-        ("ai_discovery", "AI Discovery Endpoints", ai_discovery_score(result), _MAX_AI_DISCOVERY, _ai_discovery_findings(result)),
+        (
+            "ai_discovery",
+            "AI Discovery Endpoints",
+            ai_discovery_score(result),
+            _MAX_AI_DISCOVERY,
+            _ai_discovery_findings(result),
+        ),
     ]
 
     total_failures = 0
