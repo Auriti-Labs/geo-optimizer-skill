@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from geo_optimizer.models.config import (
     ARTICLE_TYPES,
     SCHEMA_JSONLD_MAX_BYTES,
+    SCHEMA_ORG_REQUIRED,
     SCHEMA_RAW_SCHEMAS_CAP,
     SCHEMA_RICHNESS_HIGH,
     SCHEMA_RICHNESS_LOW,
@@ -127,6 +128,18 @@ def audit_schema(soup: BeautifulSoup | None, url: str) -> SchemaResult:
             result.schema_richness_score = 1
         else:
             result.schema_richness_score = 0
+
+    # Schema completeness (gap #3): check required fields per SCHEMA_ORG_REQUIRED
+    for schema_obj in result.raw_schemas:
+        schema_type_raw = schema_obj.get("@type", "unknown")
+        types_to_check = schema_type_raw if isinstance(schema_type_raw, list) else [schema_type_raw]
+        for t in types_to_check:
+            t_lower = t.lower()
+            if t_lower in SCHEMA_ORG_REQUIRED:
+                missing = [f for f in SCHEMA_ORG_REQUIRED[t_lower] if f not in schema_obj]
+                if missing and t not in result.incomplete_schema_types:
+                    result.schema_missing_fields[t] = missing
+                    result.incomplete_schema_types.append(t)
 
     # #232: E-commerce GEO Profile — analyze Product schema richness
     if result.has_product:

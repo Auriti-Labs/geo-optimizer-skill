@@ -42,6 +42,14 @@ def audit_meta_tags(soup: BeautifulSoup | None, url: str) -> MetaResult:
         result.has_canonical = True
         result.canonical_url = canonical["href"]
 
+    # noai / noimageai in meta[name="robots"] (gap #7 — blocks AI training data use)
+    robots_meta = soup.find("meta", attrs={"name": lambda n: n and n.lower() == "robots"})
+    if robots_meta:
+        robots_content = (robots_meta.get("content") or "").lower()
+        if "noai" in robots_content or "noimageai" in robots_content:
+            result.has_noai = True
+            result.noai_value = robots_meta.get("content", "")
+
     # Open Graph
     og_title = soup.find("meta", attrs={"property": "og:title"})
     og_desc = soup.find("meta", attrs={"property": "og:description"})

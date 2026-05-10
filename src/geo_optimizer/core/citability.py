@@ -3030,6 +3030,10 @@ def detect_crawl_budget(soup) -> MethodScore:
             has_nofollow = True
             penalties.append("meta robots nofollow")
             score -= 1
+        # gap #7: noai / noimageai blocks AI training — penalize citability
+        if "noai" in content or "noimageai" in content:
+            penalties.append("meta robots noai")
+            score -= 1
 
     # 2. Check X-Robots-Tag meta (alternative)
     meta_x_robots = soup.find("meta", attrs={"http-equiv": re.compile(r"x-robots-tag", re.I)})

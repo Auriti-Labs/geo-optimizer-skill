@@ -40,6 +40,8 @@ class RobotsResult:
     # Partially blocked bots (Disallow: / + specific Allows — #106)
     bots_partial: list[str] = field(default_factory=list)
     citation_bots_ok: bool = False
+    # gap #8: Crawl-delay directive value for the wildcard (*) agent, in seconds
+    crawl_delay: float | None = None
     # True if citation bots are explicitly allowed (not just via wildcard — #111)
     citation_bots_explicit: bool = False
 
@@ -92,6 +94,9 @@ class SchemaResult:
     ecommerce_signals: dict = field(default_factory=dict)
     # Fix #399: conteggio errori di parsing JSON-LD
     json_parse_errors: int = 0
+    # Schema completeness: types found but missing required fields (gap #3)
+    schema_missing_fields: dict = field(default_factory=dict)
+    incomplete_schema_types: list = field(default_factory=list)
 
 
 # ─── Meta tags ───────────────────────────────────────────────────────────────
@@ -110,6 +115,12 @@ class MetaResult:
     description_length: int = 0
     title_length: int = 0
     canonical_url: str = ""
+    # X-Robots-Tag HTTP header (gap #2 — blocks AI indexing even when robots.txt allows)
+    x_robots_noindex: bool = False
+    x_robots_tag: str = ""
+    # noai / noimageai in meta[name="robots"] (gap #7 — blocks AI training data use)
+    has_noai: bool = False
+    noai_value: str = ""
 
 
 # ─── Content quality ─────────────────────────────────────────────────────────
@@ -917,6 +928,8 @@ class BatchAuditResult:
     pages: list[BatchAuditPageResult] = field(default_factory=list)
     top_pages: list[BatchAuditPageResult] = field(default_factory=list)
     worst_pages: list[BatchAuditPageResult] = field(default_factory=list)
+    # gap #6: warning when sitemap has more URLs than max_urls cap
+    truncated_warning: str = ""
 
 
 # ─── Audit diff ──────────────────────────────────────────────────────────────
@@ -1171,6 +1184,8 @@ class SitemapUrl:
     lastmod: str | None = None
     priority: float = 0.5
     title: str | None = None
+    # gap #11: changefreq from sitemap XML (always/daily/weekly/monthly/yearly/never)
+    changefreq: str | None = None
 
 
 # ─── Fix plan ───────────────────────────────────────────────────────────────
