@@ -29,6 +29,8 @@ class AgentRules:
 
     allow: list[str] = field(default_factory=list)
     disallow: list[str] = field(default_factory=list)
+    # gap #8: Crawl-delay directive (seconds), None if not set
+    crawl_delay: float | None = None
 
 
 @dataclass
@@ -104,6 +106,17 @@ def parse_robots_txt(content: str) -> dict[str, AgentRules]:
             path = path.split("#")[0].strip()
             for agent in current_agents:
                 agent_rules[agent].allow.append(path)
+            last_was_agent = False
+        elif lower.startswith("crawl-delay:"):
+            # gap #8: parse Crawl-delay per-agent directive
+            raw = line.split(":", 1)[1].strip().split("#")[0].strip()
+            try:
+                delay = float(raw)
+                for agent in current_agents:
+                    if agent_rules[agent].crawl_delay is None:
+                        agent_rules[agent].crawl_delay = delay
+            except ValueError:
+                pass
             last_was_agent = False
         else:
             last_was_agent = False

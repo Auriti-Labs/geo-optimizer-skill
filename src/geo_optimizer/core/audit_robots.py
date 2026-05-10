@@ -74,6 +74,10 @@ def audit_robots_txt(base_url: str, bots: dict | None = None) -> RobotsResult:
             citation_explicit.append(bot)
     result.citation_bots_explicit = len(citation_explicit) == len(CITATION_BOTS)
 
+    # gap #8: extract crawl_delay from wildcard agent (applies to all bots by default)
+    if "*" in agent_rules and agent_rules["*"].crawl_delay is not None:
+        result.crawl_delay = agent_rules["*"].crawl_delay
+
     return result
 
 
@@ -118,5 +122,9 @@ def _audit_robots_from_response(r, bots: dict | None = None) -> RobotsResult:
         if bot_status.status in ("allowed", "partial") and not bot_status.via_wildcard:
             citation_explicit.append(bot)
     result.citation_bots_explicit = len(citation_explicit) == len(CITATION_BOTS)
+
+    # gap #8: extract crawl_delay from wildcard agent
+    if "*" in agent_rules and agent_rules["*"].crawl_delay is not None:
+        result.crawl_delay = agent_rules["*"].crawl_delay
 
     return result
