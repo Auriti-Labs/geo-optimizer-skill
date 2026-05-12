@@ -262,20 +262,91 @@ function render(data){
   data.competitors.forEach(function(c){
     const card=document.createElement('div');
     card.className='narrative-card';
-    card.innerHTML='<div class="narrative-header">'+
-      '<span class="narrative-brand">'+(c.brand_name||c.url)+'<span class="badge">Score '+(c.score||'N/A')+'</span></span>'+
-      '</div>'+
-      '<div class="adjectives"><span class="adjective-label">Adjectives:</span>'+
-      c.dominant_adjectives.map(a=>'<span class="adjective">'+a+'</span>').join('')+
-      '</div>'+
-      '<div class="frames"><span class="frame-label">Frames:</span>'+
-      c.key_frames.map(f=>'<span class="frame">'+f+'</span>').join('')+
-      '</div>'+
-      (c.positioning?'<div class="positioning" dir="ltr">\"'+c.positioning+'\"</div>':'')+
-      (c.credibility_signals.length?'<div class="credibility"><h4>Credibility Signals</h4><ul><li>'+
-      c.credibility_signals.join('</li><li>')+'</li></ul></div>':'')+
-      (c.content_gaps.length?'<div class="gaps"><h4>Content Gaps</h4><ul>'+
-      c.content_gaps.map(g=>'<li>'+g+'</li>').join('')+'</ul></div>':'');
+
+    const header=document.createElement('div');
+    header.className='narrative-header';
+    const brandSpan=document.createElement('span');
+    brandSpan.className='narrative-brand';
+    brandSpan.textContent=(c.brand_name||c.url);
+    const badgeSpan=document.createElement('span');
+    badgeSpan.className='badge';
+    badgeSpan.textContent='Score '+(c.score||'N/A');
+    brandSpan.appendChild(badgeSpan);
+    header.appendChild(brandSpan);
+    card.appendChild(header);
+
+    if(c.dominant_adjectives&&c.dominant_adjectives.length>0){
+      const adjDiv=document.createElement('div');
+      adjDiv.className='adjectives';
+      const adjLabel=document.createElement('span');
+      adjLabel.className='adjective-label';
+      adjLabel.textContent='Adjectives:';
+      adjDiv.appendChild(adjLabel);
+      c.dominant_adjectives.forEach(function(a){
+        const span=document.createElement('span');
+        span.className='adjective';
+        span.textContent=a;
+        adjDiv.appendChild(span);
+      });
+      card.appendChild(adjDiv);
+    }
+
+    if(c.key_frames&&c.key_frames.length>0){
+      const frameDiv=document.createElement('div');
+      frameDiv.className='frames';
+      const frameLabel=document.createElement('span');
+      frameLabel.className='frame-label';
+      frameLabel.textContent='Frames:';
+      frameDiv.appendChild(frameLabel);
+      c.key_frames.forEach(function(f){
+        const span=document.createElement('span');
+        span.className='frame';
+        span.textContent=f;
+        frameDiv.appendChild(span);
+      });
+      card.appendChild(frameDiv);
+    }
+
+    if(c.positioning){
+      const posDiv=document.createElement('div');
+      posDiv.className='positioning';
+      posDiv.setAttribute('dir','ltr');
+      posDiv.textContent='"'+c.positioning+'"';
+      card.appendChild(posDiv);
+    }
+
+    if(c.credibility_signals&&c.credibility_signals.length>0){
+      const credDiv=document.createElement('div');
+      credDiv.className='credibility';
+      const credH4=document.createElement('h4');
+      credH4.textContent='Credibility Signals';
+      credDiv.appendChild(credH4);
+      const credUl=document.createElement('ul');
+      c.credibility_signals.forEach(function(s){
+        const li=document.createElement('li');
+        li.textContent=s;
+        credUl.appendChild(li);
+      });
+      credDiv.appendChild(credUl);
+      card.appendChild(credDiv);
+    }
+
+    if(c.content_gaps&&c.content_gaps.length>0){
+      const gapDiv=document.createElement('div');
+      gapDiv.className='gaps';
+      const gapH4=document.createElement('h4');
+      gapH4.textContent='Content Gaps';
+      gapDiv.appendChild(gapH4);
+      const gapUl=document.createElement('ul');
+      c.content_gaps.forEach(function(g){
+        const li=document.createElement('li');
+        li.textContent=g;
+        gapUl.appendChild(li);
+      });
+      gapDiv.appendChild(gapUl);
+      card.appendChild(gapDiv);
+    }
+
     competitorList.appendChild(card);
   });
 
@@ -286,11 +357,41 @@ function render(data){
     $('gapSection').style.display='block';
     data.competitive_gaps.forEach(function(g){
       const tr=document.createElement('tr');
-      tr.innerHTML='<td>'+g.category+'</td>'+
-        '<td><a href="'+g.competitor_url+'" target="_blank" rel="noopener">'+new URL(g.competitor_url).hostname+'</a></td>'+
-        '<td><span class="gap-type gap-'+g.gap_type+'">'+g.gap_type+'</span></td>'+
-        '<td>'+g.target_missing+'</td>'+
-        '<td class="suggestion">'+g.suggested_content+'</td>';
+
+      const tdCat=document.createElement('td');
+      tdCat.textContent=g.category;
+      tr.appendChild(tdCat);
+
+      const tdUrl=document.createElement('td');
+      const aUrl=document.createElement('a');
+      try{
+        aUrl.href=new URL(g.competitor_url).href;
+        aUrl.textContent=new URL(g.competitor_url).hostname;
+      }catch{
+        aUrl.href='#';
+        aUrl.textContent=g.competitor_url||'';
+      }
+      aUrl.target='_blank';
+      aUrl.rel='noopener';
+      tdUrl.appendChild(aUrl);
+      tr.appendChild(tdUrl);
+
+      const tdType=document.createElement('td');
+      const spanType=document.createElement('span');
+      spanType.className='gap-type gap-'+g.gap_type;
+      spanType.textContent=g.gap_type;
+      tdType.appendChild(spanType);
+      tr.appendChild(tdType);
+
+      const tdMissing=document.createElement('td');
+      tdMissing.textContent=g.target_missing;
+      tr.appendChild(tdMissing);
+
+      const tdSuggest=document.createElement('td');
+      tdSuggest.className='suggestion';
+      tdSuggest.textContent=g.suggested_content;
+      tr.appendChild(tdSuggest);
+
       gapTableBody.appendChild(tr);
     });
   }

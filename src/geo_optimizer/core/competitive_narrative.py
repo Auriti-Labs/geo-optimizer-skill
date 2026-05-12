@@ -20,6 +20,46 @@ from geo_optimizer.models.results import AuditResult
 
 logger = logging.getLogger(__name__)
 
+# Pattern noti di prompt injection da rimuovere dai dati scrapati
+_PROMPT_INJECTION_PATTERNS = [
+    "ignore all previous instructions",
+    "ignore previous",
+    "disregard everything",
+    "forget everything",
+    "### system:",
+    "### instruction:",
+    "### human:",
+    "### assistant:",
+    "### user:",
+    "[INST]",
+    "[/INST]",
+    "<|im_start|>",
+    "<|im_end|>",
+    "<|system|>",
+    "<|user|>",
+    "<|assistant|>",
+    "system:",
+    "assistant:",
+]
+
+
+def _sanitize_prompt_input(text: str, max_len: int = 500) -> str:
+    """Sanitizza testo scrapato prima di interpolarlo in un LLM prompt.
+
+    Rimuove pattern noti di prompt injection e tronca a max_len caratteri.
+    """
+    if not isinstance(text, str):
+        text = str(text)
+    text = text.strip()
+    lower = text.lower()
+    for pattern in _PROMPT_INJECTION_PATTERNS:
+        if pattern in lower:
+            text = text.replace(pattern, "")
+            text = text.replace(pattern.title(), "")
+            text = text.replace(pattern.upper(), "")
+            text = text.replace(pattern.capitalize(), "")
+    return text[:max_len].strip()
+
 
 @dataclass
 class CompetitorNarrative:
@@ -156,6 +196,12 @@ def extract_competitor_narrative(url: str, audit: AuditResult) -> CompetitorNarr
     description = audit.meta.description_text or ""
     word_count = audit.content.word_count or 0
 
+    # Sanitizza input scrapati prima di interpolarli nel prompt LLM
+    safe_brand_names = [_sanitize_prompt_input(b, max_len=100) for b in brand_names[:3]]
+    safe_h1 = _sanitize_prompt_input(h1, max_len=200)
+    safe_title = _sanitize_prompt_input(title, max_len=200)
+    safe_description = _sanitize_prompt_input(description, max_len=200)
+
     # Estrai section headers per contesto
     sections = []
     # Cerca H2 nel content (se available)
@@ -168,10 +214,10 @@ def extract_competitor_narrative(url: str, audit: AuditResult) -> CompetitorNarr
     # Build prompt
     prompt = _NARRATIVE_EXTRACTOR_PROMPT.format(
         url=url,
-        brand_names=", ".join(brand_names[:3]) if brand_names else "Unknown",
-        h1=h1[:200] if h1 else "None",
-        title=title[:200] if title else "None",
-        description=description[:200] if description else "None",
+        brand_names=", ".join(safe_brand_names) if safe_brand_names else "Unknown",
+        h1=safe_h1 if safe_h1 else "None",
+        title=safe_title if safe_title else "None",
+        description=safe_description if safe_description else "None",
         word_count=word_count,
         sections=", ".join(sections),
     )
