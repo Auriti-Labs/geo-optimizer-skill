@@ -42,6 +42,21 @@ Apri il browser su `http://localhost:4321`.
 
 Prova a eseguire un audit: il form chiamera `/api/audit?url=...` che viene proxato al backend.
 
+## Produzione e API base
+
+Il proxy Vite in `astro.config.mjs` funziona **solo in sviluppo** (`npm run dev`).
+
+In produzione (build statico) il frontend non ha un server proxy. Servono due opzioni:
+
+1. **Reverse proxy** (Nginx, Cloudflare, Vercel rewrite) che inoltra `/api/*` al backend sotto lo stesso dominio.
+2. **Variabile d'ambiente `PUBLIC_API_BASE`** — esporta un URL assoluto prima della build:
+   ```bash
+   PUBLIC_API_BASE=https://api.geoready.dev npm run build
+   ```
+   `src/lib/api.ts` legge `import.meta.env.PUBLIC_API_BASE` e lo usa come prefisso per le chiamate API.
+
+Il frontend statico **non deve assumere** che `/api` sia disponibile sullo stesso dominio senza una di queste due configurazioni.
+
 ## Mock data (senza backend)
 
 Se il backend non e attivo, il form audit mostrera un errore di rete.

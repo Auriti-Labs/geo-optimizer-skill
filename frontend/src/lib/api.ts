@@ -1,7 +1,7 @@
 import { mapBackendToFrontend } from './reportMapper';
 import type { AuditReport } from './mockData';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.PUBLIC_API_BASE || '/api';
 
 export interface FetchAuditResult {
   report: AuditReport | null;
