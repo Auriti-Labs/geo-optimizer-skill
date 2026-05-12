@@ -3,38 +3,113 @@ import Shell from '../components/Shell.astro';
 ---
 
 <Shell title="Privacy Policy — GEO Optimizer">
-  <section class="max-w-3xl mx-auto px-6 py-16">
-    <h1 class="text-3xl md:text-4xl font-bold">Privacy Policy</h1>
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    <header class="mb-14 md:mb-20">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <span>GEO Optimizer</span>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>Privacy Policy</span>
+      </div>
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">Privacy Policy</h1>
+      <p class="mt-4 text-base text-text-secondary leading-relaxed">Last updated: May 12, 2026</p>
+    </header>
 
-    <div class="mt-8 space-y-6 text-text-secondary leading-relaxed">
-      <p>
-        This privacy policy applies to the GEO Optimizer web demo and website.
-      </p>
+    <div class="space-y-10 text-text-secondary leading-relaxed">
+      <div class="rounded-lg border border-border bg-bg-surface p-4 text-sm">
+        <p class="text-text-muted italic">
+          <strong class="text-text-secondary">Note:</strong> This document is intended as a professional draft. Before deploying to production, the data controller name and privacy contact must be completed.
+        </p>
+      </div>
 
-      <h2 class="text-xl font-semibold text-text-primary mt-8">Data We Collect</h2>
-      <p>
-        When you run an audit, we process the URL you provide. We do not store audit results permanently
-        unless you explicitly save them. URLs are processed in memory and discarded after the session.
-      </p>
+      <section>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Data Controller</h2>
+        <p class="mb-2"><strong class="text-text-primary">[Name to be completed]</strong></p>
+        <p class="mb-2">Email: <a href="mailto:[privacy email to be completed]" class="text-accent-teal hover:underline">[privacy email to be completed]</a></p>
+        <p class="mb-2">For technical issues, open an issue on our <a href="https://github.com/Auriti-Labs/geo-optimizer-skill/issues" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">GitHub repository</a>.</p>
+      </section>
 
-      <h2 class="text-xl font-semibold text-text-primary mt-8">Analytics</h2>
-      <p>
-        We use Google Analytics 4 and Google Search Console to understand traffic patterns.
-        These services may collect anonymized usage data. You can manage your consent preferences
-        through the cookie banner.
-      </p>
+      <section>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">What data we process</h2>
+        <div class="space-y-3">
+          <div class="rounded-lg border border-border bg-bg-surface p-4">
+            <h3 class="text-sm font-semibold text-text-primary mb-1">1. Technical navigation data</h3>
+            <p class="text-sm">IP addresses, browser type, operating system, and request timestamps may be logged by the hosting/server infrastructure for security and operational purposes. These logs are processed under legitimate interest and security obligations.</p>
+          </div>
+          <div class="rounded-lg border border-bg-surface p-4">
+            <h3 class="text-sm font-semibold text-text-primary mb-1">2. URLs submitted for audit</h3>
+            <p class="text-sm">When you voluntarily submit a URL through the audit form, the backend processes that URL to generate a GEO report. The URL is transmitted to the server, analyzed in real time, and the result is returned to you. We do not declare persistent storage of submitted URLs unless explicitly configured in the backend; audit data is processed as a service execution measure.</p>
+          </div>
+          <div class="rounded-lg border border-border bg-bg-surface p-4">
+            <h3 class="text-sm font-semibold text-text-primary mb-1">3. Cookie and storage preferences</h3>
+            <p class="text-sm">Your consent choices (necessary, preferences, analytics, marketing) are stored in localStorage on your device with a 6-month expiration or until the consent version changes. This data is not transmitted to any server and remains entirely on your device.</p>
+          </div>
+          <div class="rounded-lg border border-border bg-bg-surface p-4">
+            <h3 class="text-sm font-semibold text-text-primary mb-1">4. Analytics data (optional)</h3>
+            <p class="text-sm">If you explicitly consent to analytics and a Google Analytics 4 measurement ID is configured, aggregated, anonymized navigation data may be collected. This is disabled by default and requires explicit opt-in.</p>
+          </div>
+        </div>
+      </section>
 
-      <h2 class="text-xl font-semibold text-text-primary mt-8">Cookies</h2>
-      <p>
-        We use essential cookies for site functionality and optional analytics cookies.
-        You can manage your preferences at any time via the cookie settings link in the footer.
-      </p>
+      <section>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Legal basis</h2>
+        <ul class="list-disc pl-5 space-y-2 text-sm">
+          <li><strong class="text-text-primary">Service execution / pre-contractual measures:</strong> processing URLs you submit for audit, generating reports, and delivering results.</li>
+          <li><strong class="text-text-primary">Legitimate interest / security obligations:</strong> technical logs (IP, timestamps) required for server security, abuse prevention, and infrastructure monitoring.</li>
+          <li><strong class="text-text-primary">Consent:</strong> analytics and marketing cookies/storage. You can revoke consent at any time via the cookie preferences panel.</li>
+          <li><strong class="text-text-primary">Legal obligation / technical necessity:</strong> storing your cookie consent choice to comply with ePrivacy and GDPR requirements.</li>
+        </ul>
+      </section>
 
-      <h2 class="text-xl font-semibold text-text-primary mt-8">Contact</h2>
-      <p>
-        For privacy-related questions, open an issue on our
-        <a href="https://github.com/Auriti-Labs/geo-optimizer-skill/issues" class="text-accent-teal hover:underline">GitHub repository</a>.
-      </p>
+      <section>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">How long we keep data</h2>
+        <ul class="list-disc pl-5 space-y-2 text-sm">
+          <li><strong>Audit URL submissions:</strong> Not declared as persistent storage. Processed in real time and not retained beyond the session unless backend configuration specifies otherwise.</li>
+          <li><strong>Technical logs:</strong> Retention period depends on the hosting provider policy (to be completed).</li>
+          <li><strong>Cookie consent preferences:</strong> Stored in localStorage for 6 months or until the consent policy version changes.</li>
+          <li><strong>Analytics data (if consented):</strong> Retained by Google Analytics under their data retention policies.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Recipients and transfers</h2>
+        <p class="mb-3">Recipients of your data may include:</p>
+        <ul class="list-disc pl-5 space-y-2 text-sm">
+          <li><strong>Hosting/infrastructure providers:</strong> the server hosting the site and API may process technical logs.</li>
+          <li><strong>Google LLC:</strong> only if Google Analytics 4 is activated and you have provided explicit consent to analytics.</li>
+        </ul>
+        <p class="mt-3 text-sm">Links to GitHub, PyPI, and other external resources in the footer are navigated by you voluntarily; no automatic data sharing occurs with these platforms during normal browsing.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Transfers outside the EU</h2>
+        <p class="text-sm">If Google Analytics 4 is activated, data may be transferred to Google servers in the United States under the conditions defined by Google. We do not currently use analytics by default, and no transfer occurs without your explicit consent.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Your rights</h2>
+        <p class="mb-3 text-sm">Under the GDPR and applicable privacy laws, you have the right to:</p>
+        <ul class="list-disc pl-5 space-y-1 text-sm">
+          <li>Access your personal data</li>
+          <li>Request rectification of inaccurate data</li>
+          <li>Request erasure ("right to be forgotten")</li>
+          <li>Request restriction of processing</li>
+          <li>Object to processing based on legitimate interest</li>
+          <li>Data portability</li>
+          <li>Revoke consent at any time (without affecting the lawfulness of processing before revocation)</li>
+          <li>Lodge a complaint with your national Data Protection Authority (e.g., the Italian Garante per la Protezione dei Dati Personali)</li>
+        </ul>
+        <p class="mt-3 text-sm">To exercise your rights, contact the data controller at the email listed above.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Cookies</h2>
+        <p class="mb-3">This site uses a minimal cookie and storage system designed for privacy-by-default compliance. Only necessary storage is active without consent. Analytics and marketing are disabled by default. For the full inventory and detailed information, see our <a href="/cookie-policy" class="text-accent-teal hover:underline">Cookie Policy</a>.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Changes to this policy</h2>
+        <p class="text-sm">We may update this Privacy Policy to reflect changes in our practices or legal requirements. The "Last updated" date at the top of this page indicates when the policy was last revised. We encourage you to review this page periodically.</p>
+      </section>
     </div>
-  </section>
+  </main>
 </Shell>

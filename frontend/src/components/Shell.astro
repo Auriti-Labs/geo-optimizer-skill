@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from './Navbar.astro';
 import Footer from './Footer.astro';
+import CookieConsentManager from './cookie/CookieConsentManager';
 
 interface Props {
   title: string;
@@ -17,4 +18,5 @@ const { title, description } = Astro.props;
     <slot />
   </main>
   <Footer />
+  <CookieConsentManager client:only="react" />
 </Layout>
