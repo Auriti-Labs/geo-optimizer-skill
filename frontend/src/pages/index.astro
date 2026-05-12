@@ -1,0 +1,96 @@
+---
+import Shell from '../components/Shell.astro';
+import AuditForm from '../components/AuditForm';
+
+const stats = [
+  { label: 'stars', value: '407', icon: 'star' },
+  { label: 'downloads/mo', value: '4.0k', icon: 'box' },
+  { label: 'audits', value: '1.6k', icon: 'search' },
+];
+
+const features = [
+  {
+    title: 'Auditability',
+    desc: 'Every signal is scored against published research. No black boxes.',
+  },
+  {
+    title: 'Scientific Foundation',
+    desc: 'Built on Princeton KDD 2024, AutoGEO ICLR 2026, and SE Ranking 2025.',
+  },
+  {
+    title: 'Open Source',
+    desc: 'MIT licensed. Full transparency in methodology and scoring weights.',
+  },
+  {
+    title: 'Precision',
+    desc: '47 citability methods, 8 audit categories, 100-point scoring system.',
+  },
+];
+---
+
+<Shell
+  title="GEO Optimizer — AI Search Visibility Audit"
+  description="Audit your website's visibility to ChatGPT, Perplexity, Claude & Gemini"
+>
+  <section class="bg-bg-dark text-text-inverse">
+    <div class="max-w-7xl mx-auto px-6 py-20 md:py-28">
+      <div class="max-w-3xl">
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
+          Audit your website's visibility to AI search engines
+        </h1>
+        <p class="mt-6 text-lg md:text-xl text-text-muted leading-relaxed max-w-2xl">
+          GEO Optimizer scores your site across 8 categories so you know exactly how discoverable you are to ChatGPT, Perplexity, Claude, and Gemini.
+        </p>
+
+        <div class="mt-10">
+          <AuditForm client:load />
+        </div>
+
+        <div class="mt-8 flex flex-wrap items-center gap-6">
+          {stats.map((s) => (
+            <div class="flex items-center gap-2 text-sm">
+              <span class="font-mono text-text-muted">{s.icon}</span>
+              <span class="font-mono font-semibold">{s.value}</span>
+              <span class="text-text-muted">{s.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto px-6 py-20">
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {features.map((f) => (
+        <div class="p-6 rounded-xl border border-border bg-bg-surface hover:border-accent-teal/40 transition-colors">
+          <h3 class="font-display text-base font-semibold">{f.title}</h3>
+          <p class="mt-2 text-sm text-text-secondary leading-relaxed">{f.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto px-6 pb-20">
+    <div class="p-8 md:p-12 rounded-2xl border border-border bg-bg-surface">
+      <div class="max-w-3xl">
+        <h2 class="text-2xl md:text-3xl font-bold">Why this tool exists</h2>
+        <p class="mt-4 text-text-secondary leading-relaxed">
+          AI search is already deciding which websites get cited and which do not.
+          The signals are documented, the research is published, but most of the web has no idea.
+          GEO Optimizer exists to make AI visibility auditable, transparent, and accessible to every developer,
+          not just teams with enterprise budgets.
+        </p>
+        <a
+          href="/manifesto"
+          class="inline-flex items-center gap-2 mt-6 text-sm font-medium text-accent-teal hover:text-accent-teal-dark transition-colors"
+        >
+          Read the full manifesto
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"/>
+            <path d="m12 5 7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</Shell>

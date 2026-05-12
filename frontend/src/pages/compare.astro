@@ -1,0 +1,43 @@
+---
+import Shell from '../components/Shell.astro';
+---
+
+<Shell title="Compare GEO Scores — GEO Optimizer">
+  <section class="max-w-7xl mx-auto px-6 py-16">
+    <div class="max-w-2xl">
+      <h1 class="text-3xl md:text-4xl font-bold">Compare GEO Scores</h1>
+      <p class="mt-4 text-text-secondary">Side-by-side analysis. See who is more visible to AI search engines.</p>
+    </div>
+
+    <div class="mt-10 p-8 rounded-xl border border-border bg-bg-surface">
+      <form id="compare-form" class="space-y-6">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">First URL</label>
+            <input
+              type="url"
+              required
+              placeholder="https://site-a.com"
+              class="w-full px-4 py-3 rounded-lg border border-border bg-bg-base text-sm focus:outline-none focus:ring-2 focus:ring-accent-teal"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Second URL</label>
+            <input
+              type="url"
+              required
+              placeholder="https://site-b.com"
+              class="w-full px-4 py-3 rounded-lg border border-border bg-bg-base text-sm focus:outline-none focus:ring-2 focus:ring-accent-teal"
+            />
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="px-6 py-3 rounded-lg bg-accent-teal text-white font-medium text-sm hover:bg-accent-teal-dark transition-colors"
+        >
+          Compare
+        </button>
+      </form>
+    </div>
+  </section>
+</Shell>

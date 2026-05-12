@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@import "@fontsource/space-grotesk/400.css";
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/600.css";
+@import "@fontsource/space-grotesk/700.css";
+@import "@fontsource/geist/400.css";
+@import "@fontsource/geist/500.css";
+@import "@fontsource/geist/600.css";
+@import "@fontsource/geist/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/newsreader/400.css";
+@import "@fontsource/newsreader/400-italic.css";
+@import "@fontsource/newsreader/700.css";
+
+@theme {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Geist", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-editorial: "Newsreader", serif;
+
+  --color-bg-base: #F7F5F0;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-subtle: #EEEBE5;
+  --color-bg-dark: #0B0F19;
+  --color-bg-dark-surface: #111827;
+
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94A3B8;
+  --color-text-inverse: #F1F5F9;
+
+  --color-accent-teal: #0D9488;
+  --color-accent-teal-dark: #0F766E;
+  --color-accent-electric: #6366F1;
+  --color-accent-violet: #8B5CF6;
+  --color-accent-success: #059669;
+  --color-accent-warning: #D97706;
+  --color-accent-danger: #DC2626;
+
+  --color-border: #E2E0DA;
+  --color-border-dark: #1E293B;
+  --color-border-accent: #0D9488;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+}
+
+html {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+code, pre, .font-mono {
+  font-family: var(--font-mono);
+}
+
+.font-editorial {
+  font-family: var(--font-editorial);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-teal);
+  outline-offset: 2px;
+}
+
+::selection {
+  background-color: rgba(13, 148, 136, 0.2);
+  color: var(--color-text-primary);
+}

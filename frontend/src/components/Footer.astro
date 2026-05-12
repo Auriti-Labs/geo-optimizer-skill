@@ -1,0 +1,39 @@
+---
+const footerLinks = [
+  { label: "GitHub", href: "https://github.com/auriti-labs/geo-optimizer-skill" },
+  { label: "Docs", href: "https://auriti-labs.github.io/geo-optimizer-skill/" },
+  { label: "PyPI", href: "https://pypi.org/project/geo-optimizer-skill/" },
+  { label: "Privacy", href: "/privacy" },
+];
+---
+
+<footer class="mt-auto bg-bg-dark text-text-inverse border-t border-border-dark">
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-accent-teal"></span>
+        <span class="font-display font-bold text-sm">GEO Optimizer</span>
+        <span class="font-mono text-[10px] text-text-muted">v4.10.4</span>
+      </div>
+
+      <nav class="flex flex-wrap items-center gap-6">
+        {footerLinks.map((l) => (
+          <a
+            href={l.href}
+            class="text-sm text-text-muted hover:text-text-inverse transition-colors"
+            target={l.href.startsWith('http') ? '_blank' : undefined}
+            rel={l.href.startsWith('http') ? 'noopener' : undefined}
+          >
+            {l.label}
+          </a>
+        ))}
+      </nav>
+    </div>
+
+    <div class="mt-8 pt-6 border-t border-border-dark text-center">
+      <p class="text-xs text-text-muted">
+        Built by Auriti Labs. Powered by Princeton KDD 2024 + AutoGEO ICLR 2026 research.
+      </p>
+    </div>
+  </div>
+</footer>

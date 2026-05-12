@@ -1,0 +1,41 @@
+---
+import Shell from '../components/Shell.astro';
+---
+
+<Shell title="Analyze Competitors — GEO Optimizer">
+  <section class="max-w-7xl mx-auto px-6 py-16">
+    <div class="max-w-2xl">
+      <h1 class="text-3xl md:text-4xl font-bold">Analyze Competitive Narratives</h1>
+      <p class="mt-4 text-text-secondary">See how AI search engines describe your competitors vs your brand.</p>
+    </div>
+
+    <div class="mt-10 p-8 rounded-xl border border-border bg-bg-surface">
+      <form id="analyze-form" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium mb-2">Your website URL</label>
+          <input
+            type="url"
+            required
+            placeholder="https://yoursite.com"
+            class="w-full px-4 py-3 rounded-lg border border-border bg-bg-base text-sm focus:outline-none focus:ring-2 focus:ring-accent-teal"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Competitor URLs (comma-separated, max 5)</label>
+          <input
+            type="text"
+            required
+            placeholder="https://competitor1.com, https://competitor2.com"
+            class="w-full px-4 py-3 rounded-lg border border-border bg-bg-base text-sm focus:outline-none focus:ring-2 focus:ring-accent-teal"
+          />
+        </div>
+        <button
+          type="submit"
+          class="px-6 py-3 rounded-lg bg-accent-teal text-white font-medium text-sm hover:bg-accent-teal-dark transition-colors"
+        >
+          Analyze
+        </button>
+      </form>
+    </div>
+  </section>
+</Shell>

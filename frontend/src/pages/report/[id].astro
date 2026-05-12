@@ -1,0 +1,21 @@
+---
+import Shell from '../../components/Shell.astro';
+import AuditReportContainer from '../../components/report/AuditReportContainer';
+
+export function getStaticPaths() {
+  return [
+    { params: { id: 'demo' } },
+    { params: { id: '100680ad546ce6a577f42f52df33b4cf' } },
+  ];
+}
+
+const { id } = Astro.params;
+const decodedId = id ? decodeURIComponent(id) : 'demo';
+---
+
+<Shell
+  title={decodedId === 'demo' ? 'Audit Report — Demo' : `Audit Report`}
+  description="GEO Optimizer audit report"
+>
+  <AuditReportContainer client:load reportId={decodedId} />
+</Shell>

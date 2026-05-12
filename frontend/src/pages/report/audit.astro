@@ -1,0 +1,11 @@
+---
+import Shell from '../../components/Shell.astro';
+import AuditReportContainer from '../../components/report/AuditReportContainer';
+
+const url = Astro.url.searchParams.get('url') || '';
+const title = url ? `Audit Report — ${url}` : 'Audit Report';
+---
+
+<Shell title={title} description="GEO Optimizer audit report">
+  <AuditReportContainer client:load reportId={url} />
+</Shell>
