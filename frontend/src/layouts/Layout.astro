@@ -42,6 +42,14 @@ const {
   <meta name="twitter:image" content={ogImage}>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="alternate" type="application/atom+xml" title="GEO Optimizer Releases" href="https://github.com/Auriti-Labs/geo-optimizer-skill/releases.atom">
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KV5MQTGFZG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-KV5MQTGFZG');
+  </script>
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@graph": [

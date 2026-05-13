@@ -103,10 +103,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(self, request: Request, call_next):
-        # Generate cryptographically secure nonce for each request
-        nonce = secrets.token_urlsafe(16)
-        # Make the nonce accessible to endpoints (e.g. homepage)
-        request.state.csp_nonce = nonce
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
@@ -114,15 +110,18 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         # Fix #315: HSTS — force HTTPS for 1 year on all subdomains
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-        # Use 'nonce-{value}' instead of 'unsafe-inline' for XSS protection (fix #75)
-        # Note #287: style-src uses 'unsafe-inline' because all <style> tags are hardcoded
-        # in templates (not user-controllable). Removing it would require nonce on every style tag.
+        # 'unsafe-inline' required for Astro pre-built static HTML (inline hydration scripts)
+        # and for Google Analytics inline initialization.
+        # Nonce-based CSP cannot work with static files (HTML is pre-built without nonce injection).
         response.headers["Content-Security-Policy"] = (
-            f"default-src 'self'; script-src 'self' 'nonce-{nonce}'; "
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-            "font-src 'self' https://fonts.gstatic.com; "
-            "img-src 'self' data:; frame-ancestors 'none'; "
-            "object-src 'none'; base-uri 'self'; form-action 'self'"
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; "
+            "style-src 'self' 'unsafe-inline'; "
+            "font-src 'self'; "
+            "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; "
+            "connect-src 'self' https://www.google-analytics.com https://analytics.google.com "
+            "https://stats.g.doubleclick.net; "
+            "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
         )
         # Fix #413: restrict browser API access
         response.headers["Permissions-Policy"] = (
