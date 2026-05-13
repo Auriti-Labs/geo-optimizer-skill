@@ -6,13 +6,15 @@ interface Props {
   description?: string;
   canonical?: string;
   ogImage?: string;
+  robots?: string;
 }
 
 const {
   title,
   description = "Audit your website's visibility to ChatGPT, Perplexity, Claude & Gemini",
   canonical = "https://geoready.dev",
-  ogImage = "https://geoready.dev/assets/og-image.png"
+  ogImage = "https://geoready.dev/assets/og-image.png",
+  robots = "index, follow"
 } = Astro.props;
 ---
 
@@ -23,6 +25,7 @@ const {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content={description}>
+  <meta name="robots" content={robots}>
   <link rel="canonical" href={canonical}>
   <meta property="og:type" content="website">
   <meta property="og:title" content={title}>

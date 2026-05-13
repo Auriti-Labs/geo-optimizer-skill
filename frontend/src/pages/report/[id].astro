@@ -11,11 +11,70 @@ export function getStaticPaths() {
 
 const { id } = Astro.params;
 const decodedId = id ? decodeURIComponent(id) : 'demo';
+
+const isDemo = decodedId === 'demo';
+const title = isDemo
+  ? 'GEO Audit Report Demo — GEO Optimizer'
+  : 'GEO Audit Report — GEO Optimizer';
+const description = isDemo
+  ? 'Preview a sample GEO Optimizer audit report with GEO scores, citability ratings, technical signals, and actionable AI search visibility recommendations.'
+  : 'View your GEO Optimizer audit report with GEO scores, citability ratings, technical signals, and actionable AI search visibility recommendations.';
+const canonical = `https://geoready.dev/report/${decodedId}`;
+const robots = 'noindex, nofollow';
 ---
 
-<Shell
-  title={decodedId === 'demo' ? 'Audit Report — Demo' : `Audit Report`}
-  description="GEO Optimizer audit report"
->
+<Shell title={title} description={description} canonical={canonical} robots={robots}>
+  <header class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 md:pt-16 pb-6">
+    <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+      <span>GEO Optimizer</span>
+      <span class="w-1 h-1 rounded-full bg-text-muted" />
+      <span>{isDemo ? 'Demo Report' : 'Audit Report'}</span>
+    </div>
+
+    <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+      {isDemo ? 'GEO Audit Report Demo' : 'GEO Audit Report'}
+    </h1>
+
+    <p class="mt-4 text-base text-text-secondary leading-relaxed max-w-2xl">
+      {isDemo
+        ? 'This is a preview of a GEO Optimizer audit report. The demo shows how a complete report looks when you run an audit on a live website.'
+        : 'Live audit results for the submitted URL. This report is generated on demand and is not indexed by search engines.'}
+    </p>
+
+    {isDemo && (
+      <p class="mt-2 text-xs text-text-muted font-mono">Demo snapshot: May 2026</p>
+    )}
+  </header>
+
+  {isDemo && (
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-6 max-w-2xl">
+      <h2 class="text-sm font-mono font-semibold uppercase tracking-wider text-text-muted mb-3">
+        What this demo report shows
+      </h2>
+      <ul class="space-y-2">
+        <li class="text-sm text-text-secondary flex items-start gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent-teal mt-1.5 shrink-0" aria-hidden="true" />
+          GEO Score across 8 signal categories
+        </li>
+        <li class="text-sm text-text-secondary flex items-start gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent-teal mt-1.5 shrink-0" aria-hidden="true" />
+          Citability Score (47-method suite)
+        </li>
+        <li class="text-sm text-text-secondary flex items-start gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent-teal mt-1.5 shrink-0" aria-hidden="true" />
+          Category breakdown with actionable recommendations
+        </li>
+        <li class="text-sm text-text-secondary flex items-start gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent-teal mt-1.5 shrink-0" aria-hidden="true" />
+          Technical signal readiness (pass / warn / fail)
+        </li>
+        <li class="text-sm text-text-secondary flex items-start gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent-teal mt-1.5 shrink-0" aria-hidden="true" />
+          Prioritized recommendations and export actions
+        </li>
+      </ul>
+    </section>
+  )}
+
   <AuditReportContainer client:load reportId={decodedId} />
 </Shell>

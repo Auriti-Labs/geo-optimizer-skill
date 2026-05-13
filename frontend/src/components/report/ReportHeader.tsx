@@ -46,9 +46,9 @@ export default function ReportHeader({
           <span>v{version}</span>
         </div>
 
-        <h1 className="mt-1.5 text-lg md:text-xl font-bold text-text-primary break-all leading-snug" title={url}>
+        <h2 className="mt-1.5 text-lg md:text-xl font-bold text-text-primary break-all leading-snug" title={url}>
           {url}
-        </h1>
+        </h2>
 
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-text-muted">
           <span className="font-mono">{date}</span>
