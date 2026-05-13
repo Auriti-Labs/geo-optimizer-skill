@@ -2,12 +2,6 @@
 import Shell from '../components/Shell.astro';
 import AuditForm from '../components/AuditForm';
 
-const stats = [
-  { label: 'stars', value: '407', icon: 'star' },
-  { label: 'downloads/mo', value: '4.0k', icon: 'box' },
-  { label: 'audits', value: '1.6k', icon: 'search' },
-];
-
 const features = [
   {
     title: 'Auditability',
@@ -47,13 +41,30 @@ const features = [
         </div>
 
         <div class="mt-8 flex flex-wrap items-center gap-6">
-          {stats.map((s) => (
-            <div class="flex items-center gap-2 text-sm">
-              <span class="font-mono text-text-muted">{s.icon}</span>
-              <span class="font-mono font-semibold">{s.value}</span>
-              <span class="text-text-muted">{s.label}</span>
-            </div>
-          ))}
+          <div class="flex items-center gap-2 text-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="text-yellow-400 shrink-0" aria-hidden="true">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span class="font-mono font-semibold">407</span>
+            <span class="text-text-muted">stars</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400 shrink-0" aria-hidden="true">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+            <span class="font-mono font-semibold">4.0k</span>
+            <span class="text-text-muted">downloads/mo</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-400 shrink-0" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <span class="font-mono font-semibold">1.6k</span>
+            <span class="text-text-muted">audits</span>
+          </div>
         </div>
         <p class="mt-2 text-xs text-text-muted font-mono">Snapshot: May 2026 — not live data</p>
       </div>

@@ -715,7 +715,6 @@ async def audit_post(request: Request, body: AuditRequest):
     return await _run_audit(body.url)
 
 
-
 @app.get("/report/demo", response_class=HTMLResponse)
 async def report_demo_page():
     """Serve la pagina demo report dal frontend Astro."""
@@ -732,6 +731,7 @@ async def report_audit_page():
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Audit report not found")
     return HTMLResponse(file_path.read_text(encoding="utf-8"))
+
 
 @app.get("/report/{report_id}", response_class=HTMLResponse)
 async def report(report_id: str):
@@ -1642,6 +1642,7 @@ def _dict_to_audit_result(data: dict):
 #     )
 #     return PlainTextResponse(content=llms, media_type="text/plain")
 
+
 @app.get("/.well-known/ai.txt")
 async def well_known_ai():
     """AI crawler permissions."""
@@ -1957,5 +1958,7 @@ async def gap_analysis(request: Request, body: GapAnalysisRequest):
     }
 
     return JSONResponse(content=response_data)
+
+
 # Serve il frontend Astro buildato
 app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
