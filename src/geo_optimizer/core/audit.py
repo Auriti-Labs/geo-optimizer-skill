@@ -619,7 +619,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
         base_url = "https://" + base_url
 
     # Fetch homepage (with optional cache)
-    r: CachedResponse | None
+    # r is CachedResponse (disk cache hit) or requests.Response (live fetch)
     err: str | None
     if use_cache:
         from geo_optimizer.utils.cache import FileCache
@@ -637,11 +637,11 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
             )
             err = None
         else:
-            r, err = fetch_url(base_url)
+            r, err = fetch_url(base_url)  # type: ignore[assignment]
             if r and not err:
                 cache.put(base_url, r.status_code, r.text, dict(r.headers))
     else:
-        r, err = fetch_url(base_url)
+        r, err = fetch_url(base_url)  # type: ignore[assignment]
     if err or not r:
         result = AuditResult(
             url=base_url,
