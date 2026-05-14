@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { trackAuditCompleted } from '../../lib/geo_track';
 import { fetchAuditReport } from '../../lib/api';
 import { mockAuditReport } from '../../lib/mockData';
 import type { AuditReport } from '../../lib/mockData';
@@ -56,6 +57,10 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
         setState({ status: 'error', message: result.error });
       } else if (result.report) {
         setState({ status: 'ready', report: result.report });
+        trackAuditCompleted({
+          score: result.report.geoScore,
+          score_band: result.report.grade ?? 'unknown',
+        });
       } else {
         setState({ status: 'error', message: 'Unexpected empty response.' });
       }

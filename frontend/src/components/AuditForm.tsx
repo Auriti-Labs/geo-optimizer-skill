@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { trackAuditStarted } from '../lib/geo_track';
 
 /** Verifica se una stringa sembra un URL valido. */
 function isValidUrl(value: string): boolean {
@@ -30,6 +31,7 @@ export default function AuditForm() {
       return;
     }
 
+    trackAuditStarted();
     // Naviga verso la pagina report che esegue l'audit reale
     window.location.href = `/report/audit?url=${encodeURIComponent(trimmed)}`;
   };

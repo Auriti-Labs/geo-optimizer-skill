@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { trackWaitlistJoined } from "../lib/geo_track";
 
 type FormState = "idle" | "loading" | "success" | "error";
 
@@ -71,6 +72,11 @@ export default function WaitlistForm() {
       const json = await res.json();
       setState("success");
       setMessage(json.message ?? "You're on the list.");
+      trackWaitlistJoined({
+        user_type: payload.user_type,
+        managed_sites_range: payload.managed_sites_range,
+        main_interest: payload.main_interest,
+      });
     } catch {
       setState("error");
       setMessage("Could not reach the server. Check your connection and try again.");
