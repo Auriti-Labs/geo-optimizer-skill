@@ -117,10 +117,12 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; "
             "style-src 'self' 'unsafe-inline'; "
-            "font-src 'self'; "
+            # Google Fonts: glifi da fonts.gstatic.com, CSS da fonts.googleapis.com
+            "font-src 'self' https://fonts.gstatic.com; "
             "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; "
+            # region1.google-analytics.com: endpoint regionale GA4 (usato da gtag.js)
             "connect-src 'self' https://www.google-analytics.com https://analytics.google.com "
-            "https://stats.g.doubleclick.net; "
+            "https://stats.g.doubleclick.net https://region1.google-analytics.com; "
             "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
         )
         # Fix #413: restrict browser API access
