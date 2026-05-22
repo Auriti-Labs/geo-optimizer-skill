@@ -50,6 +50,11 @@ node_modules/
 docs_dev/
 .claude/
 
+# Documenti interni (marketing, strategia, decisioni)
+.agents/
+docs/product/
+docs/strategy/
+
 # Local caches
 local_cache/
 .codex
