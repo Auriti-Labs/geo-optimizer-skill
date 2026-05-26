@@ -117,8 +117,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; "
             "style-src 'self' 'unsafe-inline'; "
-            # Google Fonts: glifi da fonts.gstatic.com, CSS da fonts.googleapis.com
-            "font-src 'self' https://fonts.gstatic.com; "
+            "font-src 'self' data:; "
             "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; "
             # region1.google-analytics.com: endpoint regionale GA4 (usato da gtag.js)
             "connect-src 'self' https://www.google-analytics.com https://analytics.google.com "
