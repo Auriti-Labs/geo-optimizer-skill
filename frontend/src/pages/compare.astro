@@ -8,7 +8,7 @@ import CompareContainer from '../components/compare/CompareContainer';
   description="Compare two websites side by side with GEO Optimizer. Benchmark AI search visibility, citability, and technical signals for ChatGPT, Perplexity, and Claude."
   canonical="https://geoready.dev/compare"
 >
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
     {/* Static hero — visible to crawlers */}
     <header class="max-w-2xl mb-8">
       <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
@@ -61,7 +61,7 @@ import CompareContainer from '../components/compare/CompareContainer';
 
     {/* Interactive tool — hydrated by React */}
     <CompareContainer client:only="react" />
-  </main>
+  </div>
 
   {/* Page-specific schema */}
   <script type="application/ld+json" set:html={JSON.stringify({
@@ -81,7 +81,7 @@ import CompareContainer from '../components/compare/CompareContainer';
       "url": "https://github.com/Auriti-Labs"
     },
     "datePublished": "2026-05-12",
-    "dateModified": "2026-05-12",
+    "dateModified": "2026-05-26",
     "mainEntity": {
       "@type": "WebApplication",
       "name": "GEO Optimizer Comparison Tool",
@@ -90,7 +90,7 @@ import CompareContainer from '../components/compare/CompareContainer';
       "offers": {
         "@type": "Offer",
         "price": "0",
-        "priceCurrency": "USD"
+        "priceCurrency": "EUR"
       },
       "featureList": [
         "Side-by-side GEO score comparison",

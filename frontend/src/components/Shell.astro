@@ -16,7 +16,7 @@ const { title, description, canonical, robots } = Astro.props;
 
 <Layout title={title} description={description} canonical={canonical} robots={robots}>
   <Navbar />
-  <main class="flex-1">
+  <main id="main-content" class="flex-1">
     <slot />
   </main>
   <Footer />

@@ -32,17 +32,29 @@ const moreLinks = [
         </a>
       ))}
       <span class="w-px h-4 bg-border"></span>
-      <div class="relative group">
-        <button class="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1">
+      <div class="relative">
+        <button
+          id="more-menu-btn"
+          class="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="more-menu"
+        >
           More
-          <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-        <div class="absolute top-full right-0 mt-2 w-40 bg-bg-surface border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+        <div
+          id="more-menu"
+          role="menu"
+          aria-labelledby="more-menu-btn"
+          class="absolute top-full right-0 mt-2 w-40 bg-bg-surface border border-border rounded-lg shadow-lg opacity-0 invisible transition-all duration-150"
+        >
           {moreLinks.map((l) => (
             <a
               href={l.href}
+              role="menuitem"
               class="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors first:rounded-t-lg last:rounded-b-lg"
             >
               {l.label}
@@ -66,7 +78,7 @@ const moreLinks = [
 
     <button
       id="mobile-menu-btn"
-      class="md:hidden p-2 border border-border rounded-md text-text-secondary hover:text-text-primary"
+      class="md:hidden p-3 border border-border rounded-md text-text-secondary hover:text-text-primary"
       aria-label="Toggle menu"
       aria-expanded="false"
     >
@@ -95,6 +107,7 @@ const moreLinks = [
 </nav>
 
 <script>
+  // Menu mobile
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
   const icon = document.getElementById('menu-icon');
@@ -107,6 +120,53 @@ const moreLinks = [
       icon.innerHTML = isOpen
         ? '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>'
         : '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+    });
+  }
+
+  // Dropdown More — accessibile da tastiera e hover
+  const moreBtn = document.getElementById('more-menu-btn');
+  const moreMenu = document.getElementById('more-menu');
+
+  function openMore() {
+    moreMenu?.classList.remove('opacity-0', 'invisible');
+    moreMenu?.classList.add('opacity-100', 'visible');
+    moreBtn?.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeMore() {
+    moreMenu?.classList.add('opacity-0', 'invisible');
+    moreMenu?.classList.remove('opacity-100', 'visible');
+    moreBtn?.setAttribute('aria-expanded', 'false');
+  }
+
+  if (moreBtn && moreMenu) {
+    const wrapper = moreBtn.parentElement!;
+
+    // Hover
+    wrapper.addEventListener('mouseenter', openMore);
+    wrapper.addEventListener('mouseleave', closeMore);
+
+    // Tastiera: Enter/Space apre, Escape chiude
+    moreBtn.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const isOpen = moreBtn.getAttribute('aria-expanded') === 'true';
+        isOpen ? closeMore() : openMore();
+      }
+      if (e.key === 'Escape') closeMore();
+    });
+
+    // Chiudi al click fuori
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target as Node)) closeMore();
+    });
+
+    // Escape dall'interno dei menu item
+    moreMenu.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeMore();
+        moreBtn.focus();
+      }
     });
   }
 </script>

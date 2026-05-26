@@ -5,7 +5,7 @@ import { researchSources, researchClosing } from '../lib/researchContent';
 ---
 
 <Shell title="Research Foundation — GEO Optimizer" description="The GEO Optimizer research foundation covers peer-reviewed papers, benchmarks, and industry reports that inform every AI visibility scoring decision." canonical="https://geoready.dev/research">
-  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
     {/* Header */}
     <header class="max-w-2xl mb-14 md:mb-20">
       <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
@@ -64,7 +64,7 @@ import { researchSources, researchClosing } from '../lib/researchContent';
         </p>
       </blockquote>
     </div>
-  </main>
+  </div>
 
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
@@ -83,7 +83,7 @@ import { researchSources, researchClosing } from '../lib/researchContent';
       "url": "https://github.com/Auriti-Labs"
     },
     "datePublished": "2026-05-12",
-    "dateModified": "2026-05-12",
+    "dateModified": "2026-05-26",
     "mainEntity": {
       "@type": "ItemList",
       "itemListElement": researchSources.map((s, i) => ({

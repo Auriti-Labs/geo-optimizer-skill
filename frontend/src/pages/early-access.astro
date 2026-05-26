@@ -9,7 +9,7 @@ import SurveyForm from '../components/SurveyForm';
   description="GeoReady founding access is now open. Run a free audit, create an account, or start with Pro for full 8-category reports, monitoring, and alerts."
   canonical="https://geoready.dev/early-access"
 >
-  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
     <header class="mb-10">
       <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
         <span>GEO Optimizer</span>
@@ -36,6 +36,9 @@ import SurveyForm from '../components/SurveyForm';
         >
           Create free account
         </a>
+        <p class="text-xs text-text-muted mt-2 text-center">
+          app.geoready.dev — the GeoReady monitoring platform built on GEO Optimizer
+        </p>
         <a
           href="https://app.geoready.dev/pricing"
           class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-accent-teal text-sm font-semibold hover:underline transition-colors"
@@ -126,7 +129,7 @@ import SurveyForm from '../components/SurveyForm';
       </div>
       <SurveyForm client:load />
     </div>
-  </main>
+  </div>
 
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",

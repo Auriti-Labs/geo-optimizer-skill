@@ -58,6 +58,8 @@ const {
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#6366f1">
   <link rel="alternate" type="application/atom+xml" title="GEO Optimizer Releases" href="https://github.com/Auriti-Labs/geo-optimizer-skill/releases.atom">
+  <link rel="alternate" hreflang="en" href={canonical}>
+  <link rel="alternate" hreflang="x-default" href={canonical}>
   <!-- Google Analytics: caricato da CookieConsentManager solo dopo consenso esplicito -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
@@ -77,7 +79,9 @@ const {
         "sameAs": [
           "https://github.com/Auriti-Labs",
           "https://pypi.org/project/geo-optimizer-skill/",
-          "https://geoready.dev"
+          "https://geoready.dev",
+          "https://www.linkedin.com/company/auriti-labs",
+          "https://www.crunchbase.com/organization/auriti-labs"
         ]
       },
       {
@@ -111,6 +115,7 @@ const {
   })} />
 </head>
 <body class="bg-bg-base text-text-primary">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-accent-teal focus:text-white focus:rounded-lg focus:text-sm focus:font-medium">Skip to main content</a>
   <slot />
 </body>
 </html>

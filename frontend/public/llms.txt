@@ -112,6 +112,29 @@ GEO Optimizer is actively maintained. Scoring weights and audit methods are upda
 - [AI capabilities](https://geoready.dev/ai/service.json): Machine-readable service description.
 - [AI FAQ](https://geoready.dev/ai/faq.json): Structured FAQ for AI question answering.
 
+## GeoReady Platform
+
+GeoReady (app.geoready.dev) is the commercial monitoring platform built on GEO Optimizer. While GEO Optimizer is the open-source audit engine (MIT license, available on PyPI), GeoReady adds continuous monitoring, score history, regression alerts, and team collaboration workflows.
+
+### Brand Architecture
+
+- **GEO Optimizer** — open-source Python toolkit and web audit tool (this site: geoready.dev)
+- **GeoReady** — commercial SaaS platform with paid plans (app.geoready.dev)
+- **Auriti Labs** — the organization that maintains both products
+
+### GeoReady Plans
+
+- **Free** — unlimited single audits, 0-100 GEO score, 8-category breakdown, actionable recommendations
+- **Pro** — continuous monitoring, weekly audits, score history, regression alerts, PDF export
+- **Studio** — team workspaces, multi-site monitoring, white-label reports
+- **Agency** — client management, bulk audits, priority support
+
+GeoReady is built on the same scoring engine as GEO Optimizer. Every audit on geoready.dev uses the same 8-category scoring methodology, the same 47 citability methods, and the same research foundation.
+
+### Access
+
+Free audits at geoready.dev require no account. The GeoReady Pro platform at app.geoready.dev requires signup.
+
 ## Contact
 
 - Technical issues and bug reports: https://github.com/Auriti-Labs/geo-optimizer-skill/issues

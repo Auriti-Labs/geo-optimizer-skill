@@ -5,7 +5,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
 ---
 
 <Shell title="Product Roadmap — GEO Optimizer CLI & Web" description="Explore the open-source GEO Optimizer roadmap for CLI, web app, API, monitoring, AI visibility audits, and future GEO research workflows." canonical="https://geoready.dev/roadmap">
-  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10 md:py-16">
     {/* Hero */}
     <header class="max-w-2xl mb-14 md:mb-20">
       <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
@@ -122,7 +122,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
         </a>
       </div>
     </section>
-  </main>
+  </div>
 
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
@@ -141,7 +141,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
       "url": "https://github.com/Auriti-Labs"
     },
     "datePublished": "2026-05-12",
-    "dateModified": "2026-05-12",
+    "dateModified": "2026-05-26",
     "mainEntity": {
       "@type": "ItemList",
       "itemListElement": roadmapPhases.map((phase, i) => ({
