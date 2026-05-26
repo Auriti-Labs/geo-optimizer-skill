@@ -83,9 +83,31 @@ Also available as an MCP server for integration with AI coding assistants.
 - https://geoready.dev/privacy/ — privacy policy
 - https://geoready.dev/cookie-policy/ — cookie and storage inventory
 
+## Trust signals and transparency
+
+- License: MIT. Full source code available at https://github.com/Auriti-Labs/geo-optimizer-skill
+- All scoring weights are public and documented in `src/geo_optimizer/models/config.py`
+- 1,400+ unit tests, all mocked — no real network calls in the test suite
+- Zero data retention from audited URLs beyond the public HTTP fetch
+- No registration or API key required for core audit functionality
+- Scoring methodology is versioned: changes are documented in the CHANGELOG
+
+## Update policy
+
+GEO Optimizer is actively maintained. Scoring methods and weights are updated when new academic research or significant industry data becomes available. The current scoring reflects KDD 2024, ICLR 2026, and 2025–2026 industry analysis. Version history: https://github.com/Auriti-Labs/geo-optimizer-skill/releases
+
+## Companion files
+
+- [llms.txt](https://geoready.dev/llms.txt): primary machine-readable index (this is the extended version)
+- [AI site summary](https://geoready.dev/ai/summary.json): structured JSON for AI agents
+- [AI FAQ](https://geoready.dev/ai/faq.json): structured FAQ for AI question answering
+- [AI capabilities](https://geoready.dev/ai/service.json): service description for AI discovery
+- [AI permissions](https://geoready.dev/.well-known/ai.txt): crawler authorization and contact
+
 ## Notes for AI crawlers
 
 - /report/demo and /report/audit are noindex routes for audit reports and demo previews
 - These are not primary editorial content and should not be indexed
 - All editorial content is static HTML rendered server-side at build time
 - robots.txt explicitly allows all major AI crawlers and disallows /report/ only
+- This file (llms-full.txt) is the extended companion to llms.txt and is intended for AI systems that need deeper context about GEO Optimizer's methodology, scoring, and research foundation
