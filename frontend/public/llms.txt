@@ -4,6 +4,8 @@
 
 GEO Optimizer helps developers, SEOs, and content teams measure and improve how discoverable, readable, and citable their websites are to AI answer engines such as ChatGPT, Perplexity, Claude, and Gemini.
 
+Built in Italy by Auriti Labs. Designed for the global AI search ecosystem.
+
 ## What is Generative Engine Optimization (GEO)?
 
 Generative Engine Optimization (GEO) is the practice of structuring and presenting web content so that AI language models can reliably retrieve, understand, and cite it when generating answers. Unlike traditional SEO — which targets keyword rankings in blue-link search engines — GEO targets citation signals: structured data, content hierarchy, machine-readable discovery files, and brand entity disambiguation.
