@@ -16,17 +16,30 @@ Some of these themes will span multiple releases. Specific scope may shift as re
 
 ## Release Calendar
 
-| Version | Window | Codename | Theme |
-|---------|--------|----------|-------|
-| v4.10.0 | Late May / Early Jun 2026 | **Veil** | Signal architecture refinement |
-| v4.11.0 | Mid / Late Jul 2026 | **Static** | Expanded retrieval surface analysis |
-| v4.12.0 | Sep 2026 | **Ledger** | Scoring model recalibration |
-| v4.13.0 | Nov 2026 | **Quiet Glass** | Structural pattern recognition |
-| v4.14.0-rc1 | Jan 2027 | **Threshold** | Pre-release validation cycle |
-| v4.14.0-rc2 / v4.15.0 | Mar 2027 | **Pale Signal** | Stabilization and edge resolution |
-| v5.0.0 | May 2027 | **Black Archive** | Next-generation audit framework |
+| Version | Window | Codename | Theme | Status |
+|---------|--------|----------|-------|--------|
+| v4.10.0 | Late May / Early Jun 2026 | **Veil** | Signal architecture refinement | Shipped |
+| v4.11.0 | May 2026 (advanced from Jul 2026) | **Static** | Expanded retrieval surface analysis | Shipped — MVP A |
+| v4.12.0 | Sep 2026 | **Ledger** | Scoring model recalibration | Planned |
+| v4.13.0 | Nov 2026 | **Quiet Glass** | Structural pattern recognition | Planned |
+| v4.14.0-rc1 | Jan 2027 | **Threshold** | Pre-release validation cycle | Planned |
+| v4.14.0-rc2 / v4.15.0 | Mar 2027 | **Pale Signal** | Stabilization and edge resolution | Planned |
+| v5.0.0 | May 2027 | **Black Archive** | Next-generation audit framework | Planned |
 
-Release windows are estimates. Dates may shift based on validation outcomes and testing discipline.
+Release windows are estimates. Dates may shift based on validation outcomes and testing discipline. v4.11.0 advanced from its original Jul 2026 window because the MVP A scope was validated and stabilised earlier than planned; subsequent windows remain unchanged.
+
+## Static Cycle — MVP Track
+
+The **Static** codename groups four MVPs covering retrieval-surface visibility. Only MVP A is shipped; the remaining MVPs are sequenced across the v4.11–v4.13 cycle.
+
+| MVP | Scope | Status |
+|-----|-------|--------|
+| **A — Crawler Evidence & Access Simulation** | AI Crawler Activity Analytics (`/api/logs/analyze`, `geo logs`) and Agent Access Audit (`geo access`, browser-vs-bot simulation) | Shipped in v4.11.0 |
+| **B — Semantic Drift Monitoring** | Cross-snapshot drift detection over content and citation-readiness signals | Next |
+| **C — AI Perception Snapshot** | Enriched simulated-perception extraction from page signals | Planned |
+| **D — WordPress Connector** | First-party connector for WordPress sites and headless setups | Planned |
+
+MVP B–D scope and exact target releases will be confirmed as MVP A adoption signal and validation feedback come in.
 
 ## Release Philosophy
 
