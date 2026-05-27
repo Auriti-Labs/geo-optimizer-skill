@@ -59,13 +59,19 @@ static_dir = Path(os.environ.get("GEO_STATIC_DIR", str(Path(__file__).parent / "
 
 # ─── Middleware: POST body size limit ─────────────────────────────────────────
 _MAX_BODY_BYTES = 4 * 1024  # 4 KB — prevents DoS from unlimited POST bodies
+_MAX_LOG_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB for /api/logs/analyze
+_LOG_UPLOAD_PATH = "/api/logs/analyze"
 
 
 class BodySizeLimitMiddleware(BaseHTTPMiddleware):
-    """Rejects POST requests with body larger than _MAX_BODY_BYTES (fix #102)."""
+    """Rejects POST requests with body larger than _MAX_BODY_BYTES (fix #102).
+
+    Exception: /api/logs/analyze allows up to _MAX_LOG_UPLOAD_BYTES (10 MB).
+    """
 
     async def dispatch(self, request: Request, call_next):
         if request.method == "POST":
+            limit = _MAX_LOG_UPLOAD_BYTES if request.url.path == _LOG_UPLOAD_PATH else _MAX_BODY_BYTES
             content_length = request.headers.get("content-length")
             if content_length is not None:
                 try:
@@ -75,19 +81,19 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
                         status_code=400,
                         content={"detail": "Invalid Content-Length header."},
                     )
-                if length_bytes > _MAX_BODY_BYTES:
+                if length_bytes > limit:
                     return JSONResponse(
                         status_code=413,
-                        content={"detail": f"Body too large. Limit: {_MAX_BODY_BYTES} bytes."},
+                        content={"detail": f"Body too large. Limit: {limit} bytes."},
                     )
             else:
                 # Fix #411: enforce size limit on chunked/streaming bodies without Content-Length
                 try:
                     body = await request.body()
-                    if len(body) > _MAX_BODY_BYTES:
+                    if len(body) > limit:
                         return JSONResponse(
                             status_code=413,
-                            content={"detail": f"Body too large. Limit: {_MAX_BODY_BYTES} bytes."},
+                            content={"detail": f"Body too large. Limit: {limit} bytes."},
                         )
                 except Exception:
                     return JSONResponse(status_code=400, content={"detail": "Failed to read request body."})
@@ -1963,6 +1969,65 @@ async def gap_analysis(request: Request, body: GapAnalysisRequest):
     }
 
     return JSONResponse(content=response_data)
+
+
+@app.post("/api/logs/analyze")
+async def analyze_logs(request: Request):
+    """Analyze a server log file for AI crawler activity.
+
+    Accepts a multipart file upload (Apache/Nginx combined or JSON lines format).
+    Field name: 'file'. Max 10 MB — enforced by BodySizeLimitMiddleware.
+    Returns LogAnalysisResult as JSON.
+    """
+    import tempfile
+
+    if not _verify_bearer_token(request):
+        raise HTTPException(
+            status_code=401,
+            detail="Missing or invalid authentication token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    try:
+        form = await request.form()
+        upload = form.get("file")
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Failed to parse multipart form.") from exc
+
+    if upload is None:
+        raise HTTPException(status_code=400, detail="No file uploaded. Send a multipart field named 'file'.")
+
+    try:
+        content = await upload.read()
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Failed to read uploaded file.") from exc
+
+    if len(content) > _MAX_LOG_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail=f"File too large. Limit: {_MAX_LOG_UPLOAD_BYTES} bytes.")
+
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".log") as tmp:
+            tmp.write(content)
+            tmp_path = tmp.name
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail="Failed to create temporary file.") from exc
+
+    try:
+        from geo_optimizer.core.log_analyzer import analyze_log_file
+
+        result = await asyncio.to_thread(analyze_log_file, tmp_path)
+    except Exception as exc:
+        logger.error("Log analysis error: %s", exc)
+        raise HTTPException(status_code=500, detail="Log analysis failed. Check file format.") from exc
+    finally:
+        import os as _os
+
+        try:
+            _os.unlink(tmp_path)
+        except OSError:
+            pass
+
+    return JSONResponse(content=dataclasses.asdict(result))
 
 
 # Serve il frontend Astro buildato

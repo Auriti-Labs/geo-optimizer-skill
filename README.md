@@ -152,8 +152,18 @@ Quotation +41% · Statistics +33% · Fluency +29% · Cite Sources +27% · and 43
 
 ```bash
 geo coherence --sitemap https://example.com/sitemap.xml  # Cross-page terminology consistency
-geo logs --file access.log                                # AI crawler log analysis
+geo logs --file access.log                                # AI Crawler Activity — crawler evidence from user-agent logs
+geo access --url https://example.com                      # Agent Access Audit — browser vs AI bot access simulation
 ```
+
+GEO Optimizer checks whether websites can be **crawled, understood, cited, and monitored** by AI answer engines:
+
+- **Crawled** — robots.txt, CDN access, AI-bot reachability
+- **Understood** — schema, llms.txt, content structure
+- **Cited** — citability signals across 47 research-backed methods
+- **Monitored** — `geo logs` (crawler evidence) and `geo access` (access simulation)
+
+Note on wording: AI Crawler Activity reports crawler evidence from server-log user-agents, **not** AI answer citation tracking. Agent Access Audit reports *citation readiness* (whether bots can reach and parse the page) — it does **not** guarantee AI citations.
 
 Optional LLM-powered analysis (`pip install geo-optimizer-skill[llm]`):
 brand sentiment, citation attribution, multi-turn persistence, cross-platform citation map, prompt library.

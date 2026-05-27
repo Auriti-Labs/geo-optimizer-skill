@@ -143,9 +143,7 @@ def test_load_entry_points_con_plugin_valido():
     mock_ep.load.return_value = _MockCheck
 
     # Patch sys.version_info per il branch Python >= 3.10
-    import sys
-
-    original_version = sys.version_info
+    import sys  # noqa: F401
 
     with patch("geo_optimizer.core.registry.sys") as mock_sys:
         mock_sys.version_info = (3, 10, 0)

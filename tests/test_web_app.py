@@ -131,7 +131,7 @@ def test_homepage_ritorna_200_e_html(client):
 def test_homepage_contiene_form_audit(client):
     """L'homepage deve contenere il form per l'URL di audit."""
     response = client.get("/")
-    assert b"url-input" in response.content
+    assert b"audit-url" in response.content
     assert b"GEO Optimizer" in response.content
 
 

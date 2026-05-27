@@ -5,6 +5,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.11.0] — 2026-05-27
+
+### Added
+- **AI Crawler Activity Analytics** — new `POST /api/logs/analyze` endpoint and `geo logs` CLI command parse server access logs (Apache/Nginx common/combined formats) and aggregate AI crawler evidence by user-agent. Reports per-bot request counts, blocked/failing crawler detection (4xx/5xx ratios), top requested paths, and time-window summaries. Output is crawler evidence from log user-agents — **not** AI answer citation tracking.
+- **Agent Access Audit / Bot Simulator** — new `geo access` CLI command and `run_agent_access_audit()` core function simulate how AI agents experience a URL. Compares baseline browser access vs simulated AI bot user-agents (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, etc.), surfacing differential blocking, robots.txt disallow rules, and HTTP-status divergence. Returns an overall status of `accessible | partial | blocked | unknown`.
+- **AgentAccessResult, SemanticDriftDelta, PerceptionSnapshot** dataclasses in `models/results.py` — public output contracts for the access audit, drift detection, and perception extraction workflows.
+- **drift_detector** core module — foundational scaffolding for semantic drift comparison between content snapshots (delta surface, citation-readiness signal hooks). Public model only in this release; full MVP B detector ships in a later cycle.
+- **perception_extractor** core module — extracts a *simulated* perception snapshot of how an AI agent would summarize a page from its HTML, schema, and meta signals. Output represents simulated perception, not what any specific AI assistant actually answers.
+- **GeoReady Platform integration** — dashboard and API surface in the hosted platform consume the new logs/analyze endpoint to render AI crawler activity per domain.
+
+### Tests
+- 1579 tests (all mocked, zero network), up from 1519
+- 60 new tests across `test_agent_access.py` (13), `test_drift_detector.py` (15), `test_perception_extractor.py` (19), `test_web_logs_endpoint.py` (5), `test_audit_contract.py` (8)
+
+### Notes
+- No breaking CLI changes. Existing `geo audit`, `geo fix`, `geo llms`, `geo schema` invocations are unchanged.
+- AI Crawler Activity reflects crawler user-agent evidence from server logs, **not** AI answer citation tracking.
+- Agent Access Audit reports *citation readiness* (whether a bot can reach and parse the page), **not** guaranteed AI citations.
+- Perception snapshots represent *simulated perception* derived from page signals, not the actual response of any AI assistant.
+
+### Codename — Static
+First release in the **Static** cycle: expanded retrieval surface analysis. MVP A delivers crawler-evidence and access-simulation primitives. MVP B (Semantic Drift detector), MVP C (AI Perception Snapshot enrichment), and MVP D (WordPress Connector) remain on the roadmap and are not yet shipped.
+
+---
+
 ## [4.10.3] — 2026-05-10
 
 ### Added

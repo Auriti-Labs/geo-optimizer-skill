@@ -1211,3 +1211,88 @@ class FixPlan:
     score_estimated_after: int = 0
     fixes: list[FixItem] = field(default_factory=list)
     skipped: list[str] = field(default_factory=list)
+
+
+# ─── Agent Access ─────────────────────────────────────────────────────────────
+
+
+@dataclass
+class AgentAccessResult:
+    """Unified result for agent access audit (geo access command).
+
+    Aggregates robots, CDN, JS rendering, noai meta, and AI discovery checks
+    into a single actionable result.
+    Status values: 'accessible' | 'partial' | 'blocked' | 'unknown'
+    """
+
+    url: str = ""
+    overall_status: str = "unknown"
+    robots_allows_citation_bots: bool = False
+    robots_blocks: list[str] = field(default_factory=list)
+    cdn_challenge_detected: bool = False
+    js_required: bool = False
+    noai_meta_present: bool = False
+    x_robots_noai: bool = False
+    x_robots_noindex: bool = False
+    ai_discovery_score: int = 0
+    blocking_issues: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    passing: list[str] = field(default_factory=list)
+
+
+# ─── Semantic Drift ───────────────────────────────────────────────────────────
+
+
+@dataclass
+class SemanticDriftDelta:
+    """Delta between two GEO audit snapshots for drift detection.
+
+    Severity values: 'critical' | 'warning' | 'info' | 'none'
+    """
+
+    entity_changed: bool = False
+    entity_before: str | None = None
+    entity_after: str | None = None
+    schema_types_removed: list[str] = field(default_factory=list)
+    score_delta: int = 0
+    category_deltas: dict[str, int] = field(default_factory=dict)
+    topic_changed: bool = False
+    canonical_changed: bool = False
+    crawlable_before: bool = True
+    crawlable_after: bool = True
+    blocking_issues_hint: str = ""
+    severity: str = "none"
+    detected_at: str = ""
+
+
+# ─── AI Perception ───────────────────────────────────────────────────────────
+
+
+@dataclass
+class PerceptionSnapshot:
+    """Deterministic AI perception extraction from an AuditResult.
+
+    Represents what an AI/retrieval system would likely extract from the page.
+    Always includes a disclaimer: this is simulated, not real AI output.
+
+    mode values: 'deterministic' | 'llm'
+    """
+
+    url: str = ""
+    mode: str = "deterministic"
+    brand_name: str | None = None
+    brand_entity_type: str | None = None
+    main_topic: str | None = None
+    detected_services: list[str] = field(default_factory=list)
+    detected_audience: str | None = None
+    evidence_snippets: list[dict] = field(default_factory=list)
+    supported_claims: list[str] = field(default_factory=list)
+    unsupported_claims: list[str] = field(default_factory=list)
+    citation_worthy_facts: list[str] = field(default_factory=list)
+    ambiguities: list[str] = field(default_factory=list)
+    missing_authority_signals: list[str] = field(default_factory=list)
+    ai_readable_summary: str | None = None
+    schema_types_present: list[str] = field(default_factory=list)
+    trust_score: float | None = None
+    citability_grade: str | None = None
+    disclaimer: str = "Simulated AI perception based on deterministic analysis. Not a real AI system output."
