@@ -199,7 +199,7 @@ export default function WaitlistForm() {
         />
         <label htmlFor="wl-consent" className="text-sm text-text-secondary leading-relaxed cursor-pointer">
           I agree to be contacted about GeoReady early access. See our{" "}
-          <a href="/privacy" className="text-accent-teal hover:underline">
+          <a href="/privacy/" className="text-accent-teal hover:underline">
             Privacy Policy
           </a>
           . No newsletters, no spam.

@@ -30,9 +30,9 @@ export default function CookieBanner({
             <p className="text-sm text-text-secondary leading-relaxed">
               We use only the cookies and storage necessary for the site to function.
               Analytics and marketing are disabled by default. You can customize your preferences or learn more in our{' '}
-              <a href="/cookie-policy" className="text-accent-teal hover:underline underline-offset-2">Cookie Policy</a>{' '}
+              <a href="/cookie-policy/" className="text-accent-teal hover:underline underline-offset-2">Cookie Policy</a>{' '}
               and{' '}
-              <a href="/privacy" className="text-accent-teal hover:underline underline-offset-2">Privacy Policy</a>.
+              <a href="/privacy/" className="text-accent-teal hover:underline underline-offset-2">Privacy Policy</a>.
             </p>
           </div>
 

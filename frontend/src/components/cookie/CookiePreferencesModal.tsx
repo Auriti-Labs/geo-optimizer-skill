@@ -98,7 +98,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
         <div className="px-5 py-4 space-y-4">
           <p className="text-sm text-text-secondary leading-relaxed">
             You can choose which categories of cookies and storage you accept. Necessary items cannot be disabled.{' '}
-            <a href="/cookie-policy" className="text-accent-teal hover:underline underline-offset-2">Learn more</a>.
+            <a href="/cookie-policy/" className="text-accent-teal hover:underline underline-offset-2">Learn more</a>.
           </p>
 
           {/* Category toggles */}
