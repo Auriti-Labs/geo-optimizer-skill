@@ -29,6 +29,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.middleware.base import BaseHTTPMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from geo_optimizer import __version__
 from geo_optimizer.core.telemetry import (
@@ -134,6 +135,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(BodySizeLimitMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
+# ProxyHeadersMiddleware propagates X-Forwarded-Proto to Starlette scope,
+# so StaticFiles trailing-slash redirects use https:// not http://
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 # CORS: configurable via ALLOWED_ORIGINS env var (fix #183)
 # Default "*" for public demo. In production set ALLOWED_ORIGINS=https://yourdomain.com
