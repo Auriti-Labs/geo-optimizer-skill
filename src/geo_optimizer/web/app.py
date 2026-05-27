@@ -137,7 +137,7 @@ app.add_middleware(BodySizeLimitMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 # ProxyHeadersMiddleware propagates X-Forwarded-Proto to Starlette scope,
 # so StaticFiles trailing-slash redirects use https:// not http://
-app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=["127.0.0.1", "::1"])
 
 # CORS: configurable via ALLOWED_ORIGINS env var (fix #183)
 # Default "*" for public demo. In production set ALLOWED_ORIGINS=https://yourdomain.com
