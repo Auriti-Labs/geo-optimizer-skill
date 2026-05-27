@@ -275,12 +275,14 @@ Environment=ALLOWED_ORIGINS=https://${DOMAIN}
 Environment=GEO_LANG=it
 Environment=PORT=${APP_PORT}
 
-# Run always (avvia container Docker)
+# Use host networking so Uvicorn sees Nginx as a trusted local proxy.
+# This keeps ProxyHeadersMiddleware effective and prevents Starlette
+# directory redirects from generating http:// Location headers.
 ExecStart=/usr/bin/docker run --rm \
     -e ALLOWED_ORIGINS=https://${DOMAIN} \
     -e GEO_LANG=it \
     -e PORT=${APP_PORT} \
-    -p ${APP_PORT}:${APP_PORT} \
+    --network host \
     --name geo-web \
     geo-optimizer-web
 

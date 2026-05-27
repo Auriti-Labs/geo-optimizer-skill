@@ -30,12 +30,15 @@ docker stop "${CONTAINER_NAME}" 2>/dev/null || true
 docker rm "${CONTAINER_NAME}" 2>/dev/null || true
 
 echo "[4/5] Avvio nuovo container..."
+# Use host networking so Uvicorn sees Nginx as a trusted local proxy.
+# This keeps ProxyHeadersMiddleware effective and prevents Starlette
+# directory redirects from generating http:// Location headers.
 docker run -d \
     --name "${CONTAINER_NAME}" \
+    --network host \
     -e ALLOWED_ORIGINS=https://geoready.dev \
     -e GEO_LANG=it \
     -e PORT=${PORT} \
-    -p ${PORT}:${PORT} \
     --restart unless-stopped \
     "${IMAGE_NAME}"
 
