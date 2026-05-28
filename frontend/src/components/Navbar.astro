@@ -1,21 +1,28 @@
 ---
 const version = "v4.11.1";
-const links = [
+
+// Visibili sempre in desktop
+const primaryLinks = [
   { label: "Audit", href: "/" },
   { label: "Compare", href: "/compare/" },
   { label: "Analyze", href: "/analyze-competitors/" },
 ];
 
+// Nascoste nel dropdown "More"
 const moreLinks = [
-  { label: "Pricing", href: "/pricing/" },
-  { label: "Research", href: "/research/" },
-  { label: "Roadmap", href: "/roadmap/" },
-  { label: "Manifesto", href: "/manifesto/" },
+  { label: "Research", href: "/research/", desc: "Princeton KDD + AutoGEO ICLR" },
+  { label: "Roadmap", href: "/roadmap/", desc: "What's coming next" },
+  { label: "Manifesto", href: "/manifesto/", desc: "Why we built GeoReady" },
 ];
+
+// Promosso fuori dal dropdown ma fuori da primary
+const featuredLink = { label: "Pricing", href: "/pricing/" };
 ---
 
-<nav class="sticky top-0 z-50 bg-bg-base/90 backdrop-blur-md border-b border-border">
-  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<nav class="sticky top-0 z-50 bg-bg-base/85 backdrop-blur-xl border-b border-border">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+
+    <!-- Logo -->
     <a href="/" class="flex items-center gap-2.5 shrink-0">
       <svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <rect width="48" height="48" rx="11" fill="#0D9488"/>
@@ -25,29 +32,40 @@ const moreLinks = [
       <span class="font-display font-bold text-base tracking-tight">
         <span class="text-accent-teal">Geo</span><span class="text-text-primary">Ready</span>
       </span>
-      <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-bg-subtle text-text-secondary border border-border">{version}</span>
+      <span class="hidden sm:inline font-mono text-[10px] px-1.5 py-0.5 rounded bg-bg-subtle text-text-secondary border border-border">{version}</span>
     </a>
 
-    <div class="hidden md:flex items-center gap-8">
-      {links.map((l) => (
+    <!-- Desktop nav -->
+    <div class="hidden md:flex items-center gap-1">
+      {primaryLinks.map((l) => (
         <a
           href={l.href}
-          class="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+          class="px-3 py-1.5 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors"
         >
           {l.label}
         </a>
       ))}
-      <span class="w-px h-4 bg-border"></span>
-      <div class="relative">
+
+      <!-- Featured: Pricing fuori dal dropdown, badge accent -->
+      <a
+        href={featuredLink.href}
+        class="ml-1 px-3 py-1.5 rounded-md text-sm font-medium text-accent-teal hover:bg-accent-teal/10 transition-colors flex items-center gap-1.5"
+      >
+        <span class="w-1.5 h-1.5 rounded-full bg-accent-teal animate-pulse"></span>
+        {featuredLink.label}
+      </a>
+
+      <!-- More dropdown -->
+      <div class="relative ml-1">
         <button
           id="more-menu-btn"
-          class="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1"
+          class="px-3 py-1.5 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors flex items-center gap-1"
           aria-haspopup="true"
           aria-expanded="false"
           aria-controls="more-menu"
         >
           More
-          <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg id="more-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="transition-transform duration-200">
             <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
@@ -55,104 +73,247 @@ const moreLinks = [
           id="more-menu"
           role="menu"
           aria-labelledby="more-menu-btn"
-          class="absolute top-full right-0 mt-2 w-40 bg-bg-surface border border-border rounded-lg shadow-lg opacity-0 invisible transition-all duration-150"
+          class="absolute top-full right-0 mt-2 w-64 bg-bg-surface border border-border rounded-xl shadow-xl opacity-0 invisible translate-y-1 transition-all duration-150 overflow-hidden"
         >
           {moreLinks.map((l) => (
             <a
               href={l.href}
               role="menuitem"
-              class="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors first:rounded-t-lg last:rounded-b-lg"
+              class="flex flex-col gap-0.5 px-4 py-3 text-sm hover:bg-bg-subtle transition-colors border-b border-border last:border-0"
             >
-              {l.label}
+              <span class="font-medium text-text-primary">{l.label}</span>
+              <span class="text-xs text-text-secondary">{l.desc}</span>
             </a>
           ))}
         </div>
       </div>
-      <span class="w-px h-4 bg-border"></span>
-      <a
-        href="https://github.com/Auriti-Labs/geo-optimizer-skill"
-        target="_blank"
-        rel="noopener"
-        class="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1.5"
-      >
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-        </svg>
-        GitHub
-      </a>
+
+      <!-- Right cluster -->
+      <div class="ml-3 flex items-center gap-2">
+        <a
+          href="https://github.com/Auriti-Labs/geo-optimizer-skill"
+          target="_blank"
+          rel="noopener"
+          aria-label="GitHub repository"
+          class="w-9 h-9 flex items-center justify-center rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+        <a
+          href="https://app.geoready.dev/signup"
+          class="px-4 py-1.5 rounded-md bg-accent-teal text-white text-sm font-semibold hover:bg-accent-teal-dark transition-colors shadow-sm"
+        >
+          Get started
+        </a>
+      </div>
     </div>
 
+    <!-- Mobile burger -->
     <button
       id="mobile-menu-btn"
-      class="md:hidden p-3 border border-border rounded-md text-text-secondary hover:text-text-primary"
+      class="md:hidden relative w-10 h-10 flex items-center justify-center rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors"
       aria-label="Toggle menu"
       aria-expanded="false"
+      aria-controls="mobile-menu"
     >
-      <svg id="menu-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
+      <span class="sr-only">Menu</span>
+      <span id="burger-icon" class="block w-5 h-[14px] relative">
+        <span class="absolute left-0 top-0 w-full h-[2px] bg-current rounded-full transition-all duration-300 origin-center"></span>
+        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[2px] bg-current rounded-full transition-all duration-300"></span>
+        <span class="absolute left-0 bottom-0 w-full h-[2px] bg-current rounded-full transition-all duration-300 origin-center"></span>
+      </span>
     </button>
   </div>
 
-  <div id="mobile-menu" class="md:hidden hidden border-t border-border bg-bg-surface">
-    <div class="px-6 py-4 flex flex-col gap-1">
-      {links.map((l) => (
-        <a href={l.href} class="py-2 text-sm font-medium text-text-secondary hover:text-text-primary border-b border-border last:border-0">
-          {l.label}
+  <!-- Mobile fullscreen overlay -->
+  <div
+    id="mobile-menu"
+    class="md:hidden fixed inset-0 top-16 z-40 bg-bg-base/95 backdrop-blur-xl pointer-events-none opacity-0 transition-opacity duration-200"
+    aria-hidden="true"
+  >
+    <div class="h-full overflow-y-auto px-6 pt-6 pb-12 flex flex-col">
+
+      <!-- Featured CTA in cima -->
+      <a
+        href="/pricing/"
+        class="group relative overflow-hidden rounded-2xl border border-accent-teal/30 bg-gradient-to-br from-accent-teal/10 to-accent-teal/5 px-5 py-4 mb-6 transition-all hover:border-accent-teal/60"
+        data-mobile-link
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-2 h-2 rounded-full bg-accent-teal animate-pulse"></span>
+              <span class="text-[10px] font-mono uppercase tracking-wider text-accent-teal">Pricing</span>
+            </div>
+            <p class="font-display text-lg font-bold text-text-primary leading-tight">Plans starting at $0</p>
+            <p class="text-xs text-text-secondary mt-1">Free audit · Pro · Studio · Agency</p>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent-teal group-hover:translate-x-1 transition-transform" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </div>
+      </a>
+
+      <!-- Section: Tools -->
+      <div class="mb-6">
+        <p class="text-[10px] font-mono uppercase tracking-[0.15em] text-text-muted mb-2 px-1">Tools</p>
+        <div class="flex flex-col">
+          {primaryLinks.map((l) => (
+            <a
+              href={l.href}
+              data-mobile-link
+              class="flex items-center justify-between py-3 px-1 text-base font-medium text-text-primary border-b border-border last:border-0 hover:text-accent-teal transition-colors"
+            >
+              <span>{l.label}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-text-muted" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Section: Learn more -->
+      <div class="mb-6">
+        <p class="text-[10px] font-mono uppercase tracking-[0.15em] text-text-muted mb-2 px-1">Learn more</p>
+        <div class="flex flex-col">
+          {moreLinks.map((l) => (
+            <a
+              href={l.href}
+              data-mobile-link
+              class="flex flex-col gap-0.5 py-3 px-1 border-b border-border last:border-0 hover:bg-bg-subtle/50 transition-colors"
+            >
+              <span class="text-base font-medium text-text-primary">{l.label}</span>
+              <span class="text-xs text-text-secondary">{l.desc}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Sticky bottom CTA -->
+      <div class="mt-auto pt-6 flex flex-col gap-3 border-t border-border">
+        <a
+          href="https://app.geoready.dev/signup"
+          data-mobile-link
+          class="w-full text-center py-3 rounded-xl bg-accent-teal text-white font-semibold text-base shadow-sm hover:bg-accent-teal-dark transition-colors"
+        >
+          Get started — free
         </a>
-      ))}
-      {moreLinks.map((l) => (
-        <a href={l.href} class="py-2 text-sm font-medium text-text-secondary hover:text-text-primary border-b border-border last:border-0">
-          {l.label}
+        <a
+          href="https://app.geoready.dev/login"
+          data-mobile-link
+          class="w-full text-center py-3 rounded-xl border border-border text-text-primary font-semibold text-base hover:bg-bg-subtle transition-colors"
+        >
+          Log in
         </a>
-      ))}
+        <a
+          href="https://github.com/Auriti-Labs/geo-optimizer-skill"
+          target="_blank"
+          rel="noopener"
+          class="flex items-center justify-center gap-2 py-3 text-sm text-text-secondary hover:text-text-primary transition-colors"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          View on GitHub
+        </a>
+      </div>
     </div>
   </div>
 </nav>
 
 <script>
-  // Menu mobile
-  const btn = document.getElementById('mobile-menu-btn');
-  const menu = document.getElementById('mobile-menu');
-  const icon = document.getElementById('menu-icon');
+  // ─── Mobile fullscreen menu ─────────────────────────────────────────────────
+  const burgerBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const burgerIcon = document.getElementById('burger-icon');
 
-  if (btn && menu && icon) {
-    btn.addEventListener('click', () => {
-      const isOpen = !menu.classList.contains('hidden');
-      menu.classList.toggle('hidden', isOpen);
-      btn.setAttribute('aria-expanded', String(!isOpen));
-      icon.innerHTML = isOpen
-        ? '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>'
-        : '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
-    });
+  function setBurgerOpen(open: boolean) {
+    if (!burgerIcon) return;
+    const lines = burgerIcon.querySelectorAll('span');
+    if (lines.length < 3) return;
+    if (open) {
+      (lines[0] as HTMLElement).style.transform = 'translateY(6px) rotate(45deg)';
+      (lines[1] as HTMLElement).style.opacity = '0';
+      (lines[2] as HTMLElement).style.transform = 'translateY(-6px) rotate(-45deg)';
+    } else {
+      (lines[0] as HTMLElement).style.transform = '';
+      (lines[1] as HTMLElement).style.opacity = '';
+      (lines[2] as HTMLElement).style.transform = '';
+    }
   }
 
-  // Dropdown More — accessibile da tastiera e hover
+  function openMobile() {
+    if (!mobileMenu) return;
+    mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+    mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+    mobileMenu.setAttribute('aria-hidden', 'false');
+    burgerBtn?.setAttribute('aria-expanded', 'true');
+    setBurgerOpen(true);
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMobile() {
+    if (!mobileMenu) return;
+    mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+    mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+    mobileMenu.setAttribute('aria-hidden', 'true');
+    burgerBtn?.setAttribute('aria-expanded', 'false');
+    setBurgerOpen(false);
+    document.body.style.overflow = '';
+  }
+
+  burgerBtn?.addEventListener('click', () => {
+    const isOpen = burgerBtn.getAttribute('aria-expanded') === 'true';
+    isOpen ? closeMobile() : openMobile();
+  });
+
+  // Chiudi al tap su un link mobile
+  document.querySelectorAll('[data-mobile-link]').forEach((link) => {
+    link.addEventListener('click', closeMobile);
+  });
+
+  // Escape chiude
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && burgerBtn?.getAttribute('aria-expanded') === 'true') {
+      closeMobile();
+    }
+  });
+
+  // Chiudi se viewport cresce oltre md (768px)
+  const mq = window.matchMedia('(min-width: 768px)');
+  mq.addEventListener('change', (e) => {
+    if (e.matches) closeMobile();
+  });
+
+  // ─── Desktop "More" dropdown ─────────────────────────────────────────────────
   const moreBtn = document.getElementById('more-menu-btn');
   const moreMenu = document.getElementById('more-menu');
+  const moreChevron = document.getElementById('more-chevron');
 
   function openMore() {
-    moreMenu?.classList.remove('opacity-0', 'invisible');
-    moreMenu?.classList.add('opacity-100', 'visible');
+    moreMenu?.classList.remove('opacity-0', 'invisible', 'translate-y-1');
+    moreMenu?.classList.add('opacity-100', 'visible', 'translate-y-0');
     moreBtn?.setAttribute('aria-expanded', 'true');
+    moreChevron?.style.setProperty('transform', 'rotate(180deg)');
   }
 
   function closeMore() {
-    moreMenu?.classList.add('opacity-0', 'invisible');
-    moreMenu?.classList.remove('opacity-100', 'visible');
+    moreMenu?.classList.add('opacity-0', 'invisible', 'translate-y-1');
+    moreMenu?.classList.remove('opacity-100', 'visible', 'translate-y-0');
     moreBtn?.setAttribute('aria-expanded', 'false');
+    moreChevron?.style.setProperty('transform', '');
   }
 
   if (moreBtn && moreMenu) {
     const wrapper = moreBtn.parentElement!;
 
-    // Hover
     wrapper.addEventListener('mouseenter', openMore);
     wrapper.addEventListener('mouseleave', closeMore);
 
-    // Tastiera: Enter/Space apre, Escape chiude
     moreBtn.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -162,12 +323,10 @@ const moreLinks = [
       if (e.key === 'Escape') closeMore();
     });
 
-    // Chiudi al click fuori
     document.addEventListener('click', (e) => {
       if (!wrapper.contains(e.target as Node)) closeMore();
     });
 
-    // Escape dall'interno dei menu item
     moreMenu.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         closeMore();
