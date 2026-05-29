@@ -21,6 +21,16 @@ from geo_optimizer.web.app import (
     _check_rate_limit,
     _rate_limit_store,
     app,
+    static_dir,
+)
+
+# Some tests need the built Astro frontend (index.html). CI does not build it,
+# so skip those when the dist is missing or empty rather than asserting on bytes
+# that only exist after `npm run build`.
+_frontend_built = (static_dir / "index.html").exists()
+requires_frontend_build = pytest.mark.skipif(
+    not _frontend_built,
+    reason="Astro frontend not built (no index.html in static_dir)",
 )
 
 # ─── Fixture: AuditResult mock ───────────────────────────────────────────────
@@ -121,6 +131,7 @@ def client_strict():
 # ─── Test: GET / ─────────────────────────────────────────────────────────────
 
 
+@requires_frontend_build
 def test_homepage_ritorna_200_e_html(client):
     """GET / deve restituire 200 con content-type HTML."""
     response = client.get("/")
@@ -128,6 +139,7 @@ def test_homepage_ritorna_200_e_html(client):
     assert "text/html" in response.headers["content-type"]
 
 
+@requires_frontend_build
 def test_homepage_contiene_form_audit(client):
     """L'homepage deve contenere il form per l'URL di audit."""
     response = client.get("/")
