@@ -19,8 +19,8 @@ const moreLinks = [
 const featuredLink = { label: "Pricing", href: "/pricing/" };
 ---
 
-<nav class="sticky top-0 z-50 bg-bg-base/85 backdrop-blur-xl border-b border-border">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+<nav id="floating-nav" class="sticky top-0 z-50 px-3 sm:px-4 pt-3 pb-2 transition-all duration-300">
+  <div id="nav-pill" class="mx-auto max-w-6xl h-14 px-3 sm:px-4 flex items-center justify-between gap-3 rounded-full border border-border/70 bg-bg-base/70 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] transition-all duration-300">
 
     <!-- Logo -->
     <a href="/" class="flex items-center gap-2.5 shrink-0">
@@ -36,30 +36,32 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
     </a>
 
     <!-- Desktop nav -->
-    <div class="hidden md:flex items-center gap-1">
+    <div class="hidden md:flex items-center gap-0.5">
       {primaryLinks.map((l) => (
         <a
           href={l.href}
-          class="px-3 py-1.5 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors"
+          data-nav-link
+          class="nav-link relative px-3 py-1.5 rounded-full text-[13px] font-medium text-text-secondary hover:text-text-primary transition-colors"
         >
-          {l.label}
+          <span class="relative z-10">{l.label}</span>
         </a>
       ))}
 
-      <!-- Featured: Pricing fuori dal dropdown, badge accent -->
+      <!-- Featured: Pricing pill -->
       <a
         href={featuredLink.href}
-        class="ml-1 px-3 py-1.5 rounded-md text-sm font-medium text-accent-teal hover:bg-accent-teal/10 transition-colors flex items-center gap-1.5"
+        data-nav-link
+        class="nav-link ml-1 px-3 py-1.5 rounded-full text-[13px] font-medium text-accent-teal hover:bg-accent-teal/10 transition-colors flex items-center gap-1.5"
       >
         <span class="w-1.5 h-1.5 rounded-full bg-accent-teal animate-pulse"></span>
-        {featuredLink.label}
+        <span class="relative z-10">{featuredLink.label}</span>
       </a>
 
       <!-- More dropdown -->
-      <div class="relative ml-1">
+      <div class="relative ml-0.5">
         <button
           id="more-menu-btn"
-          class="px-3 py-1.5 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors flex items-center gap-1"
+          class="px-3 py-1.5 rounded-full text-[13px] font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors flex items-center gap-1"
           aria-haspopup="true"
           aria-expanded="false"
           aria-controls="more-menu"
@@ -73,13 +75,13 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
           id="more-menu"
           role="menu"
           aria-labelledby="more-menu-btn"
-          class="absolute top-full right-0 mt-2 w-64 bg-bg-surface border border-border rounded-xl shadow-xl opacity-0 invisible translate-y-1 transition-all duration-150 overflow-hidden"
+          class="absolute top-full right-0 mt-3 w-64 bg-bg-surface/95 backdrop-blur-xl border border-border rounded-2xl shadow-[0_12px_40px_-8px_rgba(0,0,0,0.18)] opacity-0 invisible translate-y-1 transition-all duration-200 overflow-hidden p-1"
         >
           {moreLinks.map((l) => (
             <a
               href={l.href}
               role="menuitem"
-              class="flex flex-col gap-0.5 px-4 py-3 text-sm hover:bg-bg-subtle transition-colors border-b border-border last:border-0"
+              class="flex flex-col gap-0.5 px-3 py-2.5 rounded-xl text-sm hover:bg-bg-subtle transition-colors"
             >
               <span class="font-medium text-text-primary">{l.label}</span>
               <span class="text-xs text-text-secondary">{l.desc}</span>
@@ -88,24 +90,31 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
         </div>
       </div>
 
+      <!-- Divider -->
+      <span class="mx-2 h-5 w-px bg-border" aria-hidden="true"></span>
+
       <!-- Right cluster -->
-      <div class="ml-3 flex items-center gap-2">
+      <div class="flex items-center gap-1.5">
         <a
           href="https://github.com/Auriti-Labs/geo-optimizer-skill"
           target="_blank"
           rel="noopener"
           aria-label="GitHub repository"
-          class="w-9 h-9 flex items-center justify-center rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors"
+          class="w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors"
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
           </svg>
         </a>
         <a
           href="https://app.geoready.dev/signup"
-          class="px-4 py-1.5 rounded-md bg-accent-teal text-white text-sm font-semibold hover:bg-accent-teal-dark transition-colors shadow-sm"
+          class="group px-3.5 py-1.5 rounded-full bg-accent-teal text-white text-[13px] font-semibold hover:bg-accent-teal-dark transition-all shadow-[0_4px_12px_-2px_rgba(13,148,136,0.45)] hover:shadow-[0_6px_16px_-2px_rgba(13,148,136,0.55)] hover:-translate-y-px flex items-center gap-1.5"
         >
-          Get started
+          <span>Get started</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
         </a>
       </div>
     </div>
@@ -136,7 +145,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
 <!-- Mobile fullscreen overlay — OUTSIDE nav to avoid backdrop-filter containing block bug -->
 <div
   id="mobile-menu"
-  class="md:hidden hidden fixed inset-x-0 top-16 bottom-0 z-[60] bg-bg-base overflow-y-auto overscroll-contain"
+  class="md:hidden hidden fixed inset-x-0 top-[76px] bottom-0 z-[60] bg-bg-base overflow-y-auto overscroll-contain"
   aria-hidden="true"
 >
     <div class="px-5 pt-5 pb-10">
@@ -339,4 +348,38 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
       }
     });
   }
+
+  // ─── Floating pill scroll-shrink ─────────────────────────────────────────────
+  const floatNav = document.getElementById('floating-nav');
+  const navPill = document.getElementById('nav-pill');
+
+  function updateNavScroll() {
+    if (!floatNav || !navPill) return;
+    const scrolled = window.scrollY > 8;
+    if (scrolled) {
+      floatNav.classList.remove('pt-3', 'pb-2');
+      floatNav.classList.add('pt-2', 'pb-2');
+      navPill.classList.remove('h-14', 'bg-bg-base/70');
+      navPill.classList.add('h-12', 'bg-bg-base/90', 'shadow-[0_8px_28px_-6px_rgba(0,0,0,0.18)]');
+    } else {
+      floatNav.classList.add('pt-3', 'pb-2');
+      floatNav.classList.remove('pt-2');
+      navPill.classList.add('h-14', 'bg-bg-base/70');
+      navPill.classList.remove('h-12', 'bg-bg-base/90', 'shadow-[0_8px_28px_-6px_rgba(0,0,0,0.18)]');
+    }
+  }
+
+  updateNavScroll();
+  window.addEventListener('scroll', updateNavScroll, { passive: true });
+
+  // ─── Active link highlight (current page pill) ───────────────────────────────
+  const navLinks = document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]');
+  const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
+  navLinks.forEach((link) => {
+    const href = link.getAttribute('href')?.replace(/\/$/, '') || '';
+    if (href === currentPath) {
+      link.classList.add('bg-bg-subtle', 'text-text-primary');
+      link.setAttribute('aria-current', 'page');
+    }
+  });
 </script>
