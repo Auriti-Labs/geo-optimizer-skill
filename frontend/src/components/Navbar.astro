@@ -130,7 +130,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
   <!-- Mobile fullscreen overlay -->
   <div
     id="mobile-menu"
-    class="md:hidden fixed inset-x-0 top-16 bottom-0 z-40 bg-bg-base pointer-events-none opacity-0 transition-opacity duration-200 overflow-y-auto overscroll-contain"
+    class="md:hidden hidden fixed inset-x-0 top-16 bottom-0 z-40 bg-bg-base overflow-y-auto overscroll-contain"
     aria-hidden="true"
   >
     <div class="px-5 pt-5 pb-10">
@@ -139,7 +139,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
       <a
         href="/pricing/"
         data-mobile-link
-        class="group flex items-center justify-between gap-3 rounded-xl border border-accent-teal/30 bg-accent-teal/8 px-4 py-3.5 mb-5 hover:border-accent-teal/60 transition-colors"
+        class="group flex items-center justify-between gap-3 rounded-xl border border-accent-teal/30 bg-accent-teal/10 px-4 py-3.5 mb-5 hover:border-accent-teal/60 transition-colors"
       >
         <div class="min-w-0">
           <div class="flex items-center gap-1.5 mb-0.5">
@@ -242,8 +242,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
 
   function openMobile() {
     if (!mobileMenu) return;
-    mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
-    mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+    mobileMenu.classList.remove('hidden');
     mobileMenu.setAttribute('aria-hidden', 'false');
     burgerBtn?.setAttribute('aria-expanded', 'true');
     setBurgerOpen(true);
@@ -252,8 +251,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
 
   function closeMobile() {
     if (!mobileMenu) return;
-    mobileMenu.classList.add('opacity-0', 'pointer-events-none');
-    mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+    mobileMenu.classList.add('hidden');
     mobileMenu.setAttribute('aria-hidden', 'true');
     burgerBtn?.setAttribute('aria-expanded', 'false');
     setBurgerOpen(false);
