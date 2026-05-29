@@ -194,7 +194,23 @@ _rate_limit_store: dict = {}  # {ip: [timestamp, ...]}
 _RATE_LIMIT_WINDOW = 60  # seconds
 _RATE_LIMIT_MAX_REQUESTS = 30  # requests per window per IP
 _RATE_LIMIT_MAX_IPS = 10000  # maximum number of tracked IPs
-_rate_limit_lock = asyncio.Lock()  # race condition protection on _rate_limit_store
+
+# Locks are created lazily inside the running event loop. On Python 3.9
+# asyncio.Lock() binds the current event loop at construction time, so building
+# it at import time raises "no current event loop" (e.g. on module reload in
+# tests, or under some ASGI servers). Lazy creation defers binding to first use,
+# which always happens inside an active loop.
+_locks: dict[str, asyncio.Lock] = {}
+
+
+def _get_lock(name: str) -> asyncio.Lock:
+    """Return a named asyncio.Lock, creating it on first use within the loop."""
+    lock = _locks.get(name)
+    if lock is None:
+        lock = asyncio.Lock()
+        _locks[name] = lock
+    return lock
+
 
 # ─── Proxy trust: list of trusted proxy CIDRs/IPs ─────────────────────────────
 # Configurable via TRUSTED_PROXIES environment variable (CSV of IPs/CIDRs).
@@ -259,7 +275,7 @@ async def _check_rate_limit(client_ip: str) -> bool:
     """
     # Fix #312: stricter limit for unknown IP (prevents bypass with client None)
     max_requests = 5 if client_ip == "unknown" else _RATE_LIMIT_MAX_REQUESTS
-    async with _rate_limit_lock:
+    async with _get_lock("rate_limit"):
         now = time.time()
         timestamps = _rate_limit_store.get(client_ip, [])
         # Remove timestamps outside the time window
@@ -280,8 +296,6 @@ async def _check_rate_limit(client_ip: str) -> bool:
 _audit_cache: dict = {}
 _CACHE_TTL = 3600
 _MAX_CACHE_SIZE = 500
-_audit_cache_lock = asyncio.Lock()  # race condition protection on _audit_cache (fix #209)
-_stats_cache_lock = asyncio.Lock()  # race condition protection on stats cache (#456)
 
 
 def _cache_key(url: str) -> str:
@@ -299,7 +313,7 @@ async def _get_cached(url: str) -> dict | None:
     Fix race condition: uses asyncio.Lock to protect the atomic
     read/remove on _audit_cache (fix #209).
     """
-    async with _audit_cache_lock:
+    async with _get_lock("audit_cache"):
         key = _cache_key(url)
         entry = _audit_cache.get(key)
         if entry and (time.time() - entry["cached_at"]) < _CACHE_TTL:
@@ -311,7 +325,7 @@ async def _get_cached(url: str) -> dict | None:
 
 
 def _evict_expired() -> None:
-    """Remove expired entries from cache. Caller must hold _audit_cache_lock."""
+    """Remove expired entries from cache. Caller must hold the audit_cache lock."""
     now = time.time()
     expired = [k for k, v in _audit_cache.items() if (now - v["cached_at"]) >= _CACHE_TTL]
     for k in expired:
@@ -324,7 +338,7 @@ async def _set_cached(url: str, data: dict) -> str:
     Fix race condition: uses asyncio.Lock to protect the
     check-size / evict / insert block on _audit_cache (fix #209).
     """
-    async with _audit_cache_lock:
+    async with _get_lock("audit_cache"):
         key = _cache_key(url)
         # Avoid unbounded growth: evict expired entries, then remove oldest
         if len(_audit_cache) >= _MAX_CACHE_SIZE:
@@ -616,7 +630,7 @@ async def stats():
 
     # Fix #456 + thundering herd: hold lock for the entire check-fetch-write cycle
     # so only one coroutine fetches while others wait for the cached result
-    async with _stats_cache_lock:
+    async with _get_lock("stats_cache"):
         cached = getattr(stats, cache_key, None)
         if cached and (_time.time() - cached["ts"]) < cache_ttl:
             return cached["data"]
@@ -756,7 +770,7 @@ async def report(report_id: str):
     # Fix #286: cache access protected by lock to avoid race condition
     # Fix #343: check TTL — expired reports are no longer served
     # Fix #457: extract data inside lock to prevent concurrent mutation
-    async with _audit_cache_lock:
+    async with _get_lock("audit_cache"):
         entry = _audit_cache.get(report_id)
         if entry and (time.time() - entry.get("cached_at", 0)) >= _CACHE_TTL:
             entry = None
