@@ -592,6 +592,7 @@ def _build_audit_result(
             citability=citability,
             signals=effective_signals,
             ai_discovery=effective_ai_discovery,
+            js_rendering=effective_js,
         )
 
     return result

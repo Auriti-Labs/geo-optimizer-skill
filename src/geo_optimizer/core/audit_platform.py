@@ -16,6 +16,7 @@ from geo_optimizer.models.results import (
     AiDiscoveryResult,
     CitabilityResult,
     ContentResult,
+    JsRenderingResult,
     LlmsTxtResult,
     MetaResult,
     PlatformCitationResult,
@@ -35,6 +36,7 @@ def audit_platform_citation(
     citability: CitabilityResult,
     signals: SignalsResult | None = None,
     ai_discovery: AiDiscoveryResult | None = None,
+    js_rendering: JsRenderingResult | None = None,
 ) -> PlatformCitationResult:
     """Compute per-platform citation readiness scores.
 
@@ -45,7 +47,7 @@ def audit_platform_citation(
         platforms=[
             _score_chatgpt(robots, llms, content, citability, schema),
             _score_perplexity(robots, llms, content, citability, signals),
-            _score_google_ai(robots, schema, meta, content, citability, ai_discovery),
+            _score_google_ai(robots, schema, meta, content, citability, signals, js_rendering),
         ],
     )
 
@@ -168,8 +170,13 @@ def _score_perplexity(robots, llms, content, citability, signals) -> PlatformSco
     return PlatformScore(platform="perplexity", score=min(score, 100), strengths=strengths, recommendations=recs)
 
 
-def _score_google_ai(robots, schema, meta, content, citability, ai_discovery) -> PlatformScore:
-    """Google AI Overviews favors: schema, domain authority, traditional SEO."""
+def _score_google_ai(robots, schema, meta, content, citability, signals=None, js_rendering=None) -> PlatformScore:
+    """Google AI Overviews favors: indexable HTML, structured data, traditional SEO, freshness.
+
+    Per Google's AI optimization guide, machine-readable AI files (llms.txt,
+    .well-known/ai.txt) are NOT used by Google AI. We score crawlable/SSR content,
+    schema, meta, freshness, and image quality instead.
+    """
     score = 0
     strengths: list[str] = []
     recs: list[str] = []
@@ -215,12 +222,27 @@ def _score_google_ai(robots, schema, meta, content, citability, ai_discovery) ->
         score += 10
         strengths.append("Quality content structure")
 
-    # AI discovery endpoints
-    if ai_discovery and ai_discovery.has_well_known_ai:
-        score += 10
-        strengths.append("AI discovery endpoints present")
+    # Freshness (Google values recently-updated content)
+    if signals and signals.has_freshness:
+        score += 4
+        strengths.append("Content freshness signals present")
     else:
-        recs.append("Add /.well-known/ai.txt for AI discovery")
+        recs.append("Add dateModified / lastmod freshness signals")
+
+    # SSR-safe content (Google AI needs crawlable HTML, not JS-only)
+    if js_rendering and js_rendering.checked and not js_rendering.js_dependent:
+        score += 3
+        strengths.append("Content available without JS (SSR-safe)")
+    elif js_rendering and js_rendering.checked and js_rendering.js_dependent:
+        recs.append("Serve content server-side; Google AI may not execute your JS")
+
+    # Image alt quality (Google surfaces images in AI results)
+    img_alt = next((m for m in citability.methods if m.name == "image_alt_quality"), None)
+    if img_alt and img_alt.detected:
+        score += 3
+        strengths.append("Descriptive image alt text")
+    elif img_alt and not img_alt.detected:
+        recs.append("Add descriptive alt text to images")
 
     # sameAs links (domain authority proxy)
     if schema.has_sameas:
