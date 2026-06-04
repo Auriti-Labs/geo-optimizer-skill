@@ -1,0 +1,67 @@
+---
+import Shell from '../../components/Shell.astro';
+
+// Guides hub. Kept as a simple static index — add one entry per guide here.
+const guides = [
+  {
+    href: '/guides/appear-in-chatgpt-perplexity/',
+    title: 'How to make your website appear in ChatGPT and Perplexity sources',
+    description:
+      'A practical checklist for becoming citable by AI answer engines — crawlability, llms.txt, structured data, and the content patterns models tend to quote.',
+    readingTime: '12 min read',
+  },
+];
+---
+
+<Shell
+  title="Guides — AI Search Visibility & Generative Engine Optimization"
+  description="Practical, no-hype guides on making your website visible and citable to AI answer engines like ChatGPT, Perplexity, Claude, and Gemini."
+  canonical="https://geoready.dev/guides/"
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    {/* Header */}
+    <header class="max-w-2xl mb-12 md:mb-16">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <span>GEO Optimizer</span>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>Guides</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        AI visibility guides
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        Practical, research-grounded walkthroughs for making your site visible
+        and citable to AI answer engines. No guaranteed-ranking promises — just
+        the technical and content signals that help models find and quote you.
+      </p>
+
+      <p class="mt-4 text-sm text-text-secondary">
+        Every guide is built on the same signals as the
+        <a href="/research/" class="text-accent-teal hover:underline">research foundation</a>
+        and the <a href="/manifesto/" class="text-accent-teal hover:underline">manifesto</a>.
+      </p>
+    </header>
+
+    {/* Guide list */}
+    <ul class="space-y-4">
+      {guides.map((g) => (
+        <li>
+          <a
+            href={g.href}
+            class="block rounded-xl border border-border bg-bg-surface p-5 md:p-6 transition-colors hover:border-accent-teal/20"
+          >
+            <h2 class="font-display text-lg md:text-xl font-semibold text-text-primary leading-snug">
+              {g.title}
+            </h2>
+            <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
+              {g.description}
+            </p>
+            <p class="mt-3 text-xs font-mono text-text-muted">{g.readingTime}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Shell>
