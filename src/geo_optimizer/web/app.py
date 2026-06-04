@@ -22,6 +22,7 @@ import secrets
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -100,6 +101,37 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
+# ─── Middleware: Permanent trailing-slash redirects (SEO) ─────────────────────
+class PermanentRedirectMiddleware(BaseHTTPMiddleware):
+    """Converts StaticFiles trailing-slash redirects from 307 to 301.
+
+    StaticFiles(html=True) issues a 307 Temporary Redirect when a request
+    path is missing the trailing slash (e.g. /research -> /research/). For
+    SEO these must be 301 Permanent so Google consolidates link equity onto
+    the canonical (trailing-slash) URL instead of treating it as temporary.
+
+    Only rewrites GET/HEAD redirects that point to the same path plus a
+    trailing slash, leaving API and other redirects untouched.
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        if (
+            request.method in ("GET", "HEAD")
+            and response.status_code == 307
+            and "location" in response.headers
+        ):
+            # Only promote to 301 when the redirect target is exactly the
+            # request path plus a trailing slash. Location may be absolute
+            # (ProxyHeaders rewrites it to https://host/path/), so compare
+            # the parsed path, not the raw header. This leaves any other
+            # 307 (API, future redirects) as a temporary redirect.
+            location_path = urlsplit(response.headers["location"]).path
+            if location_path == request.url.path + "/":
+                response.status_code = 301
+        return response
+
+
 # ─── Middleware: Security Headers ─────────────────────────────────────────────
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Adds HTTP security headers to all responses.
@@ -141,6 +173,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(BodySizeLimitMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(PermanentRedirectMiddleware)
 # ProxyHeadersMiddleware propagates X-Forwarded-Proto to Starlette scope,
 # so StaticFiles trailing-slash redirects use https:// not http://
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=["127.0.0.1", "::1"])

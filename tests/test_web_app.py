@@ -147,6 +147,26 @@ def test_homepage_contiene_form_audit(client):
     assert b"GEO Optimizer" in response.content
 
 
+# ─── Test: trailing-slash redirects are 301 (SEO) ────────────────────────────
+
+
+@requires_frontend_build
+def test_trailing_slash_redirect_is_permanent(client):
+    """GET /research must 301 (not 307) to /research/ for SEO link equity."""
+    from urllib.parse import urlsplit
+
+    response = client.get("/research", follow_redirects=False)
+    assert response.status_code == 301
+    assert urlsplit(response.headers["location"]).path == "/research/"
+
+
+@requires_frontend_build
+def test_non_redirect_response_unaffected(client):
+    """A normal 200 page must not be touched by the redirect middleware."""
+    response = client.get("/research/", follow_redirects=False)
+    assert response.status_code == 200
+
+
 # ─── Test: GET /health ────────────────────────────────────────────────────────
 
 
