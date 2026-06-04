@@ -116,11 +116,7 @@ class PermanentRedirectMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
-        if (
-            request.method in ("GET", "HEAD")
-            and response.status_code == 307
-            and "location" in response.headers
-        ):
+        if request.method in ("GET", "HEAD") and response.status_code == 307 and "location" in response.headers:
             # Only promote to 301 when the redirect target is exactly the
             # request path plus a trailing slash. Location may be absolute
             # (ProxyHeaders rewrites it to https://host/path/), so compare
