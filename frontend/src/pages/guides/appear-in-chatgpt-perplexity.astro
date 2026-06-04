@@ -1,0 +1,244 @@
+---
+import Shell from '../../components/Shell.astro';
+
+const title =
+  'How to Make Your Website Appear in ChatGPT and Perplexity Sources';
+const description =
+  'A practical, no-hype guide to becoming citable by AI answer engines like ChatGPT, Perplexity, Claude, and Gemini: crawlability, llms.txt, structured data, and the content patterns models tend to quote.';
+const canonical = 'https://geoready.dev/guides/appear-in-chatgpt-perplexity/';
+const datePublished = '2026-06-04';
+const dateModified = '2026-06-04';
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    {/* Header */}
+    <header class="mb-12 md:mb-16">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <a href="/guides/" class="hover:text-accent-teal">Guides</a>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>AI Visibility</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        How to make your website appear in ChatGPT and Perplexity sources
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        AI answer engines don't rank ten blue links — they synthesize an answer
+        and cite a handful of sources. This guide covers the concrete signals
+        that make your pages easier to find, parse, and quote. There are no
+        guaranteed-ranking tricks here: AI citations depend on factors outside
+        your control, but the steps below remove the technical and editorial
+        friction that keeps most sites from being cited at all.
+      </p>
+      <p class="mt-2 text-xs text-text-muted font-mono">
+        Published June 2026 · 12 min read
+      </p>
+    </header>
+
+    <div class="space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      {/* The problem */}
+      <section>
+        <h2>The problem: visible to Google, invisible to AI</h2>
+        <p class="mt-4">
+          You can rank well on Google and still be missing from ChatGPT,
+          Perplexity, Claude, and Gemini answers. These engines retrieve and
+          summarize content differently from a classic search crawler: they
+          favor pages that are easy to fetch, clearly structured, and written
+          in a way that's safe to quote. If your site blocks AI crawlers, hides
+          content behind heavy client-side rendering, or buries facts in
+          marketing prose, it simply won't surface as a source.
+        </p>
+        <p class="mt-4">
+          The goal of this guide is not to game any model. It's to make your
+          site <em>retrievable</em> and <em>quotable</em> — the two things every
+          AI answer engine needs before it can cite you.
+        </p>
+      </section>
+
+      {/* Why engines cite sources */}
+      <section>
+        <h2>Why AI engines cite sources at all</h2>
+        <p class="mt-4">
+          Answer engines cite sources to ground their responses and let users
+          verify claims. When a model assembles an answer, it pulls passages
+          from pages it retrieved, then links the ones it leaned on. To be one
+          of those pages you generally need three things:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Accessible</strong> — the crawler can fetch the page without being blocked or stalled.</li>
+          <li><strong>Parseable</strong> — the meaningful content is in the HTML, not locked behind scripts.</li>
+          <li><strong>Quotable</strong> — facts, definitions, and steps are stated plainly enough to lift verbatim.</li>
+        </ul>
+        <p class="mt-4">
+          The rest of this guide is a checklist for each of those properties.
+        </p>
+      </section>
+
+      {/* Technical checklist */}
+      <section>
+        <h2>Technical checklist: be retrievable</h2>
+        <h3 class="mt-6">Allow the AI crawlers you want</h3>
+        <p class="mt-3">
+          Many sites unknowingly block AI user agents in <code class="text-sm font-mono">robots.txt</code>.
+          Decide deliberately which engines you allow, then state it explicitly.
+          Common citation-related agents include <code class="text-sm font-mono">GPTBot</code> and
+          <code class="text-sm font-mono">OAI-SearchBot</code> (OpenAI),
+          <code class="text-sm font-mono">ClaudeBot</code> and <code class="text-sm font-mono">Claude-SearchBot</code> (Anthropic),
+          <code class="text-sm font-mono">PerplexityBot</code> (Perplexity), and
+          <code class="text-sm font-mono">Google-Extended</code> (Gemini/Vertex).
+        </p>
+        <h3 class="mt-6">Serve content in the initial HTML</h3>
+        <p class="mt-3">
+          If your key content only appears after JavaScript runs, assume a
+          retriever may never see it. Server-render or statically generate the
+          text that matters. View the raw HTML (not the rendered DOM) and
+          confirm your headings, paragraphs, and facts are present.
+        </p>
+        <h3 class="mt-6">Keep pages fast and stable</h3>
+        <p class="mt-3">
+          Slow responses, redirect chains, and flaky status codes all reduce the
+          chance a crawler finishes fetching your page. Use permanent (301)
+          redirects, return clean 200s, and keep your canonical URLs consistent.
+        </p>
+      </section>
+
+      {/* Content checklist */}
+      <section>
+        <h2>Content checklist: be quotable</h2>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li>Lead with a direct answer. State the definition or conclusion in the first sentence, then expand.</li>
+          <li>Use clear headings that match real questions people ask.</li>
+          <li>Prefer concrete facts, numbers, and dated statements over vague claims — they're easier to cite and verify.</li>
+          <li>Break processes into explicit, numbered steps.</li>
+          <li>Add a short FAQ for the questions your audience actually types into an assistant.</li>
+          <li>Keep one idea per paragraph so a model can lift a clean passage.</li>
+        </ul>
+      </section>
+
+      {/* llms.txt / schema / crawlability */}
+      <section>
+        <h2>llms.txt, structured data, and crawlability</h2>
+        <h3 class="mt-6">llms.txt</h3>
+        <p class="mt-3">
+          An <code class="text-sm font-mono">llms.txt</code> file is an emerging
+          convention: a plain-text map at your domain root that points AI tools
+          to your most important pages and summarizes what your site is about.
+          It's not a ranking guarantee and not yet honored by every engine, but
+          it's low-cost and makes your key URLs explicit. GEO Optimizer can
+          generate one for you.
+        </p>
+        <h3 class="mt-6">Structured data (schema.org)</h3>
+        <p class="mt-3">
+          Mark up your pages with relevant schema — <code class="text-sm font-mono">Article</code>,
+          <code class="text-sm font-mono">FAQPage</code>, <code class="text-sm font-mono">Organization</code>,
+          <code class="text-sm font-mono">WebSite</code>. Structured data makes
+          entities and relationships explicit, which helps both classic rich
+          results and AI systems that read JSON-LD to disambiguate your content.
+        </p>
+        <h3 class="mt-6">Crawlability basics</h3>
+        <p class="mt-3">
+          Maintain an accurate XML sitemap, link your pages internally so they're
+          discoverable, and avoid orphan pages. If a human can't reach a page in
+          a couple of clicks, a crawler probably won't either.
+        </p>
+      </section>
+
+      {/* Monitoring */}
+      <section>
+        <h2>Monitor whether it's working</h2>
+        <p class="mt-4">
+          AI visibility isn't a one-time setup. Models, crawlers, and citation
+          behavior change over time, so treat this like any other channel: take
+          a baseline, make changes, and re-measure. A point-in-time audit tells
+          you where you stand today; tracking over weeks tells you whether your
+          changes moved anything.
+        </p>
+      </section>
+
+      {/* Mistakes to avoid */}
+      <section>
+        <h2>Mistakes to avoid</h2>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li>Blocking every AI user agent by default, then wondering why you're never cited.</li>
+          <li>Rendering critical content only on the client.</li>
+          <li>Chasing one engine's quirks instead of fixing fundamentals that help all of them.</li>
+          <li>Stuffing keywords or fabricating facts — answer engines favor verifiable, well-sourced content.</li>
+          <li>Treating llms.txt or schema as a magic switch. They help retrieval and parsing; they don't guarantee citations.</li>
+        </ul>
+      </section>
+
+      {/* CTA */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+        <h2>Check your site's AI visibility</h2>
+        <p class="mt-3">
+          See how your site scores across crawlability, llms.txt, structured
+          data, and content signals — across eight categories, with specific
+          recommendations. No account required.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/#audit-form"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Run a free AI visibility audit
+          </a>
+          <a
+            href="https://app.geoready.dev/signup"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            Create a GeoReady account
+          </a>
+        </div>
+        <p class="mt-4 text-xs text-text-muted">
+          The free audit is an instant, no-account diagnosis. A GeoReady account
+          lets you save reports, monitor domains over time, and unlock the full
+          report. See <a href="/pricing/" class="text-accent-teal hover:underline">pricing</a>.
+        </p>
+      </section>
+
+      {/* Further reading */}
+      <section>
+        <h2>Further reading</h2>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li>The signals above are grounded in our <a href="/research/" class="text-accent-teal hover:underline">research foundation</a>.</li>
+          <li>Why we think AI visibility should be auditable and open — the <a href="/manifesto/" class="text-accent-teal hover:underline">GEO Optimizer manifesto</a>.</li>
+          <li>More walkthroughs in the <a href="/guides/" class="text-accent-teal hover:underline">guides hub</a>.</li>
+        </ul>
+      </section>
+    </div>
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "How to make your website appear in ChatGPT and Perplexity sources",
+    "description": description,
+    "author": {
+      "@type": "Organization",
+      "name": "Auriti Labs",
+      "url": "https://github.com/Auriti-Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Auriti Labs",
+      "url": "https://github.com/Auriti-Labs"
+    },
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "image": "https://geoready.dev/assets/og-image.png",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonical
+    },
+    "about": [
+      "AI search visibility",
+      "Generative Engine Optimization",
+      "AI citations",
+      "ChatGPT",
+      "Perplexity"
+    ]
+  })} />
+</Shell>
