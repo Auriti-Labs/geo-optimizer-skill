@@ -1,5 +1,9 @@
 ---
 import Shell from '../../components/Shell.astro';
+import D1HeroChecklist from '../../components/guide-visuals/D1HeroChecklist.astro';
+import D2TechChecklist from '../../components/guide-visuals/D2TechChecklist.astro';
+import D3ContentChecklist from '../../components/guide-visuals/D3ContentChecklist.astro';
+import D4MonitorLoop from '../../components/guide-visuals/D4MonitorLoop.astro';
 
 const title =
   'AI Visibility Checklist: How to Make Your Website Easier to Find, Cite, and Recommend';
@@ -36,6 +40,11 @@ const dateModified = '2026-06-05';
         Published June 2026 · 14 min read
       </p>
     </header>
+
+    <figure class="my-8 md:my-10 rounded-2xl border border-border bg-bg-surface p-4 md:p-6 overflow-x-auto">
+      <D1HeroChecklist />
+      <figcaption class="mt-3 text-xs text-text-muted text-center font-mono">Five layers of AI visibility signals — work through them in order, since each builds on the previous.</figcaption>
+    </figure>
 
     <div class="space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
 
@@ -93,6 +102,10 @@ const dateModified = '2026-06-05';
             <p class="mt-1 text-sm text-text-muted">Pass: sitemap exists, is accessible, and is referenced in robots.txt.</p>
           </li>
         </ul>
+        <figure class="my-8 md:my-10 rounded-2xl border border-border bg-bg-surface p-4 md:p-6 overflow-x-auto">
+          <D2TechChecklist />
+          <figcaption class="mt-3 text-xs text-text-muted text-center font-mono">The technical layer: five checks that determine whether AI engines can reach and index your pages.</figcaption>
+        </figure>
       </section>
 
       {/* Category 2: Meta / Signals */}
@@ -224,6 +237,10 @@ const dateModified = '2026-06-05';
             <p class="mt-1 text-sm text-text-muted">Pass: all how-to content uses numbered steps, not prose-only descriptions.</p>
           </li>
         </ul>
+        <figure class="my-8 md:my-10 rounded-2xl border border-border bg-bg-surface p-4 md:p-6 overflow-x-auto">
+          <D3ContentChecklist />
+          <figcaption class="mt-3 text-xs text-text-muted text-center font-mono">The content layer: five signals that determine whether your pages are quotable by AI answer engines.</figcaption>
+        </figure>
       </section>
 
       {/* Category 6: AI discovery */}
@@ -299,6 +316,10 @@ const dateModified = '2026-06-05';
           The <a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO guide</a> explains
           why these priorities differ from a classic SEO checklist.
         </p>
+        <figure class="my-8 md:my-10 rounded-2xl border border-border bg-bg-surface p-4 md:p-6 overflow-x-auto">
+          <D4MonitorLoop />
+          <figcaption class="mt-3 text-xs text-text-muted text-center font-mono">AI visibility is not a one-time audit. Treat it as a continuous loop: audit, monitor, fix, measure, improve.</figcaption>
+        </figure>
       </section>
 
       {/* Limits */}
