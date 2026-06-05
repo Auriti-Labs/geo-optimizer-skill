@@ -1,5 +1,8 @@
 ---
 import Shell from '../../components/Shell.astro';
+import C1HeroLlmsTxt from '../../components/guide-visuals/C1HeroLlmsTxt.astro';
+import C2LlmsTxtStructure from '../../components/guide-visuals/C2LlmsTxtStructure.astro';
+import C3WordPressOptions from '../../components/guide-visuals/C3WordPressOptions.astro';
 
 const title = 'llms.txt for WordPress and AI Visibility: A Practical Guide';
 const description =
@@ -36,6 +39,11 @@ const dateModified = '2026-06-05';
         Published June 2026 · 9 min read
       </p>
     </header>
+
+    <figure class="my-8 md:my-10 rounded-2xl border border-border bg-bg-surface p-4 md:p-6 overflow-x-auto">
+      <C1HeroLlmsTxt />
+      <figcaption class="mt-3 text-xs text-text-muted text-center font-mono">llms.txt is one signal layer — it complements robots.txt, sitemap, and schema rather than replacing any of them.</figcaption>
+    </figure>
 
     <div class="space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
 
@@ -114,11 +122,21 @@ const dateModified = '2026-06-05';
           <li>Include your most important pages. Don't try to list everything.</li>
           <li>Optionally link to an <code class="text-sm font-mono">llms-full.txt</code> at the bottom if you have one.</li>
         </ul>
+
+        <figure class="my-8 md:my-10 rounded-2xl border border-border bg-bg-surface p-4 md:p-6 overflow-x-auto">
+          <C2LlmsTxtStructure />
+          <figcaption class="mt-3 text-xs text-text-muted text-center font-mono">The recommended llms.txt structure: H1 site name, blockquote summary, H2 sections with annotated link lists.</figcaption>
+        </figure>
       </section>
 
       {/* WordPress implementation */}
       <section>
         <h2>Implementing on WordPress</h2>
+
+        <figure class="my-8 md:my-10 rounded-2xl border border-border bg-bg-surface p-4 md:p-6 overflow-x-auto">
+          <C3WordPressOptions />
+          <figcaption class="mt-3 text-xs text-text-muted text-center font-mono">Three practical paths for adding llms.txt to a WordPress site — choose based on hosting access.</figcaption>
+        </figure>
 
         <h3 class="mt-6">Option 1: manual file upload (simplest)</h3>
         <p class="mt-3">
