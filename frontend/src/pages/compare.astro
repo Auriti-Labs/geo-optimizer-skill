@@ -4,8 +4,8 @@ import CompareContainer from '../components/compare/CompareContainer';
 ---
 
 <Shell
-  title="Compare AI Visibility Scores — GEO Optimizer"
-  description="Compare two websites side by side with GEO Optimizer. Benchmark AI search visibility, citability, and technical signals for ChatGPT, Perplexity, and Claude."
+  title="Compare AI Search Visibility — Two Sites Side by Side"
+  description="Run a free head-to-head GEO audit. Enter two URLs and compare AI search visibility, citability, and technical signals for ChatGPT, Perplexity, and Claude."
   canonical="https://geoready.dev/compare/"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
@@ -18,14 +18,18 @@ import CompareContainer from '../components/compare/CompareContainer';
       </div>
 
       <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
-        Compare AI Visibility Scores
+        Compare AI Search Visibility
       </h1>
 
       <p class="mt-4 text-base text-text-secondary leading-relaxed max-w-2xl">
-        Side-by-side analysis. Enter two URLs and run a head-to-head GEO audit to see who is more visible to AI search engines.
+        Enter two URLs below and run a free head-to-head GEO audit. See which site is more
+        visible to AI answer engines like ChatGPT, Perplexity, and Claude — scored across the
+        same 8 signal categories, side by side.
       </p>
 
-      <p class="mt-2 text-xs text-text-muted font-mono">Last updated: May 2026</p>
+      <a href="#compare-form" class="mt-5 inline-flex items-center gap-2 rounded-lg bg-accent-teal px-5 py-2.5 text-sm font-medium text-white hover:bg-accent-teal-dark transition-colors">
+        Compare two sites
+      </a>
     </header>
 
     {/* Static info section — visible to crawlers */}
@@ -60,16 +64,18 @@ import CompareContainer from '../components/compare/CompareContainer';
     </section>
 
     {/* Interactive tool — hydrated by React */}
-    <CompareContainer client:only="react" />
+    <div id="compare-form" class="scroll-mt-24">
+      <CompareContainer client:only="react" />
+    </div>
   </div>
 
   {/* Page-specific schema */}
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Compare AI Visibility Scores — GEO Optimizer",
-    "description": "Compare two websites side by side with GEO Optimizer. Benchmark AI search visibility, citability, and technical signals for ChatGPT, Perplexity, and Claude.",
-    "url": "https://geoready.dev/compare",
+    "name": "Compare AI Search Visibility — Two Sites Side by Side",
+    "description": "Run a free head-to-head GEO audit. Enter two URLs and compare AI search visibility, citability, and technical signals for ChatGPT, Perplexity, and Claude.",
+    "url": "https://geoready.dev/compare/",
     "author": {
       "@type": "Organization",
       "name": "Auriti Labs",
