@@ -1,0 +1,310 @@
+---
+import Shell from '../../components/Shell.astro';
+
+const title = 'llms.txt for WordPress and AI Visibility: A Practical Guide';
+const description =
+  'llms.txt is a plain-text file that helps AI tools understand your site. This guide explains what it is, what it actually does, and how to implement it on WordPress — manually or with a plugin.';
+const canonical = 'https://geoready.dev/guides/llms-txt-wordpress/';
+const datePublished = '2026-06-05';
+const dateModified = '2026-06-05';
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    {/* Header */}
+    <header class="mb-12 md:mb-16">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <a href="/guides/" class="hover:text-accent-teal">Guides</a>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>llms.txt</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        llms.txt for WordPress and AI visibility: a practical guide
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        <code class="text-sm font-mono">llms.txt</code> is a plain-text file at
+        your domain root that tells AI tools which of your pages matter and what
+        your site is about. It's an emerging convention, not a standard, and
+        it's not supported by every engine — but it's low-effort, low-risk, and
+        makes your key content explicit. This guide covers what it actually does,
+        how to create one on WordPress, and where it fits in your broader AI
+        visibility strategy.
+      </p>
+      <p class="mt-2 text-xs text-text-muted font-mono">
+        Published June 2026 · 9 min read
+      </p>
+    </header>
+
+    <div class="space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      {/* What is llms.txt */}
+      <section>
+        <h2>What is llms.txt?</h2>
+        <p class="mt-4">
+          <code class="text-sm font-mono">llms.txt</code> is a convention
+          proposed by Jeremy Howard in late 2024. The idea: place a plain-text
+          file at <code class="text-sm font-mono">yourdomain.com/llms.txt</code> that
+          lists your site's important URLs along with short descriptions, giving
+          AI tools a curated map of your content.
+        </p>
+        <p class="mt-4">
+          The analogy is <code class="text-sm font-mono">robots.txt</code> for
+          classic crawlers, or <code class="text-sm font-mono">humans.txt</code>
+          for people — a discoverable convention rather than a formal standard.
+          Unlike <code class="text-sm font-mono">robots.txt</code>, it's purely
+          informational: it doesn't block or allow anything.
+        </p>
+        <p class="mt-4">
+          There's also an extended form: <code class="text-sm font-mono">llms-full.txt</code>,
+          which contains the full text of your content for tools that want to
+          ingest it directly. This guide focuses on the standard
+          <code class="text-sm font-mono">llms.txt</code> index file.
+        </p>
+      </section>
+
+      {/* What it actually does */}
+      <section>
+        <h2>What it actually does — and doesn't</h2>
+        <p class="mt-4">
+          Be realistic about the scope:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>It helps LLM-powered tools</strong> that explicitly read it — Claude's Projects feature, some RAG pipelines, research assistants, and tools built on the llms.txt spec.</li>
+          <li><strong>It's not a ranking signal</strong> for ChatGPT, Perplexity, or Gemini web search. Those engines use their own crawlers and retrieval systems; they don't consult your llms.txt when answering queries.</li>
+          <li><strong>It makes your priorities explicit</strong> — even if a tool doesn't read it, writing it forces you to decide which pages are your most important.</li>
+          <li><strong>It's low risk.</strong> A bad llms.txt won't hurt your SEO or block any crawler. The worst case is that tools ignore it.</li>
+        </ul>
+        <p class="mt-4">
+          In short: it's worth doing because the upside is real (better context
+          for tools that do read it) and the cost is an hour of work.
+        </p>
+      </section>
+
+      {/* The format */}
+      <section>
+        <h2>The llms.txt format</h2>
+        <p class="mt-4">
+          The file uses Markdown. The basic structure:
+        </p>
+        <pre class="mt-4 rounded-xl bg-bg-surface border border-border p-4 overflow-x-auto text-sm font-mono text-text-secondary leading-relaxed">{`# Your Site Name
+
+> One paragraph describing what this site is, who it's for, and what it covers.
+
+## Core pages
+
+- [Page title](https://yourdomain.com/page/): short description of what this page covers.
+- [Another page](https://yourdomain.com/other/): short description.
+
+## Documentation / Guides
+
+- [Guide title](https://yourdomain.com/guides/guide-name/): what this guide covers.
+
+## Optional: what to ignore
+
+- [/login](https://yourdomain.com/login/): authentication page, not useful content.`}</pre>
+        <p class="mt-4">
+          Rules of thumb:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li>Use H1 for your site name, H2 for categories of pages.</li>
+          <li>The blockquote (<code class="text-sm font-mono">&gt;</code>) under the H1 is the site summary — make it clear and factual.</li>
+          <li>Keep descriptions to one sentence. They're context, not marketing copy.</li>
+          <li>Include your most important pages. Don't try to list everything.</li>
+          <li>Optionally link to an <code class="text-sm font-mono">llms-full.txt</code> at the bottom if you have one.</li>
+        </ul>
+      </section>
+
+      {/* WordPress implementation */}
+      <section>
+        <h2>Implementing on WordPress</h2>
+
+        <h3 class="mt-6">Option 1: manual file upload (simplest)</h3>
+        <p class="mt-3">
+          Create a plain text file named <code class="text-sm font-mono">llms.txt</code>,
+          write your content using the format above, and upload it to the root
+          of your web server (same directory as <code class="text-sm font-mono">wp-config.php</code>
+          and <code class="text-sm font-mono">robots.txt</code>). That's it.
+        </p>
+        <p class="mt-3">
+          To verify: visit <code class="text-sm font-mono">yourdomain.com/llms.txt</code>
+          in a browser. You should see plain text. If WordPress tries to serve
+          a 404 page instead, check that the file is in the true root directory,
+          not in <code class="text-sm font-mono">wp-content</code>.
+        </p>
+
+        <h3 class="mt-6">Option 2: serve via functions.php or a plugin</h3>
+        <p class="mt-3">
+          If you're on a managed host where FTP access to the root is restricted,
+          you can serve the file via WordPress itself. Add this to your theme's
+          <code class="text-sm font-mono">functions.php</code> or a site-specific plugin:
+        </p>
+        <pre class="mt-3 rounded-xl bg-bg-surface border border-border p-4 overflow-x-auto text-sm font-mono text-text-secondary leading-relaxed">{`add_action( 'init', function () {
+    add_rewrite_rule( '^llms\\.txt$', 'index.php?llms_txt=1', 'top' );
+} );
+
+add_filter( 'query_vars', function ( $vars ) {
+    $vars[] = 'llms_txt';
+    return $vars;
+} );
+
+add_action( 'template_redirect', function () {
+    if ( ! get_query_var( 'llms_txt' ) ) {
+        return;
+    }
+    header( 'Content-Type: text/plain; charset=UTF-8' );
+    echo "# Your Site Name\n\n";
+    echo "> One sentence describing your site.\n\n";
+    echo "## Core pages\n\n";
+    echo "- [Home](https://yourdomain.com/): description.\n";
+    // add more pages here
+    exit;
+} );`}</pre>
+        <p class="mt-3">
+          After adding this, go to <strong>Settings → Permalinks</strong> in
+          WordPress and click Save (this flushes rewrite rules without changing
+          anything). Then visit <code class="text-sm font-mono">yourdomain.com/llms.txt</code>
+          to verify.
+        </p>
+
+        <h3 class="mt-6">Option 3: dedicated plugins</h3>
+        <p class="mt-3">
+          Several WordPress plugins now generate llms.txt automatically by
+          reading your pages, posts, and custom post types. Search the WordPress
+          plugin directory for "llms.txt" to see current options. Verify what the
+          plugin outputs before relying on it — auto-generated files often include
+          too many low-priority pages.
+        </p>
+      </section>
+
+      {/* What to include */}
+      <section>
+        <h2>What to include — and what to skip</h2>
+
+        <h3 class="mt-6">Include</h3>
+        <ul class="mt-3 space-y-2 list-disc pl-5">
+          <li>Your homepage — with a description of what your site is and who it's for.</li>
+          <li>Core product or service pages — what you offer, concretely.</li>
+          <li>High-value content: guides, documentation, research, long-form articles.</li>
+          <li>About and contact pages — helps with entity associations.</li>
+          <li>Your most important landing pages.</li>
+        </ul>
+
+        <h3 class="mt-6">Skip</h3>
+        <ul class="mt-3 space-y-2 list-disc pl-5">
+          <li>Login, register, checkout, account, cart pages.</li>
+          <li>Pagination pages (<code class="text-sm font-mono">/page/2/</code>, etc.).</li>
+          <li>Tag and category archive pages unless they have real editorial content.</li>
+          <li>Any URL with query parameters or session state.</li>
+          <li>Pages you'd noindex in SEO.</li>
+        </ul>
+      </section>
+
+      {/* Maintenance */}
+      <section>
+        <h2>Keeping it up to date</h2>
+        <p class="mt-4">
+          If you upload a static file, update it when you publish major new
+          content. It doesn't need to be real-time — treating it like your
+          sitemap (update it when something meaningful changes) is fine.
+        </p>
+        <p class="mt-4">
+          If you generate it dynamically via a plugin or
+          <code class="text-sm font-mono">functions.php</code>, consider
+          pinning the most important pages explicitly rather than auto-generating
+          from all content. Auto-generation tends to produce noisy files that
+          dilute the signal.
+        </p>
+      </section>
+
+      {/* Where llms.txt fits */}
+      <section>
+        <h2>Where llms.txt fits in your AI visibility stack</h2>
+        <p class="mt-4">
+          Think of it as one layer in a broader strategy:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Crawlability</strong> — the foundation. AI crawlers need to reach your pages at all. See our <a href="/guides/appear-in-chatgpt-perplexity/" class="text-accent-teal hover:underline">ChatGPT/Perplexity guide</a> for the full checklist.</li>
+          <li><strong>Structured data (schema.org)</strong> — helps engines understand entities and relationships. Works for both classic SEO rich results and AI.</li>
+          <li><strong>llms.txt</strong> — a curated map for LLM tools. Complements, doesn't replace, structured data.</li>
+          <li><strong>Content quality</strong> — the most important layer. A perfect llms.txt pointing to thin content won't get you cited.</li>
+          <li><strong>Monitoring</strong> — track whether your changes move your AI visibility score over time.</li>
+        </ul>
+        <p class="mt-4">
+          See the full stack in the <a href="/guides/ai-visibility-checklist/" class="text-accent-teal hover:underline">AI visibility checklist</a>
+          and the <a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO comparison</a>.
+        </p>
+      </section>
+
+      {/* CTA */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+        <h2>Check your site's llms.txt and structured data</h2>
+        <p class="mt-3">
+          The free audit checks whether your llms.txt exists and is valid,
+          alongside seven other AI visibility categories. No account required.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/#audit-form"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Run a free AI visibility audit
+          </a>
+          <a
+            href="https://app.geoready.dev/signup"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            Create a GeoReady account
+          </a>
+        </div>
+        <p class="mt-4 text-xs text-text-muted">
+          A GeoReady account unlocks the full report and lets you track changes over time. See <a href="/pricing/" class="text-accent-teal hover:underline">pricing</a>.
+        </p>
+      </section>
+
+      {/* Further reading */}
+      <section>
+        <h2>Further reading</h2>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><a href="/guides/appear-in-chatgpt-perplexity/" class="text-accent-teal hover:underline">How to make your website appear in ChatGPT and Perplexity sources</a> — full technical checklist.</li>
+          <li><a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO: what changes when AI becomes the interface</a>.</li>
+          <li><a href="/guides/ai-visibility-checklist/" class="text-accent-teal hover:underline">AI Visibility Checklist</a> — all signals in one place.</li>
+          <li>The research behind these guides: <a href="/research/" class="text-accent-teal hover:underline">GEO Optimizer research foundation</a>.</li>
+          <li>Our take on why AI visibility should be auditable: <a href="/manifesto/" class="text-accent-teal hover:underline">the manifesto</a>.</li>
+        </ul>
+      </section>
+    </div>
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description,
+    "author": {
+      "@type": "Organization",
+      "name": "Auriti Labs",
+      "url": "https://github.com/Auriti-Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Auriti Labs",
+      "url": "https://github.com/Auriti-Labs"
+    },
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "image": "https://geoready.dev/assets/og-image.png",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonical
+    },
+    "about": [
+      "llms.txt",
+      "AI visibility",
+      "WordPress",
+      "Generative Engine Optimization",
+      "AI search"
+    ]
+  })} />
+</Shell>

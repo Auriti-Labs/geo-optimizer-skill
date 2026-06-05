@@ -1,0 +1,275 @@
+---
+import Shell from '../../components/Shell.astro';
+
+const title = 'GEO vs SEO: What Changes When AI Engines Become the Interface';
+const description =
+  'SEO and GEO share some foundations but diverge in what they optimize for. This guide explains the differences, what stays the same, and where you need to change your approach when AI engines become the answer interface.';
+const canonical = 'https://geoready.dev/guides/geo-vs-seo/';
+const datePublished = '2026-06-05';
+const dateModified = '2026-06-05';
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    {/* Header */}
+    <header class="mb-12 md:mb-16">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <a href="/guides/" class="hover:text-accent-teal">Guides</a>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>GEO</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        GEO vs SEO: what changes when AI engines become the interface
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        Search engine optimization is about ranking links. Generative engine
+        optimization is about being cited, summarized, or recommended by an AI
+        answer. They share technical foundations but diverge in what matters
+        most. This guide maps the overlap, the differences, and the practical
+        changes your workflow actually needs.
+      </p>
+      <p class="mt-2 text-xs text-text-muted font-mono">
+        Published June 2026 · 10 min read
+      </p>
+    </header>
+
+    <div class="space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      {/* The core difference */}
+      <section>
+        <h2>The core difference: ranking vs. retrieval</h2>
+        <p class="mt-4">
+          Classic SEO optimizes for a ranked list of links. A human user sees
+          that list and clicks. Generative engines don't show ten blue links —
+          they synthesize a single answer and cite a few sources inline. The
+          human never sees a rank; they see a summary.
+        </p>
+        <p class="mt-4">
+          That changes the success metric. In SEO you want position 1. In GEO
+          you want to be one of the sources a model trusts enough to pull from
+          and attribute. There's no rank 1 in a paragraph.
+        </p>
+        <p class="mt-4">
+          This isn't a complete replacement. Classic search is still the
+          dominant interface for most queries, and ranking well in Google
+          correlates with being in training and retrieval sets. But the
+          optimization target has shifted for a meaningful share of queries,
+          especially informational and comparison ones.
+        </p>
+      </section>
+
+      {/* What stays the same */}
+      <section>
+        <h2>What stays the same</h2>
+        <p class="mt-4">
+          Most of the technical fundamentals carry over:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Crawlability</strong> — if a bot can't fetch your page, neither engine can use it. Clean robots.txt, fast responses, correct status codes.</li>
+          <li><strong>Indexable HTML</strong> — content must be in the server-rendered markup, not behind JavaScript that a basic crawler won't execute.</li>
+          <li><strong>Canonical URLs</strong> — duplicate content confuses both Google and retrieval systems. Pick a canonical, redirect correctly, use trailing slashes consistently.</li>
+          <li><strong>Page authority</strong> — links pointing to your domain are still a proxy for trust. More authoritative domains get pulled more often by RAG systems.</li>
+          <li><strong>Structured data</strong> — JSON-LD helps both rich results and entity disambiguation by AI systems.</li>
+        </ul>
+        <p class="mt-4">
+          If your SEO fundamentals are weak, GEO won't save you. Fix the
+          foundation first.
+        </p>
+      </section>
+
+      {/* What changes */}
+      <section>
+        <h2>What changes</h2>
+
+        <h3 class="mt-6">1. Quotability over keyword density</h3>
+        <p class="mt-3">
+          SEO copywriting obsesses over keyword frequency and placement. GEO
+          cares about whether a passage can be lifted cleanly. A model looking
+          for a definition doesn't want a paragraph that mentions the keyword
+          twelve times; it wants one clear sentence that states what the term
+          means, followed by context.
+        </p>
+        <p class="mt-3">
+          The shift: write for direct extraction. Lead with the answer. State
+          facts in a form that makes sense out of context.
+        </p>
+
+        <h3 class="mt-6">2. Entity clarity over anchor text</h3>
+        <p class="mt-3">
+          SEO builds link equity through anchor text. GEO needs clear entity
+          associations. Who is your brand? What does it do? What category does
+          it live in? Models build entity graphs from structured data,
+          consistent references across the web, and the way you describe
+          yourself on your own site.
+        </p>
+        <p class="mt-3">
+          Mark up your <code class="text-sm font-mono">Organization</code> and
+          <code class="text-sm font-mono">WebSite</code> schema. Be consistent
+          with your brand name, product names, and category language across
+          every page. A Wikipedia article or Wikidata entity helps; not everyone
+          can get that, but it's the clearest signal.
+        </p>
+
+        <h3 class="mt-6">3. Source trust over CTR signals</h3>
+        <p class="mt-3">
+          Google has click-through rate as a behavioral signal. Generative
+          engines don't — they assess source quality through a different lens:
+          content accuracy, domain authority, freshness, and whether the content
+          matches what the model already knows from training. There's no A/B
+          testing your title tag for citation rate the way you would for CTR.
+        </p>
+
+        <h3 class="mt-6">4. llms.txt as explicit context</h3>
+        <p class="mt-3">
+          <code class="text-sm font-mono">llms.txt</code> is an emerging standard
+          with no SEO analogue. It's a plain-text file at your domain root that
+          says: "here are my important pages, here's what this site is about."
+          It's not a ranking signal; it's a hint for LLM tools that read it
+          directly. Read our{' '}
+          <a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt implementation guide</a>
+          {' '}for details.
+        </p>
+
+        <h3 class="mt-6">5. AI-specific crawler permission</h3>
+        <p class="mt-3">
+          SEO robots.txt blocks Googlebot and Bingbot. GEO requires deliberate
+          decisions about AI crawlers: <code class="text-sm font-mono">GPTBot</code>,
+          <code class="text-sm font-mono">OAI-SearchBot</code>,
+          <code class="text-sm font-mono">ClaudeBot</code>,
+          <code class="text-sm font-mono">PerplexityBot</code>,
+          <code class="text-sm font-mono">Google-Extended</code>. Each engine
+          behaves differently. Blocking them all to protect your content from
+          training also blocks the retrieval that drives citations.
+        </p>
+      </section>
+
+      {/* Practical priority matrix */}
+      <section>
+        <h2>Practical priority: what to do first</h2>
+        <p class="mt-4">
+          If you're already doing solid SEO and want to add GEO, here's where
+          the marginal effort goes:
+        </p>
+        <ul class="mt-4 space-y-3 list-decimal pl-5">
+          <li>
+            <strong>Audit your robots.txt</strong> for unintentional AI crawler blocks.
+            If you're blocking <code class="text-sm font-mono">GPTBot</code> or
+            <code class="text-sm font-mono">PerplexityBot</code>, decide deliberately.
+          </li>
+          <li>
+            <strong>Run a baseline audit</strong> to see how your site scores on
+            crawlability, llms.txt, schema, and content signals.
+          </li>
+          <li>
+            <strong>Rewrite your key pages</strong> to lead with direct answers.
+            Check your most important landing pages: does the first paragraph
+            state what you do and for whom, in one clear sentence?
+          </li>
+          <li>
+            <strong>Add or fix entity schema</strong> — <code class="text-sm font-mono">Organization</code>,
+            <code class="text-sm font-mono">WebSite</code>, <code class="text-sm font-mono">BreadcrumbList</code>.
+          </li>
+          <li>
+            <strong>Create an llms.txt</strong> pointing to your most important content.
+            Low effort, makes your key URLs explicit.
+          </li>
+          <li>
+            <strong>Monitor over time.</strong> AI visibility changes as models
+            update. A snapshot tells you where you are; tracking tells you whether
+            changes worked.
+          </li>
+        </ul>
+      </section>
+
+      {/* What GEO can't do */}
+      <section>
+        <h2>What GEO can't do</h2>
+        <p class="mt-4">
+          Be honest with yourself about the limits:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li>No one can guarantee a specific model will cite you. Citation behavior is probabilistic and changes as models are retrained.</li>
+          <li>You can't directly control what training data includes your content.</li>
+          <li>GEO doesn't replace SEO for transactional queries — people still use classic search to buy things, compare prices, and find local services.</li>
+          <li>Brand authority built over years of SEO carries over. A two-week sprint won't substitute for it.</li>
+        </ul>
+        <p class="mt-4">
+          GEO removes friction. It doesn't manufacture authority from nothing.
+        </p>
+      </section>
+
+      {/* CTA */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+        <h2>See how your site scores on GEO signals</h2>
+        <p class="mt-3">
+          The free audit checks your site across eight GEO categories:
+          crawlability, llms.txt, schema, content signals, AI discovery, and
+          more. No account needed.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/#audit-form"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Run a free AI visibility audit
+          </a>
+          <a
+            href="https://app.geoready.dev/signup"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            Create a GeoReady account
+          </a>
+        </div>
+        <p class="mt-4 text-xs text-text-muted">
+          A GeoReady account lets you save reports, track changes over time, and
+          unlock the full audit. See <a href="/pricing/" class="text-accent-teal hover:underline">pricing</a>.
+        </p>
+      </section>
+
+      {/* Further reading */}
+      <section>
+        <h2>Further reading</h2>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><a href="/guides/appear-in-chatgpt-perplexity/" class="text-accent-teal hover:underline">How to make your website appear in ChatGPT and Perplexity sources</a> — the technical and content checklist.</li>
+          <li><a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt for WordPress and AI visibility</a> — practical implementation guide.</li>
+          <li><a href="/guides/ai-visibility-checklist/" class="text-accent-teal hover:underline">AI Visibility Checklist</a> — all the signals in one place.</li>
+          <li>The signals behind these guides: our <a href="/research/" class="text-accent-teal hover:underline">research foundation</a>.</li>
+          <li>Why we think AI visibility should be auditable — the <a href="/manifesto/" class="text-accent-teal hover:underline">GEO Optimizer manifesto</a>.</li>
+        </ul>
+      </section>
+    </div>
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description,
+    "author": {
+      "@type": "Organization",
+      "name": "Auriti Labs",
+      "url": "https://github.com/Auriti-Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Auriti Labs",
+      "url": "https://github.com/Auriti-Labs"
+    },
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "image": "https://geoready.dev/assets/og-image.png",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonical
+    },
+    "about": [
+      "Generative Engine Optimization",
+      "SEO",
+      "AI search visibility",
+      "GEO vs SEO",
+      "AI citations"
+    ]
+  })} />
+</Shell>

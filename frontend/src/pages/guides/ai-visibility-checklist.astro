@@ -1,0 +1,396 @@
+---
+import Shell from '../../components/Shell.astro';
+
+const title =
+  'AI Visibility Checklist: How to Make Your Website Easier to Find, Cite, and Recommend';
+const description =
+  'A practical checklist covering all the technical and content signals that affect whether AI answer engines can find, parse, and cite your website. Organized by category, with clear pass/fail criteria.';
+const canonical = 'https://geoready.dev/guides/ai-visibility-checklist/';
+const datePublished = '2026-06-05';
+const dateModified = '2026-06-05';
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    {/* Header */}
+    <header class="mb-12 md:mb-16">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <a href="/guides/" class="hover:text-accent-teal">Guides</a>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>Checklist</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        AI visibility checklist: how to make your website easier to find, cite, and recommend
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        This checklist covers the signals that determine whether AI answer
+        engines can find your site, parse its content, and cite it in responses.
+        It's organized by category — from crawl-level basics to brand signals —
+        with clear criteria for each item. Work through it top to bottom: the
+        higher categories are foundational; the lower ones have diminishing
+        returns if you skip the basics.
+      </p>
+      <p class="mt-2 text-xs text-text-muted font-mono">
+        Published June 2026 · 14 min read
+      </p>
+    </header>
+
+    <div class="space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      {/* How to use */}
+      <section>
+        <h2>How to use this checklist</h2>
+        <p class="mt-4">
+          Each item has a criterion and what to check. "Pass" means the signal
+          is present and correct. "Fail" means it's missing, broken, or
+          actively working against you. Some items have partial states.
+        </p>
+        <p class="mt-4">
+          You can run through this manually on your own site, or use an
+          automated audit to get a scored report across these categories. The
+          checklist covers the same signals as the GEO Optimizer audit; the
+          audit gives you a numeric score and specific recommendations per page.
+        </p>
+        <p class="mt-4 text-sm text-text-secondary">
+          Shorthand used below: <strong>AI crawler</strong> = agents like GPTBot,
+          OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended.
+          <strong>Answer engine</strong> = ChatGPT web search, Perplexity, Gemini,
+          Claude with web access, and similar.
+        </p>
+      </section>
+
+      {/* Category 1: Crawlability */}
+      <section>
+        <h2>1. Crawlability</h2>
+        <p class="mt-3 text-text-secondary text-sm font-mono uppercase tracking-wider">Foundation — fix this first</p>
+
+        <ul class="mt-6 space-y-5">
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">robots.txt doesn't block AI crawlers you want</p>
+            <p class="mt-1 text-sm">Check: fetch <code class="font-mono">yourdomain.com/robots.txt</code> and look for <code class="font-mono">Disallow: /</code> rules under GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended. If they're disallowed, those engines can't retrieve your content.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: AI crawlers you want are explicitly allowed, or not mentioned (default allow).</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Pages return 200 OK</p>
+            <p class="mt-1 text-sm">Crawlers that hit 4xx or 5xx errors on important pages won't index them. Check your key landing pages, guides, and product pages return clean 200s.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: no important pages returning error status codes.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Redirects are 301, not chains</p>
+            <p class="mt-1 text-sm">Redirect chains (A → B → C) slow down crawlers and dilute link equity. Each extra hop is a failure point. Use 301s directly to the canonical URL.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: no redirect chains longer than one hop on key pages.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Response time under 3 seconds</p>
+            <p class="mt-1 text-sm">Slow pages get deprioritized or timed out during crawl. Measure TTFB (time to first byte), not just browser load time.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: TTFB under ~500ms; full page under ~3s for crawlers.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Sitemap is present and linked from robots.txt</p>
+            <p class="mt-1 text-sm">Add <code class="font-mono">Sitemap: https://yourdomain.com/sitemap.xml</code> to your robots.txt so any crawler can discover all your pages.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: sitemap exists, is accessible, and is referenced in robots.txt.</p>
+          </li>
+        </ul>
+      </section>
+
+      {/* Category 2: Meta / Signals */}
+      <section>
+        <h2>2. Meta signals</h2>
+        <p class="mt-3 text-text-secondary text-sm font-mono uppercase tracking-wider">Page-level identification</p>
+
+        <ul class="mt-6 space-y-5">
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Each page has a unique, descriptive &lt;title&gt;</p>
+            <p class="mt-1 text-sm">Title tags are used by both classic search and AI retrieval systems to categorize pages. Duplicate or generic titles ("Home | Site Name" on every page) confuse retrieval.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: every important page has a unique title that describes its specific content.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Meta description present and accurate</p>
+            <p class="mt-1 text-sm">Not a direct ranking signal for AI, but descriptions are sometimes used as context by tools that summarize pages. Keep them factual and specific.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: meta description present on all key pages, accurate, under 160 characters.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Canonical tag present and self-referencing</p>
+            <p class="mt-1 text-sm">Without a canonical, retrieval systems may treat multiple URL variants of the same page as separate content, diluting its signal.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: <code class="font-mono">&lt;link rel="canonical"&gt;</code> on every page, pointing to the preferred URL.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Open Graph / og: tags present</p>
+            <p class="mt-1 text-sm">OG tags are used when pages are shared and summarized. Some AI summarization tools also read them. At minimum: og:title, og:description, og:image.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: og:title, og:description, og:image, og:url present on key pages.</p>
+          </li>
+        </ul>
+      </section>
+
+      {/* Category 3: llms.txt */}
+      <section>
+        <h2>3. llms.txt</h2>
+        <p class="mt-3 text-text-secondary text-sm font-mono uppercase tracking-wider">Curated content map for AI tools</p>
+
+        <ul class="mt-6 space-y-5">
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">llms.txt exists at domain root</p>
+            <p class="mt-1 text-sm">Check: <code class="font-mono">yourdomain.com/llms.txt</code> should return a plain text file, not a 404 or HTML page.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: file accessible, returns plain text (Content-Type: text/plain).</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">llms.txt follows the correct format</p>
+            <p class="mt-1 text-sm">The file should use Markdown: H1 for site name, a blockquote for the summary, H2 sections for categories, and link lists with descriptions. See our <a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">implementation guide</a>.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: valid Markdown, site description present, at least one section with linked pages.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">llms.txt includes most important pages</p>
+            <p class="mt-1 text-sm">A file that only lists low-priority pages (or auto-generates every post) is worse than a curated short list. Include homepage, key product/service pages, and your best content.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: core pages present; no more than ~30-50 entries (quality over quantity).</p>
+          </li>
+        </ul>
+      </section>
+
+      {/* Category 4: Structured data */}
+      <section>
+        <h2>4. Structured data (schema.org)</h2>
+        <p class="mt-3 text-text-secondary text-sm font-mono uppercase tracking-wider">Explicit entity and relationship signals</p>
+
+        <ul class="mt-6 space-y-5">
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Organization or Person schema present</p>
+            <p class="mt-1 text-sm">Every site should declare its identity. An <code class="font-mono">Organization</code> schema with name, URL, logo, and description helps AI systems build entity associations.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: valid JSON-LD <code class="font-mono">Organization</code> (or <code class="font-mono">Person</code> for personal sites) on homepage.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">WebSite schema with search action</p>
+            <p class="mt-1 text-sm">Helps engines understand the site as a whole. Include a <code class="font-mono">SearchAction</code> if you have on-site search.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: <code class="font-mono">WebSite</code> schema present, name and URL match the canonical domain.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Article schema on blog/guide pages</p>
+            <p class="mt-1 text-sm">Marks content as authored, dated, and categorized. Include <code class="font-mono">headline</code>, <code class="font-mono">author</code>, <code class="font-mono">datePublished</code>, <code class="font-mono">dateModified</code>.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: valid Article schema on all editorial content pages.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">FAQPage schema where applicable</p>
+            <p class="mt-1 text-sm">FAQ sections marked with <code class="font-mono">FAQPage</code> schema give AI systems clean question-answer pairs to pull from.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: FAQPage schema present on pages with Q&A sections; questions and answers accurate and specific.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">BreadcrumbList schema on sub-pages</p>
+            <p class="mt-1 text-sm">Helps engines understand site structure and page context.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: breadcrumb schema present on all pages more than one level deep.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">No schema validation errors</p>
+            <p class="mt-1 text-sm">Malformed JSON-LD (unclosed brackets, wrong types) can be silently ignored. Validate with Google's Rich Results Test or schema.org validator.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: no errors in validator; warnings are acceptable if the meaning is clear.</p>
+          </li>
+        </ul>
+      </section>
+
+      {/* Category 5: Content signals */}
+      <section>
+        <h2>5. Content signals</h2>
+        <p class="mt-3 text-text-secondary text-sm font-mono uppercase tracking-wider">Quotability and clarity</p>
+
+        <ul class="mt-6 space-y-5">
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Content is in server-rendered HTML</p>
+            <p class="mt-1 text-sm">View the raw HTML source (not the rendered DOM). Your key paragraphs, headings, and facts must appear there. If they only appear after JavaScript runs, assume a basic crawler won't see them.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: all important content present in raw HTML source.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Pages lead with a direct answer or summary</p>
+            <p class="mt-1 text-sm">AI retrieval favors pages where the first paragraph states the answer clearly. Burying the key point under marketing prose reduces quotability.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: first paragraph of each key page states its main point directly.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Headings match real questions or intents</p>
+            <p class="mt-1 text-sm">H2/H3 headings that match how people phrase queries help retrieval systems identify which section answers which question.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: headings are descriptive and query-shaped; not generic ("Introduction", "Section 3").</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Facts are specific and verifiable</p>
+            <p class="mt-1 text-sm">Vague claims ("industry-leading performance") aren't quotable. Numbers, dates, and concrete statements are. A model can cite "response time under 200ms"; it can't cite "blazing fast".</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: key claims are specific, dated where relevant, and don't require context to interpret.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">One idea per paragraph</p>
+            <p class="mt-1 text-sm">Dense paragraphs that mix multiple ideas are harder to lift cleanly. Short, focused paragraphs make it easy for a model to pull a clean passage.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: most paragraphs cover one point; rarely more than 5-6 sentences.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Processes are written as numbered steps</p>
+            <p class="mt-1 text-sm">Numbered steps are one of the easiest formats for AI to quote and reproduce. If you're explaining how to do something, use an ordered list.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: all how-to content uses numbered steps, not prose-only descriptions.</p>
+          </li>
+        </ul>
+      </section>
+
+      {/* Category 6: AI discovery */}
+      <section>
+        <h2>6. AI discovery signals</h2>
+        <p class="mt-3 text-text-secondary text-sm font-mono uppercase tracking-wider">Findability beyond direct crawl</p>
+
+        <ul class="mt-6 space-y-5">
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">XML sitemap is complete and up to date</p>
+            <p class="mt-1 text-sm">A sitemap tells crawlers what URLs exist. An outdated sitemap with broken or missing URLs undermines discoverability.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: sitemap includes all important pages; lastmod dates are accurate; no 404s in the sitemap.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Internal linking connects key pages</p>
+            <p class="mt-1 text-sm">Orphan pages (reachable only via sitemap, not through in-site links) are less likely to be indexed and less likely to accumulate authority.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: every important page linked from at least two other pages; no key pages require sitemap to reach.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">No noindex on pages you want cited</p>
+            <p class="mt-1 text-sm">A <code class="font-mono">noindex</code> meta tag or X-Robots-Tag header tells crawlers to exclude the page from their index. Verify it isn't set accidentally on content you want visible.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: no noindex on pages you want indexed and cited.</p>
+          </li>
+        </ul>
+      </section>
+
+      {/* Category 7: Brand / entity */}
+      <section>
+        <h2>7. Brand and entity signals</h2>
+        <p class="mt-3 text-text-secondary text-sm font-mono uppercase tracking-wider">Who you are, consistently stated</p>
+
+        <ul class="mt-6 space-y-5">
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Brand name used consistently across all pages</p>
+            <p class="mt-1 text-sm">Inconsistent naming (sometimes "Acme", sometimes "Acme Inc.", sometimes "acme.com") fragments entity associations. AI systems use consistent references to build confidence in who you are.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: brand name spelled identically across title tags, schema, footer, and copy.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">About page describes the entity clearly</p>
+            <p class="mt-1 text-sm">A clear, factual About page (who you are, what you do, where you're based, when founded) gives models anchor points for entity recognition.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: About page exists, factual, describes the organization concisely.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Social profiles and external mentions are consistent</p>
+            <p class="mt-1 text-sm">LinkedIn, GitHub, Crunchbase, press mentions — all should use the same brand name and description. Cross-web consistency strengthens entity association.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: major external profiles exist and match on-site branding.</p>
+          </li>
+          <li class="border-l-2 border-border pl-4">
+            <p class="font-semibold text-text-primary">Wikidata or Wikipedia entry (if applicable)</p>
+            <p class="mt-1 text-sm">Not achievable for most sites, but the strongest entity signal if you qualify. Models are trained on Wikipedia and Wikidata; being there creates a canonical entity record.</p>
+            <p class="mt-1 text-sm text-text-muted">Pass: entry exists, accurate, linked from your site. Skip if not notable enough — a bad entry is worse than none.</p>
+          </li>
+        </ul>
+      </section>
+
+      {/* Priority order */}
+      <section>
+        <h2>Priority order for a first pass</h2>
+        <p class="mt-4">
+          If you're auditing a site for the first time and want to know where to
+          start:
+        </p>
+        <ol class="mt-4 space-y-3 list-decimal pl-5">
+          <li>Fix crawlability issues first — robots.txt blocks, redirect chains, slow responses.</li>
+          <li>Add or fix canonical tags and meta titles on all key pages.</li>
+          <li>Create an <code class="font-mono">llms.txt</code> — low effort, explicitly surfaces your priorities.</li>
+          <li>Add Organization and Article schema to your homepage and content pages.</li>
+          <li>Rewrite your most important page introductions to lead with direct answers.</li>
+          <li>Fix internal linking so no important page is an orphan.</li>
+          <li>Work on brand/entity consistency across the web — this is slower but compounds.</li>
+        </ol>
+        <p class="mt-4">
+          The <a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO guide</a> explains
+          why these priorities differ from a classic SEO checklist.
+        </p>
+      </section>
+
+      {/* Limits */}
+      <section>
+        <h2>Limits of this checklist</h2>
+        <p class="mt-4">
+          This checklist covers signals that are in your control. It doesn't
+          cover:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Training data inclusion</strong> — you can't directly control whether your site was included in a model's training corpus, only whether future crawls can access it.</li>
+          <li><strong>Citation frequency</strong> — even a perfect score doesn't guarantee citations. Models have their own retrieval and selection logic, and it changes between versions.</li>
+          <li><strong>Query intent matching</strong> — if your content doesn't actually answer the queries people are asking, technical optimization won't manufacture relevance.</li>
+          <li><strong>Domain authority</strong> — established, heavily-cited domains have an advantage that a checklist won't close overnight.</li>
+        </ul>
+        <p class="mt-4">
+          Use this checklist to remove friction and make your site's signals
+          accurate. Don't use it expecting guaranteed citation outcomes — no
+          checklist can promise that.
+        </p>
+      </section>
+
+      {/* CTA */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+        <h2>Get a scored audit across all these categories</h2>
+        <p class="mt-3">
+          Instead of working through this manually, run the free audit: it
+          checks your site across these eight categories and gives specific,
+          actionable recommendations. No account required.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/#audit-form"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Run a free AI visibility audit
+          </a>
+          <a
+            href="https://app.geoready.dev/signup"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            Create a GeoReady account
+          </a>
+        </div>
+        <p class="mt-4 text-xs text-text-muted">
+          A GeoReady account lets you save reports, monitor domains over time, and track whether your changes improve your score. See <a href="/pricing/" class="text-accent-teal hover:underline">pricing</a>.
+        </p>
+      </section>
+
+      {/* Further reading */}
+      <section>
+        <h2>Further reading</h2>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><a href="/guides/appear-in-chatgpt-perplexity/" class="text-accent-teal hover:underline">How to make your website appear in ChatGPT and Perplexity sources</a> — deep dive on the crawlability and content layers.</li>
+          <li><a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO: what changes when AI becomes the interface</a> — how these signals differ from classic SEO priorities.</li>
+          <li><a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt for WordPress and AI visibility</a> — implementing the llms.txt layer.</li>
+          <li>The research behind these categories: <a href="/research/" class="text-accent-teal hover:underline">GEO Optimizer research foundation</a>.</li>
+          <li>Our philosophy on AI visibility: <a href="/manifesto/" class="text-accent-teal hover:underline">the manifesto</a>.</li>
+        </ul>
+      </section>
+    </div>
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description,
+    "author": {
+      "@type": "Organization",
+      "name": "Auriti Labs",
+      "url": "https://github.com/Auriti-Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Auriti Labs",
+      "url": "https://github.com/Auriti-Labs"
+    },
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "image": "https://geoready.dev/assets/og-image.png",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonical
+    },
+    "about": [
+      "AI search visibility",
+      "Generative Engine Optimization",
+      "AI visibility checklist",
+      "SEO",
+      "llms.txt",
+      "structured data"
+    ]
+  })} />
+</Shell>
