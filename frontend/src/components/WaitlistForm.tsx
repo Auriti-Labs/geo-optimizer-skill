@@ -93,7 +93,7 @@ export default function WaitlistForm() {
         </div>
         <p className="text-base font-semibold text-text-primary">{message}</p>
         <p className="mt-2 text-sm text-text-secondary">
-          We'll reach out by email when early access opens. No spam, no newsletters.
+          We'll email you about new features and GEO research. No spam.
         </p>
       </div>
     );
@@ -198,7 +198,7 @@ export default function WaitlistForm() {
           className="mt-0.5 h-4 w-4 rounded border-border text-accent-teal focus:ring-accent-teal/40 cursor-pointer"
         />
         <label htmlFor="wl-consent" className="text-sm text-text-secondary leading-relaxed cursor-pointer">
-          I agree to be contacted about GeoReady early access. See our{" "}
+          I agree to receive product updates about GeoReady. See our{" "}
           <a href="/privacy/" className="text-accent-teal hover:underline">
             Privacy Policy
           </a>
@@ -217,7 +217,7 @@ export default function WaitlistForm() {
         disabled={state === "loading"}
         className="w-full py-2.5 px-4 rounded-[--radius-md] bg-accent-teal text-white font-semibold text-sm hover:bg-accent-teal-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        {state === "loading" ? "Joining…" : "Join early access"}
+        {state === "loading" ? "Subscribing…" : "Get product updates"}
       </button>
     </form>
   );
