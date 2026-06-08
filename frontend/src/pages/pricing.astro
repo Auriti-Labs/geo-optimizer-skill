@@ -27,11 +27,11 @@ const selfServePlans = [
     name: 'Pro',
     price: '€19',
     period: '/month',
-    status: 'Early access',
+    status: 'Founding price',
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
     description: 'Full reports, weekly monitoring for one domain, score history, and regression alerts. For developers and consultants managing one site.',
-    cta: 'Join early access',
-    ctaHref: '/early-access/',
+    cta: 'Start with Pro',
+    ctaHref: 'https://app.geoready.dev/signup?plan=pro',
     ctaStyle: 'bg-accent-teal text-white hover:bg-accent-teal-dark',
     recommended: true,
     features: [
@@ -49,11 +49,11 @@ const selfServePlans = [
     name: 'Studio',
     price: '€49',
     period: '/month',
-    status: 'Early access',
+    status: 'Founding price',
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
     description: 'Multi-site daily monitoring, unbranded PDF exports, and competitor comparison. For consultants and agencies managing a portfolio.',
-    cta: 'Join early access',
-    ctaHref: '/early-access/',
+    cta: 'Start with Studio',
+    ctaHref: 'https://app.geoready.dev/signup?plan=studio',
     ctaStyle: 'border border-border text-text-primary hover:bg-bg-subtle',
     recommended: false,
     features: [
@@ -75,11 +75,11 @@ const scalePlans = [
     name: 'Agency',
     price: '€89',
     period: '/month',
-    status: 'Early access',
+    status: 'Founding price',
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
     description: 'Team workspace, 50-domain daily portfolio monitoring, AI answer snapshots, and unlimited batch audits.',
-    cta: 'Join early access',
-    ctaHref: '/early-access/',
+    cta: 'Start with Agency',
+    ctaHref: 'https://app.geoready.dev/signup?plan=agency',
     features: [
       'Everything in Studio',
       '50 domains — daily monitoring',
@@ -95,10 +95,10 @@ const scalePlans = [
     name: 'Enterprise',
     price: 'Custom',
     period: '',
-    status: 'Coming later',
+    status: 'Talk to us',
     statusStyle: 'bg-bg-subtle text-text-muted border border-border',
     description: 'SLA, dedicated account manager, on-premise deployment, hourly monitoring, and custom integrations.',
-    cta: 'Join early access',
+    cta: 'Contact sales',
     ctaHref: '/early-access/',
     features: [
       'Everything in Agency',
@@ -147,11 +147,11 @@ const faqs = [
   },
   {
     q: 'Are paid plans available right now?',
-    a: 'No. Pro, Studio, and Agency are in early access. You can join the waitlist to be notified when access opens. No payment is collected until plans officially launch.',
+    a: 'Yes. Pick a plan, create an account, and pay — your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe.',
   },
   {
-    q: 'Will pricing change before launch?',
-    a: 'It may. The prices shown are planned pricing for early access. Early access members will be notified of any changes before billing begins.',
+    q: 'What is the founding price?',
+    a: 'The current prices are a founding rate for early members. They are locked for the life of the subscription as long as it stays active. The public list price will be higher later.',
   },
   {
     q: 'Will the CLI remain open source?',
@@ -200,7 +200,7 @@ const faqs = [
       <h2 id="plans-heading" class="sr-only">Plans</h2>
 
       <p class="mb-6 text-xs text-text-muted font-mono">
-        Paid plans are in early access. Pricing may evolve before public launch.
+        Founding price for early members — locked for life while your subscription stays active.
       </p>
 
       {/* Self-serve row */}
@@ -328,7 +328,7 @@ const faqs = [
         </div>
         <div class="p-6 rounded-[--radius-lg] border border-accent-teal/30 bg-bg-surface">
           <span class="text-xs font-mono font-semibold text-accent-teal uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent-teal/10 inline-block mb-4">
-            Pro — early access
+            Pro — founding price
           </span>
           <ul class="space-y-3 text-sm text-text-secondary">
             <li class="flex items-start gap-2.5">
@@ -416,7 +416,7 @@ const faqs = [
         Feature comparison
       </h2>
       <p class="text-sm text-text-secondary mb-8">
-        Paid plan features reflect planned early access scope and may change before public launch.
+        Items marked "roadmap" are planned and not yet available. Everything else is live today.
       </p>
       <div class="overflow-x-auto -mx-4 sm:mx-0">
         <table class="w-full text-sm border-collapse min-w-[480px] px-4 sm:px-0">
@@ -461,12 +461,12 @@ const faqs = [
 
     {/* Footer CTA */}
     <section class="mt-20 md:mt-24 p-8 md:p-10 rounded-[--radius-xl] border border-border bg-bg-surface text-center">
-      <p class="text-[10px] font-mono text-text-muted uppercase tracking-wider mb-3">Early access open</p>
+      <p class="text-[10px] font-mono text-text-muted uppercase tracking-wider mb-3">Founding price open</p>
       <h2 class="font-display text-2xl font-bold text-text-primary mb-3">
-        Start with a free audit. Join the list for Pro.
+        Start with a free audit. Upgrade when you are ready.
       </h2>
       <p class="text-sm text-text-secondary mb-6 max-w-md mx-auto leading-relaxed">
-        No account required for the audit. Join the early access list to be notified when Pro launches — no payment until plans go live.
+        No account required for the audit. Paid plans are live now at a founding price, locked for life while your subscription stays active. Cancel anytime.
       </p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <a
@@ -476,10 +476,10 @@ const faqs = [
           Start free audit
         </a>
         <a
-          href="/early-access/"
+          href="https://app.geoready.dev/signup?plan=pro"
           class="inline-block py-2.5 px-6 rounded-[--radius-md] bg-accent-teal text-white text-sm font-semibold hover:bg-accent-teal-dark transition-colors"
         >
-          Join early access →
+          Start with Pro →
         </a>
       </div>
     </section>
@@ -532,8 +532,8 @@ const faqs = [
                 "unitCode": "MON"
               },
               "description": "Full 8-category reports, weekly monitoring for 1 domain, score history, regression alerts.",
-              "availability": "https://schema.org/PreOrder",
-              "url": "https://geoready.dev/early-access/"
+              "availability": "https://schema.org/InStock",
+              "url": "https://app.geoready.dev/signup?plan=pro"
             }
           },
           {
@@ -551,8 +551,8 @@ const faqs = [
                 "unitCode": "MON"
               },
               "description": "15 domains, daily monitoring, unbranded PDF export, competitor comparison, 12-month history.",
-              "availability": "https://schema.org/PreOrder",
-              "url": "https://geoready.dev/early-access/"
+              "availability": "https://schema.org/InStock",
+              "url": "https://app.geoready.dev/signup?plan=studio"
             }
           },
           {
@@ -570,8 +570,8 @@ const faqs = [
                 "unitCode": "MON"
               },
               "description": "50 domains, daily monitoring, team workspace, unlimited bulk audits, AI answer snapshots (Perplexity automated).",
-              "availability": "https://schema.org/PreOrder",
-              "url": "https://geoready.dev/early-access/"
+              "availability": "https://schema.org/InStock",
+              "url": "https://app.geoready.dev/signup?plan=agency"
             }
           }
         ]
@@ -597,12 +597,12 @@ const faqs = [
           {
             "@type": "Question",
             "name": "Are paid plans available right now?",
-            "acceptedAnswer": { "@type": "Answer", "text": "No. Pro, Studio, and Agency are in early access. You can join the waitlist to be notified when access opens. No payment is collected until plans officially launch." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pick a plan, create an account, and pay — your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe." }
           },
           {
             "@type": "Question",
-            "name": "Will pricing change before launch?",
-            "acceptedAnswer": { "@type": "Answer", "text": "It may. The prices shown are planned pricing for early access. Early access members will be notified of any changes before billing begins." }
+            "name": "What is the founding price?",
+            "acceptedAnswer": { "@type": "Answer", "text": "The current prices are a founding rate for early members. They are locked for the life of the subscription as long as it stays active. The public list price will be higher later." }
           },
           {
             "@type": "Question",
