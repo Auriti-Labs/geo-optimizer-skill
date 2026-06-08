@@ -51,16 +51,17 @@ const selfServePlans = [
     period: '/month',
     status: 'Early access',
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
-    description: 'Multi-site monitoring, white-label PDF exports, and competitor comparison. For consultants and agencies managing a portfolio.',
+    description: 'Multi-site daily monitoring, unbranded PDF exports, and competitor comparison. For consultants and agencies managing a portfolio.',
     cta: 'Join early access',
     ctaHref: '/early-access/',
     ctaStyle: 'border border-border text-text-primary hover:bg-bg-subtle',
     recommended: false,
     features: [
       'Everything in Pro',
-      '15 domains monitored',
+      '15 domains — daily monitoring',
       '12-month score history',
-      'White-label PDF (client logo)',
+      'Unbranded PDF export (removes GeoReady footer and badge)',
+      'Custom-logo white-label: roadmap',
       'Competitor comparison',
       'Batch audit — 50 URLs',
       'Priority support',
@@ -76,16 +77,16 @@ const scalePlans = [
     period: '/month',
     status: 'Early access',
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
-    description: 'Team workspace, 50-domain portfolio monitoring, AI search snapshots, and unlimited batch audits.',
+    description: 'Team workspace, 50-domain daily portfolio monitoring, AI answer snapshots, and unlimited batch audits.',
     cta: 'Join early access',
     ctaHref: '/early-access/',
     features: [
       'Everything in Studio',
-      '50 domains monitored',
+      '50 domains — daily monitoring',
       '24-month score history',
       'Team workspace (owner / editor / viewer)',
       'Unlimited batch audits',
-      'AI search snapshots (ChatGPT, Perplexity, Google AI)',
+      'AI answer snapshots (Perplexity automated; ChatGPT and Google via manual paste)',
       'Citation quality scoring',
     ],
   },
@@ -117,11 +118,12 @@ const comparisonRows: [string, string, string, string, string][] = [
   ['Partial report (3/8)',   '✓',       '—',        '—',        '—'],
   ['Full 8-category report', '—',       '✓',        '✓',        '✓'],
   ['Audits per day',         '5',       '∞',        '∞',        '∞'],
-  ['Domain monitoring',      '—',       '1 / week', '15 / week','50 / week'],
+  ['Domain monitoring',      '—',       '1 / week', '15 / day', '50 / day'],
   ['Score history',          '—',       '30 audits','12 months','24 months'],
   ['Regression alerts',      '—',       '✓',        '✓',        '✓'],
   ['PDF export',             '—',       '✓',        '✓',        '✓'],
-  ['White-label PDF',        '—',       '—',        '✓',        '✓'],
+  ['Unbranded PDF export',   '—',       '—',        '✓',        '✓'],
+  ['Custom-logo white-label','—',       '—',        'roadmap',  'roadmap'],
   ['Competitor comparison',  '—',       '—',        '✓',        '✓'],
   ['Bulk audit',             '—',       '—',        '50 URLs',  '∞'],
   ['Team workspace',         '—',       '—',        '—',        '✓'],
@@ -168,7 +170,7 @@ const faqs = [
 
 <Shell
   title="GEO Optimizer Pricing — Free Audit, Pro Monitoring, Agency Reporting"
-  description="The GEO audit is free, no account required. Pro adds weekly monitoring, full reports, score history, and alerts. Studio and Agency add multi-site workflows and white-label exports."
+  description="The GEO audit is free, no account required. Pro adds weekly monitoring, full reports, score history, and alerts. Studio and Agency add multi-site daily monitoring and unbranded exports."
   canonical="https://geoready.dev/pricing/"
 >
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
@@ -548,7 +550,7 @@ const faqs = [
                 "priceCurrency": "EUR",
                 "unitCode": "MON"
               },
-              "description": "15 domains, white-label PDF, competitor comparison, 12-month history.",
+              "description": "15 domains, daily monitoring, unbranded PDF export, competitor comparison, 12-month history.",
               "availability": "https://schema.org/PreOrder",
               "url": "https://geoready.dev/early-access/"
             }
@@ -567,7 +569,7 @@ const faqs = [
                 "priceCurrency": "EUR",
                 "unitCode": "MON"
               },
-              "description": "50 domains, team workspace, unlimited bulk audits, AI search snapshots.",
+              "description": "50 domains, daily monitoring, team workspace, unlimited bulk audits, AI answer snapshots (Perplexity automated).",
               "availability": "https://schema.org/PreOrder",
               "url": "https://geoready.dev/early-access/"
             }
