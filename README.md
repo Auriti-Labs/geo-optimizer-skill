@@ -7,6 +7,8 @@
 [![PyPI](https://img.shields.io/pypi/v/geo-optimizer-skill?style=flat-square&color=3b82f6)](https://pypi.org/project/geo-optimizer-skill/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![CI](https://github.com/auriti-labs/geo-optimizer-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/auriti-labs/geo-optimizer-skill/actions)
+[![codecov](https://codecov.io/gh/Auriti-Labs/geo-optimizer-skill/branch/main/graph/badge.svg)](https://app.codecov.io/gh/Auriti-Labs/geo-optimizer-skill)
+[![Tests](https://img.shields.io/badge/tests-1682%20passed-22c55e?style=flat-square)](https://github.com/Auriti-Labs/geo-optimizer-skill/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE)
 [![MCP Compatible](https://img.shields.io/badge/MCP-compatible-8b5cf6?style=flat-square)](https://modelcontextprotocol.io)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?style=flat-square&logo=buymeacoffee&logoColor=000000)](https://buymeacoffee.com/auritidesign)
@@ -14,6 +16,8 @@
 **GEO Optimizer helps you audit whether a website can be crawled, understood, cited, and monitored by AI answer engines.**
 
 [Quick Start](#quick-start) · [Live Demo](https://geoready.dev) · [Pricing](https://geoready.dev/pricing) · [Sign Up](https://app.geoready.dev/signup) · [Documentation](https://auriti-labs.github.io/geo-optimizer-skill/) · [Changelog](CHANGELOG.md)
+
+<img src="assets/demo.gif" alt="geo audit demo — score 0-100 with prioritized fixes in one command" width="800"/>
 
 </div>
 
@@ -31,6 +35,13 @@ Perplexity: "According to [Competitor.com], the formula is..."
 ```
 
 GEO Optimizer audits your site against **47 research-backed methods** ([Princeton KDD 2024](https://arxiv.org/abs/2311.09735), [AutoGEO ICLR 2026](https://arxiv.org/abs/2510.11438)) and generates the fixes.
+
+### Why this matters in 2026
+
+- ChatGPT alone serves [**900M weekly users**](https://llmrefs.com/generative-engine-optimization) — a growing share of sessions that used to be Google searches.
+- [**28.3% of ChatGPT's most-cited pages have *zero* organic visibility on Google**](https://llmrefs.com/generative-engine-optimization) (Ahrefs) — AI engines reward different signals than classic SEO.
+- Proper JSON-LD schema lifts LLM extraction accuracy [**from 16% to 54%**](https://dev.to/geobuddy/llmstxt-schema-markup-and-technical-geo-what-actually-works-in-2026-o63) (Semrush test on GPT-4).
+- [**844,000+ sites**](https://webflow.com/blog/llms-txt) already ship an `llms.txt`. Yours?
 
 ---
 
@@ -74,6 +85,12 @@ The CLI and web audit remain MIT-licensed and free. The GeoReady platform adds s
 
 ```bash
 pip install geo-optimizer-skill
+```
+
+No install? One-shot audit with [uv](https://docs.astral.sh/uv/):
+
+```bash
+uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 ```
 
 ```bash
@@ -284,15 +301,23 @@ result = await audit_async("https://example.com")
 
 ---
 
-## Dynamic Badge
+## Show your GEO score
 
-Show your GEO score in your README:
+Add a live GEO score badge to your README — like a coverage badge, but for AI visibility:
+
+![GEO Score](https://geoready.dev/badge?url=https://geoready.dev)
 
 ```markdown
-![GEO Score](https://geoready.dev/badge?url=https://yoursite.com)
+[![GEO Score](https://geoready.dev/badge?url=https://yoursite.com)](https://geoready.dev?utm_source=badge)
 ```
 
-Colors: 86-100 green · 68-85 cyan · 36-67 yellow · 0-35 red. Cached 1h.
+HTML variant for docs sites:
+
+```html
+<a href="https://geoready.dev?utm_source=badge"><img src="https://geoready.dev/badge?url=https://yoursite.com" alt="GEO Score"></a>
+```
+
+Colors: 86-100 green · 68-85 cyan · 36-67 yellow · 0-35 red. Re-audited and cached hourly — improve your site, watch the badge change. No account needed.
 
 ---
 
