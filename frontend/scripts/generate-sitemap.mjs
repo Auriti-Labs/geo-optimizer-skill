@@ -53,6 +53,7 @@ const META_BY_PATH = {
   '/roadmap/': { changefreq: 'monthly', priority: '0.7' },
   '/about/': { changefreq: 'monthly', priority: '0.8' },
   '/guides/': { changefreq: 'weekly', priority: '0.8' },
+  '/tools/llms-txt-generator/': { changefreq: 'monthly', priority: '0.8' },
   '/ai-seo/': { changefreq: 'weekly', priority: '0.9' },
   '/guides/generative-engine-optimization/': { changefreq: 'monthly', priority: '0.8' },
   '/guides/what-is-llms-txt/': { changefreq: 'monthly', priority: '0.7' },

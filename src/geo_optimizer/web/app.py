@@ -33,12 +33,18 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from geo_optimizer import __version__
+from geo_optimizer.core.llms_generator import (
+    discover_sitemap,
+    fetch_sitemap,
+    generate_llms_txt,
+)
 from geo_optimizer.core.telemetry import (
     _telemetry,
     geo_audit_run,
     geo_badge_generated,
     geo_score_improved,
 )
+from geo_optimizer.models.results import SitemapUrl
 
 logger = logging.getLogger(__name__)
 
@@ -730,6 +736,19 @@ class AuditRequest(BaseModel):
     url: str
 
 
+class LlmsGenerateRequest(BaseModel):
+    """Schema for the POST /api/llms/generate request body (Sprint 3).
+
+    Pydantic valida i tipi: input non-stringa restituisce 422, non 500.
+    """
+
+    base_url: str
+    sitemap_url: str | None = None
+    site_name: str | None = None
+    description: str | None = None
+    max_per_section: int = 10
+
+
 @app.get("/api/audit")
 async def audit_get(
     request: Request,
@@ -767,6 +786,157 @@ async def audit_post(request: Request, body: AuditRequest):
     if not await _check_rate_limit(_get_client_ip(request)):
         raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
     return await _run_audit(body.url)
+
+
+# Limiti clamp per max_per_section: minimo 1, massimo 20 link per sezione
+_LLMS_MIN_PER_SECTION = 1
+_LLMS_MAX_PER_SECTION = 20
+# Timeout complessivo per discovery + fetch sitemap + generazione (secondi)
+_LLMS_GENERATE_TIMEOUT = 30
+
+
+async def _build_llms_content(
+    url: str,
+    sitemap_resolved: str | None,
+    body: LlmsGenerateRequest,
+    max_per_section: int,
+) -> tuple[str, int, bool]:
+    """Genera il contenuto llms.txt riusando la pipeline anti-SSRF del core.
+
+    discover_sitemap/fetch_sitemap validano internamente ogni URL con
+    resolve_and_validate_url (anti-SSRF + DNS pinning); qui ci limitiamo a
+    orchestrare le funzioni sincrone in thread separati.
+
+    Args:
+        url: base URL normalizzato e gia validato (difesa a strati).
+        sitemap_resolved: URL sitemap fornito e validato, oppure None.
+        body: corpo della richiesta con site_name/description.
+        max_per_section: numero massimo di link per sezione (gia clampato).
+
+    Returns:
+        Tupla (content, url_count, found_sitemap).
+    """
+    # Se non abbiamo una sitemap esplicita, proviamo a scoprirla (anti-SSRF interno)
+    if sitemap_resolved is None:
+        sitemap_resolved = await asyncio.to_thread(discover_sitemap, url)
+
+    # Nessuna sitemap: fallback minimale alla sola homepage (NON e un errore)
+    if sitemap_resolved is None:
+        return await _build_minimal_llms(url, body, max_per_section), 1, False
+
+    # Sitemap presente: scarichiamo gli URL (fetch_sitemap ritorna [] su errore)
+    urls = await asyncio.to_thread(fetch_sitemap, sitemap_resolved)
+    if not urls:
+        # Sitemap vuota o non parsabile: fallback minimale alla homepage
+        return await _build_minimal_llms(url, body, max_per_section), 1, False
+
+    # fetch_titles SEMPRE False: niente fetch per-pagina nell'endpoint web
+    content = await asyncio.to_thread(
+        generate_llms_txt,
+        url,
+        urls,
+        body.site_name,
+        body.description,
+        False,
+        max_per_section,
+    )
+    return content, len(urls), True
+
+
+async def _build_minimal_llms(
+    url: str,
+    body: LlmsGenerateRequest,
+    max_per_section: int,
+) -> str:
+    """Genera un llms.txt minimale contenente solo la homepage."""
+    urls = [SitemapUrl(url=url, priority=1.0)]
+    return await asyncio.to_thread(
+        generate_llms_txt,
+        url,
+        urls,
+        body.site_name,
+        body.description,
+        False,
+        max_per_section,
+    )
+
+
+@app.post("/api/llms/generate")
+async def llms_generate(request: Request, body: LlmsGenerateRequest):
+    """Genera un file llms.txt a partire dalla sitemap del sito (Sprint 3).
+
+    Riusa la pipeline anti-SSRF esistente: discover_sitemap e fetch_sitemap
+    validano ogni URL internamente con resolve_and_validate_url (DNS pinning,
+    size check, anti-bomb). Come difesa a strati, validiamo comunque base_url
+    e l'eventuale sitemap_url con validate_public_url prima di passarli al core.
+
+    Nessun salvataggio su disco: il contenuto e restituito solo nella response.
+    """
+    from geo_optimizer.utils.validators import validate_public_url
+
+    # Verifica token (stessa policy di /api/audit)
+    if not _verify_bearer_token(request):
+        raise HTTPException(
+            status_code=401,
+            detail="Missing or invalid authentication token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not await _check_rate_limit(_get_client_ip(request)):
+        raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
+
+    # Clamp del numero di link per sezione entro [1, 20]
+    max_per_section = max(_LLMS_MIN_PER_SECTION, min(body.max_per_section, _LLMS_MAX_PER_SECTION))
+
+    # Normalizza e valida il base URL (difesa a strati anti-SSRF)
+    url, error = _normalize_url(body.base_url)
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+    safe, reason = validate_public_url(url)
+    if not safe:
+        raise HTTPException(status_code=400, detail=f"Unsafe URL: {reason}")
+
+    # Se la sitemap e fornita esplicitamente, normalizzala e validala anch'essa
+    sitemap_resolved: str | None = None
+    if body.sitemap_url:
+        sitemap_resolved, sm_error = _normalize_url(body.sitemap_url)
+        if sm_error:
+            raise HTTPException(status_code=400, detail=sm_error)
+        sm_safe, sm_reason = validate_public_url(sitemap_resolved)
+        if not sm_safe:
+            raise HTTPException(status_code=400, detail=f"Unsafe URL: {sm_reason}")
+
+    # Orchestrazione con timeout complessivo: discovery + fetch + generazione
+    try:
+        content, url_count, found_sitemap = await asyncio.wait_for(
+            _build_llms_content(url, sitemap_resolved, body, max_per_section),
+            timeout=_LLMS_GENERATE_TIMEOUT,
+        )
+    except asyncio.TimeoutError as exc:
+        logger.warning("llms.txt generation timeout (%ss) for URL: %s", _LLMS_GENERATE_TIMEOUT, url)
+        raise HTTPException(
+            status_code=504,
+            detail="Sitemap processing timed out. Try providing a sitemap URL directly.",
+        ) from exc
+    except HTTPException:
+        # Re-raise degli errori HTTP gia mappati (es. 400/401/429)
+        raise
+    except Exception as e:
+        # Errore generico: non esporre dettagli interni al client
+        logger.error("llms.txt generation error for %s: %s", url, e)
+        raise HTTPException(
+            status_code=500,
+            detail="Internal error generating llms.txt.",
+        ) from e
+
+    return {
+        "base_url": url,
+        "sitemap_url": sitemap_resolved or None,
+        "found_sitemap": found_sitemap,
+        "url_count": url_count,
+        "content": content,
+        "line_count": content.count("\n") + 1 if content else 0,
+        "size_bytes": len(content.encode("utf-8")),
+    }
 
 
 @app.get("/report/demo", response_class=HTMLResponse)

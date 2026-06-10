@@ -84,6 +84,10 @@ Also available as an MCP server for integration with AI coding assistants.
 - https://geoready.dev/privacy/ — privacy policy
 - https://geoready.dev/cookie-policy/ — cookie and storage inventory
 
+## Tools
+
+- https://geoready.dev/tools/llms-txt-generator/ — free llms.txt generator: builds a starter llms.txt from a site's sitemap (categorized, editable Markdown). Uses the same anti-SSRF sitemap pipeline as the open-source toolkit; titles are not fetched, for speed. No account required.
+
 ## Guides
 
 - https://geoready.dev/guides/ — index of AI visibility guides

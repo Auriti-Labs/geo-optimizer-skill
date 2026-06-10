@@ -1,0 +1,229 @@
+---
+import Shell from '../../components/Shell.astro';
+import LlmsTxtGenerator from '../../components/tools/LlmsTxtGenerator';
+
+// Metadati SEO della pagina del tool.
+const title = 'Free llms.txt Generator — Create an AI-Ready llms.txt';
+const description =
+  'Generate an llms.txt file from your sitemap. Help AI systems understand your most important pages with a clean, editable Markdown file.';
+const canonical = 'https://geoready.dev/tools/llms-txt-generator/';
+
+// FAQ visibili — riusate sia nel markup crawlable che nello schema FAQPage.
+// Tenere allineate: ogni modifica al testo va replicata in entrambi i punti.
+const faqs = [
+  {
+    question: 'Is llms.txt a ranking factor?',
+    answer:
+      'No. No major AI engine has confirmed that llms.txt changes how a site is ranked or cited, and it does not guarantee citations. It is an orientation file that helps AI systems understand your site faster — treat it as a clarity signal, not a lever that forces visibility.',
+  },
+  {
+    question: 'Where should I upload llms.txt?',
+    answer:
+      'At the root of your domain, reachable at https://yourdomain.com/llms.txt and served as plain text. It belongs in the same location as robots.txt and sitemap.xml, not inside a subfolder.',
+  },
+  {
+    question: 'Does this replace robots.txt?',
+    answer:
+      'No. robots.txt controls crawler access — what bots may fetch. llms.txt describes and indexes your content for AI systems. They are complementary: an llms.txt cannot override a block you set in robots.txt.',
+  },
+  {
+    question: 'Can I edit the generated file?',
+    answer:
+      'Yes. The generated file is a starting point built from your sitemap. Edit the title, summary, and link descriptions, remove pages that do not matter, and reorder sections so your most important content comes first.',
+  },
+  {
+    question: 'Why was no sitemap found?',
+    answer:
+      'A sitemap may be absent, served at a non-standard path, or blocked from automated fetching. When that happens the generator falls back to a minimal file from your homepage. You can paste a sitemap URL manually to get a complete result.',
+  },
+];
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    {/* Header con breadcrumb eyebrow */}
+    <header class="mb-10 md:mb-12">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <a href="/" class="hover:text-accent-teal">Tools</a>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>llms.txt generator</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        Free llms.txt Generator
+      </h1>
+
+      {/* Intro answer-first: cosa fa il tool e cosa NON garantisce. */}
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        This free tool reads your sitemap and generates an
+        <code class="text-sm font-mono"> llms.txt</code> file — a clean,
+        editable Markdown index of your most important pages. An llms.txt is a
+        guidance file that helps AI systems understand your site; it is not a
+        confirmed ranking factor and does not guarantee citations. Generate it,
+        edit it, and publish it at your domain root.
+      </p>
+    </header>
+
+    {/* ── Isola React: il generatore vero e proprio ───────────────────────── */}
+    <div class="mb-14 md:mb-16">
+      <LlmsTxtGenerator client:load />
+    </div>
+
+    {/* ── Contenuto SEO statico e crawlable ───────────────────────────────── */}
+    <div class="space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      {/* 1. Cos'è un llms.txt generator */}
+      <section>
+        <h2>What is an llms.txt generator?</h2>
+        <p class="mt-4">
+          An llms.txt generator is a tool that builds an
+          <code class="text-sm font-mono"> llms.txt</code> file for your site
+          automatically. The file is a plain-text Markdown document that lists
+          your most important pages with short descriptions, so AI systems and
+          LLM-powered tools can orient themselves around what your site is about
+          and which URLs matter.
+        </p>
+        <p class="mt-4">
+          Instead of writing the file by hand, this generator reads your sitemap,
+          groups the URLs into sections, and produces a ready-to-edit Markdown
+          file. It is an orientation file, not a ranking mechanism: no AI vendor
+          has confirmed that publishing llms.txt forces citations or improves
+          rankings. Think of it as a way to make your site easier to understand,
+          not a guarantee of visibility. Read more in our guide to
+          {' '}
+          <a href="/guides/what-is-llms-txt/" class="text-accent-teal hover:underline">what llms.txt is</a>.
+        </p>
+      </section>
+
+      {/* 2. Come funziona */}
+      <section>
+        <h2>How this generator works</h2>
+        <p class="mt-4">
+          The process is straightforward and runs in a few seconds:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Reads your sitemap</strong> — it discovers your sitemap automatically from your domain, or uses the sitemap URL you provide.</li>
+          <li><strong>Categorizes your URLs</strong> — pages are grouped into sections based on their structure, so the file is organized rather than a flat dump of links.</li>
+          <li><strong>Generates clean Markdown</strong> — the output is a standard llms.txt with an H1 title, an optional summary, and H2 sections of links, ready to copy or download.</li>
+        </ul>
+        <p class="mt-4">
+          Every URL is validated before it is fetched, with anti-SSRF protection
+          and size limits, so the tool only talks to safe, public endpoints. For
+          speed, page titles are not fetched individually — the generator uses
+          the URL structure from your sitemap. That keeps generation fast, and
+          you can refine titles and descriptions yourself in the editable output.
+        </p>
+      </section>
+
+      {/* 3. Cosa fare dopo */}
+      <section>
+        <h2>What to do after generating llms.txt</h2>
+        <p class="mt-4">
+          The generated file is a starting point. To put it to work:
+        </p>
+        <ul class="mt-4 space-y-3 list-decimal pl-5">
+          <li>
+            <strong>Save it as /llms.txt in your site root.</strong> Upload the
+            file so it is reachable at <code class="text-sm font-mono">https://yourdomain.com/llms.txt</code>,
+            served as plain text — the same place as your robots.txt and sitemap.
+          </li>
+          <li>
+            <strong>Edit it for clarity.</strong> Rewrite the title and summary in
+            your own words, sharpen link descriptions, remove pages that do not
+            matter, and move your most important content to the top.
+          </li>
+          <li>
+            <strong>Verify it loads.</strong> Open the URL in a browser to confirm
+            the file is served correctly and is not blocked by your robots.txt or
+            a redirect.
+          </li>
+        </ul>
+        <p class="mt-4">
+          When you want the full picture beyond llms.txt — crawlability, schema,
+          content signals, and AI discovery — run a
+          {' '}
+          <a href="/#audit-form" class="text-accent-teal hover:underline">free AI visibility audit</a>.
+        </p>
+      </section>
+
+      {/* 4. FAQ */}
+      <section>
+        <h2>llms.txt generator FAQ</h2>
+        <div class="mt-6 space-y-6">
+          {faqs.map((faq) => (
+            <div>
+              <h3>{faq.question}</h3>
+              <p class="mt-2">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+        <h2>Go beyond llms.txt with a full AI SEO audit</h2>
+        <p class="mt-3">
+          An llms.txt is one signal. The free audit checks your site across eight
+          GEO categories — crawlability, llms.txt, schema, content signals, AI
+          discovery, and more — so you know where to focus next. No account
+          needed.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/#audit-form"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Run a free AI visibility audit
+          </a>
+          <a
+            href="/ai-seo/"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            Learn about AI SEO
+          </a>
+        </div>
+        <p class="mt-4 text-xs text-text-muted">
+          New to the standard? Start with
+          {' '}
+          <a href="/guides/what-is-llms-txt/" class="text-accent-teal hover:underline">what is llms.txt</a>.
+        </p>
+      </section>
+    </div>
+  </article>
+
+  {/* Schema JSON-LD: WebApplication (il tool) + FAQPage (le stesse FAQ visibili). */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Free llms.txt Generator",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "url": canonical,
+        "description": description,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Auriti Labs",
+          "url": "https://github.com/Auriti-Labs"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": faqs.map((faq) => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer
+          }
+        }))
+      }
+    ]
+  })} />
+</Shell>

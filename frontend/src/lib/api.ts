@@ -73,3 +73,64 @@ export async function fetchAuditReport(url: string): Promise<FetchAuditResult> {
     };
   }
 }
+
+// Input per la generazione di un file llms.txt. Solo base_url è obbligatorio.
+export interface LlmsGenerateInput {
+  base_url: string;
+  sitemap_url?: string;
+  site_name?: string;
+  description?: string;
+  max_per_section?: number;
+}
+
+// Risultato della generazione: envelope { data, error } come fetchAuditReport.
+// data è null in caso di errore; error è null in caso di successo.
+export interface LlmsGenerateResult {
+  data: {
+    base_url: string;
+    sitemap_url: string | null;
+    found_sitemap: boolean;
+    url_count: number;
+    content: string;
+    line_count: number;
+    size_bytes: number;
+  } | null;
+  error: string | null;
+}
+
+/**
+ * Genera un file llms.txt chiamando il backend FastAPI via POST.
+ * Il backend scopre la sitemap del sito (o usa quella fornita) e
+ * costruisce il contenuto llms.txt riusando la pipeline anti-SSRF.
+ * Stesso pattern di fetchAuditReport: errori sempre gestiti, mai throw.
+ */
+export async function generateLlmsTxt(
+  input: LlmsGenerateInput,
+): Promise<LlmsGenerateResult> {
+  try {
+    const res = await fetch(buildApiUrl('/llms/generate'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    });
+
+    if (!res.ok) {
+      let detail = `HTTP ${res.status}`;
+      try {
+        const err = await res.json();
+        detail = err.detail || detail;
+      } catch {
+        // ignora errore di parsing JSON sulla risposta di errore
+      }
+      return { data: null, error: detail };
+    }
+
+    const data = await res.json();
+    return { data, error: null };
+  } catch (e: any) {
+    return {
+      data: null,
+      error: e.message || 'Network error. Is the backend running?',
+    };
+  }
+}

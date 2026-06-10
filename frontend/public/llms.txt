@@ -99,6 +99,10 @@ GEO Optimizer is actively maintained. Scoring weights and audit methods are upda
 - [Pricing](https://geoready.dev/pricing/): Free and Pro plan comparison.
 - [Privacy Policy](https://geoready.dev/privacy/): GDPR-compliant privacy policy.
 
+## Tools
+
+- [Free llms.txt Generator](https://geoready.dev/tools/llms-txt-generator/): Generate a starter llms.txt from your sitemap — categorized, editable Markdown you can download and publish at your domain root. Free, no account required.
+
 ## Guides
 
 - [Generative Engine Optimization: a practical guide to GEO](https://geoready.dev/guides/generative-engine-optimization/): The pillar guide to GEO as a technical discipline — core signals, technical and content checklists, how to measure readiness.

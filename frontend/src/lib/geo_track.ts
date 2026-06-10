@@ -118,3 +118,41 @@ export function trackPlanSelected(params: {
 }): void {
   track('geo_plan_selected', params);
 }
+
+// ── Shorthand generatore llms.txt (Sprint 3) ─────────────────────────────────
+
+/** Generatore llms.txt avviato — submit del form con/senza sitemap custom. */
+export function trackLlmsGeneratorStarted(params: {
+  has_custom_sitemap: boolean;
+  max_per_section: number;
+}): void {
+  track('geo_llms_generator_started', params);
+}
+
+/** Generazione llms.txt completata con successo — esito e metriche del contenuto. */
+export function trackLlmsGeneratorCompleted(params: {
+  found_sitemap: boolean;
+  url_count: number;
+  line_count: number;
+  size_bytes: number;
+  max_per_section: number;
+}): void {
+  track('geo_llms_generator_completed', params);
+}
+
+/** Generazione llms.txt fallita — errore backend o di rete. */
+export function trackLlmsGeneratorFailed(params: {
+  has_custom_sitemap: boolean;
+}): void {
+  track('geo_llms_generator_failed', params);
+}
+
+/** Contenuto llms.txt copiato negli appunti. */
+export function trackLlmsTxtCopied(): void {
+  track('geo_llms_txt_copied');
+}
+
+/** File llms.txt scaricato — riporta la dimensione del file. */
+export function trackLlmsTxtDownloaded(params: { size_bytes: number }): void {
+  track('geo_llms_txt_downloaded', params);
+}
