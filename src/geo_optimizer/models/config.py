@@ -466,6 +466,19 @@ SCORING = {
 # Separate from the SCORING dict because it is an alternative (not additive) to robots_citation_ok (fix #332)
 ROBOTS_PARTIAL_SCORE = 10
 
+# Max points per scoring category — must stay in sync with the SCORING weights
+# above. Used to rank recommendations by recoverable points (gap #5).
+CATEGORY_MAX = {
+    "robots": 18,
+    "llms": 18,
+    "schema": 16,
+    "meta": 14,
+    "content": 12,
+    "brand_entity": 10,
+    "signals": 6,
+    "ai_discovery": 6,
+}
+
 # Schema richness thresholds — graduated scoring (#394)
 SCHEMA_RICHNESS_HIGH = 5  # avg >= 5 attrs → full points (3pt)
 SCHEMA_RICHNESS_MED = 4  # avg >= 4 attrs → 2pt

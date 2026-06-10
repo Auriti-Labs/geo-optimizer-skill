@@ -65,6 +65,7 @@ from geo_optimizer.core.schema_validator import (
 from geo_optimizer.models.config import (
     AI_BOTS,
     ARTICLE_TYPES,
+    CATEGORY_MAX,
     CATEGORY_PATTERNS,
     CITATION_BOTS,
     HEADERS,
@@ -1556,6 +1557,82 @@ class TestBuildRecommendations:
             ),
         )
         assert not any("JSON-LD" in r and "parse" in r.lower() for r in recs)
+
+
+class TestRecommendationsImpactOrdering:
+    """gap #5: with score_breakdown, categories in a bucket sort by recoverable points."""
+
+    def _inputs(self):
+        """Medium bucket gets one meta rec (description) and several schema recs."""
+        return {
+            "base_url": "https://example.com",
+            "robots": RobotsResult(found=True, citation_bots_ok=True),
+            "llms": LlmsTxtResult(found=True, has_sections=True, sections_count=3, has_links=True, links_count=5),
+            "schema": SchemaResult(),  # all schema recs fire (recoverable 16)
+            "meta": MetaResult(
+                has_title=True, has_description=False, has_canonical=True, has_og_title=True, has_og_description=True
+            ),
+            "content": ContentResult(
+                has_numbers=True,
+                has_links=True,
+                has_h1=True,
+                word_count=500,
+                has_heading_hierarchy=True,
+                has_front_loading=True,
+            ),
+        }
+
+    def test_without_breakdown_keeps_static_order(self):
+        recs = build_recommendations(**self._inputs())
+        meta_idx = next(i for i, r in enumerate(recs) if "meta description" in r)
+        schema_idx = next(i for i, r in enumerate(recs) if "WebSite JSON-LD" in r)
+        assert meta_idx < schema_idx  # static order: meta before schema
+
+    def test_with_breakdown_highest_recoverable_first(self):
+        breakdown = {
+            "robots": 18,
+            "llms": 18,
+            "schema": 0,  # 16 points recoverable
+            "meta": 12,  # 2 points recoverable
+            "content": 12,
+            "signals": 6,
+            "ai_discovery": 6,
+            "brand_entity": 10,
+            "negative_penalty": 0,
+        }
+        recs = build_recommendations(**self._inputs(), score_breakdown=breakdown)
+        meta_idx = next(i for i, r in enumerate(recs) if "meta description" in r)
+        schema_idx = next(i for i, r in enumerate(recs) if "WebSite JSON-LD" in r)
+        assert schema_idx < meta_idx  # schema (16 recoverable) outranks meta (2)
+
+    def test_critical_bucket_always_first(self):
+        breakdown = {"robots": 0, "llms": 0, "schema": 0, "meta": 14, "content": 0}
+        recs = build_recommendations(
+            "https://example.com",
+            RobotsResult(),
+            LlmsTxtResult(),
+            SchemaResult(),
+            MetaResult(has_title=True, x_robots_noindex=True, x_robots_tag="noindex"),
+            ContentResult(),
+            score_breakdown=breakdown,
+        )
+        assert "X-Robots-Tag" in recs[0]  # critical stays on top regardless of points
+
+    def test_category_max_in_sync_with_scoring(self):
+        """CATEGORY_MAX must equal the sum of SCORING weights per category."""
+        prefixes = {
+            "robots": "robots_",
+            "llms": "llms_",
+            "schema": "schema_",
+            "meta": "meta_",
+            "content": "content_",
+            "signals": "signals_",
+            "ai_discovery": "ai_discovery_",
+            "brand_entity": "brand_",
+        }
+        for category, prefix in prefixes.items():
+            expected = sum(v for k, v in SCORING.items() if k.startswith(prefix))
+            assert CATEGORY_MAX[category] == expected, f"{category}: {CATEGORY_MAX[category]} != {expected}"
 
 
 # ============================================================================
