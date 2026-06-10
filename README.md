@@ -112,6 +112,10 @@ geo history --url https://yoursite.com
 # Passive AI visibility snapshot for a domain
 geo monitor --domain yoursite.com
 
+# Ask real AI engines: is my brand mentioned? Is my domain cited as a source?
+# BYO API key — PERPLEXITY_API_KEY recommended (real web citations)
+geo citations --brand "YourBrand" --domain yoursite.com --topic "your product category"
+
 # Save or query archived AI answer snapshots
 geo snapshots --query "best GEO tool" --from 2026-03-01 --to 2026-03-30
 
@@ -171,6 +175,7 @@ Quotation +41% · Statistics +33% · Fluency +29% · Cite Sources +27% · and 43
 geo coherence --sitemap https://example.com/sitemap.xml  # Cross-page terminology consistency
 geo logs --file access.log                                # AI Crawler Activity — crawler evidence from user-agent logs
 geo access --url https://example.com                      # Agent Access Audit — browser vs AI bot access simulation
+geo citations --brand "Acme" --domain acme.com            # AI Citation Check — are you cited by answer engines? (BYO key)
 ```
 
 GEO Optimizer checks whether websites can be **crawled, understood, cited, and monitored** by AI answer engines:
@@ -180,7 +185,7 @@ GEO Optimizer checks whether websites can be **crawled, understood, cited, and m
 - **Cited** — citability signals across 47 research-backed methods
 - **Monitored** — `geo logs` (crawler evidence) and `geo access` (access simulation)
 
-Note on wording: AI Crawler Activity reports crawler evidence from server-log user-agents, **not** AI answer citation tracking. Agent Access Audit reports *citation readiness* (whether bots can reach and parse the page) — it does **not** guarantee AI citations.
+Note on wording: AI Crawler Activity reports crawler evidence from server-log user-agents. Agent Access Audit reports *citation readiness* (whether bots can reach and parse the page). For actual answer-engine checking — "does the AI mention my brand and cite my domain?" — use `geo citations` with your own API key (Perplexity Sonar returns the real source URLs; OpenAI/Anthropic/Groq reveal parametric brand knowledge).
 
 Optional LLM-powered analysis (`pip install geo-optimizer-skill[llm]`):
 brand sentiment, citation attribution, multi-turn persistence, cross-platform citation map, prompt library.

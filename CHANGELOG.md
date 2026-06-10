@@ -5,6 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Added
+- **`geo citations` — one-shot AI citation check (bring your own API key).** Asks real AI answer engines the questions your customers ask and reports whether the brand is mentioned and the domain is cited as a source: per-query sources, competitor domains cited instead of you, mention/citation rates, and a verdict (`strong` / `cited` / `mentioned_only` / `invisible`). Text and JSON output.
+- **Perplexity provider in `llm_client`** — uses the core `requests` dependency (no `[llm]` extra needed) and populates the new `LLMResponse.citations` field with the source URLs Sonar grounds its answers in. Preferred provider for `geo citations`; OpenAI/Anthropic/Groq fall back to parametric brand-knowledge checks. Listed last in auto-detection so existing setups keep their provider.
+- README: 30-second terminal demo GIF (regenerable via `assets/demo.tape`), "Why this matters in 2026" sourced stats, zero-install `uvx` one-liner, score-badge viral section, codecov/tests badges.
+
+### Changed
+- **Recommendations are now ranked by recoverable points (gap #5).** Within each priority bucket, categories are ordered by how many points fixing them would recover for the audited site — a missing 16-point schema block now outranks a 2-point meta tweak. Order without a breakdown (direct `build_recommendations` callers) is unchanged; JSON contract unchanged (`recommendations` stays `list[str]`).
+
+### Fixed
+- CI coverage upload to Codecov failed with "Token required - not valid tokenless upload", leaving the coverage badge stuck on "unknown". Switched to OIDC tokenless upload (`id-token: write` + `use_oidc`).
+
 ## [4.12.2] — 2026-06-03
 
 ### Fixed

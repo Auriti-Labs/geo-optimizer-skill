@@ -693,6 +693,39 @@ class CitationMapResult:
     overall_visibility: float = 0.0  # 0-1
 
 
+# ─── AI Citation Check (geo citations) ───────────────────────────────────────
+
+
+@dataclass
+class CitationCheckEntry:
+    """A single query result in the one-shot AI citation check."""
+
+    query: str = ""
+    platform: str = ""
+    model: str = ""
+    brand_mentioned: bool = False
+    domain_cited: bool = False
+    cited_sources: list[str] = field(default_factory=list)  # source URLs from the answer
+    snippet: str = ""
+    error: str | None = None
+
+
+@dataclass
+class CitationCheckResult:
+    """Aggregated result of `geo citations` — is the brand/domain cited by AI engines?"""
+
+    checked: bool = False
+    skipped_reason: str | None = None
+    brand: str = ""
+    domain: str = ""
+    entries: list[CitationCheckEntry] = field(default_factory=list)
+    queries_run: int = 0
+    brand_mention_rate: float = 0.0  # 0-1, share of answers mentioning the brand
+    domain_citation_rate: float = 0.0  # 0-1, share of answers citing the domain as a source
+    top_cited_domains: list[tuple[str, int]] = field(default_factory=list)  # (domain, count), own domain excluded
+    verdict: str = ""  # strong | cited | mentioned_only | invisible
+
+
 # ─── Prompt Library (v4.7) ───────────────────────────────────────────────────
 
 
