@@ -23,6 +23,13 @@ const { title, description, canonical, robots } = Astro.props;
   <CookieConsentManager client:only="react" />
 </Layout>
 
+<script>
+  // Tracking CTA delegato — copre tutte le pagine statiche senza idratare React.
+  // L'evento è silenzioso finché non c'è consenso analytics (gestito in track()).
+  import { initCtaTracking } from '../lib/ctaTracking';
+  initCtaTracking();
+</script>
+
 <style is:global>
   /* Reserve space for fixed navbar */
   .site-main { padding-top: 76px; }

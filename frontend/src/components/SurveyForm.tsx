@@ -144,7 +144,7 @@ export default function SurveyForm() {
 
       <div>
         <label htmlFor="sv-wtp" className="block text-sm font-medium text-text-primary mb-1.5">
-          Would you pay €19/month for GeoReady Pro? <span className="text-accent-danger">*</span>
+          Would you pay $19/month for GeoReady Pro? <span className="text-accent-danger">*</span>
         </label>
         <select
           id="sv-wtp"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { trackAuditCompleted } from '../../lib/geo_track';
+import { trackAuditCompleted, trackCtaClicked } from '../../lib/geo_track';
 import { fetchAuditReport } from '../../lib/api';
 import { mockAuditReport } from '../../lib/mockData';
 import type { AuditReport } from '../../lib/mockData';
@@ -249,6 +249,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
           <div className="flex flex-col sm:flex-row gap-2 shrink-0">
             <a
               href={`https://app.geoready.dev/signup?claim=${state.claim_token}`}
+              onClick={() => trackCtaClicked({ cta_location: 'audit_report_claim', cta_text: 'Save report' })}
               className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-accent-teal text-white text-sm font-semibold hover:bg-accent-teal-dark transition-colors"
             >
               Save report
@@ -256,6 +257,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
             </a>
             <a
               href={`https://app.geoready.dev/login?claim=${state.claim_token}`}
+              onClick={() => trackCtaClicked({ cta_location: 'audit_report_claim', cta_text: 'Log in to save' })}
               className="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-border text-text-primary text-sm font-semibold hover:bg-bg-subtle transition-colors"
             >
               Log in to save

@@ -96,8 +96,8 @@ const faqSchema = {
 
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 <Shell
-  title="Free AI Visibility Audit & Checker — GeoReady"
-  description="Run a free AI visibility audit. Check how ChatGPT, Perplexity, Claude & Gemini find and cite your site — and what to fix. No account needed."
+  title="Free AI SEO & GEO Audit — GeoReady"
+  description="Run a free AI SEO and GEO audit. See how ChatGPT, Perplexity, Claude and Gemini can crawl, understand and cite your site — and what to fix."
   canonical="https://geoready.dev/"
 >
   {/* Hero */}
@@ -108,8 +108,9 @@ const faqSchema = {
           Is your website visible to AI search engines?
         </h1>
         <p class="mt-6 text-lg md:text-xl text-text-muted leading-relaxed max-w-2xl">
-          GEO Optimizer audits whether a website can be crawled, understood, and cited by AI answer engines.
-          Get a 0–100 score across 8 signal categories — free, no account required.
+          AI SEO is about being visible in AI search. GeoReady audits whether a website can be crawled,
+          understood, and cited by AI answer engines like ChatGPT, Perplexity, Claude, and Gemini.
+          Get a 0–100 GEO score across 8 signal categories — free, no account required.
         </p>
 
         <div class="mt-10">
@@ -119,9 +120,9 @@ const faqSchema = {
         <StatsBar client:load />
 
         <div class="mt-6 flex flex-wrap items-center gap-4 text-sm">
-          <a href="/pricing/" class="text-text-muted hover:text-text-inverse transition-colors">View pricing</a>
+          <a href="/pricing/" data-cta="home_hero_view_pricing" class="text-text-muted hover:text-text-inverse transition-colors">View pricing</a>
           <span class="text-text-muted/40">·</span>
-          <a href="/pricing/" class="text-text-muted hover:text-text-inverse transition-colors">GeoReady Pro — see plans</a>
+          <a href="/pricing/" data-cta="home_hero_see_plans" class="text-text-muted hover:text-text-inverse transition-colors">GeoReady Pro — see plans</a>
         </div>
       </div>
     </div>
@@ -130,17 +131,22 @@ const faqSchema = {
   {/* What is AI search visibility */}
   <section class="max-w-7xl mx-auto px-6 py-16">
     <div class="max-w-3xl">
-      <h2 class="text-2xl md:text-3xl font-bold text-text-primary">What is AI search visibility?</h2>
+      <h2 class="text-2xl md:text-3xl font-bold text-text-primary">AI SEO, GEO, and GeoReady</h2>
       <p class="mt-4 text-text-secondary leading-relaxed">
-        Traditional SEO optimizes for ranking in conventional search result pages — crawlability, backlinks, keyword signals.
-        AI search visibility is a different question: whether an AI answer engine can read, parse, understand, and <em>cite</em> your content when generating a response.
+        <strong class="text-text-primary">AI SEO</strong> is optimizing for visibility in AI search.
+        Traditional SEO targets ranking in conventional result pages — crawlability, backlinks, keyword signals.
+        AI SEO asks a different question: whether an AI answer engine can read, parse, understand, and <em>cite</em> your content when generating a response.
       </p>
       <p class="mt-4 text-text-secondary leading-relaxed">
+        <strong class="text-text-primary">GEO</strong> (Generative Engine Optimization) is the technical discipline behind it.
         A site can rank well on Google and still be largely opaque to AI systems.
         The relevant signals are different: a well-configured <code class="font-mono text-sm bg-bg-subtle px-1 rounded">robots.txt</code> that permits AI crawlers,
         an <code class="font-mono text-sm bg-bg-subtle px-1 rounded">llms.txt</code> file that guides them through your content,
         complete JSON-LD schema for entity disambiguation, factual density, and brand coherence.
-        GEO Optimizer audits every one of these signals and produces a 0–100 score with per-category breakdown.
+      </p>
+      <p class="mt-4 text-text-secondary leading-relaxed">
+        <strong class="text-text-primary">GeoReady</strong> puts the two together: a free audit that scores every one of these GEO signals 0–100 with a per-category breakdown,
+        plus an optional monitoring platform that tracks how that score changes over time.
       </p>
       <div class="mt-6 flex flex-wrap items-center gap-4 text-sm">
         <a href="/research/" class="text-accent-teal hover:text-accent-teal-dark transition-colors">Read the research</a>
@@ -288,7 +294,16 @@ const faqSchema = {
             PDF export and agency reporting
           </li>
         </ul>
-        <a href="https://app.geoready.dev/signup?plan=pro" class="mt-5 inline-block text-sm text-accent-teal hover:underline font-medium">
+        <a
+          href="https://app.geoready.dev/signup?plan=pro"
+          data-plan-id="pro"
+          data-plan-name="Pro"
+          data-plan-price="$19"
+          data-plan-period="/month"
+          data-plan-currency="USD"
+          data-cta-location="home_monitoring_section"
+          class="mt-5 inline-block text-sm text-accent-teal hover:underline font-medium"
+        >
           Start with Pro →
         </a>
         <p class="mt-2 text-xs text-text-muted">app.geoready.dev — built on GEO Optimizer</p>
@@ -339,6 +354,7 @@ const faqSchema = {
           </a>
           <a
             href="/pricing/"
+            data-cta="home_final_pick_plan"
             class="inline-block py-2.5 px-6 rounded-[--radius-md] border border-border text-sm font-semibold text-text-primary hover:bg-bg-subtle transition-colors"
           >
             Start free — or pick a plan →

@@ -5,7 +5,7 @@ const selfServePlans = [
   {
     id: 'free',
     name: 'Free',
-    price: '€0',
+    price: '$0',
     period: 'forever',
     status: 'Available now',
     statusStyle: 'bg-accent-success/10 text-accent-success',
@@ -25,7 +25,7 @@ const selfServePlans = [
   {
     id: 'pro',
     name: 'Pro',
-    price: '€19',
+    price: '$19',
     period: '/month',
     status: 'Founding price',
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
@@ -47,7 +47,7 @@ const selfServePlans = [
   {
     id: 'studio',
     name: 'Studio',
-    price: '€49',
+    price: '$49',
     period: '/month',
     status: 'Founding price',
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
@@ -73,7 +73,7 @@ const scalePlans = [
   {
     id: 'agency',
     name: 'Agency',
-    price: '€89',
+    price: '$89',
     period: '/month',
     status: 'Founding price',
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
@@ -242,6 +242,12 @@ const faqs = [
 
             <a
               href={plan.ctaHref}
+              data-plan-id={plan.id}
+              data-plan-name={plan.name}
+              data-plan-price={plan.price}
+              data-plan-period={plan.period}
+              data-plan-currency="USD"
+              data-cta-location="pricing_page"
               class={`block text-center py-2.5 px-4 rounded-[--radius-md] text-sm font-semibold transition-colors ${plan.ctaStyle}`}
             >
               {plan.cta}
@@ -279,12 +285,30 @@ const faqs = [
               ))}
             </ul>
 
-            <a
-              href={plan.ctaHref}
-              class="block text-center py-2.5 px-4 rounded-[--radius-md] text-sm font-semibold border border-border text-text-primary hover:bg-bg-subtle transition-colors"
-            >
-              {plan.cta}
-            </a>
+            {/* Enterprise è lead-gen ("Contact sales"), non selezione piano self-serve:
+                usa data-cta → geo_cta_clicked, non data-plan-id → geo_plan_selected. */}
+            {plan.id === 'enterprise' ? (
+              <a
+                href={plan.ctaHref}
+                data-cta="pricing_enterprise_contact_sales"
+                class="block text-center py-2.5 px-4 rounded-[--radius-md] text-sm font-semibold border border-border text-text-primary hover:bg-bg-subtle transition-colors"
+              >
+                {plan.cta}
+              </a>
+            ) : (
+              <a
+                href={plan.ctaHref}
+                data-plan-id={plan.id}
+                data-plan-name={plan.name}
+                data-plan-price={plan.price}
+                data-plan-period={plan.period}
+                data-plan-currency="USD"
+                data-cta-location="pricing_page"
+                class="block text-center py-2.5 px-4 rounded-[--radius-md] text-sm font-semibold border border-border text-text-primary hover:bg-bg-subtle transition-colors"
+              >
+                {plan.cta}
+              </a>
+            )}
           </div>
         ))}
       </div>
@@ -471,12 +495,19 @@ const faqs = [
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <a
           href="/"
+          data-cta="pricing_footer_free_audit"
           class="inline-block py-2.5 px-6 rounded-[--radius-md] border border-border text-sm font-semibold text-text-primary hover:bg-bg-subtle transition-colors"
         >
           Start free audit
         </a>
         <a
           href="https://app.geoready.dev/signup?plan=pro"
+          data-plan-id="pro"
+          data-plan-name="Pro"
+          data-plan-price="$19"
+          data-plan-period="/month"
+          data-plan-currency="USD"
+          data-cta-location="pricing_footer"
           class="inline-block py-2.5 px-6 rounded-[--radius-md] bg-accent-teal text-white text-sm font-semibold hover:bg-accent-teal-dark transition-colors"
         >
           Start with Pro →
@@ -511,7 +542,7 @@ const faqs = [
               "@type": "Offer",
               "name": "Free",
               "price": "0",
-              "priceCurrency": "EUR",
+              "priceCurrency": "USD",
               "description": "Single-URL GEO audit, no account required, partial 3/8 category report.",
               "availability": "https://schema.org/InStock",
               "url": "https://geoready.dev"
@@ -524,11 +555,11 @@ const faqs = [
               "@type": "Offer",
               "name": "Pro",
               "price": "19",
-              "priceCurrency": "EUR",
+              "priceCurrency": "USD",
               "priceSpecification": {
                 "@type": "UnitPriceSpecification",
                 "price": "19",
-                "priceCurrency": "EUR",
+                "priceCurrency": "USD",
                 "unitCode": "MON"
               },
               "description": "Full 8-category reports, weekly monitoring for 1 domain, score history, regression alerts.",
@@ -543,11 +574,11 @@ const faqs = [
               "@type": "Offer",
               "name": "Studio",
               "price": "49",
-              "priceCurrency": "EUR",
+              "priceCurrency": "USD",
               "priceSpecification": {
                 "@type": "UnitPriceSpecification",
                 "price": "49",
-                "priceCurrency": "EUR",
+                "priceCurrency": "USD",
                 "unitCode": "MON"
               },
               "description": "15 domains, daily monitoring, unbranded PDF export, competitor comparison, 12-month history.",
@@ -562,11 +593,11 @@ const faqs = [
               "@type": "Offer",
               "name": "Agency",
               "price": "89",
-              "priceCurrency": "EUR",
+              "priceCurrency": "USD",
               "priceSpecification": {
                 "@type": "UnitPriceSpecification",
                 "price": "89",
-                "priceCurrency": "EUR",
+                "priceCurrency": "USD",
                 "unitCode": "MON"
               },
               "description": "50 domains, daily monitoring, team workspace, unlimited bulk audits, AI answer snapshots (Perplexity automated).",

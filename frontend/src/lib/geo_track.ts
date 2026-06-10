@@ -106,3 +106,15 @@ export function trackSurveyCompleted(params: {
 }): void {
   track('geo_survey_completed', params);
 }
+
+/** Piano selezionato — clic su una CTA di un piano (pricing, home, report). */
+export function trackPlanSelected(params: {
+  plan_id: string;
+  plan_name: string;
+  billing_period: string;
+  price: string;
+  currency: string;
+  cta_location: string;
+}): void {
+  track('geo_plan_selected', params);
+}
