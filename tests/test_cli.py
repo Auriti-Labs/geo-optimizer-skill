@@ -1752,3 +1752,12 @@ class TestFormatters:
         data = json.loads(format_audit_json(sample_audit_result))
         assert len(data["recommendations"]) == 2
         assert "Add WebApplication schema" in data["recommendations"]
+
+    def test_format_audit_text_includes_platform_funnel(self):
+        """Text report ends with the one-shot → platform tracking pointer."""
+        from geo_optimizer.cli.formatters import format_audit_text
+
+        result = AuditResult(url="https://example.com", score=50, band="foundation")
+        output = format_audit_text(result)
+        assert "geoready.dev" in output
+        assert "One-shot audit" in output
