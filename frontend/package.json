@@ -10,7 +10,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "generate:sitemap": "node scripts/generate-sitemap.mjs"
+    "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "indexnow:dry-run": "node scripts/indexnow-submit.mjs",
+    "indexnow:submit": "node scripts/indexnow-submit.mjs --submit"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.4",
