@@ -1,0 +1,374 @@
+---
+import Shell from '../../components/Shell.astro';
+
+const title = 'Generative Engine Optimization Guide — GEO for AI Search';
+const description =
+  'Learn what Generative Engine Optimization is, how GEO differs from SEO, and how to make your site crawlable, understandable and citable by AI search engines.';
+const canonical = 'https://geoready.dev/guides/generative-engine-optimization/';
+const datePublished = '2026-06-10';
+const dateModified = '2026-06-10';
+
+// FAQ condivise tra pagina e JSON-LD (single source of truth)
+const faqs = [
+  {
+    q: 'Is GEO different from SEO?',
+    a: 'GEO and SEO share the same technical foundations — crawlability, indexable HTML, structured data, and domain authority. The difference is the target. SEO optimizes for a ranked list of links a person clicks. GEO optimizes for being retrieved, summarized, and cited inside a single AI-generated answer. You build GEO on top of SEO, not instead of it.',
+  },
+  {
+    q: 'Does GEO replace SEO?',
+    a: 'No. Classic search is still the dominant interface for most queries, and ranking well in traditional search correlates with appearing in the retrieval sets that AI engines draw from. GEO extends your work into AI answer surfaces; it does not replace transactional, local, or navigational search.',
+  },
+  {
+    q: 'Is llms.txt a ranking factor?',
+    a: 'There is no confirmed evidence that llms.txt influences rankings or guarantees citations. It is an emerging orientation file that lists your important pages and describes what your site is about, in plain text that LLM tools can read directly. Treat it as a low-cost hint, not a guarantee.',
+  },
+  {
+    q: 'Can a tool guarantee that ChatGPT or Perplexity will cite my site?',
+    a: 'No. Citation behavior is probabilistic and changes every time a model is retrained or its retrieval index updates. No tool or technique can guarantee a specific engine will cite you. What you can do is remove the technical and content barriers that prevent a model from finding, understanding, and quoting your pages.',
+  },
+  {
+    q: 'How do I know if my site is GEO-ready?',
+    a: 'Run an audit that scores the signals AI engines rely on: robots.txt and AI crawler access, llms.txt, schema JSON-LD, meta tags, content quality, technical signals, AI discovery files, and brand and entity clarity. A baseline score tells you where you stand; tracking it over time tells you whether your changes worked.',
+  },
+  {
+    q: 'How long does GEO take to show results?',
+    a: 'Technical fixes — crawler access, schema, llms.txt — can be detected by AI tooling within days. Changes in how often a model cites you are slower and harder to attribute, because they depend on retraining cycles and retrieval indexes you do not control. Measure readiness signals continuously and treat any AI referral observed in your analytics as a directional signal, not proof.',
+  },
+];
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    {/* Header */}
+    <header class="mb-12 md:mb-16">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <a href="/guides/" class="hover:text-accent-teal">Guides</a>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>GEO</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        Generative Engine Optimization: A Practical Guide to GEO
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        Generative Engine Optimization (GEO) is the practice of structuring a
+        website so AI answer engines like ChatGPT, Perplexity, Claude, and
+        Gemini can crawl it, understand it, and cite it inside their generated
+        answers. It builds on SEO fundamentals but optimizes for retrieval and
+        citation rather than for a ranked list of clickable links.
+      </p>
+      <p class="mt-2 text-xs text-text-muted font-mono">
+        Published June 2026 · 13 min read
+      </p>
+    </header>
+
+    <div class="space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      {/* 1. What is GEO */}
+      <section>
+        <h2>What is Generative Engine Optimization?</h2>
+        <p class="mt-4">
+          Generative Engine Optimization is the work of making your content
+          easy for AI systems to find, parse, and reuse when they assemble an
+          answer. Where classic search returns ten links and lets the person
+          choose, a generative engine reads multiple sources, synthesizes one
+          response, and attributes a handful of them inline. GEO is about
+          becoming one of those trusted, quotable sources.
+        </p>
+        <p class="mt-4">
+          The term gained traction with research like the Princeton
+          <em>GEO</em> paper at KDD 2024, which studied how content changes
+          affect visibility in generative responses, and later work such as
+          AutoGEO. The findings are research-grounded directional signals —
+          not proof that a single tactic guarantees a citation — but they point
+          consistently toward the same idea: clarity, structure, and
+          extractability matter more than keyword density. See our
+          <a href="/research/" class="text-accent-teal hover:underline">research foundation</a>
+          for the sources behind these signals.
+        </p>
+        <p class="mt-4">
+          In practice GEO touches three layers:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Access</strong> — can AI crawlers fetch your pages at all? This is <code class="text-sm font-mono">robots.txt</code>, AI-bot permissions, and clean HTML.</li>
+          <li><strong>Understanding</strong> — can a model identify what your site is, what it covers, and who you are? This is schema <code class="text-sm font-mono">JSON-LD</code>, entity clarity, and orientation files like <code class="text-sm font-mono">llms.txt</code>.</li>
+          <li><strong>Quotability</strong> — is your content written so a passage can be lifted cleanly into an answer? This is answer-first writing, clear structure, and factual density.</li>
+        </ul>
+        <p class="mt-4">
+          For a deeper introduction to the discipline and where it fits in a
+          modern strategy, see our
+          <a href="/ai-seo/" class="text-accent-teal hover:underline">AI SEO overview</a>.
+        </p>
+      </section>
+
+      {/* 2. Why GEO matters now */}
+      <section>
+        <h2>Why GEO matters now</h2>
+        <p class="mt-4">
+          A growing share of informational, comparison, and how-to queries are
+          now answered directly by AI assistants instead of a search results
+          page. When a model writes the answer, the user often never visits the
+          ranked list at all. If your content is invisible to the systems that
+          assemble those answers, you are absent from a channel that did not
+          exist a few years ago.
+        </p>
+        <p class="mt-4">
+          This does not mean classic search is going away. It means the surface
+          where people encounter your expertise is fragmenting. Being cited in
+          an AI answer can drive qualified referral traffic and, more
+          importantly, shapes how a model describes your brand and category.
+          The earlier you make your site legible to these engines, the more of
+          that surface you can occupy before competitors do.
+        </p>
+        <p class="mt-4">
+          There is also a defensive reason. AI engines build a model of your
+          brand from whatever they can read — your site, third-party mentions,
+          and structured data. If you leave that ambiguous, the model fills the
+          gaps itself, sometimes incorrectly. GEO is partly about controlling
+          the narrative the machine learns.
+        </p>
+      </section>
+
+      {/* 3. GEO vs SEO (sintesi, rimanda alla guida dedicata) */}
+      <section>
+        <h2>GEO vs SEO</h2>
+        <p class="mt-4">
+          The short version: SEO optimizes for ranking links; GEO optimizes for
+          being cited inside a synthesized answer. They share crawlability,
+          indexable HTML, canonical URLs, domain authority, and structured data
+          as a common foundation. What changes is the target metric — there is
+          no "position one" inside a paragraph, so you optimize for quotability
+          and source trust instead of click-through rate.
+        </p>
+        <p class="mt-4">
+          A few shifts summarize the difference:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li>Quotability over keyword density — write passages a model can lift cleanly.</li>
+          <li>Entity clarity over anchor text — make it unmistakable what your brand is and what category it belongs to.</li>
+          <li>Source trust over CTR — engines assess accuracy, authority, and freshness, not click behavior.</li>
+          <li>Explicit AI crawler decisions — <code class="text-sm font-mono">robots.txt</code> now has to account for bots like <code class="text-sm font-mono">GPTBot</code> and <code class="text-sm font-mono">PerplexityBot</code>.</li>
+        </ul>
+        <p class="mt-4">
+          This is a summary. For the full breakdown — what stays the same, what
+          changes, and a practical priority order — read the dedicated guide:
+          <a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO: what changes for AI answer engines</a>.
+        </p>
+      </section>
+
+      {/* 4. How AI engines discover and cite */}
+      <section>
+        <h2>How AI answer engines discover and cite sources</h2>
+        <p class="mt-4">
+          AI answer engines do not all work the same way, but most follow a
+          similar pipeline. Understanding it tells you where to intervene.
+        </p>
+        <ol class="mt-4 space-y-3 list-decimal pl-5">
+          <li><strong>Crawling and training.</strong> Bots like <code class="text-sm font-mono">GPTBot</code> and <code class="text-sm font-mono">ClaudeBot</code> fetch public pages. Some of that content may inform training; your <code class="text-sm font-mono">robots.txt</code> controls whether they are allowed in.</li>
+          <li><strong>Live retrieval.</strong> For current information, engines query a search index or fetch pages at answer time — this is retrieval-augmented generation (RAG). Search-oriented bots such as <code class="text-sm font-mono">OAI-SearchBot</code> and <code class="text-sm font-mono">PerplexityBot</code> matter most here.</li>
+          <li><strong>Ranking and selection.</strong> The engine scores candidate passages for relevance, authority, and freshness, then selects a few to ground the answer in.</li>
+          <li><strong>Synthesis and citation.</strong> The model writes a unified answer and attributes the sources it leaned on, usually as inline links or footnotes.</li>
+        </ol>
+        <p class="mt-4">
+          The practical implication: a citation requires you to pass every
+          stage. If a bot is blocked, you never enter the pipeline. If your
+          page is rendered only by JavaScript, a basic fetch may see nothing. If
+          your content is verbose and hard to extract, the selection step skips
+          it even when it is relevant. GEO removes these barriers one stage at a
+          time.
+        </p>
+      </section>
+
+      {/* 5. Core GEO signals — allineate alle 8 categorie di scoring */}
+      <section>
+        <h2>The core GEO signals</h2>
+        <p class="mt-4">
+          GeoReady scores a site across eight signal categories. They map
+          directly to the access, understanding, and quotability layers above,
+          and they are a useful mental model whether or not you use the tool.
+        </p>
+        <ul class="mt-4 space-y-3 list-disc pl-5">
+          <li><strong>Robots.txt and AI crawler access</strong> — whether bots like <code class="text-sm font-mono">GPTBot</code>, <code class="text-sm font-mono">OAI-SearchBot</code>, <code class="text-sm font-mono">ClaudeBot</code>, and <code class="text-sm font-mono">PerplexityBot</code> are allowed, and whether your file is even reachable.</li>
+          <li><strong>llms.txt</strong> — an orientation file at your domain root that lists key pages and describes the site for LLM tools that read it directly. Not a confirmed ranking factor, but a low-cost way to make your important URLs explicit.</li>
+          <li><strong>Schema JSON-LD</strong> — structured data such as <code class="text-sm font-mono">Organization</code>, <code class="text-sm font-mono">WebSite</code>, <code class="text-sm font-mono">Article</code>, and <code class="text-sm font-mono">FAQPage</code> that helps engines disambiguate entities and extract facts.</li>
+          <li><strong>Meta tags</strong> — accurate titles, descriptions, canonical tags, and Open Graph data that summarize each page consistently.</li>
+          <li><strong>Content quality</strong> — clear headings, answer-first paragraphs, lists, factual density, and front-loaded conclusions that are easy to quote.</li>
+          <li><strong>Technical signals</strong> — declared language, an RSS or Atom feed, and visible freshness signals that help engines judge recency.</li>
+          <li><strong>AI discovery</strong> — well-known files and machine-readable summaries, such as <code class="text-sm font-mono">/.well-known/ai.txt</code> and JSON summary or FAQ endpoints, that describe what your site offers.</li>
+          <li><strong>Brand and entity</strong> — consistent naming, knowledge-graph readiness, clear about and contact information, and topic authority that lets a model place you correctly.</li>
+        </ul>
+        <p class="mt-4">
+          No single signal guarantees anything on its own. They compound: clean
+          access lets the bot in, strong understanding lets it place you, and
+          quotable content lets it cite you.
+        </p>
+      </section>
+
+      {/* 6. Technical GEO checklist */}
+      <section>
+        <h2>Technical GEO checklist</h2>
+        <p class="mt-4">
+          Start with the access and understanding layers — they are the
+          fixes most likely to be silently blocking you.
+        </p>
+        <ol class="mt-4 space-y-3 list-decimal pl-5">
+          <li><strong>Audit <code class="text-sm font-mono">robots.txt</code> for unintended AI blocks.</strong> If you are disallowing <code class="text-sm font-mono">GPTBot</code> or <code class="text-sm font-mono">PerplexityBot</code>, make that a deliberate choice — blocking retrieval bots also blocks the path to citation.</li>
+          <li><strong>Serve content in server-rendered HTML.</strong> If a passage only appears after client-side JavaScript runs, assume a basic crawler will not see it.</li>
+          <li><strong>Set a single canonical URL</strong> per page and keep trailing slashes consistent, so retrieval systems do not split trust across duplicates.</li>
+          <li><strong>Add core schema <code class="text-sm font-mono">JSON-LD</code></strong> — <code class="text-sm font-mono">Organization</code> and <code class="text-sm font-mono">WebSite</code> at minimum, plus <code class="text-sm font-mono">Article</code> or <code class="text-sm font-mono">FAQPage</code> where they apply. The parser should support both direct <code class="text-sm font-mono">@type</code> and <code class="text-sm font-mono">@graph</code> formats.</li>
+          <li><strong>Publish an <code class="text-sm font-mono">llms.txt</code></strong> at your domain root pointing to your most important content. See our <a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt implementation guide</a> for the format.</li>
+          <li><strong>Expose freshness</strong> — visible dates, a working feed, and an accurate <code class="text-sm font-mono">dateModified</code> in your schema.</li>
+          <li><strong>Confirm fast, correct responses</strong> — proper status codes, no soft 404s, and reasonable load times so bots do not give up.</li>
+        </ol>
+      </section>
+
+      {/* 7. Content GEO checklist */}
+      <section>
+        <h2>Content GEO checklist</h2>
+        <p class="mt-4">
+          Once a model can reach and understand your site, the question becomes
+          whether your writing is quotable. Optimize each important page for
+          direct extraction.
+        </p>
+        <ul class="mt-4 space-y-3 list-disc pl-5">
+          <li><strong>Lead with the answer.</strong> The first paragraph of a page should state what the thing is or what you do, in one clear sentence, before any context. This is the passage a model is most likely to lift.</li>
+          <li><strong>Write self-contained sentences.</strong> A fact should make sense out of context, without relying on the sentence before it. Models extract fragments, not whole pages.</li>
+          <li><strong>Use clear heading hierarchy.</strong> One <code class="text-sm font-mono">h1</code>, then descriptive <code class="text-sm font-mono">h2</code> and <code class="text-sm font-mono">h3</code> headings that match how people phrase questions.</li>
+          <li><strong>Prefer structure over prose</strong> for definitions, steps, and comparisons. Lists and tables are easier to parse and quote than dense paragraphs.</li>
+          <li><strong>Add factual density</strong> — concrete numbers, dates, named entities, and specifics. Vague marketing copy is rarely citable.</li>
+          <li><strong>Answer real questions</strong> with a short, dedicated FAQ section, mirrored in <code class="text-sm font-mono">FAQPage</code> schema, so engines can pair a question with a clean answer.</li>
+          <li><strong>Keep entity language consistent</strong> — same brand name, product names, and category wording on every page, so the model builds one coherent entity instead of several fuzzy ones.</li>
+        </ul>
+        <p class="mt-4">
+          For an engine-by-engine view of what each system tends to favor, see
+          <a href="/guides/appear-in-chatgpt-perplexity/" class="text-accent-teal hover:underline">how to appear in ChatGPT and Perplexity sources</a>.
+        </p>
+      </section>
+
+      {/* 8. Measure GEO readiness */}
+      <section>
+        <h2>How to measure GEO readiness</h2>
+        <p class="mt-4">
+          GEO is hard to measure with a single number because the outcome — a
+          citation — happens inside a system you do not control. The honest
+          approach is to measure <em>readiness</em> directly and treat downstream
+          citations as a lagging, directional signal.
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Score your readiness signals.</strong> Run a baseline audit across the eight categories above and record the result. This is fully within your control and improves immediately when you fix issues.</li>
+          <li><strong>Track changes over time.</strong> A single snapshot tells you where you are; repeated audits tell you whether a change actually moved a signal. Models and your own site both shift, so monitoring beats one-off checks.</li>
+          <li><strong>Watch for AI referral traffic.</strong> Some analytics setups can surface visits referred from AI assistants. Treat any AI referral observed as encouraging evidence, not proof of a citation — attribution here is imperfect.</li>
+          <li><strong>Spot-check answers manually.</strong> Ask the engines questions where you would expect to be a relevant source, and note whether and how you appear. This is qualitative, but it grounds the numbers.</li>
+        </ul>
+        <p class="mt-4">
+          For a single, consolidated pass over every signal, work through the
+          <a href="/guides/ai-visibility-checklist/" class="text-accent-teal hover:underline">AI visibility checklist</a>.
+          Nobody can guarantee a model will cite you — citation behavior is
+          probabilistic and changes with every retraining — but you can make
+          your site as easy to cite as possible and verify that with data.
+        </p>
+      </section>
+
+      {/* CTA */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+        <h2>See how your site scores on GEO signals</h2>
+        <p class="mt-3">
+          The free audit checks your site across all eight GEO categories —
+          crawlability, llms.txt, schema, content quality, AI discovery, and
+          more — and gives you a clear, prioritized list of what to fix. No
+          account needed.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/#audit-form"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Run a free AI visibility audit
+          </a>
+          <a
+            href="/pricing/"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            Compare plans
+          </a>
+        </div>
+        <p class="mt-4 text-xs text-text-muted">
+          A <a href="https://app.geoready.dev/signup" class="text-accent-teal hover:underline">GeoReady account</a>
+          lets you save reports, track changes over time, and unlock the full audit.
+        </p>
+      </section>
+
+      {/* FAQ */}
+      <section>
+        <h2>FAQ</h2>
+        <div class="mt-4 space-y-6">
+          {faqs.map((item) => (
+            <div>
+              <h3>{item.q}</h3>
+              <p class="mt-2">{item.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Further reading */}
+      <section>
+        <h2>Further reading</h2>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO: what changes for AI answer engines</a> — the detailed comparison.</li>
+          <li><a href="/guides/appear-in-chatgpt-perplexity/" class="text-accent-teal hover:underline">How to appear in ChatGPT and Perplexity sources</a> — engine-specific tactics.</li>
+          <li><a href="/guides/ai-visibility-checklist/" class="text-accent-teal hover:underline">AI visibility checklist</a> — every signal in one place.</li>
+          <li><a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt for WordPress and AI visibility</a> — practical implementation.</li>
+          <li><a href="/ai-seo/" class="text-accent-teal hover:underline">AI SEO overview</a> — where GEO fits in a wider strategy.</li>
+          <li>The signals behind these guides: our <a href="/research/" class="text-accent-teal hover:underline">research foundation</a>.</li>
+        </ul>
+      </section>
+    </div>
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "headline": title,
+        "description": description,
+        "author": {
+          "@type": "Organization",
+          "name": "Auriti Labs",
+          "url": "https://github.com/Auriti-Labs"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Auriti Labs",
+          "url": "https://github.com/Auriti-Labs"
+        },
+        "datePublished": datePublished,
+        "dateModified": dateModified,
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": canonical
+        },
+        "about": [
+          "Generative Engine Optimization",
+          "AI search visibility",
+          "GEO signals",
+          "llms.txt",
+          "Schema JSON-LD"
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": faqs.map((item) => ({
+          "@type": "Question",
+          "name": item.q,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": item.a
+          }
+        }))
+      }
+    ]
+  })} />
+</Shell>

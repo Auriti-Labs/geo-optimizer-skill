@@ -75,6 +75,7 @@ Also available as an MCP server for integration with AI coding assistants.
 ## Web interface pages
 
 - https://geoready.dev/ — homepage and audit tool
+- https://geoready.dev/ai-seo/ — AI SEO category guide: what AI SEO is, how it differs from traditional SEO, where GEO fits, and how to audit a site for visibility in ChatGPT, Perplexity, Claude, and Gemini
 - https://geoready.dev/compare/ — side-by-side GEO score comparison
 - https://geoready.dev/analyze-competitors/ — multi-URL competitor analysis
 - https://geoready.dev/research/ — research foundation and sources
@@ -82,6 +83,16 @@ Also available as an MCP server for integration with AI coding assistants.
 - https://geoready.dev/manifesto/ — project philosophy and commitments
 - https://geoready.dev/privacy/ — privacy policy
 - https://geoready.dev/cookie-policy/ — cookie and storage inventory
+
+## Guides
+
+- https://geoready.dev/guides/ — index of AI visibility guides
+- https://geoready.dev/guides/generative-engine-optimization/ — pillar guide to GEO as a technical discipline: what it is, why it matters, core signals, technical and content checklists, and how to measure GEO readiness
+- https://geoready.dev/guides/what-is-llms-txt/ — what llms.txt is, how it differs from robots.txt, what to include, and a concrete example (an orientation file for AI systems, not a confirmed ranking factor)
+- https://geoready.dev/guides/geo-vs-seo/ — what stays the same and what changes when AI answer engines become the interface
+- https://geoready.dev/guides/appear-in-chatgpt-perplexity/ — practical checklist for becoming citable by AI answer engines
+- https://geoready.dev/guides/llms-txt-wordpress/ — llms.txt implementation guide for WordPress
+- https://geoready.dev/guides/ai-visibility-checklist/ — all technical and content signals organized by category
 
 ## Trust signals and transparency
 

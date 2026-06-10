@@ -1,0 +1,439 @@
+---
+import Shell from '../../components/Shell.astro';
+
+const title = 'What Is llms.txt? Guide, Example & AI SEO Use Cases';
+const description =
+  'Learn what llms.txt is, how it differs from robots.txt, and how to use it to make your site easier for AI systems to understand.';
+const canonical = 'https://geoready.dev/guides/what-is-llms-txt/';
+const datePublished = '2026-06-10';
+const dateModified = '2026-06-10';
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    {/* Header */}
+    <header class="mb-12 md:mb-16">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <a href="/guides/" class="hover:text-accent-teal">Guides</a>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>llms.txt</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        What Is llms.txt? A Practical Guide for AI Search Visibility
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        <code class="text-sm font-mono">llms.txt</code> is a plain-text Markdown
+        file placed at the root of your domain that gives AI systems a concise,
+        curated map of your most important content. It lists your key pages with
+        short descriptions so language models can orient themselves quickly. It
+        is a guidance file for large language models, not a confirmed ranking
+        factor or a guarantee of citations.
+      </p>
+      <p class="mt-2 text-xs text-text-muted font-mono">
+        Published June 2026 · 9 min read
+      </p>
+    </header>
+
+    <div class="space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      {/* What is llms.txt */}
+      <section>
+        <h2>What is llms.txt?</h2>
+        <p class="mt-4">
+          <code class="text-sm font-mono">llms.txt</code> is a Markdown file you
+          publish at <code class="text-sm font-mono">https://yourdomain.com/llms.txt</code>.
+          Its job is to hand a large language model a clean, human-readable
+          summary of your site: what the site is about, which pages matter, and
+          where the canonical information lives. Instead of crawling and guessing,
+          a model that reads the file gets a curated index written in plain
+          language.
+        </p>
+        <p class="mt-4">
+          The format is deliberately simple. It starts with an
+          <code class="text-sm font-mono">H1</code> title, an optional
+          blockquote summary, and then a set of
+          <code class="text-sm font-mono">H2</code> sections containing Markdown
+          links to your important pages. There is no XML, no schema validator, no
+          required tooling — just Markdown a person could read and an LLM can
+          parse cheaply.
+        </p>
+        <p class="mt-4">
+          The proposal emerged in 2024 as a community convention, similar in
+          spirit to how <code class="text-sm font-mono">robots.txt</code> and
+          <code class="text-sm font-mono">sitemap.xml</code> became de facto
+          standards. It is not part of an official HTTP specification and is not
+          mandated by any AI vendor. Adoption is voluntary on both sides: you
+          choose to publish it, and a given AI tool chooses whether to read it.
+        </p>
+      </section>
+
+      {/* Why it matters */}
+      <section>
+        <h2>Why llms.txt matters for AI SEO</h2>
+        <p class="mt-4">
+          Large language models and AI answer engines work with limited context.
+          When a tool needs to understand your site quickly, a curated file is
+          far more efficient than crawling hundreds of pages full of navigation,
+          cookie banners, and boilerplate. <code class="text-sm font-mono">llms.txt</code>
+          lets you front-load the signal and strip out the noise.
+        </p>
+        <p class="mt-4">
+          For <a href="/ai-seo/" class="text-accent-teal hover:underline">AI SEO</a>,
+          the value is about clarity and orientation rather than ranking:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Disambiguation</strong> — you state, in your own words, what your site and brand are about, reducing the chance a model misclassifies you.</li>
+          <li><strong>Page prioritization</strong> — you point to the canonical version of important content instead of leaving a model to find it among duplicates and thin pages.</li>
+          <li><strong>Context efficiency</strong> — a short, structured file fits inside a model's context window, where a full crawl might not.</li>
+          <li><strong>Editorial control</strong> — you decide which pages represent you, in what order, with what framing.</li>
+        </ul>
+        <p class="mt-4">
+          Set expectations honestly. <code class="text-sm font-mono">llms.txt</code>
+          is an orientation file, not a ranking factor. No AI vendor has confirmed
+          that publishing it improves how often you are cited or recommended, and
+          it cannot guarantee citations. The realistic benefit is that systems
+          which do read it can understand you faster and more accurately — a
+          foundation for visibility, not a lever that forces it. It complements
+          broader
+          <a href="/guides/generative-engine-optimization/" class="text-accent-teal hover:underline">generative engine optimization</a>
+          work; it does not replace it.
+        </p>
+      </section>
+
+      {/* llms.txt vs robots.txt */}
+      <section>
+        <h2>llms.txt vs robots.txt</h2>
+        <p class="mt-4">
+          The two files are often confused, but they do opposite jobs.
+          <code class="text-sm font-mono">robots.txt</code> is about
+          <em>permission</em>: it tells crawlers what they may and may not fetch.
+          <code class="text-sm font-mono">llms.txt</code> is about
+          <em>orientation</em>: it tells AI systems what your site means and where
+          the important content is.
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Purpose</strong> — <code class="text-sm font-mono">robots.txt</code> grants or denies access; <code class="text-sm font-mono">llms.txt</code> summarizes and points to content.</li>
+          <li><strong>Format</strong> — <code class="text-sm font-mono">robots.txt</code> uses <code class="text-sm font-mono">User-agent</code> and <code class="text-sm font-mono">Disallow</code> directives; <code class="text-sm font-mono">llms.txt</code> uses Markdown headings and links.</li>
+          <li><strong>Audience</strong> — <code class="text-sm font-mono">robots.txt</code> speaks to crawlers like <code class="text-sm font-mono">Googlebot</code> and <code class="text-sm font-mono">GPTBot</code>; <code class="text-sm font-mono">llms.txt</code> speaks to LLM tools that read content directly.</li>
+          <li><strong>Enforcement</strong> — well-behaved crawlers respect <code class="text-sm font-mono">robots.txt</code> rules; <code class="text-sm font-mono">llms.txt</code> is purely advisory and grants no access by itself.</li>
+        </ul>
+        <p class="mt-4">
+          They are complementary, not interchangeable. If your
+          <code class="text-sm font-mono">robots.txt</code> blocks an AI crawler
+          such as <code class="text-sm font-mono">GPTBot</code> or
+          <code class="text-sm font-mono">PerplexityBot</code>, publishing an
+          <code class="text-sm font-mono">llms.txt</code> will not override that
+          block — the crawler still cannot fetch the pages you reference. Get
+          permission right in <code class="text-sm font-mono">robots.txt</code>
+          first, then use <code class="text-sm font-mono">llms.txt</code> to guide
+          the systems you have allowed in.
+        </p>
+      </section>
+
+      {/* What to include */}
+      <section>
+        <h2>What to include in llms.txt</h2>
+        <p class="mt-4">
+          A good file is short, curated, and honest. Resist the urge to dump your
+          whole sitemap into it — the point is to highlight what matters, not to
+          mirror your navigation. Include the following:
+        </p>
+        <ol class="mt-4 space-y-3 list-decimal pl-5">
+          <li><strong>An H1 title</strong> — the name of your site or brand, so the model knows whose file this is.</li>
+          <li><strong>A blockquote summary</strong> — one or two sentences (a Markdown <code class="text-sm font-mono">&gt;</code> blockquote) describing what your site does and who it serves.</li>
+          <li><strong>Sectioned links</strong> — <code class="text-sm font-mono">H2</code> sections such as <em>Docs</em>, <em>Guides</em>, <em>Product</em>, or <em>About</em>, each containing Markdown links to canonical pages with a short note after each link.</li>
+          <li><strong>Canonical URLs only</strong> — link the authoritative version of each page, using the same trailing-slash convention as your site.</li>
+          <li><strong>An optional details section</strong> — secondary links you consider lower priority, often placed under a final section like <em>Optional</em>.</li>
+        </ol>
+        <p class="mt-4">
+          Keep descriptions factual. Each link should answer "what will a reader
+          find here?" in plain language. Avoid marketing superlatives and avoid
+          inventing claims — a model that reads inflated copy is more likely to
+          misrepresent you, not less. Some sites also publish an
+          <code class="text-sm font-mono">llms-full.txt</code> with the full text
+          of key pages inlined, but the standard
+          <code class="text-sm font-mono">llms.txt</code> is enough to start.
+        </p>
+      </section>
+
+      {/* Example */}
+      <section>
+        <h2>A simple llms.txt example</h2>
+        <p class="mt-4">
+          Here is a minimal, valid <code class="text-sm font-mono">llms.txt</code>.
+          Note the structure: an <code class="text-sm font-mono">H1</code> title,
+          a blockquote summary, then <code class="text-sm font-mono">H2</code>
+          sections of annotated Markdown links.
+        </p>
+        <pre class="mt-4 rounded-2xl border border-border bg-bg-surface p-4 md:p-6 overflow-x-auto text-sm font-mono text-text-secondary leading-relaxed"><code># Acme Analytics
+
+&gt; Acme Analytics is a privacy-first web analytics tool for small teams.
+&gt; This file points AI systems to our most important documentation and guides.
+
+## Docs
+- [Getting started](https://acme.example/docs/start): install and send your first event
+- [API reference](https://acme.example/docs/api): endpoints, auth, and rate limits
+
+## Guides
+- [Self-hosting Acme](https://acme.example/guides/self-host): deploy on your own server
+- [GDPR and privacy](https://acme.example/guides/privacy): how Acme handles data
+
+## About
+- [Pricing](https://acme.example/pricing): plans and limits
+- [Company](https://acme.example/about): who we are and what we believe
+
+## Optional
+- [Changelog](https://acme.example/changelog): release notes and version history
+</code></pre>
+        <p class="mt-4">
+          You can see a real file in production at
+          <a href="/llms.txt" class="text-accent-teal hover:underline">geoready.dev/llms.txt</a>
+          — it uses the same title, blockquote, and sectioned-link structure
+          described here. For a platform-specific walkthrough, see our
+          <a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt for WordPress guide</a>,
+          which covers both manual and plugin-based implementation.
+        </p>
+      </section>
+
+      {/* Common mistakes */}
+      <section>
+        <h2>Common mistakes</h2>
+        <p class="mt-4">
+          Most <code class="text-sm font-mono">llms.txt</code> problems come from
+          treating it like a sitemap or a marketing page. Watch for these:
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Dumping every URL</strong> — a 400-link file defeats the purpose. Curate the pages that actually represent your site.</li>
+          <li><strong>Wrong location or content type</strong> — it must live at the domain root (<code class="text-sm font-mono">/llms.txt</code>) and be served as plain text, not HTML.</li>
+          <li><strong>Linking non-canonical or redirecting URLs</strong> — point to the final, canonical address with the correct trailing slash.</li>
+          <li><strong>Blocking the referenced pages in robots.txt</strong> — guiding a crawler to pages it is not allowed to fetch is self-defeating.</li>
+          <li><strong>Letting it go stale</strong> — if your important pages change, update the file. A snapshot from a year ago can point models at dead links.</li>
+          <li><strong>Treating it as a ranking lever</strong> — it is an orientation file. Expecting guaranteed citations or rankings from it leads to disappointment.</li>
+        </ul>
+      </section>
+
+      {/* How to check */}
+      <section>
+        <h2>How to check whether your site has llms.txt</h2>
+        <p class="mt-4">
+          Checking is quick. You can do it three ways:
+        </p>
+        <ol class="mt-4 space-y-3 list-decimal pl-5">
+          <li>
+            <strong>Visit the URL directly</strong> — open
+            <code class="text-sm font-mono">https://yourdomain.com/llms.txt</code>
+            in a browser. If you see Markdown text, the file exists. A
+            <code class="text-sm font-mono">404</code> means it is missing.
+          </li>
+          <li>
+            <strong>Use the command line</strong> — run
+            <code class="text-sm font-mono">curl -I https://yourdomain.com/llms.txt</code>
+            and confirm a <code class="text-sm font-mono">200</code> status and a
+            <code class="text-sm font-mono">text/plain</code> or
+            <code class="text-sm font-mono">text/markdown</code> content type.
+          </li>
+          <li>
+            <strong>Run an AI visibility audit</strong> — an automated check
+            confirms the file exists, validates its structure (title, blockquote,
+            sections, links), and flags issues alongside your other AI SEO
+            signals.
+          </li>
+        </ol>
+        <p class="mt-4">
+          If the file is missing, malformed, or out of date, an audit will tell
+          you exactly what to fix before you publish.
+        </p>
+      </section>
+
+      {/* CTA */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+        <h2>Check your llms.txt and AI visibility</h2>
+        <p class="mt-3">
+          The free audit checks whether your site has a valid
+          <code class="text-sm font-mono">llms.txt</code>, validates its structure,
+          and scores your site across eight AI visibility categories — robots.txt,
+          schema, content signals, and more. No account needed.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/#audit-form"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Run a free AI visibility audit
+          </a>
+          <a
+            href="/pricing/"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            See plans and pricing
+          </a>
+        </div>
+        <p class="mt-4 text-xs text-text-muted">
+          A GeoReady account lets you save reports, track changes over time, and
+          unlock the full audit. <a href="https://app.geoready.dev/signup" class="text-accent-teal hover:underline">Create an account</a>.
+        </p>
+      </section>
+
+      {/* FAQ */}
+      <section>
+        <h2>FAQ</h2>
+
+        <h3 class="mt-6">Is llms.txt a ranking factor?</h3>
+        <p class="mt-3">
+          No. No AI vendor has confirmed that <code class="text-sm font-mono">llms.txt</code>
+          influences rankings or citation frequency, and it does not guarantee
+          either. It is an orientation file that helps AI systems understand your
+          site faster and more accurately. Treat it as a clarity signal, not a
+          lever that forces visibility.
+        </p>
+
+        <h3 class="mt-6">Where do I put the llms.txt file?</h3>
+        <p class="mt-3">
+          At the root of your domain, reachable at
+          <code class="text-sm font-mono">https://yourdomain.com/llms.txt</code>,
+          served as plain text. It belongs in the same location as
+          <code class="text-sm font-mono">robots.txt</code> and
+          <code class="text-sm font-mono">sitemap.xml</code>, not in a subfolder.
+        </p>
+
+        <h3 class="mt-6">Is llms.txt the same as robots.txt?</h3>
+        <p class="mt-3">
+          No. <code class="text-sm font-mono">robots.txt</code> controls crawler
+          access — what bots may fetch.
+          <code class="text-sm font-mono">llms.txt</code> describes and indexes
+          your content for AI systems. They are complementary: an
+          <code class="text-sm font-mono">llms.txt</code> cannot override a block
+          set in <code class="text-sm font-mono">robots.txt</code>.
+        </p>
+
+        <h3 class="mt-6">Do AI systems actually read llms.txt?</h3>
+        <p class="mt-3">
+          Adoption is voluntary and varies by tool. Some LLM-powered tools and
+          agents read it when they fetch a site; others do not. Because it is a
+          community convention rather than a mandated standard, you should publish
+          it as a low-effort best practice without expecting universal support.
+        </p>
+
+        <h3 class="mt-6">What format does llms.txt use?</h3>
+        <p class="mt-3">
+          Plain Markdown: an <code class="text-sm font-mono">H1</code> title, an
+          optional <code class="text-sm font-mono">&gt;</code> blockquote summary,
+          and <code class="text-sm font-mono">H2</code> sections containing
+          Markdown links with short descriptions. There is no XML and no required
+          validator — readability is the point.
+        </p>
+
+        <h3 class="mt-6">How is llms.txt different from JSON-LD structured data?</h3>
+        <p class="mt-3">
+          <code class="text-sm font-mono">JSON-LD</code> structured data lives
+          inside individual pages and describes entities and relationships for
+          search engines and AI systems. <code class="text-sm font-mono">llms.txt</code>
+          is a single site-level file that curates which pages matter. Use both:
+          schema for per-page meaning, <code class="text-sm font-mono">llms.txt</code>
+          for site-level orientation.
+        </p>
+      </section>
+
+      {/* Further reading */}
+      <section>
+        <h2>Further reading</h2>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt for WordPress and AI visibility</a> — manual and plugin-based implementation.</li>
+          <li><a href="/guides/generative-engine-optimization/" class="text-accent-teal hover:underline">Generative Engine Optimization</a> — the broader practice llms.txt fits into.</li>
+          <li><a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO</a> — what changes when AI engines become the interface.</li>
+          <li><a href="/ai-seo/" class="text-accent-teal hover:underline">AI SEO</a> — how to make your site visible to AI answer engines.</li>
+          <li>The signals behind these guides: our <a href="/research/" class="text-accent-teal hover:underline">research foundation</a>.</li>
+        </ul>
+      </section>
+    </div>
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "headline": title,
+        "description": description,
+        "author": {
+          "@type": "Organization",
+          "name": "Auriti Labs",
+          "url": "https://github.com/Auriti-Labs"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Auriti Labs",
+          "url": "https://github.com/Auriti-Labs"
+        },
+        "datePublished": datePublished,
+        "dateModified": dateModified,
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": canonical
+        },
+        "about": [
+          "llms.txt",
+          "AI search visibility",
+          "Generative Engine Optimization",
+          "AI SEO",
+          "robots.txt"
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is llms.txt a ranking factor?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. No AI vendor has confirmed that llms.txt influences rankings or citation frequency, and it does not guarantee either. It is an orientation file that helps AI systems understand your site faster and more accurately. Treat it as a clarity signal, not a lever that forces visibility."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Where do I put the llms.txt file?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "At the root of your domain, reachable at https://yourdomain.com/llms.txt, served as plain text. It belongs in the same location as robots.txt and sitemap.xml, not in a subfolder."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is llms.txt the same as robots.txt?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. robots.txt controls crawler access — what bots may fetch. llms.txt describes and indexes your content for AI systems. They are complementary: an llms.txt cannot override a block set in robots.txt."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do AI systems actually read llms.txt?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Adoption is voluntary and varies by tool. Some LLM-powered tools and agents read it when they fetch a site; others do not. Because it is a community convention rather than a mandated standard, you should publish it as a low-effort best practice without expecting universal support."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What format does llms.txt use?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Plain Markdown: an H1 title, an optional blockquote summary, and H2 sections containing Markdown links with short descriptions. There is no XML and no required validator — readability is the point."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How is llms.txt different from JSON-LD structured data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "JSON-LD structured data lives inside individual pages and describes entities and relationships for search engines and AI systems. llms.txt is a single site-level file that curates which pages matter. Use both: schema for per-page meaning, llms.txt for site-level orientation."
+            }
+          }
+        ]
+      }
+    ]
+  })} />
+</Shell>

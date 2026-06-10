@@ -90,6 +90,7 @@ GEO Optimizer is actively maintained. Scoring weights and audit methods are upda
 ## Main sections
 
 - [Audit](https://geoready.dev/): Run a GEO audit on any URL — free, no account required.
+- [AI SEO Guide](https://geoready.dev/ai-seo/): What AI SEO is, how it differs from traditional SEO, and how to audit a site for visibility in ChatGPT, Perplexity, Claude, and Gemini.
 - [Compare](https://geoready.dev/compare/): Side-by-side comparison of two URLs.
 - [Analyze Competitors](https://geoready.dev/analyze-competitors/): Multi-URL competitor analysis.
 - [Research](https://geoready.dev/research/): Peer-reviewed research foundation.
@@ -97,6 +98,15 @@ GEO Optimizer is actively maintained. Scoring weights and audit methods are upda
 - [Manifesto](https://geoready.dev/manifesto/): Why GEO Optimizer exists and what it stands for.
 - [Pricing](https://geoready.dev/pricing/): Free and Pro plan comparison.
 - [Privacy Policy](https://geoready.dev/privacy/): GDPR-compliant privacy policy.
+
+## Guides
+
+- [Generative Engine Optimization: a practical guide to GEO](https://geoready.dev/guides/generative-engine-optimization/): The pillar guide to GEO as a technical discipline — core signals, technical and content checklists, how to measure readiness.
+- [What is llms.txt?](https://geoready.dev/guides/what-is-llms-txt/): What llms.txt is, how it differs from robots.txt, what to include, and a concrete example.
+- [GEO vs SEO](https://geoready.dev/guides/geo-vs-seo/): What stays the same and what changes when AI answer engines become the interface.
+- [How to appear in ChatGPT and Perplexity sources](https://geoready.dev/guides/appear-in-chatgpt-perplexity/): A practical checklist for becoming citable by AI answer engines.
+- [llms.txt for WordPress](https://geoready.dev/guides/llms-txt-wordpress/): Practical implementation guide for WordPress sites.
+- [AI Visibility Checklist](https://geoready.dev/guides/ai-visibility-checklist/): All technical and content signals organized by category.
 
 ## Research sources
 
