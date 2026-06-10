@@ -22,6 +22,7 @@ import secrets
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException, Query, Request
@@ -742,10 +743,14 @@ class LlmsGenerateRequest(BaseModel):
     Pydantic valida i tipi: input non-stringa restituisce 422, non 500.
     """
 
+    # Pydantic valuta le annotazioni dei field a runtime: la sintassi PEP 604
+    # `str | None` rompe su Python 3.9 (CI #194) anche con `from __future__`.
+    # Optional[str] resta valutabile su 3.9 e identico semanticamente. Il noqa
+    # deroga UP045 solo qui: altrove `X | None` è corretto (annotazioni lazy).
     base_url: str
-    sitemap_url: str | None = None
-    site_name: str | None = None
-    description: str | None = None
+    sitemap_url: Optional[str] = None  # noqa: UP045
+    site_name: Optional[str] = None  # noqa: UP045
+    description: Optional[str] = None  # noqa: UP045
     max_per_section: int = 10
 
 
