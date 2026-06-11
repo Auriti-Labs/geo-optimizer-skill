@@ -1,0 +1,217 @@
+---
+import Shell from '../components/Shell.astro';
+import MarketingVisual from '../components/MarketingVisual.astro';
+import { marketingVisuals } from '../lib/marketingVisuals';
+
+const directions = [
+  {
+    k: '01',
+    title: 'Cinematic product surface',
+    body: 'The dashboard becomes the stage: large, angled, deep, and useful as the first impression.',
+  },
+  {
+    k: '02',
+    title: 'Explainable AI map',
+    body: 'The retrieval system is visualized as a flow, so AI visibility feels concrete instead of abstract.',
+  },
+  {
+    k: '03',
+    title: 'Operational continuity',
+    body: 'Monitoring, citations, alerts, and reports become one commercial story after the free audit.',
+  },
+];
+---
+
+<Shell
+  title="GeoReady Visual Lab"
+  description="Private visual layout test for larger GeoReady AI visibility images and a more dynamic modern landing page direction."
+  canonical="https://geoready.dev/visual-lab/"
+  robots="noindex, nofollow"
+>
+  <section data-hero-bleed class="relative isolate overflow-hidden bg-bg-dark text-text-inverse">
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 opacity-55"
+      style="background-image: radial-gradient(circle at 70% 22%, rgba(45,212,191,0.22), transparent 30%), linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.08) 1px, transparent 1px); background-size: auto, 56px 56px, 56px 56px;"
+    />
+    <div class="relative mx-auto grid min-h-[760px] max-w-7xl items-center gap-10 px-6 py-20 lg:grid-cols-[minmax(0,0.62fr)_minmax(600px,1fr)] lg:py-28">
+      <div class="z-10 max-w-2xl">
+        <p class="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-teal-100">
+          Visual direction v2
+        </p>
+        <h1 class="mt-5 font-display text-5xl font-bold leading-[0.98] tracking-tight md:text-7xl">
+          A bigger visual system for AI visibility.
+        </h1>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-text-muted">
+          This lab tests a more cinematic GeoReady direction: larger images, stronger product theatre,
+          sharper hierarchy, and sections that feel alive before the user even runs an audit.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-2">
+          {['3200px masters', 'Responsive WebP', 'Noindex preview'].map((chip) => (
+            <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-teal-100">
+              {chip}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <figure class="visual-float relative z-0 lg:-mr-32">
+        <div aria-hidden="true" class="absolute -inset-8 rounded-[--radius-2xl] bg-teal-300/10 blur-3xl"></div>
+        <div class="relative overflow-hidden rounded-[--radius-2xl] border border-white/10 bg-white/[0.03] shadow-[0_42px_120px_-58px_rgba(45,212,191,0.85)]">
+          <MarketingVisual
+            {...marketingVisuals.commandCenterV2}
+            sizes="(min-width: 1024px) 62vw, 100vw"
+            loading="eager"
+            priority
+            imgClass="aspect-[16/9] object-cover"
+            captionClass="sr-only"
+          />
+        </div>
+        <div class="mt-3 grid gap-3 rounded-[--radius-xl] border border-white/10 bg-black/45 p-3 backdrop-blur-xl sm:grid-cols-3 lg:absolute lg:-bottom-8 lg:left-6 lg:right-6 lg:mt-0">
+          {[
+            ['Score', '86/100'],
+            ['Signals', '8 categories'],
+            ['Next', 'Impact fixes'],
+          ].map(([label, value]) => (
+            <div class="rounded-[--radius-md] border border-white/10 bg-white/5 px-4 py-3">
+              <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-300">{label}</p>
+              <p class="mt-1 text-lg font-semibold text-white">{value}</p>
+            </div>
+          ))}
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 py-14 md:py-20">
+    <div class="grid gap-4 md:grid-cols-3">
+      {directions.map((item) => (
+        <article class="rounded-[--radius-lg] border border-border bg-bg-surface p-5">
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">{item.k}</p>
+          <h2 class="mt-3 font-display text-xl font-semibold leading-tight text-text-primary">{item.title}</h2>
+          <p class="mt-3 text-sm leading-relaxed text-text-secondary">{item.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="overflow-hidden border-y border-border bg-[#fbfaf7]">
+    <div class="mx-auto grid max-w-7xl gap-8 px-6 py-16 lg:grid-cols-[minmax(0,0.42fr)_minmax(640px,1fr)] lg:items-center lg:py-24">
+      <div>
+        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">Explain the invisible</p>
+        <h2 class="mt-3 font-display text-4xl font-bold leading-tight text-text-primary md:text-5xl">
+          Turn the retrieval path into a visual product story.
+        </h2>
+        <p class="mt-5 text-base leading-relaxed text-text-secondary">
+          This direction gives the AI SEO concept a clearer mental model: crawlers, structure,
+          entity meaning, retrieval, and citation output all become one readable flow.
+        </p>
+        <div class="mt-8 space-y-3">
+          {['Access layer', 'Entity layer', 'Citation layer'].map((item) => (
+            <div class="flex items-center gap-3 border-l border-accent-teal/30 pl-4">
+              <span class="h-2 w-2 rounded-full bg-accent-teal"></span>
+              <span class="text-sm font-medium text-text-primary">{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <figure class="relative lg:-mr-24">
+        <div class="overflow-hidden rounded-[--radius-2xl] border border-border bg-white shadow-[0_40px_110px_-70px_rgba(15,23,42,0.55)]">
+          <MarketingVisual
+            {...marketingVisuals.retrievalMapV2}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            imgClass="aspect-[16/9] object-cover"
+            captionClass="sr-only"
+          />
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="relative overflow-hidden bg-bg-dark text-text-inverse">
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 opacity-45"
+      style="background-image: radial-gradient(circle at 20% 16%, rgba(45,212,191,0.18), transparent 28%), linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.08) 1px, transparent 1px); background-size: auto, 54px 54px, 54px 54px;"
+    />
+    <div class="relative mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-[minmax(620px,1fr)_minmax(0,0.42fr)] lg:items-center lg:py-24">
+      <figure class="visual-float overflow-hidden rounded-[--radius-2xl] border border-white/10 bg-white/[0.03] shadow-[0_36px_120px_-60px_rgba(45,212,191,0.8)] lg:-ml-24">
+        <MarketingVisual
+          {...marketingVisuals.citationIntelligenceV2}
+          sizes="(min-width: 1024px) 66vw, 100vw"
+          imgClass="aspect-[16/9] object-cover"
+          captionClass="sr-only"
+        />
+      </figure>
+      <div>
+        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-teal-100">Citation intelligence</p>
+        <h2 class="mt-3 font-display text-4xl font-bold leading-tight md:text-5xl">
+          Make AI citations feel measurable, not mystical.
+        </h2>
+        <p class="mt-5 text-base leading-relaxed text-text-muted">
+          The darker treatment works for high-intent sections: answer snapshots, cited domains,
+          competitor sources, citation rate, and alert history become one operational surface.
+        </p>
+        <div class="mt-8 grid gap-3">
+          {[
+            ['Mentioned', 'The brand appears in the answer.'],
+            ['Cited', 'The domain appears as a source.'],
+            ['Replaced', 'A competitor earns the citation instead.'],
+          ].map(([label, text]) => (
+            <div class="rounded-[--radius-lg] border border-white/10 bg-white/5 p-4">
+              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-teal-100">{label}</p>
+              <p class="mt-2 text-sm leading-relaxed text-text-muted">{text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto grid max-w-7xl gap-8 px-6 py-16 lg:grid-cols-[minmax(0,0.44fr)_minmax(640px,1fr)] lg:items-center lg:py-24">
+    <div>
+      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">From audit to platform</p>
+      <h2 class="mt-3 font-display text-4xl font-bold leading-tight text-text-primary md:text-5xl">
+        Close the story with monitoring and client-ready reports.
+      </h2>
+      <p class="mt-5 text-base leading-relaxed text-text-secondary">
+        This is the strongest commercial visual: it connects score history, regression alerts,
+        portfolio tracking, evidence snapshots, and report export without claiming features beyond the product state.
+      </p>
+      <a href="/pricing/" class="mt-8 inline-flex rounded-full bg-accent-teal px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark">
+        See plans
+      </a>
+    </div>
+    <figure class="overflow-hidden rounded-[--radius-2xl] border border-border bg-bg-surface shadow-[0_36px_100px_-70px_rgba(15,23,42,0.65)]">
+      <MarketingVisual
+        {...marketingVisuals.monitoringReportingV2}
+        sizes="(min-width: 1024px) 62vw, 100vw"
+        imgClass="aspect-[16/9] object-cover"
+        captionClass="sr-only"
+      />
+    </figure>
+  </section>
+</Shell>
+
+<style>
+  .visual-float {
+    animation: visual-float 10s ease-in-out infinite;
+  }
+
+  @keyframes visual-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .visual-float {
+      animation: none;
+    }
+  }
+</style>

@@ -1,4 +1,13 @@
 const assetBase = '/assets/geoready-visuals';
+const v2AssetBase = `${assetBase}/v2`;
+
+const v2SrcSet = (slug: string) =>
+  [
+    `${v2AssetBase}/${slug}-1200.webp 1200w`,
+    `${v2AssetBase}/${slug}-1800.webp 1800w`,
+    `${v2AssetBase}/${slug}-2400.webp 2400w`,
+    `${v2AssetBase}/${slug}-3200.webp 3200w`,
+  ].join(', ');
 
 export const marketingVisuals = {
   commandCenter: {
@@ -65,5 +74,45 @@ export const marketingVisuals = {
     caption: 'Client-ready reporting: score breakdown, recommendations, and PDF export for audit deliverables.',
     width: 1448,
     height: 1086,
+  },
+  commandCenterV2: {
+    webp: `${v2AssetBase}/ai-command-center-v2.webp`,
+    webpSrcSet: v2SrcSet('ai-command-center-v2'),
+    png: `${v2AssetBase}/ai-command-center-v2.png`,
+    alt: 'Large GeoReady AI visibility command center with GEO readiness score, AI crawler access, citation flow, recommendations, alerts, and score trend.',
+    caption:
+      'Expanded command-center concept: readiness score, crawler access, citation flow, recommendations, alerts, and trend history in one visual surface.',
+    width: 3200,
+    height: 1801,
+  },
+  retrievalMapV2: {
+    webp: `${v2AssetBase}/ai-retrieval-map-v2.webp`,
+    webpSrcSet: v2SrcSet('ai-retrieval-map-v2'),
+    png: `${v2AssetBase}/ai-retrieval-map-v2.png`,
+    alt: 'Large AI discovery and retrieval map showing crawlers, llms.txt, schema markup, content blocks, entity graph, retrieval systems, and cited answer output.',
+    caption:
+      'Retrieval map concept: crawler access, structured content, entity clarity, retrieval systems, and citation output arranged as one explainable flow.',
+    width: 3200,
+    height: 1801,
+  },
+  citationIntelligenceV2: {
+    webp: `${v2AssetBase}/ai-citation-intelligence-v2.webp`,
+    webpSrcSet: v2SrcSet('ai-citation-intelligence-v2'),
+    png: `${v2AssetBase}/ai-citation-intelligence-v2.png`,
+    alt: 'Large AI citation intelligence dashboard with answer snapshots, citation rate, source quality, cited source table, competitor cards, and wins versus losses.',
+    caption:
+      'Citation intelligence concept: answer snapshots, citation rate, source quality, cited domains, competitor signals, and wins versus losses.',
+    width: 3200,
+    height: 1801,
+  },
+  monitoringReportingV2: {
+    webp: `${v2AssetBase}/ai-monitoring-reporting-v2.webp`,
+    webpSrcSet: v2SrcSet('ai-monitoring-reporting-v2'),
+    png: `${v2AssetBase}/ai-monitoring-reporting-v2.png`,
+    alt: 'Large GeoReady monitoring and reporting workspace with AI visibility history, regression alerts, domain portfolio, evidence snapshots, and report export.',
+    caption:
+      'Monitoring and reporting concept: score history, regression alerts, domain portfolio, evidence snapshots, recommendation queue, and report export.',
+    width: 3200,
+    height: 1801,
   },
 } as const;
