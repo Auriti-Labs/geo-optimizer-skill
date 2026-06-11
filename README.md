@@ -377,17 +377,6 @@ See [`integrations/astro-geoready/`](integrations/astro-geoready/) — geoready.
 
 ---
 
-## WordPress Plugin
-
-Make a WordPress site visible to AI answer engines without touching code:
-generates `llms.txt`, `/.well-known/ai.txt`, and `/ai/summary.json` from your
-published content, and scores your AI visibility from **Settings → GeoReady**
-with one click.
-
-See [`integrations/wordpress-geoready/`](integrations/wordpress-geoready/).
-
----
-
 ## Plugin System
 
 Extend the audit with custom checks via entry points:

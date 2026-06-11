@@ -38,7 +38,7 @@ The **Static** codename groups four MVPs covering retrieval-surface visibility. 
 | **A — Crawler Evidence & Access Simulation** | AI Crawler Activity Analytics (`/api/logs/analyze`, `geo logs`) and Agent Access Audit (`geo access`, browser-vs-bot simulation) | Shipped in v4.11.0 |
 | **B — Semantic Drift Monitoring** | Cross-snapshot drift detection over content and citation-readiness signals | Shipped — `geo drift` (CLI, one-shot) + continuous regression alerts in the GeoReady platform |
 | **C — AI Perception Snapshot** | Enriched simulated-perception extraction from page signals | Planned |
-| **D — WordPress Connector** | First-party connector for WordPress sites and headless setups | Shipped — `wordpress-geoready` plugin (`integrations/wordpress-geoready/`) |
+| **D — WordPress Connector** | First-party connector for WordPress sites and headless setups | Planned |
 
 MVP B–D scope and exact target releases will be confirmed as MVP A adoption signal and validation feedback come in.
 

@@ -5,11 +5,6 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
-## [Unreleased]
-
-### Added
-- **`wordpress-geoready` plugin (MVP D: WordPress distribution).** A WordPress plugin that serves `llms.txt`, `/.well-known/ai.txt`, and `/ai/summary.json` as virtual routes built from published content (never shadows a real static file), plus a Settings → GeoReady page with a one-click AI visibility audit via the public GeoReady API. Pure builders are WordPress-free and unit-tested (`test/test-builder.php`, `test/test-files.php`; 32 plain-PHP assertions). Lives in `integrations/wordpress-geoready/`, WordPress.org-ready (`readme.txt`).
-
 ## [4.14.0] — 2026-06-11 · Quiet Glass
 
 ### Added
