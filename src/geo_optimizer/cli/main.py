@@ -44,6 +44,7 @@ from geo_optimizer.cli.authority_cmd import authority  # noqa: E402
 from geo_optimizer.cli.citations_cmd import citations  # noqa: E402
 from geo_optimizer.cli.coherence_cmd import coherence  # noqa: E402
 from geo_optimizer.cli.diff_cmd import diff  # noqa: E402
+from geo_optimizer.cli.drift_cmd import drift  # noqa: E402
 from geo_optimizer.cli.fix_cmd import fix  # noqa: E402
 from geo_optimizer.cli.history_cmd import history  # noqa: E402
 from geo_optimizer.cli.llms_cmd import llms  # noqa: E402
@@ -59,6 +60,7 @@ cli.add_command(authority)
 cli.add_command(citations)
 cli.add_command(coherence)
 cli.add_command(diff)
+cli.add_command(drift)
 cli.add_command(fix)
 cli.add_command(history)
 cli.add_command(llms)

@@ -109,6 +109,9 @@ geo audit --url https://yoursite.com --save-history --regression
 # Show the saved trend for a site
 geo history --url https://yoursite.com
 
+# What changed since the last snapshot? (severity + category deltas; CI: --fail-on warning)
+geo drift --url https://yoursite.com
+
 # Passive AI visibility snapshot for a domain
 geo monitor --domain yoursite.com
 
