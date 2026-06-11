@@ -2,6 +2,7 @@
 import Shell from '../components/Shell.astro';
 import AuditForm from '../components/AuditForm';
 import StatsBar from '../components/StatsBar';
+import MarketingVisual from '../components/MarketingVisual.astro';
 import VisualStage from '../components/VisualStage.astro';
 import { marketingVisuals } from '../lib/marketingVisuals';
 
@@ -152,25 +153,32 @@ const faqSchema = {
           </div>
         </div>
 
-        <div class="relative lg:-mr-10">
-          <div aria-hidden="true" class="absolute -inset-6 rounded-[--radius-2xl] border border-teal-300/10 bg-teal-300/[0.03] blur-3xl"></div>
-          <VisualStage
-            visual={marketingVisuals.commandCenter}
-            variant="dark"
-            label="Audit command center"
-            eyebrow="Live surface"
-            sizes="(min-width: 1024px) 48vw, 100vw"
-            loading="eager"
-            priority
-            imgClass="aspect-[16/9] object-cover"
-            metrics={[
-              { label: 'Score', value: '0-100 GEO' },
-              { label: 'Signals', value: '8 categories' },
-              { label: 'Output', value: 'JSON + report' },
-            ]}
-            chips={['Crawler access', 'Citation graph', 'Impact fixes']}
-            class="relative"
-          />
+        <div class="relative lg:-mr-32">
+          <div aria-hidden="true" class="absolute -inset-8 rounded-[--radius-2xl] bg-teal-300/10 blur-3xl"></div>
+          <figure class="relative">
+            <div class="overflow-hidden rounded-[--radius-2xl] border border-white/10 bg-white/[0.03] shadow-[0_42px_120px_-58px_rgba(45,212,191,0.85)]">
+              <MarketingVisual
+                {...marketingVisuals.commandCenterV2}
+                sizes="(min-width: 1024px) 60vw, 100vw"
+                loading="eager"
+                priority
+                imgClass="aspect-[16/9] object-cover"
+                captionClass="sr-only"
+              />
+            </div>
+            <div class="mt-3 grid gap-3 rounded-[--radius-xl] border border-white/10 bg-black/45 p-3 backdrop-blur-xl sm:grid-cols-3 lg:absolute lg:-bottom-8 lg:left-6 lg:right-6 lg:mt-0">
+              {[
+                ['Score', '0-100 GEO'],
+                ['Signals', '8 categories'],
+                ['Output', 'Report + JSON'],
+              ].map(([label, value]) => (
+                <div class="rounded-[--radius-md] border border-white/10 bg-white/5 px-4 py-3">
+                  <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-300">{label}</p>
+                  <p class="mt-1 text-lg font-semibold text-white">{value}</p>
+                </div>
+              ))}
+            </div>
+          </figure>
         </div>
       </div>
     </div>
@@ -212,20 +220,16 @@ const faqSchema = {
           </div>
         </div>
 
-        <VisualStage
-          visual={marketingVisuals.discoveryStack}
-          variant="paper"
-          label="Discovery model"
-          eyebrow="Access to citation"
-          sizes="(min-width: 1024px) 42vw, 100vw"
-          imgClass="aspect-[16/9] object-cover"
-          metrics={[
-            { label: 'Layer 1', value: 'Crawler access' },
-            { label: 'Layer 2', value: 'Entity clarity' },
-            { label: 'Layer 3', value: 'Citation output' },
-          ]}
-          chips={['robots.txt', 'llms.txt', 'Schema']}
-        />
+        <figure class="relative lg:-mr-24">
+          <div class="overflow-hidden rounded-[--radius-2xl] border border-border bg-white shadow-[0_40px_110px_-70px_rgba(15,23,42,0.55)]">
+            <MarketingVisual
+              {...marketingVisuals.retrievalMapV2}
+              sizes="(min-width: 1024px) 58vw, 100vw"
+              imgClass="aspect-[16/9] object-cover"
+              captionClass="border-t border-border px-4 py-3 text-xs leading-relaxed text-text-muted"
+            />
+          </div>
+        </figure>
       </div>
     </div>
   </section>
@@ -315,12 +319,12 @@ const faqSchema = {
     <div class="max-w-7xl mx-auto px-6 py-20 md:py-24">
       <div class="grid gap-10 lg:grid-cols-[minmax(420px,0.92fr)_minmax(0,0.72fr)] lg:items-center">
         <VisualStage
-          visual={marketingVisuals.monitoring}
+          visual={marketingVisuals.monitoringReportingV2}
           variant="dark"
           label="Monitoring room"
           eyebrow="Continuous signal"
           sizes="(min-width: 1024px) 52vw, 100vw"
-          imgClass="aspect-[4/3] object-cover object-top"
+          imgClass="aspect-[16/9] object-cover"
           metrics={[
             { label: 'History', value: 'Weekly trend' },
             { label: 'Alert', value: 'Score drop' },
@@ -428,12 +432,12 @@ const faqSchema = {
         </div>
         <div class="border-t border-border bg-bg-subtle p-4 lg:border-l lg:border-t-0">
           <VisualStage
-            visual={marketingVisuals.clientReport}
+            visual={marketingVisuals.monitoringReportingV2}
             variant="paper"
             label="Report package"
             eyebrow="Client output"
             sizes="(min-width: 1024px) 36vw, 100vw"
-            imgClass="aspect-[4/3] object-cover"
+            imgClass="aspect-[16/9] object-cover"
             chips={['Score breakdown', 'Recommendations', 'PDF export']}
           />
         </div>
