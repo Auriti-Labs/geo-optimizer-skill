@@ -1,9 +1,9 @@
 ---
 import Shell from '../components/Shell.astro';
 
-const title = 'State of GEO — Live Benchmark of AI Search Readiness';
+const title = 'State of GEO — AI Search Readiness of Audited Sites';
 const description =
-  'Live aggregate statistics from real GEO audits: average scores, llms.txt and schema adoption, AI crawler access, and category breakdowns. Updated continuously, privacy-first.';
+  'Live aggregate statistics from real GeoReady audits: average and median GEO score, llms.txt and schema adoption, and the biggest readiness gap across audited sites. Privacy-first, updated continuously.';
 const canonical = 'https://geoready.dev/state-of-geo/';
 ---
 
@@ -17,14 +17,15 @@ const canonical = 'https://geoready.dev/state-of-geo/';
       </div>
 
       <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
-        State of GEO: how ready is the web for AI search?
+        State of GEO: how AI-ready are the sites we audit?
       </h1>
 
       <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
         Live aggregates from real audits run with the open-source GEO Optimizer
-        engine — the same 100-point, 8-category rubric for every site. No
-        domains, no identities: the dataset stores only salted hashes and
-        per-category signals, and this page shows aggregates only.
+        engine — the same 100-point, 8-category rubric for every site. This is a
+        benchmark of <strong>sites audited by GeoReady</strong>, not a survey of
+        the whole web. No domains, no identities: the dataset stores only salted
+        hashes and per-category signals, and this page shows aggregates only.
       </p>
     </header>
 
@@ -35,8 +36,8 @@ const canonical = 'https://geoready.dev/state-of-geo/';
 
     <div id="bench" class="hidden space-y-10">
       <p class="text-xs font-mono text-text-muted">
-        Based on <span id="b-domains" class="text-text-primary font-semibold">—</span> audited domains
-        (<span id="b-audits">—</span> audits) · live dataset, updated as audits run · last refresh <span id="b-updated">—</span>
+        Based on <span id="b-sample" class="text-text-primary font-semibold">—</span>
+        · live dataset, updated as audits run · last refresh <span id="b-updated">—</span>
       </p>
 
       <div class="grid sm:grid-cols-3 gap-4">
@@ -48,29 +49,29 @@ const canonical = 'https://geoready.dev/state-of-geo/';
         <div class="rounded-xl border border-border px-4 py-4">
           <p class="text-xs text-text-muted uppercase tracking-wider">Median score</p>
           <p id="b-median" class="mt-1 text-3xl font-bold text-text-primary">—</p>
-          <p class="text-xs text-text-muted">half the web does worse</p>
+          <p class="text-xs text-text-muted">half of audited sites score lower</p>
         </div>
         <div class="rounded-xl border border-border px-4 py-4">
           <p class="text-xs text-text-muted uppercase tracking-wider">Ship an llms.txt</p>
           <p id="b-llms" class="mt-1 text-3xl font-bold text-text-primary">—</p>
-          <p class="text-xs text-text-muted">of audited domains</p>
+          <p class="text-xs text-text-muted">of audited sites</p>
         </div>
       </div>
 
+      {/* Readiness headline + biggest gap — derived, coarse, citable */}
+      <section id="b-insights" class="space-y-3">
+        <p id="b-headline" class="hidden text-base text-text-secondary leading-relaxed"></p>
+        <div id="b-gap" class="hidden rounded-xl border border-accent-teal/40 bg-accent-teal/5 px-5 py-4">
+          <p class="text-xs text-text-muted uppercase tracking-wider">Biggest readiness gap</p>
+          <p id="b-gap-label" class="mt-1 text-lg font-semibold text-text-primary">—</p>
+        </div>
+        <p id="b-bands" class="hidden text-sm text-text-secondary"></p>
+      </section>
+
       <section>
         <h2 class="font-display text-2xl font-bold text-text-primary">Adoption of AI-readiness signals</h2>
+        <p class="mt-2 text-sm text-text-secondary">Share of audited sites shipping the two foundations of AI discovery.</p>
         <div id="b-adoption" class="mt-4 space-y-3"></div>
-      </section>
-
-      <section>
-        <h2 class="font-display text-2xl font-bold text-text-primary">Where sites lose points</h2>
-        <p class="mt-2 text-sm text-text-secondary">Average score per category vs. its ceiling — the widest gaps are the easiest wins.</p>
-        <div id="b-cats" class="mt-4 space-y-3"></div>
-      </section>
-
-      <section>
-        <h2 class="font-display text-2xl font-bold text-text-primary">Score bands</h2>
-        <div id="b-bands" class="mt-4 space-y-3"></div>
       </section>
     </div>
 
@@ -83,6 +84,7 @@ const canonical = 'https://geoready.dev/state-of-geo/';
       <section>
         <h2>Methodology</h2>
         <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Audited sites only</strong> — this is a benchmark of sites audited by GeoReady, not a sample of the whole web.</li>
           <li><strong>One row per domain</strong> — the most recent audit per domain; re-audits don't inflate the cohort.</li>
           <li><strong>Scheduled monitoring excluded</strong> — only user-initiated audits (web, CLI, API, tools) count.</li>
           <li><strong>Privacy-first</strong> — domains are stored as salted HMAC hashes; this endpoint exposes aggregates only.</li>
@@ -96,9 +98,9 @@ const canonical = 'https://geoready.dev/state-of-geo/';
       <section>
         <h2>Where does your site stand?</h2>
         <p class="mt-4">
-          The averages above are the baseline to beat. A free audit gives you
-          your score in seconds — then the gap analysis tells you which
-          category recovers the most points first.
+          The averages above are the baseline to beat across audited sites. A free
+          audit gives you your score in seconds — then the gap analysis tells you
+          which category recovers the most points first.
         </p>
         <div class="mt-6 flex flex-wrap gap-3">
           <a href="/" class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90">
@@ -113,22 +115,9 @@ const canonical = 'https://geoready.dev/state-of-geo/';
   </article>
 
   <script>
-    const CAT_LABELS: Record<string, string> = {
-      robots: 'Robots.txt (AI crawler access)',
-      llms: 'llms.txt',
-      schema: 'Schema JSON-LD',
-      meta: 'Meta tags',
-      content: 'Content quality',
-      brand_entity: 'Brand & entity',
-      signals: 'Technical signals',
-      ai_discovery: 'AI discovery files',
-    };
     const ADOPTION_LABELS: Record<string, string> = {
       llms_txt: 'Publish an llms.txt',
       schema_jsonld: 'Have valid JSON-LD schema',
-      canonical: 'Declare a canonical URL',
-      h1: 'Have a proper H1',
-      robots_no_ai_blocked: 'Allow all AI crawlers (none blocked)',
     };
 
     function bar(container: HTMLElement, label: string, ratio: number, valueText: string) {
@@ -144,32 +133,43 @@ const canonical = 'https://geoready.dev/state-of-geo/';
       container.appendChild(row);
     }
 
+    function show(id: string) {
+      document.getElementById(id)!.classList.remove('hidden');
+    }
+    function setText(id: string, value: string) {
+      (document.getElementById(id) as HTMLElement).textContent = value;
+    }
+
     async function load() {
       try {
         const res = await fetch('/api/public/benchmark');
         if (!res.ok) throw new Error(String(res.status));
         const d = await res.json();
 
-        (document.getElementById('b-domains') as HTMLElement).textContent = String(d.distinct_domains);
-        (document.getElementById('b-audits') as HTMLElement).textContent = String(d.total_audits);
-        (document.getElementById('b-updated') as HTMLElement).textContent = new Date(d.updated_at).toLocaleDateString('en-GB');
-        (document.getElementById('b-avg') as HTMLElement).textContent = d.score.average ?? '—';
-        (document.getElementById('b-median') as HTMLElement).textContent = d.score.median ?? '—';
+        setText('b-sample', d.sample_size_label ?? '—');
+        setText('b-updated', d.updated_at ? new Date(d.updated_at).toLocaleDateString('en-GB') : '—');
+        setText('b-avg', d.score?.average ?? '—');
+        setText('b-median', d.score?.median ?? '—');
         const llms = d.adoption?.llms_txt;
-        (document.getElementById('b-llms') as HTMLElement).textContent = llms != null ? Math.round(llms * 100) + '%' : '—';
+        setText('b-llms', llms != null ? Math.round(llms * 100) + '%' : '—');
+
+        if (d.readiness_headline) {
+          setText('b-headline', d.readiness_headline);
+          show('b-headline');
+        }
+        if (d.biggest_gap?.label) {
+          setText('b-gap-label', d.biggest_gap.label);
+          show('b-gap');
+        }
+        if (d.bands_summary) {
+          setText('b-bands', d.bands_summary);
+          show('b-bands');
+        }
 
         const adoption = document.getElementById('b-adoption') as HTMLElement;
         for (const [key, value] of Object.entries(d.adoption ?? {})) {
+          if (value == null) continue;
           bar(adoption, ADOPTION_LABELS[key] ?? key, value as number, Math.round((value as number) * 100) + '%');
-        }
-        const cats = document.getElementById('b-cats') as HTMLElement;
-        for (const [key, value] of Object.entries(d.category_averages ?? {})) {
-          const v = value as { average: number; max: number };
-          bar(cats, CAT_LABELS[key] ?? key, v.average / v.max, `${v.average}/${v.max}`);
-        }
-        const bands = document.getElementById('b-bands') as HTMLElement;
-        for (const [key, value] of Object.entries(d.bands ?? {})) {
-          bar(bands, key, value as number, Math.round((value as number) * 100) + '%');
         }
 
         document.getElementById('bench-loading')!.classList.add('hidden');
