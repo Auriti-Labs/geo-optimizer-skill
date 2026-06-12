@@ -117,11 +117,47 @@ const faqs = [
 
       <section>
         <h2>What the four verdicts mean</h2>
-        <ul class="mt-4 space-y-3 list-disc pl-5">
-          <li><strong>🏆 Strong</strong> — your domain is cited as a source in most answers. Monitor it: positions degrade silently.</li>
-          <li><strong>✅ Cited</strong> — you appear among sources, but not consistently. Strengthen citability to win more answers.</li>
-          <li><strong>🟡 Mentioned only</strong> — the AI knows your brand from third parties but never cites your own pages. Make your domain the reference.</li>
-          <li><strong>❌ Invisible</strong> — neither mentioned nor cited. Start with a <a href="/" class="text-accent-teal hover:underline">free GEO audit</a> and fix the high-impact items first.</li>
+        <ul class="mt-5 space-y-3" role="list">
+          <li class="flex gap-3 rounded-[--radius-lg] border border-border bg-bg-surface p-4">
+            <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-400/25 bg-amber-400/10 text-amber-600" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 21h8" />
+                <path d="M12 17v4" />
+                <path d="M7 4h10v4a5 5 0 0 1-10 0V4Z" />
+                <path d="M7 6H4a3 3 0 0 0 3 3" />
+                <path d="M17 6h3a3 3 0 0 1-3 3" />
+              </svg>
+            </span>
+            <p><strong>Strong</strong> — your domain is cited as a source in most answers. Monitor it: positions degrade silently.</p>
+          </li>
+          <li class="flex gap-3 rounded-[--radius-lg] border border-border bg-bg-surface p-4">
+            <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-accent-teal/25 bg-accent-teal/10 text-accent-teal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </span>
+            <p><strong>Cited</strong> — you appear among sources, but not consistently. Strengthen citability to win more answers.</p>
+          </li>
+          <li class="flex gap-3 rounded-[--radius-lg] border border-border bg-bg-surface p-4">
+            <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-400/25 bg-amber-400/10 text-amber-600" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="8" />
+                <path d="M12 8v4" />
+                <path d="M12 16h.01" />
+              </svg>
+            </span>
+            <p><strong>Mentioned only</strong> — the AI knows your brand from third parties but never cites your own pages. Make your domain the reference.</p>
+          </li>
+          <li class="flex gap-3 rounded-[--radius-lg] border border-border bg-bg-surface p-4">
+            <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-accent-danger/25 bg-accent-danger/10 text-accent-danger" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="8" />
+                <path d="m15 9-6 6" />
+                <path d="m9 9 6 6" />
+              </svg>
+            </span>
+            <p><strong>Invisible</strong> — neither mentioned nor cited. Start with a <a href="/" class="text-accent-teal hover:underline">free GEO audit</a> and fix the high-impact items first.</p>
+          </li>
         </ul>
       </section>
 
