@@ -1,0 +1,79 @@
+---
+/**
+ * MonitorSurface — a real, borderless monitoring readout: a score-trend
+ * sparkline plus a regression-alert row and a couple of history entries.
+ * No screenshot, no faux-window chrome.
+ */
+interface Props {
+  variant?: 'dark' | 'light';
+  compact?: boolean;
+  class?: string;
+}
+const { variant = 'dark', compact = false, class: className = '' } = Astro.props;
+const isDark = variant === 'dark';
+const ink = isDark ? 'text-white' : 'text-text-primary';
+const muted = isDark ? 'text-slate-400' : 'text-text-muted';
+const rowBorder = isDark ? 'border-white/8' : 'border-border';
+
+// Sparkline points (weekly GEO score trending up, with one dip → alert)
+const pts = [52, 55, 54, 61, 67, 64, 73, 79, 87];
+const W = 260, H = 70;
+const max = 100, min = 40;
+const coords = pts.map((p, i) => {
+  const x = (i / (pts.length - 1)) * W;
+  const y = H - ((p - min) / (max - min)) * H;
+  return [x, y];
+});
+const path = coords.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');
+const area = `${path} L${W} ${H} L0 ${H} Z`;
+const [lx, ly] = coords[coords.length - 1];
+---
+
+<div class={`relative ${className}`}>
+  <div aria-hidden="true" class="pointer-events-none absolute -inset-10 -z-10 rounded-[40px] bg-accent-teal/15 blur-3xl"></div>
+
+  <div class={ink}>
+    <div class="flex items-baseline justify-between gap-3">
+      <div>
+        <p class={`font-mono text-[10px] uppercase tracking-[0.2em] ${muted}`}>Score history</p>
+        <p class="mt-1 flex items-baseline gap-2">
+          <span class={`text-3xl font-bold tracking-tight ${ink}`}>87</span>
+          <span class="font-mono text-xs text-emerald-400">▲ +35 / 9 weeks</span>
+        </p>
+      </div>
+      <span class={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] ${isDark ? 'bg-white/10 text-teal-100' : 'bg-accent-teal/10 text-accent-teal'}`}>weekly</span>
+    </div>
+
+    {/* Sparkline */}
+    <svg viewBox={`0 0 ${W} ${H}`} class="mt-3 w-full" preserveAspectRatio="none" role="img" aria-label="GEO score trend rising over nine weeks">
+      <defs>
+        <linearGradient id="ms-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgb(20 184 166)" stop-opacity="0.28" />
+          <stop offset="100%" stop-color="rgb(20 184 166)" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill="url(#ms-fill)" />
+      <path d={path} fill="none" class="stroke-accent-teal" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx={lx} cy={ly} r="3.5" class="fill-accent-teal" />
+    </svg>
+
+    {!compact && (
+      <div class="mt-4 space-y-px">
+        <div class={`flex items-center justify-between gap-3 border-b ${rowBorder} py-2`}>
+          <span class="flex items-center gap-2.5">
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+            <span class={`text-sm ${ink}`}>Regression alert · schema removed</span>
+          </span>
+          <span class={`font-mono text-xs ${muted}`}>wk 6</span>
+        </div>
+        <div class={`flex items-center justify-between gap-3 border-b ${rowBorder} py-2`}>
+          <span class="flex items-center gap-2.5">
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+            <span class={`text-sm ${ink}`}>Recovered · llms.txt added</span>
+          </span>
+          <span class={`font-mono text-xs ${muted}`}>wk 7</span>
+        </div>
+      </div>
+    )}
+  </div>
+</div>

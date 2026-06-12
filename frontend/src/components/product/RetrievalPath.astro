@@ -1,0 +1,52 @@
+---
+/**
+ * RetrievalPath — the Access → Meaning → Citation path as a real, borderless
+ * diagram (no screenshot). Three connected stages, each with live signal chips.
+ */
+interface Props {
+  variant?: 'dark' | 'light';
+  class?: string;
+}
+const { variant = 'light', class: className = '' } = Astro.props;
+const isDark = variant === 'dark';
+const ink = isDark ? 'text-white' : 'text-text-primary';
+const muted = isDark ? 'text-slate-400' : 'text-text-muted';
+const line = isDark ? 'bg-white/10' : 'bg-border';
+
+const stages = [
+  { n: '01', title: 'Access', signals: ['GPTBot ✓', 'ClaudeBot ✓', 'SSR ✓'] },
+  { n: '02', title: 'Meaning', signals: ['llms.txt', 'JSON-LD', 'headings'] },
+  { n: '03', title: 'Citation', signals: ['answer blocks', 'statistics', 'sources'] },
+];
+---
+
+<div class={`relative ${className}`}>
+  <div aria-hidden="true" class="pointer-events-none absolute -inset-10 -z-10 rounded-[40px] bg-accent-teal/10 blur-3xl"></div>
+
+  <div class="space-y-3">
+    {stages.map((s, i) => (
+      <>
+        <div class="flex items-start gap-4">
+          <div class="flex flex-col items-center">
+            <span class={`flex h-9 w-9 items-center justify-center rounded-full font-mono text-xs ${isDark ? 'bg-white/10 text-teal-100' : 'bg-accent-teal/10 text-accent-teal'}`}>{s.n}</span>
+          </div>
+          <div class="flex-1 pt-1">
+            <h3 class={`font-display text-base font-semibold ${ink}`}>{s.title}</h3>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              {s.signals.map((sig) => (
+                <span class={`rounded-full px-2.5 py-1 font-mono text-[11px] ${isDark ? 'bg-white/5 text-slate-300' : 'bg-bg-subtle text-text-secondary'}`}>{sig}</span>
+              ))}
+            </div>
+          </div>
+          <span class={`mt-1 font-mono text-xs ${muted}`}>{['+34', '+40', '+26'][i]}</span>
+        </div>
+        {i < stages.length - 1 && (
+          <div class="ml-[18px] flex items-center gap-2">
+            <span class={`h-6 w-px ${line}`}></span>
+            <span class={`font-mono text-[10px] uppercase tracking-[0.16em] ${muted}`}>retrieves ↓</span>
+          </div>
+        )}
+      </>
+    ))}
+  </div>
+</div>

@@ -1,0 +1,96 @@
+---
+/**
+ * ScoreSurface — a real, borderless "product surface": a GEO score ring plus
+ * live-looking recommendation rows. Renders in pure HTML/CSS/SVG (no screenshot,
+ * no faux-browser chrome). Floats on the page with a soft glow.
+ */
+interface Row {
+  label: string;
+  delta: string;          // e.g. "+18", "-3"
+  state: 'good' | 'up' | 'warn';
+}
+
+interface Props {
+  score?: number;
+  band?: string;
+  rows?: Row[];
+  variant?: 'dark' | 'light';
+  glow?: boolean;
+  class?: string;
+}
+
+const {
+  score = 87,
+  band = 'Excellent',
+  rows = [
+    { label: 'llms.txt', delta: '+18', state: 'good' },
+    { label: 'Schema JSON-LD', delta: '+14', state: 'up' },
+    { label: 'AI bot access', delta: '+18', state: 'good' },
+    { label: 'Meta description', delta: '-3', state: 'warn' },
+  ],
+  variant = 'dark',
+  glow = true,
+  class: className = '',
+} = Astro.props;
+
+const isDark = variant === 'dark';
+const ink = isDark ? 'text-white' : 'text-text-primary';
+const muted = isDark ? 'text-slate-400' : 'text-text-muted';
+const rowBorder = isDark ? 'border-white/8' : 'border-border';
+
+// Ring geometry
+const R = 52;
+const C = 2 * Math.PI * R;
+const pct = Math.max(0, Math.min(100, score)) / 100;
+const dash = `${(C * pct).toFixed(1)} ${C.toFixed(1)}`;
+
+const dot = {
+  good: 'bg-emerald-400',
+  up: 'bg-accent-teal',
+  warn: 'bg-amber-400',
+};
+---
+
+<div class={`relative ${className}`}>
+  {glow && (
+    <div aria-hidden="true" class="pointer-events-none absolute -inset-10 -z-10 rounded-[40px] bg-accent-teal/15 blur-3xl"></div>
+  )}
+
+  <div class={`grid gap-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center ${ink}`}>
+    {/* Score ring */}
+    <div class="relative mx-auto sm:mx-0 h-[136px] w-[136px]">
+      <svg viewBox="0 0 128 128" class="h-full w-full -rotate-90">
+        <circle cx="64" cy="64" r={R} fill="none" stroke-width="9"
+          class={isDark ? 'stroke-white/10' : 'stroke-border'} />
+        <circle cx="64" cy="64" r={R} fill="none" stroke-width="9" stroke-linecap="round"
+          stroke-dasharray={dash} class="stroke-accent-teal" />
+      </svg>
+      <div class="absolute inset-0 flex flex-col items-center justify-center">
+        <span class={`text-4xl font-bold tracking-tight ${ink}`}>{score}</span>
+        <span class={`font-mono text-[10px] uppercase tracking-[0.18em] ${muted}`}>/ 100</span>
+      </div>
+    </div>
+
+    {/* Heading + band + rows */}
+    <div>
+      <p class={`font-mono text-[10px] uppercase tracking-[0.2em] ${muted}`}>GEO score</p>
+      <p class="mt-1 flex items-center gap-2">
+        <span class="inline-block h-2 w-2 rounded-full bg-accent-teal"></span>
+        <span class={`text-sm font-semibold uppercase tracking-wide ${ink}`}>{band}</span>
+        <span class={`text-sm ${muted}`}>· 8 categories</span>
+      </p>
+
+      <div class="mt-4 space-y-px">
+        {rows.map((row) => (
+          <div class={`flex items-center justify-between gap-3 border-b ${rowBorder} py-2`}>
+            <span class="flex items-center gap-2.5">
+              <span class={`inline-block h-1.5 w-1.5 rounded-full ${dot[row.state]}`}></span>
+              <span class={`text-sm ${ink}`}>{row.label}</span>
+            </span>
+            <span class={`font-mono text-xs ${row.state === 'warn' ? 'text-amber-400' : 'text-accent-teal'}`}>{row.delta}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
