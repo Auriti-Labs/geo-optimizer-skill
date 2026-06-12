@@ -1,8 +1,7 @@
 ---
 import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
-import VisualStage from '../../components/VisualStage.astro';
-import { marketingVisuals } from '../../lib/marketingVisuals';
+import ScoreSurface from '../../components/product/ScoreSurface.astro';
 
 // Guides hub. Kept as a simple static index — add one entry per guide here.
 const guides = [
@@ -120,23 +119,14 @@ const guides = [
         </div>
       </div>
 
-        <div class="border-t border-border bg-bg-subtle p-4 lg:border-l lg:border-t-0">
-        <VisualStage
-          visual={marketingVisuals.retrievalMapV2}
-          variant="paper"
-          label="Guide map"
-          eyebrow="Learning path"
-          sizes="(min-width: 1024px) 42vw, 100vw"
-          loading="eager"
-          priority
-          imgClass="aspect-[16/9] object-cover"
-          metrics={[
-            { label: 'Start', value: 'Access' },
-            { label: 'Build', value: 'Entity clarity' },
-            { label: 'Measure', value: 'Citation' },
-          ]}
-          chips={['Guides', 'Research', 'Tools']}
-        />
+        <div class="flex items-center border-t border-border bg-bg-subtle p-8 lg:border-l lg:border-t-0">
+          <ScoreSurface variant="light" score={72} band="Good" class="w-full"
+            rows={[
+              { label: 'Access · crawlable', delta: '+18', state: 'good' },
+              { label: 'Structure · llms.txt', delta: '+12', state: 'up' },
+              { label: 'Entity clarity', delta: '+10', state: 'up' },
+              { label: 'Citation signals', delta: '+8', state: 'good' },
+            ]} />
         </div>
       </div>
     </header>

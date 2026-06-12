@@ -1,8 +1,7 @@
 ---
 import Shell from '../components/Shell.astro';
 import ResearchCard from '../components/content/ResearchCard.astro';
-import VisualStage from '../components/VisualStage.astro';
-import { marketingVisuals } from '../lib/marketingVisuals';
+import ResearchSurface from '../components/product/ResearchSurface.astro';
 import { researchSources, researchClosing } from '../lib/researchContent';
 ---
 
@@ -48,23 +47,8 @@ import { researchSources, researchClosing } from '../lib/researchContent';
         </p>
       </div>
 
-      <div class="border-t border-border bg-bg-subtle p-4 lg:border-l lg:border-t-0">
-        <VisualStage
-          visual={marketingVisuals.retrievalMapV2}
-          variant="paper"
-          label="Evidence stack"
-          eyebrow="Methodology"
-          sizes="(min-width: 1024px) 42vw, 100vw"
-          loading="eager"
-          priority
-          imgClass="aspect-[16/9] object-cover"
-          metrics={[
-            { label: 'Inputs', value: 'Papers' },
-            { label: 'Signals', value: '8 categories' },
-            { label: 'Output', value: 'Audit rules' },
-          ]}
-          chips={['Peer-reviewed', 'Benchmarks', 'Internal analysis']}
-        />
+      <div class="flex items-center border-t border-border bg-bg-subtle p-8 lg:border-l lg:border-t-0">
+        <ResearchSurface variant="light" class="w-full" />
       </div>
       </div>
     </header>

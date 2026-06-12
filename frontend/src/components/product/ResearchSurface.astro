@@ -1,0 +1,52 @@
+---
+/**
+ * ResearchSurface — a real, borderless chart of citation-uplift findings from
+ * the research the scoring is grounded in (Princeton KDD 2024). Horizontal bars,
+ * no screenshot.
+ */
+interface Props {
+  variant?: 'dark' | 'light';
+  class?: string;
+}
+const { variant = 'light', class: className = '' } = Astro.props;
+const isDark = variant === 'dark';
+const ink = isDark ? 'text-white' : 'text-text-primary';
+const muted = isDark ? 'text-slate-400' : 'text-text-muted';
+const track = isDark ? 'bg-white/10' : 'bg-bg-subtle';
+
+// Citation-visibility uplift by method (Princeton GEO, KDD 2024)
+const methods = [
+  { label: 'Cite Sources', uplift: 115 },
+  { label: 'Quotations', uplift: 41 },
+  { label: 'Statistics', uplift: 40 },
+  { label: 'Fluency', uplift: 24 },
+];
+const max = 115;
+---
+
+<div class={`relative ${className}`}>
+  <div aria-hidden="true" class="pointer-events-none absolute -inset-10 -z-10 rounded-[40px] bg-accent-teal/12 blur-3xl"></div>
+
+  <div class={ink}>
+    <div class="flex items-baseline justify-between gap-3">
+      <p class={`font-mono text-[10px] uppercase tracking-[0.2em] ${muted}`}>Citation uplift by method</p>
+      <span class={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] ${isDark ? 'bg-white/10 text-teal-100' : 'bg-accent-teal/10 text-accent-teal'}`}>KDD 2024</span>
+    </div>
+
+    <div class="mt-4 space-y-3">
+      {methods.map((m) => (
+        <div>
+          <div class="flex items-center justify-between gap-3">
+            <span class={`text-sm ${ink}`}>{m.label}</span>
+            <span class="font-mono text-xs text-accent-teal">+{m.uplift}%</span>
+          </div>
+          <div class={`mt-1.5 h-2 w-full overflow-hidden rounded-full ${track}`}>
+            <div class="h-full rounded-full bg-accent-teal" style={`width:${(m.uplift / max) * 100}%`}></div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <p class={`mt-4 text-xs leading-relaxed ${muted}`}>Measured visibility gain in AI-generated answers — the signals GEO Optimizer scores.</p>
+  </div>
+</div>

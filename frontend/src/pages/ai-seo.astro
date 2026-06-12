@@ -1,7 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
-import VisualStage from '../components/VisualStage.astro';
-import { marketingVisuals } from '../lib/marketingVisuals';
+import RetrievalPath from '../components/product/RetrievalPath.astro';
 
 const title = 'AI SEO Guide — Optimize for ChatGPT, Perplexity & Gemini';
 const description =
@@ -76,21 +75,9 @@ const faqs = [
           </p>
         </div>
 
-        <VisualStage
-          visual={marketingVisuals.retrievalMapV2}
-          variant="paper"
-          label="AI SEO model"
-          eyebrow="Guide"
-          sizes="(min-width: 1024px) 42vw, 100vw"
-          loading="eager"
-          priority
-          imgClass="aspect-[16/9] object-cover"
-          metrics={[
-            { label: 'Gate 1', value: 'Accessible' },
-            { label: 'Gate 2', value: 'Parseable' },
-            { label: 'Gate 3', value: 'Citable' },
-          ]}
-        />
+        <div class="flex items-center p-2 sm:p-4">
+          <RetrievalPath variant="light" class="w-full" />
+        </div>
       </header>
     </div>
 

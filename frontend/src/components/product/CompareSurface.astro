@@ -1,0 +1,67 @@
+---
+/**
+ * CompareSurface — a real, borderless competitive readout: sites ranked by GEO
+ * score as horizontal bars. Two modes:
+ *   - 'leaderboard': several sites ranked, "you" highlighted
+ *   - 'head': two sites head-to-head with larger bars
+ */
+interface Site { name: string; score: number; you?: boolean; }
+interface Props {
+  mode?: 'leaderboard' | 'head';
+  sites?: Site[];
+  variant?: 'dark' | 'light';
+  class?: string;
+}
+const {
+  mode = 'leaderboard',
+  variant = 'light',
+  class: className = '',
+  sites = mode === 'head'
+    ? [ { name: 'yoursite.com', score: 64, you: true }, { name: 'competitor.com', score: 88 } ]
+    : [
+        { name: 'leader.com', score: 91 },
+        { name: 'competitor.com', score: 83 },
+        { name: 'yoursite.com', score: 64, you: true },
+        { name: 'rival.io', score: 58 },
+      ],
+} = Astro.props;
+
+const isDark = variant === 'dark';
+const ink = isDark ? 'text-white' : 'text-text-primary';
+const muted = isDark ? 'text-slate-400' : 'text-text-muted';
+const track = isDark ? 'bg-white/10' : 'bg-bg-subtle';
+const ranked = [...sites].sort((a, b) => b.score - a.score);
+const isHead = mode === 'head';
+---
+
+<div class={`relative ${className}`}>
+  <div aria-hidden="true" class="pointer-events-none absolute -inset-10 -z-10 rounded-[40px] bg-accent-teal/12 blur-3xl"></div>
+
+  <div class={ink}>
+    <div class="flex items-baseline justify-between gap-3">
+      <p class={`font-mono text-[10px] uppercase tracking-[0.2em] ${muted}`}>{isHead ? 'Head to head' : 'AI visibility leaderboard'}</p>
+      <span class={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] ${isDark ? 'bg-white/10 text-teal-100' : 'bg-accent-teal/10 text-accent-teal'}`}>GEO score</span>
+    </div>
+
+    <div class={isHead ? 'mt-5 space-y-5' : 'mt-4 space-y-3'}>
+      {ranked.map((s, i) => (
+        <div>
+          <div class="flex items-center justify-between gap-3">
+            <span class="flex items-center gap-2">
+              {!isHead && <span class={`font-mono text-xs ${muted}`}>{i + 1}</span>}
+              <span class={`text-sm ${s.you ? 'font-semibold text-accent-teal' : ink}`}>{s.name}{s.you && ' · you'}</span>
+            </span>
+            <span class={`font-mono ${isHead ? 'text-lg font-bold' : 'text-sm'} ${s.you ? 'text-accent-teal' : ink}`}>{s.score}</span>
+          </div>
+          <div class={`mt-1.5 ${isHead ? 'h-3' : 'h-2'} w-full overflow-hidden rounded-full ${track}`}>
+            <div class={`h-full rounded-full ${s.you ? 'bg-accent-teal' : isDark ? 'bg-white/35' : 'bg-text-muted/45'}`} style={`width:${s.score}%`}></div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <p class={`mt-4 text-xs leading-relaxed ${muted}`}>
+      {isHead ? 'See exactly which signals the higher-scoring site has that you don’t.' : 'Same 100-point rubric for every domain — find the gap to close.'}
+    </p>
+  </div>
+</div>

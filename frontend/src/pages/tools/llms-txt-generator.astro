@@ -1,8 +1,7 @@
 ---
 import Shell from '../../components/Shell.astro';
 import LlmsTxtGenerator from '../../components/tools/LlmsTxtGenerator';
-import VisualStage from '../../components/VisualStage.astro';
-import { marketingVisuals } from '../../lib/marketingVisuals';
+import LlmsPreview from '../../components/product/LlmsPreview.astro';
 
 // Metadati SEO della pagina del tool.
 const title = 'Free llms.txt Generator — Create an AI-Ready llms.txt';
@@ -81,23 +80,8 @@ const faqs = [
         </div>
       </div>
 
-      <div class="border-t border-border bg-bg-subtle p-4 lg:border-l lg:border-t-0">
-        <VisualStage
-          visual={marketingVisuals.retrievalMapV2}
-          variant="paper"
-          label="llms.txt flow"
-          eyebrow="Generator"
-          sizes="(min-width: 1024px) 42vw, 100vw"
-          loading="eager"
-          priority
-          imgClass="aspect-[16/9] object-cover"
-          metrics={[
-            { label: 'Reads', value: 'Sitemap' },
-            { label: 'Builds', value: 'Markdown' },
-            { label: 'Ships', value: 'Plain text' },
-          ]}
-          chips={['Safe fetch', 'Editable output', 'No ranking claims']}
-        />
+      <div class="flex items-center border-t border-border bg-bg-subtle p-6 lg:border-l lg:border-t-0">
+        <LlmsPreview variant="dark" class="w-full" />
       </div>
       </div>
     </header>

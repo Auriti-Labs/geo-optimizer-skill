@@ -1,8 +1,7 @@
 ---
 import Shell from '../components/Shell.astro';
 import CompareContainer from '../components/compare/CompareContainer';
-import VisualStage from '../components/VisualStage.astro';
-import { marketingVisuals } from '../lib/marketingVisuals';
+import CompareSurface from '../components/product/CompareSurface.astro';
 ---
 
 <Shell
@@ -54,23 +53,8 @@ import { marketingVisuals } from '../lib/marketingVisuals';
         </a>
       </div>
 
-      <div class="relative border-t border-white/10 p-4 lg:border-l lg:border-t-0">
-        <VisualStage
-          visual={marketingVisuals.commandCenterV2}
-          variant="dark"
-          label="Side-by-side audit"
-          eyebrow="Benchmark"
-          sizes="(min-width: 1024px) 44vw, 100vw"
-          loading="eager"
-          priority
-          imgClass="aspect-[16/9] object-cover"
-          metrics={[
-            { label: 'Mode', value: '2 URLs' },
-            { label: 'Signals', value: '8 categories' },
-            { label: 'View', value: 'Gap analysis' },
-          ]}
-          chips={['GEO score', 'Citability', 'Technical readiness']}
-        />
+      <div class="relative flex items-center border-t border-white/10 p-8 lg:border-l lg:border-t-0">
+        <CompareSurface mode="head" variant="dark" class="w-full" />
       </div>
       </div>
     </header>

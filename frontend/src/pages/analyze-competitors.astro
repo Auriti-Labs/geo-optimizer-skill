@@ -1,8 +1,7 @@
 ---
 import Shell from '../components/Shell.astro';
 import AnalyzeCompetitorsContainer from '../components/compare/AnalyzeCompetitorsContainer';
-import VisualStage from '../components/VisualStage.astro';
-import { marketingVisuals } from '../lib/marketingVisuals';
+import CompareSurface from '../components/product/CompareSurface.astro';
 ---
 
 <Shell
@@ -50,23 +49,8 @@ import { marketingVisuals } from '../lib/marketingVisuals';
         <p class="mt-8 text-xs text-text-muted font-mono">Last updated: May 2026</p>
       </div>
 
-      <div class="relative border-t border-white/10 p-4 lg:border-l lg:border-t-0">
-        <VisualStage
-          visual={marketingVisuals.commandCenterV2}
-          variant="dark"
-          label="Competitor map"
-          eyebrow="Batch audit"
-          sizes="(min-width: 1024px) 44vw, 100vw"
-          loading="eager"
-          priority
-          imgClass="aspect-[16/9] object-cover"
-          metrics={[
-            { label: 'Mode', value: 'Batch' },
-            { label: 'Scope', value: 'Many URLs' },
-            { label: 'Output', value: 'Ranked gaps' },
-          ]}
-          chips={['GEO score', 'Citability', 'Signal spread']}
-        />
+      <div class="relative flex items-center border-t border-white/10 p-8 lg:border-l lg:border-t-0">
+        <CompareSurface mode="leaderboard" variant="dark" class="w-full" />
       </div>
       </div>
     </header>

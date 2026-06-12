@@ -1,8 +1,7 @@
 ---
 import Shell from '../../components/Shell.astro';
 import AICitationChecker from '../../components/tools/AICitationChecker';
-import VisualStage from '../../components/VisualStage.astro';
-import { marketingVisuals } from '../../lib/marketingVisuals';
+import CitationSurface from '../../components/product/CitationSurface.astro';
 
 // Metadati SEO della pagina del tool.
 const title = 'Free AI Citation Checker — Is Your Brand Cited by ChatGPT & Perplexity?';
@@ -78,23 +77,8 @@ const faqs = [
         </div>
       </div>
 
-      <div class="border-t border-border bg-bg-subtle p-4 lg:border-l lg:border-t-0">
-        <VisualStage
-          visual={marketingVisuals.citationIntelligenceV2}
-          variant="paper"
-          label="Citation intelligence"
-          eyebrow="Checker"
-          sizes="(min-width: 1024px) 42vw, 100vw"
-          loading="eager"
-          priority
-          imgClass="aspect-[16/9] object-cover"
-          metrics={[
-            { label: 'Question', value: 'Buyer prompt' },
-            { label: 'Evidence', value: 'Cited URLs' },
-            { label: 'Verdict', value: 'Mention + cite' },
-          ]}
-          chips={['Brand mention', 'Domain citation', 'Competitor sources']}
-        />
+      <div class="flex items-center border-t border-border bg-bg-subtle p-8 lg:border-l lg:border-t-0">
+        <CitationSurface mode="sov" variant="light" class="w-full" />
       </div>
       </div>
     </header>
