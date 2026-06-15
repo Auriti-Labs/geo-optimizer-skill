@@ -1,128 +1,462 @@
 ---
 import Shell from '../components/Shell.astro';
+import VisualStage from '../components/VisualStage.astro';
 import NewsletterSignup from '../components/NewsletterSignup';
+import { marketingVisuals } from '../lib/marketingVisuals';
 
-const title = 'State of GEO — AI Search Readiness of Audited Sites';
+const title = 'State of GEO — AI Search Readiness Benchmark | GeoReady';
 const description =
-  'Live aggregate statistics from real GeoReady audits: average and median GEO score, llms.txt and schema adoption, and the biggest readiness gap across audited sites. Privacy-first, updated continuously.';
+  'See GeoReady’s live benchmark of audited sites and their AI search readiness, including GEO score, llms.txt adoption, schema usage, and the biggest AI visibility gaps.';
 const canonical = 'https://geoready.dev/state-of-geo/';
+const datePublished = '2026-06-11';
+const dateModified = '2026-06-15';
+
+// FAQ condivise tra il corpo della pagina (visibili) e lo schema FAQPage in fondo.
+// Risposte answer-first, claim-safe: mai "the web", sempre "audited sites".
+const faqs = [
+  {
+    question: 'What is the State of GEO benchmark?',
+    answer:
+      'The State of GEO benchmark is a live, anonymized snapshot of how prepared websites are for AI search, measured across sites audited by GeoReady. Every site is scored with the same open-source 100-point, 8-category rubric, so the averages, adoption rates, and biggest gaps reflect one consistent definition of AI search readiness.',
+  },
+  {
+    question: 'What is a good GEO score?',
+    answer:
+      'On the open-source GEO rubric, 86–100 is excellent, 68–85 is good, 36–67 is foundation, and 0–35 is critical. A good score means a site has cleared the basics — AI crawler access, structured data, and an llms.txt — and is legible to AI answer engines. The live average above is the baseline to beat across audited sites.',
+  },
+  {
+    question: 'How is AI search readiness measured?',
+    answer:
+      'AI search readiness is measured across eight categories: robots.txt and AI crawler access, llms.txt, schema JSON-LD, meta tags, content quality, technical signals, AI discovery files, and brand and entity clarity. Each category contributes to a single 0–100 GEO score using the same open-source engine for every audited site, so results are comparable.',
+  },
+  {
+    question: 'Why does llms.txt matter?',
+    answer:
+      'An llms.txt file at your domain root gives AI tools a structured, human-readable map of your most important pages. It is an orientation file, not a confirmed ranking factor, but it is one of the clearest signals that a site has thought about AI discovery. Across audited sites, llms.txt adoption is still low, which makes it an easy early advantage.',
+  },
+  {
+    question: 'Is this benchmark representative of the whole web?',
+    answer:
+      'No. This is a benchmark of sites audited by GeoReady, not a survey of the whole web. The audited sample skews toward teams already curious about AI visibility, so it is best read as a directional signal among sites that opted to measure readiness — not a universal statistic about every website that exists.',
+  },
+  {
+    question: 'How can I improve my site’s AI visibility?',
+    answer:
+      'Start with a free audit to see your GEO score and the category costing you the most points. Then allow AI crawlers intentionally, publish an llms.txt, add Organization and WebSite schema, lead key pages with a direct answer, and expose product and pricing details in machine-readable form. Re-audit over time, because AI behavior shifts as models update.',
+  },
+];
+
+const heroVisual = marketingVisuals.commandCenterV2;
 ---
 
 <Shell title={title} description={description} canonical={canonical}>
-  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
-    <header class="mb-10 md:mb-12">
-      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
-        <span>GeoReady</span>
-        <span class="w-1 h-1 rounded-full bg-text-muted" />
-        <span>Benchmark</span>
-      </div>
+  <article class="px-4 sm:px-6 py-10 md:py-16">
+    <div class="max-w-6xl mx-auto">
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <header class="mb-12 grid gap-8 md:mb-16 lg:grid-cols-[minmax(0,0.92fr)_minmax(360px,0.7fr)] lg:items-center">
+        <div>
+          <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+            <a href="/" class="hover:text-accent-teal">GeoReady</a>
+            <span class="w-1 h-1 rounded-full bg-text-muted" />
+            <span>State of GEO</span>
+          </nav>
 
-      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
-        State of GEO: how AI-ready are the sites we audit?
-      </h1>
+          <h1 class="mt-4 max-w-3xl font-display text-4xl font-bold text-text-primary leading-tight tracking-tight md:text-5xl">
+            State of GEO: AI Search Readiness Benchmark
+          </h1>
 
-      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
-        Live aggregates from real audits run with the open-source GEO Optimizer
-        engine — the same 100-point, 8-category rubric for every site. This is a
-        benchmark of <strong>sites audited by GeoReady</strong>, not a survey of
-        the whole web. No domains, no identities: the dataset stores only salted
-        hashes and per-category signals, and this page shows aggregates only.
-      </p>
-    </header>
+          <p class="mt-5 max-w-2xl text-base md:text-lg text-text-secondary leading-relaxed">
+            A live benchmark from <strong>sites audited by GeoReady</strong>,
+            showing how prepared websites are for AI search, citations,
+            <code class="text-sm font-mono">llms.txt</code>, and structured data.
+            Every site is scored with the same open-source 100-point rubric —
+            this is an audited sample, not a survey of the whole web.
+          </p>
 
-    {/* Stats — populated client-side from /api/public/benchmark */}
-    <div id="bench-loading" class="rounded-xl border border-border bg-bg-surface px-5 py-8 text-center text-sm text-text-muted">
-      Loading live benchmark data…
+          <div class="mt-7 flex flex-col sm:flex-row flex-wrap gap-3">
+            <a
+              href="/"
+              data-cta="state_geo_hero_run_audit"
+              class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+            >
+              Run your free AI SEO audit
+            </a>
+            <a
+              href="/tools/llms-txt-generator/"
+              data-cta="state_geo_hero_generate_llms"
+              class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+            >
+              Generate llms.txt
+            </a>
+          </div>
+
+          {/* Trust / freshness — populated client-side, with a static fallback */}
+          <p class="mt-5 text-xs font-mono text-text-muted">
+            <span id="hero-sample" class="text-text-secondary">Live audited sample</span>
+            <span class="mx-1.5">·</span>
+            aggregated &amp; anonymized
+            <span class="mx-1.5">·</span>
+            last updated <span id="hero-updated">continuously</span>
+          </p>
+        </div>
+
+        <VisualStage
+          visual={heroVisual}
+          variant="paper"
+          label="Readiness benchmark"
+          eyebrow="Live data"
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          loading="eager"
+          priority
+          imgClass="aspect-[16/9] object-cover"
+          metrics={[
+            { label: 'Scope', value: 'Audited sites' },
+            { label: 'Rubric', value: '8 categories' },
+            { label: 'Privacy', value: 'Anonymized' },
+          ]}
+        />
+      </header>
     </div>
 
-    <div id="bench" class="hidden space-y-10">
-      <p class="text-xs font-mono text-text-muted">
-        Based on <span id="b-sample" class="text-text-primary font-semibold">—</span>
-        · live dataset, updated as audits run · last refresh <span id="b-updated">—</span>
-      </p>
+    <div class="max-w-3xl mx-auto space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
 
-      <div class="grid sm:grid-cols-3 gap-4">
-        <div class="rounded-xl border border-border px-4 py-4">
-          <p class="text-xs text-text-muted uppercase tracking-wider">Average GEO score</p>
-          <p id="b-avg" class="mt-1 text-3xl font-bold text-text-primary">—</p>
-          <p class="text-xs text-text-muted">out of 100</p>
-        </div>
-        <div class="rounded-xl border border-border px-4 py-4">
-          <p class="text-xs text-text-muted uppercase tracking-wider">Median score</p>
-          <p id="b-median" class="mt-1 text-3xl font-bold text-text-primary">—</p>
-          <p class="text-xs text-text-muted">half of audited sites score lower</p>
-        </div>
-        <div class="rounded-xl border border-border px-4 py-4">
-          <p class="text-xs text-text-muted uppercase tracking-wider">Ship an llms.txt</p>
-          <p id="b-llms" class="mt-1 text-3xl font-bold text-text-primary">—</p>
-          <p class="text-xs text-text-muted">of audited sites</p>
-        </div>
-      </div>
+      {/* ── Key findings (live teaser) ──────────────────────────────────── */}
+      <section>
+        <h2>Key findings</h2>
+        <p class="mt-4">
+          Across sites audited by GeoReady, the basics of AI search readiness — AI
+          crawler access, an <code class="text-sm font-mono">llms.txt</code>, and
+          structured data — are still missing more often than not. The live numbers
+          below show the current average and median GEO score and adoption rates,
+          updated as new audits run and counting the most recent audit per domain.
+        </p>
 
-      {/* Readiness headline + biggest gap — derived, coarse, citable */}
-      <section id="b-insights" class="space-y-3">
-        <p id="b-headline" class="hidden text-base text-text-secondary leading-relaxed"></p>
-        <div id="b-gap" class="hidden rounded-xl border border-accent-teal/40 bg-accent-teal/5 px-5 py-4">
-          <p class="text-xs text-text-muted uppercase tracking-wider">Biggest readiness gap</p>
-          <p id="b-gap-label" class="mt-1 text-lg font-semibold text-text-primary">—</p>
+        {/* Loading state */}
+        <div id="bench-loading" class="mt-6 rounded-xl border border-border bg-bg-surface px-5 py-8 text-center text-sm text-text-muted">
+          Loading live benchmark data…
         </div>
-        <p id="b-bands" class="hidden text-sm text-text-secondary"></p>
+
+        {/* Error / fallback state — still informative, no fabricated numbers */}
+        <div id="bench-error" class="mt-6 hidden rounded-xl border border-border bg-bg-surface px-5 py-6 text-sm text-text-secondary">
+          <p class="font-medium text-text-primary">Live numbers are loading slowly.</p>
+          <p class="mt-1">
+            The benchmark is computed from sites audited by GeoReady and refreshes
+            continuously. You can still
+            <a href="/" data-cta="state_geo_key_findings_run_audit" class="text-accent-teal hover:underline">run a free audit</a>
+            to see exactly where your own site stands right now.
+          </p>
+        </div>
+
+        {/* Live data */}
+        <div id="bench" class="mt-6 hidden space-y-8">
+          <p class="text-xs font-mono text-text-muted">
+            Based on <span id="b-sample" class="text-text-primary font-semibold">—</span>
+            · aggregated &amp; anonymized · last updated <span id="b-updated">—</span>
+          </p>
+
+          <div class="grid sm:grid-cols-3 gap-4">
+            <div class="rounded-xl border border-border px-4 py-4">
+              <p class="text-xs text-text-muted uppercase tracking-wider">Average GEO score</p>
+              <p id="b-avg" class="mt-1 text-3xl font-bold text-text-primary">—</p>
+              <p class="text-xs text-text-muted">out of 100, across audited sites</p>
+            </div>
+            <div class="rounded-xl border border-border px-4 py-4">
+              <p class="text-xs text-text-muted uppercase tracking-wider">Median score</p>
+              <p id="b-median" class="mt-1 text-3xl font-bold text-text-primary">—</p>
+              <p class="text-xs text-text-muted">half of audited sites score at or below this</p>
+            </div>
+            <div class="rounded-xl border border-border px-4 py-4">
+              <p class="text-xs text-text-muted uppercase tracking-wider">Ship an llms.txt</p>
+              <p id="b-llms" class="mt-1 text-3xl font-bold text-text-primary">—</p>
+              <p class="text-xs text-text-muted">of audited sites</p>
+            </div>
+          </div>
+
+          {/* Readiness headline + biggest gap — derived, coarse, citable */}
+          <div class="space-y-3">
+            <p id="b-headline" class="hidden text-base text-text-secondary leading-relaxed"></p>
+            <div id="b-gap" class="hidden rounded-xl border border-accent-teal/40 bg-accent-teal/5 px-5 py-4">
+              <p class="text-xs text-text-muted uppercase tracking-wider">Biggest readiness gap</p>
+              <p id="b-gap-label" class="mt-1 text-lg font-semibold text-text-primary">—</p>
+            </div>
+            <p id="b-bands" class="hidden text-sm text-text-secondary"></p>
+          </div>
+
+          <div id="b-adoption-section">
+            <h3 class="font-display text-lg font-semibold text-text-primary">Adoption of AI-readiness signals</h3>
+            <p class="mt-2 text-sm text-text-secondary">Share of audited sites shipping the two foundations of AI discovery.</p>
+            <div id="b-adoption" class="mt-4 space-y-3"></div>
+          </div>
+        </div>
       </section>
 
+      {/* ── What this means ─────────────────────────────────────────────── */}
       <section>
-        <h2 class="font-display text-2xl font-bold text-text-primary">Adoption of AI-readiness signals</h2>
-        <p class="mt-2 text-sm text-text-secondary">Share of audited sites shipping the two foundations of AI discovery.</p>
-        <div id="b-adoption" class="mt-4 space-y-3"></div>
-      </section>
-    </div>
-
-    <div id="bench-error" class="hidden rounded-xl border border-border bg-bg-surface px-5 py-8 text-center text-sm text-text-muted">
-      Benchmark data is temporarily unavailable. Try again in a minute.
-    </div>
-
-    {/* Methodology + CTA (static, crawlable) */}
-    <div class="mt-14 space-y-12 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary">
-      <section>
-        <h2>Methodology</h2>
-        <ul class="mt-4 space-y-2 list-disc pl-5">
-          <li><strong>Audited sites only</strong> — this is a benchmark of sites audited by GeoReady, not a sample of the whole web.</li>
-          <li><strong>One row per domain</strong> — the most recent audit per domain; re-audits don't inflate the cohort.</li>
-          <li><strong>Scheduled monitoring excluded</strong> — only user-initiated audits (web, CLI, API, tools) count.</li>
-          <li><strong>Privacy-first</strong> — domains are stored as salted HMAC hashes; this endpoint exposes aggregates only.</li>
-          <li><strong>Same rubric for everyone</strong> — the open-source engine's 100-point score across 8 categories (robots, llms.txt, schema, meta, content, brand &amp; entity, signals, AI discovery).</li>
-        </ul>
-        <p class="mt-4 text-sm">
-          The dataset grows with every audit. Run one and you're (anonymously) in it.
+        <h2>What this means</h2>
+        <p class="mt-4">
+          The numbers point to one conclusion: among sites that bothered to measure,
+          most are still leaving easy AI visibility points on the table. The gaps are
+          rarely about content quality — they are about machine legibility. AI answer
+          engines cannot cite what they cannot reach, parse, or trust, and the
+          cheapest wins sit in exactly those three layers.
+        </p>
+        <p class="mt-4">
+          Two signals do much of the work. An <a href="/guides/what-is-llms-txt/" class="text-accent-teal hover:underline">llms.txt</a>
+          file orients AI tools toward your important pages, and valid
+          <code class="text-sm font-mono">JSON-LD</code> schema lets a model
+          disambiguate your brand and lift clean answers. Across audited sites both
+          are still underused — and both are among the cheapest, fastest fixes: a
+          weekend of work, not a quarter.
+        </p>
+        <p class="mt-4">
+          AI discovery files are often among the weakest signals. Files like
+          <code class="text-sm font-mono">/.well-known/ai.txt</code> and an
+          <code class="text-sm font-mono">llms.txt</code> are trivial to publish yet
+          rarely present, so a site that ships them moves ahead of much of the
+          audited sample with very little effort. For marketing, SEO, and dev teams,
+          the practical takeaway is that AI search readiness is mostly hygiene you
+          can act on this week — not a mysterious algorithm to chase.
         </p>
       </section>
 
+      {/* ── How to improve your score ───────────────────────────────────── */}
+      <section>
+        <h2>How to improve your score</h2>
+        <p class="mt-4">
+          To improve a GEO score: allow AI crawlers intentionally, publish an
+          <code class="text-sm font-mono">llms.txt</code>, add
+          <code class="text-sm font-mono">Organization</code> and
+          <code class="text-sm font-mono">WebSite</code> JSON-LD, lead key pages with
+          a direct answer, expose product and pricing facts in machine-readable form,
+          and re-audit over time. None of it requires guessing at a model’s internals
+          — it is the machine-readable groundwork that lets AI engines find, parse,
+          and trust a page. Work top to bottom:
+        </p>
+        <ol class="mt-5 space-y-3 list-decimal pl-5">
+          <li>
+            <strong>Allow AI crawlers intentionally</strong> — audit your
+            <code class="text-sm font-mono">robots.txt</code> so you are not silently
+            blocking <code class="text-sm font-mono">GPTBot</code>,
+            <code class="text-sm font-mono">ClaudeBot</code>, or
+            <code class="text-sm font-mono">PerplexityBot</code> by accident.
+          </li>
+          <li>
+            <strong>Publish an llms.txt</strong> at your domain root that points to
+            your most important pages. Build a starter with the free
+            <a href="/tools/llms-txt-generator/" data-cta="state_geo_checklist_generate_llms" class="text-accent-teal hover:underline">llms.txt generator</a>.
+          </li>
+          <li>
+            <strong>Add structured data</strong> — valid
+            <code class="text-sm font-mono">Organization</code>,
+            <code class="text-sm font-mono">WebSite</code>, and where it genuinely fits
+            <code class="text-sm font-mono">FAQPage</code> or
+            <code class="text-sm font-mono">Article</code> JSON-LD, with consistent brand naming.
+          </li>
+          <li>
+            <strong>Improve answer-first content blocks</strong> — open key pages
+            with a direct, self-contained answer a model can lift cleanly, before the
+            marketing context.
+          </li>
+          <li>
+            <strong>Expose product and pricing info in machine-readable form</strong>
+            — make the facts an AI needs to describe you available in plain HTML and
+            schema, not buried in images or scripts.
+          </li>
+          <li>
+            <strong>Run recurring audits</strong> — AI behavior shifts as models
+            update, so a one-time snapshot tells you where you are while monitoring
+            tells you whether your changes worked.
+          </li>
+        </ol>
+      </section>
+
+      {/* ── Intermediate CTA ────────────────────────────────────────────── */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+        <h2>See where your site stands</h2>
+        <p class="mt-3">
+          The averages above are the baseline to beat across audited sites. A free
+          audit gives you your GEO score in seconds, then the gap analysis tells you
+          which category recovers the most points first.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/"
+            data-cta="state_geo_midpage_run_audit"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Audit my site free
+          </a>
+          <a
+            href="/ai-seo/"
+            data-cta="state_geo_methodology_ai_seo_guide"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            Read the AI SEO guide
+          </a>
+        </div>
+      </section>
+
+      {/* ── Methodology ─────────────────────────────────────────────────── */}
+      <section>
+        <h2>Methodology</h2>
+        <p class="mt-4">
+          This benchmark is built from sites audited by GeoReady, scored with the
+          open-source GEO Optimizer engine. The numbers are aggregated and
+          anonymized: the public dataset is intentionally summarized, and the full
+          internal analytics are not published. It is a directional signal across an
+          audited sample — not a claim about the entire web.
+        </p>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><strong>Audited sites only</strong> — a benchmark of sites audited by GeoReady, not a sample of the whole web.</li>
+          <li><strong>One row per domain</strong> — the most recent audit per domain, so re-audits don’t inflate the cohort.</li>
+          <li><strong>Scheduled monitoring excluded</strong> — only user-initiated audits (web, CLI, API, tools) count.</li>
+          <li><strong>Aggregated &amp; anonymized</strong> — domains are stored as salted hashes; this page and its public endpoint expose aggregates only.</li>
+          <li><strong>Same rubric for everyone</strong> — the open-source engine’s 100-point score across 8 categories (robots, llms.txt, schema, meta, content, brand &amp; entity, signals, AI discovery).</li>
+          <li><strong>Public data is summarized on purpose</strong> — per-category breakdowns and exact distributions stay internal; the public figures are headline aggregates.</li>
+        </ul>
+        <p class="mt-4 text-sm">
+          The signals behind every category are documented in our
+          <a href="/guides/generative-engine-optimization/" class="text-accent-teal hover:underline">GEO guide</a>
+          and <a href="/research/" class="text-accent-teal hover:underline">research foundation</a>.
+          The dataset grows with every audit — run one and you are (anonymously) in it.
+        </p>
+      </section>
+
+      {/* ── Full report capture ─────────────────────────────────────────── */}
       <section>
         <NewsletterSignup
           client:visible
           source="newsletter-state-of-geo"
           title="The full State of GEO 2026 report is coming"
-          detail="This page shows the public teaser. The full category breakdown ships as a report when the cohort passes 200 sites — get it by email."
+          detail="This page shows the public teaser. The full category breakdown ships as a report when the cohort passes 200 audited sites — get it by email."
         />
       </section>
 
+      {/* ── FAQ ─────────────────────────────────────────────────────────── */}
       <section>
-        <h2>Where does your site stand?</h2>
-        <p class="mt-4">
-          The averages above are the baseline to beat across audited sites. A free
-          audit gives you your score in seconds — then the gap analysis tells you
-          which category recovers the most points first.
+        <h2>FAQ</h2>
+        <div class="mt-4 space-y-6">
+          {faqs.map((faq) => (
+            <div>
+              <h3>{faq.question}</h3>
+              <p class="mt-2">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Final CTA ───────────────────────────────────────────────────── */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+        <h2>Beat the benchmark</h2>
+        <p class="mt-3">
+          Run a free AI SEO audit to get your GEO score across all eight categories,
+          see your biggest gap, and turn this benchmark into a to-do list. No account
+          needed for the baseline snapshot.
         </p>
-        <div class="mt-6 flex flex-wrap gap-3">
-          <a href="/" class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90">
-            Audit my site free
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/"
+            data-cta="state_geo_final_run_audit"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Run your free AI SEO audit
           </a>
-          <a href="/guides/generative-engine-optimization/" class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal">
-            Read the GEO guide
+          <a
+            href="/pricing/"
+            data-cta="state_geo_final_pricing"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            See pricing and plans
           </a>
         </div>
+        <p class="mt-4 text-xs text-text-muted">
+          New to AI search readiness? Start with
+          <a href="/ai-seo/" data-cta="state_geo_footer_ai_seo" class="text-accent-teal hover:underline">what AI SEO is</a>,
+          then <a href="/guides/what-is-llms-txt/" class="text-accent-teal hover:underline">what llms.txt is</a>
+          and the full <a href="/guides/generative-engine-optimization/" class="text-accent-teal hover:underline">GEO guide</a>.
+        </p>
       </section>
     </div>
   </article>
+
+  {/* ── Structured data: WebPage + Dataset + FAQPage + BreadcrumbList ──── */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": canonical,
+        "url": canonical,
+        "name": title,
+        "description": description,
+        "isPartOf": { "@id": "https://geoready.dev/#website" },
+        "datePublished": datePublished,
+        "dateModified": dateModified,
+        "about": [
+          "Generative Engine Optimization",
+          "AI search readiness",
+          "AI SEO benchmark",
+          "llms.txt adoption",
+          "Schema JSON-LD"
+        ],
+        "primaryImageOfPage": "https://geoready.dev/assets/og-image.png"
+      },
+      {
+        "@type": "Dataset",
+        "name": "State of GEO — AI Search Readiness Benchmark",
+        "description":
+          "Aggregated, anonymized AI search readiness statistics across sites audited by GeoReady: average and median GEO score, llms.txt and schema JSON-LD adoption, and the most common readiness gap. Audited sample, not a survey of the whole web.",
+        "url": canonical,
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "isAccessibleForFree": true,
+        "creator": {
+          "@type": "Organization",
+          "name": "Auriti Labs",
+          "url": "https://github.com/Auriti-Labs"
+        },
+        "measurementTechnique": "GEO Optimizer 100-point, 8-category audit (open source)",
+        "variableMeasured": [
+          "Average GEO score (0–100)",
+          "Median GEO score (0–100)",
+          "llms.txt adoption rate",
+          "Schema JSON-LD adoption rate"
+        ],
+        "distribution": {
+          "@type": "DataDownload",
+          "encodingFormat": "application/json",
+          "contentUrl": "https://geoready.dev/api/public/benchmark"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": faqs.map((faq) => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer
+          }
+        }))
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "GeoReady",
+            "item": "https://geoready.dev/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "State of GEO",
+            "item": canonical
+          }
+        ]
+      }
+    ]
+  })} />
 
   <script>
     const ADOPTION_LABELS: Record<string, string> = {
@@ -130,24 +464,42 @@ const canonical = 'https://geoready.dev/state-of-geo/';
       schema_jsonld: 'Have valid JSON-LD schema',
     };
 
+    // Costruisce una barra di adozione senza innerHTML su dati esterni:
+    // label e valore via textContent (fail-closed contro chiavi inattese), solo
+    // il markup statico è iniettato.
     function bar(container: HTMLElement, label: string, ratio: number, valueText: string) {
       const row = document.createElement('div');
-      row.innerHTML = `
-        <div class="flex justify-between text-sm">
-          <span class="text-text-secondary">${label}</span>
-          <span class="font-mono text-text-primary">${valueText}</span>
-        </div>
-        <div class="mt-1 h-2 rounded-full bg-bg-subtle overflow-hidden">
-          <div class="h-full rounded-full bg-accent-teal" style="width:${Math.round(ratio * 100)}%"></div>
-        </div>`;
+
+      const head = document.createElement('div');
+      head.className = 'flex justify-between text-sm';
+      const labelEl = document.createElement('span');
+      labelEl.className = 'text-text-secondary';
+      labelEl.textContent = label;
+      const valueEl = document.createElement('span');
+      valueEl.className = 'font-mono text-text-primary';
+      valueEl.textContent = valueText;
+      head.append(labelEl, valueEl);
+
+      const track = document.createElement('div');
+      track.className = 'mt-1 h-2 rounded-full bg-bg-subtle overflow-hidden';
+      const fill = document.createElement('div');
+      fill.className = 'h-full rounded-full bg-accent-teal';
+      fill.style.width = Math.round(ratio * 100) + '%';
+      track.appendChild(fill);
+
+      row.append(head, track);
       container.appendChild(row);
     }
 
     function show(id: string) {
       document.getElementById(id)!.classList.remove('hidden');
     }
+    function hide(id: string) {
+      document.getElementById(id)!.classList.add('hidden');
+    }
     function setText(id: string, value: string) {
-      (document.getElementById(id) as HTMLElement).textContent = value;
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
     }
 
     async function load() {
@@ -156,10 +508,29 @@ const canonical = 'https://geoready.dev/state-of-geo/';
         if (!res.ok) throw new Error(String(res.status));
         const d = await res.json();
 
-        setText('b-sample', d.sample_size_label ?? '—');
-        setText('b-updated', d.updated_at ? new Date(d.updated_at).toLocaleDateString('en-GB') : '—');
-        setText('b-avg', d.score?.average ?? '—');
-        setText('b-median', d.score?.median ?? '—');
+        // Cohorte vuota/in fase di warm-up: l'endpoint risponde 200 ma con
+        // score.average null. Trattalo come fallback, non come successo, per non
+        // mostrare card piene di "—" sotto prosa di sintesi.
+        if (d.score?.average == null) {
+          hide('bench-loading');
+          show('bench-error');
+          return;
+        }
+
+        const sampleLabel = d.sample_size_label ?? 'Live audited sample';
+        const updatedLabel = d.updated_at
+          ? new Date(d.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+          : 'continuously';
+
+        // Hero trust line
+        setText('hero-sample', sampleLabel);
+        setText('hero-updated', updatedLabel);
+
+        // Key findings header
+        setText('b-sample', sampleLabel);
+        setText('b-updated', updatedLabel);
+        setText('b-avg', String(d.score.average));
+        setText('b-median', d.score?.median != null ? String(d.score.median) : '—');
         const llms = d.adoption?.llms_txt;
         setText('b-llms', llms != null ? Math.round(llms * 100) + '%' : '—');
 
@@ -176,17 +547,24 @@ const canonical = 'https://geoready.dev/state-of-geo/';
           show('b-bands');
         }
 
+        // Allowlist fail-closed: rendi SOLO le chiavi note (llms_txt, schema_jsonld).
+        // Se il teaser venisse allargato lato server, questa pagina non pubblica
+        // automaticamente nuove quote strategiche senza revisione frontend.
         const adoption = document.getElementById('b-adoption') as HTMLElement;
-        for (const [key, value] of Object.entries(d.adoption ?? {})) {
+        let barsRendered = 0;
+        for (const key of Object.keys(ADOPTION_LABELS)) {
+          const value = d.adoption?.[key];
           if (value == null) continue;
-          bar(adoption, ADOPTION_LABELS[key] ?? key, value as number, Math.round((value as number) * 100) + '%');
+          bar(adoption, ADOPTION_LABELS[key], value as number, Math.round((value as number) * 100) + '%');
+          barsRendered++;
         }
+        if (barsRendered === 0) hide('b-adoption-section');
 
-        document.getElementById('bench-loading')!.classList.add('hidden');
-        document.getElementById('bench')!.classList.remove('hidden');
+        hide('bench-loading');
+        show('bench');
       } catch {
-        document.getElementById('bench-loading')!.classList.add('hidden');
-        document.getElementById('bench-error')!.classList.remove('hidden');
+        hide('bench-loading');
+        show('bench-error');
       }
     }
     load();

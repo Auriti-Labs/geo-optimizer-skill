@@ -94,6 +94,7 @@ GEO Optimizer is actively maintained. Scoring weights and audit methods are upda
 - [Compare](https://geoready.dev/compare/): Side-by-side comparison of two URLs.
 - [Analyze Competitors](https://geoready.dev/analyze-competitors/): Multi-URL competitor analysis.
 - [Research](https://geoready.dev/research/): Peer-reviewed research foundation.
+- [State of GEO](https://geoready.dev/state-of-geo/): Live AI search readiness benchmark across sites audited by GeoReady — average and median GEO score, llms.txt and schema adoption, and the biggest readiness gap. Aggregated and anonymized; an audited sample, not a survey of the whole web.
 - [Roadmap](https://geoready.dev/roadmap/): Planned and in-progress features.
 - [Manifesto](https://geoready.dev/manifesto/): Why GEO Optimizer exists and what it stands for.
 - [Pricing](https://geoready.dev/pricing/): Free and Pro plan comparison.
