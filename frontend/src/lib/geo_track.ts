@@ -78,6 +78,25 @@ export function trackWaitlistJoined(params: {
   track('geo_waitlist_joined', params);
 }
 
+/** Form waitlist entrato nel viewport — copre lo step "ha visto ma non ha iniziato". */
+export function trackWaitlistViewed(): void {
+  track('geo_waitlist_viewed');
+}
+
+/** Utente inizia a compilare il form waitlist (primo focus/change su un campo). */
+export function trackWaitlistStarted(): void {
+  track('geo_waitlist_started');
+}
+
+/** Iscrizione waitlist fallita. `reason` è una causa anonima (validation/server/network),
+ *  mai dati personali. `status` è il codice HTTP quando disponibile. */
+export function trackWaitlistFailed(params: {
+  reason: 'validation' | 'server' | 'network';
+  status?: number;
+}): void {
+  track('geo_waitlist_failed', params);
+}
+
 /** Click su CTA significativo (hero, pricing, early-access). */
 export function trackCtaClicked(params: {
   cta_location: string;

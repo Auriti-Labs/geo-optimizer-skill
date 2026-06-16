@@ -1,5 +1,10 @@
-import { useState } from "react";
-import { trackWaitlistJoined } from "../lib/geo_track";
+import { useEffect, useRef, useState } from "react";
+import {
+  trackWaitlistJoined,
+  trackWaitlistViewed,
+  trackWaitlistStarted,
+  trackWaitlistFailed,
+} from "../lib/geo_track";
 
 type FormState = "idle" | "loading" | "success" | "error";
 
@@ -37,6 +42,33 @@ const ENDPOINT =
 export default function WaitlistForm() {
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
+  const startedRef = useRef(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Form entrato nel viewport — copre lo step "ha visto ma non ha iniziato".
+  useEffect(() => {
+    const el = formRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          trackWaitlistViewed();
+          io.disconnect();
+        }
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // Primo focus/change su un campo — sparato una sola volta per sessione di form.
+  function handleFirstInteraction() {
+    if (!startedRef.current) {
+      startedRef.current = true;
+      trackWaitlistStarted();
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -66,6 +98,11 @@ export default function WaitlistForm() {
         const detail = err?.detail?.[0]?.msg ?? err?.detail ?? "Something went wrong. Please try again.";
         setState("error");
         setMessage(typeof detail === "string" ? detail : "Something went wrong. Please try again.");
+        // Causa anonima: 4xx = validazione, 5xx = errore server. Nessun dato personale.
+        trackWaitlistFailed({
+          reason: res.status >= 500 ? "server" : "validation",
+          status: res.status,
+        });
         return;
       }
 
@@ -80,6 +117,7 @@ export default function WaitlistForm() {
     } catch {
       setState("error");
       setMessage("Could not reach the server. Check your connection and try again.");
+      trackWaitlistFailed({ reason: "network" });
     }
   }
 
@@ -100,7 +138,14 @@ export default function WaitlistForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      onFocusCapture={handleFirstInteraction}
+      onChange={handleFirstInteraction}
+      noValidate
+      className="space-y-5"
+    >
       {/* Honeypot — invisible to humans, ignored by screen readers */}
       <div
         style={{
