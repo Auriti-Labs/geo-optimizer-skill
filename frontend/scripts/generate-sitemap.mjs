@@ -55,7 +55,10 @@ const META_BY_PATH = {
   '/guides/': { changefreq: 'weekly', priority: '0.8' },
   '/state-of-geo/': { changefreq: 'daily', priority: '0.8' },
   '/tools/llms-txt-generator/': { changefreq: 'monthly', priority: '0.8' },
+  '/tools/ai-citation-checker/': { changefreq: 'monthly', priority: '0.8' },
   '/ai-seo/': { changefreq: 'weekly', priority: '0.9' },
+  '/best-geo-tools/': { changefreq: 'monthly', priority: '0.8' },
+  '/methodology/': { changefreq: 'monthly', priority: '0.8' },
   '/guides/generative-engine-optimization/': { changefreq: 'monthly', priority: '0.8' },
   '/guides/what-is-llms-txt/': { changefreq: 'monthly', priority: '0.7' },
   '/guides/appear-in-chatgpt-perplexity/': { changefreq: 'monthly', priority: '0.7' },
@@ -63,13 +66,13 @@ const META_BY_PATH = {
   '/guides/llms-txt-wordpress/': { changefreq: 'monthly', priority: '0.7' },
   '/guides/ai-visibility-checklist/': { changefreq: 'monthly', priority: '0.7' },
   '/guides/ai-citations-check/': { changefreq: 'monthly', priority: '0.7' },
+  '/guides/how-to-improve-ai-visibility/': { changefreq: 'monthly', priority: '0.7' },
   '/guides/entity-authority/': { changefreq: 'monthly', priority: '0.7' },
   '/guides/multimodal-geo/': { changefreq: 'monthly', priority: '0.7' },
   '/report/demo/': { changefreq: 'monthly', priority: '0.5' },
   '/manifesto/': { changefreq: 'monthly', priority: '0.7' },
   '/privacy/': { changefreq: 'monthly', priority: '0.5' },
   '/cookie-policy/': { changefreq: 'monthly', priority: '0.5' },
-  '/tools/ai-citation-checker/': { changefreq: 'monthly', priority: '0.8' },
 };
 const DEFAULT_META = { changefreq: 'monthly', priority: '0.6' };
 
