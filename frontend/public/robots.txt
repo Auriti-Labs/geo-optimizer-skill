@@ -85,5 +85,7 @@ Allow: /report/demo
 Allow: /report/demo/
 Disallow: /report/
 Disallow: /api/
+Disallow: /health
+Disallow: /badge
 
 Sitemap: https://geoready.dev/sitemap.xml
