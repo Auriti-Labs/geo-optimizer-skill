@@ -33,6 +33,17 @@ This documentation covers every tool and concept in the toolkit. → [README](..
 
 ---
 
+## Deployment records
+
+Public, point-in-time records of notable deploys to the [GeoReady](https://geoready.dev)
+site (the hosted product surface powered by the GEO Optimizer engine).
+
+| Date | Record |
+|------|--------|
+| 2026-06-16 | [GeoReady CLS & branding follow-up](deployments/geoready-brand-discovery-cls-2026-06-16.md) |
+
+---
+
 ## Quick Navigation
 
 **Start here if you're new →** [Getting Started](getting-started.md)
