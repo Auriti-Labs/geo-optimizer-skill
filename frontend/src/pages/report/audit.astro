@@ -3,8 +3,8 @@ import Shell from '../../components/Shell.astro';
 import AuditReportContainer from '../../components/report/AuditReportContainer';
 
 const url = Astro.url.searchParams.get('url') || '';
-const title = url ? `GEO Audit Report — ${url}` : 'GEO Audit Report — GEO Optimizer';
-const description = 'View your GEO Optimizer audit report with GEO scores, citability ratings, technical signals, and actionable AI search visibility recommendations.';
+const title = url ? `GeoReady Audit Report — ${url}` : 'GeoReady Audit Report';
+const description = 'View your GeoReady audit report with GEO scores, citability ratings, technical signals, and actionable AI search visibility recommendations.';
 const canonical = 'https://geoready.dev/report/audit/';
 const robots = 'noindex, nofollow';
 ---
@@ -12,7 +12,7 @@ const robots = 'noindex, nofollow';
 <Shell title={title} description={description} canonical={canonical} robots={robots}>
   <header class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 md:pt-16 pb-6">
     <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
-      <span>GEO Optimizer</span>
+      <span>GeoReady</span>
       <span class="w-1 h-1 rounded-full bg-text-muted" />
       <span>Audit Report</span>
     </div>
@@ -34,7 +34,7 @@ const robots = 'noindex, nofollow';
   <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-16 md:pb-24">
     <div class="rounded-[--radius-2xl] border border-border bg-bg-surface p-6 md:p-10">
       <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
-        <span>GEO Optimizer</span>
+        <span>GeoReady</span>
         <span class="w-1 h-1 rounded-full bg-text-muted" />
         <span>Next step</span>
       </div>

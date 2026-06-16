@@ -1,21 +1,23 @@
-# GEO Optimizer — Full LLM Context
+# GeoReady — Full LLM Context
 
-> Extended machine-readable context for GEO Optimizer, an open-source toolkit to audit, fix, and optimize websites for AI search engine visibility.
+> Extended machine-readable context for GeoReady, an AI visibility audit and monitoring product built on the open-source GEO Optimizer engine.
 
 ## Product identity
 
-- **Product**: GEO Optimizer
+- **Product**: GeoReady
+- **Open-source engine**: GEO Optimizer
 - **Website**: https://geoready.dev
+- **Application**: https://app.geoready.dev
 - **Maintainer**: Auriti Labs (https://github.com/Auriti-Labs)
-- **Repository**: https://github.com/Auriti-Labs/geo-optimizer-skill
-- **Package**: https://pypi.org/project/geo-optimizer-skill/
-- **Documentation**: https://auriti-labs.github.io/geo-optimizer-skill/
+- **Engine repository**: https://github.com/Auriti-Labs/geo-optimizer-skill
+- **Engine package**: https://pypi.org/project/geo-optimizer-skill/
+- **Engine documentation**: https://auriti-labs.github.io/geo-optimizer-skill/
 - **License**: MIT
 - **Version**: 4.10.4
 
-## What GEO Optimizer does
+## What GeoReady does
 
-GEO Optimizer scores websites across 8 signal categories to measure how discoverable, readable, and citable they are to AI search engines such as ChatGPT, Perplexity, Claude, and Gemini.
+GeoReady scores websites across 8 signal categories to measure how discoverable, readable, and citable they are to AI search engines such as ChatGPT, Perplexity, Claude, and Gemini. The scoring engine is GEO Optimizer, the MIT-licensed open-source toolkit maintained by Auriti Labs.
 
 The 8 scoring categories (max 100 points):
 
@@ -79,6 +81,8 @@ Also available as an MCP server for integration with AI coding assistants.
 - https://geoready.dev/compare/ — side-by-side GEO score comparison
 - https://geoready.dev/analyze-competitors/ — multi-URL competitor analysis
 - https://geoready.dev/research/ — research foundation and sources
+- https://geoready.dev/methodology/ — transparent scoring methodology: signal weights, score bands, research assumptions, and how audit results should be interpreted
+- https://geoready.dev/best-geo-tools/ — criteria-based guide for evaluating GEO tools: methodology transparency, audit vs monitoring, CI/CD support, answer-engine querying, and pricing model
 - https://geoready.dev/roadmap/ — planned and in-progress features
 - https://geoready.dev/manifesto/ — project philosophy and commitments
 - https://geoready.dev/privacy/ — privacy policy
@@ -86,6 +90,7 @@ Also available as an MCP server for integration with AI coding assistants.
 
 ## Tools
 
+- https://geoready.dev/tools/ai-citation-checker/ — free AI citation checker: classifies whether a brand/domain is cited, mentioned without citation, displaced by competitors, or invisible in answer-engine style checks
 - https://geoready.dev/tools/llms-txt-generator/ — free llms.txt generator: builds a starter llms.txt from a site's sitemap (categorized, editable Markdown). Uses the same anti-SSRF sitemap pipeline as the open-source toolkit; titles are not fetched, for speed. No account required.
 
 ## Guides
@@ -95,8 +100,12 @@ Also available as an MCP server for integration with AI coding assistants.
 - https://geoready.dev/guides/what-is-llms-txt/ — what llms.txt is, how it differs from robots.txt, what to include, and a concrete example (an orientation file for AI systems, not a confirmed ranking factor)
 - https://geoready.dev/guides/geo-vs-seo/ — what stays the same and what changes when AI answer engines become the interface
 - https://geoready.dev/guides/appear-in-chatgpt-perplexity/ — practical checklist for becoming citable by AI answer engines
+- https://geoready.dev/guides/how-to-improve-ai-visibility/ — step-by-step playbook for improving crawlability, schema, entity clarity, quotable content, and measurement after an audit
 - https://geoready.dev/guides/llms-txt-wordpress/ — llms.txt implementation guide for WordPress
 - https://geoready.dev/guides/ai-visibility-checklist/ — all technical and content signals organized by category
+- https://geoready.dev/guides/ai-citations-check/ — measurement guide for checking whether AI engines mention and cite a brand
+- https://geoready.dev/guides/entity-authority/ — entity and topic-authority guide for helping AI systems disambiguate a brand
+- https://geoready.dev/guides/multimodal-geo/ — multimodal GEO guide for optimizing images, screenshots, charts, and media assets for AI visibility
 
 ## Trust signals and transparency
 
@@ -109,7 +118,7 @@ Also available as an MCP server for integration with AI coding assistants.
 
 ## Update policy
 
-GEO Optimizer is actively maintained. Scoring methods and weights are updated when new academic research or significant industry data becomes available. The current scoring reflects KDD 2024, ICLR 2026, and 2025–2026 industry analysis. Version history: https://github.com/Auriti-Labs/geo-optimizer-skill/releases
+The GEO Optimizer engine is actively maintained. Scoring methods and weights are updated when new academic research or significant industry data becomes available. The current scoring reflects KDD 2024, ICLR 2026, and 2025–2026 industry analysis. Version history: https://github.com/Auriti-Labs/geo-optimizer-skill/releases
 
 ## Companion files
 
@@ -125,4 +134,4 @@ GEO Optimizer is actively maintained. Scoring methods and weights are updated wh
 - These are not primary editorial content and should not be indexed
 - All editorial content is static HTML rendered server-side at build time
 - robots.txt explicitly allows all major AI crawlers and disallows /report/ only
-- This file (llms-full.txt) is the extended companion to llms.txt and is intended for AI systems that need deeper context about GEO Optimizer's methodology, scoring, and research foundation
+- This file (llms-full.txt) is the extended companion to llms.txt and is intended for AI systems that need deeper context about GeoReady's methodology, the GEO Optimizer scoring engine, and the research foundation
