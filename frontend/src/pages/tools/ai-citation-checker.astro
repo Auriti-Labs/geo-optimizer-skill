@@ -9,17 +9,34 @@ const description =
   'Ask real AI answer engines the questions your customers ask and see whether your brand is mentioned and your domain is cited as a source — or who gets cited instead of you.';
 const canonical = 'https://geoready.dev/tools/ai-citation-checker/';
 
+// I passi del controllo — riusati nello schema HowTo.
+const HOWTO_STEPS = [
+  ['Enter your domain', 'Type your brand, domain, and product category so the checker can ask the questions your customers would ask.'],
+  ['Run the free check', 'Start the citation check. The tool queries a source-backed AI answer engine — no account required.'],
+  ['Read the verdict', 'See whether ChatGPT- and Perplexity-style answers cite your domain, mention you without citing, or cite a competitor instead — and which sources were returned.'],
+] as const;
+
 // FAQ visibili — riusate sia nel markup crawlable che nello schema FAQPage.
 const faqs = [
+  {
+    question: 'What does an AI citation checker do?',
+    answer:
+      'An AI citation checker asks an AI answer engine the questions your customers ask and reports whether your brand is mentioned and whether your own domain is cited as a source. It tells you, for a given category, whether AI answers point people to you or to someone else.',
+  },
+  {
+    question: 'How is this different from rank tracking?',
+    answer:
+      'Rank trackers measure your position in a list of ten blue links on Google. An AI citation checker measures something different: whether an AI answer cites your domain as one of the few sources behind a single generated answer. A page can rank well on Google and still never be cited by AI, so the two metrics do not move together.',
+  },
+  {
+    question: 'Which AI engines does it check — ChatGPT or Perplexity?',
+    answer:
+      'The check queries Perplexity Sonar, an answer engine grounded in live web search that returns the exact source URLs it cited, which makes citations verifiable. ChatGPT and other parametric models do not expose their sources the same way. Citation patterns correlate across engines: content that is citable for Perplexity is building the signals other AI engines reward.',
+  },
   {
     question: 'How does the AI citation checker work?',
     answer:
       'It sends customer-style questions about your product category to Perplexity Sonar, an AI answer engine grounded in live web search, and analyzes the answers: is your brand mentioned in the text, and does your domain appear among the cited sources? You also see which competitor domains were cited instead of you.',
-  },
-  {
-    question: 'Why Perplexity and not ChatGPT?',
-    answer:
-      'Perplexity grounds every answer in a live web search and returns the exact source URLs it cited, which makes citations verifiable. ChatGPT and other parametric models do not expose their sources the same way. Citation patterns correlate across engines: if your content is citable for Perplexity, you are building the same signals other AI engines reward.',
   },
   {
     question: 'What does "mentioned but not cited" mean?',
@@ -46,7 +63,7 @@ const faqs = [
       <div class="grid lg:grid-cols-[minmax(0,0.88fr)_minmax(420px,0.82fr)]">
       <div class="p-6 md:p-10 lg:p-12">
         <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
-          <a href="/" class="hover:text-accent-teal">Tools</a>
+          <a href="/" class="hover:text-accent-teal">Home</a>
           <span class="w-1 h-1 rounded-full bg-text-muted" />
           <span>AI citation checker</span>
         </div>
@@ -108,10 +125,10 @@ const faqs = [
           AI answer engines don't show ten blue links — they give one answer and
           cite a handful of sources. If your domain is among those sources, you
           capture the click and the trust. If it isn't, the AI is actively
-          sending your customers to whoever <em>is</em> cited. Ahrefs found that
-          28.3% of ChatGPT's most-cited pages have zero organic visibility on
-          Google: AI citation is a different game from classic SEO, with
-          different winners.
+          sending your customers to whoever <em>is</em> cited. AI answers and
+          classic Google rankings don't always overlap: a page can rank well on
+          Google and never be cited by AI, so citation is a different game from
+          classic SEO, with different winners.
         </p>
       </section>
 
@@ -169,9 +186,13 @@ const faqs = [
           an <a href="/tools/llms-txt-generator/" class="text-accent-teal hover:underline">llms.txt</a>,
           quotable statistics, and multi-page topical coverage. The
           {' '}<a href="/guides/generative-engine-optimization/" class="text-accent-teal hover:underline">GEO guide</a>{' '}
-          covers the full playbook, and the free audit scores your site on 100
-          points across 8 categories. Run the audit, fix the priority items,
-          then come back and re-check your citations.
+          covers the full playbook, and the
+          {' '}<a href="/" class="text-accent-teal hover:underline">free GEO audit</a>{' '}
+          scores your site on 100 points across 8 categories. For a step-by-step
+          walkthrough of interpreting a check, see the guide to
+          {' '}<a href="/guides/ai-citations-check/" class="text-accent-teal hover:underline">checking AI citations</a>.
+          Run the audit, fix the priority items, then come back and re-check your
+          citations.
         </p>
       </section>
 
@@ -220,6 +241,8 @@ const faqs = [
     "@graph": [
       {
         "@type": "WebApplication",
+        "@id": "https://geoready.dev/tools/ai-citation-checker/#webapp",
+        "isPartOf": { "@id": "https://geoready.dev/#webapp" },
         "name": "Free AI Citation Checker",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any",
@@ -230,11 +253,7 @@ const faqs = [
           "price": "0",
           "priceCurrency": "USD"
         },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Auriti Labs",
-          "url": "https://github.com/Auriti-Labs"
-        }
+        "publisher": { "@id": "https://geoready.dev/#organization" }
       },
       {
         "@type": "FAQPage",
@@ -245,6 +264,18 @@ const faqs = [
             "@type": "Answer",
             "text": faq.answer
           }
+        }))
+      },
+      {
+        "@type": "HowTo",
+        "name": "How to check if AI answers cite you",
+        "description": "Run a free AI citation check: enter your domain, run the check, and read whether ChatGPT- and Perplexity-style answers cite you or a competitor.",
+        "totalTime": "PT1M",
+        "step": HOWTO_STEPS.map(([name, text], index) => ({
+          "@type": "HowToStep",
+          "position": index + 1,
+          "name": name,
+          "text": text
         }))
       }
     ]
