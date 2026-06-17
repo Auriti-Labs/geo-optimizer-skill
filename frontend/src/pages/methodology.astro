@@ -33,6 +33,11 @@ const CITABILITY_SIGNALS = [
 // Tenere allineate: ogni modifica al testo va replicata in entrambi i punti.
 const faqs = [
   {
+    question: 'What is an AI visibility score?',
+    answer:
+      'An AI visibility score is a number — in GEO Optimizer, a score out of 100 — that measures how well a site is structured for AI answer engines to crawl, understand, and evaluate. It differs from a traditional SEO score: rather than evaluating keyword density or backlinks, it checks signals like AI crawler access, llms.txt, schema JSON-LD, content quotability, and entity clarity. The score answers the readiness question — can an AI engine use this site? — not the outcome question of whether you are currently cited.',
+  },
+  {
     question: 'Why are the scoring weights public?',
     answer:
       'GEO Optimizer is open source under the MIT license, and the weights live in the repository as plain constants. Publishing them means anyone can read exactly how a score is produced, reproduce it locally, and disagree with a specific number on the record rather than against a black box. A visibility score you cannot inspect is a score you cannot trust.',
