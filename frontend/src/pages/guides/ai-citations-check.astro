@@ -2,12 +2,12 @@
 import Shell from '../../components/Shell.astro';
 import CitationSurface from '../../components/product/CitationSurface.astro';
 
-const title = 'How to Check if AI Engines Cite Your Brand (ChatGPT, Perplexity)';
+const title = 'How to Tell If ChatGPT & Perplexity Cite Your Brand';
 const description =
-  'A practical method to find out whether AI answer engines mention your brand and cite your domain as a source — manually, with a free checker, and with ongoing monitoring.';
+  'A step-by-step way to tell if ChatGPT or Perplexity mention and cite your brand — a manual check, a free tool, and ongoing monitoring of your AI citations.';
 const canonical = 'https://geoready.dev/guides/ai-citations-check/';
 const datePublished = '2026-06-11';
-const dateModified = '2026-06-11';
+const dateModified = '2026-06-17';
 
 const faqs = [
   {
@@ -31,6 +31,13 @@ const faqs = [
       'No. There is no submission form and no paid placement for organic AI citations. What you control is citability: open crawler access, structured data, an llms.txt, quotable statistics with sources, and multi-page topical coverage. Research (Princeton KDD 2024) measured which content patterns increase citation probability — statistics, quotations, and cited sources lead.',
   },
 ];
+
+// I tre metodi della guida — riusati nello schema HowTo.
+const HOWTO_STEPS = [
+  ['Ask the engines yourself', 'Open a fresh, non-personalized session and ask the questions your customers ask ("best [category] for [audience]", "[your brand] vs [competitor]"). Note whether your brand is named, which domains are cited, and who is recommended first.'],
+  ['Run the free automated check', 'Use the AI Citation Checker to query Perplexity Sonar with customer-style questions and get one of four verdicts — Strong, Cited, Mentioned only, or Invisible — plus the domains cited instead of you.'],
+  ['Monitor over time', 'AI answers change weekly. Run scheduled checks with history and alerts so you catch a lost citation before the traffic moves, instead of relying on one-shot snapshots.'],
+] as const;
 ---
 
 <Shell title={title} description={description} canonical={canonical}>
@@ -45,7 +52,7 @@ const faqs = [
         </div>
 
         <h1 class="mt-4 max-w-3xl font-display text-4xl md:text-5xl font-bold text-text-primary leading-tight tracking-tight">
-          How to check whether AI engines cite your brand.
+          How to tell if ChatGPT is citing your brand.
         </h1>
 
         <p class="mt-5 max-w-2xl text-base md:text-lg text-text-secondary leading-relaxed">
@@ -55,13 +62,19 @@ const faqs = [
           manual method, a free automated check, and ongoing monitoring — and
           what to do with each verdict.
         </p>
+        <p class="mt-4 max-w-2xl text-base text-text-secondary leading-relaxed">
+          Prefer the automated version? Run our free
+          {' '}<a href="/tools/ai-citation-checker/" class="font-medium text-accent-teal hover:underline">AI Citation Checker</a>{' '}
+          to test your brand against source-backed AI answers in seconds — then
+          come back here to interpret the result.
+        </p>
         <div class="mt-6 flex flex-wrap gap-2">
           {['Manual check', 'Source citation', 'Monitoring'].map((item) => (
             <span class="rounded-full border border-border bg-bg-surface px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-text-secondary">{item}</span>
           ))}
         </div>
         <p class="mt-5 text-xs text-text-muted font-mono">
-          Published June 2026 · 8 min read
+          Published June 11, 2026 · Last updated June 17, 2026 · 8 min read
         </p>
       </div>
 
@@ -231,6 +244,40 @@ const faqs = [
           "name": faq.question,
           "acceptedAnswer": { "@type": "Answer", "text": faq.answer }
         }))
+      },
+      {
+        "@type": "HowTo",
+        "name": "How to tell if ChatGPT and Perplexity cite your brand",
+        "description": "Three ways to find out whether AI answer engines mention your brand and cite your domain: a manual check, a free automated checker, and ongoing monitoring.",
+        "step": HOWTO_STEPS.map(([name, text], index) => ({
+          "@type": "HowToStep",
+          "position": index + 1,
+          "name": name,
+          "text": text
+        }))
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "GeoReady",
+            "item": "https://geoready.dev/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Guides",
+            "item": "https://geoready.dev/guides/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "How to Tell If ChatGPT Cites Your Brand",
+            "item": canonical
+          }
+        ]
       }
     ]
   })} />
