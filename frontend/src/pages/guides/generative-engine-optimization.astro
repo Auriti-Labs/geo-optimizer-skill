@@ -6,10 +6,14 @@ const description =
   'Learn what Generative Engine Optimization is, how GEO differs from SEO, and how to make your site crawlable, understandable and citable by AI search engines.';
 const canonical = 'https://geoready.dev/guides/generative-engine-optimization/';
 const datePublished = '2026-06-10';
-const dateModified = '2026-06-10';
+const dateModified = '2026-06-17';
 
 // FAQ condivise tra pagina e JSON-LD (single source of truth)
 const faqs = [
+  {
+    q: 'What does GEO mean in AI search?',
+    a: 'GEO stands for Generative Engine Optimization: structuring a website so AI answer engines like ChatGPT, Perplexity, Claude, and Gemini can more easily crawl, understand, and evaluate its content. It is not geographic or local SEO.',
+  },
   {
     q: 'Is GEO different from SEO?',
     a: 'GEO and SEO share the same technical foundations — crawlability, indexable HTML, structured data, and domain authority. The difference is the target. SEO optimizes for a ranked list of links a person clicks. GEO optimizes for being retrieved, summarized, and cited inside a single AI-generated answer. You build GEO on top of SEO, not instead of it.',
@@ -58,8 +62,12 @@ const faqs = [
         answers. It builds on SEO fundamentals but optimizes for retrieval and
         citation rather than for a ranked list of clickable links.
       </p>
+      <p class="mt-3 text-sm md:text-base text-text-secondary leading-relaxed">
+        In this guide, GEO means Generative Engine Optimization — not geographic
+        or local SEO.
+      </p>
       <p class="mt-2 text-xs text-text-muted font-mono">
-        Published June 2026 · 13 min read
+        Published June 10, 2026 · Last updated June 17, 2026 · 13 min read
       </p>
     </header>
 
@@ -373,6 +381,29 @@ const faqs = [
             "text": item.a
           }
         }))
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "GeoReady",
+            "item": "https://geoready.dev/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Guides",
+            "item": "https://geoready.dev/guides/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Generative Engine Optimization",
+            "item": canonical
+          }
+        ]
       }
     ]
   })} />
