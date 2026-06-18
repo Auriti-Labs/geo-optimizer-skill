@@ -13,6 +13,11 @@ const statusConfig: Record<RoadmapStatus, { label: string; dot: string; bg: stri
   planned: { label: 'Planned', dot: 'bg-accent-teal', bg: 'bg-accent-teal/5' },
   exploring: { label: 'Exploring', dot: 'bg-text-muted', bg: 'bg-text-muted/5' },
 };
+
+// Progress aggregato della fase: quanti item sono già disponibili.
+const total = phase.items.length;
+const shipped = phase.items.filter((i) => i.status === 'available').length;
+const shippedPct = total > 0 ? Math.round((shipped / total) * 100) : 0;
 ---
 
 <section class="relative pl-6 md:pl-8">
@@ -20,18 +25,26 @@ const statusConfig: Record<RoadmapStatus, { label: string; dot: string; bg: stri
   <div class="absolute left-0 top-0 bottom-0 w-px bg-border" aria-hidden="true"></div>
 
   {/* Phase header dot */}
-  <div class={`absolute left-[-3px] top-1.5 w-[7px] h-[7px] rounded-full ${phase.statusColor.replace('border-', 'bg-')}`} aria-hidden="true"></div>
+  <div class={`absolute left-[-4px] top-1 w-2.5 h-2.5 rounded-full ring-2 ring-bg-base ${phase.statusColor.replace('border-', 'bg-')}`} aria-hidden="true"></div>
 
   <div class="pb-2">
-    <h2 class="font-display text-lg md:text-xl font-bold text-text-primary">{phase.label}</h2>
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <h2 class="font-display text-lg md:text-xl font-bold text-text-primary">{phase.label}</h2>
+      <span class="font-mono text-[11px] text-text-muted">{shipped} / {total} shipped</span>
+    </div>
     <p class="mt-0.5 text-sm text-text-muted">{phase.subtitle}</p>
+    {shipped > 0 && (
+      <div class="mt-2 h-1 w-full max-w-xs rounded-full bg-border overflow-hidden" role="img" aria-label={`${shipped} of ${total} items available`}>
+        <div class="h-full rounded-full bg-accent-success" style={`width: ${shippedPct}%`}></div>
+      </div>
+    )}
   </div>
 
   <div class="mt-4 space-y-3">
     {phase.items.map((item) => {
       const cfg = statusConfig[item.status];
       return (
-        <div class={`rounded-lg border border-border p-4 transition-colors hover:border-accent-teal/20 ${cfg.bg}`}>
+        <div class={`rounded-xl border border-border p-4 transition-colors hover:border-accent-teal/20 ${cfg.bg}`}>
           <div class="flex items-center gap-2 mb-1">
             <span class={`w-2 h-2 rounded-full ${cfg.dot}`} aria-hidden="true"></span>
             <span class="text-[10px] font-mono font-semibold uppercase tracking-wider text-text-muted">{cfg.label}</span>

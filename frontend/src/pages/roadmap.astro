@@ -10,7 +10,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
     <header class="max-w-2xl mb-14 md:mb-20">
       <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
         <span>GeoReady</span>
-        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span class="w-1 h-1 rounded-full bg-text-muted" aria-hidden="true" />
         <span>Roadmap</span>
       </div>
 
@@ -25,7 +25,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
       <p class="mt-4 text-base text-text-secondary leading-relaxed max-w-2xl">
         GEO Optimizer evolves through deliberate releases focused on signal quality, auditability, retrieval visibility, and developer workflows.
       </p>
-      <p class="mt-2 text-xs text-text-muted font-mono">Last updated: May 2026</p>
+      <p class="mt-2 text-xs text-text-muted font-mono">Last updated: June 2026 · v4.14.0</p>
     </header>
 
     {/* Legend */}
@@ -78,7 +78,8 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
                     : 'border-border bg-bg-surface text-text-secondary'
               }`}
             >
-              <span class={`w-2 h-2 rounded-full ${isAvailable ? 'bg-accent-success' : isExploring ? 'bg-text-muted' : 'bg-accent-teal'}`} />
+              <span class={`w-2 h-2 rounded-full ${isAvailable ? 'bg-accent-success' : isExploring ? 'bg-text-muted' : 'bg-accent-teal'}`} aria-hidden="true" />
+              <span class="sr-only">{isAvailable ? 'Available' : isExploring ? 'Exploring' : 'Planned'}: </span>
               <span class="font-mono text-xs font-semibold">{rel.version}</span>
               <span class="text-xs">{rel.name}</span>
             </div>
@@ -103,6 +104,8 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
           class="inline-flex items-center gap-2 rounded-lg bg-accent-teal px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity"
         >
           Open an issue
+          <span class="sr-only">(opens in a new tab)</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
         </a>
         <a
           href="https://github.com/Auriti-Labs/geo-optimizer-skill/discussions"
@@ -111,6 +114,8 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
           class="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-primary hover:border-accent-teal/30 transition-colors"
         >
           Start a discussion
+          <span class="sr-only">(opens in a new tab)</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
         </a>
         <a
           href="https://github.com/Auriti-Labs/geo-optimizer-skill"
@@ -119,6 +124,8 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
           class="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-primary hover:border-accent-teal/30 transition-colors"
         >
           Star on GitHub
+          <span class="sr-only">(opens in a new tab)</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
         </a>
       </div>
     </section>
@@ -141,7 +148,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
       "url": "https://github.com/Auriti-Labs"
     },
     "datePublished": "2026-05-12",
-    "dateModified": "2026-05-26",
+    "dateModified": "2026-06-18",
     "mainEntity": {
       "@type": "ItemList",
       "itemListElement": roadmapPhases.map((phase, i) => ({
