@@ -24,7 +24,7 @@ export const researchSources: ResearchSource[] = [
       'Tested 9 optimization strategies across 10,000 queries on GEO-bench. Demonstrated that structural and authoritative signals significantly increase LLM citation rates.',
     howWeUseIt:
       'The 8-category scoring engine (robots.txt, llms.txt, schema, meta, content, signals, AI discovery, brand entity) is directly derived from the signal taxonomy validated in this paper.',
-    link: 'https://arxiv.org/abs/2311.09701',
+    link: 'https://arxiv.org/abs/2311.09735',
     linkLabel: 'Read paper',
     metrics: [
       { label: 'Cite Sources', value: '+27–115%' },
@@ -46,10 +46,10 @@ export const researchSources: ResearchSource[] = [
     year: '2026',
     authors: 'AutoGEO Research Group',
     finding:
-      'Introduces automated pipelines that optimize content for generative engines without human intervention, using reinforcement learning from LLM feedback.',
+      'Introduces automated pipelines that optimize content for generative engines without human intervention, using reinforcement learning from LLM feedback. Reports a +50.99% improvement over the Princeton KDD 2024 baseline by optimizing content automatically.',
     howWeUseIt:
       'Informs the design of the `geo fix` command and the auto-fix generation layer: robots.txt, llms.txt, schema, and meta tag suggestions are generated using the same structural principles.',
-    link: 'https://openreview.net/forum?id=K8EinVWtUB',
+    link: 'https://arxiv.org/abs/2510.11438',
     linkLabel: 'Read paper',
   },
   {

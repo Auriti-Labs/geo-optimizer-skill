@@ -31,7 +31,7 @@ export const manifestoSections: ManifestoSection[] = [
     references: [
       {
         label: 'GEO: Generative Engine Optimization — KDD 2024',
-        href: 'https://arxiv.org/abs/2311.09701',
+        href: 'https://arxiv.org/abs/2311.09735',
       },
     ],
   },

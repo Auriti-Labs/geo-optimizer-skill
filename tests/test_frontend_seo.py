@@ -22,6 +22,7 @@ from __future__ import annotations
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import pytest
 
@@ -117,8 +118,15 @@ def _extract_page_schema_urls(astro_source: str) -> list[str]:
 
 
 def _is_asset_url(url: str) -> bool:
-    last_segment = url.rstrip("/").split("/")[-1].lower()
-    return "/assets/" in url or last_segment.endswith(_ASSET_EXTENSIONS)
+    parsed = urlsplit(url)
+    last_segment = parsed.path.rstrip("/").split("/")[-1].lower()
+    return "/assets/" in parsed.path or last_segment.endswith(_ASSET_EXTENSIONS)
+
+
+def _page_url_has_trailing_slash(url: str) -> bool:
+    """Valuta lo slash finale sul path, ignorando query string e fragment."""
+    parsed = urlsplit(url)
+    return parsed.path.endswith("/")
 
 
 # ── Skip se il sorgente non è presente (es. checkout parziale) ──────────────────
@@ -227,7 +235,7 @@ class TestSchemaCanonicalConsistency:
         for url in _extract_page_schema_urls(source):
             if url == CANONICAL_HOST or _is_asset_url(url):
                 continue
-            assert url.endswith("/"), f"{relpath}: URL di pagina senza trailing slash: {url}"
+            assert _page_url_has_trailing_slash(url), f"{relpath}: URL di pagina senza trailing slash: {url}"
 
     def test_pagine_con_jsonld_espongono_url_di_pagina(self):
         """Anti-silent-pass: ogni pagina con un blocco JSON-LD deve esporre la
