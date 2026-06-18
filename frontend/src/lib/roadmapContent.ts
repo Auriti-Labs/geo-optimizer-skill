@@ -19,7 +19,7 @@ export const roadmapPhases: RoadmapPhase[] = [
   {
     id: 'current',
     label: 'Current Foundation',
-    subtitle: 'What exists today in v4.11.x',
+    subtitle: 'What exists today in v4.14.x',
     statusColor: 'border-accent-success',
     items: [
       {
@@ -102,9 +102,15 @@ export const roadmapPhases: RoadmapPhase[] = [
       },
       {
         id: 'astro-frontend-v2',
-        title: 'Astro frontend v2',
-        description: 'New static-site frontend in Astro 5 + React + Tailwind (this site).',
-        status: 'in-progress',
+        title: 'Astro frontend',
+        description: 'Static-site frontend in Astro + React + Tailwind (this site), live in production.',
+        status: 'available',
+      },
+      {
+        id: 'server-logs',
+        title: 'AI Crawler Activity Analytics',
+        description: 'Detect AI crawler activity from access logs (OAI-SearchBot, ClaudeBot, PerplexityBot). Available via `geo logs` CLI command and `POST /api/logs/analyze`.',
+        status: 'available',
       },
     ],
   },
@@ -117,44 +123,44 @@ export const roadmapPhases: RoadmapPhase[] = [
       {
         id: 'static-pages',
         title: 'Strategic static pages',
-        description: 'Complete Research, Roadmap, Manifesto, and comparison pages.',
-        status: 'in-progress',
+        description: 'Research, Roadmap, Manifesto, guides, and comparison pages — live.',
+        status: 'available',
       },
       {
         id: 'compare-page',
         title: 'Compare page',
         description: 'Side-by-side competitor report linked to the live backend.',
-        status: 'planned',
+        status: 'available',
       },
       {
         id: 'export-pdf-json',
         title: 'Export PDF/JSON',
-        description: 'Production-ready export actions in the report UI.',
-        status: 'planned',
+        description: 'Export actions in the report UI for PDF and JSON output.',
+        status: 'available',
+      },
+      {
+        id: 'gdpr-consent',
+        title: 'GDPR cookie consent',
+        description: 'Cookie banner, preferences modal, and consent management for analytics.',
+        status: 'available',
+      },
+      {
+        id: 'production-deploy',
+        title: 'Production deploy',
+        description: 'Live on geoready.dev behind a reverse proxy, served from the FastAPI backend.',
+        status: 'available',
       },
       {
         id: 'caching',
         title: 'Audit caching',
         description: 'Client-side or server-side caching to reduce redundant backend calls.',
-        status: 'planned',
+        status: 'in-progress',
       },
       {
         id: 'loading-states',
         title: 'Loading & skeleton states',
         description: 'Polished loading UX for audit and report pages.',
         status: 'in-progress',
-      },
-      {
-        id: 'gdpr-consent',
-        title: 'GDPR cookie consent',
-        description: 'Cookie banner and consent management for analytics.',
-        status: 'planned',
-      },
-      {
-        id: 'production-deploy',
-        title: 'Production deploy',
-        description: 'Deploy with PUBLIC_API_BASE and reverse proxy configuration.',
-        status: 'planned',
       },
       {
         id: 'responsive-a11y',
@@ -193,12 +199,6 @@ export const roadmapPhases: RoadmapPhase[] = [
         title: 'Scheduled monitoring in web app',
         description: 'Configure and view scheduled audits without using the CLI.',
         status: 'planned',
-      },
-      {
-        id: 'server-logs',
-        title: 'AI Crawler Activity Analytics',
-        description: 'Detect AI crawler activity from access logs (OAI-SearchBot, ClaudeBot, PerplexityBot). Available via `geo logs` CLI command and `POST /api/logs/analyze`.',
-        status: 'available',
       },
       {
         id: 'batch-audit',
