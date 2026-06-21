@@ -39,8 +39,25 @@ alembic/             migrations (baseline creates tables; Postgres RLS policies)
 
 `Audit → Explain → Fix → Implement → Verify → Monitor → Prove Business Impact`
 
-Phase 0 implements only the **Audit** stage as a queued, ownership-gated,
+Phase 0 implements the **Audit** stage as a queued, ownership-gated,
 tenant-isolated job that writes results as *signals on an entity*.
+
+**Phase 1 — AI Perception Probe** adds the user-visible wedge: query AI engines
+(Perplexity Sonar by default, via the engine's LLM client) with buyer-intent
+prompts, then compute **Share-of-Model v1**, **competitor mentions**, and
+**hallucination/factual-mismatch flags**. Every per-prompt response is persisted
+with full provenance (provider, model, taxonomy version, prompt, raw response,
+timestamp) so historical comparisons stay valid as scoring evolves.
+
+> **Probes require auth + per-org quota only — NOT ownership verification.**
+> A probe queries AI engines *about* the business and never crawls the entity's
+> site, so the SSRF/ownership rationale does not apply. This also keeps the path
+> open for the future free public-probe wedge. (Audits, which DO crawl, remain
+> verification-gated.)
+
+The pure layers — `services/probe/{taxonomy,prompt_generator,analysis,share_of_model,hallucination}.py`
+— contain no I/O and are fully unit-tested offline; the engine is touched only
+through `core_bridge/probe_adapter.py`.
 
 ## Local development
 
@@ -89,6 +106,10 @@ suite under `../tests` is untouched and runs independently.
 | `POST` | `/v1/entities/{id}/audits` | enqueue audit (verified only) |
 | `GET`  | `/v1/audits/{job_id}` | poll audit status/result |
 | `GET`  | `/v1/entities/{id}/signals` | list entity signals |
+| `POST` | `/v1/entities/{id}/probes` | enqueue AI Perception Probe (**auth + quota; NO verification**) |
+| `GET`  | `/v1/probes/{run_id}` | poll probe run (Share-of-Model, competitors, flags) |
+| `GET`  | `/v1/probes/{run_id}/responses` | per-prompt responses with full provenance |
+| `GET`  | `/v1/entities/{id}/probes` | probe history for an entity |
 
 ## Hard rules (do not violate)
 
