@@ -51,6 +51,11 @@ class Settings:
 
     # ─── Rate limiting (per API key) ─────────────────────────────────────────
     free_audits_per_day: int = field(default_factory=lambda: int(os.environ.get("GR_FREE_AUDITS_PER_DAY", "5")))
+    free_probes_per_day: int = field(default_factory=lambda: int(os.environ.get("GR_FREE_PROBES_PER_DAY", "3")))
+
+    # ─── Perception probe ────────────────────────────────────────────────────
+    probe_max_prompts: int = field(default_factory=lambda: int(os.environ.get("GR_PROBE_MAX_PROMPTS", "8")))
+    probe_provider: str | None = field(default_factory=lambda: os.environ.get("GR_PROBE_PROVIDER"))
 
     @property
     def is_sqlite(self) -> bool:

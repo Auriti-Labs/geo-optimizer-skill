@@ -199,20 +199,84 @@ class AuditJob(Base):
 # require migrations. Intentionally minimal; columns will be extended later.
 
 
-class Perception(Base):
-    """What an AI engine says about an entity. Populated in Phase 1+."""
+class ProbeRun(Base):
+    """One AI Perception Probe execution — groups the per-prompt Perception rows.
 
-    __tablename__ = "perception"
+    This is the unit users poll and trend. Provenance (provider, model,
+    taxonomy_version) is recorded at run level AND on each Perception row so
+    historical comparisons stay valid as scoring/taxonomy evolve.
+    """
+
+    __tablename__ = "probe_run"
+    __table_args__ = (Index("ix_probe_entity_created", "entity_id", "created_at"),)
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     entity_id: Mapped[str] = mapped_column(ForeignKey("business_entity.id", ondelete="CASCADE"), nullable=False)
     org_id: Mapped[str] = mapped_column(ForeignKey("orgs.id", ondelete="CASCADE"), nullable=False)
+
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default=AuditStatus.queued.value)
+
+    # Provenance (run level)
+    provider: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    model: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    taxonomy_version: Mapped[str | None] = mapped_column(String(16), nullable=True)
+
+    prompt_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    answered_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    # Metrics (v1)
+    share_of_model: Mapped[float | None] = mapped_column(nullable=True)
+    recommended_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    competitors: Mapped[list | None] = mapped_column(JSON, nullable=True)  # [{name, mentions}]
+    flags: Mapped[list | None] = mapped_column(JSON, nullable=True)  # [{type, severity, perception_id, evidence}]
+
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    perceptions: Mapped[list[Perception]] = relationship(back_populates="probe_run", cascade="all, delete-orphan")
+
+
+class Perception(Base):
+    """What an AI engine said about an entity for a single prompt.
+
+    Every row is a self-contained, immutable record of one AI answer with full
+    provenance — provider, model, taxonomy version, the exact prompt, the raw
+    response, and the timestamp — so re-scoring or taxonomy changes never
+    invalidate historical data.
+    """
+
+    __tablename__ = "perception"
+    __table_args__ = (Index("ix_perception_run", "probe_run_id"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    entity_id: Mapped[str] = mapped_column(ForeignKey("business_entity.id", ondelete="CASCADE"), nullable=False)
+    org_id: Mapped[str] = mapped_column(ForeignKey("orgs.id", ondelete="CASCADE"), nullable=False)
+    probe_run_id: Mapped[str | None] = mapped_column(
+        ForeignKey("probe_run.id", ondelete="CASCADE"), nullable=True
+    )
+
+    # Provenance (per response) — required for valid historical comparison.
     engine: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    provider: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    model: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    taxonomy_version: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    prompt_category: Mapped[str | None] = mapped_column(String(32), nullable=True)
+
     prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
-    recommended: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
     raw_response: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    recommended: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    brand_mentioned: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    domain_cited: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    competitors_named: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    flags: Mapped[list | None] = mapped_column(JSON, nullable=True)
     details: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+
     probed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+    probe_run: Mapped[ProbeRun | None] = relationship(back_populates="perceptions")
 
 
 class Intervention(Base):
@@ -261,6 +325,7 @@ __all__ = [
     "BusinessEntity",
     "EntitySignal",
     "AuditJob",
+    "ProbeRun",
     "Perception",
     "Intervention",
     "Impact",
