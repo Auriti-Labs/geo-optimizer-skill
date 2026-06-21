@@ -12,7 +12,7 @@ import logging
 from fastapi import FastAPI
 
 from geoready_platform import __version__
-from geoready_platform.api.routers import audits, entities, health, orgs
+from geoready_platform.api.routers import audits, entities, health, orgs, probe
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,12 +24,16 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="GeoReady AI Visibility Platform API",
         version=__version__,
-        description="Phase 0 foundation: orgs, entities, ownership verification, audit-as-signal jobs.",
+        description=(
+            "Orgs, entities, ownership verification, audit-as-signal jobs (Phase 0), "
+            "and the AI Perception Probe (Phase 1)."
+        ),
     )
     app.include_router(health.router)
     app.include_router(orgs.router)
     app.include_router(entities.router)
     app.include_router(audits.router)
+    app.include_router(probe.router)
     return app
 
 
