@@ -40,12 +40,19 @@ _NON_COMPETITOR_DOMAINS: frozenset[str] = frozenset(
         "facebook.com", "instagram.com", "twitter.com", "x.com", "linkedin.com",
         "tiktok.com", "youtube.com", "pinterest.com", "threads.net",
         "snapchat.com", "whatsapp.com", "telegram.org",
-        # Reviews / directories / lead-gen
+        # Reviews / directories / lead-gen (general)
         "yelp.com", "tripadvisor.com", "trustpilot.com", "g2.com", "capterra.com",
         "getapp.com", "softwareadvice.com", "bbb.org", "glassdoor.com",
         "indeed.com", "yellowpages.com", "angi.com", "angieslist.com",
         "thumbtack.com", "houzz.com", "foursquare.com", "manta.com",
         "crunchbase.com", "clutch.co", "producthunt.com", "nextdoor.com",
+        "expertise.com", "threebestrated.com", "yellow.place", "cylex.com",
+        # Vertical directories / aggregators (health, legal, travel, real estate, auto)
+        "healthgrades.com", "zocdoc.com", "vitals.com", "webmd.com", "ratemds.com",
+        "avvo.com", "findlaw.com", "justia.com", "lawyers.com", "martindale.com",
+        "opentable.com", "booking.com", "expedia.com", "hotels.com", "kayak.com",
+        "realtor.com", "zillow.com", "redfin.com", "trulia.com", "rightmove.co.uk",
+        "cars.com", "carfax.com", "autotrader.com", "kbb.com",
         # Maps / big-tech surfaces
         "google.com", "bing.com", "duckduckgo.com", "apple.com",
         "maps.google.com", "goo.gl",
