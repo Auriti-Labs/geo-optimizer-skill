@@ -143,105 +143,120 @@ def execute_probe_run(run_id: str) -> None:
         max_prompts=settings.probe_max_prompts,
     )
 
-    # Phase B: run prompts OUTSIDE any DB transaction (network I/O).
-    rows: list[dict] = []
-    analyzed: list[AnalyzedResponse] = []
-    model_seen = ""
-    answered = 0
+    # Phases B + C run under a failure guard: any unexpected error (provider
+    # library, analysis edge case, DB write) marks the run failed instead of
+    # leaving it stuck in `running` or propagating a 500 in eager mode. Mirrors
+    # the audit service's contract.
+    try:
+        # Phase B: run prompts OUTSIDE any DB transaction (network I/O).
+        rows: list[dict] = []
+        analyzed: list[AnalyzedResponse] = []
+        model_seen = ""
+        answered = 0
 
-    for gp in prompts:
-        resp = run_prompt(gp.text, provider=provider, api_key=api_key)
-        model_seen = model_seen or resp.model
-        cat = CATEGORY_BY_KEY.get(gp.category)
-        counts_for_factual = bool(cat and cat.counts_for_factual)
-        is_answered = not resp.error and bool(resp.text.strip())
-        answered += 1 if is_answered else 0
+        for gp in prompts:
+            resp = run_prompt(gp.text, provider=provider, api_key=api_key)
+            model_seen = model_seen or resp.model
+            cat = CATEGORY_BY_KEY.get(gp.category)
+            counts_for_factual = bool(cat and cat.counts_for_factual)
+            is_answered = not resp.error and bool(resp.text.strip())
+            answered += 1 if is_answered else 0
 
-        signals = analyze_response(
-            text=resp.text,
-            citations=resp.citations,
-            name=facts["name"],
-            domain=facts["domain"],
-        )
-        flags = (
-            hallucination.detect_flags(
+            signals = analyze_response(
                 text=resp.text,
-                category_key=gp.category,
-                brand_mentioned=signals.brand_mentioned,
+                citations=resp.citations,
                 name=facts["name"],
-                city=facts["city"],
-                counts_for_factual=counts_for_factual,
+                domain=facts["domain"],
             )
-            if is_answered
-            else []
-        )
-
-        analyzed.append(
-            AnalyzedResponse(
-                category=gp.category,
-                answered=is_answered,
-                brand_mentioned=signals.brand_mentioned,
-                competitor_domains=signals.competitor_domains,
-                competitor_names=signals.competitor_names,
+            flags = (
+                hallucination.detect_flags(
+                    text=resp.text,
+                    category_key=gp.category,
+                    brand_mentioned=signals.brand_mentioned,
+                    name=facts["name"],
+                    city=facts["city"],
+                    counts_for_factual=counts_for_factual,
+                )
+                if is_answered
+                else []
             )
-        )
-        rows.append(
-            {
-                "prompt_category": gp.category,
-                "prompt": gp.text,
-                "provider": resp.provider,
-                "model": resp.model,
-                "raw_response": resp.text,
-                "recommended": signals.brand_mentioned if (cat and cat.counts_for_share) else None,
-                "brand_mentioned": signals.brand_mentioned,
-                "domain_cited": signals.domain_cited,
-                "competitors_named": signals.competitor_domains + signals.competitor_names,
-                "flags": [f.__dict__ for f in flags],
-                "error": resp.error,
-            }
-        )
 
-    som = share_of_model.compute_share_of_model(analyzed)
-    run_flags = [
-        {**f, "perception_index": i}
-        for i, row in enumerate(rows)
-        for f in row["flags"]
-    ]
-
-    # Phase C: persist everything.
-    with session_scope() as session:
-        run = session.get(ProbeRun, run_id)
-        if run is None:
-            raise ProbeRunNotFoundError(run_id)
-        run.status = AuditStatus.complete.value
-        run.provider = provider
-        run.model = model_seen
-        run.prompt_count = len(rows)
-        run.answered_count = answered
-        run.share_of_model = som.share_of_model
-        run.recommended_count = som.recommended_count
-        run.competitors = som.competitors
-        run.flags = run_flags
-        run.completed_at = _utcnow()
-
-        for row in rows:
-            session.add(
-                Perception(
-                    entity_id=entity_id,
-                    org_id=org_id,
-                    probe_run_id=run_id,
-                    engine=provider,
-                    provider=row["provider"],
-                    model=row["model"],
-                    taxonomy_version=taxonomy_version,
-                    prompt_category=row["prompt_category"],
-                    prompt=row["prompt"],
-                    raw_response=row["raw_response"],
-                    recommended=row["recommended"],
-                    brand_mentioned=row["brand_mentioned"],
-                    domain_cited=row["domain_cited"],
-                    competitors_named=row["competitors_named"],
-                    flags=row["flags"],
-                    details={"error": row["error"]} if row["error"] else None,
+            analyzed.append(
+                AnalyzedResponse(
+                    category=gp.category,
+                    answered=is_answered,
+                    brand_mentioned=signals.brand_mentioned,
+                    competitor_domains=signals.competitor_domains,
+                    competitor_names=signals.competitor_names,
                 )
             )
+            rows.append(
+                {
+                    "prompt_category": gp.category,
+                    "prompt": gp.text,
+                    "provider": resp.provider,
+                    "model": resp.model,
+                    "raw_response": resp.text,
+                    "recommended": signals.brand_mentioned if (cat and cat.counts_for_share) else None,
+                    "brand_mentioned": signals.brand_mentioned,
+                    "domain_cited": signals.domain_cited,
+                    "competitors_named": signals.competitor_domains + signals.competitor_names,
+                    "flags": [f.__dict__ for f in flags],
+                    "error": resp.error,
+                }
+            )
+
+        som = share_of_model.compute_share_of_model(analyzed)
+        run_flags = [
+            {**f, "perception_index": i}
+            for i, row in enumerate(rows)
+            for f in row["flags"]
+        ]
+
+        # Phase C: persist everything.
+        with session_scope() as session:
+            run = session.get(ProbeRun, run_id)
+            if run is None:
+                raise ProbeRunNotFoundError(run_id)
+            run.status = AuditStatus.complete.value
+            run.provider = provider
+            run.model = model_seen
+            run.prompt_count = len(rows)
+            run.answered_count = answered
+            run.share_of_model = som.share_of_model
+            run.recommended_count = som.recommended_count
+            run.competitors = som.competitors
+            run.flags = run_flags
+            run.completed_at = _utcnow()
+
+            for row in rows:
+                session.add(
+                    Perception(
+                        entity_id=entity_id,
+                        org_id=org_id,
+                        probe_run_id=run_id,
+                        engine=provider,
+                        provider=row["provider"],
+                        model=row["model"],
+                        taxonomy_version=taxonomy_version,
+                        prompt_category=row["prompt_category"],
+                        prompt=row["prompt"],
+                        raw_response=row["raw_response"],
+                        recommended=row["recommended"],
+                        brand_mentioned=row["brand_mentioned"],
+                        domain_cited=row["domain_cited"],
+                        competitors_named=row["competitors_named"],
+                        flags=row["flags"],
+                        details={"error": row["error"]} if row["error"] else None,
+                    )
+                )
+    except ProbeRunNotFoundError:
+        raise
+    except Exception as exc:  # noqa: BLE001 — record any failure, never leave run hanging
+        with session_scope() as session:
+            run = session.get(ProbeRun, run_id)
+            if run is not None and run.status != AuditStatus.complete.value:
+                run.status = AuditStatus.failed.value
+                run.error = f"{type(exc).__name__}: {exc}"
+                run.completed_at = _utcnow()
+        return

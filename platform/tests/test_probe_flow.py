@@ -105,6 +105,24 @@ def test_probe_history_listed_for_entity(client, org_key, monkeypatch):
     assert runs[0]["entity_id"] == eid
 
 
+def test_provider_exception_marks_run_failed_not_500(client, org_key, monkeypatch):
+    """A raising provider must mark the run failed, never leave it 'running' or 500."""
+    headers = org_key["headers"]
+    _stub_provider(monkeypatch)
+
+    def _boom(prompt, *, provider, api_key):
+        raise RuntimeError("provider SDK exploded")
+
+    monkeypatch.setattr(runner, "run_prompt", _boom)
+    eid = _make_entity(client, headers)
+
+    resp = client.post(f"/v1/entities/{eid}/probes", headers=headers)
+    assert resp.status_code == 202, resp.text
+    run = client.get(f"/v1/probes/{resp.json()['probe_run_id']}", headers=headers).json()
+    assert run["status"] == "failed"
+    assert "exploded" in run["error"]
+
+
 def test_no_provider_marks_run_failed(client, org_key, monkeypatch):
     headers = org_key["headers"]
     monkeypatch.setattr(runner, "resolve_probe_provider", lambda p=None: (None, None))
