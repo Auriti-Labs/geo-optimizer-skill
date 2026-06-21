@@ -59,6 +59,7 @@
     {"id": "verde-landscaping-saopaulo", "name": "Verde Landscaping", "website": "verdelandscaping.com.br", "category": "landscaping service", "city": "Sao Paulo", "country": "Brazil", "prominence_tier": "low", "known_competitors": [], "needs_review": true},
     {"id": "savanna-safaris-nairobi", "name": "Savanna Safaris", "website": "savannasafaris.co.ke", "category": "safari tour operator", "city": "Nairobi", "country": "Kenya", "prominence_tier": "medium", "known_competitors": [], "needs_review": true},
     {"id": "table-mountain-tours", "name": "Table Mountain Tours", "website": "tablemountaintours.co.za", "category": "tour operator", "city": "Cape Town", "country": "South Africa", "prominence_tier": "low", "known_competitors": [], "needs_review": true},
-    {"id": "andes-trek-cusco", "name": "Andes Trek Co", "website": "andestrekcusco.pe", "category": "trekking tour operator", "city": "Cusco", "country": "Peru", "prominence_tier": "low", "known_competitors": [], "needs_review": true}
+    {"id": "andes-trek-cusco", "name": "Andes Trek Co", "website": "andestrekcusco.pe", "category": "trekking tour operator", "city": "Cusco", "country": "Peru", "prominence_tier": "low", "known_competitors": [], "needs_review": true},
+    {"id": "zephyrline-plumbing-austin", "name": "Zephyrline Plumbing", "website": "zephyrlineplumbing.com", "category": "plumber", "city": "Austin", "country": "USA", "prominence_tier": "low", "known_competitors": [], "needs_review": true, "_note": "Distinctive invented name (unlikely to be emitted by chance) — used to verify discovery-only SoM yields ~0 for unknown brands."}
   ]
 }

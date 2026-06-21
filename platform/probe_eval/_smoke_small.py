@@ -28,7 +28,9 @@ from probe_eval import openrouter_client
 from probe_eval.harness import business_by_id, score_business
 
 MODEL = "openai/gpt-4o-mini"          # non-web (no citations) — connectivity-proven
-BUSINESS_IDS = ["slack", "notion", "joes-plumbing-austin"]
+# High-prominence brands + a DISTINCTIVE fictional business. With discovery-only
+# SoM, the fictional one should score ~0 (the model won't independently name it).
+BUSINESS_IDS = ["slack", "notion", "zephyrline-plumbing-austin"]
 TIMEOUT_SECONDS = 20.0
 
 

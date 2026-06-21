@@ -1,10 +1,16 @@
 """Share-of-Model v1 + competitor tally. Pure, no I/O.
 
-Share-of-Model v1 = (# recommendation-intent answers that mention the brand) /
-(# recommendation-intent answers that were answered).
+Share-of-Model v1 = (# DISCOVERY answers that independently name the brand) /
+(# discovery answers that were answered).
 
-v1 limitation: "recommended" is approximated by "brand mentioned in a
-recommendation-class answer" — true ranked-endorsement detection is deferred.
+"Discovery" = prompts with category + location/problem but NO business name
+(``counts_for_share`` categories, which by taxonomy invariant never embed the
+name). This is the key anti-bias rule: a brand mentioned in a NAME-BEARING
+prompt (comparison/legitimacy/factual) is handed to the model and must NOT count
+— otherwise even a fictional business scores 1.0.
+
+v1 limitation: among discovery answers, "recommended" is still approximated by
+"brand independently mentioned"; true ranked-endorsement detection is deferred.
 Competitor tally aggregates competitor domains/names across all answers.
 """
 
