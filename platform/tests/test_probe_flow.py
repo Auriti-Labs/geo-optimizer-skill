@@ -23,7 +23,8 @@ def _fake_run_prompt(prompt, *, provider, api_key):
         return ProbeResponse(
             prompt=prompt, provider="perplexity", model="sonar",
             text="The best option is Acme Plumbing. Globex is also notable.",
-            citations=["https://acme.com", "https://globex.com"],
+            # Includes a real competitor plus reference/review sites that must be filtered out.
+            citations=["https://acme.com", "https://globex.com", "https://yelp.com/biz/x", "https://reddit.com/r/x"],
         )
     if "hours" in prompt.lower() or "services" in prompt.lower():
         return ProbeResponse(
@@ -64,8 +65,11 @@ def test_full_probe_pipeline_and_provenance(client, org_key, monkeypatch):
     assert run["taxonomy_version"]
     assert run["share_of_model"] is not None and run["share_of_model"] > 0
     assert run["prompt_count"] >= 1
-    # Competitor surfaced from citations.
-    assert any(c["name"] == "globex.com" for c in run["competitors"])
+    # Competitor surfaced from citations; reference/review sites filtered out.
+    competitor_names = {c["name"] for c in run["competitors"]}
+    assert "globex.com" in competitor_names
+    assert "yelp.com" not in competitor_names
+    assert "reddit.com" not in competitor_names
     # Hallucination flag surfaced at run level.
     assert any(f["type"] == "claims_closed" for f in run["flags"])
 

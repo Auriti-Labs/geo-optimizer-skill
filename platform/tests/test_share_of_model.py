@@ -87,16 +87,57 @@ def test_flags_permanently_closed_high_severity():
     assert types.get("claims_closed") == "high"
 
 
-def test_flags_brand_absent_on_factual_query():
+def test_brand_not_recognized_is_low_severity_visibility_gap():
+    # Substantive factual answer that never names the brand -> low-severity gap.
+    text = (
+        "I don't have specific information about that business, but in general when "
+        "choosing a plumber you should check licensing, reviews, and response times."
+    )
     flags = hallucination.detect_flags(
-        text="I don't have specific information, but here are general tips.",
+        text=text,
         category_key="factual_attributes",
         brand_mentioned=False,
         name="Acme",
-        city="Austin",
         counts_for_factual=True,
     )
-    assert any(f.type == "brand_absent_on_factual_query" for f in flags)
+    by_type = {f.type: f.severity for f in flags}
+    assert by_type.get("brand_not_recognized") == "low"
+    # Old noisy type must be gone.
+    assert "brand_absent_on_factual_query" not in by_type
+
+
+def test_short_answer_does_not_trip_brand_not_recognized():
+    flags = hallucination.detect_flags(
+        text="I'm not sure.",
+        category_key="factual_attributes",
+        brand_mentioned=False,
+        name="Acme",
+        counts_for_factual=True,
+    )
+    assert all(f.type != "brand_not_recognized" for f in flags)
+
+
+def test_closed_flag_requires_brand_mentioned():
+    # "Closed" about some other business (brand not mentioned) must NOT flag us.
+    flags = hallucination.detect_flags(
+        text="Globex is permanently closed.",
+        category_key="factual_attributes",
+        brand_mentioned=False,
+        name="Acme",
+        counts_for_factual=True,
+    )
+    assert all(f.type != "claims_closed" for f in flags)
+
+
+def test_closed_flag_respects_negation():
+    flags = hallucination.detect_flags(
+        text="Acme is not permanently closed; they are open and operating.",
+        category_key="factual_attributes",
+        brand_mentioned=True,
+        name="Acme",
+        counts_for_factual=True,
+    )
+    assert all(f.type != "claims_closed" for f in flags)
 
 
 def test_no_false_closed_flag_on_clean_answer():
@@ -105,7 +146,6 @@ def test_no_false_closed_flag_on_clean_answer():
         category_key="factual_attributes",
         brand_mentioned=True,
         name="Acme",
-        city="Austin",
         counts_for_factual=True,
     )
     assert all(f.type != "claims_closed" for f in flags)
