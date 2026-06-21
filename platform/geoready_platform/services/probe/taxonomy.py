@@ -14,7 +14,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-TAXONOMY_VERSION = "v1"
+# Bumped to v2 when templates were revised for realism/commercial intent.
+# Always bump this when templates change so historical comparisons remain valid
+# (provenance is persisted per response).
+TAXONOMY_VERSION = "v2"
 
 
 @dataclass(frozen=True)
@@ -28,41 +31,15 @@ class PromptCategory:
 
 
 CATEGORIES: tuple[PromptCategory, ...] = (
+    # Highest commercial intent: a buyer asking the engine to pick for them.
     PromptCategory(
         key="category_recommendation",
         counts_for_share=True,
         counts_for_factual=False,
         templates=(
             "What are the best {category} in {city}?",
-            "Can you recommend a good {category} in {city}?",
-            "Who are the top-rated {category} in {city}?",
-        ),
-    ),
-    PromptCategory(
-        key="comparison",
-        counts_for_share=True,
-        counts_for_factual=False,
-        templates=(
-            "What are the best alternatives to {name} for {category}?",
-            "How does {name} compare to other {category} in {city}?",
-        ),
-    ),
-    PromptCategory(
-        key="legitimacy",
-        counts_for_share=False,
-        counts_for_factual=True,
-        templates=(
-            "Is {name} a reputable {category}?",
-            "What do reviews say about {name}?",
-        ),
-    ),
-    PromptCategory(
-        key="factual_attributes",
-        counts_for_share=False,
-        counts_for_factual=True,
-        templates=(
-            "What are {name}'s hours, location, and contact details?",
-            "What services does {name} offer and where are they based?",
+            "Which {category} in {city} would you recommend and why?",
+            "Who are the most recommended {category} near {city}?",
         ),
     ),
     PromptCategory(
@@ -70,7 +47,36 @@ CATEGORIES: tuple[PromptCategory, ...] = (
         counts_for_share=True,
         counts_for_factual=False,
         templates=(
-            "Who should I hire for {category} in {city}?",
+            "I need {category} in {city} — who should I hire?",
+            "I'm looking for a reliable {category} in {city}. Any suggestions?",
+        ),
+    ),
+    PromptCategory(
+        key="comparison",
+        counts_for_share=True,
+        counts_for_factual=False,
+        templates=(
+            "What are the best alternatives to {name} for {category} in {city}?",
+            "How does {name} compare to other {category} in {city}?",
+            "Is {name} a good choice for {category}, or are there better options?",
+        ),
+    ),
+    PromptCategory(
+        key="legitimacy",
+        counts_for_share=False,
+        counts_for_factual=True,
+        templates=(
+            "Is {name} a reputable, trustworthy {category}?",
+            "What do customer reviews say about {name}?",
+        ),
+    ),
+    PromptCategory(
+        key="factual_attributes",
+        counts_for_share=False,
+        counts_for_factual=True,
+        templates=(
+            "Where is {name} located, what are their hours, and how do I contact them?",
+            "What services does {name} offer?",
         ),
     ),
     PromptCategory(
@@ -78,7 +84,7 @@ CATEGORIES: tuple[PromptCategory, ...] = (
         counts_for_share=False,
         counts_for_factual=True,
         templates=(
-            "What do you know about {name}?",
+            "What can you tell me about {name}?",
         ),
     ),
 )
