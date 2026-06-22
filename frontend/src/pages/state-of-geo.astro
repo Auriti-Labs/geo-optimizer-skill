@@ -322,14 +322,23 @@ const heroVisual = marketingVisuals.commandCenterV2;
         </p>
       </section>
 
-      {/* ── Full report capture ─────────────────────────────────────────── */}
-      <section>
-        <NewsletterSignup
-          client:visible
-          source="newsletter-state-of-geo"
-          title="The full State of GEO 2026 report is coming"
-          detail="This page shows the public teaser. The full category breakdown ships as a report when the cohort passes 200 audited sites — get it by email."
-        />
+      {/* ── Full report CTA ─────────────────────────────────────────────── */}
+      <section class="rounded-2xl border border-accent-teal/30 bg-accent-teal/5 p-6 md:p-8">
+        <p class="text-xs font-mono text-accent-teal uppercase tracking-wider mb-2">New · June 2026</p>
+        <h2 class="!text-text-primary">The full State of GEO 2026 report is live</h2>
+        <p class="mt-3">
+          204 audits. 165 domains. Category-by-category breakdown, adoption rates,
+          score impact of llms.txt and schema, and the full methodology.
+        </p>
+        <div class="mt-5">
+          <a
+            href="/state-of-geo-2026/"
+            data-cta="state_geo_teaser_full_report"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Read the full report →
+          </a>
+        </div>
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────────────── */}
