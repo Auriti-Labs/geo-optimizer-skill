@@ -196,6 +196,44 @@ class TestRedirectSsrfProtection:
 
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_redirect_cross_host_chiude_vecchia_session(self, mock_create, mock_dns):
+        """Redirect verso host con IP diversi ricrea la session e chiude la vecchia
+        (evita leak di connessioni pooled)."""
+        first_session = MagicMock()
+        second_session = MagicMock()
+
+        redirect_response = Mock()
+        redirect_response.status_code = 301
+        redirect_response.headers = {"Location": "https://other.com/new-page"}
+        redirect_response.close = Mock()
+
+        final_response = Mock()
+        final_response.status_code = 200
+        final_response.headers = {}
+        final_response._content = b"Hello World"
+        final_response._content_consumed = False
+
+        first_session.get.return_value = redirect_response
+        second_session.get.return_value = final_response
+        mock_create.side_effect = [first_session, second_session]
+
+        def dns_side_effect(host, port, *args, **kwargs):
+            if host == "example.com":
+                return [(2, 1, 6, "", ("93.184.216.34", 0))]
+            if host == "other.com":
+                return [(2, 1, 6, "", ("104.18.0.1", 0))]  # IP diversi → ricrea session
+            return [(2, 1, 6, "", ("8.8.8.8", 0))]
+
+        mock_dns.side_effect = dns_side_effect
+
+        resp, err = fetch_url("https://example.com/page")
+        assert resp is not None
+        assert err is None
+        # la prima session (host originale) deve essere chiusa prima di crearne una nuova
+        first_session.close.assert_called_once()
+
+    @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_troppi_redirect_bloccati(self, mock_create, mock_dns):
         """Loop di redirect supera il limite e viene bloccato."""
         mock_session = MagicMock()

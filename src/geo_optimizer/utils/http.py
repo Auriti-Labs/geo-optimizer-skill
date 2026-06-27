@@ -340,6 +340,7 @@ def _fetch_with_manual_redirects(
             # Recreate session only if IPs have changed (redirect to different host)
             if next_ips != current_ips:
                 current_ips = next_ips
+                session.close()  # release the old session's pooled connections
                 session = create_session_with_retry(
                     total_retries=3,
                     backoff_factor=1.0,
