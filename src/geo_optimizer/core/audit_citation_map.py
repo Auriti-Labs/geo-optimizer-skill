@@ -12,6 +12,7 @@ import re
 
 from geo_optimizer.core.llm_client import detect_provider, query_llm
 from geo_optimizer.models.results import CitationMapEntry, CitationMapResult
+from geo_optimizer.utils.brand_match import brand_matches
 
 _QUERIES = [
     "What is the best tool for {topic}?",
@@ -61,7 +62,7 @@ def audit_citation_map(
             if response.error:
                 continue
 
-            mentioned = bool(re.search(re.escape(brand), response.text, re.IGNORECASE))
+            mentioned = brand_matches(response.text, brand)
             sentiment = _quick_sentiment(response.text)
 
             if mentioned:
