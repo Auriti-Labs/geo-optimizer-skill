@@ -50,6 +50,19 @@ def _domains_in_text(text: str) -> list[str]:
     return found
 
 
+def _brand_pattern(brand: str) -> re.Pattern[str]:
+    """Compile a precise brand-mention matcher.
+
+    Uses word boundaries so a short brand does not match inside a longer word
+    (``Acme`` must not match ``Acmecorp``), plus a negative lookahead so the
+    brand is not counted when it is merely the root of a domain/host — this
+    avoids counting a same-named but unrelated company (``geoready`` must not
+    match ``geoready.app`` when the brand is GeoReady). A standalone mention,
+    or one ending a sentence (``GeoReady.``), still matches.
+    """
+    return re.compile(r"\b" + re.escape(brand) + r"\b(?!\.\w)", re.IGNORECASE)
+
+
 def _verdict(domain_citation_rate: float, brand_mention_rate: float) -> str:
     if domain_citation_rate >= _STRONG_CITATION_RATE:
         return "strong"
@@ -120,7 +133,7 @@ def run_citation_check(
             domain=domain,
         )
 
-    brand_pattern = re.compile(re.escape(brand), re.IGNORECASE)
+    brand_pattern = _brand_pattern(brand)
     entries: list[CitationCheckEntry] = []
     other_domains: Counter[str] = Counter()
     answered = 0
