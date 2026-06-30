@@ -63,6 +63,7 @@ const {
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#0D9488">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate" type="application/atom+xml" title="GeoReady Guides" href="https://geoready.dev/feed.xml">
   <link rel="alternate" type="application/atom+xml" title="GEO Optimizer Releases" href="https://github.com/Auriti-Labs/geo-optimizer-skill/releases.atom">
   <link rel="alternate" hreflang="en" href={canonical}>
   <link rel="alternate" hreflang="x-default" href={canonical}>
@@ -112,7 +113,7 @@ const {
         "publisher": { "@id": "https://geoready.dev/#organization" }
       },
       {
-        "@type": "WebApplication",
+        "@type": ["WebApplication", "SoftwareApplication"],
         "@id": "https://geoready.dev/#webapp",
         "name": "GeoReady",
         "url": "https://geoready.dev",
@@ -123,10 +124,28 @@ const {
         "author": {
           "@id": "https://geoready.dev/#organization"
         },
+        "brand": {
+          "@id": "https://geoready.dev/#organization"
+        },
+        "featureList": [
+          "GEO score 0-100 across 8 categories",
+          "Free one-shot web audit, no account required",
+          "Free weekly monitoring for one domain with drift email",
+          "AI citation tracking via Perplexity Sonar",
+          "Full 8-category report and fix recommendations"
+        ],
         "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
+          "@type": "AggregateOffer",
+          "priceCurrency": "EUR",
+          "lowPrice": "0",
+          "highPrice": "89",
+          "offerCount": "4",
+          "offers": [
+            { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EUR" },
+            { "@type": "Offer", "name": "Pro", "price": "19", "priceCurrency": "EUR" },
+            { "@type": "Offer", "name": "Studio", "price": "49", "priceCurrency": "EUR" },
+            { "@type": "Offer", "name": "Agency", "price": "89", "priceCurrency": "EUR" }
+          ]
         }
       }
     ]

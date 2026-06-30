@@ -8,6 +8,7 @@ import tailwindcss from '@tailwindcss/vite';
 // Dogfooding: the same integration we ship on npm (astro-geoready).
 // Skips the hand-curated public/llms.txt; generates the AI discovery files.
 import geoReady from '../integrations/astro-geoready/index.mjs';
+import { aiFaqs, aiService } from './src/data/ai-content.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -19,6 +20,8 @@ export default defineConfig({
       siteName: 'GeoReady',
       description:
         'AI visibility audit, monitoring, and citation tracking — built on the open-source GEO Optimizer engine.',
+      faqs: aiFaqs,
+      service: aiService,
     }),
   ],
 
