@@ -9,7 +9,7 @@ const description =
   'See GeoReady’s live benchmark of audited sites and their AI search readiness, including GEO score, llms.txt adoption, schema usage, and the biggest AI visibility gaps.';
 const canonical = 'https://geoready.dev/state-of-geo/';
 const datePublished = '2026-06-11';
-const dateModified = '2026-06-15';
+const dateModified = '2026-07-01';
 
 // FAQ condivise tra il corpo della pagina (visibili) e lo schema FAQPage in fondo.
 // Risposte answer-first, claim-safe: mai "the web", sempre "audited sites".
@@ -322,13 +322,30 @@ const heroVisual = marketingVisuals.commandCenterV2;
         </p>
       </section>
 
-      {/* ── Full report capture ─────────────────────────────────────────── */}
+      {/* ── June 2026 report link ───────────────────────────────────────── */}
+      <section class="rounded-2xl border border-accent-teal/30 bg-accent-teal/5 p-6">
+        <p class="text-xs font-mono text-accent-teal uppercase tracking-wider mb-3">June 2026 — Full report published</p>
+        <h2 class="font-display text-xl font-bold text-text-primary leading-tight">State of GEO: June 2026</h2>
+        <p class="mt-2 text-sm text-text-secondary">
+          288 unique domains. Average score 53.6/100. AI Discovery at 8.3% efficiency — the biggest gap.
+          Full category breakdown, TLD analysis, and the quick-win checklist to move from Foundation to Good.
+        </p>
+        <a
+          href="/state-of-geo/june-2026/"
+          data-cta="state_geo_live_june2026_report"
+          class="mt-4 inline-flex items-center gap-2 rounded-full bg-accent-teal px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+        >
+          Read the June 2026 report →
+        </a>
+      </section>
+
+      {/* ── Newsletter ──────────────────────────────────────────────────── */}
       <section>
         <NewsletterSignup
           client:visible
           source="newsletter-state-of-geo"
-          title="The full State of GEO 2026 report is coming"
-          detail="This page shows the public teaser. The full category breakdown ships as a report when the cohort passes 200 audited sites — get it by email."
+          title="Get the July 2026 report when it drops"
+          detail="The State of GEO publishes monthly. Each edition tracks score trends, adoption rates, and the evolving gap between what sites publish and what AI engines can actually read."
         />
       </section>
 
