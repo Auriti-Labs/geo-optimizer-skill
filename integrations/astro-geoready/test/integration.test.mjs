@@ -56,6 +56,43 @@ test('generates ai discovery files', async () => {
   assert.equal(summary.pages_count, PAGES.length);
 });
 
+test('generates ai/faq.json from the faqs option', async () => {
+  const faqs = [
+    { q: 'What is it?', a: 'A test.' },
+    { q: 'Is it free?', a: 'Yes.' },
+  ];
+  const dir = await runBuild({ siteName: 'Example', faqs });
+  const faq = JSON.parse(await readFile(path.join(dir, 'ai', 'faq.json'), 'utf-8'));
+  assert.equal(faq.name, 'Example — FAQ');
+  assert.equal(faq.url, 'https://example.com');
+  assert.equal(faq.questions.length, 2);
+  assert.deepEqual(faq.questions[0], { question: 'What is it?', answer: 'A test.' });
+});
+
+test('generates ai/service.json from the service option', async () => {
+  const service = {
+    type: 'Audit tool',
+    provider: 'Acme',
+    offers: [{ plan: 'Free', price: '0', priceCurrency: 'EUR' }],
+    features: ['One', 'Two'],
+  };
+  const dir = await runBuild({ siteName: 'Example', description: 'Desc.', service });
+  const svc = JSON.parse(await readFile(path.join(dir, 'ai', 'service.json'), 'utf-8'));
+  assert.equal(svc.name, 'Example');
+  assert.equal(svc.service_type, 'Audit tool');
+  assert.equal(svc.provider, 'Acme');
+  assert.equal(svc.offers.length, 1);
+  assert.deepEqual(svc.features, ['One', 'Two']);
+});
+
+test('skips faq.json and service.json when options are absent', async () => {
+  const dir = await runBuild({ siteName: 'Example' });
+  // summary.json still generated; faq/service must NOT exist without their options.
+  await readFile(path.join(dir, 'ai', 'summary.json'), 'utf-8');
+  await assert.rejects(readFile(path.join(dir, 'ai', 'faq.json'), 'utf-8'));
+  await assert.rejects(readFile(path.join(dir, 'ai', 'service.json'), 'utf-8'));
+});
+
 test('never overwrites an existing llms.txt by default', async () => {
   const dir = await runBuild({ siteName: 'Example' }, { existingLlms: 'HAND CURATED\n' });
   const content = await readFile(path.join(dir, 'llms.txt'), 'utf-8');
