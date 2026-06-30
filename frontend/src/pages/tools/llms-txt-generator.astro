@@ -9,9 +9,32 @@ const description =
   'Generate an llms.txt file from your sitemap. Help AI systems understand your most important pages with a clean, editable Markdown file.';
 const canonical = 'https://geoready.dev/tools/llms-txt-generator/';
 
+// I passi della generazione — riusati nello schema HowTo.
+const HOWTO_STEPS = [
+  ['Paste your sitemap URL', 'Enter your homepage or sitemap URL. Every URL is validated before it is fetched, with anti-SSRF protection and size limits.'],
+  ['Generate the file', 'Run the generator. It reads your sitemap, groups the URLs into sections, and produces a clean Markdown llms.txt.'],
+  ['Copy or download it', 'Copy the output or download the file, then edit the title, summary, and link descriptions to fit your site.'],
+  ['Host it at /llms.txt', 'Upload the file so it is reachable at https://yourdomain.com/llms.txt, served as plain text — the same place as robots.txt and sitemap.xml.'],
+] as const;
+
 // FAQ visibili — riusate sia nel markup crawlable che nello schema FAQPage.
 // Tenere allineate: ogni modifica al testo va replicata in entrambi i punti.
 const faqs = [
+  {
+    question: 'What is llms.txt?',
+    answer:
+      'llms.txt is a plain-text Markdown file you publish at your domain root that lists your most important pages with short descriptions, so AI systems can orient themselves around what your site is about. It sits alongside robots.txt and sitemap.xml and acts as a clarity signal, not a ranking lever.',
+  },
+  {
+    question: 'What does this llms.txt generator do?',
+    answer:
+      'It reads your sitemap, groups the URLs into H2 sections, and produces a ready-to-edit llms.txt with an H1 title and an optional summary. Instead of writing the file by hand, you get a structured starting point you can refine and publish.',
+  },
+  {
+    question: 'What input does the generator need?',
+    answer:
+      'A sitemap. Paste your sitemap URL, or enter your homepage URL and the generator discovers the sitemap automatically. If no sitemap is found, it falls back to a minimal file built from your homepage.',
+  },
   {
     question: 'Is llms.txt a ranking factor?',
     answer:
@@ -47,7 +70,7 @@ const faqs = [
       <div class="grid lg:grid-cols-[minmax(0,0.88fr)_minmax(420px,0.82fr)]">
       <div class="p-6 md:p-10 lg:p-12">
         <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
-          <a href="/" class="hover:text-accent-teal">Tools</a>
+          <a href="/" class="hover:text-accent-teal">Home</a>
           <span class="w-1 h-1 rounded-full bg-text-muted" />
           <span>llms.txt generator</span>
         </div>
@@ -172,6 +195,10 @@ const faqs = [
           </li>
         </ul>
         <p class="mt-4">
+          On WordPress, hosting a static <code class="text-sm font-mono">/llms.txt</code>
+          {' '}takes a couple of extra steps — see the guide to
+          {' '}
+          <a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">adding llms.txt to WordPress</a>.
           When you want the full picture beyond llms.txt — crawlability, schema,
           content signals, and AI discovery — run a
           {' '}
@@ -230,6 +257,8 @@ const faqs = [
     "@graph": [
       {
         "@type": "WebApplication",
+        "@id": "https://geoready.dev/tools/llms-txt-generator/#webapp",
+        "isPartOf": { "@id": "https://geoready.dev/#webapp" },
         "name": "Free llms.txt Generator",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any",
@@ -240,11 +269,7 @@ const faqs = [
           "price": "0",
           "priceCurrency": "USD"
         },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Auriti Labs",
-          "url": "https://github.com/Auriti-Labs"
-        }
+        "publisher": { "@id": "https://geoready.dev/#organization" }
       },
       {
         "@type": "FAQPage",
@@ -255,6 +280,18 @@ const faqs = [
             "@type": "Answer",
             "text": faq.answer
           }
+        }))
+      },
+      {
+        "@type": "HowTo",
+        "name": "How to generate an llms.txt",
+        "description": "Generate an llms.txt for your site: paste your sitemap URL, generate the file, copy or download it, and host it at /llms.txt at your domain root.",
+        "totalTime": "PT2M",
+        "step": HOWTO_STEPS.map(([name, text], index) => ({
+          "@type": "HowToStep",
+          "position": index + 1,
+          "name": name,
+          "text": text
         }))
       }
     ]

@@ -2,6 +2,70 @@
 import Shell from '../components/Shell.astro';
 import CompareContainer from '../components/compare/CompareContainer';
 import CompareSurface from '../components/product/CompareSurface.astro';
+
+// Le 8 categorie di segnale e i rispettivi pesi (totale 100).
+// Allineati a SCORING in src/geo_optimizer/models/config.py.
+const SIGNAL_CATEGORIES = [
+  ['robots.txt', 18, 'Whether AI crawlers can reach the site and whether the file invites citation-oriented bots rather than blocking them by default.'],
+  ['llms.txt', 18, 'Presence and quality of a root-level llms.txt: title, summary, sectioned links, and link depth that orient AI systems to the right pages.'],
+  ['Schema JSON-LD', 16, 'Valid structured data — Organization, WebSite, Article, FAQ — that lets engines disambiguate entities and pull facts confidently.'],
+  ['Meta tags', 14, 'Title, description, canonical, and Open Graph tags that keep the page identifiable and free of duplication.'],
+  ['Content', 12, 'Heading hierarchy, front-loaded answers, lists, and the numbers and links that make passages quotable.'],
+  ['Brand & entity', 10, 'Naming coherence, knowledge-graph readiness, and about/contact clarity that tie pages to a recognizable entity.'],
+  ['Signals', 6, 'Declared language, RSS, and freshness indicators that help engines judge currency.'],
+  ['AI discovery', 6, 'Machine-readable endpoints such as /.well-known/ai.txt and JSON summaries that expose the site to AI tooling.'],
+] as const;
+
+// Le bande di punteggio, identiche a SCORE_BANDS in config.py.
+const SCORE_BANDS = [
+  ['86–100', 'Excellent', 'Most signals in place; the site is structurally ready to be cited.'],
+  ['68–85', 'Good', 'Solid foundation with a few high-value gaps left to close.'],
+  ['36–67', 'Foundation', 'Core pieces exist but several categories need work.'],
+  ['0–35', 'Critical', 'Crawlability or structure blocks visibility before content matters.'],
+] as const;
+
+// I passi del confronto — riusati nel markup visibile e nello schema HowTo.
+const HOWTO_STEPS = [
+  ['Enter the first URL', 'Type the address of site A — your own domain or a reference competitor — into the first field.'],
+  ['Enter the second URL', 'Type the address of site B in the second field. Both URLs are validated before they are fetched.'],
+  ['Run the free comparison', 'Start the head-to-head audit. Each site is scored across the same 8 signal categories, with no account required.'],
+  ['Read the side-by-side gap', 'Compare the two GEO scores category by category and identify where one domain holds a measurable advantage.'],
+] as const;
+
+// FAQ visibili — riusate sia nel markup crawlable che nello schema FAQPage.
+// Tenere allineate: ogni modifica al testo va replicata in entrambi i punti.
+const faqs = [
+  {
+    question: 'What does a head-to-head GEO comparison actually measure?',
+    answer:
+      'It scores two sites across the same 8 signal categories used in the standard GEO audit — robots.txt, llms.txt, schema, meta tags, content, brand and entity signals, freshness signals, and AI discovery — and shows the gap category by category. The output is a relative readiness picture, not a prediction that a specific model will cite either site.',
+  },
+  {
+    question: 'Is the comparison free, and do I need an account?',
+    answer:
+      'The two-site comparison is free and runs without an account. It returns a side-by-side GEO score for each URL across all 8 categories. Saving reports and tracking changes over time are account features, but the comparison itself is not gated.',
+  },
+  {
+    question: 'When should I compare two sites instead of analyzing several competitors?',
+    answer:
+      'Use a two-site comparison when you have one clear benchmark — your domain against a single competitor, or a before-and-after on a redesign. When you need to see a market pattern across a set of domains, multi-competitor analysis is the better tool because it surfaces shared blockers and ranks several sites at once.',
+  },
+  {
+    question: 'Does a higher GEO score guarantee more AI citations?',
+    answer:
+      'No. The score measures structural readiness — whether crawlers can reach the site, whether content is quotable, and whether entities are clear. Citation behavior in AI engines is probabilistic and changes as models are retrained. A stronger score removes friction; it does not force a citation.',
+  },
+  {
+    question: 'Which AI engines does the comparison reflect?',
+    answer:
+      'The signals are engine-agnostic. They reflect the technical and content conditions that AI answer engines such as ChatGPT, Perplexity, and Claude rely on when they retrieve and cite sources — crawler access, structured data, quotable content, and entity clarity — rather than any single vendor’s ranking system.',
+  },
+  {
+    question: 'How should I read a large gap between two sites?',
+    answer:
+      'Read it by category, not by the headline number. A 20-point gap concentrated in robots.txt or llms.txt is a fast, technical fix; the same gap spread across content and brand signals reflects slower editorial work. Start with the category where the difference is largest and the effort is lowest.',
+  },
+];
 ---
 
 <Shell
@@ -20,7 +84,7 @@ import CompareSurface from '../components/product/CompareSurface.astro';
         />
       <div class="relative p-6 md:p-10 lg:p-12">
         <div class="flex items-center gap-2 text-[10px] font-mono text-slate-300 uppercase tracking-wider">
-          <span>GEO Optimizer</span>
+          <span>GeoReady</span>
           <span class="w-1 h-1 rounded-full bg-slate-500" />
           <span>Compare</span>
         </div>
@@ -88,6 +152,142 @@ import CompareSurface from '../components/product/CompareSurface.astro';
     <div id="compare-form" class="scroll-mt-24">
       <CompareContainer client:only="react" />
     </div>
+
+    {/* Static, crawler-visible content — answer-first */}
+    <div class="mx-auto mt-16 max-w-3xl space-y-12 md:mt-20 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      {/* When to run a comparison */}
+      <section>
+        <h2>When to run a head-to-head GEO comparison</h2>
+        <p class="mt-4">
+          Run a two-site comparison when you have one clear benchmark in mind. The
+          most common cases are your own domain against a single competitor, a
+          before-and-after on a site you have just changed, or two candidate pages
+          competing for the same query. The point is isolation: with exactly two
+          sites, every difference in the score is attributable to one of them, not
+          averaged across a crowd.
+        </p>
+        <p class="mt-4">
+          It is the wrong tool when you want a market picture. If you are trying to
+          understand how a whole category treats AI visibility, or to rank several
+          domains at once, a single pair will mislead you. For that, use
+          {' '}
+          <a href="/analyze-competitors/" class="text-accent-teal hover:underline">multi-competitor analysis</a>.
+          And if you only need a baseline for one site, you do not need a comparison
+          at all — <a href="/" class="text-accent-teal hover:underline">run a single audit</a> first,
+          then compare once you have something to measure against.
+        </p>
+      </section>
+
+      {/* What the 8 categories measure */}
+      <section>
+        <h2>What the 8 signal categories measure</h2>
+        <p class="mt-4">
+          Both sites are scored on the same eight categories used in the standard
+          GEO audit, weighted to a total of 100 points. The weights reflect how much
+          each category influences whether an AI answer engine can reach, understand,
+          and quote a page. Crawlability and orientation files carry the most weight
+          because they gate everything downstream: if a bot cannot fetch the page or
+          find your key URLs, the quality of the content never gets a chance to matter.
+        </p>
+        <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-border text-text-muted">
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Category</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Weight</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">What it checks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SIGNAL_CATEGORIES.map(([name, weight, detail]) => (
+                <tr class="border-b border-border/60 last:border-0 align-top">
+                  <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary whitespace-nowrap">{name}</th>
+                  <td class="px-4 py-3 font-mono text-text-secondary">{weight}</td>
+                  <td class="px-4 py-3 text-text-secondary leading-relaxed">{detail}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-4">
+          The same weights apply to both sites, so the comparison is apples to apples.
+          A site can score well on content yet lose the overall gap on a single
+          blocked crawler — which is exactly the kind of imbalance a side-by-side view
+          makes visible.
+        </p>
+      </section>
+
+      {/* How to read the gap */}
+      <section>
+        <h2>How to read the gap between two sites</h2>
+        <p class="mt-4">
+          Read the gap by category, not by the headline number. Two sites can sit ten
+          points apart for very different reasons, and the reason determines the work.
+          A gap concentrated in robots.txt or llms.txt is usually a technical fix you
+          can ship in an afternoon. The same gap spread across content and brand
+          signals reflects editorial and authority work that takes weeks.
+        </p>
+        <p class="mt-4">
+          Map each category difference to the band it falls into:
+        </p>
+        <div class="mt-6 grid gap-3 sm:grid-cols-2">
+          {SCORE_BANDS.map(([range, label, meaning]) => (
+            <div class="rounded-xl border border-border bg-bg-surface p-4">
+              <div class="flex items-baseline gap-3">
+                <span class="font-mono text-sm text-accent-teal">{range}</span>
+                <span class="font-display text-base font-semibold text-text-primary">{label}</span>
+              </div>
+              <p class="mt-2 text-sm leading-relaxed text-text-secondary">{meaning}</p>
+            </div>
+          ))}
+        </div>
+        <p class="mt-4">
+          Then prioritize where the difference is largest and the effort is lowest.
+          A losing site in the foundation band with a strong competitor in good
+          territory should fix crawlability and structure before touching copy. If
+          you want the full reasoning behind why these categories matter for AI
+          engines specifically, the <a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO guide</a>
+          {' '}explains what changes when the interface is an answer rather than a list of links.
+        </p>
+      </section>
+
+      {/* Comparison vs multi-competitor analysis */}
+      <section>
+        <h2>Comparison vs multi-competitor analysis</h2>
+        <p class="mt-4">
+          A two-site comparison and a multi-competitor analysis answer different
+          questions. The comparison is built for depth on a single pair: it puts two
+          domains side by side so the gap in each category is explicit and easy to
+          act on. It is the right tool for a duel — you versus one rival, or one
+          version of a page versus another.
+        </p>
+        <p class="mt-4">
+          Multi-competitor analysis is built for breadth. It runs a batch audit across
+          several domains and surfaces the pattern — shared blockers, the signals the
+          leaders have in common, and where a whole set of sites is weak. Use it when
+          you are setting strategy for a category rather than closing a gap with one
+          competitor. When a pattern points you back to a single contender, return here
+          and run the head-to-head. See
+          {' '}
+          <a href="/analyze-competitors/" class="text-accent-teal hover:underline">competitor AI visibility analysis</a>
+          {' '}for the multi-site view.
+        </p>
+      </section>
+
+      {/* FAQ */}
+      <section>
+        <h2>Comparison FAQ</h2>
+        <div class="mt-6 space-y-6">
+          {faqs.map((faq) => (
+            <div>
+              <h3>{faq.question}</h3>
+              <p class="mt-2">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
   </div>
 
   {/* Page-specific schema */}
@@ -98,20 +298,20 @@ import CompareSurface from '../components/product/CompareSurface.astro';
     "description": "Run a free head-to-head GEO audit. Enter two URLs and compare AI search visibility, citability, and technical signals for ChatGPT, Perplexity, and Claude.",
     "url": "https://geoready.dev/compare/",
     "author": {
-      "@type": "Organization",
-      "name": "Auriti Labs",
-      "url": "https://github.com/Auriti-Labs"
+      "@id": "https://geoready.dev/#organization"
     },
     "publisher": {
-      "@type": "Organization",
-      "name": "Auriti Labs",
-      "url": "https://github.com/Auriti-Labs"
+      "@id": "https://geoready.dev/#organization"
     },
     "datePublished": "2026-05-12",
     "dateModified": "2026-05-26",
     "mainEntity": {
       "@type": "WebApplication",
-      "name": "GEO Optimizer Comparison Tool",
+      "@id": "https://geoready.dev/compare/#tool",
+      "isPartOf": {
+        "@id": "https://geoready.dev/#webapp"
+      },
+      "name": "GeoReady Comparison Tool",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Web",
       "offers": {
@@ -126,5 +326,34 @@ import CompareSurface from '../components/product/CompareSurface.astro';
         "AI visibility scoring"
       ]
     }
+  })} />
+
+  {/* FAQPage — stesse FAQ visibili nel markup */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  })} />
+
+  {/* HowTo — i passi del confronto due siti */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to compare AI search visibility for two sites",
+    "description": "Run a free head-to-head GEO comparison: enter two URLs, score each site across the same 8 signal categories, and read the side-by-side gap.",
+    "totalTime": "PT2M",
+    "step": HOWTO_STEPS.map(([name, text], index) => ({
+      "@type": "HowToStep",
+      "position": index + 1,
+      "name": name,
+      "text": text
+    }))
   })} />
 </Shell>

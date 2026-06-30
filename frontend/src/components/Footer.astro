@@ -1,8 +1,11 @@
 ---
-const footerLinks = [
-  { label: "GitHub", href: "https://github.com/Auriti-Labs/geo-optimizer-skill" },
-  { label: "Docs", href: "https://auriti-labs.github.io/geo-optimizer-skill/" },
-  { label: "PyPI", href: "https://pypi.org/project/geo-optimizer-skill/" },
+// I link esterni portano `cta` per far scattare geo_cta_clicked via ctaTracking
+// (listener delegato già caricato da Shell.astro).
+const footerLinks: { label: string; href: string; cta?: string }[] = [
+  { label: "GitHub", href: "https://github.com/Auriti-Labs/geo-optimizer-skill", cta: "footer_github" },
+  { label: "Docs", href: "https://auriti-labs.github.io/geo-optimizer-skill/", cta: "footer_docs" },
+  { label: "PyPI", href: "https://pypi.org/project/geo-optimizer-skill/", cta: "footer_pypi" },
+  { label: "Methodology", href: "/methodology/" },
   { label: "Pricing", href: "/pricing/" },
   { label: "About", href: "/about/" },
   { label: "Privacy", href: "/privacy/" },
@@ -32,6 +35,7 @@ const footerLinks = [
             class="text-sm text-text-muted hover:text-text-inverse transition-colors"
             target={l.href.startsWith('http') ? '_blank' : undefined}
             rel={l.href.startsWith('http') ? 'noopener' : undefined}
+            data-cta={l.cta}
           >
             {l.label}
           </a>

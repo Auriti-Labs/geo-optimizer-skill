@@ -1,0 +1,548 @@
+---
+import Shell from '../components/Shell.astro';
+
+const title = 'State of GEO 2026 — AI Search Readiness Report | GeoReady';
+const description =
+  'The first AI search readiness benchmark: 204 audits, 165 domains, 8 categories. Average GEO score 57/100. 75% of sites are invisible to AI answer engines. Data from GeoReady, June 2026.';
+const canonical = 'https://geoready.dev/state-of-geo-2026/';
+const datePublished = '2026-06-22';
+const dateModified = '2026-06-22';
+
+const faqs = [
+  {
+    question: 'What is the State of GEO 2026 report?',
+    answer:
+      'The State of GEO 2026 is the first structured benchmark of AI search readiness across real websites. It is built from 204 audits of 165 unique domains run through GeoReady between June 10 and June 22, 2026 — each scored on the same open-source 100-point, 8-category rubric. It is an audited sample, not a survey of the whole web.',
+  },
+  {
+    question: 'What is a good GEO score?',
+    answer:
+      'On the open-source GEO rubric: 86–100 is excellent, 68–85 is good, 36–67 is foundation, and 0–35 is critical. The 2026 average across audited sites is 57/100 — squarely in the foundation band. A score of 68+ means a site has cleared the basics: AI crawler access, structured data, and an llms.txt.',
+  },
+  {
+    question: 'Why do 75% of sites fail to reach "good"?',
+    answer:
+      'The biggest drag is AI discovery (average 0.7/6) and brand entity clarity (4.2/10). These categories measure how well a site signals its identity and exposes machine-readable endpoints to AI tools. Most sites have acceptable HTML basics but have not yet thought about AI-specific signals.',
+  },
+  {
+    question: 'What is the single biggest quick win?',
+    answer:
+      'Publishing an llms.txt file. Sites with llms.txt average 66/100; sites without average 42/100 — a 24-point gap. It is a plain-text file that takes less than an hour to publish and has the strongest correlation with overall GEO score in this dataset.',
+  },
+  {
+    question: 'Is schema.org markup still worth adding?',
+    answer:
+      'Yes. Sites with any valid JSON-LD schema average 65/100; sites without average 36/100 — a 29-point gap. Organization and WebSite schema are the highest-leverage types: they help AI models disambiguate your brand and surface clean answers about who you are.',
+  },
+  {
+    question: 'Is this benchmark representative of the whole web?',
+    answer:
+      'No. This is a benchmark of sites that chose to measure their AI readiness with GeoReady — a sample that skews toward teams already curious about AI visibility. It is best read as a directional signal, not a universal statistic.',
+  },
+];
+---
+
+<Shell title={title} description={description} canonical={canonical} robots="noindex,nofollow">
+  <article class="px-4 sm:px-6 py-10 md:py-16">
+    <div class="max-w-3xl mx-auto">
+
+      {/* ── Breadcrumb ──────────────────────────────────────────────────── */}
+      <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider mb-6">
+        <a href="/" class="hover:text-accent-teal">GeoReady</a>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <a href="/state-of-geo/" class="hover:text-accent-teal">State of GEO</a>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>2026 Report</span>
+      </nav>
+
+      {/* ── Hero ────────────────────────────────────────────────────────── */}
+      <header class="mb-12">
+        <div class="inline-flex items-center gap-2 rounded-full border border-accent-teal/30 bg-accent-teal/5 px-3 py-1 text-xs font-mono text-accent-teal mb-4">
+          June 2026 · 165 domains · First edition
+        </div>
+        <h1 class="font-display text-4xl font-bold text-text-primary leading-tight tracking-tight md:text-5xl">
+          State of GEO 2026
+        </h1>
+        <p class="mt-2 text-lg font-medium text-text-secondary">AI Search Readiness Report</p>
+        <p class="mt-5 text-base md:text-lg text-text-secondary leading-relaxed max-w-2xl">
+          The first structured benchmark of AI search readiness across real websites.
+          204 audits. 165 domains. One consistent rubric.
+          Here is where the web stands — and where the biggest gaps are.
+        </p>
+        <p class="mt-4 text-xs font-mono text-text-muted">
+          Audited sample · Anonymized · June 10–22, 2026 · <a href="#methodology" class="text-accent-teal hover:underline">Methodology ↓</a>
+        </p>
+      </header>
+
+      <div class="space-y-14 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+        {/* ── Executive summary ───────────────────────────────────────────── */}
+        <section>
+          <h2>Executive summary</h2>
+          <p class="mt-4">
+            The average GEO score across audited sites is <strong class="text-text-primary">57 out of 100</strong> —
+            squarely in the "foundation" band. <strong class="text-text-primary">75% of sites</strong> have not
+            yet reached the "good" threshold. The biggest gap is not content quality:
+            it is machine legibility. AI discovery signals average just <strong class="text-text-primary">0.7 out of 6</strong>,
+            and only <strong class="text-text-primary">16%</strong> of sites expose any AI-readable endpoints.
+          </p>
+          <p class="mt-4">
+            The fastest path to a better score: publish an <code class="text-sm font-mono">llms.txt</code>
+            and add <code class="text-sm font-mono">Organization</code> JSON-LD. Sites with <code class="text-sm font-mono">llms.txt</code>
+            average <strong class="text-text-primary">24 points higher</strong> than those without.
+            Sites with schema average <strong class="text-text-primary">29 points higher</strong>.
+            Both take less than a day to implement.
+          </p>
+        </section>
+
+        {/* ── Score distribution ──────────────────────────────────────────── */}
+        <section>
+          <h2>Score distribution</h2>
+          <p class="mt-4">
+            204 audits across 165 unique domains, scored June 10–22, 2026.
+            The distribution skews toward the foundation band — most sites have cleared
+            basic HTML hygiene but have not yet invested in AI-specific signals.
+          </p>
+
+          {/* Big number cards */}
+          <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="rounded-xl border border-border bg-bg-surface px-4 py-5 text-center">
+              <p class="text-3xl font-bold text-text-primary">57</p>
+              <p class="mt-1 text-xs text-text-muted">Average score</p>
+            </div>
+            <div class="rounded-xl border border-border bg-bg-surface px-4 py-5 text-center">
+              <p class="text-3xl font-bold text-text-primary">60</p>
+              <p class="mt-1 text-xs text-text-muted">Median score</p>
+            </div>
+            <div class="rounded-xl border border-border bg-bg-surface px-4 py-5 text-center">
+              <p class="text-3xl font-bold text-text-primary">7</p>
+              <p class="mt-1 text-xs text-text-muted">Score min</p>
+            </div>
+            <div class="rounded-xl border border-border bg-bg-surface px-4 py-5 text-center">
+              <p class="text-3xl font-bold text-text-primary">90</p>
+              <p class="mt-1 text-xs text-text-muted">Score max</p>
+            </div>
+          </div>
+
+          {/* Percentile strip */}
+          <div class="mt-4 rounded-xl border border-border bg-bg-surface px-5 py-4">
+            <p class="text-xs font-mono text-text-muted uppercase tracking-wider mb-3">Score percentiles</p>
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <p class="text-xl font-bold text-text-primary">47</p>
+                <p class="text-xs text-text-muted">P25 — bottom quarter</p>
+              </div>
+              <div>
+                <p class="text-xl font-bold text-text-primary">60</p>
+                <p class="text-xs text-text-muted">P50 — median</p>
+              </div>
+              <div>
+                <p class="text-xl font-bold text-text-primary">67</p>
+                <p class="text-xs text-text-muted">P75 — top quarter</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Band breakdown */}
+          <div class="mt-6">
+            <h3>Readiness bands</h3>
+            <p class="mt-2 text-sm">
+              63% of sites fall in the "foundation" band. Only 7% reach "excellent" — the threshold where all eight categories are properly implemented.
+            </p>
+            <div class="mt-4 space-y-3">
+              {[
+                { band: 'Critical', range: '0–35', n: 24, pct: 11.8, color: '#DC2626' },
+                { band: 'Foundation', range: '36–67', n: 129, pct: 63.2, color: '#D97706' },
+                { band: 'Good', range: '68–85', n: 36, pct: 17.6, color: '#2563EB' },
+                { band: 'Excellent', range: '86–100', n: 15, pct: 7.4, color: '#059669' },
+              ].map(({ band, range, n, pct, color }) => (
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="font-medium text-text-primary">{band} <span class="font-normal text-text-muted">({range})</span></span>
+                    <span class="font-mono text-text-primary">{pct}% <span class="text-text-muted">· {n} sites</span></span>
+                  </div>
+                  <div class="h-2.5 rounded-full bg-bg-subtle overflow-hidden">
+                    <div class="h-full rounded-full" style={`width:${pct}%;background-color:${color}`} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Category breakdown ──────────────────────────────────────────── */}
+        <section>
+          <h2>Score by category</h2>
+          <p class="mt-4">
+            Eight categories, each with a fixed max. The percentage of max achieved
+            shows where the market is leaving points on the table.
+          </p>
+          <div class="mt-6 space-y-4">
+            {[
+              { name: 'Meta tags', avg: 12.7, max: 14, pct: 91 },
+              { name: 'Content quality', avg: 10.0, max: 12, pct: 83 },
+              { name: 'Robots.txt / AI crawlers', avg: 13.7, max: 18, pct: 76 },
+              { name: 'Technical signals', avg: 3.8, max: 6, pct: 63 },
+              { name: 'llms.txt', avg: 7.8, max: 18, pct: 43 },
+              { name: 'Brand & entity', avg: 4.2, max: 10, pct: 42 },
+              { name: 'Schema JSON-LD', avg: 6.8, max: 16, pct: 43 },
+              { name: 'AI discovery', avg: 0.7, max: 6, pct: 12 },
+            ].sort((a, b) => b.pct - a.pct).map(({ name, avg, max, pct }) => (
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-text-secondary">{name}</span>
+                  <span class="font-mono text-text-primary">{avg}/{max} <span class="text-text-muted">({pct}%)</span></span>
+                </div>
+                <div class="h-2 rounded-full bg-bg-subtle overflow-hidden">
+                  <div
+                    class="h-full rounded-full bg-accent-teal"
+                    style={`width:${pct}%;opacity:${pct < 20 ? '0.5' : '1'}`}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div class="mt-5 rounded-xl border border-amber-500/30 bg-amber-500/5 px-5 py-4">
+            <p class="text-xs font-mono text-amber-600 uppercase tracking-wider">Biggest gap</p>
+            <p class="mt-1 text-base font-semibold text-text-primary">AI discovery — 12% of max (avg 0.7/6)</p>
+            <p class="mt-1 text-sm text-text-secondary">
+              Only 16% of sites expose any AI-readable discovery endpoints. Files like
+              <code class="text-xs font-mono">/.well-known/ai.txt</code> are trivial to add
+              yet almost universally absent — an easy differentiator this week.
+            </p>
+          </div>
+        </section>
+
+        {/* ── Adoption rates ──────────────────────────────────────────────── */}
+        <section>
+          <h2>Adoption of AI-readiness signals</h2>
+          <p class="mt-4">
+            How many of the 165 audited domains have implemented each signal. Most HTML
+            basics are in place; AI-specific signals are not.
+          </p>
+          <div class="mt-6 space-y-3">
+            {[
+              { label: 'HTML lang attribute', pct: 94.8 },
+              { label: 'H1 heading', pct: 86.3 },
+              { label: 'Canonical URL', pct: 85.8 },
+              { label: 'Answer-first content structure', pct: 80.9 },
+              { label: 'Any schema.org JSON-LD', pct: 72.1 },
+              { label: 'llms.txt (any)', pct: 61.3 },
+              { label: 'Organization schema', pct: 58.8 },
+              { label: 'llms.txt (complete with sections)', pct: 31.9 },
+              { label: 'FAQ content blocks', pct: 21.1 },
+              { label: 'FAQPage schema', pct: 21.1 },
+              { label: 'AI discovery endpoints', pct: 15.7 },
+            ].map(({ label, pct }) => (
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-text-secondary">{label}</span>
+                  <span class="font-mono text-text-primary">{pct}%</span>
+                </div>
+                <div class="h-2 rounded-full bg-bg-subtle overflow-hidden">
+                  <div class="h-full rounded-full bg-accent-teal" style={`width:${pct}%`} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Impact of key signals ───────────────────────────────────────── */}
+        <section>
+          <h2>Impact of implementing key signals</h2>
+          <p class="mt-4">
+            The score delta between sites that have implemented a signal and those that
+            have not, across the full dataset.
+          </p>
+          <div class="mt-6 grid sm:grid-cols-2 gap-4">
+            <div class="rounded-xl border border-border bg-bg-surface p-5">
+              <p class="text-xs font-mono text-text-muted uppercase tracking-wider">llms.txt present</p>
+              <div class="mt-3 flex items-end gap-4">
+                <div class="text-center">
+                  <p class="text-2xl font-bold text-accent-teal">66</p>
+                  <p class="text-xs text-text-muted">With llms.txt</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-2xl font-bold text-text-muted">42</p>
+                  <p class="text-xs text-text-muted">Without</p>
+                </div>
+                <div class="ml-auto text-right">
+                  <p class="text-2xl font-bold text-green-500">+24</p>
+                  <p class="text-xs text-text-muted">avg delta</p>
+                </div>
+              </div>
+            </div>
+            <div class="rounded-xl border border-border bg-bg-surface p-5">
+              <p class="text-xs font-mono text-text-muted uppercase tracking-wider">Schema JSON-LD present</p>
+              <div class="mt-3 flex items-end gap-4">
+                <div class="text-center">
+                  <p class="text-2xl font-bold text-accent-teal">65</p>
+                  <p class="text-xs text-text-muted">With schema</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-2xl font-bold text-text-muted">36</p>
+                  <p class="text-xs text-text-muted">Without</p>
+                </div>
+                <div class="ml-auto text-right">
+                  <p class="text-2xl font-bold text-green-500">+29</p>
+                  <p class="text-xs text-text-muted">avg delta</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="mt-4 text-sm text-text-muted">
+            Correlation, not causation — sites investing in AI readiness tend to invest across the board.
+            But both signals are among the fastest to implement and among the highest-leverage in this dataset.
+          </p>
+        </section>
+
+        {/* ── Robots / AI crawlers ────────────────────────────────────────── */}
+        <section>
+          <h2>AI crawler access</h2>
+          <p class="mt-4">
+            Robots.txt is the gatekeeping layer for AI training and retrieval. Across audited sites,
+            most are open — but a meaningful minority actively block AI bots.
+          </p>
+          <div class="mt-5 grid grid-cols-3 gap-4 text-center">
+            <div class="rounded-xl border border-border bg-bg-surface px-4 py-5">
+              <p class="text-2xl font-bold text-text-primary">23.5</p>
+              <p class="mt-1 text-xs text-text-muted">Avg AI bots<br/>explicitly allowed</p>
+            </div>
+            <div class="rounded-xl border border-border bg-bg-surface px-4 py-5">
+              <p class="text-2xl font-bold text-red-500">8.8%</p>
+              <p class="mt-1 text-xs text-text-muted">Sites with at least<br/>one AI bot blocked</p>
+            </div>
+            <div class="rounded-xl border border-border bg-bg-surface px-4 py-5">
+              <p class="text-2xl font-bold text-text-primary">0.7</p>
+              <p class="mt-1 text-xs text-text-muted">Avg AI bots<br/>missing from robots.txt</p>
+            </div>
+          </div>
+          <p class="mt-4 text-sm">
+            Nearly 9% of sites are silently blocking AI crawlers — likely through catch-all
+            <code class="text-sm font-mono">Disallow: /</code> rules that predate AI bots.
+            An <a href="/" class="text-accent-teal hover:underline">audit</a> surfaces this in seconds.
+          </p>
+        </section>
+
+        {/* ── Domain geography ────────────────────────────────────────────── */}
+        <section>
+          <h2>Domain geography</h2>
+          <p class="mt-4">
+            The audited sample spans 25+ TLDs. Half are <code class="text-sm font-mono">.com</code> —
+            the rest skew toward developer and tech-adjacent domains, reflecting early adopter interest in AI visibility.
+          </p>
+          <div class="mt-5 grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {[
+              { tld: '.com', pct: 50.0 },
+              { tld: '.dev', pct: 7.4 },
+              { tld: '.io', pct: 5.4 },
+              { tld: '.it', pct: 5.4 },
+              { tld: '.ai', pct: 3.4 },
+              { tld: '.app', pct: 3.9 },
+              { tld: '.org', pct: 3.4 },
+              { tld: '.in', pct: 2.9 },
+              { tld: '.fr', pct: 2.0 },
+              { tld: 'other', pct: 16.2 },
+            ].map(({ tld, pct }) => (
+              <div class="rounded-lg border border-border bg-bg-surface px-3 py-3 text-center">
+                <p class="font-mono text-sm font-semibold text-text-primary">{tld}</p>
+                <p class="text-xs text-text-muted">{pct}%</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── What this means ─────────────────────────────────────────────── */}
+        <section>
+          <h2>What this means</h2>
+          <p class="mt-4">
+            The data points to one conclusion: among sites that bothered to measure, most
+            are still leaving easy AI visibility points on the table. The gaps are rarely
+            about content quality — they are about machine legibility.
+          </p>
+          <p class="mt-4">
+            AI answer engines cannot cite what they cannot reach, parse, or trust. The
+            cheapest wins sit in exactly those three layers: open your <code class="text-sm font-mono">robots.txt</code>
+            to AI crawlers, publish an <code class="text-sm font-mono">llms.txt</code>, and
+            add <code class="text-sm font-mono">Organization</code> JSON-LD. That combination
+            moves a site from the bottom of the foundation band to the top — and none of it
+            requires guessing at model internals.
+          </p>
+          <p class="mt-4">
+            The 7% of sites that already score "excellent" share one trait: they have
+            implemented <em>all eight categories</em>, not just the easy ones. AI discovery
+            signals — the weakest category in this report at 12% of max — are where the
+            excellent tier separates itself from the good one.
+          </p>
+        </section>
+
+        {/* ── Action checklist ────────────────────────────────────────────── */}
+        <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+          <h2>Your AI visibility checklist</h2>
+          <p class="mt-3">
+            The five moves that close most of the gap between "foundation" and "good",
+            ranked by this dataset's correlation with overall score:
+          </p>
+          <ol class="mt-5 space-y-4 list-decimal pl-5">
+            <li>
+              <strong class="text-text-primary">Publish an llms.txt</strong> — the strongest single predictor in this dataset (+24 points avg).
+              <a href="/tools/llms-txt-generator/" class="text-accent-teal hover:underline ml-1">Free generator →</a>
+            </li>
+            <li>
+              <strong class="text-text-primary">Add Organization + WebSite JSON-LD</strong> — schema presence correlates with +29 points.
+              58.8% of audited sites have it; 41.2% still do not.
+            </li>
+            <li>
+              <strong class="text-text-primary">Audit your robots.txt</strong> — 8.8% of sites are silently blocking AI bots.
+              Check explicitly for GPTBot, ClaudeBot, PerplexityBot.
+            </li>
+            <li>
+              <strong class="text-text-primary">Add AI discovery files</strong> — <code class="text-sm font-mono">/.well-known/ai.txt</code>
+              and a complete llms.txt are present on only 16% of sites. This is the fastest differentiator.
+            </li>
+            <li>
+              <strong class="text-text-primary">Lead key pages with a direct answer</strong> — 80.9% of sites already do this;
+              if you are in the 19.1% that do not, it is the easiest content fix.
+            </li>
+          </ol>
+          <div class="mt-6">
+            <a
+              href="/"
+              data-cta="state_geo_2026_checklist_run_audit"
+              class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+            >
+              Run your free audit and see your score →
+            </a>
+          </div>
+        </section>
+
+        {/* ── Methodology ─────────────────────────────────────────────────── */}
+        <section id="methodology">
+          <h2>Methodology</h2>
+          <p class="mt-4">
+            This report is built from 204 audits of 165 unique domains run through GeoReady
+            between June 10 and June 22, 2026. Each site is scored with the same open-source
+            GEO Optimizer engine — the same engine powering the free audit tool — across
+            8 categories for a total of 100 points.
+          </p>
+          <ul class="mt-4 space-y-2 list-disc pl-5">
+            <li><strong>Audited sites only.</strong> A benchmark of sites that chose to measure, not a sample of the whole web. The sample skews toward teams already curious about AI visibility.</li>
+            <li><strong>One row per domain.</strong> Where a domain was audited more than once, only the most recent audit is counted. Re-audits do not inflate the cohort.</li>
+            <li><strong>User-initiated audits only.</strong> Automated monitoring runs are excluded. Every row in this report reflects a deliberate measurement.</li>
+            <li><strong>Aggregated and anonymized.</strong> Domains are stored as salted hashes. This report exposes aggregates and adoption rates only — never individual domain results.</li>
+            <li><strong>Same rubric for everyone.</strong> 100-point, 8-category score: robots.txt / AI crawlers (18pt), llms.txt (18pt), schema JSON-LD (16pt), content quality (12pt), meta tags (14pt), brand &amp; entity (10pt), technical signals (6pt), AI discovery (6pt).</li>
+            <li><strong>Engine version: 4.13–4.14.</strong> Minor version differences within the dataset do not affect category weights or score interpretation.</li>
+          </ul>
+        </section>
+
+        {/* ── FAQ ─────────────────────────────────────────────────────────── */}
+        <section>
+          <h2>FAQ</h2>
+          <div class="mt-4 space-y-6">
+            {faqs.map((faq) => (
+              <div>
+                <h3>{faq.question}</h3>
+                <p class="mt-2">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Final CTA ───────────────────────────────────────────────────── */}
+        <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+          <h2>Beat the benchmark</h2>
+          <p class="mt-3">
+            The average across audited sites is 57/100. Run a free audit in 60 seconds to see
+            exactly where your site stands — and which category recovers the most points first.
+          </p>
+          <div class="mt-6 flex flex-col sm:flex-row gap-3">
+            <a
+              href="/"
+              data-cta="state_geo_2026_final_run_audit"
+              class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+            >
+              Run your free AI SEO audit
+            </a>
+            <a
+              href="/state-of-geo/"
+              data-cta="state_geo_2026_live_benchmark"
+              class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+            >
+              View live benchmark →
+            </a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </article>
+
+  {/* ── Structured data ─────────────────────────────────────────────────── */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "@id": canonical,
+        "url": canonical,
+        "name": title,
+        "headline": "State of GEO 2026 — AI Search Readiness Report",
+        "description": description,
+        "datePublished": datePublished,
+        "dateModified": dateModified,
+        "isPartOf": { "@id": "https://geoready.dev/#website" },
+        "author": {
+          "@type": "Organization",
+          "name": "GeoReady",
+          "url": "https://geoready.dev"
+        },
+        "about": [
+          "Generative Engine Optimization",
+          "AI search readiness",
+          "llms.txt adoption",
+          "Schema JSON-LD",
+          "AI visibility benchmark"
+        ]
+      },
+      {
+        "@type": "Dataset",
+        "name": "State of GEO 2026 — AI Search Readiness Benchmark",
+        "description": "204 audits of 165 unique domains, June 2026. Average GEO score 57/100. 8-category open-source rubric.",
+        "url": canonical,
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "isAccessibleForFree": true,
+        "datePublished": datePublished,
+        "creator": {
+          "@type": "Organization",
+          "name": "GeoReady",
+          "url": "https://geoready.dev"
+        },
+        "measurementTechnique": "GEO Optimizer open-source 100-point, 8-category audit engine",
+        "variableMeasured": [
+          "Average GEO score (0–100)",
+          "Median GEO score (0–100)",
+          "llms.txt adoption rate",
+          "Schema JSON-LD adoption rate",
+          "AI discovery endpoint adoption rate",
+          "Score by readiness band"
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": faqs.map((faq) => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": { "@type": "Answer", "text": faq.answer }
+        }))
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "GeoReady", "item": "https://geoready.dev/" },
+          { "@type": "ListItem", "position": 2, "name": "State of GEO", "item": "https://geoready.dev/state-of-geo/" },
+          { "@type": "ListItem", "position": 3, "name": "2026 Report", "item": canonical }
+        ]
+      }
+    ]
+  })} />
+</Shell>

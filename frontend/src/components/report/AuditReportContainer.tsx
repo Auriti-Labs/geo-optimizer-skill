@@ -91,7 +91,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 text-center">
         <div className="inline-flex items-center gap-2 text-sm text-text-muted">
-          <svg className="animate-spin w-4 h-4 text-accent-teal" viewBox="0 0 24 24" fill="none">
+          <svg className="animate-spin w-4 h-4 text-accent-teal" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-20" />
             <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
           </svg>

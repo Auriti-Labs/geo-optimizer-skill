@@ -40,7 +40,7 @@ const selfServePlans = [
       'Full 8-category GEO report',
       '1 domain — weekly monitoring',
       '30-audit score history',
-      'Regression alerts (±5 points)',
+      'Regression alerts (when your score moves by 5 points or more)',
       'PDF export',
       'API access (Bearer token)',
     ],
@@ -187,12 +187,26 @@ const faqs = [
             <span>Pricing</span>
           </div>
           <h1 class="mt-4 max-w-3xl font-display text-4xl font-bold text-text-primary leading-tight tracking-tight md:text-5xl">
-            Start with a free audit. Pay when monitoring becomes part of the workflow.
+            Free GEO audit, forever. Pay only when you need monitoring.
           </h1>
           <p class="mt-5 max-w-2xl text-base text-text-secondary leading-relaxed">
-            The free audit requires no account and returns a GEO score with actionable recommendations.
-            Paid plans add continuity: monitoring, score history, alerts, exports, and team workflows.
+            Run a full GEO score on any URL with no account and no card — every time you want.
+            Paid plans add what a one-shot audit can't: weekly monitoring, score history, regression
+            alerts, exports, and team workflows.
           </p>
+
+          <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <a
+              href="/"
+              data-cta="pricing_hero_free_audit"
+              class="inline-flex items-center justify-center rounded-[--radius-md] bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+            >
+              Start free audit →
+            </a>
+            <span class="text-sm text-text-muted">
+              No time trial. No card required for Free. Cancel anytime.
+            </span>
+          </div>
 
           <div class="mt-8 grid gap-3 sm:grid-cols-3">
             <div class="border-l border-accent-teal/30 pl-4">
@@ -210,8 +224,8 @@ const faqs = [
           </div>
 
           <p class="mt-8 max-w-2xl text-sm text-text-muted leading-relaxed">
-            The web audit and CLI are MIT-licensed and will always remain free. No trial periods.
-            No credit card required for the Free plan.
+            The web audit and CLI are MIT-licensed and remain free forever. The CLI runs locally with
+            no usage limits.
           </p>
         </div>
 
@@ -233,6 +247,23 @@ const faqs = [
         ))}
       </div>
     </header>
+
+    {/* Credibility row — verifiable signals only (open-source, research-backed, coverage) */}
+    <section aria-label="What the audit is built on" class="mb-16 -mt-8">
+      <ul class="grid gap-px overflow-hidden rounded-[--radius-lg] border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          ['Open source, MIT', 'Scoring weights are public and auditable on GitHub.'],
+          ['Research-grounded', 'Weights follow Princeton KDD 2024 and AutoGEO ICLR 2026.'],
+          ['27 AI bots checked', 'robots.txt access verified across 27 AI crawlers.'],
+          ['47 citability methods', 'Each audit runs 47 citation-signal checks.'],
+        ].map(([label, text]) => (
+          <li class="bg-bg-surface p-5">
+            <p class="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent-teal">{label}</p>
+            <p class="mt-2 text-sm leading-relaxed text-text-secondary">{text}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
 
     {/* Plan cards */}
     <section aria-labelledby="plans-heading">
@@ -271,7 +302,7 @@ const faqs = [
             <ul class="flex-1 space-y-2 mb-6">
               {plan.features.map((f) => (
                 <li class="flex items-start gap-2 text-sm text-text-secondary">
-                  <svg class="mt-0.5 w-3.5 h-3.5 shrink-0 text-accent-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <svg aria-hidden="true" class="mt-0.5 w-3.5 h-3.5 shrink-0 text-accent-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   {f}
@@ -316,7 +347,7 @@ const faqs = [
             <ul class="flex-1 space-y-2 mb-6">
               {plan.features.map((f) => (
                 <li class="flex items-start gap-2 text-sm text-text-secondary">
-                  <svg class="mt-0.5 w-3.5 h-3.5 shrink-0 text-accent-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <svg aria-hidden="true" class="mt-0.5 w-3.5 h-3.5 shrink-0 text-accent-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   {f}
@@ -408,7 +439,7 @@ const faqs = [
             </li>
             <li class="flex items-start gap-2.5">
               <span class="mt-0.5 text-accent-teal shrink-0">+</span>
-              Regression alerts — notified when score drops ≥5 points
+              Regression alerts — notified when your score moves by 5 points or more
             </li>
             <li class="flex items-start gap-2.5">
               <span class="mt-0.5 text-accent-teal shrink-0">+</span>
@@ -425,7 +456,7 @@ const faqs = [
         Why not a traditional SEO tool?
       </h2>
       <p class="text-sm text-text-secondary mb-8 max-w-2xl">
-        SEO tools measure ranking signals. GEO Optimizer measures citation signals — a different question entirely.
+        SEO tools measure ranking signals. GeoReady measures citation signals — a different question entirely.
       </p>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="p-5 rounded-[--radius-lg] border border-border bg-bg-surface">
@@ -466,7 +497,7 @@ const faqs = [
         <div class="p-5 rounded-[--radius-lg] border border-border bg-bg-surface">
           <p class="text-sm font-semibold text-text-primary mb-2">Complements, doesn't replace</p>
           <p class="text-sm text-text-secondary leading-relaxed">
-            Use GEO Optimizer alongside your existing SEO tooling. A strong GEO score makes a well-ranked
+            Use GeoReady alongside your existing SEO tooling. A strong GEO score makes a well-ranked
             page more likely to be cited by AI assistants.
           </p>
         </div>
@@ -561,18 +592,14 @@ const faqs = [
     "@graph": [
       {
         "@type": "WebPage",
-        "name": "GEO Optimizer Pricing",
-        "description": "GEO Optimizer pricing — free audit with no account required, Pro monitoring, Studio multi-site, Agency workspace.",
+        "name": "GeoReady Pricing",
+        "description": "GeoReady pricing — free audit with no account required, Pro monitoring, Studio multi-site, Agency workspace.",
         "url": "https://geoready.dev/pricing/",
-        "isPartOf": {
-          "@type": "WebSite",
-          "name": "GEO Optimizer",
-          "url": "https://geoready.dev"
-        }
+        "isPartOf": { "@id": "https://geoready.dev/#website" }
       },
       {
         "@type": "ItemList",
-        "name": "GEO Optimizer Plans",
+        "name": "GeoReady Plans",
         "itemListElement": [
           {
             "@type": "ListItem",

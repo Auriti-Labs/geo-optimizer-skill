@@ -13,6 +13,7 @@ import re
 
 from geo_optimizer.core.llm_client import query_llm
 from geo_optimizer.models.results import PromptLibraryResult, PromptResult
+from geo_optimizer.utils.brand_match import count_brand_mentions
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ def run_prompt_library(
 
             resp_provider = response.provider
             resp_model = response.model
-            mentions = len(re.findall(re.escape(brand), response.text, re.IGNORECASE))
+            mentions = count_brand_mentions(response.text, brand)
             sentiment = _quick_sentiment(response.text)
 
             results.append(

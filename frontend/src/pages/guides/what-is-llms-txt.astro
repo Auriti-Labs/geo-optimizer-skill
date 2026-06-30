@@ -6,7 +6,7 @@ const description =
   'Learn what llms.txt is, how it differs from robots.txt, and how to use it to make your site easier for AI systems to understand.';
 const canonical = 'https://geoready.dev/guides/what-is-llms-txt/';
 const datePublished = '2026-06-10';
-const dateModified = '2026-06-10';
+const dateModified = '2026-06-17';
 ---
 
 <Shell title={title} description={description} canonical={canonical}>
@@ -32,7 +32,7 @@ const dateModified = '2026-06-10';
         factor or a guarantee of citations.
       </p>
       <p class="mt-2 text-xs text-text-muted font-mono">
-        Published June 2026 · 9 min read
+        Published June 10, 2026 · Last updated June 17, 2026 · 9 min read
       </p>
     </header>
 
@@ -111,7 +111,64 @@ const dateModified = '2026-06-10';
           <em>permission</em>: it tells crawlers what they may and may not fetch.
           <code class="text-sm font-mono">llms.txt</code> is about
           <em>orientation</em>: it tells AI systems what your site means and where
-          the important content is.
+          the important content is. It is also worth adding
+          <code class="text-sm font-mono">sitemap.xml</code> to the comparison,
+          since all three are root-level files that are easy to mix up — they
+          solve different problems and are not interchangeable.
+        </p>
+        <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-border text-text-muted">
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">&nbsp;</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">llms.txt</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">robots.txt</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">sitemap.xml</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/60 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary">Purpose</th>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Curate priority content for AI models</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Allow or deny crawler access</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">List indexable URLs for discovery</td>
+              </tr>
+              <tr class="border-b border-border/60 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary">Primary audience</th>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">AI answer engines (ChatGPT, Perplexity, Claude, Gemini)</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">All crawlers (search + AI bots)</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Search engine crawlers</td>
+              </tr>
+              <tr class="border-b border-border/60 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary">Format</th>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Markdown (human + machine readable)</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Plain-text directives</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">XML</td>
+              </tr>
+              <tr class="border-b border-border/60 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary">What it does</th>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Points to your best content with context</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Grants or blocks access by path</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Helps discovery of every page</td>
+              </tr>
+              <tr class="border-b border-border/60 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary">Enforcement</th>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Advisory — no model is obligated to use it</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Honored by compliant bots</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">Advisory hint for discovery</td>
+              </tr>
+              <tr class="border-b border-border/60 last:border-0 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary">Location</th>
+                <td class="px-4 py-3 font-mono text-text-secondary">/llms.txt</td>
+                <td class="px-4 py-3 font-mono text-text-secondary">/robots.txt</td>
+                <td class="px-4 py-3 font-mono text-text-secondary">/sitemap.xml</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-4">
+          The bullets below expand on the most important contrast — permission
+          versus orientation:
         </p>
         <ul class="mt-4 space-y-2 list-disc pl-5">
           <li><strong>Purpose</strong> — <code class="text-sm font-mono">robots.txt</code> grants or denies access; <code class="text-sm font-mono">llms.txt</code> summarizes and points to content.</li>
@@ -151,10 +208,11 @@ const dateModified = '2026-06-10';
           Keep descriptions factual. Each link should answer "what will a reader
           find here?" in plain language. Avoid marketing superlatives and avoid
           inventing claims — a model that reads inflated copy is more likely to
-          misrepresent you, not less. Some sites also publish an
-          <code class="text-sm font-mono">llms-full.txt</code> with the full text
-          of key pages inlined, but the standard
-          <code class="text-sm font-mono">llms.txt</code> is enough to start.
+          misrepresent you, not less. Some sites also publish an optional
+          companion file, <code class="text-sm font-mono">llms-full.txt</code>,
+          with expanded page text for systems that ingest longer context, but the
+          standard <code class="text-sm font-mono">llms.txt</code> is enough to
+          start.
         </p>
       </section>
 
@@ -345,6 +403,7 @@ const dateModified = '2026-06-10';
           <li><a href="/tools/llms-txt-generator/" class="text-accent-teal hover:underline">Free llms.txt generator</a> — build a starter llms.txt from your sitemap.</li>
           <li><a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt for WordPress and AI visibility</a> — manual and plugin-based implementation.</li>
           <li><a href="/guides/generative-engine-optimization/" class="text-accent-teal hover:underline">Generative Engine Optimization</a> — the broader practice llms.txt fits into.</li>
+          <li><a href="/methodology/" class="text-accent-teal hover:underline">Our scoring methodology</a> — how we weight llms.txt against the other AI visibility signals.</li>
           <li><a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO</a> — what changes when AI engines become the interface.</li>
           <li><a href="/ai-seo/" class="text-accent-teal hover:underline">AI SEO</a> — how to make your site visible to AI answer engines.</li>
           <li>The signals behind these guides: our <a href="/research/" class="text-accent-teal hover:underline">research foundation</a>.</li>
@@ -434,6 +493,29 @@ const dateModified = '2026-06-10';
               "@type": "Answer",
               "text": "JSON-LD structured data lives inside individual pages and describes entities and relationships for search engines and AI systems. llms.txt is a single site-level file that curates which pages matter. Use both: schema for per-page meaning, llms.txt for site-level orientation."
             }
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "GeoReady",
+            "item": "https://geoready.dev/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Guides",
+            "item": "https://geoready.dev/guides/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "What Is llms.txt?",
+            "item": canonical
           }
         ]
       }

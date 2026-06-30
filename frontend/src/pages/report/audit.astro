@@ -3,8 +3,8 @@ import Shell from '../../components/Shell.astro';
 import AuditReportContainer from '../../components/report/AuditReportContainer';
 
 const url = Astro.url.searchParams.get('url') || '';
-const title = url ? `GEO Audit Report — ${url}` : 'GEO Audit Report — GEO Optimizer';
-const description = 'View your GEO Optimizer audit report with GEO scores, citability ratings, technical signals, and actionable AI search visibility recommendations.';
+const title = url ? `GeoReady Audit Report — ${url}` : 'GeoReady Audit Report';
+const description = 'View your GeoReady audit report with GEO scores, citability ratings, technical signals, and actionable AI search visibility recommendations.';
 const canonical = 'https://geoready.dev/report/audit/';
 const robots = 'noindex, nofollow';
 ---
@@ -12,7 +12,7 @@ const robots = 'noindex, nofollow';
 <Shell title={title} description={description} canonical={canonical} robots={robots}>
   <header class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 md:pt-16 pb-6">
     <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
-      <span>GEO Optimizer</span>
+      <span>GeoReady</span>
       <span class="w-1 h-1 rounded-full bg-text-muted" />
       <span>Audit Report</span>
     </div>
@@ -29,4 +29,42 @@ const robots = 'noindex, nofollow';
   </header>
 
   <AuditReportContainer client:only="react" reportId={url} />
+
+  {/* Static next-step CTA — server-rendered, visible after the report */}
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-16 md:pb-24">
+    <div class="rounded-[--radius-2xl] border border-border bg-bg-surface p-6 md:p-10">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <span>GeoReady</span>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>Next step</span>
+      </div>
+
+      <h2 class="mt-3 font-display text-2xl md:text-3xl font-bold text-text-primary leading-tight tracking-tight">
+        This is a snapshot. AI visibility changes as engines re-crawl.
+      </h2>
+
+      <p class="mt-4 max-w-2xl text-base text-text-secondary leading-relaxed">
+        A one-off audit shows where the site stands today. GeoReady Pro re-runs the same
+        checks on a weekly schedule, keeps a score history per category, and alerts you when
+        a signal regresses — so a robots.txt change or a dropped llms.txt does not go unnoticed.
+      </p>
+
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a
+          href="/pricing/"
+          data-cta="report_to_pricing"
+          class="inline-block py-2.5 px-6 rounded-[--radius-md] bg-accent-teal text-white text-sm font-semibold hover:bg-accent-teal-dark transition-colors"
+        >
+          See monitoring plans
+        </a>
+        <a
+          href="/early-access/"
+          data-cta="report_to_early_access"
+          class="inline-block py-2.5 px-6 rounded-[--radius-md] border border-border text-sm font-semibold text-text-primary hover:bg-bg-subtle transition-colors"
+        >
+          Join early access
+        </a>
+      </div>
+    </div>
+  </section>
 </Shell>

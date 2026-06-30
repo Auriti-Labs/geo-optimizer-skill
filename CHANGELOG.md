@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.14.1] — 2026-06-27
+
+### Fixed
+- **Brand mention check counted same-named domains as the brand.** The brand matcher used a bare case-insensitive substring (`re.escape(brand)`), so brand `GeoReady` matched the unrelated `geoready.app`, inflating the brand mention rate (a real citation check on `geoready.dev` reported 100% mentions that were actually a homonym). The matcher now uses word boundaries plus a negative lookahead (`(?!\.\w)`) so the brand is not counted when it is merely the root of a domain/host. Word boundaries are applied conditionally so brands ending or starting with a non-word char still match (`C++`, `Yahoo!`, `.NET`). Extracted to `utils/brand_match.py` and reused across `citations`, `prompt_library`, `audit_persistence`, and `audit_citation_map` so the fix is consistent everywhere a brand is matched.
+- **HTTP session leak on cross-host redirect.** When a redirect pointed to a host with different pinned IPs, `fetch_url` recreated the `requests` session for the new IPs but never closed the previous one, orphaning its pooled connections. The old session is now closed before being replaced.
+
 ## [4.14.0] — 2026-06-11 · Quiet Glass
 
 ### Added

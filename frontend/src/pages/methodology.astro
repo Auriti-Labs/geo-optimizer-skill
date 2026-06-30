@@ -1,0 +1,338 @@
+---
+import Shell from '../components/Shell.astro';
+
+// Le 8 categorie di scoring con i pesi esatti (totale 100).
+// Allineati a SCORING in src/geo_optimizer/models/config.py.
+const SCORING_CATEGORIES = [
+  ['robots.txt', 18, 'Whether AI crawlers can reach the site and whether the file welcomes citation-oriented bots instead of blocking them by default. It gates everything downstream — an unreachable page never gets scored on anything else.'],
+  ['llms.txt', 18, 'Presence and quality of a root-level llms.txt: a clear H1, a summary, sectioned links, and link depth that point AI systems at the pages worth citing.'],
+  ['Schema JSON-LD', 16, 'Valid structured data — Organization, WebSite, Article, FAQ — that lets engines disambiguate the entity and pull facts with confidence rather than inference.'],
+  ['Meta tags', 14, 'Title, description, canonical, and Open Graph tags that keep the page identifiable and free of duplication when an engine indexes it.'],
+  ['Content', 12, 'Heading hierarchy, front-loaded answers, lists, tables, and the numbers and links that make individual passages quotable.'],
+  ['Brand & entity', 10, 'Naming coherence, knowledge-graph readiness, and about/contact clarity that tie a set of pages to a single recognizable entity.'],
+  ['Signals', 6, 'Declared language, RSS, and freshness indicators that help an engine judge how current and maintained the source is.'],
+  ['AI discovery', 6, 'Machine-readable endpoints such as /.well-known/ai.txt and JSON summaries that expose the site to AI tooling directly.'],
+] as const;
+
+// Bande di punteggio, identiche a SCORE_BANDS in config.py.
+const SCORE_BANDS = [
+  ['86–100', 'Excellent', 'Most signals are in place; the site is structurally ready to be cited.'],
+  ['68–85', 'Good', 'A solid foundation with a few high-value gaps left to close.'],
+  ['36–67', 'Foundation', 'Core pieces exist, but several categories still need work.'],
+  ['0–35', 'Critical', 'Crawlability or structure blocks visibility before content quality matters.'],
+] as const;
+
+// Segnali di citability con il lift verificato dalla ricerca.
+// Fonti: Princeton KDD 2024 (arXiv:2311.09735), AutoGEO ICLR 2026 (arXiv:2510.11438).
+const CITABILITY_SIGNALS = [
+  ['Quotations', '+41%', 'Direct quotes from named sources give an engine a self-contained, attributable passage it can lift verbatim.'],
+  ['Statistics', '+33%', 'Concrete numbers anchor a claim and are easier for a model to surface than a general assertion.'],
+] as const;
+
+// FAQ visibili — riusate sia nel markup crawlable che nello schema FAQPage.
+// Tenere allineate: ogni modifica al testo va replicata in entrambi i punti.
+const faqs = [
+  {
+    question: 'What is an AI visibility score?',
+    answer:
+      'An AI visibility score is a number — in GEO Optimizer, a score out of 100 — that measures how well a site is structured for AI answer engines to crawl, understand, and evaluate. It differs from a traditional SEO score: rather than evaluating keyword density or backlinks, it checks signals like AI crawler access, llms.txt, schema JSON-LD, content quotability, and entity clarity. The score answers the readiness question — can an AI engine use this site? — not the outcome question of whether you are currently cited.',
+  },
+  {
+    question: 'Why are the scoring weights public?',
+    answer:
+      'GEO Optimizer is open source under the MIT license, and the weights live in the repository as plain constants. Publishing them means anyone can read exactly how a score is produced, reproduce it locally, and disagree with a specific number on the record rather than against a black box. A visibility score you cannot inspect is a score you cannot trust.',
+  },
+  {
+    question: 'How are the 100 points distributed?',
+    answer:
+      'Across eight categories: robots.txt 18, llms.txt 18, schema 16, meta tags 14, content 12, brand and entity signals 10, freshness signals 6, and AI discovery 6. Crawlability and orientation files carry the most weight because they gate everything else — if a bot cannot fetch the page or find your key URLs, content quality never gets a chance to count.',
+  },
+  {
+    question: 'Does a higher GEO score guarantee more AI citations?',
+    answer:
+      'No. The score measures structural readiness — whether crawlers can reach the site, whether content is quotable, and whether the entity is clear. Citation behavior in AI engines is probabilistic and shifts as models are retrained. A stronger score removes friction; it does not force a citation.',
+  },
+  {
+    question: 'Where does the citability layer come from?',
+    answer:
+      'It is a set of 47 content checks derived from published research. The headline signals — direct quotations and concrete statistics — carry measured citation lift in the Princeton KDD 2024 study (arXiv:2311.09735), and AutoGEO (ICLR 2026, arXiv:2510.11438) reports a +50.99% improvement over that baseline. The checks turn those findings into auditable rules.',
+  },
+  {
+    question: 'Can I change the weights for my own use?',
+    answer:
+      'Yes. The scoring weights are constants in the open-source repository, so you can fork it and re-weight the categories for your context. The defaults reflect how much each category influences whether an AI answer engine can reach, understand, and quote a page, but they are a starting point, not a fixed law.',
+  },
+];
+---
+
+<Shell
+  title="GEO Scoring Methodology — Open Scoring Weights"
+  description="How GEO Optimizer scores a site for AI search visibility: the 8 categories and their exact point weights, the score bands, and the research-backed citability layer — all open source under MIT."
+  canonical="https://geoready.dev/methodology/"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    {/* Header */}
+    <header class="mb-14 overflow-hidden rounded-[--radius-2xl] border border-border bg-bg-surface md:mb-20">
+      <div class="p-6 md:p-10 lg:p-12">
+        <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+          <span>GEO Optimizer</span>
+          <span class="w-1 h-1 rounded-full bg-text-muted" aria-hidden="true" />
+          <span>Methodology</span>
+        </div>
+
+        <h1 class="mt-4 max-w-3xl font-display text-4xl md:text-5xl font-bold text-text-primary leading-tight tracking-tight">
+          How GEO Optimizer scores a site — and why the weights are public.
+        </h1>
+
+        <p class="mt-5 text-base md:text-lg text-text-secondary leading-relaxed max-w-2xl">
+          GEO Optimizer scores a site out of 100 across eight signal categories, then adds a
+          research-backed citability layer on top. The weights are not a secret: they are plain
+          constants in an open-source, MIT-licensed repository, so any score can be read,
+          reproduced, and challenged on the record.
+        </p>
+        <p class="mt-2 text-xs text-text-muted font-mono">Last updated: June 2026</p>
+
+        <div class="mt-8 grid gap-3 sm:grid-cols-3">
+          {[
+            ['100 points', 'Distributed across 8 signal categories.'],
+            ['Open weights', 'Constants in the MIT-licensed repo.'],
+            ['Research-backed', 'Citability grounded in published papers.'],
+          ].map(([label, text]) => (
+            <div class="border-l border-accent-teal/30 pl-4">
+              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-accent-teal">{label}</p>
+              <p class="mt-1 text-sm leading-relaxed text-text-secondary">{text}</p>
+            </div>
+          ))}
+        </div>
+
+        <p class="mt-8 text-sm text-text-secondary">
+          For the science behind the signals, see the
+          <a href="/research/" class="text-accent-teal hover:underline">research foundation</a>.
+          To turn the score into action, start with the
+          <a href="/guides/ai-visibility-checklist/" class="text-accent-teal hover:underline">AI visibility checklist</a>.
+        </p>
+      </div>
+    </header>
+
+    {/* Static, crawler-visible content — answer-first */}
+    <div class="mx-auto max-w-3xl space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      {/* How scoring works */}
+      <section>
+        <h2>How the score is built</h2>
+        <p class="mt-4">
+          A GEO audit produces a single number out of 100. That number is the sum of eight
+          category scores, each with a fixed weight. The weights reflect how much a category
+          influences whether an AI answer engine can reach a page, understand what it is about,
+          and quote it confidently. They are deliberately uneven: the categories that gate access
+          and orientation carry more weight than the ones that polish an already-reachable page.
+        </p>
+        <p class="mt-4">
+          On top of the structural score sits a citability layer — a set of content checks drawn
+          from published research on what makes a passage quotable. The structural score answers
+          “can an engine use this site at all?”; the citability layer answers “once it can, is the
+          content worth lifting?”. Both are visible in the audit output, and both are computed by
+          rules you can read in the source.
+        </p>
+      </section>
+
+      {/* The 8 categories and weights */}
+      <section>
+        <h2>The 8 categories and their exact weights</h2>
+        <p class="mt-4">
+          Every site is scored on the same eight categories, weighted to a total of 100 points.
+          robots.txt and llms.txt carry the most weight because they gate everything downstream:
+          if a crawler is blocked or cannot find your key URLs, the quality of the content never
+          gets a chance to matter. Schema and meta tags come next, because they decide whether an
+          engine can resolve the entity and pull facts without guessing.
+        </p>
+        <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-border text-text-muted">
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Category</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Weight</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">What it measures</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SCORING_CATEGORIES.map(([name, weight, detail]) => (
+                <tr class="border-b border-border/60 last:border-0 align-top">
+                  <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary whitespace-nowrap">{name}</th>
+                  <td class="px-4 py-3 font-mono text-text-secondary">{weight}</td>
+                  <td class="px-4 py-3 text-text-secondary leading-relaxed">{detail}</td>
+                </tr>
+              ))}
+              <tr class="border-t-2 border-border">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary whitespace-nowrap">Total</th>
+                <td class="px-4 py-3 font-mono font-semibold text-text-primary">100</td>
+                <td class="px-4 py-3 text-text-muted leading-relaxed">The sum of all eight category weights.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-4">
+          The same weights apply to every site, so two audits are always directly comparable. A
+          site can score well on content yet lose most of its points to a single blocked crawler —
+          which is exactly the kind of imbalance the category breakdown is meant to expose.
+        </p>
+      </section>
+
+      {/* Score bands */}
+      <section>
+        <h2>How to read the score bands</h2>
+        <p class="mt-4">
+          The total score falls into one of four bands. The band is a summary, not a verdict: it
+          tells you roughly how much structural work remains, but the category breakdown is where
+          the actual to-do list lives.
+        </p>
+        <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-border text-text-muted">
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Range</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Band</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">What it means</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SCORE_BANDS.map(([range, label, meaning]) => (
+                <tr class="border-b border-border/60 last:border-0 align-top">
+                  <th scope="row" class="px-4 py-3 font-mono text-accent-teal whitespace-nowrap">{range}</th>
+                  <td class="px-4 py-3 font-display font-semibold text-text-primary whitespace-nowrap">{label}</td>
+                  <td class="px-4 py-3 text-text-secondary leading-relaxed">{meaning}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-4">
+          Prioritize by where the gap is largest and the effort is lowest. A site in the foundation
+          band almost always has more to gain from fixing crawlability and structure than from
+          rewriting copy — the points are concentrated in the categories that gate everything else.
+        </p>
+      </section>
+
+      {/* Citability layer */}
+      <section>
+        <h2>The citability layer: 47 research-backed checks</h2>
+        <p class="mt-4">
+          Beyond the structural score, GEO Optimizer runs 47 content checks that estimate how
+          quotable a page is. These checks are not opinions; they map directly to findings in
+          published research on generative engine optimization. The two strongest signals are
+          direct quotations and concrete statistics — both measured to raise citation rates in the
+          Princeton study.
+        </p>
+        <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-border text-text-muted">
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Signal</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Citation lift</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Why it works</th>
+              </tr>
+            </thead>
+            <tbody>
+              {CITABILITY_SIGNALS.map(([name, lift, detail]) => (
+                <tr class="border-b border-border/60 last:border-0 align-top">
+                  <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary whitespace-nowrap">{name}</th>
+                  <td class="px-4 py-3 font-mono text-accent-teal">{lift}</td>
+                  <td class="px-4 py-3 text-text-secondary leading-relaxed">{detail}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-4">
+          The lift figures come from
+          {' '}
+          <a href="https://arxiv.org/abs/2311.09735" rel="noopener" class="text-accent-teal hover:underline">Princeton’s KDD 2024 paper</a>
+          {' '}(arXiv:2311.09735), the first systematic study of which on-page changes move AI
+          citations. <a href="https://arxiv.org/abs/2510.11438" rel="noopener" class="text-accent-teal hover:underline">AutoGEO</a>
+          {' '}(ICLR 2026, arXiv:2510.11438) builds on it and reports a +50.99% improvement over the
+          Princeton baseline by optimizing content automatically. The full list of sources behind
+          every signal is on the <a href="/research/" class="text-accent-teal hover:underline">research page</a>.
+        </p>
+      </section>
+
+      {/* Why we publish the weights */}
+      <section>
+        <h2>Why we publish the weights</h2>
+        <p class="mt-4">
+          A visibility score is only useful if you can interrogate it. Publishing the weights as
+          open-source constants does three things. It makes the score reproducible — you can run
+          the same audit locally and get the same number. It makes the score auditable — you can
+          read the exact rule behind any category and disagree with it specifically. And it makes
+          the score honest — there is no hidden lever to inflate a result or favor a particular
+          kind of site.
+        </p>
+        <p class="mt-4">
+          The weights and every check live in the
+          {' '}
+          <a href="https://github.com/Auriti-Labs/geo-optimizer-skill" rel="noopener" class="text-accent-teal hover:underline">open-source repository</a>
+          {' '}under the MIT license. If you think a category is weighted wrong for your context,
+          you can read the code, open an issue, or fork it and re-weight it yourself. That is the
+          point of publishing them: a methodology you can change on the record is more trustworthy
+          than one you have to take on faith.
+        </p>
+      </section>
+
+      {/* FAQ */}
+      <section>
+        <h2>Methodology FAQ</h2>
+        <div class="mt-6 space-y-6">
+          {faqs.map((faq) => (
+            <div>
+              <h3>{faq.question}</h3>
+              <p class="mt-2">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+
+  {/* Article — la metodologia come contenuto editoriale; autore = Organization globale */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "How GEO Optimizer scores a site — and why the weights are public",
+    "description": "How GEO Optimizer scores a site for AI search visibility: the 8 categories and their exact point weights, the score bands, and the research-backed citability layer — all open source under MIT.",
+    "url": "https://geoready.dev/methodology/",
+    "author": { "@id": "https://geoready.dev/#organization" },
+    "publisher": { "@id": "https://geoready.dev/#organization" },
+    "datePublished": "2026-06-16",
+    "dateModified": "2026-06-16",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://geoready.dev/methodology/"
+    },
+    "license": "https://opensource.org/licenses/MIT",
+    "citation": [
+      {
+        "@type": "CreativeWork",
+        "name": "GEO: Generative Engine Optimization (Princeton, KDD 2024)",
+        "url": "https://arxiv.org/abs/2311.09735"
+      },
+      {
+        "@type": "CreativeWork",
+        "name": "AutoGEO (ICLR 2026)",
+        "url": "https://arxiv.org/abs/2510.11438"
+      }
+    ]
+  })} />
+
+  {/* FAQPage — stesse FAQ visibili nel markup */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  })} />
+</Shell>

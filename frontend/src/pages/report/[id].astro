@@ -14,11 +14,11 @@ const decodedId = id ? decodeURIComponent(id) : 'demo';
 
 const isDemo = decodedId === 'demo';
 const title = isDemo
-  ? 'GEO Audit Report Demo — GEO Optimizer'
-  : 'GEO Audit Report — GEO Optimizer';
+  ? 'GeoReady Audit Report Demo'
+  : 'GeoReady Audit Report';
 const description = isDemo
-  ? 'Preview a sample GEO Optimizer audit report with GEO scores, citability ratings, technical signals, and actionable AI search visibility recommendations.'
-  : 'View your GEO Optimizer audit report with GEO scores, citability ratings, technical signals, and actionable AI search visibility recommendations.';
+  ? 'Preview a sample GeoReady audit report with GEO scores, citability ratings, technical signals, and actionable AI search visibility recommendations.'
+  : 'View your GeoReady audit report with GEO scores, citability ratings, technical signals, and actionable AI search visibility recommendations.';
 // Public demo report is a marketing page (static mock data, no user data) and
 // should be indexable. Live token reports stay out of the index.
 const canonical = isDemo
@@ -30,7 +30,7 @@ const robots = isDemo ? 'index, follow' : 'noindex, nofollow';
 <Shell title={title} description={description} canonical={canonical} robots={robots}>
   <header class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 md:pt-16 pb-6">
     <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
-      <span>GEO Optimizer</span>
+      <span>GeoReady</span>
       <span class="w-1 h-1 rounded-full bg-text-muted" />
       <span>{isDemo ? 'Demo Report' : 'Audit Report'}</span>
     </div>
@@ -41,7 +41,7 @@ const robots = isDemo ? 'index, follow' : 'noindex, nofollow';
 
     <p class="mt-4 text-base text-text-secondary leading-relaxed max-w-2xl">
       {isDemo
-        ? 'This is a preview of a GEO Optimizer audit report. The demo shows how a complete report looks when you run an audit on a live website.'
+        ? 'This is a preview of a GeoReady audit report. The demo shows how a complete report looks when you run an audit on a live website.'
         : 'Live audit results for the submitted URL. This report is generated on demand and is not indexed by search engines.'}
     </p>
 

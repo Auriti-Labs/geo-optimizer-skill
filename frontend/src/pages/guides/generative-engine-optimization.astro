@@ -6,10 +6,14 @@ const description =
   'Learn what Generative Engine Optimization is, how GEO differs from SEO, and how to make your site crawlable, understandable and citable by AI search engines.';
 const canonical = 'https://geoready.dev/guides/generative-engine-optimization/';
 const datePublished = '2026-06-10';
-const dateModified = '2026-06-10';
+const dateModified = '2026-06-17';
 
 // FAQ condivise tra pagina e JSON-LD (single source of truth)
 const faqs = [
+  {
+    q: 'What does GEO mean in AI search?',
+    a: 'GEO stands for Generative Engine Optimization: structuring a website so AI answer engines like ChatGPT, Perplexity, Claude, and Gemini can more easily crawl, understand, and evaluate its content. It is not geographic or local SEO.',
+  },
   {
     q: 'Is GEO different from SEO?',
     a: 'GEO and SEO share the same technical foundations — crawlability, indexable HTML, structured data, and domain authority. The difference is the target. SEO optimizes for a ranked list of links a person clicks. GEO optimizes for being retrieved, summarized, and cited inside a single AI-generated answer. You build GEO on top of SEO, not instead of it.',
@@ -58,8 +62,12 @@ const faqs = [
         answers. It builds on SEO fundamentals but optimizes for retrieval and
         citation rather than for a ranked list of clickable links.
       </p>
+      <p class="mt-3 text-sm md:text-base text-text-secondary leading-relaxed">
+        In this guide, GEO means Generative Engine Optimization — not geographic
+        or local SEO.
+      </p>
       <p class="mt-2 text-xs text-text-muted font-mono">
-        Published June 2026 · 13 min read
+        Published June 10, 2026 · Last updated June 17, 2026 · 13 min read
       </p>
     </header>
 
@@ -259,14 +267,18 @@ const faqs = [
           <li><strong>Score your readiness signals.</strong> Run a baseline audit across the eight categories above and record the result. This is fully within your control and improves immediately when you fix issues.</li>
           <li><strong>Track changes over time.</strong> A single snapshot tells you where you are; repeated audits tell you whether a change actually moved a signal. Models and your own site both shift, so monitoring beats one-off checks.</li>
           <li><strong>Watch for AI referral traffic.</strong> Some analytics setups can surface visits referred from AI assistants. Treat any AI referral observed as encouraging evidence, not proof of a citation — attribution here is imperfect.</li>
-          <li><strong>Spot-check answers manually.</strong> Ask the engines questions where you would expect to be a relevant source, and note whether and how you appear. This is qualitative, but it grounds the numbers.</li>
+          <li><strong>Spot-check answers manually.</strong> Ask the engines questions where you would expect to be a relevant source, and note whether and how you appear. This is qualitative, but it grounds the numbers. For a structured way to do this, see <a href="/guides/ai-citations-check/" class="text-accent-teal hover:underline">how to check whether ChatGPT and Perplexity cite your brand</a>.</li>
         </ul>
         <p class="mt-4">
           For a single, consolidated pass over every signal, work through the
           <a href="/guides/ai-visibility-checklist/" class="text-accent-teal hover:underline">AI visibility checklist</a>.
-          Nobody can guarantee a model will cite you — citation behavior is
-          probabilistic and changes with every retraining — but you can make
-          your site as easy to cite as possible and verify that with data.
+          If you want to see exactly how each category is weighted before you
+          run an audit, the
+          <a href="/methodology/" class="text-accent-teal hover:underline">scoring methodology</a>
+          documents the points behind every signal. Nobody can guarantee a model
+          will cite you — citation behavior is probabilistic and changes with
+          every retraining — but you can make your site as easy to cite as
+          possible and verify that with data.
         </p>
       </section>
 
@@ -319,7 +331,9 @@ const faqs = [
           <li><a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO: what changes for AI answer engines</a> — the detailed comparison.</li>
           <li><a href="/guides/appear-in-chatgpt-perplexity/" class="text-accent-teal hover:underline">How to appear in ChatGPT and Perplexity sources</a> — engine-specific tactics.</li>
           <li><a href="/guides/ai-visibility-checklist/" class="text-accent-teal hover:underline">AI visibility checklist</a> — every signal in one place.</li>
+          <li><a href="/guides/how-to-improve-ai-visibility/" class="text-accent-teal hover:underline">How to improve AI visibility</a> — a step-by-step plan once you have your baseline score.</li>
           <li><a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt for WordPress and AI visibility</a> — practical implementation.</li>
+          <li><a href="/best-geo-tools/" class="text-accent-teal hover:underline">Best GEO tools</a> — how to choose a generative engine optimization tool.</li>
           <li><a href="/ai-seo/" class="text-accent-teal hover:underline">AI SEO overview</a> — where GEO fits in a wider strategy.</li>
           <li>The signals behind these guides: our <a href="/research/" class="text-accent-teal hover:underline">research foundation</a>.</li>
         </ul>
@@ -368,6 +382,29 @@ const faqs = [
             "text": item.a
           }
         }))
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "GeoReady",
+            "item": "https://geoready.dev/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Guides",
+            "item": "https://geoready.dev/guides/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Generative Engine Optimization",
+            "item": canonical
+          }
+        ]
       }
     ]
   })} />

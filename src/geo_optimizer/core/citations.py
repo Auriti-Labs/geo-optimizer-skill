@@ -18,6 +18,7 @@ from urllib.parse import urlparse
 
 from geo_optimizer.core.llm_client import _PROVIDER_ENV_KEYS, detect_provider, query_llm
 from geo_optimizer.models.results import CitationCheckEntry, CitationCheckResult
+from geo_optimizer.utils.brand_match import brand_pattern
 
 _QUERY_TEMPLATES = [
     "What is the best tool for {topic}?",
@@ -120,7 +121,7 @@ def run_citation_check(
             domain=domain,
         )
 
-    brand_pattern = re.compile(re.escape(brand), re.IGNORECASE)
+    brand_matcher = brand_pattern(brand)
     entries: list[CitationCheckEntry] = []
     other_domains: Counter[str] = Counter()
     answered = 0
@@ -138,7 +139,7 @@ def run_citation_check(
         text_domains = _domains_in_text(response.text)
         all_domains = source_domains + [d for d in text_domains if d not in source_domains]
 
-        brand_mentioned = bool(brand_pattern.search(response.text))
+        brand_mentioned = bool(brand_matcher.search(response.text))
         domain_cited = domain in all_domains
         mentioned_count += brand_mentioned
         cited_count += domain_cited

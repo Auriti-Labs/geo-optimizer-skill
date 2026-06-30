@@ -8,10 +8,9 @@ Requires LLM API key (opt-in).
 
 from __future__ import annotations
 
-import re
-
 from geo_optimizer.core.llm_client import query_llm
 from geo_optimizer.models.results import MultiTurnResult, TurnResult
+from geo_optimizer.utils.brand_match import count_brand_mentions
 
 _DEFAULT_TURNS = [
     "What is {topic}?",
@@ -104,8 +103,8 @@ def audit_multi_turn_persistence(
 
 
 def _count_mentions(text: str, brand: str) -> int:
-    """Count case-insensitive mentions of brand in text."""
-    return len(re.findall(re.escape(brand), text, re.IGNORECASE))
+    """Count case-insensitive mentions of brand in text (excluding same-named domains)."""
+    return count_brand_mentions(text, brand)
 
 
 def _compute_persistence(turns: list[TurnResult], total: int) -> int:

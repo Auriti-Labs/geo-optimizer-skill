@@ -2,11 +2,65 @@
 import Shell from '../components/Shell.astro';
 import AnalyzeCompetitorsContainer from '../components/compare/AnalyzeCompetitorsContainer';
 import CompareSurface from '../components/product/CompareSurface.astro';
+
+// FAQ visibili — riusate sia nel markup crawlable che nello schema FAQPage.
+const faqs = [
+  {
+    question: 'What is competitor AI visibility analysis?',
+    answer:
+      'It runs the same GEO audit on your site and several competitor domains at once, then puts the scores next to each other. Instead of an isolated number, you see how ready each domain is to be cited by AI answer engines across the same 8 signal categories: robots.txt, llms.txt, schema, meta, content, brand and entity, signals, and AI discovery.',
+  },
+  {
+    question: 'How many competitors should I analyze at once?',
+    answer:
+      'Three to five direct rivals is usually enough to reveal a pattern. Pick the domains that already appear when you ask an AI engine "what is the best tool for X". More than that and the gaps blur together; fewer and you cannot tell a category-wide blocker from a single weak site.',
+  },
+  {
+    question: 'Does a higher GEO Score mean a competitor is cited more often?',
+    answer:
+      'The GEO Score measures readiness — the technical and content signals AI retrieval rewards — not live citation counts. A higher score means a domain has fewer blockers and stronger citable signals, which correlates with being cited. To confirm who is actually cited for a given question, pair the analysis with a citation check.',
+  },
+  {
+    question: 'When should I use head-to-head compare instead of multi-competitor analysis?',
+    answer:
+      'Use a single audit when you only need your own baseline. Use head-to-head compare when one rival matters most and you want a focused, two-column diff. Use multi-competitor analysis when you need to see a whole category at once and decide where you sit in the field.',
+  },
+  {
+    question: 'Is the competitor analysis free?',
+    answer:
+      'Yes. The batch audit scores each domain on the open-source GEO scoring weights at no cost, with a fair-use limit per visitor. The audit reads only publicly available pages, the same content any AI crawler can fetch.',
+  },
+  {
+    question: 'What do I do once I find a gap?',
+    answer:
+      'Sort the blockers by scoring weight and fix the highest-impact ones first. robots.txt and llms.txt are worth 18 points each, so an access or discovery gap usually outranks a content tweak. Re-run the analysis after the fixes to confirm the gap closed relative to the same competitors.',
+  },
+];
+
+// Passi HowTo — riusati nello schema HowTo (procedura del tool).
+const howToSteps = [
+  {
+    name: 'Enter your URL and competitor URLs',
+    text: 'Add your own domain and the competitor domains you want to benchmark — the rivals that already surface in AI answers for your category.',
+  },
+  {
+    name: 'Run the batch audit',
+    text: 'Each domain is scored across the same 8 GEO signal categories on a 100-point scale, so the results are directly comparable.',
+  },
+  {
+    name: 'Read which domain AI engines are most ready to cite',
+    text: 'Compare the scores and category breakdowns to see which site has the fewest blockers and the strongest citable signals for AI answer engines.',
+  },
+  {
+    name: 'Prioritise fixes by scoring weight',
+    text: 'Close the gaps that carry the most points first — robots.txt and llms.txt are worth 18 points each — then re-run the analysis to confirm the gap narrowed.',
+  },
+];
 ---
 
 <Shell
-  title="Competitor AI Visibility Analysis — GEO Optimizer"
-  description="Analyze competitor AI visibility with GEO Optimizer. Compare multiple websites across GEO scores, citability, technical readiness, and AI search signals."
+  title="Competitor AI Visibility Analysis — GeoReady"
+  description="Analyze competitor AI visibility with GeoReady. Compare multiple websites across GEO scores, citability, technical readiness, and AI search signals."
   canonical="https://geoready.dev/analyze-competitors/"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
@@ -20,7 +74,7 @@ import CompareSurface from '../components/product/CompareSurface.astro';
         />
       <div class="relative p-6 md:p-10 lg:p-12">
         <div class="flex items-center gap-2 text-[10px] font-mono text-slate-300 uppercase tracking-wider">
-          <span>GEO Optimizer</span>
+          <span>GeoReady</span>
           <span class="w-1 h-1 rounded-full bg-slate-500" />
           <span>Competitors</span>
         </div>
@@ -82,43 +136,194 @@ import CompareSurface from '../components/product/CompareSurface.astro';
 
     {/* Interactive tool — hydrated by React */}
     <AnalyzeCompetitorsContainer client:only="react" />
+
+    {/* Static, crawler-visible content — answer-first */}
+    <div class="mt-14 max-w-3xl mx-auto space-y-12 md:mt-16 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      <section>
+        <h2>When to map competitor AI visibility</h2>
+        <p class="mt-4">
+          Map competitor AI visibility when a single audit isn't enough to make
+          a decision. A standalone score tells you where <em>you</em> stand; it
+          doesn't tell you whether a 72 is leading your category or trailing it.
+          Run a multi-competitor analysis when you're entering a crowded space,
+          planning a content investment, or trying to explain to a stakeholder
+          why a rival keeps showing up in ChatGPT and Perplexity answers and you
+          don't.
+        </p>
+        <p class="mt-4">
+          The analysis is most useful in three moments: before you commit
+          budget to GEO work and want a baseline against the field; after a
+          competitor's traffic or share of AI mentions shifts and you need to
+          know what changed technically; and during a quarterly review, where a
+          repeated run shows whether your relative position improved or the
+          category as a whole moved.
+        </p>
+      </section>
+
+      <section>
+        <h2>What a competitor GEO gap reveals</h2>
+        <p class="mt-4">
+          A gap is the difference between your category breakdown and a rival's,
+          read against the scoring weights. Because every domain is graded on
+          the same 100-point scale across 8 categories, a gap points to a
+          specific, fixable cause rather than a vague "they rank better"
+          feeling. The categories carry uneven weight, so where the gap sits
+          matters more than how big it looks:
+        </p>
+        <ul class="mt-5 space-y-2 list-disc pl-5">
+          <li><strong>robots.txt (18) and llms.txt (18)</strong> — an access or discovery gap here is the most expensive. If a competitor lets AI crawlers in and you don't, no amount of content closes the distance.</li>
+          <li><strong>Schema (16) and meta (14)</strong> — a competitor with valid structured data and clean canonical or Open Graph tags is easier for an engine to parse and attribute.</li>
+          <li><strong>Content (12) and brand &amp; entity (10)</strong> — multi-page topical coverage and consistent entity signals are where a thin site falls behind a deep one.</li>
+          <li><strong>Signals (6) and AI discovery (6)</strong> — language declaration, freshness, and the AI discovery files are smaller but cheap to fix once spotted.</li>
+        </ul>
+        <p class="mt-4">
+          A gap concentrated in the high-weight categories is a priority; a gap
+          spread across the 6-point categories is housekeeping. Reading the gap
+          by weight is what turns a comparison into a plan.
+        </p>
+      </section>
+
+      <section>
+        <h2>A worked example: one SaaS against three rivals</h2>
+        <p class="mt-4">
+          A project-management SaaS keeps seeing one of its competitors cited
+          when prospects ask an AI engine "what's the best tool for remote
+          teams". It runs a multi-competitor analysis on its own domain plus
+          three rivals. The breakdown is more informative than any single
+          number:
+        </p>
+        <ul class="mt-5 space-y-2 list-disc pl-5">
+          <li>All four sites have a strong meta and content profile — that's table stakes in the category, not a differentiator.</li>
+          <li>The two most-cited rivals both publish an llms.txt and valid FAQ and Organization schema. The SaaS publishes neither.</li>
+          <li>One rival blocks AI crawlers in robots.txt and scores lowest overall, confirming the cost of an access gap even with good content.</li>
+        </ul>
+        <p class="mt-4">
+          The conclusion writes itself: the SaaS isn't losing on content, it's
+          losing on the high-weight technical signals (llms.txt and schema)
+          that the cited rivals already have. That's a two-week fix, not a
+          quarter-long content project — and the analysis is what made the
+          priority obvious. To confirm the change later, the team re-runs the
+          analysis against the same three domains and watches the gap close.
+        </p>
+      </section>
+
+      <section>
+        <h2>Single audit vs head-to-head vs multi-competitor</h2>
+        <p class="mt-4">
+          The three views answer different questions. Pick the smallest one that
+          answers yours:
+        </p>
+        <ul class="mt-5 space-y-3" role="list">
+          <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4">
+            <strong>Single audit</strong> — your own baseline, one domain, full
+            category breakdown. Start here to know where you stand before you
+            look at anyone else. <a href="/" class="text-accent-teal hover:underline">Run a free GEO audit</a>.
+          </li>
+          <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4">
+            <strong>Head-to-head compare</strong> — two domains, side by side,
+            for when one rival matters most and you want a focused diff.
+            {' '}<a href="/compare/" class="text-accent-teal hover:underline">Compare two sites</a>.
+          </li>
+          <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4">
+            <strong>Multi-competitor analysis</strong> — your domain plus several
+            rivals in one run, for reading a whole category and finding where you
+            sit in the field. That's this page.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>How to run a competitor analysis</h2>
+        <ol class="mt-5 space-y-3 list-decimal pl-5">
+          {howToSteps.map((step) => (
+            <li><strong>{step.name}.</strong> {step.text}</li>
+          ))}
+        </ol>
+        <p class="mt-4">
+          Earning citations is a function of the signals AI retrieval rewards —
+          open access for AI crawlers, structured data, an llms.txt, quotable
+          statistics, and multi-page topical coverage. The
+          {' '}<a href="/guides/appear-in-chatgpt-perplexity/" class="text-accent-teal hover:underline">guide to appearing in ChatGPT and Perplexity</a>{' '}
+          and the
+          {' '}<a href="/guides/entity-authority/" class="text-accent-teal hover:underline">entity authority guide</a>{' '}
+          cover the playbook behind the categories you're benchmarking.
+        </p>
+      </section>
+
+      {/* FAQ visibili (stesse del FAQPage schema) */}
+      <section>
+        <h2>Frequently asked questions</h2>
+        <div class="mt-6 space-y-6">
+          {faqs.map((faq) => (
+            <div>
+              <h3>{faq.question}</h3>
+              <p class="mt-2">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
   </div>
 
-  {/* Page-specific schema */}
+  {/* Page-specific schema — WebPage + FAQPage in un unico @graph */}
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Competitor AI Visibility Analysis — GEO Optimizer",
-    "description": "Analyze competitor AI visibility with GEO Optimizer. Compare multiple websites across GEO scores, citability, technical readiness, and AI search signals.",
-    "url": "https://geoready.dev/analyze-competitors/",
-    "author": {
-      "@type": "Organization",
-      "name": "Auriti Labs",
-      "url": "https://github.com/Auriti-Labs"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Auriti Labs",
-      "url": "https://github.com/Auriti-Labs"
-    },
-    "datePublished": "2026-05-12",
-    "dateModified": "2026-05-26",
-    "mainEntity": {
-      "@type": "WebApplication",
-      "name": "GEO Optimizer Competitor Analysis Tool",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Web",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "name": "Competitor AI Visibility Analysis — GeoReady",
+        "description": "Analyze competitor AI visibility with GeoReady. Compare multiple websites across GEO scores, citability, technical readiness, and AI search signals.",
+        "url": "https://geoready.dev/analyze-competitors/",
+        "author": { "@id": "https://geoready.dev/#organization" },
+        "publisher": { "@id": "https://geoready.dev/#organization" },
+        "datePublished": "2026-05-12",
+        "dateModified": "2026-05-26",
+        "mainEntity": {
+          "@type": "WebApplication",
+          "@id": "https://geoready.dev/analyze-competitors/#tool",
+          "name": "GeoReady Competitor Analysis Tool",
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web",
+          "isPartOf": { "@id": "https://geoready.dev/#webapp" },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "featureList": [
+            "Batch competitor GEO audit",
+            "Citability benchmarking",
+            "Technical signal comparison",
+            "AI visibility scoring"
+          ]
+        }
       },
-      "featureList": [
-        "Batch competitor GEO audit",
-        "Citability benchmarking",
-        "Technical signal comparison",
-        "AI visibility scoring"
-      ]
-    }
+      {
+        "@type": "FAQPage",
+        "mainEntity": faqs.map((faq) => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer
+          }
+        }))
+      }
+    ]
+  })} />
+
+  {/* HowTo schema — procedura del tool di analisi competitor */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to analyze competitor AI visibility with GeoReady",
+    "description": "Benchmark your site against competitor domains to see which is most ready to be cited by AI answer engines, then prioritise fixes by scoring weight.",
+    "step": howToSteps.map((step, index) => ({
+      "@type": "HowToStep",
+      "position": index + 1,
+      "name": step.name,
+      "text": step.text
+    }))
   })} />
 </Shell>

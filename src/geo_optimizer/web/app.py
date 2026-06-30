@@ -16,6 +16,7 @@ import asyncio
 import dataclasses
 import hashlib
 import logging
+import mimetypes
 import os
 import re
 import secrets
@@ -160,7 +161,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; "
             "style-src 'self' 'unsafe-inline'; "
             "font-src 'self' data:; "
-            "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; "
+            "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com "
+            "https://launchpadly.co; "
             # region1.google-analytics.com: endpoint regionale GA4 (usato da gtag.js)
             "connect-src 'self' https://www.google-analytics.com https://analytics.google.com "
             "https://stats.g.doubleclick.net https://region1.google-analytics.com; "
@@ -2411,6 +2413,10 @@ async def analyze_logs(request: Request):
 
     return JSONResponse(content=dataclasses.asdict(result))
 
+
+# Garantisce il MIME corretto per i woff2 (alcuni ambienti li servono come
+# application/octet-stream, invalidando il <link rel="preload" as="font">).
+mimetypes.add_type("font/woff2", ".woff2")
 
 # Serve il frontend Astro buildato
 app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")

@@ -1,0 +1,514 @@
+---
+import Shell from '../../components/Shell.astro';
+
+const title = 'How to Improve AI Visibility';
+const description =
+  'A practical, ordered playbook for becoming citable by AI answer engines like ChatGPT, Perplexity, Claude, and Gemini: crawler access, llms.txt, JSON-LD schema, meta, answer-first content, entity signals, freshness, and AI discovery endpoints.';
+const canonical = 'https://geoready.dev/guides/how-to-improve-ai-visibility/';
+const datePublished = '2026-06-16';
+const dateModified = '2026-06-16';
+
+// Le 8 categorie di segnale e i rispettivi pesi (totale 100).
+// Allineate a SCORING in src/geo_optimizer/models/config.py.
+const SIGNAL_CATEGORIES = [
+  ['1', 'robots.txt — AI crawler access', 18, 'Whether AI crawlers can fetch the site at all, and whether the file invites citation-oriented bots rather than blocking them by default.'],
+  ['2', 'llms.txt', 18, 'A root-level map with title, summary, sectioned links, and link depth that orients AI systems to your most important pages.'],
+  ['3', 'Schema JSON-LD', 16, 'Valid structured data — Organization, WebSite, Article, FAQPage — that lets engines disambiguate entities and pull facts confidently.'],
+  ['4', 'Meta tags', 14, 'Title, description, canonical, and Open Graph tags that keep each page identifiable and free of duplication.'],
+  ['5', 'Content structure', 12, 'Heading hierarchy, front-loaded answers, lists, and the numbers and quotations that make passages quotable.'],
+  ['6', 'Brand & entity', 10, 'Naming coherence, knowledge-graph readiness, about/contact clarity, and sameAs links that tie pages to a recognizable entity.'],
+  ['7', 'Freshness signals', 6, 'Declared language, RSS, and dated content that help engines judge currency.'],
+  ['8', 'AI discovery endpoints', 6, 'Machine-readable endpoints such as /.well-known/ai.txt and JSON summaries that expose the site to AI tooling.'],
+] as const;
+
+// Le bande di punteggio, identiche a SCORE_BANDS in config.py.
+const SCORE_BANDS = [
+  ['86–100', 'Excellent', 'Most signals in place; the site is structurally ready to be cited.'],
+  ['68–85', 'Good', 'Solid foundation with a few high-value gaps left to close.'],
+  ['36–67', 'Foundation', 'Core pieces exist but several categories need work.'],
+  ['0–35', 'Critical', 'Crawlability or structure blocks visibility before content matters.'],
+] as const;
+
+// FAQ visibili — riusate sia nel markup crawlable che nello schema FAQPage.
+// Tenere allineate: ogni modifica al testo va replicata in entrambi i punti.
+const faqs = [
+  {
+    question: 'What does "AI visibility" actually mean?',
+    answer:
+      'AI visibility is the degree to which AI answer engines such as ChatGPT, Perplexity, Claude, and Gemini can reach your pages, parse their content, and quote them as sources. It is distinct from a Google ranking: a page can rank well in classic search and still never surface as a cited source, because answer engines favor pages that are easy to fetch, clearly structured, and safe to quote.',
+  },
+  {
+    question: 'Which of the eight signal categories should I fix first?',
+    answer:
+      'Start with crawler access in robots.txt, then llms.txt, because they gate everything downstream. If a bot cannot fetch your page or find your key URLs, the quality of your schema and content never gets a chance to matter. These two categories carry the most weight — 18 points each out of 100 — for exactly that reason.',
+  },
+  {
+    question: 'Does adding llms.txt or schema guarantee I will be cited?',
+    answer:
+      'No. These signals improve retrieval and parsing — they make your site easier to find and understand — but citation behavior in AI engines is probabilistic and changes as models are retrained. The signals remove friction; they do not force a citation. Treat them as necessary conditions, not magic switches.',
+  },
+  {
+    question: 'How do quotations and statistics affect AI citations?',
+    answer:
+      'Research on Generative Engine Optimization found that adding quotations raised source citation by roughly 41% and adding statistics by roughly 33% (Princeton, arXiv:2311.09735). Concrete, verifiable facts are easier for a model to lift and attribute than vague marketing claims, so front-loading them in your content directly improves quotability.',
+  },
+  {
+    question: 'How do I know whether my changes worked?',
+    answer:
+      'Take a baseline audit before you change anything, ship the fixes, then re-audit and compare the score category by category. AI visibility is not a one-time setup: models, crawlers, and citation behavior change over time, so treat it like any other channel — measure, change, re-measure.',
+  },
+];
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    {/* Header */}
+    <header class="mb-12 md:mb-16">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <a href="/guides/" class="hover:text-accent-teal">Guides</a>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>AI Visibility</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        How to Improve AI Visibility
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        To improve AI visibility, work through eight signal categories in order:
+        let AI crawlers reach the site, publish an llms.txt map, add JSON-LD
+        schema, keep meta tags clean, write answer-first content, make your brand
+        a clear entity, signal freshness, and expose AI discovery endpoints. The
+        steps below are ordered by leverage — the earliest ones gate everything
+        after them. None of this guarantees a citation, but it removes the
+        technical and editorial friction that keeps most sites from being cited
+        at all.
+      </p>
+      <p class="mt-2 text-xs text-text-muted font-mono">
+        Published June 2026 · 11 min read
+      </p>
+    </header>
+
+    <div class="space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+      {/* What AI visibility is */}
+      <section>
+        <h2>What AI visibility is, and why these eight signals</h2>
+        <p class="mt-4">
+          AI visibility is whether AI answer engines can reach your pages, parse
+          them, and quote them as sources. It is measurable: the GEO score breaks
+          the question into eight categories totaling 100 points, with the open
+          weights below. The weights are not arbitrary — they reflect how much
+          each category influences whether an engine can <em>reach</em>,
+          <em>understand</em>, and <em>quote</em> a page. Access and orientation
+          files carry the most weight because they gate everything downstream.
+        </p>
+        <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-border text-text-muted">
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Step</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Category</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Weight</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">What it checks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SIGNAL_CATEGORIES.map(([step, name, weight, detail]) => (
+                <tr class="border-b border-border/60 last:border-0 align-top">
+                  <td class="px-4 py-3 font-mono text-text-secondary">{step}</td>
+                  <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary">{name}</th>
+                  <td class="px-4 py-3 font-mono text-text-secondary">{weight}</td>
+                  <td class="px-4 py-3 text-text-secondary leading-relaxed">{detail}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-4">
+          Work the steps top to bottom. A site that nails content but blocks the
+          crawlers will still score in the foundation band, because the friction
+          sits earlier in the chain. If you want a number to start from,
+          {' '}
+          <a href="/" class="text-accent-teal hover:underline">run the free audit</a>
+          {' '}and read your current score against each category before you change
+          anything.
+        </p>
+      </section>
+
+      {/* Step 1 — robots.txt */}
+      <section>
+        <h2>Step 1 — Let the AI crawlers you want reach the site</h2>
+        <h3 class="mt-6">What it is</h3>
+        <p class="mt-3">
+          Your <code class="text-sm font-mono">robots.txt</code> file tells
+          automated agents which paths they may fetch. AI engines run their own
+          named user agents, and many sites block them unintentionally — either
+          with a broad <code class="text-sm font-mono">Disallow</code> or by a
+          CDN rule that never distinguished AI bots from scrapers.
+        </p>
+        <h3 class="mt-6">Why AI engines use it</h3>
+        <p class="mt-3">
+          A retriever that is disallowed simply never fetches the page, so it can
+          never become a source. There are 27 AI bots that GEO Optimizer accounts
+          for across <code class="text-sm font-mono">robots.txt</code>. Common
+          citation-related agents include
+          {' '}<code class="text-sm font-mono">GPTBot</code> and
+          {' '}<code class="text-sm font-mono">OAI-SearchBot</code> (OpenAI),
+          {' '}<code class="text-sm font-mono">ClaudeBot</code> and
+          {' '}<code class="text-sm font-mono">Claude-SearchBot</code> (Anthropic),
+          {' '}<code class="text-sm font-mono">PerplexityBot</code> (Perplexity),
+          and <code class="text-sm font-mono">Google-Extended</code> (Gemini).
+        </p>
+        <h3 class="mt-6">The concrete fix</h3>
+        <p class="mt-3">
+          Decide deliberately which engines you allow, then state it explicitly
+          rather than relying on a default. Allow the citation-oriented agents you
+          want, keep your sitemap reference in the file, and confirm no upstream
+          CDN rule overrides it. Then re-check that the bots resolve to a clean
+          200 on your key pages.
+        </p>
+      </section>
+
+      {/* Step 2 — llms.txt */}
+      <section>
+        <h2>Step 2 — Publish an llms.txt map</h2>
+        <h3 class="mt-6">What it is</h3>
+        <p class="mt-3">
+          An <code class="text-sm font-mono">llms.txt</code> file is an emerging
+          convention: a plain-text Markdown file at your domain root that
+          summarizes what your site is about and points AI tools to your most
+          important pages, grouped into sections.
+        </p>
+        <h3 class="mt-6">Why AI engines use it</h3>
+        <p class="mt-3">
+          It makes your key URLs explicit instead of leaving an engine to infer
+          them from navigation. A good file has a clear H1, a summary blockquote,
+          sectioned links, and enough depth to cover your real content surface —
+          the same properties the GEO audit scores. It is low-cost and not yet
+          honored by every engine, but it removes ambiguity about which pages
+          matter.
+        </p>
+        <h3 class="mt-6">The concrete fix</h3>
+        <p class="mt-3">
+          Create <code class="text-sm font-mono">/llms.txt</code> with an H1 title,
+          a one-line summary, and grouped links to your pillar pages, docs, and
+          key guides. The
+          {' '}<a href="/tools/llms-txt-generator/" class="text-accent-teal hover:underline">llms.txt generator</a>
+          {' '}produces a valid file from your site so you do not have to assemble
+          it by hand.
+        </p>
+      </section>
+
+      {/* Step 3 — schema */}
+      <section>
+        <h2>Step 3 — Add JSON-LD structured data</h2>
+        <h3 class="mt-6">What it is</h3>
+        <p class="mt-3">
+          Structured data is machine-readable markup — typically JSON-LD using the
+          schema.org vocabulary — that states facts about a page explicitly:
+          <code class="text-sm font-mono">Article</code>,
+          {' '}<code class="text-sm font-mono">FAQPage</code>,
+          {' '}<code class="text-sm font-mono">Organization</code>,
+          {' '}<code class="text-sm font-mono">WebSite</code>.
+        </p>
+        <h3 class="mt-6">Why AI engines use it</h3>
+        <p class="mt-3">
+          JSON-LD makes entities and relationships unambiguous. Instead of
+          inferring that a string is an author, a date, or an organization, an
+          engine reads it directly. That disambiguation helps both classic rich
+          results and AI systems deciding whether your page is a reliable answer
+          to a question.
+        </p>
+        <h3 class="mt-6">The concrete fix</h3>
+        <p class="mt-3">
+          Add <code class="text-sm font-mono">Organization</code> and
+          {' '}<code class="text-sm font-mono">WebSite</code> markup site-wide, then
+          <code class="text-sm font-mono">Article</code> on posts and
+          {' '}<code class="text-sm font-mono">FAQPage</code> where you answer real
+          questions. Keep the structured data consistent with the visible content —
+          do not assert in JSON-LD what the page does not actually say. Both direct
+          <code class="text-sm font-mono">@type</code> and
+          {' '}<code class="text-sm font-mono">@graph</code> arrays are valid.
+        </p>
+      </section>
+
+      {/* Step 4 — meta */}
+      <section>
+        <h2>Step 4 — Keep meta tags clean and unique</h2>
+        <h3 class="mt-6">What it is</h3>
+        <p class="mt-3">
+          Meta tags describe the page to machines: the
+          {' '}<code class="text-sm font-mono">&lt;title&gt;</code>, the meta
+          description, the canonical URL, and Open Graph tags.
+        </p>
+        <h3 class="mt-6">Why AI engines use it</h3>
+        <p class="mt-3">
+          A unique title and description help an engine identify what a page is
+          about at a glance, and a correct canonical prevents duplicate versions
+          of a page from splitting or confusing that signal. Pages with missing,
+          duplicated, or self-conflicting meta are harder to attribute confidently.
+        </p>
+        <h3 class="mt-6">The concrete fix</h3>
+        <p class="mt-3">
+          Give every important page a distinct, descriptive title and description,
+          set a self-referential canonical with a consistent trailing-slash
+          convention, and add Open Graph tags so the page is identifiable when
+          shared or summarized.
+        </p>
+      </section>
+
+      {/* Step 5 — content */}
+      <section>
+        <h2>Step 5 — Write answer-first, quotable content</h2>
+        <h3 class="mt-6">What it is</h3>
+        <p class="mt-3">
+          Content structure is how your text is organized: heading hierarchy,
+          where the answer sits relative to the question, and whether facts are
+          stated plainly or buried in prose.
+        </p>
+        <h3 class="mt-6">Why AI engines use it</h3>
+        <p class="mt-3">
+          Answer engines lift passages and attribute them. The cleaner and more
+          self-contained a passage is, the easier it is to quote. Research on
+          Generative Engine Optimization is concrete here: adding quotations
+          raised source citation by roughly <strong>41%</strong> and adding
+          statistics by roughly <strong>33%</strong> (Princeton, arXiv:2311.09735).
+          Concrete, verifiable facts beat vague claims.
+        </p>
+        <h3 class="mt-6">The concrete fix</h3>
+        <ul class="mt-3 space-y-2 list-disc pl-5">
+          <li>Lead with a direct answer in the first sentence, then expand.</li>
+          <li>Use headings that match the questions people actually ask.</li>
+          <li>Prefer concrete numbers, dated statements, and named sources over generalities.</li>
+          <li>Add relevant quotations and statistics where they support a claim.</li>
+          <li>Break processes into explicit, numbered steps.</li>
+          <li>Keep one idea per paragraph so a model can lift a clean passage.</li>
+        </ul>
+      </section>
+
+      {/* Step 6 — brand & entity */}
+      <section>
+        <h2>Step 6 — Make your brand a recognizable entity</h2>
+        <h3 class="mt-6">What it is</h3>
+        <p class="mt-3">
+          Brand and entity signals tie your pages to a single, recognizable
+          organization: consistent naming, clear about and contact pages,
+          knowledge-graph readiness, and <code class="text-sm font-mono">sameAs</code>
+          {' '}links to your authoritative profiles.
+        </p>
+        <h3 class="mt-6">Why AI engines use it</h3>
+        <p class="mt-3">
+          Engines prefer to cite identifiable entities. When your name, schema,
+          and external profiles agree, a model can resolve "who is this" with
+          confidence, which makes attribution safer. Incoherent naming or an
+          orphaned brand makes the same content riskier to quote.
+        </p>
+        <h3 class="mt-6">The concrete fix</h3>
+        <p class="mt-3">
+          Use one consistent brand name across the site, publish clear about and
+          contact pages, and add <code class="text-sm font-mono">sameAs</code>
+          {' '}links from your <code class="text-sm font-mono">Organization</code>
+          {' '}schema to your verifiable profiles. Keep these aligned with what the
+          pages actually state.
+        </p>
+      </section>
+
+      {/* Step 7 — freshness */}
+      <section>
+        <h2>Step 7 — Signal freshness and currency</h2>
+        <h3 class="mt-6">What it is</h3>
+        <p class="mt-3">
+          Freshness signals tell an engine when content was produced or updated:
+          a declared language, an RSS feed, and explicit, accurate dates.
+        </p>
+        <h3 class="mt-6">Why AI engines use it</h3>
+        <p class="mt-3">
+          For time-sensitive questions, engines weigh how current a source is.
+          Undated content, or content whose dates do not match its substance, is
+          harder to trust for anything that changes over time.
+        </p>
+        <h3 class="mt-6">The concrete fix</h3>
+        <p class="mt-3">
+          Declare your language in the <code class="text-sm font-mono">&lt;html lang&gt;</code>
+          {' '}attribute, expose an RSS feed where you publish regularly, and keep
+          <code class="text-sm font-mono">datePublished</code> and
+          {' '}<code class="text-sm font-mono">dateModified</code> accurate in both
+          your visible content and your schema. Update dates only when the content
+          genuinely changes.
+        </p>
+      </section>
+
+      {/* Step 8 — AI discovery */}
+      <section>
+        <h2>Step 8 — Expose AI discovery endpoints</h2>
+        <h3 class="mt-6">What it is</h3>
+        <p class="mt-3">
+          AI discovery endpoints are machine-readable files that describe your
+          site to AI tooling directly — for example
+          {' '}<code class="text-sm font-mono">/.well-known/ai.txt</code> and JSON
+          summaries of your site, FAQs, and services.
+        </p>
+        <h3 class="mt-6">Why AI engines use it</h3>
+        <p class="mt-3">
+          These endpoints give tooling a structured, low-friction way to read your
+          intent and key facts without parsing every page. They are the smallest
+          category by weight, but they are cheap to add and complete the picture
+          once the higher-leverage steps are in place.
+        </p>
+        <h3 class="mt-6">The concrete fix</h3>
+        <p class="mt-3">
+          Publish a <code class="text-sm font-mono">/.well-known/ai.txt</code> with
+          your crawler permissions, and serve JSON summaries describing the site,
+          its FAQs, and its services. Keep them in sync with the rest of your
+          signals.
+        </p>
+      </section>
+
+      {/* Ordered checklist */}
+      <section>
+        <h2>The checklist, in order</h2>
+        <p class="mt-4">
+          Work top to bottom. Each item names the category, the weight it carries
+          out of 100, and the single most important action.
+        </p>
+        <ol class="mt-6 space-y-3 list-decimal pl-5">
+          <li><strong>robots.txt (18):</strong> allow the citation-oriented AI bots you want; confirm no CDN rule overrides it.</li>
+          <li><strong>llms.txt (18):</strong> publish a root-level map with H1, summary, and sectioned links to your key pages.</li>
+          <li><strong>Schema JSON-LD (16):</strong> add Organization, WebSite, Article, and FAQPage markup that matches the visible content.</li>
+          <li><strong>Meta tags (14):</strong> give every page a unique title, description, correct canonical, and Open Graph tags.</li>
+          <li><strong>Content (12):</strong> lead with the answer; add quotations and statistics; one idea per paragraph.</li>
+          <li><strong>Brand &amp; entity (10):</strong> consistent naming, clear about/contact, and sameAs links from your schema.</li>
+          <li><strong>Freshness (6):</strong> declare language, expose RSS, keep dates accurate in content and schema.</li>
+          <li><strong>AI discovery (6):</strong> publish /.well-known/ai.txt and JSON summaries of the site, FAQs, and services.</li>
+        </ol>
+      </section>
+
+      {/* Read the score */}
+      <section>
+        <h2>Read your score, then re-measure</h2>
+        <p class="mt-4">
+          The point of working through the categories is to move a measurable
+          number. Map your audit result to the band it falls into, fix the lowest
+          bands first where the effort is smallest, and re-audit after each round.
+        </p>
+        <div class="mt-6 grid gap-3 sm:grid-cols-2">
+          {SCORE_BANDS.map(([range, label, meaning]) => (
+            <div class="rounded-xl border border-border bg-bg-surface p-4">
+              <div class="flex items-baseline gap-3">
+                <span class="font-mono text-sm text-accent-teal">{range}</span>
+                <span class="font-display text-base font-semibold text-text-primary">{label}</span>
+              </div>
+              <p class="mt-2 text-sm leading-relaxed text-text-secondary">{meaning}</p>
+            </div>
+          ))}
+        </div>
+        <p class="mt-4">
+          A site in the critical or foundation band should fix crawler access and
+          structure before touching copy — the friction sits earlier in the chain.
+          For the reasoning behind why these eight categories matter for AI engines
+          specifically, see the
+          {' '}<a href="/guides/generative-engine-optimization/" class="text-accent-teal hover:underline">Generative Engine Optimization guide</a>
+          {' '}and the open
+          {' '}<a href="/methodology/" class="text-accent-teal hover:underline">scoring methodology</a>.
+        </p>
+      </section>
+
+      {/* CTA */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6 md:p-8">
+        <h2>Measure where you stand today</h2>
+        <p class="mt-3">
+          See how your site scores across all eight categories, with specific
+          recommendations per category. No account required.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/"
+            class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Run the free audit
+          </a>
+          <a
+            href="/tools/ai-citation-checker/"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            Check AI citations
+          </a>
+        </div>
+        <p class="mt-4 text-xs text-text-muted">
+          GEO Optimizer is open source under the MIT license, with 47 citability
+          methods and open scoring weights. See the
+          {' '}<a href="/methodology/" class="text-accent-teal hover:underline">methodology</a>
+          {' '}for how every point is counted.
+        </p>
+      </section>
+
+      {/* FAQ */}
+      <section>
+        <h2>AI visibility FAQ</h2>
+        <div class="mt-6 space-y-6">
+          {faqs.map((faq) => (
+            <div>
+              <h3>{faq.question}</h3>
+              <p class="mt-2">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Further reading */}
+      <section>
+        <h2>Further reading</h2>
+        <ul class="mt-4 space-y-2 list-disc pl-5">
+          <li><a href="/guides/generative-engine-optimization/" class="text-accent-teal hover:underline">Generative Engine Optimization</a> — the foundational guide to how AI engines retrieve and cite sources.</li>
+          <li><a href="/tools/llms-txt-generator/" class="text-accent-teal hover:underline">llms.txt generator</a> — produce a valid root-level map from your site.</li>
+          <li><a href="/tools/ai-citation-checker/" class="text-accent-teal hover:underline">AI citation checker</a> — see how citable your content is today.</li>
+          <li><a href="/methodology/" class="text-accent-teal hover:underline">Scoring methodology</a> — how the eight categories and 100 points are counted.</li>
+          <li><a href="/" class="text-accent-teal hover:underline">Run the free audit</a> — get your baseline score before you start.</li>
+        </ul>
+      </section>
+    </div>
+  </article>
+
+  {/* Page-specific schema — Article */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "How to Improve AI Visibility",
+    "description": description,
+    "author": {
+      "@id": "https://geoready.dev/#organization"
+    },
+    "publisher": {
+      "@id": "https://geoready.dev/#organization"
+    },
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "image": "https://geoready.dev/assets/og-image.png",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonical
+    },
+    "about": [
+      { "@type": "Thing", "name": "AI search visibility" },
+      { "@type": "Thing", "name": "Generative Engine Optimization" },
+      { "@type": "Thing", "name": "AI citations" },
+      { "@type": "Thing", "name": "llms.txt" },
+      { "@type": "Thing", "name": "structured data" }
+    ]
+  })} />
+
+  {/* FAQPage — stesse FAQ visibili nel markup */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  })} />
+</Shell>

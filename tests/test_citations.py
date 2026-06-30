@@ -66,6 +66,38 @@ class TestRunCitationCheck:
 
         assert result.verdict == "invisible"
 
+    def test_same_named_domain_not_counted_as_brand_mention(self):
+        """A same-named but unrelated domain (geoready.app) must not inflate the
+        brand mention rate for GeoReady (geoready.dev)."""
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response(
+                "For this, check geoready.app — it covers the topic well.",
+                citations=["https://geoready.app/post"],
+            )
+            result = run_citation_check("GeoReady", "geoready.dev", provider="perplexity", api_key="pk-test")
+
+        assert result.brand_mention_rate == 0.0
+        assert result.domain_citation_rate == 0.0
+        assert result.verdict == "invisible"
+        # the homonym is surfaced as a competitor domain, not as "you"
+        assert ("geoready.app", 3) in result.top_cited_domains
+
+    def test_brand_not_matched_inside_longer_word(self):
+        """A short brand must not match as a substring of a longer word."""
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("Acmecorp and Acmetech are unrelated firms.")
+            result = run_citation_check("Acme", "acme.com", provider="perplexity", api_key="pk-test")
+
+        assert result.brand_mention_rate == 0.0
+
+    def test_brand_mention_at_sentence_end_still_counts(self):
+        """A legitimate standalone mention ending a sentence still counts."""
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("Many teams rely on Acme.")
+            result = run_citation_check("Acme", "acme.com", provider="perplexity", api_key="pk-test")
+
+        assert result.brand_mention_rate == 1.0
+
     def test_domain_cited_in_text_for_parametric_providers(self):
         """Providers without a citations list still count URLs in the answer text."""
         with patch.object(citations_mod, "query_llm") as mock_q:

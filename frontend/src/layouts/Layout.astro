@@ -26,6 +26,11 @@ const {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Preload dei font critici above-the-fold (self-hosted in /public/fonts).
+       Con font-display: optional in global.css, il preload dà al font la possibilità
+       di essere pronto entro il block period → niente swap tardivo, CLS azzerato. -->
+  <link rel="preload" href="/fonts/space-grotesk-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/geist-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <title>{title}</title>
   <meta name="description" content={description}>
   <meta name="robots" content={robots}>
@@ -40,7 +45,7 @@ const {
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content={description}>
-  <meta property="og:site_name" content="GEO Optimizer">
+  <meta property="og:site_name" content="GeoReady">
   <meta property="og:locale" content="en_US">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content={title}>
@@ -84,29 +89,37 @@ const {
         },
         "sameAs": [
           "https://github.com/Auriti-Labs",
+          "https://github.com/Auriti-Labs/geo-optimizer-skill",
           "https://pypi.org/project/geo-optimizer-skill/",
-          "https://geoready.dev",
           "https://auriti-labs.github.io/geo-optimizer-skill/"
-        ]
+        ],
+        "founder": { "@id": "https://geoready.dev/#founder" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://geoready.dev/#founder",
+        "name": "Juan Camilo Auriti",
+        "url": "https://x.com/JuanAuriti",
+        "worksFor": { "@id": "https://geoready.dev/#organization" }
       },
       {
         "@type": "WebSite",
         "@id": "https://geoready.dev/#website",
-        "name": "GEO Optimizer",
+        "name": "GeoReady",
         "url": "https://geoready.dev",
-        "description": "Audit your website's AI search visibility and citability. GEO Optimizer scores your site across 8 categories with actionable recommendations — free, no account required.",
-        "dateModified": "2026-05-26",
+        "description": "Audit your website's AI search visibility and citability. GeoReady scores your site across 8 categories with actionable recommendations — free, no account required.",
+        "dateModified": "2026-06-16",
         "publisher": { "@id": "https://geoready.dev/#organization" }
       },
       {
         "@type": "WebApplication",
         "@id": "https://geoready.dev/#webapp",
-        "name": "GEO Optimizer",
+        "name": "GeoReady",
         "url": "https://geoready.dev",
-        "description": "Audit your website's AI search visibility and citability. GEO Optimizer scores your site across 8 categories with actionable recommendations — free, no account required.",
+        "description": "Audit your website's AI search visibility and citability. GeoReady scores your site across 8 categories with actionable recommendations — free, no account required.",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Web",
-        "dateModified": "2026-05-26",
+        "dateModified": "2026-06-16",
         "author": {
           "@id": "https://geoready.dev/#organization"
         },

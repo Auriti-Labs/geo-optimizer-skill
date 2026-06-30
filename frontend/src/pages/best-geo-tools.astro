@@ -1,0 +1,513 @@
+---
+import Shell from '../components/Shell.astro';
+
+const title = 'Best GEO Tools 2026: Compare AI Visibility Software';
+const description =
+  'Compare GEO and AI visibility tools by audit depth, monitoring, llms.txt support, schema, workflows, and pricing fit. Includes GEO Optimizer.';
+const canonical = 'https://geoready.dev/best-geo-tools/';
+const datePublished = '2026-06-16';
+const dateModified = '2026-06-17';
+
+// Criteri di valutazione di un GEO tool — riusati nella tabella visibile.
+// Ogni criterio è una domanda concreta che un reviewer tecnico può verificare.
+const EVALUATION_CRITERIA = [
+  [
+    'Methodology transparency',
+    'Are the scoring weights and methods published, or is the score a black box? A transparent tool lets you read exactly why a page scored the way it did.',
+  ],
+  [
+    'Open-source vs closed',
+    'Can you read, fork, and self-host the code, or are you locked into a hosted product? Open-source tools can be audited and run in your own environment.',
+  ],
+  [
+    'Audit vs monitoring',
+    'Does it score a site once, track changes over time, or both? One-off audits answer "where do I stand"; monitoring answers "did my changes hold".',
+  ],
+  [
+    'CI/CD integration',
+    'Can it run in a pipeline and fail a build on regression, or only in a browser? Pipeline support turns AI-readiness into an enforceable check.',
+  ],
+  [
+    'Answer-engine querying',
+    'Does it only score on-page signals, or can it ask real answer engines whether your brand is mentioned and your domain cited? These are different questions.',
+  ],
+  [
+    'Research backing',
+    'Are the methods grounded in published research, or asserted without sources? Cited methods are testable; unsourced claims are not.',
+  ],
+  [
+    'Pricing model',
+    'Free and open, freemium, or paid-only? The model determines how much you can verify before committing budget.',
+  ],
+] as const;
+
+// Categorie di tool sul mercato — descritte senza inventare nomi o feature di vendor.
+const TOOL_CATEGORIES = [
+  [
+    'AI-readiness audit tools',
+    'Score a page or site against the technical and content signals AI engines rely on — crawler access, structured data, llms.txt, quotable content. Best for a baseline and a prioritized fix list.',
+  ],
+  [
+    'Citation monitoring',
+    'Track whether AI answer engines mention your brand and cite your domain over time, and which competitors are cited instead. Best for measuring outcomes rather than readiness.',
+  ],
+  [
+    'llms.txt tooling',
+    'Generate or validate the root-level llms.txt orientation file. Narrow in scope, useful as one part of a wider workflow rather than a standalone strategy.',
+  ],
+  [
+    'SEO suites adding GEO',
+    'Established SEO platforms layering AI-visibility features onto existing crawls and dashboards. Convenient if you already run the suite; verify how the GEO score is computed before relying on it.',
+  ],
+] as const;
+
+// Matrice comparativa categoria × criterio — volutamente category-level.
+// Nessun nome o feature di vendor specifici: ogni cella descrive cosa fa
+// tipicamente quel TIPO di tool, con hedging onesto ("usually/often/varies").
+const CATEGORY_MATRIX = [
+  {
+    category: 'AI-readiness audit tools',
+    bestAt: 'A baseline score and a prioritized fix list.',
+    audit: 'Audit-first; some add tracking over time.',
+    query: 'Usually no; they score on-page signals, not live answers.',
+    cicd: 'Some can run in a pipeline.',
+    pricing: 'Free to freemium.',
+  },
+  {
+    category: 'Citation monitoring',
+    bestAt: 'Tracking brand mentions and citations over time.',
+    audit: 'Monitoring-first.',
+    query: 'Yes; querying answer engines is the core function.',
+    cicd: 'Rarely.',
+    pricing: 'Mostly paid.',
+  },
+  {
+    category: 'llms.txt tooling',
+    bestAt: 'Generating or validating a root-level llms.txt.',
+    audit: 'Neither; a narrow point utility.',
+    query: 'No.',
+    cicd: 'Occasionally, as a validation step.',
+    pricing: 'Often free.',
+  },
+  {
+    category: 'SEO suites adding GEO',
+    bestAt: 'GEO features inside an existing SEO workflow.',
+    audit: 'Both, layered onto existing crawls.',
+    query: 'Varies; often on-page only.',
+    cicd: 'Rarely.',
+    pricing: 'Paid subscription.',
+  },
+] as const;
+
+// Feature verificabili di GEO Optimizer — ogni voce è confermata nel repository.
+const GEO_OPTIMIZER_FEATURES = [
+  ['License', 'MIT, open-source. Scoring weights are public and readable in the repository.'],
+  ['Distribution', 'Python package on PyPI, plus a command-line tool, a Python library, and an MCP server.'],
+  ['Audit', 'Scores a site 0–100 across 8 categories using 47 research-backed citability methods.'],
+  ['CI/CD', 'Ships a GitHub Action that runs a full audit in a pipeline and can fail a build below a minimum score.'],
+  ['Answer-engine querying', 'The geo citations command asks real answer engines whether your brand is mentioned and your domain is cited (bring your own API key).'],
+  ['Research basis', 'Methods grounded in Princeton KDD 2024 and AutoGEO ICLR 2026.'],
+] as const;
+
+// FAQ condivise tra markup visibile e JSON-LD (single source of truth).
+const faqs = [
+  {
+    q: 'What makes a GEO tool worth using?',
+    a: 'A GEO tool is worth using when you can verify how it works. The most useful signals are a transparent, published scoring methodology, support for both one-off audits and tracking over time, the ability to run in a pipeline rather than only in a browser, and methods grounded in citable research. A tool that hides its scoring logic gives you a number you cannot act on or contest.',
+  },
+  {
+    q: 'Are there open-source GEO tools?',
+    a: 'Yes. GEO Optimizer is an open-source, MIT-licensed toolkit whose scoring weights are published in the repository. Open-source tools let you read the methodology, fork it, and run it in your own environment, which matters when you want to understand exactly why a page scored the way it did.',
+  },
+  {
+    q: 'What is the difference between an audit tool and citation monitoring?',
+    a: 'An audit tool scores the on-page and technical signals that determine whether an AI engine can reach, understand, and quote your site — crawler access, structured data, quotable content. Citation monitoring asks a different question: does an answer engine actually mention your brand and cite your domain, and which competitors are cited instead. Readiness and outcome are related but distinct; the strongest workflows use both.',
+  },
+  {
+    q: 'Can any GEO tool guarantee that ChatGPT or Perplexity will cite my site?',
+    a: 'No. Citation behavior is probabilistic and changes every time a model is retrained or its retrieval index updates. No tool can guarantee a specific engine will cite you. What a good tool does is remove the technical and content barriers that prevent a model from finding, understanding, and quoting your pages, and measure whether you are cited today.',
+  },
+  {
+    q: 'Should I use a dedicated GEO tool or the GEO features in my existing SEO suite?',
+    a: 'It depends on how much you need to verify. SEO suites adding GEO features are convenient if you already run the platform, but the way the AI-visibility score is computed is often not published. A dedicated tool with a transparent methodology lets you audit the logic and reproduce the result. If accountability matters, prefer the tool whose scoring you can read.',
+  },
+  {
+    q: 'What is the difference between GEO tools and AI visibility tools?',
+    a: 'The terms are often used interchangeably, and in practice they describe overlapping categories. GEO tools — short for Generative Engine Optimization tools — help you structure a site so AI answer engines like ChatGPT and Perplexity can more easily find, understand, and evaluate its content. AI visibility tools is the broader label some vendors use for the same category, sometimes extending to citation monitoring and brand-mention tracking. When comparing products, check what the tool actually measures: a one-off readiness audit, ongoing citation monitoring, or both.',
+  },
+];
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+    {/* Header — answer-first, visible to crawlers */}
+    <header class="mb-12 md:mb-16">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <span>GEO Optimizer</span>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>Tools</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        Best GEO Tools for AI Search Visibility
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        The honest answer to "what is the best GEO tool" is that it depends on
+        what you are trying to measure. The category is new, vendors define
+        "AI visibility" differently, and a score is only useful if you can see how
+        it was computed. Rather than rank products on claims we cannot verify,
+        this guide evaluates the main categories of AI visibility and generative
+        engine optimization tools against fixed criteria, gives you the questions
+        to ask before you buy, and details one open-source option, GEO Optimizer,
+        using only facts published in its repository.
+      </p>
+
+      <p class="mt-4 text-sm text-text-secondary leading-relaxed">
+        GEO here means Generative Engine Optimization, not geographic or local SEO.
+      </p>
+
+      <p class="mt-3 text-sm text-text-muted leading-relaxed">
+        This comparison is criteria-based and evolving. The GEO tooling landscape
+        changes quickly; treat the criteria below as the durable part and any specific
+        product as a snapshot to re-verify before you buy.
+      </p>
+
+      <p class="mt-4 text-xs text-text-muted font-mono">
+        Published June 16, 2026 · Last updated June 17, 2026 · 8 min read
+      </p>
+    </header>
+
+    {/* What "best" means in a new category */}
+    <section class="mb-12 md:mb-16">
+      <h2>What "best" means in a category this young</h2>
+      <p class="mt-4">
+        Generative Engine Optimization is the practice of structuring a site so AI
+        answer engines like ChatGPT, Perplexity, Claude, and Gemini can crawl it,
+        understand it, and cite it. The discipline is only a couple of years old, the
+        underlying models change on their own schedule, and no tool controls whether a
+        given engine cites you. That makes any ranked "top 10" list fragile: the
+        rankings rest on methodologies that are rarely published and on outcomes no
+        vendor can guarantee.
+      </p>
+      <p class="mt-4">
+        A more durable approach is to evaluate tools against fixed criteria and pick the
+        one that fits your workflow. The sections below give you those criteria, then
+        describe the categories of tool you will encounter so you know what each is
+        good for before you compare specific products.
+      </p>
+    </section>
+
+    {/* Evaluation criteria table */}
+    <section class="mb-12 md:mb-16">
+      <h2>How to evaluate a GEO tool</h2>
+      <p class="mt-4">
+        Score any candidate against these seven criteria. Each is a question you can
+        answer by reading documentation or running a trial — not a claim you have to
+        take on faith.
+      </p>
+      <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-border text-text-muted">
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Criterion</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Question to ask</th>
+            </tr>
+          </thead>
+          <tbody>
+            {EVALUATION_CRITERIA.map(([name, detail]) => (
+              <tr class="border-b border-border/60 last:border-0 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary whitespace-nowrap">{name}</th>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">{detail}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-4">
+        Methodology transparency sits at the top for a reason: if you cannot see how a
+        score is calculated, you cannot reproduce it, contest it, or learn from it. A
+        published scoring model turns a number into a checklist you can act on.
+      </p>
+    </section>
+
+    {/* Tool categories */}
+    <section class="mb-12 md:mb-16">
+      <h2>The main categories of GEO and AI visibility tools</h2>
+      <p class="mt-4">
+        Tools in this space fall into a few broad categories. Most teams end up using
+        more than one, because readiness and outcome are different things and few
+        products do both well.
+      </p>
+      <div class="mt-6 space-y-4">
+        {TOOL_CATEGORIES.map(([name, detail]) => (
+          <div class="rounded-xl border border-border bg-bg-surface p-5">
+            <h3>{name}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-text-secondary">{detail}</p>
+          </div>
+        ))}
+      </div>
+      <p class="mt-4">
+        When you compare specific products, place each one in a category first. A
+        citation monitor and an audit tool are not really competitors: they answer
+        different questions, and judging one by the other's strengths is how
+        misleading "best of" lists get written.
+      </p>
+    </section>
+
+    {/* Category comparison matrix — category-level only, no vendor claims */}
+    <section class="mb-12 md:mb-16">
+      <h2>GEO tools compared, by category</h2>
+      <p class="mt-4">
+        This matrix compares the categories, not individual products, so it stays
+        true as vendors come and go. Use it to decide which kind of tool fits your
+        question, then verify any specific product against the criteria above before
+        you buy. "Varies" means the answer depends on the vendor and is worth
+        checking yourself.
+      </p>
+      <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-border text-text-muted">
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Tool category</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Best at</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Audit vs monitoring</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Answer-engine querying</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">CI/CD</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Pricing</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CATEGORY_MATRIX.map((row) => (
+              <tr class="border-b border-border/60 last:border-0 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary">{row.category}</th>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">{row.bestAt}</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">{row.audit}</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">{row.query}</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">{row.cicd}</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">{row.pricing}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-4">
+        Most teams end up using more than one category, because readiness and outcome
+        are different questions. The pattern that holds across all of them: the tool
+        whose methodology you can read is the one you can trust the result from.
+      </p>
+    </section>
+
+    {/* GEO Optimizer feature block — verifiable repo facts only */}
+    <section class="mb-12 md:mb-16">
+      <h2>GEO Optimizer: an open-source option, by the facts</h2>
+      <p class="mt-4">
+        GEO Optimizer is the toolkit behind GeoReady, and the one we can describe
+        without asking you to trust a marketing claim, because everything below is
+        verifiable in its public repository under an MIT license. We list it here as a
+        worked example of the criteria above, not as a verdict that it beats tools we
+        have not audited.
+      </p>
+      <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-border text-text-muted">
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Capability</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">What it provides</th>
+            </tr>
+          </thead>
+          <tbody>
+            {GEO_OPTIMIZER_FEATURES.map(([name, detail]) => (
+              <tr class="border-b border-border/60 last:border-0 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary whitespace-nowrap">{name}</th>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">{detail}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-4">
+        Against the criteria: the methodology is transparent because the 8 scoring
+        categories and their weights are published; it is open-source under MIT; it
+        does both auditing and, through the citations command, answer-engine querying;
+        it runs in CI/CD via a GitHub Action; and its methods are grounded in published
+        research. The hosted layer is freemium — the
+        {' '}
+        <a href="/" class="text-accent-teal hover:underline">audit</a>,
+        {' '}
+        <a href="/compare/" class="text-accent-teal hover:underline">two-site comparison</a>, and a free
+        {' '}
+        <a href="/tools/ai-citation-checker/" class="text-accent-teal hover:underline">AI citation checker</a>
+        {' '}run without an account, while saving history and ongoing monitoring are paid features.
+        See <a href="/pricing/" class="text-accent-teal hover:underline">pricing</a> for the tiers.
+      </p>
+      <p class="mt-4">
+        The source, scoring weights, and research references are in the
+        {' '}
+        <a href="https://github.com/Auriti-Labs/geo-optimizer-skill" class="text-accent-teal hover:underline" rel="noopener">public repository on GitHub</a>,
+        {' '}with full documentation in the
+        {' '}
+        <a href="https://auriti-labs.github.io/geo-optimizer-skill/" class="text-accent-teal hover:underline" rel="noopener">project docs</a>.
+        Because it is open-source, you can verify every claim in the table above yourself.
+      </p>
+    </section>
+
+    {/* The research it scores against */}
+    <section class="mb-12 md:mb-16">
+      <h2>Why research backing matters</h2>
+      <p class="mt-4">
+        "Research-backed" is easy to assert and harder to demonstrate. The standard to
+        hold a tool to is whether it names the work it relies on. GEO Optimizer's 47
+        citability methods trace to two papers you can read: the Princeton GEO study
+        (KDD 2024), which tested optimization methods at scale, and AutoGEO (ICLR 2026),
+        which reports a +50.99% improvement over the Princeton baseline. The same body of
+        work documents citation-lift signals such as +41% from adding quotations and +33%
+        from adding statistics.
+      </p>
+      <p class="mt-4">
+        You do not have to take those numbers as guarantees for your own site — model
+        behavior varies — but a tool that points to specific, citable research is one you
+        can interrogate. A tool that asserts "AI-optimized" with no source is not.
+        For the underlying discipline, the
+        {' '}
+        <a href="/guides/generative-engine-optimization/" class="text-accent-teal hover:underline">GEO guide</a>
+        {' '}explains what these signals do, and the
+        {' '}
+        <a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO guide</a>
+        {' '}covers what changes when the interface is an answer rather than a list of links.
+      </p>
+    </section>
+
+    {/* How to choose */}
+    <section class="mb-12 md:mb-16">
+      <h2>How to choose, in practice</h2>
+      <p class="mt-4">
+        Start from the question you actually need answered, then pick the category that
+        answers it:
+      </p>
+      <ul class="mt-4 ml-5 list-disc space-y-2">
+        <li>
+          <strong class="text-text-primary">"Where does my site stand and what do I fix first?"</strong>
+          {' '}Use an audit tool with a transparent scoring model so the fix list is reproducible.
+        </li>
+        <li>
+          <strong class="text-text-primary">"Am I actually being cited, and by whom over time?"</strong>
+          {' '}Use citation monitoring that queries real answer engines, and accept that results move as models retrain. See
+          {' '}<a href="/guides/ai-citations-check/" class="text-accent-teal hover:underline">how to check AI citations</a>
+          {' '}to get started.
+        </li>
+        <li>
+          <strong class="text-text-primary">"How do I stack up against my competitors?"</strong>
+          {' '}Benchmark several domains at once with
+          {' '}<a href="/analyze-competitors/" class="text-accent-teal hover:underline">competitor AI visibility analysis</a>
+          {' '}to see where a whole category sits, then drill into one rival with a
+          {' '}<a href="/compare/" class="text-accent-teal hover:underline">head-to-head comparison</a>.
+        </li>
+        <li>
+          <strong class="text-text-primary">"How do I stop regressions in a pipeline?"</strong>
+          {' '}Require CI/CD support — a tool you can run on every deploy and fail a build below a threshold.
+        </li>
+        <li>
+          <strong class="text-text-primary">"I already run an SEO suite."</strong>
+          {' '}Check whether its GEO score is computed transparently before you rely on it; if not, pair it with a tool that publishes its method.
+        </li>
+      </ul>
+      <p class="mt-4">
+        Two warnings hold across every category. First, distrust any tool that promises a
+        citation — none can deliver it, because the decision lives inside models you do not
+        control. Second, prefer the tool whose methodology you can read; in a field this
+        young, transparency is the closest thing to a guarantee you will get.
+      </p>
+    </section>
+
+    {/* CTA band */}
+    <section class="mb-12 rounded-2xl border border-border bg-bg-surface p-6 md:mb-16 md:p-8">
+      <h2>See where your site stands first</h2>
+      <p class="mt-3">
+        Before you choose a tool, get a baseline. The free GEO audit scores your
+        site 0 to 100 across 8 categories and returns a prioritized fix list, with
+        no account required. It is the open-source methodology described above,
+        running on your URL.
+      </p>
+      <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <a
+          href="/#audit-form"
+          class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
+        >
+          Run the free GEO audit
+        </a>
+        <a
+          href="/pricing/"
+          class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+        >
+          See pricing
+        </a>
+      </div>
+    </section>
+
+    {/* FAQ */}
+    <section>
+      <h2>Frequently asked questions</h2>
+      <div class="mt-6 space-y-6">
+        {faqs.map((faq) => (
+          <div>
+            <h3>{faq.q}</h3>
+            <p class="mt-2">{faq.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  {/* Page-specific schema — Article */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description,
+    "url": canonical,
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "author": { "@id": "https://geoready.dev/#organization" },
+    "publisher": { "@id": "https://geoready.dev/#organization" }
+  })} />
+
+  {/* FAQPage — stesse FAQ visibili nel markup */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.a
+      }
+    }))
+  })} />
+
+  {/* BreadcrumbList — coerente con le altre pagine */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "GeoReady", "item": "https://geoready.dev/" },
+      { "@type": "ListItem", "position": 2, "name": "Best GEO Tools", "item": canonical }
+    ]
+  })} />
+
+  {/* ItemList — le categorie di tool (non vendor), riusa TOOL_CATEGORIES */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Categories of GEO and AI visibility tools",
+    "description": "The main categories of Generative Engine Optimization tooling, compared by what each is best at.",
+    "itemListElement": TOOL_CATEGORIES.map(([name, detail], index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": name,
+      "description": detail
+    }))
+  })} />
+</Shell>
