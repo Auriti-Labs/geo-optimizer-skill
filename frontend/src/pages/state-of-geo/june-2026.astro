@@ -143,7 +143,7 @@ const faqs = [
             <p class="text-xs text-text-muted mt-0.5">have llms.txt</p>
           </div>
           <div>
-            <p class="text-3xl font-bold text-text-primary">{100 - stats.pctExcellent - stats.pctGood}%</p>
+            <p class="text-3xl font-bold text-text-primary">{stats.pctFoundation + stats.pctCritical}%</p>
             <p class="text-xs text-text-muted mt-0.5">Foundation or Critical</p>
           </div>
         </div>
@@ -301,6 +301,23 @@ const faqs = [
           <p class="mt-6">
             The llms.txt data reveals a pattern common in early-adoption cycles: <strong class="text-text-primary">presence is not quality</strong>. 58.3% of audited sites have an llms.txt file — a clear majority. But only 27.8% have a full, structured file with meaningful sections and links. The remaining 30% of adopters publish a minimal file: sometimes a single line, sometimes a stub with no URLs. A stub llms.txt is better than nothing, but it provides almost no orientation value to an AI tool trying to understand a site's important content.
           </p>
+
+          <div class="mt-6 grid sm:grid-cols-2 gap-4">
+            <div class="rounded-xl border border-accent-teal/30 bg-accent-teal/5 p-5">
+              <p class="text-xs font-mono text-accent-teal uppercase tracking-wider mb-2">llms.txt correlation</p>
+              <p class="text-3xl font-bold text-text-primary">+24 pts</p>
+              <p class="text-sm text-text-secondary mt-1">
+                Sites <em>with</em> llms.txt average <strong class="text-text-primary">66/100</strong>. Sites <em>without</em> average <strong class="text-text-primary">42/100</strong>. Publishing an llms.txt is the single signal most correlated with overall GEO score.
+              </p>
+            </div>
+            <div class="rounded-xl border border-accent-teal/30 bg-accent-teal/5 p-5">
+              <p class="text-xs font-mono text-accent-teal uppercase tracking-wider mb-2">Schema markup correlation</p>
+              <p class="text-3xl font-bold text-text-primary">+29 pts</p>
+              <p class="text-sm text-text-secondary mt-1">
+                Sites <em>with</em> valid JSON-LD average <strong class="text-text-primary">65/100</strong>. Sites <em>without</em> average <strong class="text-text-primary">36/100</strong>. Organization and WebSite schema drive the biggest share of this gap.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* ── 4. The AI Discovery gap ────────────────────────────────────────── */}
