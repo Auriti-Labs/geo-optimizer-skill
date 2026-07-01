@@ -21,6 +21,7 @@ const stats = {
   pctGood: 19.4,
   pctFoundation: 64.6,
   pctCritical: 14.6,
+  pctBelowGood: 79.2,
   pctLlmsTxt: 58.3,
   pctLlmsFull: 27.8,
   pctSchema: 70.1,
@@ -143,7 +144,7 @@ const faqs = [
             <p class="text-xs text-text-muted mt-0.5">have llms.txt</p>
           </div>
           <div>
-            <p class="text-3xl font-bold text-text-primary">{stats.pctFoundation + stats.pctCritical}%</p>
+            <p class="text-3xl font-bold text-text-primary">{stats.pctBelowGood}%</p>
             <p class="text-xs text-text-muted mt-0.5">Foundation or Critical</p>
           </div>
         </div>
