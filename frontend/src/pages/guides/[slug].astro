@@ -1,32 +1,19 @@
 ---
-import { sanityClient } from 'sanity:client';
-import { defineQuery } from 'groq';
 import { PortableText } from 'astro-portabletext';
 import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
+import { getAllArticleSlugs, getArticleBySlug } from '../../utils/sanity';
 
 // ── Static paths ──────────────────────────────────────────────────────────────
 export async function getStaticPaths() {
-  const SLUGS_QUERY = defineQuery(
-    `*[_type == "article" && category == "guides" && defined(slug.current) && !coalesce(noindex, false)]{
-      "params": { "slug": slug.current }
-    }`
-  );
-  return sanityClient.fetch(SLUGS_QUERY);
+  const slugs = await getAllArticleSlugs();
+  return slugs
+    .filter((s: { slug: string; category: string }) => s.category === 'guides')
+    .map((s: { slug: string; category: string }) => ({ params: { slug: s.slug } }));
 }
 
-// ── Fetch article ─────────────────────────────────────────────────────────────
-const ARTICLE_QUERY = defineQuery(
-  `*[_type == "article" && slug.current == $slug][0]{
-    _id, title, metaTitle, slug, description, category,
-    datePublished, dateModified, body, faqs,
-    ogImage{ asset, alt }, focusKeyword, llmsContext,
-    schemaOrgType, author, noindex
-  }`
-);
-
 const { slug } = Astro.params;
-const article = await sanityClient.fetch(ARTICLE_QUERY, { slug });
+const article = await getArticleBySlug(slug as string);
 
 if (!article) return Astro.redirect('/404', 301);
 
