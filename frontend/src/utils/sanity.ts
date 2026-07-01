@@ -20,12 +20,18 @@ export interface SanityArticle {
   noindex?: boolean
 }
 
+// An article is "live" if:
+//   - status == "published"  (explicit publish)
+//   - status == "scheduled" AND scheduledFor <= now()  (scheduled time passed)
+//   - status is not yet set (legacy docs migrated before this field existed)
+const LIVE = `(!defined(status) || status == "published" || (status == "scheduled" && dateTime(scheduledFor) <= dateTime(now())))`
+
 const SLUGS_QUERY = defineQuery(
-  `*[_type == "article" && defined(slug.current) && !coalesce(noindex, false)]{ "slug": slug.current, "category": category }`
+  `*[_type == "article" && defined(slug.current) && ${LIVE}]{ "slug": slug.current, "category": category }`
 )
 
 const ARTICLE_QUERY = defineQuery(
-  `*[_type == "article" && slug.current == $slug][0]{
+  `*[_type == "article" && slug.current == $slug && ${LIVE}][0]{
     _id, title, metaTitle, slug, description, category,
     datePublished, dateModified, body, faqs,
     ogImage{ asset, alt }, focusKeyword, llmsContext,
@@ -34,13 +40,13 @@ const ARTICLE_QUERY = defineQuery(
 )
 
 const ARTICLES_BY_CATEGORY_QUERY = defineQuery(
-  `*[_type == "article" && category == $category && !coalesce(noindex, false)] | order(datePublished desc){
+  `*[_type == "article" && category == $category && ${LIVE}] | order(datePublished desc){
     _id, title, slug, description, datePublished, dateModified, focusKeyword
   }`
 )
 
 const ALL_ARTICLES_QUERY = defineQuery(
-  `*[_type == "article" && !coalesce(noindex, false)] | order(datePublished desc){
+  `*[_type == "article" && ${LIVE}] | order(datePublished desc){
     _id, title, slug, description, category, datePublished
   }`
 )
