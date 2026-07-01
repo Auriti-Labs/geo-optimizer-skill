@@ -35,60 +35,11 @@ const title = article.metaTitle || article.title;
 const schemaType = article.schemaOrgType || 'Article';
 const author = article.author || 'Juan Camilo Auriti';
 
-// ── Portable Text custom components ──────────────────────────────────────────
-const ptComponents = {
-  types: {
-    callout: ({ node }: any) => {
-      const colors: Record<string, string> = {
-        info: 'border-accent-teal/30 bg-accent-teal/5 text-accent-teal',
-        tip: 'border-green-400/30 bg-green-400/5 text-green-400',
-        warning: 'border-yellow-400/30 bg-yellow-400/5 text-yellow-400',
-        stat: 'border-accent-teal/40 bg-accent-teal/8 text-accent-teal',
-      };
-      const cls = colors[node.variant] || colors.info;
-      return `<div class="rounded-xl border ${cls} p-5 my-6"><p class="text-sm leading-relaxed text-text-secondary">${node.body}</p></div>`;
-    },
-    codeBlock: ({ node }: any) =>
-      `<pre class="rounded-xl bg-bg-surface border border-border p-4 my-6 overflow-x-auto text-sm font-mono"><code class="language-${node.language || 'text'}">${node.code}</code></pre>`,
-    image: ({ node }: any) => {
-      const alt = node.alt || '';
-      const caption = node.caption || '';
-      return `<figure class="my-8">
-        <img src="https://cdn.sanity.io/images/uvzrnk4t/production/${node.asset?._ref?.replace('image-', '').replace(/-([a-z]+)$/, '.$1') || ''}" alt="${alt}" class="rounded-xl w-full" loading="lazy" />
-        ${caption ? `<figcaption class="mt-2 text-xs text-text-muted text-center">${caption}</figcaption>` : ''}
-      </figure>`;
-    },
-  },
-  block: {
-    h2: ({ children }: any) =>
-      `<h2 class="font-display text-2xl font-bold text-text-primary leading-tight tracking-tight mt-12 mb-4">${children}</h2>`,
-    h3: ({ children }: any) =>
-      `<h3 class="font-display text-lg font-semibold text-text-primary mt-8 mb-3">${children}</h3>`,
-    h4: ({ children }: any) =>
-      `<h4 class="font-semibold text-text-primary mt-6 mb-2">${children}</h4>`,
-    normal: ({ children }: any) =>
-      `<p class="text-text-secondary leading-relaxed mt-4">${children}</p>`,
-    blockquote: ({ children }: any) =>
-      `<blockquote class="border-l-4 border-accent-teal pl-4 italic text-text-secondary my-6">${children}</blockquote>`,
-  },
-  list: {
-    bullet: ({ children }: any) =>
-      `<ul class="list-disc pl-5 space-y-2 mt-4 text-text-secondary">${children}</ul>`,
-    number: ({ children }: any) =>
-      `<ol class="list-decimal pl-5 space-y-2 mt-4 text-text-secondary">${children}</ol>`,
-  },
-  marks: {
-    strong: ({ children }: any) => `<strong class="font-semibold text-text-primary">${children}</strong>`,
-    em: ({ children }: any) => `<em>${children}</em>`,
-    code: ({ children }: any) =>
-      `<code class="text-sm font-mono bg-bg-surface border border-border rounded px-1 py-0.5">${children}</code>`,
-    link: ({ children, value }: any) => {
-      const href = value?.href || '#';
-      const isExternal = href.startsWith('http');
-      return `<a href="${href}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} class="text-accent-teal hover:underline">${children}</a>`;
-    },
-  },
-};
+// ── Portable Text components ──────────────────────────────────────────────────
+// astro-portabletext requires .astro component files for custom renderers.
+// Block/list/marks use the library defaults (semantic HTML) styled via CSS below.
+// Types (callout, codeBlock, image) are defined in separate .astro files when needed.
+const ptComponents = {};
 
 // ── JSON-LD ───────────────────────────────────────────────────────────────────
 const jsonLd = {
@@ -175,7 +126,7 @@ const jsonLd = {
     </header>
 
     {/* ── Body ─────────────────────────────────────────────────────────────── */}
-    <div class="space-y-0 [&_h2]:mt-12 [&_h2]:mb-4 [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mt-4 [&_ul]:mt-4 [&_ol]:mt-4 [&_li]:leading-relaxed">
+    <div class="pt-prose">
       <PortableText value={article.body} components={ptComponents} />
     </div>
 
@@ -210,3 +161,21 @@ const jsonLd = {
   {/* ── Structured data ──────────────────────────────────────────────────────── */}
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 </Shell>
+
+<style is:global>
+  .pt-prose h2 { font-family: var(--font-display, inherit); font-size: 1.5rem; font-weight: 700; color: var(--color-text-primary, inherit); line-height: 1.25; letter-spacing: -0.025em; margin-top: 3rem; margin-bottom: 1rem; }
+  .pt-prose h3 { font-family: var(--font-display, inherit); font-size: 1.125rem; font-weight: 600; color: var(--color-text-primary, inherit); margin-top: 2rem; margin-bottom: 0.75rem; }
+  .pt-prose h4 { font-weight: 600; color: var(--color-text-primary, inherit); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  .pt-prose p { color: var(--color-text-secondary, inherit); line-height: 1.75; margin-top: 1rem; }
+  .pt-prose ul { list-style-type: disc; padding-left: 1.25rem; margin-top: 1rem; }
+  .pt-prose ol { list-style-type: decimal; padding-left: 1.25rem; margin-top: 1rem; }
+  .pt-prose li { color: var(--color-text-secondary, inherit); line-height: 1.75; margin-top: 0.375rem; }
+  .pt-prose strong { font-weight: 600; color: var(--color-text-primary, inherit); }
+  .pt-prose em { font-style: italic; }
+  .pt-prose code { font-size: 0.875rem; font-family: ui-monospace, monospace; background: var(--color-bg-surface, #1a1a1a); border: 1px solid var(--color-border, #333); border-radius: 0.25rem; padding: 0.125rem 0.25rem; }
+  .pt-prose pre { background: var(--color-bg-surface, #1a1a1a); border: 1px solid var(--color-border, #333); border-radius: 0.75rem; padding: 1rem; margin: 1.5rem 0; overflow-x: auto; font-size: 0.875rem; font-family: ui-monospace, monospace; }
+  .pt-prose pre code { background: none; border: none; padding: 0; }
+  .pt-prose a { color: var(--color-accent-teal, #2dd4bf); }
+  .pt-prose a:hover { text-decoration: underline; }
+  .pt-prose blockquote { border-left: 4px solid var(--color-accent-teal, #2dd4bf); padding-left: 1rem; font-style: italic; color: var(--color-text-secondary, inherit); margin: 1.5rem 0; }
+</style>
