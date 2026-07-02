@@ -7,15 +7,15 @@ import { saveScore } from '../../lib/scoreHistory';
 import ReportHeader from './ReportHeader';
 import ScoreGauge from './ScoreGauge';
 import ScoreHistory from './ScoreHistory';
-import CategoryBreakdown from './CategoryBreakdown';
 import BenchmarkComparison from './BenchmarkComparison';
-import GateBanner from './GateBanner';
+import CategoryBreakdown from './CategoryBreakdown';
+import EmailGateBanner from './EmailGateBanner';
 import TechnicalSignals from './TechnicalSignals';
 import RecommendationList from './RecommendationList';
 import ExportActions from './ExportActions';
 
 const FREE_SLUGS = new Set(['robots', 'meta', 'signals']);
-const LOCKED_SLUGS = ['llms', 'schema', 'content', 'ai_discovery', 'brand_entity'];
+const ALL_LOCKED_SLUGS = ['llms', 'schema', 'content', 'ai_discovery', 'brand_entity'];
 const LOCKED_MAX_POINTS = 18 + 16 + 12 + 6 + 10; // 62
 
 interface AuditReportContainerProps {
@@ -28,23 +28,18 @@ type State =
   | { status: 'ready'; report: AuditReport; claim_token: string | null; expires_at: string | null };
 
 export default function AuditReportContainer({ reportId }: AuditReportContainerProps) {
-  // La demo è una pagina marketing indicizzabile: inizializza già con i dati mock
-  // così l'isola viene renderizzata lato server (SSG) con il contenuto completo
-  // del report, invece di uno shell vuoto idratato solo client-side.
   const [state, setState] = useState<State>(() =>
     reportId === 'demo'
       ? { status: 'ready', report: mockAuditReport, claim_token: null, expires_at: null }
       : { status: 'loading' }
   );
+  const [unlocked, setUnlocked] = useState(false);
 
   useEffect(() => {
     if (reportId === 'demo') {
-      // Stato già pronto dall'initializer; nessun fetch necessario per la demo.
       return;
     }
 
-    // In una pagina statica i query params non sono disponibili a build time.
-    // Leggiamo l'URL direttamente dal browser quando siamo client-side.
     let targetUrl: string | null = null;
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -54,7 +49,6 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
       }
     }
 
-    // Fallback alla prop reportId (cache hash o URL codificato)
     if (!targetUrl && reportId) {
       const isHexId = /^[a-f0-9]{32}$/i.test(reportId);
       targetUrl = isHexId ? null : decodeURIComponent(reportId);
@@ -116,7 +110,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
   const report = state.report;
 
   const isDemo = reportId === 'demo';
-  const lockedSlugs = isDemo ? [] : LOCKED_SLUGS;
+  const lockedSlugs = (isDemo || unlocked) ? [] : ALL_LOCKED_SLUGS;
   const lockedSet = new Set(lockedSlugs);
 
   const criticalCount = report.recommendations.filter((r) => r.priority === 'critical').length;
@@ -205,10 +199,11 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
             <CategoryBreakdown categories={report.categories} lockedSlugs={lockedSlugs} />
             {lockedSlugs.length > 0 && (
               <div className="mt-4">
-                <GateBanner
+                <EmailGateBanner
                   score={report.geoScore}
                   lockedCount={lockedSlugs.length}
                   totalLockedPoints={LOCKED_MAX_POINTS}
+                  onUnlock={() => setUnlocked(true)}
                 />
               </div>
             )}
