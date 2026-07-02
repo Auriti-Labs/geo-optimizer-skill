@@ -46,10 +46,8 @@ KEY_PAGES = {
     "/roadmap/": "roadmap.astro",
     "/manifesto/": "manifesto.astro",
     "/compare/": "compare.astro",
-    # Guide target del recovery indicizzazione: stessi standard SEO delle core.
-    "/guides/ai-visibility-checklist/": "guides/ai-visibility-checklist.astro",
-    "/guides/geo-vs-seo/": "guides/geo-vs-seo.astro",
-    "/guides/llms-txt-wordpress/": "guides/llms-txt-wordpress.astro",
+    # Guide content migrated to Sanity CMS — no static .astro source files.
+    # Metadata quality is enforced by Sanity schema validation (required fields).
 }
 
 # robots.txt: fonte di verità per la policy di crawl (vedi report/[id].astro).
@@ -245,9 +243,15 @@ class TestSchemaCanonicalConsistency:
 
         Nota: alcune pagine (es. homepage) hanno solo schema di entità/FAQ senza
         un URL di pagina nel JSON-LD; lì la canonical del <Shell> è la fonte valida.
+
+        Route dinamiche ([slug].astro, [id].astro) sono escluse: i loro URL sono
+        calcolati a runtime da parametri — non estraibili staticamente dal sorgente.
         """
         mancanti: list[str] = []
         for relpath in _ALL_PAGES:
+            # Skip dynamic routes — canonical is a template literal, not a static string.
+            if "[" in relpath:
+                continue
             source = (_PAGES_DIR / relpath).read_text(encoding="utf-8")
             if "application/ld+json" not in source:
                 continue
@@ -351,11 +355,17 @@ class TestGuideInternalLinks:
     """Le 3 guide non indicizzate devono ricevere link editoriali dalle pagine forti
     e nessun link non-slash deve essere introdotto (coerenza con il canonical)."""
 
-    def test_hub_linka_tutte_le_guide_target(self):
+    def test_hub_usa_sanity_per_i_link_guide(self):
+        # Guide links are now Sanity-driven (getArticlesByCategory) — not hardcoded.
+        # Verify the hub imports and calls the Sanity helper instead of checking
+        # for static hrefs that no longer exist in source.
         source = _GUIDES_HUB.read_text(encoding="utf-8")
-        hrefs = _hrefs(source)
-        for guide in _TARGET_GUIDES:
-            assert guide in hrefs, f"Hub guide non linka {guide}"
+        assert "getArticlesByCategory" in source, (
+            "guides/index.astro deve usare getArticlesByCategory per generare i link"
+        )
+        assert "a.slug.current" in source, (
+            "guides/index.astro deve rendere gli href da a.slug.current (Sanity)"
+        )
 
     def test_homepage_linka_hub_guide(self):
         hrefs = _hrefs(_HOMEPAGE.read_text(encoding="utf-8"))
