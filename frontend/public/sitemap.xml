@@ -80,7 +80,7 @@
   </url>
   <url>
     <loc>https://geoready.dev/guides/</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-07-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -117,7 +117,13 @@
     <loc>https://geoready.dev/guides/generative-engine-optimization/</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://geoready.dev/guides/what-is-generative-engine-optimization/</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://geoready.dev/guides/geo-vs-seo/</loc>
@@ -186,7 +192,7 @@
   </url>
   <url>
     <loc>https://geoready.dev/research/</loc>
-    <lastmod>2026-06-17</lastmod>
+    <lastmod>2026-07-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <image:image>
@@ -203,8 +209,14 @@
   </url>
   <url>
     <loc>https://geoready.dev/state-of-geo/</loc>
-    <lastmod>2026-06-15</lastmod>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://geoready.dev/state-of-geo/june-2026/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
