@@ -33,7 +33,6 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
       ? { status: 'ready', report: mockAuditReport, claim_token: null, expires_at: null }
       : { status: 'loading' }
   );
-  const [unlocked, setUnlocked] = useState(false);
 
   useEffect(() => {
     if (reportId === 'demo') {
@@ -110,7 +109,8 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
   const report = state.report;
 
   const isDemo = reportId === 'demo';
-  const lockedSlugs = (isDemo || unlocked) ? [] : ALL_LOCKED_SLUGS;
+  // Categories stay locked on screen — user gets full report via email only
+  const lockedSlugs = isDemo ? [] : ALL_LOCKED_SLUGS;
   const lockedSet = new Set(lockedSlugs);
 
   const criticalCount = report.recommendations.filter((r) => r.priority === 'critical').length;
@@ -203,7 +203,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
                   score={report.geoScore}
                   lockedCount={lockedSlugs.length}
                   totalLockedPoints={LOCKED_MAX_POINTS}
-                  onUnlock={() => setUnlocked(true)}
+                  claimToken={state.claim_token}
                 />
               </div>
             )}

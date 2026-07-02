@@ -5,12 +5,12 @@ interface EmailGateBannerProps {
   score: number;
   lockedCount: number;
   totalLockedPoints: number;
-  onUnlock: () => void;
+  claimToken: string | null;
 }
 
 const API_BASE = import.meta.env.PUBLIC_API_BASE || '/api';
 
-export default function EmailGateBanner({ score, lockedCount, totalLockedPoints, onUnlock }: EmailGateBannerProps) {
+export default function EmailGateBanner({ score, lockedCount, totalLockedPoints, claimToken }: EmailGateBannerProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
@@ -19,26 +19,24 @@ export default function EmailGateBanner({ score, lockedCount, totalLockedPoints,
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || status === 'submitting') return;
+    if (!email || status === 'submitting' || !claimToken) return;
 
     setStatus('submitting');
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${API_BASE}/email/capture`, {
+      const res = await fetch(`${API_BASE}/public/email-report`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
-          source: 'audit-report-unlock',
-          source_url: typeof window !== 'undefined' ? window.location.href : undefined,
+          claim_token: claimToken,
         }),
       });
 
       if (res.ok) {
         setStatus('success');
-        trackCtaClicked({ cta_location: 'email_gate', cta_text: 'Unlock with email' });
-        onUnlock();
+        trackCtaClicked({ cta_location: 'email_gate', cta_text: 'Send report to email' });
       } else {
         const data = await res.json().catch(() => ({}));
         setStatus('error');
@@ -50,20 +48,24 @@ export default function EmailGateBanner({ score, lockedCount, totalLockedPoints,
     }
   }
 
-  // Success state — categories unlocked
+  // Success state — email sent, categories stay locked on screen
   if (status === 'success') {
     return (
-      <div className="rounded-xl border border-accent-success/25 bg-accent-success/5 p-5 flex items-start gap-3">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-success shrink-0 mt-0.5" aria-hidden="true">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-          <path d="M22 4L12 14.01l-3-3" />
-        </svg>
-        <div>
-          <p className="text-sm font-semibold text-text-primary">Full report unlocked</p>
-          <p className="text-xs text-text-secondary mt-1">
-            We saved your email and unlocked all 8 categories. We'll occasionally send you GEO benchmark updates — unsubscribe anytime.
-          </p>
+      <div className="rounded-xl border border-accent-teal/25 bg-accent-teal/5 p-6 text-center">
+        <div className="w-12 h-12 rounded-full bg-accent-teal/10 flex items-center justify-center mx-auto mb-3">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-teal">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <path d="M22 4L12 14.01l-3-3" />
+          </svg>
         </div>
+        <p className="text-sm font-semibold text-text-primary mb-1">
+          Full report sent to your inbox
+        </p>
+        <p className="text-xs text-text-secondary max-w-sm mx-auto leading-relaxed">
+          Check <strong className="text-text-primary">{email}</strong> for the complete 8-category
+          GEO breakdown with scores, signals, and recommendations. The full report is in your email —
+          not on this page.
+        </p>
       </div>
     );
   }
@@ -84,7 +86,7 @@ export default function EmailGateBanner({ score, lockedCount, totalLockedPoints,
         Your visible score is <strong className="text-text-primary">{score}/100</strong>.
         The locked categories can add up to <strong className="text-accent-teal">+{totalLockedPoints} points</strong>,
         potentially reaching <strong className="text-accent-teal">{potentialScore}/100</strong>.
-        Enter your email to unlock the full report — free, no account needed.
+        Enter your email and we'll send the full report — <strong>it lands in your inbox, not on this page</strong>.
       </p>
 
       <div className="flex flex-wrap gap-1.5 mb-4">
@@ -110,7 +112,7 @@ export default function EmailGateBanner({ score, lockedCount, totalLockedPoints,
         />
         <button
           type="submit"
-          disabled={status === 'submitting' || !email}
+          disabled={status === 'submitting' || !email || !claimToken}
           className="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-accent-teal text-white text-sm font-semibold hover:bg-accent-teal-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {status === 'submitting' ? (
@@ -119,11 +121,11 @@ export default function EmailGateBanner({ score, lockedCount, totalLockedPoints,
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-20" />
                 <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
               </svg>
-              Unlocking...
+              Sending...
             </>
           ) : (
             <>
-              Unlock full report
+              Send full report
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
@@ -137,7 +139,7 @@ export default function EmailGateBanner({ score, lockedCount, totalLockedPoints,
       )}
 
       <p className="mt-2 text-[10px] text-text-muted">
-        We save your email to send occasional GEO updates. No spam, unsubscribe anytime.{' '}
+        We send the full 8-category report to your email. No spam, unsubscribe anytime.{' '}
         <a href="/privacy/" className="text-text-muted underline hover:text-text-secondary">Privacy Policy</a>
       </p>
     </div>
