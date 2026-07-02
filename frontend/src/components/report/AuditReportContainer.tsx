@@ -8,6 +8,7 @@ import ReportHeader from './ReportHeader';
 import ScoreGauge from './ScoreGauge';
 import ScoreHistory from './ScoreHistory';
 import CategoryBreakdown from './CategoryBreakdown';
+import BenchmarkComparison from './BenchmarkComparison';
 import GateBanner from './GateBanner';
 import TechnicalSignals from './TechnicalSignals';
 import RecommendationList from './RecommendationList';
@@ -187,6 +188,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
           </div>
 
           <ScoreHistory url={report.url} currentScore={report.geoScore} />
+          <BenchmarkComparison score={report.geoScore} grade={report.grade} />
         </div>
 
         <div className="lg:col-span-9 space-y-8">
