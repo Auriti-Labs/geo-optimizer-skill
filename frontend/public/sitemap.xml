@@ -103,7 +103,13 @@
   </url>
   <url>
     <loc>https://geoready.dev/guides/appear-in-chatgpt-perplexity/</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://geoready.dev/guides/robots-txt-ai-bots/</loc>
+    <lastmod>2026-07-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
