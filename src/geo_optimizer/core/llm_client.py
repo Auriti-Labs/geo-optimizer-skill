@@ -1,14 +1,14 @@
 """
 Provider-agnostic LLM query client for GEO Optimizer.
 
-Supports OpenAI, Anthropic, Groq (optional dependencies) and Perplexity
-(uses the core `requests` dependency, no extra needed).
+Supports OpenAI, Anthropic, Groq (optional dependencies), Perplexity and
+MiniMax (both use the core `requests` dependency, no extra needed).
 Configuration via environment variables:
-  GEO_LLM_PROVIDER  — openai | anthropic | groq | perplexity (auto-detected if not set)
+  GEO_LLM_PROVIDER  — openai | anthropic | groq | perplexity | minimax (auto-detected if not set)
   GEO_LLM_API_KEY   — API key (falls back to provider-specific env vars)
   GEO_LLM_MODEL     — model name (provider default if not set)
 
-Requires: pip install geo-optimizer-skill[llm] (except Perplexity)
+Requires: pip install geo-optimizer-skill[llm] (except Perplexity and MiniMax)
 """
 
 from __future__ import annotations
@@ -26,6 +26,7 @@ _PROVIDER_DEFAULTS = {
     "anthropic": "claude-sonnet-4-20250514",
     "groq": "llama-3.3-70b-versatile",
     "perplexity": "sonar",
+    "minimax": "MiniMax-M3",
 }
 
 # Perplexity is listed last so adding its key does not silently change the
@@ -35,9 +36,11 @@ _PROVIDER_ENV_KEYS = {
     "anthropic": "ANTHROPIC_API_KEY",
     "groq": "GROQ_API_KEY",
     "perplexity": "PERPLEXITY_API_KEY",
+    "minimax": "MINIMAX_API_KEY",
 }
 
 _PERPLEXITY_API_URL = "https://api.perplexity.ai/chat/completions"
+_MINIMAX_API_URL = "https://api.minimax.io/v1/chat/completions"
 
 
 @dataclass
@@ -123,6 +126,8 @@ def query_llm(
         return _query_groq(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
     if provider == "perplexity":
         return _query_perplexity(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
+    if provider == "minimax":
+        return _query_minimax(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
 
     return LLMResponse(error=f"Unknown provider: {provider}")
 
@@ -252,3 +257,35 @@ def _query_groq(prompt: str, *, system: str, api_key: str, model: str, max_token
     except Exception as exc:
         logger.warning("Groq query failed: %s: %s", type(exc).__name__, exc)
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="groq", model=model)
+
+
+def _query_minimax(prompt: str, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
+    """Query MiniMax via plain HTTP (OpenAI-compatible, no extra dependency)."""
+    import requests
+
+    messages: list[dict] = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": prompt})
+
+    try:
+        resp = requests.post(
+            _MINIMAX_API_URL,
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={"model": model, "messages": messages, "max_tokens": max_tokens},
+            timeout=_LLM_TIMEOUT,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        choice = (data.get("choices") or [{}])[0]
+        usage = data.get("usage") or {}
+        return LLMResponse(
+            text=(choice.get("message") or {}).get("content", ""),
+            model=data.get("model", model),
+            provider="minimax",
+            prompt_tokens=usage.get("prompt_tokens", 0),
+            completion_tokens=usage.get("completion_tokens", 0),
+        )
+    except Exception as exc:
+        logger.warning("MiniMax query failed: %s: %s", type(exc).__name__, exc)
+        return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="minimax", model=model)

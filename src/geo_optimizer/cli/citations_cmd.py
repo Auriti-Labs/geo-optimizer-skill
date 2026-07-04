@@ -71,7 +71,7 @@ def _format_text(result) -> str:
 @click.option("--query", "queries", multiple=True, help="Custom query to ask (repeatable, overrides defaults)")
 @click.option(
     "--provider",
-    type=click.Choice(["perplexity", "openai", "anthropic", "groq"]),
+    type=click.Choice(["perplexity", "openai", "anthropic", "groq", "minimax"]),
     default=None,
     help="AI provider (default: perplexity if PERPLEXITY_API_KEY is set, else auto-detect)",
 )
