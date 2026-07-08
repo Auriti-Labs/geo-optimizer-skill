@@ -564,8 +564,8 @@ def format_audit_text(result: AuditResult) -> str:
 
     # CLI→platform funnel: the CLI is one-shot, continuity lives in the platform
     lines.append("")
-    lines.append("  💡 One-shot audit. Score history, regression alerts, and AI citation")
-    lines.append("     tracking live at https://geoready.dev — free to start.")
+    lines.append("  💡 One-shot audit. The free plan at https://geoready.dev tracks 1 domain")
+    lines.append("     with a weekly drift email — plus score history and AI citation tracking.")
 
     lines.append("")
     return "\n".join(lines)

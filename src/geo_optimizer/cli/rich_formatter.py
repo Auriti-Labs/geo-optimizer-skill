@@ -1215,7 +1215,7 @@ def format_audit_rich(result: AuditResult) -> str:
     # CLI→platform funnel: the CLI is one-shot, continuity lives in the platform
     console.print()
     funnel = Text()
-    funnel.append("Track this score over time — alerts & AI citation tracking → ", style=_COLORS["dim"])
+    funnel.append("Free plan: 1 monitored domain + weekly drift email → ", style=_COLORS["dim"])
     funnel.append("geoready.dev", style=f"bold {_COLORS['brand_1']} underline")
     console.print(Align.center(funnel))
 
