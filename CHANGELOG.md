@@ -5,13 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
-## [Unreleased]
+## [4.15.0] — 2026-07-08 · Aperture
 
 ### Added
 - **`geo perception` — deterministic AI perception snapshot (MVP C).** Aggregates brand, schema, citability, trust, and factual signals from a full audit into what an AI/retrieval system would likely extract from the page: brand entity, schema types, citability grade, trust score, supported/unsupported claims, and missing authority signals. Deterministic — no LLM call, no extra network beyond the audit — and always disclosed as simulated perception, not real AI output. Completes the Static-cycle MVP C alongside `geo drift` (MVP B) and `geo access`/`geo logs` (MVP A). Text and JSON output.
 
 ### Changed
 - **`geo audit` suggests a badge embed for `good`/`excellent` scores.** The text and rich output now show a ready-to-paste `[![GEO Score](...)]` snippet pre-filled with the audited URL when the score clears the "good" band — the badge generator (`/badge`) already existed but was only documented in the README, not surfaced at the moment of the score itself.
+- **CLI funnel footers name the free monitoring tier.** geoready-platform shipped a free tier on 2026-06-30 (1 monitored domain + weekly drift email), but the `geo audit`/`geo drift` funnel footers still said generic "regression alerts" from before that feature existed. Updated to name exactly what's free.
 
 ## [4.14.1] — 2026-06-27
 
