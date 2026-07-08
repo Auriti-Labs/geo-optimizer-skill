@@ -381,6 +381,25 @@ class TestAuditCommand:
 
     @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
+    def test_audit_good_band_suggests_badge(self, mock_audit, runner, sample_audit_result):
+        """A 'good'/'excellent' band suggests embedding the score badge."""
+        mock_audit.return_value = sample_audit_result
+        result = runner.invoke(cli, ["audit", "--url", "https://example.com"])
+        assert result.exit_code == 0
+        assert "embed-worthy" in result.output
+        assert "geoready.dev/badge?url=https://example.com" in result.output
+
+    @patch.dict("sys.modules", {"httpx": None})
+    @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
+    def test_audit_critical_band_no_badge_suggestion(self, mock_audit, runner, minimal_audit_result):
+        """A 'critical' band does not suggest embedding the score badge."""
+        mock_audit.return_value = minimal_audit_result
+        result = runner.invoke(cli, ["audit", "--url", "https://minimal.example.com"])
+        assert result.exit_code == 0
+        assert "embed-worthy" not in result.output
+
+    @patch.dict("sys.modules", {"httpx": None})
+    @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_json_output(self, mock_audit, runner, sample_audit_result):
         """geo audit --url URL --format json produces valid JSON."""
         mock_audit.return_value = sample_audit_result

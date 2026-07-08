@@ -567,6 +567,14 @@ def format_audit_text(result: AuditResult) -> str:
     lines.append("  💡 One-shot audit. The free plan at https://geoready.dev tracks 1 domain")
     lines.append("     with a weekly drift email — plus score history and AI citation tracking.")
 
+    # Badge growth loop: only suggest embedding a score worth showing off (gap #501)
+    if result.band in ("excellent", "good"):
+        lines.append("")
+        lines.append(f"  🏅 {result.score}/100 is embed-worthy. Add it to your README:")
+        lines.append(
+            f"     [![GEO Score](https://geoready.dev/badge?url={result.url})](https://geoready.dev?utm_source=badge)"
+        )
+
     lines.append("")
     return "\n".join(lines)
 
