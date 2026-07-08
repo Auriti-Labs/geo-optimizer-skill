@@ -1223,7 +1223,9 @@ def format_audit_rich(result: AuditResult) -> str:
     if result.band in ("excellent", "good"):
         console.print()
         badge = Text()
-        badge.append(f"🏅 {result.score}/100 is embed-worthy — add a live badge to your README → ", style=_COLORS["dim"])
+        badge.append(
+            f"🏅 {result.score}/100 is embed-worthy — add a live badge to your README → ", style=_COLORS["dim"]
+        )
         badge.append("geoready.dev/badge", style=f"bold {_COLORS['brand_1']} underline")
         console.print(Align.center(badge))
 
