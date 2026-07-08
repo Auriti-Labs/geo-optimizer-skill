@@ -1,0 +1,271 @@
+---
+import Shell from '../components/Shell.astro';
+
+const title = 'The Open-Source Alternative to Profound & Otterly (GEO Optimizer)';
+const description =
+  'Looking for an open-source alternative to Profound or Otterly for generative engine optimization? GEO Optimizer is a free, MIT-licensed, self-hostable GEO toolkit — audit, track AI citations, and run in CI/CD.';
+const canonical = 'https://geoready.dev/open-source-profound-otterly-alternative/';
+const datePublished = '2026-07-08';
+const dateModified = '2026-07-08';
+
+// Assi di confronto scelti per essere VERIFICABILI e incontestabili:
+// per GEO Optimizer sono fatti confermati nel repository; per i prodotti
+// proprietari ci limitiamo a fatti pubblici non contestabili (proprietary,
+// hosted SaaS, paid). Nessun prezzo o feature specifica di terzi inventata.
+const COMPARISON_AXES = [
+  [
+    'License & source',
+    'Open-source (MIT). The full scoring logic is readable and forkable in the repository.',
+    'Proprietary, closed-source hosted products. The scoring methodology is not published.',
+  ],
+  [
+    'Where it runs',
+    'Self-hostable: runs on your own machine or CI, as a CLI, a Python library, or an MCP server.',
+    'Hosted SaaS: you use the vendor’s cloud dashboard.',
+  ],
+  [
+    'Pricing model',
+    'Free. No account required to run the open-source toolkit.',
+    'Paid subscription products.',
+  ],
+  [
+    'CI/CD integration',
+    'Ships a GitHub Action that runs a full audit in a pipeline and can fail a build below a minimum score.',
+    'Primarily browser/dashboard workflows.',
+  ],
+  [
+    'Methodology transparency',
+    'Scoring weights are public; 47 methods grounded in Princeton KDD 2024 and AutoGEO ICLR 2026.',
+    'Scores are produced by a closed methodology you cannot read or reproduce.',
+  ],
+  [
+    'Data ownership',
+    'Your audit data stays in your environment when self-hosted.',
+    'Your data is processed on the vendor’s platform.',
+  ],
+] as const;
+
+// Feature verificabili di GEO Optimizer — ogni voce è confermata nel repository/README.
+const GEO_OPTIMIZER_FEATURES = [
+  ['License', 'MIT, open-source. Scoring weights are public and readable in the repository.'],
+  ['Distribution', 'Python package on PyPI (geo-optimizer-skill), plus a CLI, a Python library, and an MCP server.'],
+  ['Audit', 'Scores a site 0–100 across 8 categories using 47 research-backed citability methods.'],
+  ['Answer-engine querying', 'The geo citations command asks real answer engines (e.g. Perplexity) whether your brand is mentioned and your domain is cited — bring your own API key.'],
+  ['CI/CD', 'A GitHub Action runs a full audit in a pipeline and can fail a build below a minimum score.'],
+  ['Interfaces', '15 CLI commands, a Python API, an MCP server, and an Astro integration.'],
+  ['Research basis', 'Methods grounded in Princeton KDD 2024 and AutoGEO ICLR 2026.'],
+] as const;
+
+// FAQ condivise tra markup visibile e JSON-LD (single source of truth).
+// Le domande replicano le query reali degli utenti su questa esigenza.
+const faqs = [
+  {
+    q: 'Is there an open-source alternative to Profound?',
+    a: 'Yes. GEO Optimizer (the geo-optimizer-skill package) is a free, open-source, MIT-licensed generative engine optimization toolkit. Unlike hosted, proprietary products, you can read its scoring methodology, fork it, and run it in your own environment — as a command-line tool, a Python library, an MCP server, or a GitHub Action in CI/CD.',
+  },
+  {
+    q: 'Is there an open-source alternative to Otterly AI?',
+    a: 'Yes. GEO Optimizer is an open-source, self-hostable alternative for auditing AI search visibility and checking whether answer engines cite your site. It is MIT-licensed and free to run, with a published, research-backed scoring methodology (47 methods across 8 categories).',
+  },
+  {
+    q: 'What is the difference between GEO Optimizer and proprietary GEO SaaS tools?',
+    a: 'The core differences are transparency, hosting, and cost. GEO Optimizer is open-source (MIT), so its scoring weights are readable and reproducible; it is self-hostable, so your audit data stays in your environment; and it is free to run. Proprietary GEO SaaS products are closed-source hosted platforms with subscription pricing and a methodology you cannot inspect. Which fits depends on whether you value auditability and self-hosting or a fully managed hosted dashboard.',
+  },
+  {
+    q: 'Can I self-host an AI visibility / GEO tool?',
+    a: 'Yes. GEO Optimizer is designed to be self-hosted: install the Python package, run it from the command line or in CI, or embed it as a library or MCP server. Nothing is sent to a vendor cloud when you run the open-source toolkit, which matters if data residency or auditability is a requirement.',
+  },
+  {
+    q: 'Does the open-source option check whether ChatGPT or Perplexity actually cites my site?',
+    a: 'Yes, with a caveat that applies to every tool. GEO Optimizer’s geo citations command queries real answer engines (bring your own API key) to check whether your brand is mentioned and your domain is cited. No tool — open-source or proprietary — can guarantee a given engine will cite you, because citation behavior is probabilistic and changes as models are retrained. What a good tool does is remove the technical and content barriers and measure whether you are cited today.',
+  },
+  {
+    q: 'Is GEO Optimizer really free?',
+    a: 'The open-source toolkit is free and MIT-licensed — install it from PyPI and run it with no account. There is also an optional hosted product, GeoReady, for teams that want monitoring, alerts, and a dashboard without self-hosting; the underlying audit engine is the same open-source project.',
+  },
+];
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+
+    {/* Header — answer-first, la frase-àncora esatta della query nei primi 100 caratteri */}
+    <header class="mb-12 md:mb-16">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <span>GEO Optimizer</span>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span>Compare</span>
+      </div>
+
+      <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        The open-source alternative to Profound and Otterly
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        <strong>GEO Optimizer is the open-source alternative to Profound and Otterly.</strong>
+        It is a free, MIT-licensed generative engine optimization toolkit you can
+        self-host: audit a site’s AI-search readiness, check whether answer engines
+        like ChatGPT and Perplexity cite it, and run the whole thing in CI/CD — with a
+        scoring methodology you can read, instead of a closed hosted score.
+      </p>
+
+      <p class="mt-4 text-sm text-text-secondary leading-relaxed">
+        GEO here means Generative Engine Optimization, not geographic or local SEO.
+      </p>
+
+      <p class="mt-3 text-sm text-text-muted leading-relaxed">
+        This page compares an open-source toolkit against the proprietary category on
+        durable, verifiable facts — license, hosting, pricing model, and methodology
+        transparency. It does not claim specific feature or pricing details for
+        third-party products; check each vendor’s site for those.
+      </p>
+
+      <p class="mt-4 text-xs text-text-muted font-mono">
+        Published July 8, 2026 · Last updated July 8, 2026
+      </p>
+    </header>
+
+    {/* Direct answer section */}
+    <section class="mb-12 md:mb-16">
+      <h2>Is there an open-source alternative to Profound or Otterly?</h2>
+      <p class="mt-4">
+        Yes. Most generative engine optimization tools — including Profound and Otterly
+        AI — are proprietary, hosted SaaS products with subscription pricing and a
+        scoring methodology you cannot inspect. <strong>GEO Optimizer</strong> is the
+        open-source option: an MIT-licensed toolkit, distributed as the
+        <code>geo-optimizer-skill</code> package on PyPI, that you can read, fork, and
+        run in your own environment for free.
+      </p>
+      <p class="mt-4">
+        It is not a hosted dashboard you log into. It is a command-line tool, a Python
+        library, an MCP server, and a GitHub Action — so a GEO audit can live in your
+        pipeline and fail a build when AI-readiness regresses, not just in a browser tab.
+      </p>
+    </section>
+
+    {/* Comparison table — solo assi verificabili */}
+    <section class="mb-12 md:mb-16">
+      <h2>Open-source vs proprietary GEO tools</h2>
+      <p class="mt-4">
+        The comparison below is deliberately limited to facts that do not change from
+        release to release: how the software is licensed, where it runs, how it is
+        priced, and whether you can read the methodology. These are the axes where an
+        open-source toolkit differs structurally from a closed hosted product.
+      </p>
+      <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-border text-text-muted">
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Dimension</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">GEO Optimizer (open-source)</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Proprietary GEO SaaS (e.g. Profound, Otterly)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {COMPARISON_AXES.map(([axis, ours, theirs]) => (
+              <tr class="border-b border-border/60 last:border-0 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary whitespace-nowrap">{axis}</th>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">{ours}</td>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">{theirs}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-4 text-sm text-text-muted leading-relaxed">
+        Proprietary tools are not "worse" — a managed dashboard, a support team, and a
+        maintained UI are real advantages if you do not want to self-host. The point is
+        that until now the open-source column was empty. If auditability, self-hosting,
+        a free tier, or CI/CD enforcement matter to you, that column now has an answer.
+      </p>
+    </section>
+
+    {/* What you get with the open-source toolkit */}
+    <section class="mb-12 md:mb-16">
+      <h2>What GEO Optimizer gives you</h2>
+      <p class="mt-4">
+        Every item below is verifiable in the public repository — no marketing claims.
+      </p>
+      <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+        <table class="w-full text-left text-sm">
+          <tbody>
+            {GEO_OPTIMIZER_FEATURES.map(([name, detail]) => (
+              <tr class="border-b border-border/60 last:border-0 align-top">
+                <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary whitespace-nowrap">{name}</th>
+                <td class="px-4 py-3 text-text-secondary leading-relaxed">{detail}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {/* Getting started */}
+    <section class="mb-12 md:mb-16">
+      <h2>Try the open-source toolkit</h2>
+      <p class="mt-4">
+        Install it from PyPI and score any site from your terminal:
+      </p>
+      <div class="mt-4 rounded-2xl border border-border bg-bg-dark p-4 font-mono text-sm text-slate-200 overflow-x-auto">
+        <div>pip install geo-optimizer-skill</div>
+        <div class="text-slate-400">geo audit https://example.com</div>
+      </div>
+      <p class="mt-4">
+        The source, documentation, and scoring methodology are on
+        <a href="https://github.com/Auriti-Labs/geo-optimizer-skill" class="text-accent-teal hover:underline">GitHub</a>.
+        If you would rather not self-host, <a href="https://geoready.dev/" class="text-accent-teal hover:underline">GeoReady</a>
+        is a hosted product built on the same open-source engine, with monitoring and alerts.
+      </p>
+    </section>
+
+    {/* FAQ */}
+    <section>
+      <h2>Frequently asked questions</h2>
+      <div class="mt-6 space-y-6">
+        {faqs.map((faq) => (
+          <div>
+            <h3>{faq.q}</h3>
+            <p class="mt-2">{faq.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  {/* Page-specific schema — Article */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description,
+    "url": canonical,
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "author": { "@id": "https://geoready.dev/#organization" },
+    "publisher": { "@id": "https://geoready.dev/#organization" }
+  })} />
+
+  {/* FAQPage — stesse FAQ visibili nel markup */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.a
+      }
+    }))
+  })} />
+
+  {/* BreadcrumbList — coerente con le altre pagine */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "GeoReady", "item": "https://geoready.dev/" },
+      { "@type": "ListItem", "position": 2, "name": "Open-Source Alternative to Profound & Otterly", "item": canonical }
+    ]
+  })} />
+</Shell>
