@@ -16,6 +16,8 @@ export default function GateBanner({ score, lockedCount, totalLockedPoints }: Ga
     trackCtaClicked({ cta_location: 'gate_banner', cta_text: 'Unlock full report' });
   }
 
+  const potentialScore = score + totalLockedPoints;
+
   return (
     <div className="rounded-xl border border-accent-teal/25 bg-accent-teal/5 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
       <div className="flex-1 min-w-0">
@@ -29,9 +31,22 @@ export default function GateBanner({ score, lockedCount, totalLockedPoints }: Ga
           </span>
         </div>
         <p className="text-sm text-text-secondary leading-snug">
-          Your current score is <strong className="text-text-primary">{score}/100</strong>.
-          Unlock llms.txt, Schema, Content, AI Discovery, and Brand &amp; Entity to see your full picture and fix what matters most.
+          Your visible score is <strong className="text-text-primary">{score}/100</strong>.
+          The locked categories (llms.txt, Schema, Content, AI Discovery, Brand &amp; Entity)
+          can add up to <strong className="text-accent-teal">+{totalLockedPoints} points</strong>,
+          potentially reaching <strong className="text-accent-teal">{Math.min(potentialScore, 100)}/100</strong>.
+          Unlock to see exactly where those points are and how to capture them.
         </p>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {['llms.txt +18', 'Schema +16', 'Content +12', 'AI Discovery +6', 'Brand +10'].map((label) => (
+            <span
+              key={label}
+              className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-subtle text-text-muted border border-border"
+            >
+              {label}
+            </span>
+          ))}
+        </div>
       </div>
       <a
         href="https://app.geoready.dev/signup"
