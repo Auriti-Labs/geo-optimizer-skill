@@ -21,7 +21,7 @@
 
 <img src="assets/demo.gif" alt="geo audit demo — AI visibility score 0-100 with prioritized fixes in one command" width="800"/>
 
-**15 CLI commands** · **8 scoring categories** · **47 research-backed methods** · **7 output formats** · **1,720 tests** · academic foundation ([KDD 2024](https://arxiv.org/abs/2311.09735), [ICLR 2026](https://arxiv.org/abs/2510.11438)) · runs in CI/CD, as a [Python library](#python-api), an [MCP server](#mcp-server), or an [Astro integration](#astro-integration)
+**16 CLI commands** · **8 scoring categories** · **47 research-backed methods** · **7 output formats** · **1,720 tests** · academic foundation ([KDD 2024](https://arxiv.org/abs/2311.09735), [ICLR 2026](https://arxiv.org/abs/2510.11438)) · runs in CI/CD, as a [Python library](#python-api), an [MCP server](#mcp-server), or an [Astro integration](#astro-integration)
 
 </div>
 
@@ -203,6 +203,7 @@ geo access --url https://example.com                      # Agent Access Audit �
 geo citations --brand "Acme" --domain acme.com            # AI Citation Check — are you cited by answer engines? (BYO key)
 geo authority --sitemap https://example.com/sitemap.xml   # Topic Authority — multi-page entity coverage, clusters, pillars
 geo drift --url https://example.com                        # Semantic Drift — what changed since the last snapshot
+geo perception --url https://example.com                  # AI Perception Snapshot — what an AI would extract from the page
 ```
 
 **Topic authority** — AI engines map entities and multi-page coverage, not single pages. `geo authority` clusters your site by topic and scores depth, interlinking, and pillar pages:

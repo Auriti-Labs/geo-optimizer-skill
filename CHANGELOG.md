@@ -5,6 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Added
+- **`geo perception` — deterministic AI perception snapshot (MVP C).** Aggregates brand, schema, citability, trust, and factual signals from a full audit into what an AI/retrieval system would likely extract from the page: brand entity, schema types, citability grade, trust score, supported/unsupported claims, and missing authority signals. Deterministic — no LLM call, no extra network beyond the audit — and always disclosed as simulated perception, not real AI output. Completes the Static-cycle MVP C alongside `geo drift` (MVP B) and `geo access`/`geo logs` (MVP A). Text and JSON output.
+
 ## [4.14.1] — 2026-06-27
 
 ### Fixed
