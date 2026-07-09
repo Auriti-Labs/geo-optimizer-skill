@@ -249,6 +249,7 @@ class TestSitemapDepthLimit:
         mock_session = MagicMock()
         mock_resp = Mock()
         mock_resp.content = sitemap_xml.encode()
+        mock_resp.iter_content = Mock(return_value=[sitemap_xml.encode()])
         mock_resp.raise_for_status = Mock()
         mock_session.get.return_value = mock_resp
         mock_create.return_value = mock_session

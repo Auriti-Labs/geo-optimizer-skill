@@ -1849,6 +1849,7 @@ class TestFetchSitemap:
         mock_session = MagicMock()
         mock_resp = Mock()
         mock_resp.content = xml.encode()
+        mock_resp.iter_content = Mock(return_value=[xml.encode()])
         mock_resp.raise_for_status = Mock()
         mock_session.get.return_value = mock_resp
         mock_create.return_value = mock_session
@@ -1873,9 +1874,11 @@ class TestFetchSitemap:
         mock_session = MagicMock()
         mock_resp_index = Mock()
         mock_resp_index.content = index_xml.encode()
+        mock_resp_index.iter_content = Mock(return_value=[index_xml.encode()])
         mock_resp_index.raise_for_status = Mock()
         mock_resp_sub = Mock()
         mock_resp_sub.content = sub_xml.encode()
+        mock_resp_sub.iter_content = Mock(return_value=[sub_xml.encode()])
         mock_resp_sub.raise_for_status = Mock()
         mock_session.get.side_effect = [mock_resp_index, mock_resp_sub]
         mock_create.return_value = mock_session
@@ -1903,6 +1906,7 @@ class TestFetchSitemap:
         mock_session = MagicMock()
         mock_resp = Mock()
         mock_resp.content = xml.encode()
+        mock_resp.iter_content = Mock(return_value=[xml.encode()])
         mock_resp.raise_for_status = Mock()
         mock_session.get.return_value = mock_resp
         mock_create.return_value = mock_session
@@ -1911,6 +1915,28 @@ class TestFetchSitemap:
         urls = fetch_sitemap("https://example.com/sitemap.xml", on_status=status_msgs.append)
         assert len(urls) == 1
         assert any("Fetching" in m for m in status_msgs)
+
+    @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
+    def test_oversized_sitemap_aborted_mid_stream(self, mock_create):
+        """A response body over MAX_RESPONSE_SIZE must abort during streaming,
+        not after buffering the whole thing into r.content (DoS guard)."""
+        from geo_optimizer.core.llms_generator import MAX_RESPONSE_SIZE
+
+        mock_session = MagicMock()
+        mock_resp = Mock()
+        mock_resp.raise_for_status = Mock()
+        # Never let the test actually allocate MAX_RESPONSE_SIZE bytes — a
+        # handful of oversized chunks proves the abort triggers mid-stream.
+        chunk = b"x" * 1024
+        n_chunks = (MAX_RESPONSE_SIZE // len(chunk)) + 2
+        mock_resp.iter_content = Mock(return_value=iter([chunk] * n_chunks))
+        mock_session.get.return_value = mock_resp
+        mock_create.return_value = mock_session
+
+        urls = fetch_sitemap("https://example.com/sitemap.xml")
+        assert urls == []
+        # Aborted after exceeding the cap, not after consuming the full iterator
+        assert mock_resp.iter_content.return_value.__length_hint__() > 0  # sanity: iterator wasn't pre-drained
 
 
 class TestGenerateLlmsTxt:
