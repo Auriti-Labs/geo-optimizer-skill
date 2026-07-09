@@ -1,21 +1,29 @@
 import React, { useState } from 'react';
 import { trackCtaClicked } from '../../lib/geo_track';
+import type { CategoryScore } from '../../lib/mockData';
 
 interface EmailGateBannerProps {
   score: number;
-  lockedCount: number;
-  totalLockedPoints: number;
+  categories: CategoryScore[];
   claimToken: string | null;
 }
 
 const API_BASE = import.meta.env.PUBLIC_API_BASE || '/api';
 
-export default function EmailGateBanner({ score, lockedCount, totalLockedPoints, claimToken }: EmailGateBannerProps) {
+export default function EmailGateBanner({ score, categories, claimToken }: EmailGateBannerProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const potentialScore = Math.min(score + totalLockedPoints, 100);
+  const lockedCount = categories.length;
+  // "points hidden" (badges/header) uses each category's full ceiling — the
+  // achievable "potential score" below must use only the *unearned* remainder,
+  // not the full ceiling, or a site that already scores in locked categories
+  // (real numeric scores are always present, only per-signal detail is
+  // stripped — see CLAUDE.md Partial Report Gate) gets double-counted.
+  const totalLockedPoints = categories.reduce((sum, c) => sum + c.maxScore, 0);
+  const unearnedPoints = categories.reduce((sum, c) => sum + Math.max(0, c.maxScore - c.score), 0);
+  const potentialScore = Math.min(score + unearnedPoints, 100);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -84,18 +92,18 @@ export default function EmailGateBanner({ score, lockedCount, totalLockedPoints,
 
       <p className="text-sm text-text-secondary leading-snug mb-3">
         Your visible score is <strong className="text-text-primary">{score}/100</strong>.
-        The locked categories can add up to <strong className="text-accent-teal">+{totalLockedPoints} points</strong>,
+        The locked categories can add up to <strong className="text-accent-teal">+{unearnedPoints} more points</strong>,
         potentially reaching <strong className="text-accent-teal">{potentialScore}/100</strong>.
         Enter your email and we'll send the full report — <strong>it lands in your inbox, not on this page</strong>.
       </p>
 
       <div className="flex flex-wrap gap-1.5 mb-4">
-        {['llms.txt +18', 'Schema +16', 'Content +12', 'AI Discovery +6', 'Brand +10'].map((label) => (
+        {categories.map((c) => (
           <span
-            key={label}
+            key={c.slug}
             className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-subtle text-text-muted border border-border"
           >
-            {label}
+            {c.name} +{c.maxScore}
           </span>
         ))}
       </div>

@@ -16,7 +16,6 @@ import ExportActions from './ExportActions';
 
 const FREE_SLUGS = new Set(['robots', 'meta', 'signals']);
 const ALL_LOCKED_SLUGS = ['llms', 'schema', 'content', 'ai_discovery', 'brand_entity'];
-const LOCKED_MAX_POINTS = 18 + 16 + 12 + 6 + 10; // 62
 
 interface AuditReportContainerProps {
   reportId: string;
@@ -112,6 +111,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
   // Categories stay locked on screen — user gets full report via email only
   const lockedSlugs = isDemo ? [] : ALL_LOCKED_SLUGS;
   const lockedSet = new Set(lockedSlugs);
+  const lockedCategories = report.categories.filter((c) => lockedSet.has(c.slug));
 
   const criticalCount = report.recommendations.filter((r) => r.priority === 'critical').length;
   const highCount = report.recommendations.filter((r) => r.priority === 'high').length;
@@ -201,8 +201,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
               <div className="mt-4">
                 <EmailGateBanner
                   score={report.geoScore}
-                  lockedCount={lockedSlugs.length}
-                  totalLockedPoints={LOCKED_MAX_POINTS}
+                  categories={lockedCategories}
                   claimToken={state.claim_token}
                 />
               </div>
