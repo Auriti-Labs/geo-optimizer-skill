@@ -49,6 +49,13 @@ def perception(url: str, output_format: str, output_file: str | None, cache: boo
         sys.exit(1)
 
     audit_result = run_full_audit(url, use_cache=cache)
+    if audit_result.error:
+        if output_format == "json":
+            click.echo(json.dumps({"error": audit_result.error, "url": audit_result.url}, indent=2))
+        else:
+            click.echo(f"\n❌ Unable to extract perception: {audit_result.error}", err=True)
+        sys.exit(1)
+
     snapshot = extract_perception(audit_result)
 
     output = _format_json(snapshot) if output_format == "json" else _format_text(snapshot)
