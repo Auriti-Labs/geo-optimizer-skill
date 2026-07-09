@@ -387,7 +387,9 @@ class TestAuditCommand:
         result = runner.invoke(cli, ["audit", "--url", "https://example.com"])
         assert result.exit_code == 0
         assert "embed-worthy" in result.output
-        assert "geoready.dev/badge?url=https://example.com" in result.output
+        # URL is percent-encoded in the generated Markdown link (badge?url=...)
+        # so it can't break the link syntax for URLs containing (, ), or spaces.
+        assert "geoready.dev/badge?url=https%3A%2F%2Fexample.com" in result.output
 
     @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")

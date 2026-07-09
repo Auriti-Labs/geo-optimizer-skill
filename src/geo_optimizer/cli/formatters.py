@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from dataclasses import asdict
 from html import escape
+from urllib.parse import quote
 
 from geo_optimizer.cli.scoring_helpers import (
     brand_entity_score as _brand_entity_score,
@@ -572,7 +573,8 @@ def format_audit_text(result: AuditResult) -> str:
         lines.append("")
         lines.append(f"  🏅 {result.score}/100 is embed-worthy. Add it to your README:")
         lines.append(
-            f"     [![GEO Score](https://geoready.dev/badge?url={result.url})](https://geoready.dev?utm_source=badge)"
+            f"     [![GEO Score](https://geoready.dev/badge?url={quote(result.url, safe='')})]"
+            "(https://geoready.dev?utm_source=badge)"
         )
 
     lines.append("")
