@@ -63,6 +63,12 @@ def format_audit_json(result: AuditResult) -> str:
         "timestamp": result.timestamp,
         "score": result.score,
         "band": result.band,
+        # None on a successful audit; a message (e.g. "Connection failed",
+        # "HTTP 503") when the site was unreachable — every check below is
+        # then a default-empty AuditResult, not a real "everything failed"
+        # result. A script parsing this output must check this field before
+        # trusting score/checks.
+        "error": result.error,
         "checks": {
             "robots_txt": {
                 "score": _robots_score(result),
@@ -226,6 +232,13 @@ def format_audit_text(result: AuditResult) -> str:
     lines.append("  github.com/auriti-labs/geo-optimizer-skill")
     lines.append("🔍 " * 20)
     lines.append("")
+
+    if result.error:
+        lines.append(f"❌ AUDIT FAILED: {result.error}")
+        lines.append("   The site could not be reached — every check below reflects an")
+        lines.append("   empty result, not a real 0. Do not treat this as a real score.")
+        lines.append("")
+
     status_line = f"   Status: {result.http_status} | Size: {result.page_size:,} bytes"
     if result.audit_duration_ms is not None:
         status_line += f" | Duration: {result.audit_duration_ms}ms"
@@ -906,6 +919,13 @@ def format_monitor_text(result: MonitorResult) -> str:
     lines.append("  github.com/auriti-labs/geo-optimizer-skill")
     lines.append("🔍 " * 20)
     lines.append("")
+
+    if result.error:
+        lines.append(f"❌ AUDIT FAILED: {result.error}")
+        lines.append("   The site could not be reached — every signal below reflects an")
+        lines.append("   empty result, not real visibility data. Do not treat this as real.")
+        lines.append("")
+
     lines.append(f"   Domain: {result.domain}")
     lines.append(f"   Homepage: {result.url}")
     lines.append(f"   Visibility score: {result.visibility_score}/100 ({result.band.upper()}) | Mode: {result.mode}")

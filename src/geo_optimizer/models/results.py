@@ -1143,6 +1143,10 @@ class MonitorResult:
     latest_geo_band: str | None = None
     signals: list[MonitorSignal] = field(default_factory=list)
     recommendations: list[str] = field(default_factory=list)
+    # None on a successful audit; the underlying AuditResult.error when the
+    # site was unreachable — every signal/score above is then computed from
+    # a default-empty audit, not a real "no visibility" result.
+    error: str | None = None
 
 
 # ─── Answer snapshots ───────────────────────────────────────────────────────

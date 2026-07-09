@@ -43,6 +43,10 @@ def format_audit_github(result: AuditResult) -> str:
     """Format AuditResult with GitHub Actions annotations."""
     lines = []
 
+    if result.error:
+        lines.append(f"::error::GEO audit failed for {result.url}: {result.error}")
+        return "\n".join(lines)
+
     # Main score
     band_labels = {
         "excellent": "EXCELLENT",

@@ -88,6 +88,45 @@ def format_audit_sarif(result: AuditResult) -> str:
     rules = []
     results = []
 
+    if result.error:
+        rules.append(
+            {
+                "id": "geo/audit-error",
+                "name": "Audit Failed",
+                "shortDescription": {"text": "The site could not be reached"},
+            }
+        )
+        results.append(
+            {
+                "ruleId": "geo/audit-error",
+                "level": "error",
+                "message": {"text": f"GEO audit failed for {result.url}: {result.error}"},
+                "locations": [
+                    {"physicalLocation": {"artifactLocation": {"uri": result.url}}}
+                ],
+            }
+        )
+        return json.dumps(
+            {
+                "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+                "version": "2.1.0",
+                "runs": [
+                    {
+                        "tool": {
+                            "driver": {
+                                "name": "GEO Optimizer",
+                                "informationUri": "https://github.com/auriti-labs/geo-optimizer-skill",
+                                "version": _get_version(),
+                                "rules": rules,
+                            }
+                        },
+                        "results": results,
+                    }
+                ],
+            },
+            indent=2,
+        )
+
     # Map each check category to SARIF rules and results
     checks = [
         ("geo/robots-txt", "robots.txt AI Bot Access", _robots_findings(result)),
@@ -319,6 +358,23 @@ def format_audit_junit(result: AuditResult) -> str:
     testsuites.set("name", "GEO Optimizer Audit")
     # Fix #430: initial value overwritten at line 316 with actual count
     testsuites.set("tests", "0")
+
+    if result.error:
+        testsuites.set("tests", "1")
+        testsuites.set("failures", "0")
+        testsuites.set("errors", "1")
+        testsuite = SubElement(testsuites, "testsuite")
+        testsuite.set("name", "Audit")
+        testsuite.set("tests", "1")
+        testsuite.set("failures", "0")
+        testsuite.set("errors", "1")
+        testcase = SubElement(testsuite, "testcase")
+        testcase.set("name", "audit_reachable")
+        testcase.set("classname", "GEO.Audit")
+        error_el = SubElement(testcase, "error")
+        error_el.set("message", f"GEO audit failed for {result.url}: {result.error}")
+        error_el.set("type", "AuditUnreachable")
+        return '<?xml version="1.0" encoding="UTF-8"?>\n' + tostring(testsuites, encoding="unicode")
 
     categories = [
         ("robots_txt", "Robots.txt AI Bot Access", robots_score(result), _MAX_ROBOTS, _robots_findings(result)),
