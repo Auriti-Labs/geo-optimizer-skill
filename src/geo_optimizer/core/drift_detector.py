@@ -61,12 +61,17 @@ def _classify_severity(delta: SemanticDriftDelta, score_delta: int) -> str:
     """Classify drift severity based on score drop and structural changes."""
     if score_delta <= -_SCORE_DROP_CRITICAL:
         return "critical"
+    # Crawlability loss (AI bots now blocked) is checked before the softer
+    # thresholds below — it's the single worst regression this function
+    # detects and must win even when it coincides with a smaller,
+    # independently-occurring change (e.g. a modest schema drop) that would
+    # otherwise match "warning" first and mask it.
+    if not delta.crawlable_after and delta.crawlable_before:
+        return "critical"
     if score_delta <= -_SCORE_DROP_WARNING:
         return "warning"
     if delta.schema_types_removed:
         return "warning"
-    if not delta.crawlable_after and delta.crawlable_before:
-        return "critical"
     if delta.category_deltas:
         return "info"
     if score_delta < 0:
