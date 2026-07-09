@@ -14,11 +14,14 @@ const gradeLabels: Record<string, string> = {
 };
 
 export default function BenchmarkComparison({ score, grade }: BenchmarkComparisonProps) {
-  const { avgScore, medianScore, topQuarterThreshold, totalDomains, bands } = benchmark2026;
+  const { avgScore, medianScore, totalDomains, bands } = benchmark2026;
   const band = bands[grade];
   const isAboveAvg = score >= avgScore;
-  const isTopQuarter = score >= topQuarterThreshold;
-  const percentile = Math.round(((totalDomains - band.domains) / totalDomains) * 100);
+  // Derived from the band itself, not a separately-tuned score threshold —
+  // a numeric cutoff (e.g. 66) can land inside a lower band (foundation is
+  // 36-67) and produce self-contradictory copy ("top 25%" + "64.6% share
+  // your band"). "Excellent" is always the top band by construction.
+  const isTopQuarter = grade === 'excellent';
 
   return (
     <div className="p-5 rounded-xl border border-border bg-bg-surface">
