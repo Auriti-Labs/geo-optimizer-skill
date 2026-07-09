@@ -79,8 +79,8 @@ export default function BenchmarkComparison({ score, grade }: BenchmarkCompariso
       <p className="text-sm text-text-secondary leading-relaxed">
         {isTopQuarter ? (
           <>
-            You're in the <strong className="text-accent-success">top 25%</strong> of audited sites.
-            Only <strong className="text-text-primary">{band.domains}</strong> sites ({band.share}%) reach the {gradeLabels[grade]} band.
+            You're in the <strong className="text-accent-success">top {band.share}%</strong> of audited sites —
+            only <strong className="text-text-primary">{band.domains}</strong> sites reach the {gradeLabels[grade]} band.
           </>
         ) : isAboveAvg ? (
           <>
