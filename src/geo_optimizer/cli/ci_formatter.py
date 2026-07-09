@@ -101,9 +101,7 @@ def format_audit_sarif(result: AuditResult) -> str:
                 "ruleId": "geo/audit-error",
                 "level": "error",
                 "message": {"text": f"GEO audit failed for {result.url}: {result.error}"},
-                "locations": [
-                    {"physicalLocation": {"artifactLocation": {"uri": result.url}}}
-                ],
+                "locations": [{"physicalLocation": {"artifactLocation": {"uri": result.url}}}],
             }
         )
         return json.dumps(
