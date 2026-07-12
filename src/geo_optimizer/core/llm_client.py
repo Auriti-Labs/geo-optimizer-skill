@@ -34,8 +34,8 @@ _PROVIDER_DEFAULTS = {
     "minimax": "MiniMax-M3",
 }
 
-# Perplexity is listed last so adding its key does not silently change the
-# auto-detected provider for users who already configured another one.
+# Keep existing providers ahead of newly added ones so a new key does not
+# silently change auto-detection for an established configuration.
 _PROVIDER_ENV_KEYS = {
     "openai": "OPENAI_API_KEY",
     "anthropic": "ANTHROPIC_API_KEY",

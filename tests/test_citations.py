@@ -135,6 +135,7 @@ class TestRunCitationCheck:
             monkeypatch.delenv(var, raising=False)
         result = run_citation_check("Acme", "acme.com")
         assert result.skipped_reason is not None
+        assert "MINIMAX_API_KEY" in result.skipped_reason
 
     def test_all_queries_error_returns_skipped(self):
         with patch.object(citations_mod, "query_llm") as mock_q:

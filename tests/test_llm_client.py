@@ -142,7 +142,7 @@ class TestDetectProvider:
         assert api_key == "explicit_key"
 
     def test_detect_provider_minimax_env(self, _mock_env, monkeypatch) -> None:
-        """detect_provider con MINIMAX_API_KEY (provider MiniMax)."""
+        """Detect MiniMax from MINIMAX_API_KEY."""
         monkeypatch.setenv("MINIMAX_API_KEY", "env_key")
         provider, api_key = llm_client.detect_provider()
         assert provider == "minimax"
