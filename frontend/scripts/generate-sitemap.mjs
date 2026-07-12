@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-// Genera frontend/public/sitemap.xml derivando le route da src/pages/**.
-// lastmod onesto: data dell'ultimo commit git che tocca il file sorgente.
+// Genera frontend/public/sitemap.xml derivando le route da src/pages/** PIÙ i contenuti
+// Sanity (article) live, per categoria con una route dinamica reale (guides, resources).
+// lastmod onesto: data dell'ultimo commit git per le pagine statiche, dateModified/
+// datePublished di Sanity per i contenuti dinamici.
 // Mantiene l'URL /sitemap.xml (continuità GSC) e NON tocca robots/canonical.
 //
-// Strategia lastmod (priorità decrescente, ogni scelta non-git è segnalata a stdout):
+// Strategia lastmod pagine statiche (priorità decrescente, ogni scelta non-git è segnalata a stdout):
 //   1. file tracciato e MODIFICATO nel working tree → data ODIERNA (marcato DIRTY).
 //      Motivo: workflow reale = modifico pagina → genero sitemap → commit. La
 //      modifica è il vero "ultimo aggiornamento", anche se non ancora committata.
@@ -11,12 +13,19 @@
 //   3. git non disponibile o file non tracciato → mtime del file     (fallback segnalato).
 //   4. mtime illeggibile → data odierna                              (fallback finale segnalato).
 //
+// Contenuti Sanity: interrogati direttamente (stesso filtro "live" del sito — status
+// "published", oppure "scheduled" con scheduledFor già passato) così la sitemap non
+// dipende da un rebuild per sapere cosa è effettivamente pubblicato in questo istante.
+// Solo le categorie con una route dinamica reale vengono incluse (vedi CATEGORY_TO_PATH);
+// le altre sono segnalate come avviso e saltate, per non generare URL che darebbero 404.
+//
 // Uso: npm run generate:sitemap   (manuale — vedi nota churn in fondo)
 
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createClient } from '@sanity/client';
 
 const SITE = 'https://geoready.dev';
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -40,6 +49,53 @@ const EXCLUDE_ROUTES = new Set([
 const EXTRA_ROUTES = [
   { url: '/report/demo/', sourceFile: 'report/[id].astro' },
 ];
+
+// Categorie articolo Sanity con una route dinamica reale nel sito, e il relativo
+// prefisso URL. Se un articolo ha una categoria non elencata qui (es. "tools" o
+// "state-of-geo" non hanno oggi un [slug].astro proprio — quelle sezioni sono pagine
+// statiche indipendenti), viene saltato con un avviso invece di generare un URL 404.
+const CATEGORY_TO_PATH = {
+  guides: '/guides/',
+  resources: '/resources/',
+};
+
+const SANITY_PROJECT_ID = process.env.PUBLIC_SANITY_PROJECT_ID || 'uvzrnk4t';
+const SANITY_DATASET = process.env.PUBLIC_SANITY_DATASET || 'production';
+
+// Stesso filtro "live" usato dal sito (frontend/src/utils/sanity.ts): pubblicato, o
+// programmato con orario già passato. Legacy senza `status` = trattato come live.
+const LIVE_FILTER = `(!defined(status) || status == "published" || (status == "scheduled" && dateTime(scheduledFor) <= dateTime(now())))`;
+
+/** Interroga Sanity per tutti gli articoli live e li converte in entry sitemap. */
+async function fetchSanityEntries() {
+  const client = createClient({
+    projectId: SANITY_PROJECT_ID,
+    dataset: SANITY_DATASET,
+    apiVersion: '2024-01-01',
+    useCdn: false,
+  });
+
+  let articles;
+  try {
+    articles = await client.fetch(
+      `*[_type == "article" && defined(slug.current) && ${LIVE_FILTER}]{ "slug": slug.current, category, dateModified, datePublished }`
+    );
+  } catch (err) {
+    warnings.push(`SANITY: impossibile interrogare il dataset (${err.message}) — sitemap generata senza contenuti Sanity.`);
+    return [];
+  }
+
+  const out = [];
+  for (const a of articles) {
+    const prefix = CATEGORY_TO_PATH[a.category];
+    if (!prefix) {
+      warnings.push(`SANITY SKIP: "${a.slug}" ha categoria "${a.category}" senza route dinamica nota — non aggiunto alla sitemap.`);
+      continue;
+    }
+    out.push({ url: `${prefix}${a.slug}/`, lastmod: a.dateModified || a.datePublished || today() });
+  }
+  return out;
+}
 
 // changefreq/priority curati per pagina (preserva i valori storici della sitemap).
 // Le route non elencate ricevono i default DEFAULT_META.
@@ -339,6 +395,17 @@ function renderXml(entries) {
 
 // --- main ---
 const entries = buildEntries();
+
+// Merge dei contenuti Sanity (guides/resources dinamiche) — dedup difensivo, per il caso
+// (oggi non atteso) in cui una URL sia già presente dal walk dei file statici.
+const seenUrls = new Set(entries.map((e) => e.url));
+for (const e of await fetchSanityEntries()) {
+  if (seenUrls.has(e.url)) continue;
+  seenUrls.add(e.url);
+  entries.push(e);
+}
+entries.sort((a, b) => (a.url === '/' ? -1 : b.url === '/' ? 1 : a.url.localeCompare(b.url)));
+
 const xml = renderXml(entries);
 writeFileSync(OUTPUT, xml, 'utf8');
 

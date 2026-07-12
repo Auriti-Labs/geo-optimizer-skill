@@ -1,0 +1,173 @@
+---
+import { PortableText } from 'astro-portabletext';
+import Shell from '../../components/Shell.astro';
+import NewsletterSignup from '../../components/NewsletterSignup';
+import Callout from '../../components/Callout.astro';
+import CodeBlock from '../../components/CodeBlock.astro';
+import { getAllArticleSlugs, getArticleBySlug } from '../../utils/sanity';
+
+// ── Static paths ──────────────────────────────────────────────────────────────
+export async function getStaticPaths() {
+  const slugs = await getAllArticleSlugs();
+  return slugs
+    .filter((s: { slug: string; category: string }) => s.category === 'resources')
+    .map((s: { slug: string; category: string }) => ({ params: { slug: s.slug } }));
+}
+
+const { slug } = Astro.params;
+const article = await getArticleBySlug(slug as string);
+
+if (!article) return Astro.redirect('/404', 301);
+
+const canonical = `https://geoready.dev/resources/${slug}/`;
+const title = article.metaTitle || article.title;
+const schemaType = article.schemaOrgType || 'Article';
+const author = article.author || 'Juan Camilo Auriti';
+
+// ── Portable Text components ──────────────────────────────────────────────────
+// astro-portabletext requires .astro component files for custom renderers.
+// Block/list/marks use the library defaults (semantic HTML) styled via CSS below.
+const ptComponents = {
+  type: {
+    callout: Callout,
+    codeBlock: CodeBlock,
+  },
+};
+
+// ── JSON-LD ───────────────────────────────────────────────────────────────────
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': schemaType,
+      '@id': `${canonical}#article`,
+      url: canonical,
+      headline: article.title,
+      description: article.description,
+      datePublished: article.datePublished,
+      dateModified: article.dateModified,
+      author: { '@type': 'Person', name: author, url: 'https://geoready.dev/about/' },
+      publisher: {
+        '@type': 'Organization',
+        name: 'GeoReady',
+        url: 'https://geoready.dev',
+        logo: { '@type': 'ImageObject', url: 'https://geoready.dev/icon-512.png' },
+      },
+      mainEntityOfPage: canonical,
+      isPartOf: { '@id': 'https://geoready.dev/#website' },
+    },
+    ...(article.faqs?.length
+      ? [{
+          '@type': 'FAQPage',
+          mainEntity: article.faqs.map((faq: any) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+          })),
+        }]
+      : []),
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'GeoReady', item: 'https://geoready.dev/' },
+        { '@type': 'ListItem', position: 2, name: article.title, item: canonical },
+      ],
+    },
+  ],
+};
+---
+
+<Shell
+  title={title}
+  description={article.description}
+  canonical={canonical}
+  robots={article.noindex ? 'noindex, follow' : 'index, follow'}
+>
+  <article class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16" itemscope itemtype="https://schema.org/Article">
+    {/* ── Header ──────────────────────────────────────────────────────────── */}
+    <header class="mb-12 md:mb-16 max-w-3xl">
+      <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+        <span>Resources</span>
+        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        {article.focusKeyword && <span>{article.focusKeyword}</span>}
+      </div>
+
+      <h1 itemprop="headline" class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">
+        {article.title}
+      </h1>
+
+      <p class="mt-4 text-base md:text-lg text-text-secondary leading-relaxed">
+        {article.description}
+      </p>
+
+      <div class="mt-5 flex items-center gap-3 text-xs font-mono text-text-muted">
+        <span itemprop="author">{author}</span>
+        <span>·</span>
+        <time itemprop="datePublished" datetime={article.datePublished}>
+          {new Date(article.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </time>
+        {article.dateModified !== article.datePublished && (
+          <>
+            <span>· Updated</span>
+            <time itemprop="dateModified" datetime={article.dateModified}>
+              {new Date(article.dateModified).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </time>
+          </>
+        )}
+      </div>
+    </header>
+
+    {/* ── Body ─────────────────────────────────────────────────────────────── */}
+    <div class="pt-prose">
+      <PortableText value={article.body} components={ptComponents} />
+    </div>
+
+    {/* ── FAQs ─────────────────────────────────────────────────────────────── */}
+    {article.faqs && article.faqs.length > 0 && (
+      <section class="mt-16">
+        <h2 class="font-display text-2xl font-bold text-text-primary leading-tight tracking-tight mb-6">
+          Frequently asked questions
+        </h2>
+        <div class="space-y-7">
+          {article.faqs.map((faq: any) => (
+            <div>
+              <h3 class="font-display text-lg font-semibold text-text-primary">{faq.question}</h3>
+              <p class="mt-2 text-text-secondary leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {/* ── Newsletter ───────────────────────────────────────────────────────── */}
+    <div class="mt-16">
+      <NewsletterSignup
+        client:visible
+        source={`newsletter-resource-${slug}`}
+        title="Get the monthly State of GEO report"
+        detail="AI search readiness benchmarks, adoption stats, and the actions that move the needle — delivered monthly. No spam."
+      />
+    </div>
+  </article>
+
+  {/* ── Structured data ──────────────────────────────────────────────────────── */}
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</Shell>
+
+<style is:global>
+  .pt-prose h2 { font-family: var(--font-display, inherit); font-size: 1.5rem; font-weight: 700; color: var(--color-text-primary, inherit); line-height: 1.25; letter-spacing: -0.025em; margin-top: 3rem; margin-bottom: 1rem; }
+  .pt-prose h3 { font-family: var(--font-display, inherit); font-size: 1.125rem; font-weight: 600; color: var(--color-text-primary, inherit); margin-top: 2rem; margin-bottom: 0.75rem; }
+  .pt-prose h4 { font-weight: 600; color: var(--color-text-primary, inherit); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  .pt-prose p { color: var(--color-text-secondary, inherit); line-height: 1.75; margin-top: 1rem; }
+  .pt-prose ul { list-style-type: disc; padding-left: 1.25rem; margin-top: 1rem; }
+  .pt-prose ol { list-style-type: decimal; padding-left: 1.25rem; margin-top: 1rem; }
+  .pt-prose li { color: var(--color-text-secondary, inherit); line-height: 1.75; margin-top: 0.375rem; }
+  .pt-prose strong { font-weight: 600; color: var(--color-text-primary, inherit); }
+  .pt-prose em { font-style: italic; }
+  .pt-prose code { font-size: 0.875rem; font-family: ui-monospace, monospace; background: var(--color-bg-surface, #1a1a1a); border: 1px solid var(--color-border, #333); border-radius: 0.25rem; padding: 0.125rem 0.25rem; }
+  .pt-prose pre { background: var(--color-bg-surface, #1a1a1a); border: 1px solid var(--color-border, #333); border-radius: 0.75rem; padding: 1rem; margin: 1.5rem 0; overflow-x: auto; font-size: 0.875rem; font-family: ui-monospace, monospace; }
+  .pt-prose pre code { background: none; border: none; padding: 0; }
+  .pt-prose a { color: var(--color-accent-teal, #2dd4bf); }
+  .pt-prose a:hover { text-decoration: underline; }
+  .pt-prose blockquote { border-left: 4px solid var(--color-accent-teal, #2dd4bf); padding-left: 1rem; font-style: italic; color: var(--color-text-secondary, inherit); margin: 1.5rem 0; }
+</style>
