@@ -65,6 +65,9 @@ def track(url, show_history, report, output_format, output_file, cache, config_f
         output = format_history_json(history_result) if output_format == "json" else format_history_text(history_result)
     else:
         audit_result = run_full_audit(normalized_url, use_cache=cache, project_config=project_config)
+        if audit_result.error:
+            click.echo(f"\n❌ Audit failed, snapshot not saved: {audit_result.error}", err=True)
+            sys.exit(1)
         store.save_audit_result(audit_result, retention_days=retention_days)
         history_result = store.build_history_result(normalized_url, limit=limit, retention_days=retention_days)
 

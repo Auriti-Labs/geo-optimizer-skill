@@ -1,0 +1,9 @@
+---
+// Portable Text custom type renderer for Sanity's "codeBlock" object
+// ({ _type: "codeBlock", language: string, code: string }).
+// Registered in ptComponents.type.codeBlock — see frontend/src/pages/guides/[slug].astro
+const { node } = Astro.props;
+const { language, code } = node;
+---
+
+<pre><code class={language ? `language-${language}` : undefined}>{code}</code></pre>

@@ -1215,9 +1215,19 @@ def format_audit_rich(result: AuditResult) -> str:
     # CLI→platform funnel: the CLI is one-shot, continuity lives in the platform
     console.print()
     funnel = Text()
-    funnel.append("Track this score over time — alerts & AI citation tracking → ", style=_COLORS["dim"])
+    funnel.append("Free plan: 1 monitored domain + weekly drift email → ", style=_COLORS["dim"])
     funnel.append("geoready.dev", style=f"bold {_COLORS['brand_1']} underline")
     console.print(Align.center(funnel))
+
+    # Badge growth loop: only suggest embedding a score worth showing off (gap #501)
+    if result.band in ("excellent", "good"):
+        console.print()
+        badge = Text()
+        badge.append(
+            f"🏅 {result.score}/100 is embed-worthy — add a live badge to your README → ", style=_COLORS["dim"]
+        )
+        badge.append("geoready.dev/badge", style=f"bold {_COLORS['brand_1']} underline")
+        console.print(Align.center(badge))
 
     console.print()
     return buf.getvalue()

@@ -2,6 +2,8 @@
 import { PortableText } from 'astro-portabletext';
 import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
+import Callout from '../../components/Callout.astro';
+import CodeBlock from '../../components/CodeBlock.astro';
 import { getAllArticleSlugs, getArticleBySlug } from '../../utils/sanity';
 
 // ── Static paths ──────────────────────────────────────────────────────────────
@@ -25,8 +27,12 @@ const author = article.author || 'Juan Camilo Auriti';
 // ── Portable Text components ──────────────────────────────────────────────────
 // astro-portabletext requires .astro component files for custom renderers.
 // Block/list/marks use the library defaults (semantic HTML) styled via CSS below.
-// Types (callout, codeBlock, image) are defined in separate .astro files when needed.
-const ptComponents = {};
+const ptComponents = {
+  type: {
+    callout: Callout,
+    codeBlock: CodeBlock,
+  },
+};
 
 // ── JSON-LD ───────────────────────────────────────────────────────────────────
 const jsonLd = {

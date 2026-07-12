@@ -449,6 +449,7 @@ _DOCS_PAGES = {
     "mcp-server": "MCP Server",
     "ai-context": "Using as AI Context",
     "geo-methods": "The 11 GEO Methods",
+    "geo-perception": "AI Perception Snapshot",
     "ai-bots-reference": "AI Bots Reference",
     "ci-cd": "CI/CD Integration",
     "scoring-rubric": "Scoring Rubric",

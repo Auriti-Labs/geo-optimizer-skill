@@ -213,6 +213,7 @@ class TestFetchSitemapOnStatus:
         mock_sessione = MagicMock()
         resp = Mock()
         resp.content = xml_sitemap.encode()
+        resp.iter_content = Mock(return_value=[xml_sitemap.encode()])
         resp.raise_for_status = Mock()
         mock_sessione.get.return_value = resp
         mock_crea.return_value = mock_sessione
@@ -250,6 +251,7 @@ class TestPriorityNonNumerica:
         mock_sessione = MagicMock()
         resp = Mock()
         resp.content = xml_sitemap.encode()
+        resp.iter_content = Mock(return_value=[xml_sitemap.encode()])
         resp.raise_for_status = Mock()
         mock_sessione.get.return_value = resp
         mock_crea.return_value = mock_sessione

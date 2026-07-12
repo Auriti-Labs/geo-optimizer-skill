@@ -1,0 +1,25 @@
+---
+// Portable Text custom type renderer for Sanity's "callout" object
+// ({ _type: "callout", variant: "info"|"tip"|"warning"|"stat", body: string }).
+// Registered in ptComponents.type.callout — see frontend/src/pages/guides/[slug].astro
+const { node } = Astro.props;
+const { variant = "info", body } = node;
+
+const styles: Record<string, { border: string; bg: string; label: string }> = {
+  info: { border: "#2dd4bf", bg: "rgba(45, 212, 191, 0.08)", label: "Info" },
+  tip: { border: "#4ade80", bg: "rgba(74, 222, 128, 0.08)", label: "Tip" },
+  warning: { border: "#f59e0b", bg: "rgba(245, 158, 11, 0.08)", label: "Warning" },
+  stat: { border: "#a78bfa", bg: "rgba(167, 139, 250, 0.08)", label: "Stat" },
+};
+const style = styles[variant] ?? styles.info;
+---
+
+<div
+  class="callout my-6 rounded-lg px-5 py-4 text-sm leading-relaxed"
+  style={`border-left: 3px solid ${style.border}; background: ${style.bg};`}
+>
+  <span class="block font-mono text-[10px] uppercase tracking-wider mb-1.5" style={`color: ${style.border};`}>
+    {style.label}
+  </span>
+  <span class="text-text-secondary">{body}</span>
+</div>

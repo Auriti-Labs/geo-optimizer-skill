@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: Auriti-Labs/geo-optimizer-skill@v4.14.0
+      - uses: Auriti-Labs/geo-optimizer-skill@v4.15.0
         with:
           url: https://yoursite.com
 ```
@@ -46,7 +46,7 @@ That's it. The action installs Python, installs `geo-optimizer-skill`, runs the 
 ### Enforce a minimum score
 
 ```yaml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.14.0
+- uses: Auriti-Labs/geo-optimizer-skill@v4.15.0
   with:
     url: https://yoursite.com
     min-score: 70
@@ -69,7 +69,7 @@ The step fails if the score drops below 70.
 ### SARIF upload (GitHub Security tab)
 
 ```yaml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.14.0
+- uses: Auriti-Labs/geo-optimizer-skill@v4.15.0
   with:
     url: https://yoursite.com
     format: sarif
@@ -82,7 +82,7 @@ When `format: sarif`, results automatically appear in the **Security** tab of yo
 ### Post results as a PR comment
 
 ```yaml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.14.0
+- uses: Auriti-Labs/geo-optimizer-skill@v4.15.0
   id: geo
   with:
     url: https://yoursite.com
@@ -105,7 +105,7 @@ When `format: sarif`, results automatically appear in the **Security** tab of yo
 ### JUnit output (for CI dashboards)
 
 ```yaml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.14.0
+- uses: Auriti-Labs/geo-optimizer-skill@v4.15.0
   with:
     url: https://yoursite.com
     format: junit
@@ -130,7 +130,7 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: Auriti-Labs/geo-optimizer-skill@v4.14.0
+      - uses: Auriti-Labs/geo-optimizer-skill@v4.15.0
         id: geo
         with:
           url: https://yoursite.com

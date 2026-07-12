@@ -21,7 +21,7 @@
 
 <img src="assets/demo.gif" alt="geo audit demo — AI visibility score 0-100 with prioritized fixes in one command" width="800"/>
 
-**15 CLI commands** · **8 scoring categories** · **47 research-backed methods** · **7 output formats** · **1,720 tests** · academic foundation ([KDD 2024](https://arxiv.org/abs/2311.09735), [ICLR 2026](https://arxiv.org/abs/2510.11438)) · runs in CI/CD, as a [Python library](#python-api), an [MCP server](#mcp-server), or an [Astro integration](#astro-integration)
+**16 CLI commands** · **8 scoring categories** · **47 research-backed methods** · **7 output formats** · **1,720 tests** · academic foundation ([KDD 2024](https://arxiv.org/abs/2311.09735), [ICLR 2026](https://arxiv.org/abs/2510.11438)) · runs in CI/CD, as a [Python library](#python-api), an [MCP server](#mcp-server), or an [Astro integration](#astro-integration)
 
 </div>
 
@@ -217,6 +217,7 @@ geo access --url https://example.com                      # Agent Access Audit �
 geo citations --brand "Acme" --domain acme.com            # AI Citation Check — are you cited by answer engines? (BYO key)
 geo authority --sitemap https://example.com/sitemap.xml   # Topic Authority — multi-page entity coverage, clusters, pillars
 geo drift --url https://example.com                        # Semantic Drift — what changed since the last snapshot
+geo perception --url https://example.com                  # AI Perception Snapshot — what an AI would extract from the page
 ```
 
 **Topic authority** — AI engines map entities and multi-page coverage, not single pages. `geo authority` clusters your site by topic and scores depth, interlinking, and pillar pages:
@@ -266,7 +267,7 @@ Treat AI visibility like test coverage: gate every deploy on it. The GitHub Acti
 
 ```yaml
 # .github/workflows/geo.yml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.14.0
+- uses: Auriti-Labs/geo-optimizer-skill@v4.15.0
   with:
     url: https://yoursite.com
     min-score: 70        # Fail the build if the GEO score drops below 70
@@ -429,8 +430,9 @@ This project follows a deliberate release cadence — focused waves, not noisy p
 | v4.12.0 | May 2026 | Ledger | Shipped |
 | v4.13.0 | Jun 2026 | Echo | Shipped |
 | v4.14.0 | Jun 2026 | Quiet Glass | Shipped |
-| v4.15.0-rc1 | Jan 2027 | Threshold | Planned |
-| v4.15.0-rc2 / v4.16.0 | Mar 2027 | Pale Signal | Planned |
+| v4.15.0 | Jul 2026 | Aperture | Shipped |
+| v4.16.0-rc1 | Jan 2027 | Threshold | Planned |
+| v4.16.0-rc2 / v4.17.0 | Mar 2027 | Pale Signal | Planned |
 | v5.0.0 | May 2027 | Black Archive | Exploring |
 
 Next focus areas: signal architecture, retrieval surface analysis, scoring recalibration, and structural pattern recognition. The v5.0 cycle represents a broader architectural evolution.

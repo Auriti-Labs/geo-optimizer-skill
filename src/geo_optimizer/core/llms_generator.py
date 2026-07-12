@@ -116,13 +116,25 @@ def fetch_sitemap(
         session = create_session_with_retry(pinned_ips=pinned_ips)
 
     try:
-        r = session.get(sitemap_url, headers=HEADERS, timeout=15)
+        # stream=True: the body is downloaded in chunks so the size check
+        # below can abort mid-download, instead of requests.Session buffering
+        # the entire response into r.content before any check runs (the
+        # non-streamed call previously here had no real DoS protection —
+        # every other network call in this codebase streams for this reason;
+        # see utils.http.fetch_url).
+        r = session.get(sitemap_url, headers=HEADERS, timeout=15, stream=True)
         r.raise_for_status()
 
-        # Size check: prevents DoS from oversized sitemaps (fix #181)
-        if len(r.content) > MAX_RESPONSE_SIZE:
-            logger.warning("Sitemap too large (%d bytes): %s", len(r.content), sitemap_url)
-            return urls
+        body = bytearray()
+        for chunk in r.iter_content(chunk_size=8192):
+            body.extend(chunk)
+            if len(body) > MAX_RESPONSE_SIZE:
+                r.close()
+                logger.warning("Sitemap too large (>%d bytes), aborting download: %s", MAX_RESPONSE_SIZE, sitemap_url)
+                if on_status:
+                    on_status(f"Sitemap too large, aborting: {sitemap_url}")
+                return urls
+        sitemap_body = bytes(body)
     except requests.exceptions.Timeout:
         logger.warning("Sitemap timeout: %s", sitemap_url)
         if on_status:
@@ -145,7 +157,7 @@ def fetch_sitemap(
             on_status(f"Sitemap error: {e}")
         return urls
 
-    soup = BeautifulSoup(r.content, "xml")
+    soup = BeautifulSoup(sitemap_body, "xml")
 
     # Sitemap index (contains nested sitemaps)
     sitemap_tags = soup.find_all("sitemap")
