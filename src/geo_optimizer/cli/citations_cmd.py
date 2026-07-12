@@ -102,7 +102,7 @@ def citations(brand, domain, topic, queries, provider, output_format, output_fil
         click.echo(
             "\n❌ No AI provider configured.\n"
             "   Set PERPLEXITY_API_KEY (recommended: real web citations from Sonar)\n"
-            "   or OPENAI_API_KEY / ANTHROPIC_API_KEY / GROQ_API_KEY.",
+            "   or OPENAI_API_KEY / ANTHROPIC_API_KEY / GROQ_API_KEY / MINIMAX_API_KEY.",
             err=True,
         )
         sys.exit(1)

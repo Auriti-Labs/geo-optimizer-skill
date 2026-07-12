@@ -159,6 +159,20 @@ geo llms --base-url https://yoursite.com --output ./public/llms.txt
 geo schema --type faq --url https://yoursite.com
 ```
 
+MiniMax can use either supported API wire format and regional API root:
+
+```bash
+export MINIMAX_API_KEY="your-api-key"
+export MINIMAX_API_FORMAT="openai"  # or "anthropic"
+export MINIMAX_API_BASE_URL="https://api.minimax.io/v1"
+geo citations --provider minimax --brand "YourBrand" --domain yoursite.com
+```
+
+For the China endpoint, use `https://api.minimaxi.com/v1` with the `openai` format or
+`https://api.minimaxi.com/anthropic/v1` with the `anthropic` format. The global messages-format root is
+`https://api.minimax.io/anthropic/v1`. `MINIMAX_THINKING` accepts `adaptive` or `disabled` for `MiniMax-M3`;
+`MiniMax-M2.7` always uses thinking.
+
 ---
 
 ## What it checks

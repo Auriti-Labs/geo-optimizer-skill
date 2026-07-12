@@ -128,6 +128,7 @@ class TestRunCitationCheck:
             "OPENAI_API_KEY",
             "ANTHROPIC_API_KEY",
             "GROQ_API_KEY",
+            "MINIMAX_API_KEY",
             "GEO_LLM_API_KEY",
             "GEO_LLM_PROVIDER",
         ):
@@ -165,6 +166,12 @@ class TestResolveProvider:
         provider, key = citations_mod.resolve_provider("groq")
         assert provider == "groq" and key is None
 
+    def test_explicit_minimax_provider_uses_its_env_key(self, monkeypatch):
+        monkeypatch.setenv("MINIMAX_API_KEY", "minimax-test")
+        monkeypatch.delenv("GEO_LLM_API_KEY", raising=False)
+        provider, key = citations_mod.resolve_provider("minimax")
+        assert (provider, key) == ("minimax", "minimax-test")
+
 
 class TestCitationsCli:
     def test_cli_text_output(self, monkeypatch):
@@ -199,6 +206,7 @@ class TestCitationsCli:
             "OPENAI_API_KEY",
             "ANTHROPIC_API_KEY",
             "GROQ_API_KEY",
+            "MINIMAX_API_KEY",
             "GEO_LLM_API_KEY",
             "GEO_LLM_PROVIDER",
         ):
@@ -207,6 +215,7 @@ class TestCitationsCli:
         result = runner.invoke(cli, ["citations", "--brand", "Acme", "--domain", "acme.com"])
         assert result.exit_code == 1
         assert "No AI provider configured" in result.output
+        assert "MINIMAX_API_KEY" in result.output
 
 
 class TestPerplexityProvider:

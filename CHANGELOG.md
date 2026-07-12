@@ -5,6 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Added
+- **MiniMax LLM provider.** `geo citations` can use `MiniMax-M3` or `MiniMax-M2.7` through either supported API wire format, with configurable global or China API roots and optional thinking control.
+
 ## [4.14.1] — 2026-06-27
 
 ### Fixed

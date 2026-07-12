@@ -114,6 +114,9 @@ def _mock_env(monkeypatch) -> None:
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.delenv("MINIMAX_API_KEY", raising=False)
+    monkeypatch.delenv("MINIMAX_API_FORMAT", raising=False)
+    monkeypatch.delenv("MINIMAX_API_BASE_URL", raising=False)
+    monkeypatch.delenv("MINIMAX_THINKING", raising=False)
     monkeypatch.setenv("GEO_LLM_MODEL", "test-model")
 
 
@@ -208,10 +211,10 @@ class TestQueryLLM:
 
 
 class TestQueryMinimax:
-    """Test MiniMax provider (OpenAI-compatible over plain HTTP, requests mockato)."""
+    """Test MiniMax provider over plain HTTP."""
 
     def test_query_llm_minimax_success(self, _mock_env, monkeypatch) -> None:
-        """MiniMax success con system param (requests.post mockato)."""
+        """Use the default model and current chat completion token field."""
         captured: dict = {}
 
         def _fake_post(url, headers, json, timeout):
@@ -222,13 +225,14 @@ class TestQueryMinimax:
             resp.raise_for_status = Mock()
             resp.json = Mock(
                 return_value={
-                    "model": "MiniMax-M3",
+                    "model": json["model"],
                     "choices": [{"message": {"content": "MiniMax response"}}],
                     "usage": {"prompt_tokens": 10, "completion_tokens": 5},
                 }
             )
             return resp
 
+        monkeypatch.delenv("GEO_LLM_MODEL")
         monkeypatch.setattr("requests.post", _fake_post)
         resp = llm_client.query_llm("test", provider="minimax", api_key="fake_key", system="system prompt")
         assert resp.text == "MiniMax response"
@@ -236,11 +240,102 @@ class TestQueryMinimax:
         assert resp.model == "MiniMax-M3"
         assert resp.prompt_tokens == 10
         assert resp.completion_tokens == 5
+        assert captured["url"] == "https://api.minimax.io/v1/chat/completions"
         assert captured["headers"]["Authorization"] == "Bearer fake_key"
+        assert captured["json"]["model"] == "MiniMax-M3"
         assert captured["json"]["messages"][0]["role"] == "system"
+        assert captured["json"]["max_completion_tokens"] == 1024
+        assert "max_tokens" not in captured["json"]
+
+    def test_query_llm_minimax_second_model_and_region(self, _mock_env, monkeypatch) -> None:
+        """Pass the second supported model through a regional API root."""
+        captured: dict = {}
+
+        def _fake_post(url, headers, json, timeout):
+            captured["url"] = url
+            captured["json"] = json
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(
+                return_value={
+                    "model": json["model"],
+                    "choices": [{"message": {"content": "Regional response"}}],
+                    "usage": {},
+                }
+            )
+            return resp
+
+        monkeypatch.setenv("MINIMAX_API_BASE_URL", "https://api.minimaxi.com/v1/")
+        monkeypatch.setattr("requests.post", _fake_post)
+
+        resp = llm_client.query_llm(
+            "test",
+            provider="minimax",
+            api_key="fake_key",
+            model="MiniMax-M2.7",
+        )
+
+        assert resp.text == "Regional response"
+        assert resp.model == "MiniMax-M2.7"
+        assert captured["url"] == "https://api.minimaxi.com/v1/chat/completions"
+        assert captured["json"]["model"] == "MiniMax-M2.7"
+        assert "thinking" not in captured["json"]
+
+    def test_query_llm_minimax_anthropic_format(self, _mock_env, monkeypatch) -> None:
+        """Build and parse the supported messages wire format."""
+        captured: dict = {}
+
+        def _fake_post(url, headers, json, timeout):
+            captured["url"] = url
+            captured["json"] = json
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(
+                return_value={
+                    "model": "MiniMax-M3",
+                    "content": [
+                        {"type": "thinking", "thinking": "reasoning"},
+                        {"type": "text", "text": "Messages response"},
+                    ],
+                    "usage": {"input_tokens": 12, "output_tokens": 7},
+                }
+            )
+            return resp
+
+        monkeypatch.setenv("MINIMAX_API_FORMAT", "anthropic")
+        monkeypatch.setenv("MINIMAX_THINKING", "disabled")
+        monkeypatch.setattr("requests.post", _fake_post)
+
+        resp = llm_client.query_llm(
+            "test",
+            provider="minimax",
+            api_key="fake_key",
+            model="MiniMax-M3",
+            system="system prompt",
+        )
+
+        assert resp.text == "Messages response"
+        assert resp.prompt_tokens == 12
+        assert resp.completion_tokens == 7
+        assert captured["url"] == "https://api.minimax.io/anthropic/v1/messages"
+        assert captured["json"]["system"] == "system prompt"
+        assert captured["json"]["max_tokens"] == 1024
+        assert "max_completion_tokens" not in captured["json"]
+        assert captured["json"]["thinking"] == {"type": "disabled"}
+
+    def test_query_llm_minimax_rejects_invalid_format(self, _mock_env, monkeypatch) -> None:
+        """Reject unsupported wire formats before sending a request."""
+        monkeypatch.setenv("MINIMAX_API_FORMAT", "invalid")
+
+        with patch("requests.post") as mock_post:
+            resp = llm_client.query_llm("test", provider="minimax", api_key="fake_key")
+
+        assert resp.error == "Invalid MINIMAX_API_FORMAT; expected 'openai' or 'anthropic'"
+        assert resp.provider == "minimax"
+        mock_post.assert_not_called()
 
     def test_query_llm_minimax_http_error(self, _mock_env) -> None:
-        """MiniMax HTTP error viene catturato in LLMResponse.error."""
+        """Return HTTP errors in LLMResponse.error."""
         import requests as requests_mod
 
         with patch("requests.post", side_effect=requests_mod.ConnectionError("down")):
