@@ -47,7 +47,7 @@ _PROVIDER_ENV_KEYS = {
 _PERPLEXITY_API_URL = "https://api.perplexity.ai/chat/completions"
 _MINIMAX_API_FORMATS = {
     "openai": {"base_url": "https://api.minimax.io/v1", "path": "chat/completions"},
-    "anthropic": {"base_url": "https://api.minimax.io/anthropic/v1", "path": "messages"},
+    "anthropic": {"base_url": "https://api.minimax.io/anthropic", "path": "v1/messages"},
 }
 _MINIMAX_THINKING_MODES = {"adaptive", "disabled"}
 

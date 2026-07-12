@@ -323,6 +323,10 @@ class TestQueryMinimax:
         assert "max_completion_tokens" not in captured["json"]
         assert captured["json"]["thinking"] == {"type": "disabled"}
 
+        monkeypatch.setenv("MINIMAX_API_BASE_URL", "https://api.minimaxi.com/anthropic/")
+        llm_client.query_llm("test", provider="minimax", api_key="fake_key")
+        assert captured["url"] == "https://api.minimaxi.com/anthropic/v1/messages"
+
     def test_query_llm_minimax_rejects_invalid_format(self, _mock_env, monkeypatch) -> None:
         """Reject unsupported wire formats before sending a request."""
         monkeypatch.setenv("MINIMAX_API_FORMAT", "invalid")

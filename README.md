@@ -169,8 +169,8 @@ geo citations --provider minimax --brand "YourBrand" --domain yoursite.com
 ```
 
 For the China endpoint, use `https://api.minimaxi.com/v1` with the `openai` format or
-`https://api.minimaxi.com/anthropic/v1` with the `anthropic` format. The global messages-format root is
-`https://api.minimax.io/anthropic/v1`. `MINIMAX_THINKING` accepts `adaptive` or `disabled` for `MiniMax-M3`;
+`https://api.minimaxi.com/anthropic` with the `anthropic` format. The global messages-format root is
+`https://api.minimax.io/anthropic`. `MINIMAX_THINKING` accepts `adaptive` or `disabled` for `MiniMax-M3`;
 `MiniMax-M2.7` always uses thinking.
 
 ---
