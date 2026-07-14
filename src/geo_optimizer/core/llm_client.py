@@ -307,7 +307,12 @@ def _query_minimax(prompt: str, *, system: str, api_key: str, model: str, max_to
         if system:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
-        payload = {"model": model, "messages": messages, "max_completion_tokens": max_tokens}
+        payload = {
+            "model": model,
+            "messages": messages,
+            "max_completion_tokens": max_tokens,
+            "reasoning_split": True,
+        }
 
     if thinking:
         payload["thinking"] = {"type": thinking}

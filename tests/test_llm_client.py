@@ -245,6 +245,7 @@ class TestQueryMinimax:
         assert captured["json"]["model"] == "MiniMax-M3"
         assert captured["json"]["messages"][0]["role"] == "system"
         assert captured["json"]["max_completion_tokens"] == 1024
+        assert captured["json"]["reasoning_split"] is True
         assert "max_tokens" not in captured["json"]
 
     def test_query_llm_minimax_second_model_and_region(self, _mock_env, monkeypatch) -> None:
