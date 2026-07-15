@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { trackCtaClicked } from '../../lib/geo_track';
 import type { CategoryScore } from '../../lib/mockData';
 
+// Optional email delivery of the full report. The on-screen report is complete
+// (no locked categories): this banner only offers a copy in the inbox, matching
+// the pricing promise "no email required".
 interface EmailGateBannerProps {
   score: number;
   categories: CategoryScore[];
@@ -15,15 +18,8 @@ export default function EmailGateBanner({ score, categories, claimToken }: Email
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const lockedCount = categories.length;
-  // "points hidden" (badges/header) uses each category's full ceiling — the
-  // achievable "potential score" below must use only the *unearned* remainder,
-  // not the full ceiling, or a site that already scores in locked categories
-  // (real numeric scores are always present, only per-signal detail is
-  // stripped — see CLAUDE.md Partial Report Gate) gets double-counted.
-  const totalLockedPoints = categories.reduce((sum, c) => sum + c.maxScore, 0);
-  const unearnedPoints = categories.reduce((sum, c) => sum + Math.max(0, c.maxScore - c.score), 0);
-  const potentialScore = Math.min(score + unearnedPoints, 100);
+  void score;
+  void categories;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,7 +40,7 @@ export default function EmailGateBanner({ score, categories, claimToken }: Email
 
       if (res.ok) {
         setStatus('success');
-        trackCtaClicked({ cta_location: 'email_gate', cta_text: 'Send report to email' });
+        trackCtaClicked({ cta_location: 'email_report_optional', cta_text: 'Email me this report' });
       } else {
         const data = await res.json().catch(() => ({}));
         setStatus('error');
@@ -56,7 +52,7 @@ export default function EmailGateBanner({ score, categories, claimToken }: Email
     }
   }
 
-  // Success state — email sent, categories stay locked on screen
+  // Success state — a copy of the report is on its way
   if (status === 'success') {
     return (
       <div className="rounded-xl border border-accent-teal/25 bg-accent-teal/5 p-6 text-center">
@@ -67,12 +63,11 @@ export default function EmailGateBanner({ score, categories, claimToken }: Email
           </svg>
         </div>
         <p className="text-sm font-semibold text-text-primary mb-1">
-          Full report sent to your inbox
+          Report sent to your inbox
         </p>
         <p className="text-xs text-text-secondary max-w-sm mx-auto leading-relaxed">
-          Check <strong className="text-text-primary">{email}</strong> for the complete 8-category
-          GEO breakdown with scores, signals, and recommendations. The full report is in your email —
-          not on this page.
+          Check <strong className="text-text-primary">{email}</strong> for a copy of the complete
+          8-category GEO breakdown with scores, signals, and recommendations.
         </p>
       </div>
     );
@@ -82,31 +77,18 @@ export default function EmailGateBanner({ score, categories, claimToken }: Email
     <div className="rounded-xl border border-accent-teal/25 bg-accent-teal/5 p-5">
       <div className="flex items-center gap-2 mb-2">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-teal shrink-0" aria-hidden="true">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <polyline points="22,6 12,13 2,6" />
         </svg>
         <span className="text-sm font-semibold text-text-primary">
-          {lockedCount} categories locked — {totalLockedPoints} points hidden
+          Want this report in your inbox?
         </span>
       </div>
 
       <p className="text-sm text-text-secondary leading-snug mb-3">
-        Your visible score is <strong className="text-text-primary">{score}/100</strong>.
-        The locked categories can add up to <strong className="text-accent-teal">+{unearnedPoints} more points</strong>,
-        potentially reaching <strong className="text-accent-teal">{potentialScore}/100</strong>.
-        Enter your email and we'll send the full report — <strong>it lands in your inbox, not on this page</strong>.
+        Optional — the full report is already on this page. Enter your email and we'll
+        send you a copy of the complete 8-category breakdown to keep or share.
       </p>
-
-      <div className="flex flex-wrap gap-1.5 mb-4">
-        {categories.map((c) => (
-          <span
-            key={c.slug}
-            className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-subtle text-text-muted border border-border"
-          >
-            {c.name} +{c.maxScore}
-          </span>
-        ))}
-      </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
         <input
@@ -133,7 +115,7 @@ export default function EmailGateBanner({ score, categories, claimToken }: Email
             </>
           ) : (
             <>
-              Send full report
+              Email me this report
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
@@ -147,7 +129,7 @@ export default function EmailGateBanner({ score, categories, claimToken }: Email
       )}
 
       <p className="mt-2 text-[10px] text-text-muted">
-        We send the full 8-category report to your email. No spam, unsubscribe anytime.{' '}
+        One email with your report copy. No spam, unsubscribe anytime.{' '}
         <a href="/privacy/" className="text-text-muted underline hover:text-text-secondary">Privacy Policy</a>
       </p>
     </div>

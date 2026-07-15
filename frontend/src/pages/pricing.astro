@@ -1,6 +1,7 @@
 ---
 import Shell from '../components/Shell.astro';
 import MonitorSurface from '../components/product/MonitorSurface.astro';
+import PricingObjectionSurvey from '../components/PricingObjectionSurvey';
 
 const selfServePlans = [
   {
@@ -10,7 +11,7 @@ const selfServePlans = [
     period: 'forever',
     status: 'Available now',
     statusStyle: 'bg-accent-success/10 text-accent-success',
-    description: 'Single-URL audit with a full GEO score, top recommendations, and partial category breakdown. No account required.',
+    description: 'Single-URL audit with a full GEO score and the complete 8-category breakdown. No account required.',
     cta: 'Start free audit',
     ctaHref: '/',
     ctaStyle: 'border border-border text-text-primary hover:bg-bg-subtle',
@@ -18,8 +19,8 @@ const selfServePlans = [
     features: [
       '5 audits per day',
       'GEO score 0–100',
-      'Partial report — 3 of 8 categories',
-      'Top 3 recommendations',
+      'Full 8-category GEO report',
+      'Actionable recommendations',
       'CLI (MIT, unlimited)',
     ],
   },
@@ -30,14 +31,13 @@ const selfServePlans = [
     period: '/month',
     status: 'Founding price',
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
-    description: 'Full reports, weekly monitoring for one domain, score history, and regression alerts. For developers and consultants managing one site.',
+    description: 'Weekly monitoring for one domain, score history, regression alerts, PDF export, and API access. For developers and consultants managing one site.',
     cta: 'Start with Pro',
     ctaHref: 'https://app.geoready.dev/signup?plan=pro',
     ctaStyle: 'bg-accent-teal text-white hover:bg-accent-teal-dark',
     recommended: true,
     features: [
       'Unlimited audits',
-      'Full 8-category GEO report',
       '1 domain — weekly monitoring',
       '30-audit score history',
       'Regression alerts (when your score moves by 5 points or more)',
@@ -100,8 +100,10 @@ const scalePlans = [
     status: 'Talk to us',
     statusStyle: 'bg-bg-subtle text-text-muted border border-border',
     description: 'SLA, dedicated account manager, on-premise deployment, hourly monitoring, and custom integrations.',
-    cta: 'Contact sales',
-    ctaHref: '/early-access/',
+    // No sales team today — honest label + direct email to the maintainer
+    // (address already public on the privacy policy page).
+    cta: 'Contact us',
+    ctaHref: 'mailto:juancamilo.auriti@gmail.com?subject=GeoReady%20Enterprise',
     features: [
       'Everything in Agency',
       'Unlimited domains',
@@ -117,8 +119,7 @@ const scalePlans = [
 
 const comparisonRows: [string, string, string, string, string][] = [
   ['GEO score (0–100)',      '✓',       '✓',        '✓',        '✓'],
-  ['Partial report (3/8)',   '✓',       '—',        '—',        '—'],
-  ['Full 8-category report', '—',       '✓',        '✓',        '✓'],
+  ['Full 8-category report', '✓',       '✓',        '✓',        '✓'],
   ['Audits per day',         '5',       '∞',        '∞',        '∞'],
   ['Domain monitoring',      '—',       '1 / week', '15 / day', '50 / day'],
   ['Score history',          '—',       '30 audits','12 months','24 months'],
@@ -137,15 +138,15 @@ const comparisonRows: [string, string, string, string, string][] = [
 const faqs = [
   {
     q: 'Is the free audit really free?',
-    a: 'Yes. The web audit requires no account, no credit card, and no signup. You get a full GEO score and three category breakdowns immediately. The CLI is MIT-licensed and free to use without limits.',
+    a: 'Yes. The web audit requires no account, no credit card, and no signup. You get a full GEO score and the complete 8-category breakdown immediately. The CLI is MIT-licensed and free to use without limits.',
   },
   {
     q: 'Do I need to register to use the free audit?',
-    a: 'No. Just enter a URL and run the audit. Email capture is optional and only used to unlock the full 8-category report.',
+    a: 'No. Just enter a URL and run the audit. No email is required to see your results.',
   },
   {
     q: 'What does Pro add that Free does not?',
-    a: 'Pro adds continuity. The free audit is a one-shot snapshot. Pro monitors your domain weekly, tracks score history over time, and sends alerts when your GEO score drops. It also includes PDF export and API access.',
+    a: 'Pro adds continuity, not more report. The free audit is a one-shot snapshot with all 8 categories. Pro monitors your domain weekly, tracks score history over time, and sends alerts when your GEO score drops. It also includes PDF export and API access.',
   },
   {
     q: 'Are paid plans available right now?',
@@ -172,7 +173,7 @@ const faqs = [
 
 <Shell
   title="GeoReady Pricing — Free AI Audit, Pro Monitoring & Alerts"
-  description="The GEO audit is free, no account required. Pro adds weekly monitoring, full reports, score history, and alerts. Studio and Agency add multi-site daily monitoring and unbranded exports."
+  description="The full 8-category GEO audit is free, no account required. Pro adds weekly monitoring, score history, and alerts. Studio and Agency add multi-site daily monitoring and unbranded exports."
   canonical="https://geoready.dev/pricing/"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
@@ -355,8 +356,9 @@ const faqs = [
               ))}
             </ul>
 
-            {/* Enterprise è lead-gen ("Contact sales"), non selezione piano self-serve:
-                usa data-cta → geo_cta_clicked, non data-plan-id → geo_plan_selected. */}
+            {/* Enterprise è lead-gen ("Contact us" via mailto), non selezione piano self-serve:
+                usa data-cta → geo_cta_clicked, non data-plan-id → geo_plan_selected.
+                Il nome evento resta "pricing_enterprise_contact_sales" per continuità storica GA4. */}
             {plan.id === 'enterprise' ? (
               <a
                 href={plan.ctaHref}
@@ -404,11 +406,11 @@ const faqs = [
             </li>
             <li class="flex items-start gap-2.5">
               <span class="mt-0.5 text-accent-teal shrink-0">✓</span>
-              3 of 8 category breakdowns (robots, meta, signals)
+              All 8 category breakdowns, no email required
             </li>
             <li class="flex items-start gap-2.5">
               <span class="mt-0.5 text-accent-teal shrink-0">✓</span>
-              Top 3 actionable recommendations
+              Actionable recommendations
             </li>
             <li class="flex items-start gap-2.5">
               <span class="mt-0.5 text-accent-teal shrink-0">✓</span>
@@ -425,10 +427,6 @@ const faqs = [
             Pro — founding price
           </span>
           <ul class="space-y-3 text-sm text-text-secondary">
-            <li class="flex items-start gap-2.5">
-              <span class="mt-0.5 text-accent-teal shrink-0">+</span>
-              Full 8-category report (all signals, all categories)
-            </li>
             <li class="flex items-start gap-2.5">
               <span class="mt-0.5 text-accent-teal shrink-0">+</span>
               Weekly monitoring — score tracked automatically
@@ -585,6 +583,11 @@ const faqs = [
       </div>
     </section>
 
+    {/* Exit micro-survey — 1 domanda, solo evento GA4 (geo_pricing_objection), nessun backend */}
+    <section class="mt-10" aria-label="Pricing feedback">
+      <PricingObjectionSurvey client:visible />
+    </section>
+
   </div>
 
   <script type="application/ld+json" set:html={JSON.stringify({
@@ -609,7 +612,7 @@ const faqs = [
               "name": "Free",
               "price": "0",
               "priceCurrency": "USD",
-              "description": "Single-URL GEO audit, no account required, partial 3/8 category report.",
+              "description": "Single-URL GEO audit, no account required, full 8-category report.",
               "availability": "https://schema.org/InStock",
               "url": "https://geoready.dev"
             }
@@ -628,7 +631,7 @@ const faqs = [
                 "priceCurrency": "USD",
                 "unitCode": "MON"
               },
-              "description": "Full 8-category reports, weekly monitoring for 1 domain, score history, regression alerts.",
+              "description": "Weekly monitoring for 1 domain, score history, regression alerts, PDF export, API access.",
               "availability": "https://schema.org/InStock",
               "url": "https://app.geoready.dev/signup?plan=pro"
             }
@@ -679,17 +682,17 @@ const faqs = [
           {
             "@type": "Question",
             "name": "Is the free audit really free?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. The web audit requires no account, no credit card, and no signup. You get a full GEO score and three category breakdowns immediately. The CLI is MIT-licensed and free to use without limits." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. The web audit requires no account, no credit card, and no signup. You get a full GEO score and the complete 8-category breakdown immediately. The CLI is MIT-licensed and free to use without limits." }
           },
           {
             "@type": "Question",
             "name": "Do I need to register to use the free audit?",
-            "acceptedAnswer": { "@type": "Answer", "text": "No. Just enter a URL and run the audit. Email capture is optional and only used to unlock the full 8-category report." }
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Just enter a URL and run the audit. No email is required to see your results." }
           },
           {
             "@type": "Question",
             "name": "What does Pro add that Free does not?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Pro adds continuity. The free audit is a one-shot snapshot. Pro monitors your domain weekly, tracks score history over time, and sends alerts when your GEO score drops. It also includes PDF export and API access." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Pro adds continuity, not more report. The free audit is a one-shot snapshot with all 8 categories. Pro monitors your domain weekly, tracks score history over time, and sends alerts when your GEO score drops. It also includes PDF export and API access." }
           },
           {
             "@type": "Question",
