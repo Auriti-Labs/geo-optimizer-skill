@@ -138,6 +138,16 @@ export function trackPlanSelected(params: {
   track('geo_plan_selected', params);
 }
 
+/** Obiezione pricing — risposta alla micro-survey "What's stopping you today?".
+ *  `reason` è una delle opzioni predefinite; `note` è testo libero opzionale
+ *  (troncato lato client, nessun dato personale richiesto). */
+export function trackPricingObjection(params: {
+  reason: string;
+  note?: string;
+}): void {
+  track('geo_pricing_objection', params);
+}
+
 // ── Shorthand generatore llms.txt (Sprint 3) ─────────────────────────────────
 
 /** Generatore llms.txt avviato — submit del form con/senza sitemap custom. */
