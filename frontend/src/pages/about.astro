@@ -104,6 +104,24 @@ import Shell from '../components/Shell.astro';
         </div>
       </section>
 
+      {/* Founder */}
+      <section>
+        <h2 class="text-xl font-bold text-text-primary mb-4">Founder</h2>
+        <div class="p-6 rounded-[--radius-lg] border border-border bg-bg-surface">
+          <h3 class="font-semibold text-text-primary">Juan Camilo Auriti</h3>
+          <p class="mt-0.5 text-xs font-mono text-text-muted uppercase tracking-wider">Founder &amp; maintainer</p>
+          <p class="mt-3 text-sm text-text-secondary leading-relaxed">
+            Juan Camilo builds open-source tools for AI search visibility. He maintains
+            GEO Optimizer, the MIT-licensed audit engine behind GeoReady, and develops the
+            scoring methodology, research notes, and product in the open.
+          </p>
+          <div class="mt-3 flex flex-wrap gap-3 text-xs font-mono">
+            <a href="https://github.com/Auriti-Labs" class="text-text-muted hover:text-accent-teal transition-colors" target="_blank" rel="noopener">GitHub →</a>
+            <a href="https://x.com/JuanAuriti" class="text-text-muted hover:text-accent-teal transition-colors" target="_blank" rel="noopener">X →</a>
+          </div>
+        </div>
+      </section>
+
       {/* Built in Italy */}
       <section>
         <h2 class="text-xl font-bold text-text-primary mb-4">Built in Italy. Designed for the global web.</h2>
@@ -156,7 +174,19 @@ import Shell from '../components/Shell.astro';
       "sameAs": [
         "https://github.com/Auriti-Labs",
         "https://pypi.org/project/geo-optimizer-skill/"
-      ]
+      ],
+      "founder": {
+        "@type": "Person",
+        "@id": "https://geoready.dev/#founder",
+        "name": "Juan Camilo Auriti",
+        "jobTitle": "Founder & Maintainer",
+        "description": "Builds open-source tools for AI search visibility. Maintains GEO Optimizer, the MIT-licensed audit engine behind GeoReady.",
+        "url": "https://x.com/JuanAuriti",
+        "sameAs": [
+          "https://github.com/Auriti-Labs",
+          "https://x.com/JuanAuriti"
+        ]
+      }
     }
   })} />
 </Shell>
