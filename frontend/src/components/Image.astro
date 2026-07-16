@@ -1,0 +1,41 @@
+---
+// Portable Text custom type renderer for Sanity's inline "image" object
+// ({ _type: "image", asset, alt, caption }).
+// Registered in ptComponents.type.image — see frontend/src/pages/guides/[slug].astro
+import { urlForImage } from '../utils/sanity';
+
+const { node } = Astro.props;
+const { asset, alt, caption } = node;
+
+if (!asset?._ref) {
+  throw new Error('Image block is missing asset._ref');
+}
+
+// The asset _ref itself encodes native dimensions, e.g.
+// "image-<hash>-1376x768-jpg" — parse them instead of querying asset->metadata,
+// so no GROQ deref is needed just to prevent layout shift.
+const dimensionMatch = /-(\d+)x(\d+)-/.exec(asset._ref);
+const nativeWidth = dimensionMatch ? Number(dimensionMatch[1]) : 1600;
+const nativeHeight = dimensionMatch ? Number(dimensionMatch[2]) : Math.round(nativeWidth * 0.5625);
+
+const renderWidth = Math.min(1600, nativeWidth);
+const renderHeight = Math.round(renderWidth * (nativeHeight / nativeWidth));
+
+const src = urlForImage({ asset }).width(renderWidth).fit('max').auto('format').url();
+---
+
+<figure class="my-8">
+  <img
+    src={src}
+    alt={alt || ''}
+    width={renderWidth}
+    height={renderHeight}
+    loading="lazy"
+    decoding="async"
+    class="w-full h-auto rounded-lg border"
+    style="border-color: var(--color-border, #333);"
+  />
+  {caption && (
+    <figcaption class="mt-2 text-center text-sm text-text-muted">{caption}</figcaption>
+  )}
+</figure>

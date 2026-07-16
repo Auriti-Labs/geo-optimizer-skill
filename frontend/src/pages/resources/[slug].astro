@@ -4,7 +4,8 @@ import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
 import Callout from '../../components/Callout.astro';
 import CodeBlock from '../../components/CodeBlock.astro';
-import { getAllArticleSlugs, getArticleBySlug } from '../../utils/sanity';
+import Image from '../../components/Image.astro';
+import { getAllArticleSlugs, getArticleBySlug, urlForImage } from '../../utils/sanity';
 
 // ── Static paths ──────────────────────────────────────────────────────────────
 export async function getStaticPaths() {
@@ -23,6 +24,9 @@ const canonical = `https://geoready.dev/resources/${slug}/`;
 const title = article.metaTitle || article.title;
 const schemaType = article.schemaOrgType || 'Article';
 const author = article.author || 'Juan Camilo Auriti';
+const ogImageUrl = article.ogImage?.asset
+  ? urlForImage(article.ogImage).width(1200).height(630).fit('crop').auto('format').url()
+  : undefined;
 
 // ── Portable Text components ──────────────────────────────────────────────────
 // astro-portabletext requires .astro component files for custom renderers.
@@ -31,6 +35,7 @@ const ptComponents = {
   type: {
     callout: Callout,
     codeBlock: CodeBlock,
+    image: Image,
   },
 };
 
@@ -44,6 +49,9 @@ const jsonLd = {
       url: canonical,
       headline: article.title,
       description: article.description,
+      ...(ogImageUrl
+        ? { image: { '@type': 'ImageObject', url: ogImageUrl, width: 1200, height: 630 } }
+        : {}),
       datePublished: article.datePublished,
       dateModified: article.dateModified,
       author: { '@type': 'Person', name: author, url: 'https://geoready.dev/about/' },
@@ -82,6 +90,8 @@ const jsonLd = {
   description={article.description}
   canonical={canonical}
   robots={article.noindex ? 'noindex, follow' : 'index, follow'}
+  ogImage={ogImageUrl}
+  twitterImage={ogImageUrl}
 >
   <article class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16" itemscope itemtype="https://schema.org/Article">
     {/* ── Header ──────────────────────────────────────────────────────────── */}
