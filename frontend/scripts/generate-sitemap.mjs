@@ -48,6 +48,7 @@ const EXCLUDE_ROUTES = new Set([
 // Sono aggiunte a mano con il file sorgente da cui derivare il lastmod.
 const EXTRA_ROUTES = [
   { url: '/report/demo/', sourceFile: 'report/[id].astro' },
+  { url: '/guides/', sourceFile: 'guides/[...page].astro' },
 ];
 
 // Categorie articolo Sanity con una route dinamica reale nel sito, e il relativo
