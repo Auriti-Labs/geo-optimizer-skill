@@ -108,10 +108,11 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
   const report = state.report;
 
   const isDemo = reportId === 'demo';
-  // Categories stay locked on screen — user gets full report via email only
-  const lockedSlugs = isDemo ? [] : ALL_LOCKED_SLUGS;
+  // All categories are visible on screen: the free report is complete, matching
+  // the public API and the pricing promise ("no email required"). Email capture
+  // below is optional (send-me-a-copy), not a gate.
+  const lockedSlugs: string[] = [];
   const lockedSet = new Set(lockedSlugs);
-  const lockedCategories = report.categories.filter((c) => lockedSet.has(c.slug));
 
   const criticalCount = report.recommendations.filter((r) => r.priority === 'critical').length;
   const highCount = report.recommendations.filter((r) => r.priority === 'high').length;
@@ -190,18 +191,15 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-xs font-mono font-semibold uppercase tracking-wider text-text-muted">Category Breakdown</h2>
               <span className="text-[11px] text-text-muted">
-                {activeCategories} of {report.categories.filter((c) => !lockedSet.has(c.slug)).length} visible
-                {lockedSlugs.length > 0 && (
-                  <span className="ml-1 text-accent-teal">· {lockedSlugs.length} locked</span>
-                )}
+                {activeCategories} of {report.categories.length} active
               </span>
             </div>
             <CategoryBreakdown categories={report.categories} lockedSlugs={lockedSlugs} />
-            {lockedSlugs.length > 0 && (
+            {!isDemo && state.claim_token && (
               <div className="mt-4">
                 <EmailGateBanner
                   score={report.geoScore}
-                  categories={lockedCategories}
+                  categories={report.categories}
                   claimToken={state.claim_token}
                 />
               </div>

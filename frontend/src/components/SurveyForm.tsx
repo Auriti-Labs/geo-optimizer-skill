@@ -30,7 +30,7 @@ const PRIORITY_FEATURE_OPTIONS = [
   { value: 'monitoring', label: 'Weekly AI search monitoring with alerts' },
   { value: 'history', label: 'Score history and audit log' },
   { value: 'pdf', label: 'PDF report export for clients' },
-  { value: 'full-report', label: 'Full 8-category report (vs 3 free)' },
+  { value: 'full-report', label: 'Deeper per-signal detail in reports' },
   { value: 'api', label: 'API access for integrations' },
   { value: 'agency', label: 'White-label reporting for agencies' },
 ];

@@ -12,7 +12,8 @@ function fmt(n: number): string {
   return String(n);
 }
 
-const FALLBACK: Stats = { github_stars: 432, pypi_downloads_month: 5134, audits_run: 1593 };
+// Static fallback shown until /stats responds. github_stars verified via GitHub API on 2026-07-15.
+const FALLBACK: Stats = { github_stars: 587, pypi_downloads_month: 5134, audits_run: 1593 };
 
 export default function StatsBar() {
   const [stats, setStats] = useState<Stats>(FALLBACK);
@@ -59,7 +60,7 @@ export default function StatsBar() {
         </div>
       </div>
       {!live && (
-        <p className="mt-2 text-xs text-text-muted font-mono">Snapshot: May 2026 — not live data</p>
+        <p className="mt-2 text-xs text-text-muted font-mono">Snapshot: as of July 2026 — not live data</p>
       )}
     </div>
   );
