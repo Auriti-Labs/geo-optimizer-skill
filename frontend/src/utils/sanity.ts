@@ -1,5 +1,12 @@
 import {sanityClient} from 'sanity:client'
 import {defineQuery} from 'groq'
+import imageUrlBuilder from '@sanity/image-url'
+
+const imageBuilder = imageUrlBuilder(sanityClient)
+
+export function urlForImage(source: {asset: {_ref: string}}) {
+  return imageBuilder.image(source)
+}
 
 export interface SanityArticle {
   _id: string
@@ -41,7 +48,8 @@ const ARTICLE_QUERY = defineQuery(
 
 const ARTICLES_BY_CATEGORY_QUERY = defineQuery(
   `*[_type == "article" && category == $category && ${LIVE}] | order(datePublished desc){
-    _id, title, slug, description, datePublished, dateModified, focusKeyword
+    _id, title, slug, description, datePublished, dateModified, focusKeyword,
+    ogImage{ asset, alt }
   }`
 )
 

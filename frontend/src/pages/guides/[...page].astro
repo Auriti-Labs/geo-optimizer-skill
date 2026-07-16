@@ -1,16 +1,27 @@
 ---
+import type { GetStaticPaths } from 'astro';
 import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
 import ScoreSurface from '../../components/product/ScoreSurface.astro';
-import { getArticlesByCategory } from '../../utils/sanity';
+import { getArticlesByCategory, urlForImage } from '../../utils/sanity';
 
-const articles = await getArticlesByCategory('guides');
+export const getStaticPaths = (async ({ paginate }) => {
+  const articles = await getArticlesByCategory('guides');
+  return paginate(articles, { pageSize: 6 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const articles = page.data;
+const canonical = `https://geoready.dev/guides/${page.currentPage > 1 ? `${page.currentPage}/` : ''}`;
+const title = page.currentPage > 1
+  ? `Guides — Page ${page.currentPage} of ${page.lastPage} — GeoReady`
+  : 'Guides — AI Search Visibility & Generative Engine Optimization';
 ---
 
 <Shell
-  title="Guides — AI Search Visibility & Generative Engine Optimization"
+  title={title}
   description="Practical, no-hype guides on making your website visible and citable to AI answer engines like ChatGPT, Perplexity, Claude, and Gemini."
-  canonical="https://geoready.dev/guides/"
+  canonical={canonical}
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
     {/* Header */}
@@ -73,21 +84,73 @@ const articles = await getArticlesByCategory('guides');
         <li>
           <a
             href={`/guides/${a.slug.current}/`}
-            class="group block h-full rounded-xl border border-border bg-bg-surface p-5 md:p-6 transition-colors hover:border-accent-teal/30"
+            class="group block h-full overflow-hidden rounded-xl border border-border bg-bg-surface transition-colors hover:border-accent-teal/30"
           >
-            <p class="mb-4 text-xs font-mono text-text-muted">
-              {new Date(a.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </p>
-            <h2 class="font-display text-lg md:text-xl font-semibold text-text-primary leading-snug group-hover:text-accent-teal">
-              {a.title}
-            </h2>
-            <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
-              {a.description}
-            </p>
+            {a.ogImage?.asset ? (
+              <img
+                src={urlForImage(a.ogImage).width(640).height(360).fit('crop').auto('format').url()}
+                alt={a.ogImage.alt || ''}
+                width="640"
+                height="360"
+                loading="lazy"
+                class="aspect-[16/9] w-full object-cover"
+              />
+            ) : null}
+            <div class="p-5 md:p-6">
+              <p class="mb-4 text-xs font-mono text-text-muted">
+                {new Date(a.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
+              <h2 class="font-display text-lg md:text-xl font-semibold text-text-primary leading-snug group-hover:text-accent-teal">
+                {a.title}
+              </h2>
+              <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
+                {a.description}
+              </p>
+            </div>
           </a>
         </li>
       ))}
     </ul>
+
+    {/* Pagination */}
+    {page.lastPage > 1 && (
+      <nav class="mt-10 flex items-center justify-between gap-4" aria-label="Guides pagination">
+        {page.url.prev ? (
+          <a
+            href={page.url.prev}
+            class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:border-accent-teal/30 hover:text-text-primary"
+          >
+            ← Newer
+          </a>
+        ) : <span />}
+
+        <div class="flex items-center gap-1.5 font-mono text-xs text-text-muted">
+          {Array.from({ length: page.lastPage }, (_, i) => i + 1).map((n) => (
+            n === page.currentPage ? (
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-teal font-semibold text-white">
+                {n}
+              </span>
+            ) : (
+              <a
+                href={n === 1 ? '/guides/' : `/guides/${n}/`}
+                class="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-bg-surface hover:text-text-primary"
+              >
+                {n}
+              </a>
+            )
+          ))}
+        </div>
+
+        {page.url.next ? (
+          <a
+            href={page.url.next}
+            class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:border-accent-teal/30 hover:text-text-primary"
+          >
+            Older →
+          </a>
+        ) : <span />}
+      </nav>
+    )}
 
     {/* Tools — strumenti gratuiti collegati alle guide */}
     <section class="mt-12 border-t border-border pt-10 md:mt-16 md:pt-12">
