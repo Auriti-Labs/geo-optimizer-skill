@@ -18,13 +18,17 @@ const dimensionMatch = /-(\d+)x(\d+)-/.exec(asset._ref);
 const nativeWidth = dimensionMatch ? Number(dimensionMatch[1]) : 1600;
 const nativeHeight = dimensionMatch ? Number(dimensionMatch[2]) : Math.round(nativeWidth * 0.5625);
 
-const renderWidth = Math.min(1600, nativeWidth);
+// Displayed size is capped well below the article column width (see max-w-xl
+// below), so there's no reason to request a full 1600px asset from the CDN —
+// a tighter fetch width also reads sharper for a soft AI-generated source
+// (less visible upscaling/blur once downsampled into a smaller box).
+const renderWidth = Math.min(900, nativeWidth);
 const renderHeight = Math.round(renderWidth * (nativeHeight / nativeWidth));
 
-const src = urlForImage({ asset }).width(renderWidth).fit('max').auto('format').url();
+const src = urlForImage({ asset }).width(renderWidth).fit('max').quality(90).auto('format').url();
 ---
 
-<figure class="my-8">
+<figure class="my-8 max-w-xl mx-auto">
   <img
     src={src}
     alt={alt || ''}
