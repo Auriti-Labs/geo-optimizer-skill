@@ -334,7 +334,7 @@ _TARGET_GUIDES = (
     "/guides/geo-vs-seo/",
     "/guides/llms-txt-wordpress/",
 )
-_GUIDES_HUB = _PAGES_DIR / "guides" / "index.astro"
+_GUIDES_HUB = _PAGES_DIR / "guides" / "[...page].astro"
 _HOMEPAGE = _PAGES_DIR / "index.astro"
 _RESEARCH = _PAGES_DIR / "research.astro"
 
@@ -361,10 +361,10 @@ class TestGuideInternalLinks:
         # for static hrefs that no longer exist in source.
         source = _GUIDES_HUB.read_text(encoding="utf-8")
         assert "getArticlesByCategory" in source, (
-            "guides/index.astro deve usare getArticlesByCategory per generare i link"
+            "guides/[...page].astro deve usare getArticlesByCategory per generare i link"
         )
         assert "a.slug.current" in source, (
-            "guides/index.astro deve rendere gli href da a.slug.current (Sanity)"
+            "guides/[...page].astro deve rendere gli href da a.slug.current (Sanity)"
         )
 
     def test_homepage_linka_hub_guide(self):
