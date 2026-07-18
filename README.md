@@ -159,6 +159,37 @@ geo llms --base-url https://yoursite.com --output ./public/llms.txt
 geo schema --type faq --url https://yoursite.com
 ```
 
+MiniMax can use either supported API wire format and regional API root:
+
+```bash
+export MINIMAX_API_KEY="your-api-key"
+export MINIMAX_API_FORMAT="openai"  # or "anthropic"
+export MINIMAX_API_BASE_URL="https://api.minimax.io/v1"
+geo citations --provider minimax --brand "YourBrand" --domain yoursite.com
+```
+
+For the China endpoint, use `https://api.minimaxi.com/v1` with the `openai` format or
+`https://api.minimaxi.com/anthropic` with the `anthropic` format. The global messages-format root is
+`https://api.minimax.io/anthropic`. `MINIMAX_THINKING` accepts `adaptive` or `disabled` for `MiniMax-M3`;
+`MiniMax-M2.7` always uses thinking.
+
+Set `GEO_LLM_MODEL` to select either supported model. Model capabilities are:
+
+| Model | Context window | API input modalities | Thinking |
+|-------|----------------|----------------------|----------|
+| `MiniMax-M3` | 1,000,000 tokens | Text, image, video | `adaptive` or `disabled` |
+| `MiniMax-M2.7` | 204,800 tokens | Text | Always on |
+
+`geo citations` currently sends text prompts. Pricing below is in USD per million tokens:
+
+| Model / service tier | Request input tokens | Input | Output | Cache read | Cache write |
+|----------------------|----------------------|-------|--------|------------|-------------|
+| `MiniMax-M3` standard | Up to 512,000 | $0.30 | $1.20 | $0.06 | Not available |
+| `MiniMax-M3` standard | Above 512,000 | $0.60 | $2.40 | $0.12 | Not available |
+| `MiniMax-M3` priority | Up to 512,000 | $0.45 | $1.80 | $0.09 | Not available |
+| `MiniMax-M3` priority | Above 512,000 | $0.90 | $3.60 | $0.18 | Not available |
+| `MiniMax-M2.7` | All requests | $0.30 | $1.20 | $0.06 | $0.375 |
+
 ---
 
 ## What it checks

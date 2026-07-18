@@ -1,14 +1,19 @@
 """
 Provider-agnostic LLM query client for GEO Optimizer.
 
-Supports OpenAI, Anthropic, Groq (optional dependencies) and Perplexity
-(uses the core `requests` dependency, no extra needed).
+Supports OpenAI, Anthropic, Groq (optional dependencies), Perplexity and
+MiniMax (both use the core `requests` dependency, no extra needed).
 Configuration via environment variables:
-  GEO_LLM_PROVIDER  — openai | anthropic | groq | perplexity (auto-detected if not set)
+  GEO_LLM_PROVIDER  — openai | anthropic | groq | perplexity | minimax (auto-detected if not set)
   GEO_LLM_API_KEY   — API key (falls back to provider-specific env vars)
   GEO_LLM_MODEL     — model name (provider default if not set)
 
-Requires: pip install geo-optimizer-skill[llm] (except Perplexity)
+MiniMax-specific configuration:
+  MINIMAX_API_FORMAT    — openai | anthropic (default: openai)
+  MINIMAX_API_BASE_URL  — API root override for another supported region
+  MINIMAX_THINKING      — adaptive | disabled for MiniMax-M3 (MiniMax-M2.7 is always on)
+
+Requires: pip install geo-optimizer-skill[llm] (except Perplexity and MiniMax)
 """
 
 from __future__ import annotations
@@ -26,18 +31,25 @@ _PROVIDER_DEFAULTS = {
     "anthropic": "claude-sonnet-4-20250514",
     "groq": "llama-3.3-70b-versatile",
     "perplexity": "sonar",
+    "minimax": "MiniMax-M3",
 }
 
-# Perplexity is listed last so adding its key does not silently change the
-# auto-detected provider for users who already configured another one.
+# Keep existing providers ahead of newly added ones so a new key does not
+# silently change auto-detection for an established configuration.
 _PROVIDER_ENV_KEYS = {
     "openai": "OPENAI_API_KEY",
     "anthropic": "ANTHROPIC_API_KEY",
     "groq": "GROQ_API_KEY",
     "perplexity": "PERPLEXITY_API_KEY",
+    "minimax": "MINIMAX_API_KEY",
 }
 
 _PERPLEXITY_API_URL = "https://api.perplexity.ai/chat/completions"
+_MINIMAX_API_FORMATS = {
+    "openai": {"base_url": "https://api.minimax.io/v1", "path": "chat/completions"},
+    "anthropic": {"base_url": "https://api.minimax.io/anthropic", "path": "v1/messages"},
+}
+_MINIMAX_THINKING_MODES = {"adaptive", "disabled"}
 
 
 @dataclass
@@ -123,6 +135,8 @@ def query_llm(
         return _query_groq(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
     if provider == "perplexity":
         return _query_perplexity(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
+    if provider == "minimax":
+        return _query_minimax(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
 
     return LLMResponse(error=f"Unknown provider: {provider}")
 
@@ -252,3 +266,88 @@ def _query_groq(prompt: str, *, system: str, api_key: str, model: str, max_token
     except Exception as exc:
         logger.warning("Groq query failed: %s: %s", type(exc).__name__, exc)
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="groq", model=model)
+
+
+def _query_minimax(prompt: str, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
+    """Query MiniMax via either supported HTTP wire format."""
+    import requests
+
+    api_format = os.environ.get("MINIMAX_API_FORMAT", "openai").strip().lower()
+    api_config = _MINIMAX_API_FORMATS.get(api_format)
+    if api_config is None:
+        return LLMResponse(
+            error="Invalid MINIMAX_API_FORMAT; expected 'openai' or 'anthropic'",
+            provider="minimax",
+            model=model,
+        )
+
+    base_url = os.environ.get("MINIMAX_API_BASE_URL", api_config["base_url"]).strip().rstrip("/")
+    if not base_url:
+        return LLMResponse(error="MINIMAX_API_BASE_URL cannot be empty", provider="minimax", model=model)
+    api_url = f"{base_url}/{api_config['path']}"
+
+    thinking = os.environ.get("MINIMAX_THINKING", "").strip().lower()
+    if thinking and thinking not in _MINIMAX_THINKING_MODES:
+        return LLMResponse(
+            error="Invalid MINIMAX_THINKING; expected 'adaptive' or 'disabled'",
+            provider="minimax",
+            model=model,
+        )
+
+    if api_format == "anthropic":
+        payload: dict = {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": max_tokens,
+        }
+        if system:
+            payload["system"] = system
+    else:
+        messages: list[dict] = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
+        payload = {
+            "model": model,
+            "messages": messages,
+            "max_completion_tokens": max_tokens,
+            "reasoning_split": True,
+        }
+
+    if thinking:
+        payload["thinking"] = {"type": thinking}
+
+    try:
+        resp = requests.post(
+            api_url,
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json=payload,
+            timeout=_LLM_TIMEOUT,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        usage = data.get("usage") or {}
+
+        if api_format == "anthropic":
+            text = "".join(
+                block.get("text", "") for block in (data.get("content") or []) if block.get("type") == "text"
+            )
+            return LLMResponse(
+                text=text,
+                model=data.get("model", model),
+                provider="minimax",
+                prompt_tokens=usage.get("input_tokens", 0),
+                completion_tokens=usage.get("output_tokens", 0),
+            )
+
+        choice = (data.get("choices") or [{}])[0]
+        return LLMResponse(
+            text=(choice.get("message") or {}).get("content", ""),
+            model=data.get("model", model),
+            provider="minimax",
+            prompt_tokens=usage.get("prompt_tokens", 0),
+            completion_tokens=usage.get("completion_tokens", 0),
+        )
+    except Exception as exc:
+        logger.warning("MiniMax query failed: %s: %s", type(exc).__name__, exc)
+        return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="minimax", model=model)
