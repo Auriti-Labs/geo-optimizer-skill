@@ -437,6 +437,22 @@ class TestSanityScheduledPublishing:
         assert '"prebuild": "node scripts/verify-scheduled-articles.mjs"' in package_source
         assert '"sanity:check-schedule": "node scripts/verify-scheduled-articles.mjs"' in package_source
 
+
+class TestSanityScheduledWorkflow:
+    """Il workflow deve promuovere il contenuto prima di avviare il deploy."""
+
+    _WORKFLOW = Path(__file__).parent.parent / ".github" / "workflows" / "sanity-scheduled-publish.yml"
+
+    def test_workflow_richiede_secret_e_deploy_solo_dopo_pubblicazioni(self):
+        source = self._WORKFLOW.read_text(encoding="utf-8")
+        assert "cron: '*/10 * * * *'" in source
+        assert "SANITY_API_TOKEN" in source
+        assert "GEOREADY_DEPLOY_WEBHOOK_URL" in source
+        assert "publish-scheduled-articles.mjs" in source
+        assert "published_count != '0'" in source
+        assert "force_deploy" in source
+
+
 # ── Test SEO del report demo ─────────────────────────────────────────────────────
 class TestDemoReportSeo:
     """La demo pubblica deve essere indicizzabile con canonical slash; i report con
