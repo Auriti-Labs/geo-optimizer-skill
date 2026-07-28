@@ -13,9 +13,9 @@
 //   3. git non disponibile o file non tracciato → mtime del file     (fallback segnalato).
 //   4. mtime illeggibile → data odierna                              (fallback finale segnalato).
 //
-// Contenuti Sanity: interrogati direttamente (stesso filtro "live" del sito — status
-// "published", oppure "scheduled" con scheduledFor già passato) così la sitemap non
-// dipende da un rebuild per sapere cosa è effettivamente pubblicato in questo istante.
+// Contenuti Sanity: interrogati direttamente con lo stesso filtro "live" del sito.
+// Il job di pubblicazione promuove gli articoli scaduti a status "published" prima
+// di avviare il deploy, così sito, sitemap e stato editoriale restano coerenti.
 // Solo le categorie con una route dinamica reale vengono incluse (vedi CATEGORY_TO_PATH);
 // le altre sono segnalate come avviso e saltate, per non generare URL che darebbero 404.
 //
@@ -26,6 +26,7 @@ import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@sanity/client';
+import { assertNoDueScheduledArticles } from './sanity-publication-state.mjs';
 
 const SITE = 'https://geoready.dev';
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -62,9 +63,10 @@ const CATEGORY_TO_PATH = {
 const SANITY_PROJECT_ID = process.env.PUBLIC_SANITY_PROJECT_ID || 'uvzrnk4t';
 const SANITY_DATASET = process.env.PUBLIC_SANITY_DATASET || 'production';
 
-// Stesso filtro "live" usato dal sito (frontend/src/utils/sanity.ts): pubblicato, o
-// programmato con orario già passato. Legacy senza `status` = trattato come live.
-const LIVE_FILTER = `(!defined(status) || status == "published" || (status == "scheduled" && dateTime(scheduledFor) <= dateTime(now())))`;
+// Stesso filtro "live" usato dal sito (frontend/src/utils/sanity.ts). I documenti
+// legacy senza `status` restano visibili; quelli programmati diventano visibili solo
+// quando il job schedulato li ha promossi esplicitamente a "published".
+const LIVE_FILTER = `(!defined(status) || status == "published")`;
 
 /** Interroga Sanity per tutti gli articoli live e li converte in entry sitemap. */
 async function fetchSanityEntries() {
@@ -394,6 +396,9 @@ function renderXml(entries) {
 }
 
 // --- main ---
+// Senza questa guardia una build manuale potrebbe pubblicare una sitemap
+// incompleta: gli articoli scaduti restano esclusi finche' non vengono promossi.
+await assertNoDueScheduledArticles();
 const entries = buildEntries();
 
 // Merge dei contenuti Sanity (guides/resources dinamiche) — dedup difensivo, per il caso

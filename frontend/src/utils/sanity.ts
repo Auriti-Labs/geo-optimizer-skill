@@ -20,11 +20,10 @@ export interface SanityArticle {
   noindex?: boolean
 }
 
-// An article is "live" if:
-//   - status == "published"  (explicit publish)
-//   - status == "scheduled" AND scheduledFor <= now()  (scheduled time passed)
-//   - status is not yet set (legacy docs migrated before this field existed)
-const LIVE = `(!defined(status) || status == "published" || (status == "scheduled" && dateTime(scheduledFor) <= dateTime(now())))`
+// Un articolo e' live solo dopo una pubblicazione esplicita. I contenuti legacy
+// senza status restano visibili per compatibilita'. Gli articoli programmati sono
+// promossi a "published" dal job GitHub prima di avviare il deploy statico.
+const LIVE = `(!defined(status) || status == "published")`
 
 const SLUGS_QUERY = defineQuery(
   `*[_type == "article" && defined(slug.current) && ${LIVE}]{ "slug": slug.current, "category": category }`
