@@ -29,16 +29,6 @@ const ogImageUrl = article.ogImage?.asset
   ? urlForImage(article.ogImage).width(1200).height(630).fit('crop').auto('format').url()
   : undefined;
 
-function hasPortableImage(value: unknown): boolean {
-  if (Array.isArray(value)) return value.some(hasPortableImage);
-  if (!value || typeof value !== 'object') return false;
-
-  const node = value as { _type?: string; [key: string]: unknown };
-  if (node._type === 'image') return true;
-
-  return Object.entries(node).some(([key, nested]) => key !== 'asset' && hasPortableImage(nested));
-}
-
 const articleVisualAssets = {
   aiDiscovery: {
     src: '/images/article-visuals/A1HeroAIDiscovery.png',
@@ -228,9 +218,7 @@ const guideFallbackVisuals = {
   },
 } as const;
 
-const fallbackVisual = !hasPortableImage(article.body)
-  ? guideFallbackVisuals[slug as keyof typeof guideFallbackVisuals]
-  : undefined;
+const primaryVisual = guideFallbackVisuals[slug as keyof typeof guideFallbackVisuals];
 const guideSupplementalVisuals = {
   'schema-markup-for-ai-citations': [
     {
@@ -243,9 +231,7 @@ const guideSupplementalVisuals = {
     },
   ],
 } as const;
-const supplementalVisuals = fallbackVisual
-  ? guideSupplementalVisuals[slug as keyof typeof guideSupplementalVisuals] ?? []
-  : [];
+const supplementalVisuals = guideSupplementalVisuals[slug as keyof typeof guideSupplementalVisuals] ?? [];
 
 // ── Portable Text components ──────────────────────────────────────────────────
 // astro-portabletext requires .astro component files for custom renderers.
@@ -347,12 +333,12 @@ const jsonLd = {
       </div>
     </header>
 
-    {fallbackVisual && (
+    {primaryVisual && (
       <ArticleVisual
-        src={fallbackVisual.src}
-        alt={fallbackVisual.alt}
-        caption={fallbackVisual.caption}
-        height={fallbackVisual.height}
+        src={primaryVisual.src}
+        alt={primaryVisual.alt}
+        caption={primaryVisual.caption}
+        height={primaryVisual.height}
       />
     )}
 
