@@ -3,6 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
 import ScoreSurface from '../../components/product/ScoreSurface.astro';
+import { guidePrimaryVisuals } from '../../lib/articleVisuals';
 import { getArticlesByCategory, urlForImage } from '../../utils/sanity';
 
 export const getStaticPaths = (async ({ paginate }) => {
@@ -16,6 +17,24 @@ const canonical = `https://geoready.dev/guides/${page.currentPage > 1 ? `${page.
 const title = page.currentPage > 1
   ? `Guides — Page ${page.currentPage} of ${page.lastPage} — GeoReady`
   : 'Guides — AI Search Visibility & Generative Engine Optimization';
+function getCardImage(article: (typeof articles)[number]) {
+  if (article.ogImage?.asset) {
+    return {
+      src: urlForImage(article.ogImage).width(640).height(360).fit('crop').auto('format').url(),
+      alt: article.ogImage.alt || '',
+      fit: 'cover',
+    };
+  }
+
+  const fallback = guidePrimaryVisuals[article.slug.current as keyof typeof guidePrimaryVisuals];
+  return fallback
+    ? {
+        src: fallback.src,
+        alt: fallback.alt,
+        fit: 'contain',
+      }
+    : undefined;
+}
 ---
 
 <Shell
@@ -80,21 +99,26 @@ const title = page.currentPage > 1
 
     {/* Guide list */}
     <ul class="grid gap-4 md:grid-cols-2">
-      {articles.map((a) => (
+      {articles.map((a) => {
+        const cardImage = getCardImage(a);
+        return (
         <li>
           <a
             href={`/guides/${a.slug.current}/`}
             class="group block h-full overflow-hidden rounded-xl border border-border bg-bg-surface transition-colors hover:border-accent-teal/30"
           >
-            {a.ogImage?.asset ? (
-              <img
-                src={urlForImage(a.ogImage).width(640).height(360).fit('crop').auto('format').url()}
-                alt={a.ogImage.alt || ''}
-                width="640"
-                height="360"
-                loading="lazy"
-                class="aspect-[16/9] w-full object-cover"
-              />
+            {cardImage ? (
+              <div class="aspect-[16/9] w-full bg-bg-subtle">
+                <img
+                  src={cardImage.src}
+                  alt={cardImage.alt}
+                  width="640"
+                  height="360"
+                  loading="lazy"
+                  decoding="async"
+                  class={`h-full w-full ${cardImage.fit === 'contain' ? 'object-contain p-4 md:p-5' : 'object-cover'}`}
+                />
+              </div>
             ) : null}
             <div class="p-5 md:p-6">
               <p class="mb-4 text-xs font-mono text-text-muted">
@@ -109,7 +133,8 @@ const title = page.currentPage > 1
             </div>
           </a>
         </li>
-      ))}
+        );
+      })}
     </ul>
 
     {/* Pagination */}
