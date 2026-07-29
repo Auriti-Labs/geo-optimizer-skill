@@ -1,0 +1,25 @@
+---
+// Portable Text custom type renderer for Sanity's "image" block
+// ({ _type: "image", asset: { _ref, _type }, alt?, caption? }).
+// Registered in ptComponents.type.image — see frontend/src/pages/guides/[slug].astro
+import { urlForImage } from '../utils/imageUrlBuilder';
+
+const { node } = Astro.props;
+const { alt, caption } = node;
+const src = urlForImage(node);
+---
+{src && (
+  <figure class="my-8">
+    <img
+      src={src}
+      alt={alt ?? ''}
+      loading="lazy"
+      class="w-full rounded-xl border border-[var(--color-border,#333)]"
+    />
+    {caption && (
+      <figcaption class="mt-2 text-center text-sm text-[var(--color-text-secondary,inherit)] italic">
+        {caption}
+      </figcaption>
+    )}
+  </figure>
+)}
