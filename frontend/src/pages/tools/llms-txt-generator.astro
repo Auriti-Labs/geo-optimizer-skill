@@ -2,6 +2,7 @@
 import Shell from '../../components/Shell.astro';
 import LlmsTxtGenerator from '../../components/tools/LlmsTxtGenerator';
 import LlmsPreview from '../../components/product/LlmsPreview.astro';
+import ArticleVisual from '../../components/ArticleVisual.astro';
 
 // Metadati SEO della pagina del tool.
 const title = 'Free llms.txt Generator — Create an AI-Ready llms.txt';
@@ -109,6 +110,14 @@ const faqs = [
       </div>
     </header>
 
+    <ArticleVisual
+      src="/images/article-visuals/M1HeroLlmsGeneratorFlow.png"
+      alt="Flow diagram showing a sitemap becoming grouped URLs, editable Markdown, and a published llms.txt file."
+      caption="The generator turns a sitemap into editable llms.txt Markdown that can be published at the domain root."
+      height={452}
+      class="mx-auto"
+    />
+
     {/* ── Isola React: il generatore vero e proprio ───────────────────────── */}
     <section class="mx-auto mb-14 max-w-5xl md:mb-16" aria-labelledby="llms-tool-heading">
       <div class="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
@@ -151,6 +160,13 @@ const faqs = [
         </p>
       </section>
 
+      <ArticleVisual
+        src="/images/article-visuals/H1HeroLlmsTxtOrientation.png"
+        alt="Diagram showing llms.txt as an orientation layer that points AI tools to canonical URLs and summaries."
+        caption="llms.txt is an orientation layer: it prioritizes canonical URLs and short summaries for AI tools."
+        height={452}
+      />
+
       {/* 2. Come funziona */}
       <section>
         <h2>How this generator works</h2>
@@ -170,6 +186,13 @@ const faqs = [
           you can refine titles and descriptions yourself in the editable output.
         </p>
       </section>
+
+      <ArticleVisual
+        src="/images/article-visuals/C2LlmsTxtStructure.png"
+        alt="Diagram of a useful llms.txt structure with a title, summary, section headings, and important page links."
+        caption="A useful llms.txt is short, sectioned, and explicit about which pages matter most."
+        height={565}
+      />
 
       {/* 3. Cosa fare dopo */}
       <section>
