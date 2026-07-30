@@ -1,5 +1,12 @@
 import {sanityClient} from 'sanity:client'
 import {defineQuery} from 'groq'
+import imageUrlBuilder from '@sanity/image-url'
+
+const imageBuilder = imageUrlBuilder(sanityClient)
+
+export function urlForImage(source: {asset: {_ref: string}}) {
+  return imageBuilder.image(source)
+}
 
 export interface SanityArticle {
   _id: string
@@ -18,13 +25,13 @@ export interface SanityArticle {
   schemaOrgType?: 'Article' | 'TechArticle' | 'HowTo'
   author?: string
   noindex?: boolean
-  firstImage?: { asset: { _ref: string }; alt?: string }
 }
 
-// Un articolo e' live solo dopo una pubblicazione esplicita. I contenuti legacy
-// senza status restano visibili per compatibilita'. Gli articoli programmati sono
-// promossi a "published" dal job GitHub prima di avviare il deploy statico.
-const LIVE = `(!defined(status) || status == "published")`
+// An article is "live" if:
+//   - status == "published"  (explicit publish)
+//   - status == "scheduled" AND scheduledFor <= now()  (scheduled time passed)
+//   - status is not yet set (legacy docs migrated before this field existed)
+const LIVE = `(!defined(status) || status == "published" || (status == "scheduled" && dateTime(scheduledFor) <= dateTime(now())))`
 
 const SLUGS_QUERY = defineQuery(
   `*[_type == "article" && defined(slug.current) && ${LIVE}]{ "slug": slug.current, "category": category }`
@@ -42,7 +49,7 @@ const ARTICLE_QUERY = defineQuery(
 const ARTICLES_BY_CATEGORY_QUERY = defineQuery(
   `*[_type == "article" && category == $category && ${LIVE}] | order(datePublished desc){
     _id, title, slug, description, datePublished, dateModified, focusKeyword,
-    "firstImage": body[@._type == "image"][0]{ asset, alt }
+    ogImage{ asset, alt }
   }`
 )
 

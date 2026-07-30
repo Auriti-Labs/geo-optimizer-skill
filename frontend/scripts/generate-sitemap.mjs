@@ -49,6 +49,7 @@ const EXCLUDE_ROUTES = new Set([
 // Sono aggiunte a mano con il file sorgente da cui derivare il lastmod.
 const EXTRA_ROUTES = [
   { url: '/report/demo/', sourceFile: 'report/[id].astro' },
+  { url: '/guides/', sourceFile: 'guides/[...page].astro' },
 ];
 
 // Categorie articolo Sanity con una route dinamica reale nel sito, e il relativo
@@ -254,6 +255,11 @@ function hasNoindex(absPath, source) {
   return false;
 }
 
+/** True se il file e solo un endpoint di redirect e non una pagina canonica. */
+function isRedirectRoute(source) {
+  return /\breturn\s+Astro\.redirect\s*\(/.test(source);
+}
+
 /** Converte un path file (relativo a src/pages, senza estensione) in URL con trailing slash. */
 function fileToUrl(routePath) {
   // routePath è già senza estensione, separatori '/'.
@@ -345,7 +351,7 @@ function buildEntries() {
       warnings.push(`SKIP: impossibile leggere ${rel} — escluso per sicurezza.`);
       continue;
     }
-    if (hasNoindex(absPath, source)) continue;
+    if (hasNoindex(absPath, source) || isRedirectRoute(source)) continue;
 
     const url = fileToUrl(routePath);
     if (seenUrls.has(url)) continue;

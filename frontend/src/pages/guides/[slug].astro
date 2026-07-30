@@ -4,8 +4,10 @@ import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
 import Callout from '../../components/Callout.astro';
 import CodeBlock from '../../components/CodeBlock.astro';
-import SanityImage from '../../components/SanityImage.astro';
-import { getAllArticleSlugs, getArticleBySlug } from '../../utils/sanity';
+import Image from '../../components/Image.astro';
+import ArticleVisual from '../../components/ArticleVisual.astro';
+import { guidePrimaryVisuals, guideSupplementalVisuals } from '../../lib/articleVisuals';
+import { getAllArticleSlugs, getArticleBySlug, urlForImage } from '../../utils/sanity';
 
 // ── Static paths ──────────────────────────────────────────────────────────────
 export async function getStaticPaths() {
@@ -24,6 +26,12 @@ const canonical = `https://geoready.dev/guides/${slug}/`;
 const title = article.metaTitle || article.title;
 const schemaType = article.schemaOrgType || 'Article';
 const author = article.author || 'Juan Camilo Auriti';
+const ogImageUrl = article.ogImage?.asset
+  ? urlForImage(article.ogImage).width(1200).height(630).fit('crop').auto('format').url()
+  : undefined;
+
+const primaryVisual = guidePrimaryVisuals[slug as keyof typeof guidePrimaryVisuals];
+const supplementalVisuals = guideSupplementalVisuals[slug as keyof typeof guideSupplementalVisuals] ?? [];
 
 // ── Portable Text components ──────────────────────────────────────────────────
 // astro-portabletext requires .astro component files for custom renderers.
@@ -32,7 +40,7 @@ const ptComponents = {
   type: {
     callout: Callout,
     codeBlock: CodeBlock,
-    image: SanityImage,
+    image: Image,
   },
 };
 
@@ -46,6 +54,9 @@ const jsonLd = {
       url: canonical,
       headline: article.title,
       description: article.description,
+      ...(ogImageUrl
+        ? { image: { '@type': 'ImageObject', url: ogImageUrl, width: 1200, height: 630 } }
+        : {}),
       datePublished: article.datePublished,
       dateModified: article.dateModified,
       author: { '@type': 'Person', name: author, url: 'https://geoready.dev/about/' },
@@ -85,6 +96,8 @@ const jsonLd = {
   description={article.description}
   canonical={canonical}
   robots={article.noindex ? 'noindex, follow' : 'index, follow'}
+  ogImage={ogImageUrl}
+  twitterImage={ogImageUrl}
 >
   <article class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16" itemscope itemtype="https://schema.org/Article">
     {/* ── Header ──────────────────────────────────────────────────────────── */}
@@ -120,10 +133,32 @@ const jsonLd = {
       </div>
     </header>
 
+    {primaryVisual && (
+      <ArticleVisual
+        src={primaryVisual.src}
+        alt={primaryVisual.alt}
+        caption={primaryVisual.caption}
+        height={primaryVisual.height}
+      />
+    )}
+
     {/* ── Body ─────────────────────────────────────────────────────────────── */}
     <div class="pt-prose">
       <PortableText value={article.body} components={ptComponents} />
     </div>
+
+    {supplementalVisuals.length > 0 && (
+      <div class="mt-10 space-y-8">
+        {supplementalVisuals.map((visual) => (
+          <ArticleVisual
+            src={visual.src}
+            alt={visual.alt}
+            caption={visual.caption}
+            height={visual.height}
+          />
+        ))}
+      </div>
+    )}
 
     {/* ── FAQs ─────────────────────────────────────────────────────────────── */}
     {article.faqs && article.faqs.length > 0 && (
@@ -173,6 +208,4 @@ const jsonLd = {
   .pt-prose a { color: var(--color-accent-teal, #2dd4bf); }
   .pt-prose a:hover { text-decoration: underline; }
   .pt-prose blockquote { border-left: 4px solid var(--color-accent-teal, #2dd4bf); padding-left: 1rem; font-style: italic; color: var(--color-text-secondary, inherit); margin: 1.5rem 0; }
-  .pt-prose figure { margin: 2rem 0; }
-  .pt-prose figcaption { margin-top: 0.5rem; text-align: center; font-size: 0.875rem; font-style: italic; color: var(--color-text-secondary, inherit); }
 </style>

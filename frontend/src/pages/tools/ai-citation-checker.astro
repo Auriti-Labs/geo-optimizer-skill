@@ -2,6 +2,7 @@
 import Shell from '../../components/Shell.astro';
 import AICitationChecker from '../../components/tools/AICitationChecker';
 import CitationSurface from '../../components/product/CitationSurface.astro';
+import ArticleVisual from '../../components/ArticleVisual.astro';
 
 // Metadati SEO della pagina del tool.
 // Il title bilancia query intent ("cited by ChatGPT & Perplexity" come domanda)
@@ -112,6 +113,14 @@ const faqs = [
     </header>
 
     {/* ── Isola React: il checker vero e proprio ──────────────────────────── */}
+    <ArticleVisual
+      src="/images/article-visuals/B2RankingVsCitation.png"
+      alt="Side-by-side diagram comparing traditional search ranking with AI answer citation."
+      caption="AI citation checks measure source inclusion, not traditional ranking position."
+      height={377}
+      class="mx-auto"
+    />
+
     <section class="mx-auto mb-14 max-w-5xl md:mb-16" aria-labelledby="citation-tool-heading">
       <div class="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div>
@@ -142,6 +151,13 @@ const faqs = [
           classic SEO, with different winners.
         </p>
       </section>
+
+      <ArticleVisual
+        src="/images/article-visuals/A1HeroAIDiscovery.png"
+        alt="End-to-end diagram showing a website becoming crawlable, understandable, quotable, and eligible for AI citation."
+        caption="A brand has to be crawlable, understandable, and quotable before an answer engine can cite it."
+        height={452}
+      />
 
       <section>
         <h2>What the four verdicts mean</h2>
@@ -208,6 +224,13 @@ const faqs = [
       </section>
 
       {/* FAQ visibili (stesse del FAQPage schema) */}
+      <ArticleVisual
+        src="/images/article-visuals/D4MonitorLoop.png"
+        alt="Loop diagram showing citation checks repeated over time through snapshots, fixes, rechecks, and monitoring."
+        caption="A citation check is a snapshot; monitoring shows when answers change."
+        height={424}
+      />
+
       <section>
         <h2>Frequently asked questions</h2>
         <div class="mt-6 space-y-6">

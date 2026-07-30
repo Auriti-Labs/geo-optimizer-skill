@@ -23,7 +23,7 @@
   </url>
   <url>
     <loc>https://geoready.dev/about/</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -74,13 +74,13 @@
   </url>
   <url>
     <loc>https://geoready.dev/early-access/</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://geoready.dev/guides/</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -108,8 +108,20 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://geoready.dev/guides/chatgpt-search-vs-google-search/</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://geoready.dev/guides/check-if-chatgpt-sees-your-website/</loc>
     <lastmod>2026-07-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://geoready.dev/guides/do-backlinks-matter-for-ai-search/</loc>
+    <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -132,10 +144,22 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://geoready.dev/guides/free-ai-search-visibility-tools-2026/</loc>
+    <lastmod>2026-07-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://geoready.dev/guides/generative-engine-optimization/</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://geoready.dev/guides/geo-vs-seo-7-key-differences/</loc>
+    <lastmod>2026-07-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://geoready.dev/guides/geo-vs-seo/</loc>
@@ -144,10 +168,34 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://geoready.dev/guides/google-ai-overviews-optimization/</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://geoready.dev/guides/how-long-to-get-cited-by-chatgpt/</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://geoready.dev/guides/how-perplexity-chooses-sources/</loc>
+    <lastmod>2026-07-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://geoready.dev/guides/how-to-improve-ai-visibility/</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://geoready.dev/guides/is-ai-search-traffic-growing/</loc>
+    <lastmod>2026-07-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://geoready.dev/guides/llms-txt-wordpress/</loc>
@@ -180,6 +228,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://geoready.dev/guides/what-is-an-ai-crawler-bot-list/</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://geoready.dev/guides/what-is-generative-engine-optimization/</loc>
     <lastmod>2026-07-02</lastmod>
     <changefreq>monthly</changefreq>
@@ -193,7 +247,7 @@
   </url>
   <url>
     <loc>https://geoready.dev/manifesto/</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -205,7 +259,7 @@
   </url>
   <url>
     <loc>https://geoready.dev/pricing/</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -216,7 +270,7 @@
   </url>
   <url>
     <loc>https://geoready.dev/privacy/</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -244,14 +298,8 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://geoready.dev/state-of-geo-2026/</loc>
-    <lastmod>2026-07-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://geoready.dev/state-of-geo/</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
@@ -263,7 +311,7 @@
   </url>
   <url>
     <loc>https://geoready.dev/tools/ai-citation-checker/</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>

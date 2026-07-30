@@ -3,14 +3,12 @@ import type { GetStaticPaths } from 'astro';
 import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
 import ScoreSurface from '../../components/product/ScoreSurface.astro';
-import { getArticlesByCategory } from '../../utils/sanity';
-import { urlForImage } from '../../utils/imageUrlBuilder';
+import { guidePrimaryVisuals } from '../../lib/articleVisuals';
+import { getArticlesByCategory, urlForImage } from '../../utils/sanity';
 
-// Paginazione: 9 articoli per pagina su desktop (3 colonne x 3 righe),
-// 6 visibili su mobile (2 colonne x 3 righe) via CSS nth-child hide.
 export const getStaticPaths = (async ({ paginate }) => {
   const articles = await getArticlesByCategory('guides');
-  return paginate(articles, { pageSize: 9 });
+  return paginate(articles, { pageSize: 6 });
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
@@ -19,6 +17,24 @@ const canonical = `https://geoready.dev/guides/${page.currentPage > 1 ? `${page.
 const title = page.currentPage > 1
   ? `Guides — Page ${page.currentPage} of ${page.lastPage} — GeoReady`
   : 'Guides — AI Search Visibility & Generative Engine Optimization';
+function getCardImage(article: (typeof articles)[number]) {
+  if (article.ogImage?.asset) {
+    return {
+      src: urlForImage(article.ogImage).width(640).height(360).fit('crop').auto('format').url(),
+      alt: article.ogImage.alt || '',
+      fit: 'cover',
+    };
+  }
+
+  const fallback = guidePrimaryVisuals[article.slug.current as keyof typeof guidePrimaryVisuals];
+  return fallback
+    ? {
+        src: fallback.src,
+        alt: fallback.alt,
+        fit: 'contain',
+      }
+    : undefined;
+}
 ---
 
 <Shell
@@ -81,26 +97,29 @@ const title = page.currentPage > 1
       </div>
     </header>
 
-    {/* Guide list — 3 cols on desktop (9 per page), 2 cols on mobile (6 visible) */}
-    <ul class="guides-grid grid gap-4 grid-cols-2 lg:grid-cols-3">
+    {/* Guide list */}
+    <ul class="grid gap-4 md:grid-cols-2">
       {articles.map((a) => {
-        const imgSrc = a.firstImage ? urlForImage(a.firstImage) : '';
+        const cardImage = getCardImage(a);
         return (
         <li>
           <a
             href={`/guides/${a.slug.current}/`}
             class="group block h-full overflow-hidden rounded-xl border border-border bg-bg-surface transition-colors hover:border-accent-teal/30"
           >
-            {imgSrc && (
-              <div class="aspect-[16/9] overflow-hidden border-b border-border bg-bg-subtle">
+            {cardImage ? (
+              <div class="aspect-[16/9] w-full bg-bg-subtle">
                 <img
-                  src={imgSrc}
-                  alt={a.firstImage?.alt ?? a.title}
+                  src={cardImage.src}
+                  alt={cardImage.alt}
+                  width="640"
+                  height="360"
                   loading="lazy"
-                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  decoding="async"
+                  class={`h-full w-full ${cardImage.fit === 'contain' ? 'object-contain p-4 md:p-5' : 'object-cover'}`}
                 />
               </div>
-            )}
+            ) : null}
             <div class="p-5 md:p-6">
               <p class="mb-4 text-xs font-mono text-text-muted">
                 {new Date(a.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -197,12 +216,3 @@ const title = page.currentPage > 1
     </section>
   </div>
 </Shell>
-
-<style is:global>
-  /* On mobile (below lg breakpoint): hide cards 7-9 so only 6 show (2 cols x 3 rows) */
-  @media (max-width: 1023px) {
-    .guides-grid > li:nth-child(n+7) {
-      display: none;
-    }
-  }
-</style>
