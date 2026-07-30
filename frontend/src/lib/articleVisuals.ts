@@ -74,6 +74,21 @@ export const articleVisualAssets = {
     alt: 'Loop diagram showing schema implementation, validation, publishing, monitoring, and rechecking.',
     height: 452,
   },
+  saasCitationSurfaces: {
+    src: '/images/article-visuals/R1HeroSaaSCitationSurfaces.png',
+    alt: 'Diagram showing buyer SaaS queries flowing through comparison pages, documentation, reviews, and community proof into an AI recommendation.',
+    height: 452,
+  },
+  saasContentStack: {
+    src: '/images/article-visuals/R2SaaSContentStack.png',
+    alt: 'Diagram showing owned SaaS content assets and independent validation combining into stronger source trust.',
+    height: 452,
+  },
+  saasQueryTrackingLoop: {
+    src: '/images/article-visuals/R3SaaSQueryTrackingLoop.png',
+    alt: 'Loop diagram showing SaaS best-tool prompts, AI answers, citation logs, content fixes, and rechecks.',
+    height: 452,
+  },
 } as const;
 
 export const guidePrimaryVisuals = {
@@ -185,6 +200,10 @@ export const guidePrimaryVisuals = {
     ...articleVisualAssets.techFoundations,
     caption: 'AI crawler bot lists matter because access is the first step in every retrieval path.',
   },
+  'geo-for-saas-companies': {
+    ...articleVisualAssets.saasCitationSurfaces,
+    caption: 'SaaS citations depend on a source mix: comparison content, public documentation, third-party reviews, and community proof.',
+  },
 } as const;
 
 export const guideSupplementalVisuals = {
@@ -196,6 +215,16 @@ export const guideSupplementalVisuals = {
     {
       ...articleVisualAssets.schemaValidation,
       caption: 'Schema only stays useful when validation and re-checking are part of the publishing workflow.',
+    },
+  ],
+  'geo-for-saas-companies': [
+    {
+      ...articleVisualAssets.saasContentStack,
+      caption: 'A SaaS source stack is strongest when owned pages and independent validation confirm the same product fit.',
+    },
+    {
+      ...articleVisualAssets.saasQueryTrackingLoop,
+      caption: 'SaaS GEO should be tracked against recurring best-tool and comparison prompts, not only generic brand searches.',
     },
   ],
 } as const;
