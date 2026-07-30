@@ -18,6 +18,7 @@ export interface SanityArticle {
   schemaOrgType?: 'Article' | 'TechArticle' | 'HowTo'
   author?: string
   noindex?: boolean
+  firstImage?: { asset: { _ref: string }; alt?: string }
 }
 
 // Un articolo e' live solo dopo una pubblicazione esplicita. I contenuti legacy
@@ -40,7 +41,8 @@ const ARTICLE_QUERY = defineQuery(
 
 const ARTICLES_BY_CATEGORY_QUERY = defineQuery(
   `*[_type == "article" && category == $category && ${LIVE}] | order(datePublished desc){
-    _id, title, slug, description, datePublished, dateModified, focusKeyword
+    _id, title, slug, description, datePublished, dateModified, focusKeyword,
+    "firstImage": body[@._type == "image"][0]{ asset, alt }
   }`
 )
 

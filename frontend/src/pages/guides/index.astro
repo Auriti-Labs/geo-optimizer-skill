@@ -3,6 +3,7 @@ import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
 import ScoreSurface from '../../components/product/ScoreSurface.astro';
 import { getArticlesByCategory } from '../../utils/sanity';
+import { urlForImage } from '../../utils/imageUrlBuilder';
 
 const articles = await getArticlesByCategory('guides');
 ---
@@ -69,24 +70,39 @@ const articles = await getArticlesByCategory('guides');
 
     {/* Guide list */}
     <ul class="grid gap-4 md:grid-cols-2">
-      {articles.map((a) => (
+      {articles.map((a) => {
+        const imgSrc = a.firstImage ? urlForImage(a.firstImage) : '';
+        return (
         <li>
           <a
             href={`/guides/${a.slug.current}/`}
-            class="group block h-full rounded-xl border border-border bg-bg-surface p-5 md:p-6 transition-colors hover:border-accent-teal/30"
+            class="group block h-full overflow-hidden rounded-xl border border-border bg-bg-surface transition-colors hover:border-accent-teal/30"
           >
-            <p class="mb-4 text-xs font-mono text-text-muted">
-              {new Date(a.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </p>
-            <h2 class="font-display text-lg md:text-xl font-semibold text-text-primary leading-snug group-hover:text-accent-teal">
-              {a.title}
-            </h2>
-            <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
-              {a.description}
-            </p>
+            {imgSrc && (
+              <div class="aspect-[16/9] overflow-hidden border-b border-border bg-bg-subtle">
+                <img
+                  src={imgSrc}
+                  alt={a.firstImage?.alt ?? a.title}
+                  loading="lazy"
+                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+              </div>
+            )}
+            <div class="p-5 md:p-6">
+              <p class="mb-4 text-xs font-mono text-text-muted">
+                {new Date(a.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
+              <h2 class="font-display text-lg md:text-xl font-semibold text-text-primary leading-snug group-hover:text-accent-teal">
+                {a.title}
+              </h2>
+              <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
+                {a.description}
+              </p>
+            </div>
           </a>
         </li>
-      ))}
+        );
+      })}
     </ul>
 
     {/* Tools — strumenti gratuiti collegati alle guide */}
