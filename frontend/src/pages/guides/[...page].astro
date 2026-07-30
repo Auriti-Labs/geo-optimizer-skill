@@ -1,17 +1,30 @@
 ---
+import type { GetStaticPaths } from 'astro';
 import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
 import ScoreSurface from '../../components/product/ScoreSurface.astro';
 import { getArticlesByCategory } from '../../utils/sanity';
 import { urlForImage } from '../../utils/imageUrlBuilder';
 
-const articles = await getArticlesByCategory('guides');
+// Paginazione: 9 articoli per pagina su desktop (3 colonne x 3 righe),
+// 6 visibili su mobile (2 colonne x 3 righe) via CSS nth-child hide.
+export const getStaticPaths = (async ({ paginate }) => {
+  const articles = await getArticlesByCategory('guides');
+  return paginate(articles, { pageSize: 9 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const articles = page.data;
+const canonical = `https://geoready.dev/guides/${page.currentPage > 1 ? `${page.currentPage}/` : ''}`;
+const title = page.currentPage > 1
+  ? `Guides — Page ${page.currentPage} of ${page.lastPage} — GeoReady`
+  : 'Guides — AI Search Visibility & Generative Engine Optimization';
 ---
 
 <Shell
-  title="Guides — AI Search Visibility & Generative Engine Optimization"
+  title={title}
   description="Practical, no-hype guides on making your website visible and citable to AI answer engines like ChatGPT, Perplexity, Claude, and Gemini."
-  canonical="https://geoready.dev/guides/"
+  canonical={canonical}
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
     {/* Header */}
@@ -68,8 +81,8 @@ const articles = await getArticlesByCategory('guides');
       </div>
     </header>
 
-    {/* Guide list */}
-    <ul class="grid gap-4 md:grid-cols-2">
+    {/* Guide list — 3 cols on desktop (9 per page), 2 cols on mobile (6 visible) */}
+    <ul class="guides-grid grid gap-4 grid-cols-2 lg:grid-cols-3">
       {articles.map((a) => {
         const imgSrc = a.firstImage ? urlForImage(a.firstImage) : '';
         return (
@@ -104,6 +117,46 @@ const articles = await getArticlesByCategory('guides');
         );
       })}
     </ul>
+
+    {/* Pagination */}
+    {page.lastPage > 1 && (
+      <nav class="mt-10 flex items-center justify-between gap-4" aria-label="Guides pagination">
+        {page.url.prev ? (
+          <a
+            href={page.url.prev}
+            class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:border-accent-teal/30 hover:text-text-primary"
+          >
+            ← Newer
+          </a>
+        ) : <span />}
+
+        <div class="flex items-center gap-1.5 font-mono text-xs text-text-muted">
+          {Array.from({ length: page.lastPage }, (_, i) => i + 1).map((n) => (
+            n === page.currentPage ? (
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-teal font-semibold text-white">
+                {n}
+              </span>
+            ) : (
+              <a
+                href={n === 1 ? '/guides/' : `/guides/${n}/`}
+                class="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-bg-surface hover:text-text-primary"
+              >
+                {n}
+              </a>
+            )
+          ))}
+        </div>
+
+        {page.url.next ? (
+          <a
+            href={page.url.next}
+            class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:border-accent-teal/30 hover:text-text-primary"
+          >
+            Older →
+          </a>
+        ) : <span />}
+      </nav>
+    )}
 
     {/* Tools — strumenti gratuiti collegati alle guide */}
     <section class="mt-12 border-t border-border pt-10 md:mt-16 md:pt-12">
@@ -144,3 +197,12 @@ const articles = await getArticlesByCategory('guides');
     </section>
   </div>
 </Shell>
+
+<style is:global>
+  /* On mobile (below lg breakpoint): hide cards 7-9 so only 6 show (2 cols x 3 rows) */
+  @media (max-width: 1023px) {
+    .guides-grid > li:nth-child(n+7) {
+      display: none;
+    }
+  }
+</style>
