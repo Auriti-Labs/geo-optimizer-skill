@@ -229,6 +229,47 @@ const faqs = [
         </p>
       </section>
 
+      <section>
+        <h2>What llms.txt covers and what it does not cover</h2>
+        <p class="mt-4">
+          Publishing llms.txt improves orientation, but it does not replace a full
+          GEO workflow. Use this table to decide the next check after the file is live.
+        </p>
+        <div class="mt-5 overflow-x-auto rounded-[--radius-lg] border border-border bg-bg-surface">
+          <table class="min-w-full border-collapse text-left text-sm">
+            <thead class="bg-bg-subtle text-text-primary">
+              <tr>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Need</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Covered by llms.txt?</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Next GeoReady step</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">List important URLs</th>
+                <td class="border-b border-border px-4 py-3">Yes. llms.txt can summarize canonical pages and sections.</td>
+                <td class="border-b border-border px-4 py-3">Generate the file, edit descriptions, publish at /llms.txt.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">Allow AI crawler access</th>
+                <td class="border-b border-border px-4 py-3">No. robots.txt and server rules still control access.</td>
+                <td class="border-b border-border px-4 py-3">Run the free audit to check robots.txt, redirects, and blocked agents.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">Earn AI citations</th>
+                <td class="border-b border-border px-4 py-3">No. Citations depend on source quality, structure, and off-page signals.</td>
+                <td class="border-b border-border px-4 py-3">Track citation prompts and competitor sources over time.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="px-4 py-3 font-semibold text-text-primary">Catch regressions</th>
+                <td class="px-4 py-3">No. A static file will not tell you when visibility drops.</td>
+                <td class="px-4 py-3">Monitor weekly changes with GeoReady Pro.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* 4. FAQ */}
       <section>
         <h2>llms.txt generator FAQ</h2>
@@ -254,12 +295,26 @@ const faqs = [
         <div class="mt-6 flex flex-col sm:flex-row gap-3">
           <a
             href="/#audit-form"
+            data-cta="llms_generator_final_free_audit"
             class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
           >
             Run a free AI visibility audit
           </a>
           <a
+            href="https://app.geoready.dev/signup?plan=pro&intent=llms&utm_source=llms_txt_generator_page&utm_medium=content_cta&utm_campaign=tool_to_paid"
+            data-plan-id="pro"
+            data-plan-name="Pro"
+            data-plan-period="monthly"
+            data-plan-price="$19"
+            data-plan-currency="USD"
+            data-cta-location="llms_generator_final_monitoring"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            Monitor weekly changes
+          </a>
+          <a
             href="/ai-seo/"
+            data-cta="llms_generator_final_ai_seo"
             class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
           >
             Learn about AI SEO

@@ -223,6 +223,53 @@ const faqs = [
         </p>
       </section>
 
+      <section>
+        <h2>Which AI citation result should trigger action?</h2>
+        <p class="mt-4">
+          A single AI citation check is useful only if it leads to the right next
+          step. Use the result below to decide whether to monitor, improve the
+          source page, or rebuild the visibility foundation.
+        </p>
+        <div class="mt-5 overflow-x-auto rounded-[--radius-lg] border border-border bg-bg-surface">
+          <table class="min-w-full border-collapse text-left text-sm">
+            <thead class="bg-bg-subtle text-text-primary">
+              <tr>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Result</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Risk</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Next action</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">GeoReady workflow</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">Strong</th>
+                <td class="border-b border-border px-4 py-3">You can lose citations without noticing.</td>
+                <td class="border-b border-border px-4 py-3">Track the same prompts weekly.</td>
+                <td class="border-b border-border px-4 py-3">Studio citation snapshots and alerts.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">Cited</th>
+                <td class="border-b border-border px-4 py-3">Competitors still appear in adjacent prompts.</td>
+                <td class="border-b border-border px-4 py-3">Find the prompts where your domain is missing.</td>
+                <td class="border-b border-border px-4 py-3">Prompt tracking plus competitor comparison.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">Mentioned only</th>
+                <td class="border-b border-border px-4 py-3">Third-party pages define your brand for AI answers.</td>
+                <td class="border-b border-border px-4 py-3">Make your own domain the better source.</td>
+                <td class="border-b border-border px-4 py-3">Audit, source gaps, structured content fixes.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="px-4 py-3 font-semibold text-text-primary">Invisible</th>
+                <td class="px-4 py-3">AI answers send buyers to other domains.</td>
+                <td class="px-4 py-3">Fix crawlability, schema, content, and authority first.</td>
+                <td class="px-4 py-3">Free GEO audit, then monitored fixes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* FAQ visibili (stesse del FAQPage schema) */}
       <ArticleVisual
         src="/images/article-visuals/D4MonitorLoop.png"
@@ -254,13 +301,20 @@ const faqs = [
         </p>
         <div class="mt-6 flex flex-wrap gap-3">
           <a
-            href="https://app.geoready.dev/signup?utm_source=citation-checker-page&intent=citations"
+            href="https://app.geoready.dev/signup?plan=studio&intent=citations&utm_source=ai_citation_checker_page&utm_medium=content_cta&utm_campaign=tool_to_paid"
+            data-plan-id="studio"
+            data-plan-name="Studio"
+            data-plan-period="monthly"
+            data-plan-price="$49"
+            data-plan-currency="USD"
+            data-cta-location="citation_checker_final_tracking"
             class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
           >
-            Start tracking citations
+            Track citations weekly
           </a>
           <a
             href="/pricing/"
+            data-cta="citation_checker_final_pricing"
             class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
           >
             See pricing

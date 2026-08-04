@@ -185,3 +185,22 @@ export function trackLlmsTxtCopied(): void {
 export function trackLlmsTxtDownloaded(params: { size_bytes: number }): void {
   track('geo_llms_txt_downloaded', params);
 }
+
+export function trackCitationCheckerStarted(params: { has_topic: boolean }): void {
+  track('geo_citation_checker_started', params);
+}
+
+export function trackCitationCheckerCompleted(params: {
+  verdict: string;
+  brand_mention_rate: number;
+  domain_citation_rate: number;
+  cited_competitor_count: number;
+}): void {
+  track('geo_citation_checker_completed', params);
+}
+
+export function trackCitationCheckerFailed(params: {
+  reason: 'validation' | 'server';
+}): void {
+  track('geo_citation_checker_failed', params);
+}

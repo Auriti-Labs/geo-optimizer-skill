@@ -7,6 +7,7 @@ import {
   trackLlmsGeneratorFailed,
   trackLlmsTxtCopied,
   trackLlmsTxtDownloaded,
+  trackPlanSelected,
 } from '../../lib/geo_track';
 
 // Stato del flusso di generazione.
@@ -343,6 +344,20 @@ export default function LlmsTxtGenerator() {
               className="px-5 py-2.5 rounded-lg bg-accent-teal text-white font-semibold text-sm hover:bg-accent-teal-dark transition-colors"
             >
               Run a full AI SEO audit
+            </a>
+            <a
+              href="https://app.geoready.dev/signup?plan=pro&intent=llms&utm_source=llms_txt_generator&utm_medium=tool_result&utm_campaign=tool_to_paid"
+              onClick={() => trackPlanSelected({
+                plan_id: 'pro',
+                plan_name: 'Pro',
+                billing_period: 'monthly',
+                price: '19',
+                currency: 'USD',
+                cta_location: 'llms_generator_result_monitoring',
+              })}
+              className="px-5 py-2.5 rounded-lg border border-border bg-bg-surface text-text-primary font-semibold text-sm hover:border-accent-teal transition-colors"
+            >
+              Monitor weekly changes
             </a>
             <a href="/guides/what-is-llms-txt/" className="text-sm text-accent-teal hover:underline">
               What is llms.txt?
