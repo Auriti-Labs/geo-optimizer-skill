@@ -7,11 +7,8 @@
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
+    dataLayer?: unknown[];
   }
-}
-
-function gtagReady(): boolean {
-  return typeof window !== 'undefined' && typeof window.gtag === 'function';
 }
 
 /** Estrae i parametri UTM dall'URL corrente. */
@@ -46,12 +43,23 @@ export interface TrackParams {
 
 /** Invia un evento GA4. Silenzioso se gtag non è disponibile (consenso non dato). */
 export function track(eventName: string, params: TrackParams = {}): void {
-  if (!gtagReady()) return;
-  window.gtag!('event', eventName, {
+  if (typeof window === 'undefined') return;
+
+  const payload = {
+    transport_type: 'beacon',
     referrer_type: referrerType(),
     ...getUtmParams(),
     ...params,
-  });
+  };
+
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', eventName, payload);
+    return;
+  }
+
+  if (Array.isArray(window.dataLayer)) {
+    window.dataLayer.push(['event', eventName, payload]);
+  }
 }
 
 // ── Shorthand per gli eventi pre-launch ──────────────────────────────────────

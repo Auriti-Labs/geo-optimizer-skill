@@ -29,6 +29,7 @@ import {
 const MANUAL_PREVIEW_FILE = 'geo-readiness-manual-preview.pdf';
 const MANUAL_DOWNLOAD_ENDPOINT = '/public/download-manual';
 const APP_HOST = 'app.geoready.dev';
+const trackedManualPreviewLinks = new WeakSet<HTMLElement>();
 
 type ManualRequestContext = {
   location: string;
@@ -179,6 +180,10 @@ function manualPreviewLocation(link: HTMLElement): string {
 }
 
 function handleManualPreviewDownload(link: HTMLElement): void {
+  if (trackedManualPreviewLinks.has(link)) return;
+  trackedManualPreviewLinks.add(link);
+  window.setTimeout(() => trackedManualPreviewLinks.delete(link), 2000);
+
   track('manual_preview_downloaded', {
     manual_location: manualPreviewLocation(link),
     asset: MANUAL_PREVIEW_FILE,
@@ -251,6 +256,13 @@ export function initCtaTracking(): void {
   (window as unknown as { __geoCtaTracking?: boolean }).__geoCtaTracking = true;
 
   initManualDownloadFetchTracking();
+
+  document.addEventListener('pointerdown', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+    const previewLink = target.closest<HTMLElement>(`a[href$="${MANUAL_PREVIEW_FILE}"]`);
+    if (previewLink) handleManualPreviewDownload(previewLink);
+  });
 
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement | null;
