@@ -25,6 +25,23 @@ type Faq = {
   a: string;
 };
 
+type PaidStep = {
+  heading: string;
+  copy: string;
+  proofPoints: string[];
+  plan: {
+    id: 'pro' | 'studio' | 'agency';
+    name: 'Pro' | 'Studio' | 'Agency';
+    price: '$19' | '$49' | '$89';
+    period: 'monthly';
+    href: string;
+    cta: string;
+    ctaLocation: string;
+    intent: string;
+  };
+  secondary?: Cta;
+};
+
 interface Props {
   title: string;
   description: string;
@@ -41,6 +58,7 @@ interface Props {
   tableIntro: string;
   tableRows: TableRow[];
   faqs: Faq[];
+  paidStep?: PaidStep;
 }
 
 const {
@@ -59,25 +77,73 @@ const {
   tableIntro,
   tableRows,
   faqs,
+  paidStep,
 } = Astro.props;
 
-const schema = [
+const offerCatalog = {
+  '@type': 'OfferCatalog',
+  name: 'GeoReady plans for AI visibility work',
+  itemListElement: [
+    {
+      '@type': 'Offer',
+      name: 'Free AI SEO audit',
+      price: '0',
+      priceCurrency: 'USD',
+      url: canonical,
+      availability: 'https://schema.org/InStock',
+    },
+    {
+      '@type': 'Offer',
+      name: 'GeoReady Pro',
+      price: '19',
+      priceCurrency: 'USD',
+      url: 'https://app.geoready.dev/signup?plan=pro',
+      availability: 'https://schema.org/InStock',
+    },
+    {
+      '@type': 'Offer',
+      name: 'GeoReady Studio',
+      price: '49',
+      priceCurrency: 'USD',
+      url: 'https://app.geoready.dev/signup?plan=studio',
+      availability: 'https://schema.org/InStock',
+    },
+  ],
+};
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
   {
-    '@context': 'https://schema.org',
     '@type': 'WebPage',
-    '@id': canonical,
+    '@id': `${canonical}#webpage`,
     url: canonical,
     name: title,
     description,
     dateModified,
+    mainEntity: { '@id': `${canonical}#service` },
     publisher: {
       '@type': 'Organization',
       name: 'GeoReady',
       url: 'https://geoready.dev/',
     },
+    isPartOf: { '@id': 'https://geoready.dev/#website' },
   },
   {
-    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${canonical}#service`,
+    name: h1,
+    description,
+    serviceType: eyebrow,
+    areaServed: 'Worldwide',
+    provider: {
+      '@type': 'Organization',
+      name: 'GeoReady',
+      url: 'https://geoready.dev/',
+    },
+    hasOfferCatalog: offerCatalog,
+  },
+  {
     '@type': 'FAQPage',
     mainEntity: faqs.map((item) => ({
       '@type': 'Question',
@@ -88,7 +154,14 @@ const schema = [
       },
     })),
   },
-];
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'GeoReady', item: 'https://geoready.dev/' },
+      { '@type': 'ListItem', position: 2, name: eyebrow, item: canonical },
+    ],
+  },
+] };
 
 const primaryClass =
   'inline-flex min-h-11 items-center justify-center rounded-[--radius-md] bg-accent-teal px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark';
@@ -176,6 +249,52 @@ const secondaryClass =
           </table>
         </div>
       </section>
+
+      {paidStep && (
+        <section aria-labelledby="paid-path-heading" class="overflow-hidden rounded-[--radius-lg] border border-border bg-bg-surface">
+          <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.42fr)]">
+            <div class="p-6 md:p-8">
+              <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">Free check to paid loop</p>
+              <h2 id="paid-path-heading" class="mt-2">{paidStep.heading}</h2>
+              <p class="mt-4">{paidStep.copy}</p>
+              <ul class="mt-5 grid gap-3 md:grid-cols-3" role="list">
+                {paidStep.proofPoints.map((point) => (
+                  <li class="border-l border-accent-teal/30 pl-3 text-sm">{point}</li>
+                ))}
+              </ul>
+            </div>
+            <aside class="border-t border-border bg-bg-subtle p-6 md:p-8 lg:border-l lg:border-t-0">
+              <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">Recommended plan</p>
+              <p class="mt-2 font-display text-2xl font-bold text-text-primary">{paidStep.plan.name}</p>
+              <p class="mt-1 text-sm text-text-secondary">
+                <span class="font-mono text-text-primary">{paidStep.plan.price}</span> / month
+              </p>
+              <p class="mt-4 text-sm leading-relaxed text-text-secondary">
+                The free check stays useful. The paid plan adds the recurring proof that a one-time result cannot give.
+              </p>
+              <div class="mt-5 flex flex-col gap-3">
+                <a
+                  href={paidStep.plan.href}
+                  data-plan-id={paidStep.plan.id}
+                  data-plan-name={paidStep.plan.name}
+                  data-plan-price={paidStep.plan.price}
+                  data-plan-period={paidStep.plan.period}
+                  data-plan-currency="USD"
+                  data-cta-location={paidStep.plan.ctaLocation}
+                  class={primaryClass}
+                >
+                  {paidStep.plan.cta}
+                </a>
+                {paidStep.secondary && (
+                  <a href={paidStep.secondary.href} data-cta={paidStep.secondary.dataCta} class={secondaryClass}>
+                    {paidStep.secondary.label}
+                  </a>
+                )}
+              </div>
+            </aside>
+          </div>
+        </section>
+      )}
 
       <section aria-labelledby="intent-faq-heading">
         <h2 id="intent-faq-heading">Frequently asked questions</h2>
