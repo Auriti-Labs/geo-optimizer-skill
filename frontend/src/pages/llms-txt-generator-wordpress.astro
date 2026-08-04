@@ -1,0 +1,124 @@
+---
+import IntentLanding from '../components/IntentLanding.astro';
+import LlmsPreview from '../components/product/LlmsPreview.astro';
+
+const title = 'llms.txt Generator for WordPress - Create an AI Discovery File';
+const description =
+  'Generate a starter llms.txt file for a WordPress site, then audit whether AI crawlers can discover, parse, and cite the important pages.';
+const canonical = 'https://geoready.dev/llms-txt-generator-wordpress/';
+const dateModified = '2026-08-04';
+
+const stats = [
+  { value: 'Sitemap', label: 'WordPress source', detail: 'Use the WordPress sitemap to choose important public URLs.' },
+  { value: 'Root', label: '/llms.txt', detail: 'Publish the file at the domain root so crawlers can find it consistently.' },
+  { value: 'Audit', label: 'Verify access', detail: 'Check robots.txt, sitemap, schema, and discovery signals after publishing.' },
+];
+
+const tableRows = [
+  {
+    signal: 'WordPress sitemap discovery',
+    freeCheck: 'The generator can start from the WordPress sitemap and create a simple file from public URLs.',
+    paidLoop: 'Use Pro when sitemap, robots.txt, and discovery files need recurring checks.',
+  },
+  {
+    signal: 'Publishing at /llms.txt',
+    freeCheck: 'The page explains where the file should live and links to the generator.',
+    paidLoop: 'Use Pro when deploys or plugin changes can remove the file silently.',
+  },
+  {
+    signal: 'AI crawler access',
+    freeCheck: 'Run the AI SEO audit to verify whether AI crawlers can reach the site after the file is published.',
+    paidLoop: 'Use Pro when crawler access must be monitored after WordPress updates.',
+  },
+  {
+    signal: 'Citable content structure',
+    freeCheck: 'The audit checks whether important WordPress pages are structured for extraction, not only listed in llms.txt.',
+    paidLoop: 'Use Studio when citations and competitor prompts need tracking.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Do WordPress sites need llms.txt?',
+    a: 'WordPress sites do not need llms.txt as a guaranteed ranking factor. The file is useful as an orientation layer that points AI systems to important pages, docs, pricing, and canonical resources.',
+  },
+  {
+    q: 'Where should llms.txt go in WordPress?',
+    a: 'Publish llms.txt at the root of the domain, for example https://example.com/llms.txt. It should be publicly reachable and linked to canonical pages that already work for human readers and crawlers.',
+  },
+  {
+    q: 'Can a plugin replace an AI SEO audit?',
+    a: 'No. A plugin can help publish a file, but an audit is still needed to check crawler access, schema, metadata, content structure, and whether important pages are citable.',
+  },
+  {
+    q: 'What should a WordPress llms.txt include?',
+    a: 'Include the homepage, product or service pages, pricing, documentation, guides, research, contact or about pages, and any canonical resource that explains the entity clearly.',
+  },
+];
+---
+
+<IntentLanding
+  title={title}
+  description={description}
+  canonical={canonical}
+  eyebrow="llms.txt for WordPress"
+  badge="Generate, publish, then audit"
+  h1="Create a WordPress llms.txt file, then verify AI discovery."
+  lede="As of August 2026, llms.txt is best treated as an orientation file, not a ranking promise. For WordPress sites, the practical workflow is to generate a clean starter file from the sitemap, publish it at the domain root, and audit whether AI crawlers can use the site."
+  dateModified={dateModified}
+  primaryCta={{ href: '/tools/llms-txt-generator/', label: 'Generate llms.txt', dataCta: 'wordpress_llms_hero_generator' }}
+  secondaryCta={{ href: '/ai-seo-audit/', label: 'Audit AI discovery', dataCta: 'wordpress_llms_hero_audit' }}
+  stats={stats}
+  tableHeading="How llms.txt fits into a WordPress AI discovery workflow"
+  tableIntro="The file helps orientation, but it does not fix blocked crawlers, weak schema, or thin content by itself."
+  tableRows={tableRows}
+  faqs={faqs}
+  paidStep={{
+    heading: 'Use Pro when WordPress updates can break discovery.',
+    copy: 'WordPress themes, SEO plugins, security plugins, and redirects can change crawler access and discovery files. Pro keeps the domain on a recurring technical audit loop.',
+    proofPoints: [
+      'Monitor robots.txt and llms.txt.',
+      'Catch schema and metadata regressions.',
+      'Keep score history after plugin changes.',
+    ],
+    plan: {
+      id: 'pro',
+      name: 'Pro',
+      price: '$19',
+      period: 'monthly',
+      href: 'https://app.geoready.dev/signup?plan=pro&intent=wordpress_llms_monitoring&onboarding=first_domain&utm_source=llms_txt_generator_wordpress&utm_medium=paid_step&utm_campaign=long_tail_to_paid',
+      cta: 'Monitor WordPress AI discovery',
+      ctaLocation: 'wordpress_llms_paid_step_pro',
+      intent: 'wordpress_llms_monitoring',
+    },
+    secondary: {
+      href: '/pricing/',
+      label: 'Compare plans',
+      dataCta: 'wordpress_llms_paid_step_pricing',
+    },
+  }}
+>
+  <div slot="heroAside" class="w-full">
+    <LlmsPreview variant="light" class="w-full" />
+  </div>
+
+  <section>
+    <h2>How to create llms.txt for WordPress</h2>
+    <p class="mt-4">
+      Start from the WordPress sitemap, then keep only the URLs that help an AI system understand the site: homepage, service or product pages, pricing, documentation, guides, research, about, and contact. The file should describe the site and point to canonical URLs, not list every archive page.
+    </p>
+    <p class="mt-4">
+      After generating the file, publish it at <code>/llms.txt</code> on the same domain. Then run the <a href="/ai-seo-audit/" class="text-accent-teal hover:underline">AI SEO audit</a> to verify that robots.txt, sitemap, schema, and core content are still accessible.
+    </p>
+  </section>
+
+  <section>
+    <h2>What llms.txt cannot fix on WordPress</h2>
+    <p class="mt-4">
+      llms.txt cannot fix a blocked crawler, a slow server, missing schema, thin service pages, or claims hidden inside images. It is a map, not the destination. The pages listed in the file still need clear headings, extractable HTML, concrete facts, and internal links that explain the entity.
+    </p>
+    <p class="mt-4">
+      For commercial pages, pair the file with structured data and answer-first copy. If the goal is citation, use the <a href="/perplexity-citation-checker/" class="text-accent-teal hover:underline">Perplexity citation checker</a> after the technical audit is clean.
+    </p>
+  </section>
+</IntentLanding>

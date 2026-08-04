@@ -117,8 +117,12 @@ const META_BY_PATH = {
   '/tools/ai-citation-checker/': { changefreq: 'monthly', priority: '0.8' },
   '/ai-seo/': { changefreq: 'weekly', priority: '0.9' },
   '/ai-seo-audit/': { changefreq: 'weekly', priority: '0.9' },
+  '/ai-seo-audit-for-saas/': { changefreq: 'weekly', priority: '0.8' },
   '/chatgpt-visibility-checker/': { changefreq: 'weekly', priority: '0.8' },
+  '/chatgpt-visibility-audit/': { changefreq: 'weekly', priority: '0.8' },
   '/perplexity-citation-checker/': { changefreq: 'weekly', priority: '0.8' },
+  '/perplexity-citation-monitoring/': { changefreq: 'weekly', priority: '0.8' },
+  '/llms-txt-generator-wordpress/': { changefreq: 'monthly', priority: '0.7' },
   '/best-geo-tools/': { changefreq: 'monthly', priority: '0.8' },
   '/methodology/': { changefreq: 'monthly', priority: '0.8' },
   '/guides/generative-engine-optimization/': { changefreq: 'monthly', priority: '0.8' },
@@ -179,6 +183,13 @@ const IMAGE_BY_PATH = {
       caption: 'GeoReady audit dashboard for crawler access, schema, llms.txt, content quality, and AI discovery signals.',
     },
   ],
+  '/ai-seo-audit-for-saas/': [
+    {
+      loc: '/assets/geoready-visuals/v2/ai-command-center-v2.png',
+      title: 'SaaS AI SEO audit dashboard',
+      caption: 'AI SEO audit workflow for SaaS product, pricing, comparison, and documentation pages.',
+    },
+  ],
   '/chatgpt-visibility-checker/': [
     {
       loc: '/assets/geoready-visuals/v2/ai-retrieval-map-v2.png',
@@ -186,11 +197,32 @@ const IMAGE_BY_PATH = {
       caption: 'Readiness path from crawler access and structured data to AI answer inclusion.',
     },
   ],
+  '/chatgpt-visibility-audit/': [
+    {
+      loc: '/assets/geoready-visuals/v2/ai-retrieval-map-v2.png',
+      title: 'ChatGPT visibility audit workflow',
+      caption: 'Audit path from crawler access and entity clarity to ChatGPT-style answer inclusion.',
+    },
+  ],
   '/perplexity-citation-checker/': [
     {
       loc: '/assets/geoready-visuals/v2/ai-citation-intelligence-v2.png',
       title: 'Perplexity citation intelligence dashboard',
       caption: 'AI citation readout showing whether an answer cites your domain or competitors.',
+    },
+  ],
+  '/perplexity-citation-monitoring/': [
+    {
+      loc: '/assets/geoready-visuals/v2/ai-citation-intelligence-v2.png',
+      title: 'Perplexity citation monitoring dashboard',
+      caption: 'Recurring AI citation monitoring for own-domain citations, competitor sources, and answer snapshots.',
+    },
+  ],
+  '/llms-txt-generator-wordpress/': [
+    {
+      loc: '/assets/geoready-visuals/v2/ai-retrieval-map-v2.png',
+      title: 'WordPress llms.txt discovery workflow',
+      caption: 'Workflow for generating, publishing, and auditing llms.txt on a WordPress site.',
     },
   ],
   '/guides/': [

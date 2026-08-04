@@ -1,0 +1,130 @@
+---
+import IntentLanding from '../components/IntentLanding.astro';
+import AuditForm from '../components/AuditForm';
+import CitationSurface from '../components/product/CitationSurface.astro';
+
+const title = 'ChatGPT Visibility Audit - Find Why ChatGPT Ignores Your Site';
+const description =
+  'Run a ChatGPT visibility audit for crawler access, entity clarity, structured data, content citability, and prompt-level AI visibility signals.';
+const canonical = 'https://geoready.dev/chatgpt-visibility-audit/';
+const dateModified = '2026-08-04';
+
+const stats = [
+  { value: 'Reach', label: 'Crawler access', detail: 'Verify whether AI retrieval systems can reach and parse the page.' },
+  { value: 'Resolve', label: 'Entity clarity', detail: 'Check whether the brand, domain, author, and offer are machine-readable.' },
+  { value: 'Retrieve', label: 'Answer blocks', detail: 'Find whether the page has sections that answer prompt-level questions directly.' },
+];
+
+const tableRows = [
+  {
+    signal: 'ChatGPT-style retrieval readiness',
+    freeCheck: 'Checks whether the page clears access, metadata, schema, and content-structure basics.',
+    paidLoop: 'Use Pro when those technical signals must be rechecked after releases.',
+  },
+  {
+    signal: 'Brand mention eligibility',
+    freeCheck: 'Reports whether the page gives clear entity signals and connected references for the brand.',
+    paidLoop: 'Use Studio when brand mentions need prompt tracking over time.',
+  },
+  {
+    signal: 'Own-domain citation potential',
+    freeCheck: 'Flags pages that lack citable facts, answer-first sections, or extractable lists and tables.',
+    paidLoop: 'Use Studio when you need to prove whether AI engines cite your domain or third-party pages.',
+  },
+  {
+    signal: 'Competitor replacement risk',
+    freeCheck: 'Shows which on-page gaps make competitor sources more likely to win the answer.',
+    paidLoop: 'Use Studio when competitor-cited prompts need ongoing monitoring.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'What is a ChatGPT visibility audit?',
+    a: 'A ChatGPT visibility audit checks whether a page has the access, structure, entity clarity, and source value needed to appear in ChatGPT-style AI answers.',
+  },
+  {
+    q: 'Can GeoReady guarantee a ChatGPT mention?',
+    a: 'No. ChatGPT answers depend on model, query, retrieval, and personalization. GeoReady measures the readiness signals that make a page easier to retrieve, mention, and cite.',
+  },
+  {
+    q: 'What should I audit first?',
+    a: 'Audit the homepage and the commercial page that should answer the buyer prompt. For SaaS, that usually means the product, pricing, comparison, alternative, or integration page.',
+  },
+  {
+    q: 'How do I measure improvement after the audit?',
+    a: 'Use the same prompt pool before and after changes. Track Share of Mentions, direct citations, competitor citations, and whether the cited URL is your own domain.',
+  },
+];
+---
+
+<IntentLanding
+  title={title}
+  description={description}
+  canonical={canonical}
+  eyebrow="ChatGPT visibility audit"
+  badge="Audit the path from crawl access to answer inclusion"
+  h1="Find the blocker that keeps your site out of ChatGPT-style answers."
+  lede="As of August 2026, a page can rank in Google and still fail in ChatGPT-style answers. A visibility audit separates technical invisibility from weak entity signals and weak source content."
+  dateModified={dateModified}
+  primaryCta={{ href: '#audit-form', label: 'Run visibility audit', dataCta: 'chatgpt_visibility_audit_hero_form' }}
+  secondaryCta={{ href: '/chatgpt-visibility-checker/', label: 'Read the checker workflow', dataCta: 'chatgpt_visibility_audit_hero_checker' }}
+  stats={stats}
+  tableHeading="What a ChatGPT visibility audit should diagnose"
+  tableIntro="The audit should identify the weakest layer in the visibility path, then connect that layer to the right monitoring loop."
+  tableRows={tableRows}
+  faqs={faqs}
+  paidStep={{
+    heading: 'Use Studio when visibility must be measured by prompt.',
+    copy: 'A ChatGPT visibility audit finds the first blocker. Studio is the next step when the business question is whether the brand appears, how often it appears, and which competitor is named instead.',
+    proofPoints: [
+      'Track prompts by product category.',
+      'Compare mentions and citations.',
+      'Keep snapshots for reporting.',
+    ],
+    plan: {
+      id: 'studio',
+      name: 'Studio',
+      price: '$49',
+      period: 'monthly',
+      href: 'https://app.geoready.dev/signup?plan=studio&intent=chatgpt_visibility_audit&onboarding=first_domain&utm_source=chatgpt_visibility_audit&utm_medium=paid_step&utm_campaign=long_tail_to_paid',
+      cta: 'Start visibility tracking',
+      ctaLocation: 'chatgpt_visibility_audit_paid_step_studio',
+      intent: 'chatgpt_visibility_audit',
+    },
+    secondary: {
+      href: '/pricing/',
+      label: 'Compare plans',
+      dataCta: 'chatgpt_visibility_audit_paid_step_pricing',
+    },
+  }}
+>
+  <div slot="heroAside" class="w-full space-y-5">
+    <CitationSurface mode="sov" variant="light" class="w-full" />
+    <section id="audit-form" class="rounded-[--radius-lg] border border-border bg-bg-base p-4" aria-label="Run a ChatGPT visibility audit">
+      <p class="mb-3 font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">Free audit</p>
+      <AuditForm client:load />
+      <p class="mt-3 text-xs leading-relaxed text-text-muted">Use the URL you want ChatGPT-style answers to cite.</p>
+    </section>
+  </div>
+
+  <section>
+    <h2>Why ChatGPT visibility fails even when SEO looks healthy</h2>
+    <p class="mt-4">
+      ChatGPT visibility fails when a page is hard to retrieve, hard to identify, or hard to quote. Classic SEO can miss those problems because title tags and rankings do not prove that an answer engine can use the page as a source.
+    </p>
+    <p class="mt-4">
+      The most common blockers are AI crawler restrictions, client-rendered content with weak initial HTML, missing schema, vague brand naming, thin comparison content, and pages that answer the question only after long introductory copy.
+    </p>
+  </section>
+
+  <section>
+    <h2>What to do after a ChatGPT visibility audit</h2>
+    <p class="mt-4">
+      Start by fixing the weakest audit category. Then rewrite the target page so each major section answers a real buyer question in the first sentence. Add product facts, pricing facts, comparison criteria, and schema that identifies the page type.
+    </p>
+    <p class="mt-4">
+      After the fix, run a source-backed check with the <a href="/perplexity-citation-checker/" class="text-accent-teal hover:underline">Perplexity citation checker</a>. It will not guarantee ChatGPT behavior, but it gives a verifiable citation snapshot and a practical measurement loop.
+    </p>
+  </section>
+</IntentLanding>
