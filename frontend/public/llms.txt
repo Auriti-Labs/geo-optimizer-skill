@@ -98,6 +98,7 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 - [State of GEO](https://geoready.dev/state-of-geo/): Live AI search readiness benchmark across sites audited by GeoReady — average and median GEO score, llms.txt and schema adoption, and the biggest readiness gap. Aggregated and anonymized; an audited sample, not a survey of the whole web.
 - [Best GEO Tools](https://geoready.dev/best-geo-tools/): Criteria-based guide to evaluating generative engine optimization software, including methodology transparency, audit vs monitoring, CI/CD support, and answer-engine citation checks.
 - [Roadmap](https://geoready.dev/roadmap/): Planned and in-progress features.
+- [GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/): 160-page technical guide to AI search visibility, citations, and Generative Engine Optimization — access, schema, quotability, entity authority, measurement, and security.
 - [Manifesto](https://geoready.dev/manifesto/): Why the open-source GEO Optimizer engine exists and what it stands for.
 - [Pricing](https://geoready.dev/pricing/): Free and Pro plan comparison.
 - [Privacy Policy](https://geoready.dev/privacy/): GDPR-compliant privacy policy.

@@ -1,0 +1,605 @@
+---
+import Shell from '../components/Shell.astro';
+
+const chapters = [
+  { num: '0', title: 'The Selection Layer — Why AI Search Became a Filter' },
+  { num: '1', title: 'Foreword — Why This Guide Exists' },
+  { num: '2', title: 'How AI Answer Engines Work' },
+  { num: '3', title: 'The AI Crawler Ecosystem' },
+  { num: '4', title: 'Access — The Zero Layer' },
+  { num: '5', title: 'Orientation — llms.txt and Beyond' },
+  { num: '6', title: 'Understanding — Schema Markup Deep Dive' },
+  { num: '7', title: 'Quotability — How to Write for Citation' },
+  { num: '8', title: 'Entity Authority — Beyond the Page' },
+  { num: '9', title: 'AI Citation Measurement' },
+  { num: '10', title: 'GEO for Specific Verticals' },
+  { num: '11', title: 'Security — Prompt Injection and AI Crawler Defense' },
+  { num: '12', title: 'The GEO Tech Stack' },
+  { num: '13', title: 'The Future of GEO' },
+  { num: '14', title: 'Conclusion' },
+];
+
+const appendices = ['A: GEO Audit Checklist', 'B: AI Crawler Reference Card', 'C: JSON-LD Templates', 'D: GEO Glossary', 'E: References and Further Reading'];
+
+const layers = [
+  { num: '01', title: 'Access', desc: 'Crawl permissions, status codes, rendering, canonical control' },
+  { num: '02', title: 'Orientation', desc: 'llms.txt, sitemap, feeds, priority URLs, discovery hints' },
+  { num: '03', title: 'Understanding', desc: 'Schema, entity identity, metadata, page-type clarity' },
+  { num: '04', title: 'Quotability', desc: 'Self-contained passages, factual density, source-worthy claims' },
+  { num: '05', title: 'Entity Authority', desc: 'Independent mentions, consistent profiles, topical footprint' },
+  { num: '06', title: 'Measurement', desc: 'Prompt sets, citations, competitors, logs, iteration backlog' },
+];
+
+const stats = [
+  ['160', 'pages'],
+  ['15', 'chapters'],
+  ['5', 'appendices'],
+  ['11', 'AI crawlers documented'],
+];
+
+const whoFor = [
+  { icon: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', title: 'SEO practitioners', desc: 'Who need to extend their skill set to cover AI answer engines — not replace their SEO knowledge, but add a new layer on top.' },
+  { icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3', title: 'SaaS and B2B teams', desc: 'Whose buyers ask ChatGPT "what\'s the best tool for X" before visiting any vendor website. If you\'re not in that answer, you\'re not in the consideration set.' },
+  { icon: 'M14.7 6.3a1 1 0 0 0 0 1.4l1 1a1 1 0 0 0 1.4 0l3.7-3.7a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0z', title: 'Developers and tech leads', desc: 'Responsible for the infrastructure that makes content accessible to AI crawlers. robots.txt, rendering, schema, server responses — the technical foundation.' },
+  { icon: 'M3 3v18h18', title: 'Marketing leaders', desc: 'Who need to decide where to invest between classic SEO and GEO in 2026 — with honest evidence about what works and what doesn\'t.' },
+];
+
+const whatInside = [
+  { title: 'The 4-layer GEO model', desc: 'Access, Orientation, Understanding, Quotability — applied in order. Fix access before schema. Fix schema before content. The order matters.' },
+  { title: '11 AI crawlers documented', desc: 'GPTBot, OAI-SearchBot, PerplexityBot, ClaudeBot, Claude-SearchBot, Googlebot, Google-Extended, Applebot, CCBot, Bytespider, Diffbot — with user-agent tokens, robots.txt directives, and GEO implications.' },
+  { title: '12 schema types with templates', desc: 'Article, FAQPage, HowTo, Organization, Person, Product, VideoObject, ImageObject, BreadcrumbList, WebSite, DefinedTerm, Dataset — with copy-paste JSON-LD templates and @graph examples.' },
+  { title: 'Passage extraction mechanics', desc: 'How vector embeddings select passages, why BLUF (Bottom Line Up Front) beats narrative, and 5 anti-patterns that make your content invisible to retrieval.' },
+  { title: 'Entity authority strategy', desc: 'Pillar-cluster architecture, sameAs cross-platform identity, entity resolution pipeline, independent mentions — why 5 connected pages beat 1 perfect page.' },
+  { title: 'Citation measurement workflow', desc: 'Manual prompt testing protocol, GA4 attribution, server log analysis, GEO metrics (citation presence, rate, share, accuracy, drift) — weekly, monthly, quarterly cadence.' },
+  { title: 'Prompt injection defense', desc: '8 attack vectors against AI crawlers, CSP configuration, monitoring scripts, and a response plan for when your citations disappear.' },
+  { title: 'Vertical-specific guidance', desc: 'SaaS/B2B, e-commerce, editorial, WordPress, and headless CMS — with platform-specific implementation patterns and pitfalls.' },
+];
+
+const faqs = [
+  { q: 'Is this a marketing ebook?', a: 'No. It\'s a 160-page technical manual with code examples, JSON-LD templates, server log commands, robots.txt configurations, and audit checklists. It\'s written for practitioners, not for list-building.' },
+  { q: 'Does it replace the free guides on geoready.dev?', a: 'No. The guides cover specific topics. The manual is the comprehensive reference that connects them — including material not on the site: the AI engine pipeline, passage extraction mechanics, prompt injection defense, and the GEO maturity model.' },
+  { q: 'Is the content based on real data?', a: 'Yes. The manual draws from 1000+ site audits, the GeoReady benchmark dashboard, public State of GEO reports, official crawler documentation, and reasonable inference from how RAG systems work mechanically. Every claim is labeled by evidence level.' },
+  { q: 'What format is the PDF?', a: 'A4 format, 160 pages, with a cover page, table of contents, diagrams, code blocks, tables, and appendices. It\'s a readable document, not a slide deck or a series of blog posts stitched together.' },
+  { q: 'Why do you need my email?', a: 'We use your email to send a signed download link for the full PDF. The link is valid for 24 hours. GEO research updates are optional: check the consent box if you want them, leave it unchecked if you only want this one download email.' },
+  { q: 'Can I share it with my team?', a: 'Yes. Once you download the PDF, share it internally. If you want to share it publicly (blog post, social media, newsletter), link back to this page so others can get their own copy.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": { "@type": "Answer", "text": f.a },
+  })),
+};
+---
+
+<Shell title="The GEO Readiness Manual — A Technical Guide to AI Search Visibility" description="A 160-page technical manual for Generative Engine Optimization: how to make your site citable by ChatGPT, Perplexity, Claude, and Google AI Overviews. Built from audit data across 1000+ sites." canonical="https://geoready.dev/geo-readiness-manual/">
+
+  {/* ============ HERO — drenched dark, real cover mockup ============ */}
+  <section data-hero-bleed class="relative overflow-hidden bg-bg-dark text-text-inverse">
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 opacity-45"
+      style="background-image: radial-gradient(circle at 14% 18%, rgba(94,234,212,0.16), transparent 38%), linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.08) 1px, transparent 1px); background-size: auto, 56px 56px, 56px 56px;"
+    />
+    <div class="relative max-w-7xl mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28">
+      <div class="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.62fr)]">
+
+        {/* Copy column */}
+        <div class="hero-in" style="animation-delay:0ms">
+          <p class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-teal-100">
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-teal-300"></span>
+            Free 160-page technical manual
+          </p>
+
+          <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] text-wrap-balance">
+            The book on getting cited by AI search.
+          </h1>
+
+          <p class="mt-6 text-lg md:text-xl text-text-muted leading-relaxed max-w-xl">
+            ChatGPT, Perplexity, and Google AI Overviews choose 3–7 sources before a user ever sees a link. This manual is the technical reference for being one of them — built from audit data across 1000+ sites, not theory.
+          </p>
+
+          <div class="mt-9 grid max-w-lg grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-4">
+            {stats.map(([num, label]) => (
+              <div class="border-l border-teal-300/30 pl-3.5">
+                <p class="font-display text-2xl font-bold text-white">{num}</p>
+                <p class="mt-0.5 text-xs text-text-muted leading-tight">{label}</p>
+              </div>
+            ))}
+          </div>
+
+          <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-text-muted">
+            <span>By <span class="text-white font-medium">Juan Camilo Auriti</span></span>
+            <span class="w-1 h-1 rounded-full bg-text-muted"></span>
+            <span>Version 1.1 — July 2026</span>
+            <span class="w-1 h-1 rounded-full bg-text-muted"></span>
+            <span class="text-teal-200">Free, no account required</span>
+          </div>
+
+          {/* Preview — no email gate */}
+          <div class="mt-7 rounded-xl border border-teal-300/25 bg-teal-300/5 p-4 max-w-lg">
+            <p class="text-sm text-text-inverse leading-relaxed">
+              <span class="font-semibold text-teal-200">Not sure yet?</span>
+              Read a free 3-chapter preview — Chapter 0 (The Selection Layer), Chapter 4 (Access), and Chapter 7 (Quotability). No email required.
+            </p>
+            <a href="/geo-readiness-manual-preview.pdf" class="mt-3 inline-flex items-center gap-2 rounded-lg border border-teal-300/40 bg-teal-300/10 px-4 py-2.5 text-sm font-medium text-teal-100 hover:bg-teal-300/20 transition-colors">
+              Download free preview (PDF, 27 pages)
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          {/* Mobile-only inline form (desktop uses the sticky panel below the cover) */}
+          <div class="mt-9 lg:hidden">
+            <div id="manual-download-form-mobile" class="manual-download-form" data-api-base={import.meta.env.PUBLIC_API_BASE || '/api'}>
+              <form class="manual-form flex flex-col sm:flex-row gap-3" novalidate>
+                <label for="manual-email-mobile" class="sr-only">Email address</label>
+                <input
+                  type="email"
+                  id="manual-email-mobile"
+                  name="email"
+                  required
+                  placeholder="you@company.com"
+                  class="manual-email flex-1 rounded-lg border border-white/15 bg-white/5 px-4 py-3.5 text-white placeholder-text-muted focus:border-teal-300 focus:outline-none focus:ring-1 focus:ring-teal-300 transition-colors"
+                />
+                <button
+                  type="submit"
+                  class="manual-submit inline-flex items-center justify-center gap-2 rounded-lg bg-accent-teal px-6 py-3.5 text-white font-semibold text-base hover:bg-accent-teal-dark transition-colors whitespace-nowrap"
+                >
+                  Get the PDF
+                  <span aria-hidden="true">→</span>
+                </button>
+              </form>
+              <label class="mt-3 flex items-start gap-2.5 text-xs text-text-muted leading-relaxed cursor-pointer">
+                <input type="checkbox" name="marketing_consent" class="manual-marketing-consent mt-0.5 h-3.5 w-3.5 rounded border-white/30 bg-white/5 text-accent-teal focus:ring-accent-teal/40 cursor-pointer" />
+                <span>Also send me occasional GEO research updates (new benchmarks, guides). Unchecked, you'll only get this one download email.</span>
+              </label>
+              <div class="manual-success hidden mt-4 rounded-lg border border-teal-300/25 bg-teal-300/5 p-4 text-sm">
+                <p class="text-white font-medium">Check your inbox.</p>
+                <p class="manual-success-msg mt-0.5 text-text-muted"></p>
+              </div>
+              <div class="manual-error hidden mt-3 rounded-lg border border-red-500/25 bg-red-500/5 p-3 text-sm text-red-300">
+                <span class="manual-error-msg"></span>
+              </div>
+              <p class="mt-3 text-xs text-text-muted leading-relaxed">
+                No spam. By downloading, you agree to our <a href="/privacy/" class="text-teal-200 hover:underline">Privacy Policy</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Cover mockup column */}
+        <div class="hero-in relative flex justify-center lg:justify-end" style="animation-delay:120ms">
+          <div aria-hidden="true" class="pointer-events-none absolute -inset-x-10 -inset-y-16 -z-10 rounded-[48px] bg-accent-teal/20 blur-3xl"></div>
+          <div class="manual-cover-tilt w-[240px] sm:w-[280px]">
+            <img
+              src="/assets/manual/cover-500.webp"
+              srcset="/assets/manual/cover-500.webp 500w, /assets/manual/cover-1400.webp 1400w"
+              sizes="(min-width: 640px) 280px, 240px"
+              alt="Cover of The GEO Readiness Manual — a 160-page technical guide to AI search visibility, by Juan Camilo Auriti, GeoReady, 2026 Edition"
+              width="1400"
+              height="1981"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              class="w-full h-auto rounded-md shadow-[0_40px_80px_-20px_rgba(0,0,0,0.65)] ring-1 ring-white/10"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ============ DOWNLOAD PANEL — desktop-focused conversion block ============ */}
+  <section class="border-b border-border bg-bg-surface">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="hidden lg:flex items-center justify-between gap-10 py-8">
+        <div class="max-w-md">
+          <h2 class="font-display text-lg font-bold text-text-primary">Get the PDF in your inbox</h2>
+          <p class="mt-1 text-sm text-text-secondary leading-relaxed">
+            Enter your email. We'll send a download link valid for 24 hours — no account, no credit card.
+          </p>
+        </div>
+        <div id="manual-download-form-desktop" class="manual-download-form flex-1 max-w-lg" data-api-base={import.meta.env.PUBLIC_API_BASE || '/api'}>
+          <form class="manual-form flex gap-3" novalidate>
+            <label for="manual-email-desktop" class="sr-only">Email address</label>
+            <input
+              type="email"
+              id="manual-email-desktop"
+              name="email"
+              required
+              placeholder="you@company.com"
+              class="manual-email flex-1 rounded-lg border border-border bg-input px-4 py-3 text-text-primary placeholder-text-muted focus:border-accent-teal focus:outline-none focus:ring-1 focus:ring-accent-teal transition-colors"
+            />
+            <button
+              type="submit"
+              class="manual-submit inline-flex items-center justify-center gap-2 rounded-lg bg-accent-teal px-6 py-3 text-white font-semibold text-sm hover:bg-accent-teal-dark transition-colors whitespace-nowrap"
+            >
+              Get the PDF
+              <span aria-hidden="true">→</span>
+            </button>
+          </form>
+          <label class="mt-2.5 flex items-start gap-2.5 text-xs text-text-muted leading-relaxed cursor-pointer">
+            <input type="checkbox" name="marketing_consent" class="manual-marketing-consent mt-0.5 h-3.5 w-3.5 rounded border-border text-accent-teal focus:ring-accent-teal/40 cursor-pointer" />
+            <span>Also send me occasional GEO research updates. Unchecked, you'll only get this one download email.</span>
+          </label>
+          <div class="manual-success hidden mt-3 rounded-lg border border-accent-teal/25 bg-accent-teal/5 p-3 text-sm">
+            <p class="text-text-primary font-medium">Check your inbox.</p>
+            <p class="manual-success-msg mt-0.5 text-text-secondary"></p>
+          </div>
+          <div class="manual-error hidden mt-3 rounded-lg border border-red-500/25 bg-red-500/5 p-3 text-sm text-red-500">
+            <span class="manual-error-msg"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+
+    {/* Bottom strip stats — moved from old hero, now a standalone row */}
+    <section class="mb-20 grid divide-y divide-border border border-border md:grid-cols-4 md:divide-x md:divide-y-0">
+      {[
+        ['Crawler access', '11 AI crawlers documented'],
+        ['Schema deep dive', '12 types with JSON-LD templates'],
+        ['Entity authority', 'Pillar-cluster architecture'],
+        ['Measurement', 'Citation tracking workflow'],
+      ].map(([label, text]) => (
+        <div class="p-5">
+          <p class="font-mono text-xs uppercase tracking-[0.16em] text-accent-teal">{label}</p>
+          <p class="mt-2 text-sm leading-relaxed text-text-secondary">{text}</p>
+        </div>
+      ))}
+    </section>
+
+    {/* The problem */}
+    <section class="mb-20 max-w-4xl">
+      <h2 class="font-display text-2xl md:text-3xl font-bold text-text-primary mb-6 text-wrap-balance">
+        AI search doesn't rank you. It selects you.
+      </h2>
+      <div class="space-y-5 text-text-secondary text-lg leading-relaxed">
+        <p>
+          Traditional search returns ten links and asks the user to choose. AI answer engines choose first — synthesizing a single answer from 3-7 sources — then show the user the result. If your site isn't one of those sources, you're not on page two. You're absent from the answer entirely.
+        </p>
+        <p>
+          The user reads one answer. They may never see the sources that weren't selected.
+        </p>
+        <p>
+          This is not a traffic problem. It's a selection problem. And the rules of selection are different from the rules of ranking. Keywords don't work the same way. Backlinks don't work the same way. Meta descriptions don't work the same way. The infrastructure that got you to page one on Google may be invisible to ChatGPT.
+        </p>
+        <p class="text-text-primary font-medium">
+          This manual is the technical guide to being selected.
+        </p>
+      </div>
+    </section>
+
+    {/* The four-layer model */}
+    <section class="mb-20">
+      <h2 class="font-display text-2xl md:text-3xl font-bold text-text-primary mb-4">
+        The four-layer model
+      </h2>
+      <p class="text-text-secondary text-base leading-relaxed mb-8 max-w-3xl">
+        Everything in the manual reduces to four layers, applied in order — plus entity authority as a multiplier. Fix access before orientation. Fix orientation before schema. Fix schema before quotability. Build entity authority alongside all of them. Measure at the end, not the beginning.
+      </p>
+
+      <div class="space-y-3 max-w-3xl">
+        {layers.map((layer) => (
+          <div class="flex items-start gap-4 rounded-lg border border-border bg-surface p-4 md:p-5 hover:border-accent-teal/20 transition-colors">
+            <span class="font-mono text-sm text-accent-teal font-bold pt-0.5">{layer.num}</span>
+            <div class="flex-1">
+              <span class="text-text-primary font-semibold text-base">{layer.title}</span>
+              <p class="text-text-muted text-sm mt-0.5">{layer.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* Sample pages — proof it's a real document, not a placeholder */}
+    <section class="mb-20">
+      <h2 class="font-display text-2xl md:text-3xl font-bold text-text-primary mb-3">
+        Inside the manual
+      </h2>
+      <p class="text-text-secondary text-base leading-relaxed mb-8 max-w-2xl">
+        Two real spreads — server log commands for verifying AI crawler access, and the site-speed factors that shrink your crawl budget.
+      </p>
+      <div class="grid gap-6 sm:grid-cols-2 max-w-3xl">
+        <figure class="group overflow-hidden rounded-xl border border-border bg-bg-surface">
+          <img
+            src="/assets/manual/page-sample-1.webp"
+            alt="Manual page 25: how to verify which AI crawlers access your site, with grep commands for Nginx and Apache access logs"
+            width="900"
+            height="1273"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-auto transition-transform duration-500 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]"
+          />
+          <figcaption class="px-4 py-3 text-xs text-text-muted border-t border-border">Page 25 — verifying AI crawler access via server logs</figcaption>
+        </figure>
+        <figure class="group overflow-hidden rounded-xl border border-border bg-bg-surface">
+          <img
+            src="/assets/manual/page-sample-2.webp"
+            alt="Manual page 45: site speed and crawl accessibility, covering TTFB targets, page weight limits, and internal linking depth"
+            width="900"
+            height="1273"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-auto transition-transform duration-500 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]"
+          />
+          <figcaption class="px-4 py-3 text-xs text-text-muted border-t border-border">Page 45 — TTFB targets and crawl budget</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    {/* What's inside */}
+    <section class="mb-20">
+      <h2 class="font-display text-2xl md:text-3xl font-bold text-text-primary mb-8">
+        What's inside
+      </h2>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl">
+        {whatInside.map((item) => (
+          <div class="rounded-xl border border-border bg-surface p-5 hover:border-accent-teal/30 transition-colors">
+            <h3 class="font-semibold text-text-primary text-base mb-2">{item.title}</h3>
+            <p class="text-text-muted text-sm leading-relaxed">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* Who this is for */}
+    <section class="mb-20">
+      <h2 class="font-display text-2xl md:text-3xl font-bold text-text-primary mb-8">
+        Who this is for
+      </h2>
+      <div class="grid gap-4 sm:grid-cols-2 max-w-4xl">
+        {whoFor.map((item) => (
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <div class="flex items-start gap-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent-teal flex-shrink-0 mt-0.5">
+                <path d={item.icon} />
+              </svg>
+              <div>
+                <h3 class="font-semibold text-text-primary text-base mb-1">{item.title}</h3>
+                <p class="text-text-muted text-sm leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* Table of contents */}
+    <section class="mb-20">
+      <h2 class="font-display text-2xl md:text-3xl font-bold text-text-primary mb-8">
+        Table of contents
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 max-w-4xl">
+        {chapters.map((ch) => (
+          <div class="flex items-baseline gap-3 py-2 border-b border-border/50">
+            <span class="font-mono text-xs text-text-muted w-8 flex-shrink-0">Ch.{ch.num}</span>
+            <span class="text-text-secondary text-sm leading-snug">{ch.title}</span>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-6 max-w-4xl">
+        <p class="font-mono text-xs text-text-muted uppercase tracking-wider mb-3">Appendices</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
+          {appendices.map((ap) => (
+            <div class="flex items-baseline gap-3 py-2 border-b border-border/50">
+              <span class="font-mono text-xs text-text-muted w-8 flex-shrink-0">App.{ap.charAt(0)}</span>
+              <span class="text-text-secondary text-sm leading-snug">{ap}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* FAQ */}
+    <section class="mb-20 max-w-3xl">
+      <h2 class="font-display text-2xl md:text-3xl font-bold text-text-primary mb-8">
+        FAQ
+      </h2>
+      <div class="space-y-6">
+        {faqs.map((faq) => (
+          <div class="border-b border-border/50 pb-5">
+            <h3 class="font-semibold text-text-primary text-base mb-2">{faq.q}</h3>
+            <p class="text-text-muted text-sm leading-relaxed">{faq.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* Final CTA — repeats the download form so bottom-of-page readers convert without scrolling back */}
+    <section class="border-t border-border pt-10">
+      <div class="rounded-2xl border border-accent-teal/20 bg-accent-teal/5 p-6 md:p-10 max-w-2xl mx-auto text-center">
+        <h2 class="font-display text-2xl font-bold text-text-primary mb-3">
+          Get the manual, free.
+        </h2>
+        <p class="text-text-secondary text-base leading-relaxed mb-6 max-w-xl mx-auto">
+          160 pages, delivered to your inbox in under a minute. Then run a free audit to see exactly where your own site stands.
+        </p>
+        <div id="manual-download-form-footer" class="manual-download-form max-w-md mx-auto text-left" data-api-base={import.meta.env.PUBLIC_API_BASE || '/api'}>
+          <form class="manual-form flex flex-col sm:flex-row gap-3" novalidate>
+            <label for="manual-email-footer" class="sr-only">Email address</label>
+            <input
+              type="email"
+              id="manual-email-footer"
+              name="email"
+              required
+              placeholder="you@company.com"
+              class="manual-email flex-1 rounded-lg border border-border bg-input px-4 py-3 text-text-primary placeholder-text-muted focus:border-accent-teal focus:outline-none focus:ring-1 focus:ring-accent-teal transition-colors"
+            />
+            <button
+              type="submit"
+              class="manual-submit inline-flex items-center justify-center gap-2 rounded-lg bg-accent-teal px-6 py-3 text-white font-semibold text-sm hover:bg-accent-teal-dark transition-colors whitespace-nowrap"
+            >
+              Get the PDF
+              <span aria-hidden="true">→</span>
+            </button>
+          </form>
+          <label class="mt-2.5 flex items-start gap-2.5 text-xs text-text-muted leading-relaxed cursor-pointer">
+            <input type="checkbox" name="marketing_consent" class="manual-marketing-consent mt-0.5 h-3.5 w-3.5 rounded border-border text-accent-teal focus:ring-accent-teal/40 cursor-pointer" />
+            <span>Also send me occasional GEO research updates. Unchecked, you'll only get this one download email.</span>
+          </label>
+          <div class="manual-success hidden mt-3 rounded-lg border border-accent-teal/25 bg-accent-teal/5 p-3 text-sm">
+            <p class="text-text-primary font-medium">Check your inbox.</p>
+            <p class="manual-success-msg mt-0.5 text-text-secondary"></p>
+          </div>
+          <div class="manual-error hidden mt-3 rounded-lg border border-red-500/25 bg-red-500/5 p-3 text-sm text-red-500">
+            <span class="manual-error-msg"></span>
+          </div>
+          <p class="mt-3 text-xs text-text-muted leading-relaxed">
+            Unsubscribe anytime. By downloading, you agree to our <a href="/privacy/" class="text-accent-teal hover:underline">Privacy Policy</a>.
+          </p>
+        </div>
+
+        {/* Preview — no email gate */}
+        <div class="mt-6 rounded-lg border border-border bg-bg-surface px-6 py-4 max-w-md mx-auto">
+          <p class="text-sm text-text-secondary leading-relaxed mb-3">
+            Prefer to read first? Download a free 3-chapter preview — no email required.
+          </p>
+          <a href="/geo-readiness-manual-preview.pdf" class="inline-flex items-center gap-2 rounded-lg border border-accent-teal/40 bg-accent-teal/10 px-4 py-2 text-sm font-medium text-accent-teal hover:bg-accent-teal/20 transition-colors">
+            Get the free preview (PDF, 27 pages)
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <p class="mt-6 text-sm">
+          <a href="/" class="text-accent-teal hover:text-accent-teal-dark font-medium transition-colors">
+            Or run a free GEO audit first →
+          </a>
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+  {/* Shared handler for every .manual-download-form instance on the page */}
+  <script>
+    function initManualForms() {
+      document.querySelectorAll<HTMLElement>('.manual-download-form').forEach((container) => {
+        if (container.dataset.wired === 'true') return;
+        container.dataset.wired = 'true';
+
+        const apiBase = container.dataset.apiBase || '/api';
+        const form = container.querySelector<HTMLFormElement>('.manual-form');
+        const successDiv = container.querySelector<HTMLElement>('.manual-success');
+        const errorDiv = container.querySelector<HTMLElement>('.manual-error');
+        const errorMsg = container.querySelector<HTMLElement>('.manual-error-msg');
+        const successMsg = container.querySelector<HTMLElement>('.manual-success-msg');
+        const submitBtn = container.querySelector<HTMLButtonElement>('.manual-submit');
+        const emailInput = container.querySelector<HTMLInputElement>('.manual-email');
+        const marketingConsentInput = container.querySelector<HTMLInputElement>('.manual-marketing-consent');
+        const submitLabel = submitBtn?.innerHTML ?? 'Get the PDF';
+
+        form?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = emailInput?.value?.trim();
+          if (!email) return;
+
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Sending...';
+          }
+          errorDiv?.classList.add('hidden');
+          successDiv?.classList.add('hidden');
+
+          try {
+            const res = await fetch(`${apiBase}/public/download-manual`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, marketing_consent: marketingConsentInput?.checked ?? false }),
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              successDiv?.classList.remove('hidden');
+              if (successMsg && data.message) successMsg.textContent = data.message;
+              form?.classList.add('hidden');
+            } else {
+              const data = await res.json().catch(() => ({}));
+              errorDiv?.classList.remove('hidden');
+              if (errorMsg) errorMsg.textContent = data.detail || data.message || 'Something went wrong. Try again.';
+            }
+          } catch {
+            errorDiv?.classList.remove('hidden');
+            if (errorMsg) errorMsg.textContent = 'Network error. Please try again.';
+          } finally {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = submitLabel;
+            }
+          }
+        });
+      });
+    }
+    initManualForms();
+  </script>
+
+  <style>
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-in {
+        opacity: 0;
+        animation: manual-hero-in 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes manual-hero-in {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .manual-cover-tilt {
+        transform: perspective(1200px) rotateY(-10deg) rotateX(2deg);
+        animation: manual-cover-settle 900ms 120ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .manual-cover-tilt:hover {
+        transform: perspective(1200px) rotateY(-4deg) rotateX(1deg) scale(1.015);
+      }
+      @keyframes manual-cover-settle {
+        from { transform: perspective(1200px) rotateY(-22deg) rotateX(6deg) translateY(18px); opacity: 0; }
+        to { opacity: 1; }
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-in { opacity: 1; }
+      .manual-cover-tilt { transform: perspective(1200px) rotateY(-10deg) rotateX(2deg); }
+    }
+    .text-wrap-balance { text-wrap: balance; }
+  </style>
+
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "The GEO Readiness Manual",
+    "description": "A 160-page technical guide to AI search visibility, citations, and Generative Engine Optimization. Built from audit data across 1000+ sites.",
+    "author": {
+      "@type": "Person",
+      "name": "Juan Camilo Auriti",
+      "url": "https://geoready.dev/about/"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "GeoReady",
+      "url": "https://geoready.dev",
+      "sameAs": ["https://github.com/auriti/geo-optimizer", "https://x.com/JuanAuriti"]
+    },
+    "datePublished": "2026-07-31",
+    "dateModified": "2026-07-31",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://geoready.dev/geo-readiness-manual/"
+    },
+    "about": [
+      "Generative Engine Optimization",
+      "AI search visibility",
+      "AI citation",
+      "Schema markup",
+      "robots.txt for AI crawlers"
+    ]
+  })} />
+</Shell>

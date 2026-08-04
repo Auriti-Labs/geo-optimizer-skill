@@ -11,7 +11,7 @@ import Shell from '../components/Shell.astro';
         <span>Privacy Policy</span>
       </div>
       <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">Privacy Policy</h1>
-      <p class="mt-4 text-base text-text-secondary leading-relaxed">Last updated: May 12, 2026</p>
+      <p class="mt-4 text-base text-text-secondary leading-relaxed">Last updated: August 3, 2026</p>
     </header>
 
     <div class="space-y-10 text-text-secondary leading-relaxed">
@@ -41,15 +41,21 @@ import Shell from '../components/Shell.astro';
             <h3 class="text-sm font-semibold text-text-primary mb-1">4. Analytics data (optional)</h3>
             <p class="text-sm">If you explicitly consent to analytics and a Google Analytics 4 measurement ID is configured, aggregated, anonymized navigation data may be collected. This is disabled by default and requires explicit opt-in.</p>
           </div>
+          <div class="rounded-lg border border-border bg-bg-surface p-4">
+            <h3 class="text-sm font-semibold text-text-primary mb-1">5. Email address for manual download and newsletter</h3>
+            <p class="text-sm"><strong class="text-text-primary">Manual download:</strong> When you request the full GEO Readiness Manual PDF, we collect your email address to send you a signed download link valid for 24 hours. GEO research updates are optional: if you check the marketing consent box, we may also send occasional updates on AI search visibility, new research, benchmark findings, and product updates. Your email is stored in our newsletter subscriber database with the source labeled "geo-readiness-manual"; marketing consent is recorded with a timestamp only when you provide it.</p>
+            <p class="text-sm mt-2"><strong class="text-text-primary">Newsletter signup:</strong> When you subscribe to the State of GEO report or benchmark updates via the signup form on our guides, resource pages, or State of GEO pages, we collect your email address to notify you when new reports are published and to send occasional GEO findings. Your email is stored in the same subscriber database with the source labeled according to the page where you subscribed (e.g., "state-of-geo", "guides"), and your consent is recorded with a timestamp.</p>
+            <p class="text-sm mt-2">You can unsubscribe from updates at any time by clicking the unsubscribe link in any email we send, or by contacting us at the email listed above. We do not sell, rent, or share your email with third parties. We use <a href="https://resend.com" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">Resend</a> as our email delivery provider, which processes email addresses under their <a href="https://resend.com/privacy" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">privacy policy</a>. If you want to read before providing an email, use the <a href="/geo-readiness-manual/" class="text-accent-teal hover:underline">free 3-chapter preview</a> — no email required.</p>
+          </div>
         </div>
       </section>
 
       <section>
         <h2 class="text-lg font-semibold text-text-primary mb-3">Legal basis</h2>
         <ul class="list-disc pl-5 space-y-2 text-sm">
-          <li><strong class="text-text-primary">Service execution / pre-contractual measures:</strong> processing URLs you submit for audit, generating reports, and delivering results.</li>
+          <li><strong class="text-text-primary">Service execution / pre-contractual measures:</strong> processing URLs you submit for audit, generating reports, delivering audit results, and sending the manual download link you requested.</li>
           <li><strong class="text-text-primary">Legitimate interest / security obligations:</strong> technical logs (IP, timestamps) required for server security, abuse prevention, and infrastructure monitoring.</li>
-          <li><strong class="text-text-primary">Consent:</strong> analytics and marketing cookies/storage. You can revoke consent at any time via the cookie preferences panel.</li>
+          <li><strong class="text-text-primary">Consent:</strong> optional GEO research updates, newsletter signup, analytics, and marketing cookies/storage. You can revoke consent at any time via the cookie preferences panel or by unsubscribing from emails.</li>
           <li><strong class="text-text-primary">Legal obligation / technical necessity:</strong> storing your cookie consent choice to comply with ePrivacy and GDPR requirements.</li>
         </ul>
       </section>
@@ -58,6 +64,7 @@ import Shell from '../components/Shell.astro';
         <h2 class="text-lg font-semibold text-text-primary mb-3">How long we keep data</h2>
         <ul class="list-disc pl-5 space-y-2 text-sm">
           <li><strong>Audit URL submissions:</strong> Not declared as persistent storage. Processed in real time and not retained beyond the session unless backend configuration specifies otherwise.</li>
+          <li><strong>Email addresses (manual download & newsletter):</strong> Stored in the newsletter subscriber database until you unsubscribe or request deletion. Manual download links expire after 24 hours. If you want to read before providing an email, use the free 3-chapter preview at <a href="/geo-readiness-manual/" class="text-accent-teal hover:underline">geoready.dev/geo-readiness-manual/</a> — no email required.</li>
           <li><strong>Technical logs:</strong> Technical server logs are rotated and retained for a limited period (typically 14–30 days) for security and abuse-prevention purposes, and are not used for profiling.</li>
           <li><strong>Cookie consent preferences:</strong> Stored in localStorage for 6 months or until the consent policy version changes.</li>
           <li><strong>Analytics data (if consented):</strong> Retained by Google Analytics under their data retention policies.</li>
@@ -69,6 +76,7 @@ import Shell from '../components/Shell.astro';
         <p class="mb-3">Recipients of your data may include:</p>
         <ul class="list-disc pl-5 space-y-2 text-sm">
           <li><strong>Hosting/infrastructure providers:</strong> the server hosting the site and API may process technical logs.</li>
+          <li><strong>Resend Inc.:</strong> processes the email address you provide when requesting the manual PDF to deliver the download link and, if you consented, occasional updates. See <a href="https://resend.com/privacy" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">Resend's privacy policy</a>.</li>
           <li><strong>Google LLC:</strong> only if Google Analytics 4 is activated and you have provided explicit consent to analytics.</li>
         </ul>
         <p class="mt-3 text-sm">Links to GitHub, PyPI, and other external resources in the footer are navigated by you voluntarily; no automatic data sharing occurs with these platforms during normal browsing.</p>
@@ -76,7 +84,7 @@ import Shell from '../components/Shell.astro';
 
       <section>
         <h2 class="text-lg font-semibold text-text-primary mb-3">Transfers outside the EU</h2>
-        <p class="text-sm">If Google Analytics 4 is activated, data may be transferred to Google servers in the United States under the conditions defined by Google. We do not currently use analytics by default, and no transfer occurs without your explicit consent.</p>
+        <p class="text-sm">If Google Analytics 4 is activated, data may be transferred to Google servers in the United States under the conditions defined by Google. Resend Inc. (our email delivery provider for the manual download) may process email addresses on servers in the United States under the conditions defined by their privacy policy. We do not currently use analytics by default, and no analytics transfer occurs without your explicit consent.</p>
       </section>
 
       <section>
