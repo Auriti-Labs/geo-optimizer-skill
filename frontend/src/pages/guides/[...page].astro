@@ -17,6 +17,48 @@ const canonical = `https://geoready.dev/guides/${page.currentPage > 1 ? `${page.
 const title = page.currentPage > 1
   ? `Guides — Page ${page.currentPage} of ${page.lastPage} — GeoReady`
   : 'Guides — AI Search Visibility & Generative Engine Optimization';
+const guideActionLinks = [
+  { href: '/ai-seo-audit/', label: 'AI SEO audit' },
+  { href: '/chatgpt-visibility-checker/', label: 'ChatGPT visibility' },
+  { href: '/perplexity-citation-checker/', label: 'Perplexity citations' },
+  { href: '/research/', label: 'Research foundation' },
+] as const;
+
+const guideToolCards = [
+  {
+    href: '/ai-seo-audit/',
+    title: 'Free AI SEO audit',
+    copy:
+      'Check crawler access, schema, llms.txt, content quality, AI discovery, and entity signals before prioritizing fixes.',
+    meta: 'Audit',
+    dataCta: 'guides_tools_ai_seo_audit',
+  },
+  {
+    href: '/chatgpt-visibility-checker/',
+    title: 'ChatGPT visibility checker',
+    copy:
+      'Use this path when the question is whether ChatGPT can understand, mention, or cite your website.',
+    meta: 'Visibility',
+    dataCta: 'guides_tools_chatgpt_visibility',
+  },
+  {
+    href: '/perplexity-citation-checker/',
+    title: 'Perplexity citation checker',
+    copy:
+      'Inspect source-backed answers and see whether Perplexity-style results cite your domain or competitors.',
+    meta: 'Citations',
+    dataCta: 'guides_tools_perplexity_citations',
+  },
+  {
+    href: '/tools/llms-txt-generator/',
+    title: 'Free llms.txt generator',
+    copy:
+      'Generate a starter llms.txt from your sitemap, then publish the editable Markdown at your domain root.',
+    meta: 'Tool',
+    dataCta: 'guides_tools_llms_generator',
+  },
+] as const;
+
 function getCardImage(article: (typeof articles)[number]) {
   if (article.ogImage?.asset) {
     return {
@@ -76,12 +118,15 @@ function getCardImage(article: (typeof articles)[number]) {
           ))}
         </div>
 
-        <div class="mt-8 flex flex-wrap gap-3 text-sm">
-          <a href="/research/" class="text-accent-teal hover:text-accent-teal-dark transition-colors">Research foundation</a>
-          <span class="text-text-muted">·</span>
-          <a href="/manifesto/" class="text-accent-teal hover:text-accent-teal-dark transition-colors">Manifesto</a>
-          <span class="text-text-muted">·</span>
-          <a href="/tools/ai-citation-checker/" class="text-accent-teal hover:text-accent-teal-dark transition-colors">Citation checker</a>
+        <div class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
+          {guideActionLinks.map((link, index) => (
+            <>
+              <a href={link.href} class="text-accent-teal hover:text-accent-teal-dark transition-colors">
+                {link.label}
+              </a>
+              {index < guideActionLinks.length - 1 && <span class="text-text-muted">/</span>}
+            </>
+          ))}
         </div>
       </div>
 
@@ -187,22 +232,25 @@ function getCardImage(article: (typeof articles)[number]) {
             Use the tools when a guide turns into an implementation task.
           </p>
         </div>
-      <ul class="space-y-4">
-        <li>
-          <a
-            href="/tools/llms-txt-generator/"
-            class="block rounded-xl border border-border bg-bg-surface p-5 md:p-6 transition-colors hover:border-accent-teal/30"
-          >
-            <h3 class="font-display text-base md:text-lg font-semibold text-text-primary leading-snug">
-              Free llms.txt generator
-            </h3>
-            <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
-              Generate a starter llms.txt from your sitemap — categorized, editable Markdown you can download and publish at your domain root.
-            </p>
-            <p class="mt-3 text-xs font-mono text-text-muted">Tool</p>
-          </a>
-        </li>
-      </ul>
+        <ul class="grid gap-4 sm:grid-cols-2">
+          {guideToolCards.map((tool) => (
+            <li>
+              <a
+                href={tool.href}
+                data-cta={tool.dataCta}
+                class="block h-full rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6 transition-colors hover:border-accent-teal/30"
+              >
+                <h3 class="font-display text-base md:text-lg font-semibold text-text-primary leading-snug">
+                  {tool.title}
+                </h3>
+                <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
+                  {tool.copy}
+                </p>
+                <p class="mt-3 text-xs font-mono text-text-muted">{tool.meta}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
 
