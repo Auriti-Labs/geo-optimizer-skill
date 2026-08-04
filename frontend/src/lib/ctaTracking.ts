@@ -16,10 +16,19 @@
  *   - CTA generica            → <a data-cta="<location>"> → evento geo_cta_clicked
  *   Un link è O un piano O una CTA generica: i due rami si escludono, niente doppio evento.
  */
-import { track, trackPlanSelected, trackCtaClicked } from './geo_track';
+import {
+  track,
+  trackPlanSelected,
+  trackCtaClicked,
+  trackSignupStarted,
+  trackOnboardingStarted,
+  trackReportClaimStarted,
+  trackUpgradeIntent,
+} from './geo_track';
 
 const MANUAL_PREVIEW_FILE = 'geo-readiness-manual-preview.pdf';
 const MANUAL_DOWNLOAD_ENDPOINT = '/public/download-manual';
+const APP_HOST = 'app.geoready.dev';
 
 type ManualRequestContext = {
   location: string;
@@ -61,6 +70,102 @@ function handleGenericCta(link: HTMLElement): void {
     cta_location: location,
     cta_text: (link.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80) || 'unknown',
   });
+}
+
+function linkText(link: HTMLElement): string {
+  return (link.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80) || 'unknown';
+}
+
+function ctaLocation(link: HTMLElement): string {
+  return (
+    link.getAttribute('data-cta-location') ||
+    link.getAttribute('data-cta') ||
+    link.getAttribute('aria-label') ||
+    'app_outbound'
+  );
+}
+
+function appUrl(link: HTMLElement): URL | null {
+  const href = link.getAttribute('href');
+  if (!href) return null;
+  try {
+    const url = new URL(href, window.location.href);
+    return url.hostname === APP_HOST ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+function planIdFor(link: HTMLElement, url: URL): string {
+  return link.getAttribute('data-plan-id') || url.searchParams.get('plan') || '';
+}
+
+function planNameFor(link: HTMLElement, planId: string): string | undefined {
+  return link.getAttribute('data-plan-name') || (planId ? planId.charAt(0).toUpperCase() + planId.slice(1) : undefined);
+}
+
+function appDestination(url: URL): 'signup' | 'login' | 'unknown' {
+  if (url.pathname.startsWith('/signup')) return 'signup';
+  if (url.pathname.startsWith('/login')) return 'login';
+  return 'unknown';
+}
+
+function handleAppFunnelClick(link: HTMLElement): void {
+  const url = appUrl(link);
+  if (!url) return;
+
+  const location = ctaLocation(link);
+  const planId = planIdFor(link, url);
+  const intent = url.searchParams.get('intent') || undefined;
+  const onboarding = url.searchParams.get('onboarding') || undefined;
+  const hasClaim = url.searchParams.has('claim');
+  const destination = appDestination(url);
+
+  if (destination === 'signup') {
+    trackSignupStarted({
+      plan_id: planId || undefined,
+      intent,
+      onboarding,
+      claim_present: hasClaim,
+      cta_location: location,
+      cta_text: linkText(link),
+    });
+  }
+
+  if (onboarding) {
+    trackOnboardingStarted({
+      onboarding,
+      plan_id: planId || undefined,
+      intent,
+      cta_location: location,
+      claim_present: hasClaim,
+    });
+  }
+
+  if (hasClaim) {
+    trackReportClaimStarted({
+      claim_source: url.searchParams.get('claim_source') || 'unknown',
+      destination,
+      cta_location: location,
+    });
+  }
+
+  if (planId && planId !== 'free') {
+    trackUpgradeIntent({
+      plan_id: planId,
+      plan_name: planNameFor(link, planId),
+      intent,
+      cta_location: location,
+      claim_present: hasClaim,
+    });
+  }
+
+  if (url.pathname.startsWith('/pricing')) {
+    track('geo_app_pricing_opened', {
+      cta_location: location,
+      cta_text: linkText(link),
+    });
+  }
 }
 
 function manualFormLocation(element: HTMLElement): string {
@@ -152,6 +257,9 @@ export function initCtaTracking(): void {
     if (!target) return;
     const previewLink = target.closest<HTMLElement>(`a[href$="${MANUAL_PREVIEW_FILE}"]`);
     if (previewLink) handleManualPreviewDownload(previewLink);
+
+    const appLink = target.closest<HTMLElement>(`a[href*="${APP_HOST}"]`);
+    if (appLink) handleAppFunnelClick(appLink);
 
     const link = target.closest<HTMLElement>('a[data-plan-id], a[data-cta]');
     if (!link) return;

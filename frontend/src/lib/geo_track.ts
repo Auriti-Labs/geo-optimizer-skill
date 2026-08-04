@@ -138,6 +138,45 @@ export function trackPlanSelected(params: {
   track('geo_plan_selected', params);
 }
 
+export function trackSignupStarted(params: {
+  plan_id?: string;
+  intent?: string;
+  onboarding?: string;
+  claim_present: boolean;
+  cta_location: string;
+  cta_text: string;
+}): void {
+  track('geo_signup_started', params);
+}
+
+export function trackOnboardingStarted(params: {
+  onboarding: string;
+  plan_id?: string;
+  intent?: string;
+  cta_location: string;
+  claim_present: boolean;
+}): void {
+  track('geo_onboarding_started', params);
+}
+
+export function trackReportClaimStarted(params: {
+  claim_source: string;
+  destination: 'signup' | 'login' | 'unknown';
+  cta_location: string;
+}): void {
+  track('geo_report_claim_started', params);
+}
+
+export function trackUpgradeIntent(params: {
+  plan_id: string;
+  plan_name?: string;
+  intent?: string;
+  cta_location: string;
+  claim_present: boolean;
+}): void {
+  track('geo_upgrade_intent_clicked', params);
+}
+
 /** Obiezione pricing — risposta alla micro-survey "What's stopping you today?".
  *  `reason` è una delle opzioni predefinite; `note` è testo libero opzionale
  *  (troncato lato client, nessun dato personale richiesto). */
