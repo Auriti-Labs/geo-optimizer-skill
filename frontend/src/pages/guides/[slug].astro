@@ -5,6 +5,7 @@ import NewsletterSignup from '../../components/NewsletterSignup';
 import Callout from '../../components/Callout.astro';
 import CodeBlock from '../../components/CodeBlock.astro';
 import Image from '../../components/Image.astro';
+import PortableTextLink from '../../components/PortableTextLink.astro';
 import ArticleVisual from '../../components/ArticleVisual.astro';
 import { guidePrimaryVisuals, guideSupplementalVisuals } from '../../lib/articleVisuals';
 import { getAllArticleSlugs, getArticleBySlug, urlForImage } from '../../utils/sanity';
@@ -180,6 +181,9 @@ const ptComponents = {
     callout: Callout,
     codeBlock: CodeBlock,
     image: Image,
+  },
+  mark: {
+    link: PortableTextLink,
   },
 };
 

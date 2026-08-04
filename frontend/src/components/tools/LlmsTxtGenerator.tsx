@@ -340,7 +340,8 @@ export default function LlmsTxtGenerator() {
           {/* CTA verso l'audit completo + link alla guida. */}
           <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-border">
             <a
-              href="/#audit-form"
+              href="/ai-seo-audit/"
+              data-cta="llms_generator_result_ai_seo_audit"
               className="px-5 py-2.5 rounded-lg bg-accent-teal text-white font-semibold text-sm hover:bg-accent-teal-dark transition-colors"
             >
               Run a full AI SEO audit

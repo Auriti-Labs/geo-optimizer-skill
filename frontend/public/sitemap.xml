@@ -28,6 +28,17 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://geoready.dev/ai-seo-audit-for-saas/</loc>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://geoready.dev/assets/geoready-visuals/v2/ai-command-center-v2.png</image:loc>
+      <image:title>SaaS AI SEO audit dashboard</image:title>
+      <image:caption>AI SEO audit workflow for SaaS product, pricing, comparison, and documentation pages.</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://geoready.dev/ai-seo-audit/</loc>
     <lastmod>2026-08-04</lastmod>
     <changefreq>weekly</changefreq>
@@ -51,7 +62,7 @@
   </url>
   <url>
     <loc>https://geoready.dev/analyze-competitors/</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-08-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -62,9 +73,20 @@
   </url>
   <url>
     <loc>https://geoready.dev/best-geo-tools/</loc>
-    <lastmod>2026-07-29</lastmod>
+    <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://geoready.dev/chatgpt-visibility-audit/</loc>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://geoready.dev/assets/geoready-visuals/v2/ai-retrieval-map-v2.png</image:loc>
+      <image:title>ChatGPT visibility audit workflow</image:title>
+      <image:caption>Audit path from crawler access and entity clarity to ChatGPT-style answer inclusion.</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://geoready.dev/chatgpt-visibility-checker/</loc>
@@ -286,6 +308,17 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://geoready.dev/llms-txt-generator-wordpress/</loc>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://geoready.dev/assets/geoready-visuals/v2/ai-retrieval-map-v2.png</image:loc>
+      <image:title>WordPress llms.txt discovery workflow</image:title>
+      <image:caption>Workflow for generating, publishing, and auditing llms.txt on a WordPress site.</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://geoready.dev/manifesto/</loc>
     <lastmod>2026-07-15</lastmod>
     <changefreq>monthly</changefreq>
@@ -306,6 +339,17 @@
       <image:loc>https://geoready.dev/assets/geoready-visuals/v2/ai-citation-intelligence-v2.png</image:loc>
       <image:title>Perplexity citation intelligence dashboard</image:title>
       <image:caption>AI citation readout showing whether an answer cites your domain or competitors.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://geoready.dev/perplexity-citation-monitoring/</loc>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://geoready.dev/assets/geoready-visuals/v2/ai-citation-intelligence-v2.png</image:loc>
+      <image:title>Perplexity citation monitoring dashboard</image:title>
+      <image:caption>Recurring AI citation monitoring for own-domain citations, competitor sources, and answer snapshots.</image:caption>
     </image:image>
   </url>
   <url>
@@ -350,7 +394,7 @@
   </url>
   <url>
     <loc>https://geoready.dev/state-of-geo/</loc>
-    <lastmod>2026-08-03</lastmod>
+    <lastmod>2026-08-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
@@ -362,7 +406,7 @@
   </url>
   <url>
     <loc>https://geoready.dev/state-of-geo/june-2026/</loc>
-    <lastmod>2026-07-29</lastmod>
+    <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

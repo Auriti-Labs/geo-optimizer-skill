@@ -1,0 +1,73 @@
+---
+import type { MarkProps } from 'astro-portabletext/types';
+
+type LinkMark = {
+  href?: string;
+  blank?: boolean;
+};
+
+export type Props = MarkProps<LinkMark>;
+
+const { node, ...attrs } = Astro.props;
+const rawHref = node.markDef?.href || '#';
+const anchorText = Array.isArray(node.children)
+  ? node.children
+      .map((child: any) => (typeof child?.text === 'string' ? child.text : ''))
+      .join(' ')
+      .trim()
+  : '';
+
+function normalizeInternalHref(href: string, text: string): string {
+  const lowerText = text.toLowerCase();
+  const normalizedHref = href === 'https://geoready.dev/' ? '/' : href;
+
+  if (
+    (normalizedHref === '/' || normalizedHref === '/#audit-form') &&
+    (lowerText.includes('ai seo audit') ||
+      lowerText.includes('geo audit') ||
+      lowerText.includes('free audit') ||
+      lowerText.includes('readiness audit'))
+  ) {
+    return '/ai-seo-audit/';
+  }
+
+  if (
+    normalizedHref === '/tools/ai-citation-checker/' &&
+    (lowerText.includes('perplexity') || lowerText.includes('citation checker'))
+  ) {
+    return '/perplexity-citation-checker/';
+  }
+
+  if (
+    normalizedHref === '/' &&
+    (lowerText.includes('chatgpt') || lowerText.includes('visibility checker'))
+  ) {
+    return '/chatgpt-visibility-checker/';
+  }
+
+  return normalizedHref;
+}
+
+function ctaForHref(href: string): string | undefined {
+  if (href === '/ai-seo-audit/') return 'cms_link_ai_seo_audit';
+  if (href === '/chatgpt-visibility-checker/') return 'cms_link_chatgpt_visibility';
+  if (href === '/perplexity-citation-checker/') return 'cms_link_perplexity_citation';
+  if (href === '/pricing/') return 'cms_link_pricing';
+  return undefined;
+}
+
+const href = normalizeInternalHref(rawHref, anchorText);
+const isExternal = /^https?:\/\//.test(href) && !href.startsWith('https://geoready.dev');
+const isBlank = Boolean(node.markDef?.blank) || isExternal;
+const dataCta = ctaForHref(href);
+---
+
+<a
+  href={href}
+  target={isBlank ? '_blank' : undefined}
+  rel={isBlank ? 'noopener noreferrer' : undefined}
+  data-cta={dataCta}
+  {...attrs}
+>
+  <slot />
+</a>

@@ -101,10 +101,13 @@ const faqs = [
         <div class="mt-5 grid gap-3 md:grid-cols-3">
           {[
             ['/ai-seo-audit/', 'Free AI SEO audit', 'Check crawler access, schema, llms.txt, content, and discovery signals.'],
+            ['/ai-seo-audit-for-saas/', 'AI SEO audit for SaaS', 'Check product, pricing, comparison, and docs pages for buyer-intent prompts.'],
             ['/chatgpt-visibility-checker/', 'ChatGPT visibility checker', 'Inspect the readiness path for ChatGPT-style answer inclusion.'],
+            ['/chatgpt-visibility-audit/', 'ChatGPT visibility audit', 'Find the blocker that keeps a page out of ChatGPT-style answers.'],
             ['/perplexity-citation-checker/', 'Perplexity citation checker', 'See whether source-backed answers cite your domain or competitors.'],
+            ['/perplexity-citation-monitoring/', 'Perplexity citation monitoring', 'Track citation losses, source changes, and competitor replacements over time.'],
           ].map(([href, label, text]) => (
-            <a href={href} class="rounded-[--radius-lg] border border-border bg-bg-base p-4 transition-colors hover:border-accent-teal">
+            <a href={href} data-cta={`ai_seo_high_intent_${label.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`} class="rounded-[--radius-lg] border border-border bg-bg-base p-4 transition-colors hover:border-accent-teal">
               <span class="text-sm font-semibold text-text-primary">{label}</span>
               <span class="mt-2 block text-sm leading-relaxed text-text-secondary">{text}</span>
             </a>
@@ -413,6 +416,7 @@ const faqs = [
         <ul class="mt-3 space-y-2 list-disc pl-5">
           <li><a href="/guides/what-is-llms-txt/" class="text-accent-teal hover:underline">What is llms.txt</a> — what the orientation file does, with a concrete example.</li>
           <li><a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt for WordPress</a> — implementing the file manually or with a plugin.</li>
+          <li><a href="/llms-txt-generator-wordpress/" class="text-accent-teal hover:underline">llms.txt generator for WordPress</a> — generate the file, publish it at the root, then audit AI discovery.</li>
           <li><a href="/guides/appear-in-chatgpt-perplexity/" class="text-accent-teal hover:underline">Appear in ChatGPT and Perplexity sources</a> — the full content and technical checklist.</li>
           <li><a href="/guides/ai-visibility-checklist/" class="text-accent-teal hover:underline">AI visibility checklist</a> — every technical and content signal in one place, with pass/fail criteria.</li>
           <li><a href="/guides/ai-citations-check/" class="text-accent-teal hover:underline">How to check if AI engines cite your brand</a> — a practical method for ChatGPT and Perplexity.</li>
@@ -456,7 +460,8 @@ const faqs = [
         </p>
         <div class="mt-6 flex flex-col sm:flex-row gap-3">
           <a
-            href="/#audit-form"
+            href="/ai-seo-audit/"
+            data-cta="ai_seo_final_ai_seo_audit"
             class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
           >
             Run a free AI visibility audit
@@ -470,7 +475,7 @@ const faqs = [
         </div>
         <p class="mt-4 text-xs text-text-muted">
           Want to save reports and track changes over time? You can
-          <a href="https://app.geoready.dev/signup" class="text-accent-teal hover:underline">create a GeoReady account</a>
+          <a href="https://app.geoready.dev/signup?onboarding=first_domain&utm_source=ai_seo&utm_medium=final_cta&utm_campaign=content_to_signup" data-cta="ai_seo_final_signup" class="text-accent-teal hover:underline">create a GeoReady account</a>
           or browse all our <a href="/guides/" class="text-accent-teal hover:underline">AI visibility guides</a> first.
         </p>
       </section>
