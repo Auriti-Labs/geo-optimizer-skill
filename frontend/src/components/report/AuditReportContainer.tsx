@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { trackAuditCompleted, trackCtaClicked } from '../../lib/geo_track';
 import { fetchAuditReport } from '../../lib/api';
 import { mockAuditReport } from '../../lib/mockData';
-import type { AuditReport } from '../../lib/mockData';
+import type { AuditReport, CategoryScore, Recommendation } from '../../lib/mockData';
 import { saveScore } from '../../lib/scoreHistory';
 import ReportHeader from './ReportHeader';
 import ScoreGauge from './ScoreGauge';
@@ -17,6 +17,48 @@ import ExportActions from './ExportActions';
 const FREE_SLUGS = new Set(['robots', 'meta', 'signals']);
 const ALL_LOCKED_SLUGS = ['llms', 'schema', 'content', 'ai_discovery', 'brand_entity'];
 
+const categoryAction: Record<string, { label: string; detail: string }> = {
+  robots: {
+    label: 'Fix crawler access first',
+    detail: 'AI systems cannot cite pages they are blocked from reaching. Check robots.txt, X-Robots-Tag, and AI crawler directives before rewriting content.',
+  },
+  llms: {
+    label: 'Publish an llms.txt source map',
+    detail: 'Expose your best pages, product facts, pricing pages, docs, and canonical resources in one file that answer engines can parse quickly.',
+  },
+  schema: {
+    label: 'Add machine-readable schema',
+    detail: 'Ship Organization, WebSite, Article, Product, and FAQ JSON-LD where relevant so engines can resolve what the page, brand, and offer are.',
+  },
+  meta: {
+    label: 'Stabilize page metadata',
+    detail: 'Canonical URLs, titles, descriptions, and Open Graph tags reduce ambiguity when engines choose which URL or snippet to trust.',
+  },
+  content: {
+    label: 'Rewrite for extractable answers',
+    detail: 'Lead important sections with direct answers, add concrete facts, and split long explanations into self-contained blocks that can be cited.',
+  },
+  signals: {
+    label: 'Monitor freshness signals',
+    detail: 'Keep sitemap, feeds, dates, and core technical signals consistent so score regressions are visible before rankings or citations drop.',
+  },
+  ai_discovery: {
+    label: 'Expose AI discovery endpoints',
+    detail: 'Add /.well-known/ai.txt, summary files, and FAQ-style resources so answer engines can discover the site beyond standard HTML crawling.',
+  },
+  brand_entity: {
+    label: 'Strengthen entity resolution',
+    detail: 'Connect the brand, authors, social profiles, contact page, and sameAs references so engines can identify the company consistently.',
+  },
+};
+
+const priorityRank: Record<Recommendation['priority'], number> = {
+  critical: 0,
+  high: 1,
+  medium: 2,
+  low: 3,
+};
+
 interface AuditReportContainerProps {
   reportId: string;
 }
@@ -25,6 +67,121 @@ type State =
   | { status: 'loading' }
   | { status: 'error'; message: string }
   | { status: 'ready'; report: AuditReport; claim_token: string | null; expires_at: string | null };
+
+function categoryRatio(category: CategoryScore): number {
+  if (category.maxScore <= 0) return 1;
+  return category.score / category.maxScore;
+}
+
+function findWeakestCategory(categories: CategoryScore[]): CategoryScore | null {
+  if (categories.length === 0) return null;
+  return [...categories].sort((a, b) => categoryRatio(a) - categoryRatio(b))[0];
+}
+
+function topRecommendations(recommendations: Recommendation[]): Recommendation[] {
+  return [...recommendations]
+    .sort((a, b) => priorityRank[a.priority] - priorityRank[b.priority])
+    .slice(0, 3);
+}
+
+function proSignupHref(claimToken: string | null): string {
+  const params = new URLSearchParams({
+    plan: 'pro',
+    intent: 'report_monitoring',
+    utm_source: 'audit_report',
+    utm_medium: 'result_cta',
+    utm_campaign: 'free_audit_to_paid',
+  });
+  if (claimToken) params.set('claim', claimToken);
+  return `https://app.geoready.dev/signup?${params.toString()}`;
+}
+
+function ReportNextStep({
+  report,
+  claimToken,
+  criticalCount,
+  highCount,
+}: {
+  report: AuditReport;
+  claimToken: string | null;
+  criticalCount: number;
+  highCount: number;
+}) {
+  const weakest = findWeakestCategory(report.categories);
+  const action = weakest ? categoryAction[weakest.slug] : null;
+  const recs = topRecommendations(report.recommendations);
+  const openIssues = criticalCount + highCount;
+
+  return (
+    <section className="rounded-xl border border-accent-teal/25 bg-accent-teal/5 p-5 md:p-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+        <div className="max-w-3xl">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-accent-teal">
+            <span>Recommended next step</span>
+            {openIssues > 0 && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-accent-teal/70" />
+                <span>{openIssues} critical or high issues</span>
+              </>
+            )}
+          </div>
+
+          <h2 className="mt-2 text-xl md:text-2xl font-bold text-text-primary leading-tight">
+            Turn this one-time audit into weekly monitoring.
+          </h2>
+
+          <p className="mt-3 text-sm md:text-base text-text-secondary leading-relaxed">
+            {weakest && action ? (
+              <>
+                The weakest area is <strong className="text-text-primary">{weakest.name}</strong>
+                {' '}at <strong className="text-text-primary">{weakest.score}/{weakest.maxScore}</strong>.
+                {' '}{action.detail}
+              </>
+            ) : (
+              'GeoReady Pro keeps the same checks running every week, stores score history, and flags regressions before they become harder to diagnose.'
+            )}
+          </p>
+
+          {recs.length > 0 && (
+            <ul className="mt-4 grid gap-2 text-sm text-text-secondary sm:grid-cols-3">
+              {recs.map((rec) => (
+                <li key={rec.id} className="flex gap-2 leading-snug">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-teal" />
+                  <span>{rec.title}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row lg:flex-col">
+          <a
+            href={proSignupHref(claimToken)}
+            data-plan-id="pro"
+            data-plan-name="Pro"
+            data-plan-period="monthly"
+            data-plan-price="$19"
+            data-plan-currency="USD"
+            data-cta-location="audit_report_next_step"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-accent-teal px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+          >
+            Monitor this URL
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+          <a
+            href="/pricing/?utm_source=audit_report&utm_medium=result_cta&utm_campaign=free_audit_to_paid"
+            data-cta="audit_report_next_step_pricing"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-bg-surface px-5 py-2.5 text-sm font-semibold text-text-primary transition-colors hover:bg-bg-subtle"
+          >
+            Compare plans
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function AuditReportContainer({ reportId }: AuditReportContainerProps) {
   const [state, setState] = useState<State>(() =>
@@ -162,6 +319,13 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
           <div className="text-[10px] text-text-muted mt-0.5">/ 100</div>
         </div>
       </div>
+
+      <ReportNextStep
+        report={report}
+        claimToken={state.claim_token}
+        criticalCount={criticalCount}
+        highCount={highCount}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-3 space-y-4">
