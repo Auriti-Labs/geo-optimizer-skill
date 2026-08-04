@@ -74,6 +74,30 @@ const faqs = [
   tableIntro="Use the free audit for the first diagnosis. Move to a paid loop only when the same signal needs monitoring, history, or client-ready proof."
   tableRows={tableRows}
   faqs={faqs}
+  paidStep={{
+    heading: 'Use Pro when the audit exposes a recurring technical risk.',
+    copy: 'An AI SEO audit gives the current diagnosis. Pro is the next step when crawler access, schema, metadata, llms.txt, or freshness signals need weekly monitoring and regression alerts.',
+    proofPoints: [
+      'Weekly checks for one domain.',
+      'Score history for the same URL set.',
+      'Alerts when a working setup regresses.',
+    ],
+    plan: {
+      id: 'pro',
+      name: 'Pro',
+      price: '$19',
+      period: 'monthly',
+      href: 'https://app.geoready.dev/signup?plan=pro&intent=ai_seo_monitoring&onboarding=first_domain&utm_source=ai_seo_audit&utm_medium=paid_step&utm_campaign=intent_to_paid',
+      cta: 'Start Pro monitoring',
+      ctaLocation: 'ai_seo_audit_paid_step_pro',
+      intent: 'ai_seo_monitoring',
+    },
+    secondary: {
+      href: '/pricing/',
+      label: 'Compare plans',
+      dataCta: 'ai_seo_audit_paid_step_pricing',
+    },
+  }}
 >
   <div slot="heroAside" class="w-full space-y-5">
     <ScoreSurface variant="light" class="w-full" />

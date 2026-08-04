@@ -73,6 +73,30 @@ const faqs = [
   tableIntro="Treat ChatGPT visibility as a funnel from crawl access to answer inclusion. Each layer has a different check and a different paid reason."
   tableRows={tableRows}
   faqs={faqs}
+  paidStep={{
+    heading: 'Use Studio when visibility has to become a monitored prompt set.',
+    copy: 'A readiness check tells you whether the page can be found and understood. Studio is the next step when you need recurring prompt checks, competitor context, and evidence that answer engines mention or cite the brand.',
+    proofPoints: [
+      'Track a fixed prompt pool over time.',
+      'Compare brand mentions against competitors.',
+      'Turn answer snapshots into client-ready evidence.',
+    ],
+    plan: {
+      id: 'studio',
+      name: 'Studio',
+      price: '$49',
+      period: 'monthly',
+      href: 'https://app.geoready.dev/signup?plan=studio&intent=chatgpt_visibility&onboarding=first_domain&utm_source=chatgpt_visibility_checker&utm_medium=paid_step&utm_campaign=intent_to_paid',
+      cta: 'Start Studio tracking',
+      ctaLocation: 'chatgpt_visibility_paid_step_studio',
+      intent: 'chatgpt_visibility',
+    },
+    secondary: {
+      href: '/pricing/',
+      label: 'Compare plans',
+      dataCta: 'chatgpt_visibility_paid_step_pricing',
+    },
+  }}
 >
   <div slot="heroAside" class="w-full">
     <CitationSurface mode="sov" variant="light" class="w-full" />

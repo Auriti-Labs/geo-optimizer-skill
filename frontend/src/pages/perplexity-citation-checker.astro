@@ -73,6 +73,30 @@ const faqs = [
   tableIntro="A citation result is useful when it tells you what to do next. Separate own-domain citations from mentions and competitor citations."
   tableRows={tableRows}
   faqs={faqs}
+  paidStep={{
+    heading: 'Use Studio when one citation snapshot is not enough.',
+    copy: 'A Perplexity citation check shows the current source set. Studio is the next step when you need to repeat the same prompts, catch citation losses, and see which competitor replaced your domain.',
+    proofPoints: [
+      'Scheduled citation checks.',
+      'Competitor-cited domain history.',
+      'Alerts when citation status changes.',
+    ],
+    plan: {
+      id: 'studio',
+      name: 'Studio',
+      price: '$49',
+      period: 'monthly',
+      href: 'https://app.geoready.dev/signup?plan=studio&intent=perplexity_citations&onboarding=first_domain&utm_source=perplexity_citation_checker&utm_medium=paid_step&utm_campaign=intent_to_paid',
+      cta: 'Start citation tracking',
+      ctaLocation: 'perplexity_citation_paid_step_studio',
+      intent: 'perplexity_citations',
+    },
+    secondary: {
+      href: '/pricing/',
+      label: 'Compare plans',
+      dataCta: 'perplexity_citation_paid_step_pricing',
+    },
+  }}
 >
   <div slot="heroAside" class="w-full">
     <CitationSurface mode="verdict" variant="light" class="w-full" />
