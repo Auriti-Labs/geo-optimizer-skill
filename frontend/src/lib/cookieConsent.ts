@@ -224,7 +224,9 @@ export function loadAnalyticsScript(): void {
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', '${GA_MEASUREMENT_ID}');
+    gtag('config', '${GA_MEASUREMENT_ID}', {
+      'linker': { 'domains': ['geoready.dev', 'app.geoready.dev'], 'decorate_forms': true }
+    });
   `;
   document.head.appendChild(inline);
 }
