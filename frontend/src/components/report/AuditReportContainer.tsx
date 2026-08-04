@@ -59,6 +59,91 @@ const priorityRank: Record<Recommendation['priority'], number> = {
   low: 3,
 };
 
+type RecommendedPlan = {
+  id: 'pro' | 'studio';
+  name: 'Pro' | 'Studio';
+  price: '$19' | '$49';
+  cta: string;
+  headline: string;
+  reason: string;
+  intent: string;
+};
+
+const planByCategory: Record<string, RecommendedPlan> = {
+  robots: {
+    id: 'pro',
+    name: 'Pro',
+    price: '$19',
+    cta: 'Start Pro monitoring',
+    headline: 'Start with Pro to keep technical GEO signals from regressing.',
+    reason: 'This looks like a technical visibility problem. Pro is the right first upgrade when you need weekly checks, score history, PDF export, and regression alerts for one domain.',
+    intent: 'technical_monitoring',
+  },
+  llms: {
+    id: 'pro',
+    name: 'Pro',
+    price: '$19',
+    cta: 'Start Pro monitoring',
+    headline: 'Start with Pro to monitor llms.txt and crawl-readiness over time.',
+    reason: 'llms.txt and crawler-discovery issues are usually fixed quickly, then monitored. Pro keeps the domain on a weekly audit loop and warns when the setup changes.',
+    intent: 'llms_monitoring',
+  },
+  schema: {
+    id: 'pro',
+    name: 'Pro',
+    price: '$19',
+    cta: 'Start Pro monitoring',
+    headline: 'Start with Pro to validate schema fixes every week.',
+    reason: 'Schema regressions are easy to introduce during CMS, template, or release changes. Pro gives one-domain monitoring, history, and alerts after the first fix.',
+    intent: 'schema_monitoring',
+  },
+  meta: {
+    id: 'pro',
+    name: 'Pro',
+    price: '$19',
+    cta: 'Start Pro monitoring',
+    headline: 'Start with Pro to keep metadata and canonical signals stable.',
+    reason: 'Metadata issues affect both classic SEO and AI answer extraction. Pro is enough when the main job is catching technical drift on one domain.',
+    intent: 'metadata_monitoring',
+  },
+  signals: {
+    id: 'pro',
+    name: 'Pro',
+    price: '$19',
+    cta: 'Start Pro monitoring',
+    headline: 'Start with Pro to catch freshness and technical signal drift.',
+    reason: 'Freshness and technical signal changes are monitoring problems. Pro keeps a score history and alerts you when a working setup degrades.',
+    intent: 'freshness_monitoring',
+  },
+  content: {
+    id: 'studio',
+    name: 'Studio',
+    price: '$49',
+    cta: 'Start Studio tracking',
+    headline: 'Use Studio when the gap is citation quality, not just crawlability.',
+    reason: 'Content gaps need more than a weekly technical score. Studio adds AI citation tracking, competitor comparison, and client-ready exports so you can see whether answer engines actually mention and cite you.',
+    intent: 'citation_tracking',
+  },
+  ai_discovery: {
+    id: 'studio',
+    name: 'Studio',
+    price: '$49',
+    cta: 'Start Studio tracking',
+    headline: 'Use Studio to track whether AI engines discover and cite the site.',
+    reason: 'Discovery issues sit between technical access and answer-engine presence. Studio is the better fit when you need citation checks and competitor context, not only monitoring.',
+    intent: 'ai_discovery_tracking',
+  },
+  brand_entity: {
+    id: 'studio',
+    name: 'Studio',
+    price: '$49',
+    cta: 'Start Studio tracking',
+    headline: 'Use Studio when entity authority is the blocker.',
+    reason: 'Brand and entity gaps show up in whether answer engines mention you against competitors. Studio adds citation tracking and comparison workflows for that job.',
+    intent: 'entity_citation_tracking',
+  },
+};
+
 interface AuditReportContainerProps {
   reportId: string;
 }
@@ -84,10 +169,15 @@ function topRecommendations(recommendations: Recommendation[]): Recommendation[]
     .slice(0, 3);
 }
 
-function proSignupHref(claimToken: string | null): string {
+function recommendedPlanFor(category: CategoryScore | null): RecommendedPlan {
+  if (!category) return planByCategory.robots;
+  return planByCategory[category.slug] ?? planByCategory.robots;
+}
+
+function planSignupHref(plan: RecommendedPlan, claimToken: string | null): string {
   const params = new URLSearchParams({
-    plan: 'pro',
-    intent: 'report_monitoring',
+    plan: plan.id,
+    intent: plan.intent,
     utm_source: 'audit_report',
     utm_medium: 'result_cta',
     utm_campaign: 'free_audit_to_paid',
@@ -109,6 +199,7 @@ function ReportNextStep({
 }) {
   const weakest = findWeakestCategory(report.categories);
   const action = weakest ? categoryAction[weakest.slug] : null;
+  const plan = recommendedPlanFor(weakest);
   const recs = topRecommendations(report.recommendations);
   const openIssues = criticalCount + highCount;
 
@@ -118,6 +209,8 @@ function ReportNextStep({
         <div className="max-w-3xl">
           <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-accent-teal">
             <span>Recommended next step</span>
+            <span className="w-1 h-1 rounded-full bg-accent-teal/70" />
+            <span>{plan.name} {plan.price}/mo</span>
             {openIssues > 0 && (
               <>
                 <span className="w-1 h-1 rounded-full bg-accent-teal/70" />
@@ -127,7 +220,7 @@ function ReportNextStep({
           </div>
 
           <h2 className="mt-2 text-xl md:text-2xl font-bold text-text-primary leading-tight">
-            Turn this one-time audit into weekly monitoring.
+            {plan.headline}
           </h2>
 
           <p className="mt-3 text-sm md:text-base text-text-secondary leading-relaxed">
@@ -136,9 +229,10 @@ function ReportNextStep({
                 The weakest area is <strong className="text-text-primary">{weakest.name}</strong>
                 {' '}at <strong className="text-text-primary">{weakest.score}/{weakest.maxScore}</strong>.
                 {' '}{action.detail}
+                {' '}{plan.reason}
               </>
             ) : (
-              'GeoReady Pro keeps the same checks running every week, stores score history, and flags regressions before they become harder to diagnose.'
+              plan.reason
             )}
           </p>
 
@@ -156,16 +250,16 @@ function ReportNextStep({
 
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row lg:flex-col">
           <a
-            href={proSignupHref(claimToken)}
-            data-plan-id="pro"
-            data-plan-name="Pro"
+            href={planSignupHref(plan, claimToken)}
+            data-plan-id={plan.id}
+            data-plan-name={plan.name}
             data-plan-period="monthly"
-            data-plan-price="$19"
+            data-plan-price={plan.price}
             data-plan-currency="USD"
             data-cta-location="audit_report_next_step"
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-accent-teal px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
           >
-            Monitor this URL
+            {plan.cta}
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
