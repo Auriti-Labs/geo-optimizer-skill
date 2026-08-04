@@ -116,6 +116,9 @@ const META_BY_PATH = {
   '/tools/llms-txt-generator/': { changefreq: 'monthly', priority: '0.8' },
   '/tools/ai-citation-checker/': { changefreq: 'monthly', priority: '0.8' },
   '/ai-seo/': { changefreq: 'weekly', priority: '0.9' },
+  '/ai-seo-audit/': { changefreq: 'weekly', priority: '0.9' },
+  '/chatgpt-visibility-checker/': { changefreq: 'weekly', priority: '0.8' },
+  '/perplexity-citation-checker/': { changefreq: 'weekly', priority: '0.8' },
   '/best-geo-tools/': { changefreq: 'monthly', priority: '0.8' },
   '/methodology/': { changefreq: 'monthly', priority: '0.8' },
   '/guides/generative-engine-optimization/': { changefreq: 'monthly', priority: '0.8' },
@@ -167,6 +170,27 @@ const IMAGE_BY_PATH = {
       loc: '/assets/geoready-visuals/v2/ai-retrieval-map-v2.png',
       title: 'AI SEO retrieval map',
       caption: 'How crawler access, llms.txt, schema, entity clarity, retrieval, and citation output fit into AI SEO.',
+    },
+  ],
+  '/ai-seo-audit/': [
+    {
+      loc: '/assets/geoready-visuals/v2/ai-command-center-v2.png',
+      title: 'AI SEO audit score dashboard',
+      caption: 'GeoReady audit dashboard for crawler access, schema, llms.txt, content quality, and AI discovery signals.',
+    },
+  ],
+  '/chatgpt-visibility-checker/': [
+    {
+      loc: '/assets/geoready-visuals/v2/ai-retrieval-map-v2.png',
+      title: 'ChatGPT visibility readiness map',
+      caption: 'Readiness path from crawler access and structured data to AI answer inclusion.',
+    },
+  ],
+  '/perplexity-citation-checker/': [
+    {
+      loc: '/assets/geoready-visuals/v2/ai-citation-intelligence-v2.png',
+      title: 'Perplexity citation intelligence dashboard',
+      caption: 'AI citation readout showing whether an answer cites your domain or competitors.',
     },
   ],
   '/guides/': [

@@ -91,6 +91,9 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 
 - [Audit](https://geoready.dev/): Run a GEO audit on any URL — free, no account required.
 - [AI SEO Guide](https://geoready.dev/ai-seo/): What AI SEO is, how it differs from traditional SEO, and how to audit a site for visibility in ChatGPT, Perplexity, Claude, and Gemini.
+- [Free AI SEO Audit](https://geoready.dev/ai-seo-audit/): High-intent audit landing page with a no-account form for checking crawler access, llms.txt, schema, content quality, AI discovery, and entity signals.
+- [ChatGPT Visibility Checker](https://geoready.dev/chatgpt-visibility-checker/): Readiness page explaining how to check whether a site can appear in ChatGPT-style answers, with a path from audit to source-backed citation checks.
+- [Perplexity Citation Checker](https://geoready.dev/perplexity-citation-checker/): Commercial citation page for checking whether Perplexity-style answers cite the user's own domain or cite competitors instead.
 - [Compare](https://geoready.dev/compare/): Side-by-side comparison of two URLs.
 - [Analyze Competitors](https://geoready.dev/analyze-competitors/): Multi-URL competitor analysis.
 - [Research](https://geoready.dev/research/): Peer-reviewed research foundation.
