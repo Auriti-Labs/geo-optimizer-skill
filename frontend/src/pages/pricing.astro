@@ -117,6 +117,57 @@ const scalePlans = [
   },
 ];
 
+const planChoiceRows = [
+  {
+    intent: 'I need one current GEO score before I change anything.',
+    plan: 'Free audit',
+    reason: 'Use the free audit when you need a one-time diagnosis for one URL, with the full 8-category report and no account.',
+    href: '/#audit-form',
+    cta: 'Run free audit',
+    tracking: 'pricing_choice_free_audit',
+    planId: '',
+    planName: '',
+    price: '',
+    period: '',
+  },
+  {
+    intent: 'I need to know when my site gets worse or better.',
+    plan: 'Pro',
+    reason: 'Choose Pro when one domain needs weekly monitoring, score history, regression alerts, PDF export, and API access.',
+    href: 'https://app.geoready.dev/signup?plan=pro&intent=monitoring&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid',
+    cta: 'Start Pro',
+    tracking: 'pricing_choice_pro_monitoring',
+    planId: 'pro',
+    planName: 'Pro',
+    price: '$19',
+    period: 'monthly',
+  },
+  {
+    intent: 'I need AI citation tracking or client-ready reports.',
+    plan: 'Studio',
+    reason: 'Choose Studio when AI citations, competitor comparison, unbranded exports, or several monitored domains matter.',
+    href: 'https://app.geoready.dev/signup?plan=studio&intent=citations&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid',
+    cta: 'Start Studio',
+    tracking: 'pricing_choice_studio_citations',
+    planId: 'studio',
+    planName: 'Studio',
+    price: '$49',
+    period: 'monthly',
+  },
+  {
+    intent: 'I manage a portfolio and need team or bulk workflows.',
+    plan: 'Agency',
+    reason: 'Choose Agency when 50 monitored domains, team access, unlimited batch audits, and AI answer snapshots are part of the workflow.',
+    href: 'https://app.geoready.dev/signup?plan=agency&intent=portfolio&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid',
+    cta: 'Start Agency',
+    tracking: 'pricing_choice_agency_portfolio',
+    planId: 'agency',
+    planName: 'Agency',
+    price: '$89',
+    period: 'monthly',
+  },
+] as const;
+
 const comparisonRows: [string, string, string, string, string][] = [
   ['GEO score (0–100)',      '✓',       '✓',        '✓',        '✓'],
   ['Full 8-category report', '✓',       '✓',        '✓',        '✓'],
@@ -383,6 +434,72 @@ const faqs = [
             )}
           </div>
         ))}
+      </div>
+
+      <div class="mt-14 rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6">
+        <div class="max-w-3xl">
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">Plan chooser</p>
+          <h2 class="mt-2 font-display text-2xl font-bold text-text-primary">
+            Which GeoReady plan should you choose?
+          </h2>
+          <p class="mt-3 text-sm leading-relaxed text-text-secondary">
+            Pick the plan by the job after the audit, not by feature count. A one-time
+            diagnosis stays free. Ongoing monitoring starts with Pro. AI citation
+            tracking and client workflows start with Studio.
+          </p>
+        </div>
+
+        <div class="mt-6 overflow-x-auto">
+          <table class="min-w-full border-collapse text-left text-sm">
+            <thead class="bg-bg-subtle text-text-primary">
+              <tr>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">If your next job is...</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Choose</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Why</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {planChoiceRows.map((row) => (
+                <tr>
+                  <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">
+                    {row.intent}
+                  </th>
+                  <td class="border-b border-border px-4 py-3 font-mono text-xs text-accent-teal">
+                    {row.plan}
+                  </td>
+                  <td class="border-b border-border px-4 py-3 text-text-secondary">
+                    {row.reason}
+                  </td>
+                  <td class="border-b border-border px-4 py-3">
+                    {row.planId ? (
+                      <a
+                        href={row.href}
+                        data-plan-id={row.planId}
+                        data-plan-name={row.planName}
+                        data-plan-price={row.price}
+                        data-plan-period={row.period}
+                        data-plan-currency="USD"
+                        data-cta-location={row.tracking}
+                        class="inline-flex whitespace-nowrap rounded-[--radius-md] border border-border px-3 py-2 text-xs font-semibold text-text-primary transition-colors hover:border-accent-teal"
+                      >
+                        {row.cta}
+                      </a>
+                    ) : (
+                      <a
+                        href={row.href}
+                        data-cta={row.tracking}
+                        class="inline-flex whitespace-nowrap rounded-[--radius-md] border border-border px-3 py-2 text-xs font-semibold text-text-primary transition-colors hover:border-accent-teal"
+                      >
+                        {row.cta}
+                      </a>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
