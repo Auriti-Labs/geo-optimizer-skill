@@ -1,0 +1,192 @@
+---
+import Shell from '../../components/Shell.astro';
+
+const title = 'GeoReady Growth Funnel Dashboard';
+const description = 'Noindex internal growth dashboard for GeoReady funnel measurement and weekly SEO/GEO actions.';
+const canonical = 'https://geoready.dev/growth/funnel/';
+const robots = 'noindex, nofollow';
+const snapshotWindow = 'June 3, 2026 to August 2, 2026';
+
+const funnel = [
+  { step: 'Reach', event: 'page_view', events: 4924, users: 380, rate: '100%', note: 'All tracked users in the GA4 export.' },
+  { step: 'Audit intent', event: 'geo_audit_started', events: 390, users: 225, rate: '59.2%', note: 'Users who started an audit from a URL form.' },
+  { step: 'Report value', event: 'geo_audit_completed', events: 404, users: 207, rate: '54.5%', note: 'Users who saw an audit result. Event count is higher than starts, so use users for trend reporting.' },
+  { step: 'Upgrade pressure', event: 'geo_gate_triggered', events: 116, users: 69, rate: '18.2%', note: 'Users who saw locked/upgrade context in the report.' },
+  { step: 'Commercial click', event: 'geo_cta_clicked', events: 85, users: 53, rate: '13.9%', note: 'Generic CTA clicks toward pricing, signup, demo, or related next steps.' },
+  { step: 'Plan intent', event: 'geo_plan_selected', events: 12, users: 9, rate: '2.4%', note: 'Users who selected a plan CTA before checkout.' },
+];
+
+const topPages = [
+  ['/', '1,267', '367', '8', 'Home and free audit entry point. Keep this page as the highest-speed path into report results.'],
+  ['/report/audit', '836', '318', '424', 'The highest-intent surface. Report CTA copy and plan recommendation matter most here.'],
+  ['/pricing/', '417', '126', '24', 'Strong pricing traffic relative to current audience size. Needs objections and checkout clarity.'],
+  ['/analyze-competitors/', '292', '44', '0', 'High pageviews per user. Add contextual upgrade paths and proof of portfolio use.'],
+  ['/methodology/', '284', '16', '0', 'Deep-reading trust page. Use it as support for commercial pages, not as the main CTA path.'],
+  ['/tools/llms-txt-generator/', '250', '29', '0', 'Tool intent. Link generated-file success toward monitoring and audit.'],
+  ['/tools/ai-citation-checker/', '239', '14', '0', 'Long engagement. Push citation outcomes toward Studio.'],
+  ['/best-geo-tools/', '227', '13', '0', 'Commercial comparison intent. Link to AI SEO audit and pricing from the decision sections.'],
+];
+
+const acquisition = [
+  ['Direct', '540', '410', '30.9%', 'Main source by volume. Treat as mixed branded, returning, and untagged traffic.'],
+  ['Referral', '343', '226', '23.9%', 'GitHub and external links are already meaningful. Keep GitHub, directories, and partner mentions active.'],
+  ['AI Assistant', '39', '20', '28.2%', 'Small but high-quality. ChatGPT sends users mainly to home and GEO guides.'],
+  ['Organic Search', '26', '15', '34.6%', 'Smallest growth lever today. High-intent landing pages should expand this channel.'],
+  ['Organic Social', '13', '8', '15.4%', 'Low volume. Use social for distribution, not primary acquisition yet.'],
+];
+
+const weeklyActions = [
+  ['Report to plan', 'Track audit_completed users to plan_selected users. Target: move from 4.3% to 7% by improving report next-step relevance.'],
+  ['Pricing objections', 'Track pricing page views to plan_selected. Target: identify the top objection through the pricing survey and rewrite the first pricing fold around it.'],
+  ['AI assistant landings', 'Watch ChatGPT and Gemini sessions by landing page. Target: create more answer-ready commercial pages, not only informational guides.'],
+  ['Organic expansion', 'Track impressions and clicks for /ai-seo-audit/, /chatgpt-visibility-checker/, and /perplexity-citation-checker/. Target: first 50 organic clicks per page cluster.'],
+];
+
+const eventMap = [
+  ['geo_audit_started', 'User submits a URL audit form.', 'Entry into product value.'],
+  ['geo_audit_completed', 'User sees a completed score report.', 'Proof moment.'],
+  ['geo_gate_triggered', 'User sees locked or upgrade context.', 'Commercial pressure.'],
+  ['geo_cta_clicked', 'User clicks a generic CTA.', 'Interest in next step.'],
+  ['geo_plan_selected', 'User clicks a plan CTA.', 'Paid intent before checkout.'],
+  ['manual_preview_downloaded', 'Preview PDF downloaded.', 'Manual funnel, owned by the current tracking check.'],
+  ['manual_pdf_requested', 'Full manual requested by email link.', 'Manual funnel, owned by the current email-link check.'],
+];
+---
+
+<Shell title={title} description={description} canonical={canonical} robots={robots}>
+  <article class="mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-16">
+    <header class="mb-10 rounded-[--radius-xl] border border-border bg-bg-surface p-6 md:p-8">
+      <div class="flex flex-wrap items-center gap-2 text-[10px] font-mono uppercase tracking-[0.16em] text-text-muted">
+        <span>Growth</span>
+        <span class="h-1 w-1 rounded-full bg-text-muted" aria-hidden="true"></span>
+        <span>Noindex dashboard</span>
+      </div>
+      <h1 class="mt-4 max-w-3xl font-display text-4xl font-bold leading-tight tracking-tight text-text-primary md:text-5xl">
+        GeoReady funnel snapshot and weekly action board
+      </h1>
+      <p class="mt-5 max-w-3xl text-base leading-relaxed text-text-secondary">
+        This page turns the GA4 exports from {snapshotWindow} into an internal funnel view. It is noindex and should be used as a working board until a live GA4/Data API dashboard is connected.
+      </p>
+      <div class="mt-6 grid gap-3 sm:grid-cols-3">
+        <div class="border-l border-accent-teal/30 pl-4">
+          <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-accent-teal">380</p>
+          <p class="mt-1 text-sm font-semibold text-text-primary">Active users</p>
+          <p class="mt-1 text-sm text-text-secondary">GA4 export total.</p>
+        </div>
+        <div class="border-l border-accent-teal/30 pl-4">
+          <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-accent-teal">225</p>
+          <p class="mt-1 text-sm font-semibold text-text-primary">Audit starters</p>
+          <p class="mt-1 text-sm text-text-secondary">59.2% of active users.</p>
+        </div>
+        <div class="border-l border-accent-teal/30 pl-4">
+          <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-accent-teal">9</p>
+          <p class="mt-1 text-sm font-semibold text-text-primary">Plan selectors</p>
+          <p class="mt-1 text-sm text-text-secondary">2.4% of active users.</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="mb-12" aria-labelledby="funnel-heading">
+      <h2 id="funnel-heading" class="font-display text-2xl font-bold text-text-primary">Core funnel</h2>
+      <p class="mt-3 max-w-3xl text-sm leading-relaxed text-text-secondary">
+        Use user counts for conversion rates. Event counts are useful for volume, but repeated events can make later steps look larger than earlier steps.
+      </p>
+      <div class="mt-6 grid gap-3 lg:grid-cols-6">
+        {funnel.map((item) => (
+          <section class="rounded-[--radius-lg] border border-border bg-bg-surface p-4">
+            <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-text-muted">{item.step}</p>
+            <p class="mt-2 font-mono text-xs text-accent-teal">{item.event}</p>
+            <p class="mt-3 font-display text-3xl font-bold text-text-primary">{item.users}</p>
+            <p class="text-xs text-text-muted">{item.events} events</p>
+            <p class="mt-3 rounded-full bg-accent-teal/10 px-2 py-1 text-center font-mono text-[11px] text-accent-teal">{item.rate}</p>
+            <p class="mt-3 text-xs leading-relaxed text-text-secondary">{item.note}</p>
+          </section>
+        ))}
+      </div>
+    </section>
+
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,0.98fr)_minmax(360px,0.62fr)]">
+      <section aria-labelledby="top-pages-heading">
+        <h2 id="top-pages-heading" class="font-display text-2xl font-bold text-text-primary">Top pages by tracked views</h2>
+        <div class="mt-5 overflow-x-auto rounded-[--radius-lg] border border-border bg-bg-surface">
+          <table class="min-w-full border-collapse text-left text-sm">
+            <thead class="bg-bg-subtle text-text-primary">
+              <tr>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Page</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Views</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Users</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Key events</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {topPages.map(([page, views, users, keyEvents, action]) => (
+                <tr>
+                  <th scope="row" class="border-b border-border px-4 py-3 font-mono text-xs text-text-primary">{page}</th>
+                  <td class="border-b border-border px-4 py-3 text-text-secondary">{views}</td>
+                  <td class="border-b border-border px-4 py-3 text-text-secondary">{users}</td>
+                  <td class="border-b border-border px-4 py-3 text-text-secondary">{keyEvents}</td>
+                  <td class="border-b border-border px-4 py-3 text-text-secondary">{action}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside class="space-y-8">
+        <section class="rounded-[--radius-lg] border border-border bg-bg-surface p-5" aria-labelledby="weekly-actions-heading">
+          <h2 id="weekly-actions-heading" class="font-display text-xl font-bold text-text-primary">Weekly action list</h2>
+          <ul class="mt-4 space-y-4">
+            {weeklyActions.map(([label, text]) => (
+              <li>
+                <p class="text-sm font-semibold text-text-primary">{label}</p>
+                <p class="mt-1 text-sm leading-relaxed text-text-secondary">{text}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section class="rounded-[--radius-lg] border border-border bg-bg-surface p-5" aria-labelledby="channel-heading">
+          <h2 id="channel-heading" class="font-display text-xl font-bold text-text-primary">Acquisition readout</h2>
+          <ul class="mt-4 space-y-3">
+            {acquisition.map(([channel, sessions, engaged, keyRate, action]) => (
+              <li class="border-l border-accent-teal/30 pl-4">
+                <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-accent-teal">{channel}</p>
+                <p class="mt-1 text-sm text-text-secondary">{sessions} sessions, {engaged} engaged, {keyRate} key-event rate.</p>
+                <p class="mt-1 text-xs leading-relaxed text-text-muted">{action}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </aside>
+    </div>
+
+    <section class="mt-12 rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6" aria-labelledby="event-map-heading">
+      <h2 id="event-map-heading" class="font-display text-2xl font-bold text-text-primary">Event map</h2>
+      <p class="mt-3 max-w-3xl text-sm leading-relaxed text-text-secondary">
+        These are the events that should drive the paid funnel dashboard. Manual events are listed for completeness, but you are already validating those separately.
+      </p>
+      <div class="mt-5 overflow-x-auto">
+        <table class="min-w-full border-collapse text-left text-sm">
+          <thead class="bg-bg-subtle text-text-primary">
+            <tr>
+              <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Event</th>
+              <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Trigger</th>
+              <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Funnel meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            {eventMap.map(([event, trigger, meaning]) => (
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-mono text-xs text-accent-teal">{event}</th>
+                <td class="border-b border-border px-4 py-3 text-text-secondary">{trigger}</td>
+                <td class="border-b border-border px-4 py-3 text-text-secondary">{meaning}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </article>
+</Shell>
