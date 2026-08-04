@@ -168,6 +168,36 @@ const planChoiceRows = [
   },
 ] as const;
 
+const afterCheckoutSteps = [
+  {
+    step: '01',
+    title: 'Stripe checkout',
+    desc: 'Payment is handled by Stripe. GeoReady does not store card details on its own servers.',
+  },
+  {
+    step: '02',
+    title: 'Plan activates immediately',
+    desc: 'After payment, the selected plan is available in the app without a sales call or manual approval.',
+  },
+  {
+    step: '03',
+    title: 'Claim or add your domain',
+    desc: 'If you start from a free report, the claim link carries that report into your account. Otherwise, add the domain from the dashboard.',
+  },
+  {
+    step: '04',
+    title: 'Monitoring starts from there',
+    desc: 'Pro runs weekly for one domain. Studio and Agency move to daily multi-site monitoring with longer history and client workflows.',
+  },
+] as const;
+
+const trustAssurances = [
+  ['Free stays useful', 'The free audit remains a complete 8-category report with no account and no card.'],
+  ['Cancel anytime', 'There is no annual lock-in or sales contract for self-serve plans.'],
+  ['Open methodology', 'The core audit engine, scoring logic, and CLI are MIT-licensed and auditable.'],
+  ['Founding price lock', 'The founding price stays locked while the subscription remains active.'],
+] as const;
+
 const comparisonRows: [string, string, string, string, string][] = [
   ['GEO score (0–100)',      '✓',       '✓',        '✓',        '✓'],
   ['Full 8-category report', '✓',       '✓',        '✓',        '✓'],
@@ -202,6 +232,10 @@ const faqs = [
   {
     q: 'Are paid plans available right now?',
     a: 'Yes. Pick a plan, create an account, and pay — your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe.',
+  },
+  {
+    q: 'What happens after I choose a paid plan?',
+    a: 'You complete Stripe checkout, return to the GeoReady app, and the selected plan activates immediately. If you came from a free report, the claim link can attach that report to your account; otherwise you add a domain from the dashboard and monitoring starts from that point.',
   },
   {
     q: 'What is the founding price?',
@@ -435,6 +469,50 @@ const faqs = [
           </div>
         ))}
       </div>
+
+      <section class="mt-14 rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6" aria-labelledby="after-checkout-heading">
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(320px,0.55fr)]">
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">After checkout</p>
+            <h2 id="after-checkout-heading" class="mt-2 font-display text-2xl font-bold text-text-primary">
+              What happens after you pick a paid plan
+            </h2>
+            <p class="mt-3 max-w-2xl text-sm leading-relaxed text-text-secondary">
+              The next screen is not a vague "contact sales" handoff. Self-serve plans activate through
+              Stripe, then the app guides you to claim the report or add the first monitored domain.
+            </p>
+
+            <ol class="mt-6 grid gap-3 sm:grid-cols-2">
+              {afterCheckoutSteps.map((item) => (
+                <li class="border-l border-accent-teal/30 bg-bg-base p-4">
+                  <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-teal">{item.step}</p>
+                  <h3 class="mt-2 text-sm font-semibold text-text-primary">{item.title}</h3>
+                  <p class="mt-1 text-sm leading-relaxed text-text-secondary">{item.desc}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div class="border-t border-border pt-6 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">Buyer checks</p>
+            <ul class="mt-4 space-y-4">
+              {trustAssurances.map(([label, text]) => (
+                <li>
+                  <p class="text-sm font-semibold text-text-primary">{label}</p>
+                  <p class="mt-1 text-sm leading-relaxed text-text-secondary">{text}</p>
+                </li>
+              ))}
+            </ul>
+            <a
+              href="/report/demo/"
+              data-cta="pricing_after_checkout_demo_report"
+              class="mt-6 inline-flex rounded-[--radius-md] border border-border px-4 py-2.5 text-sm font-semibold text-text-primary transition-colors hover:border-accent-teal"
+            >
+              View a demo report
+            </a>
+          </div>
+        </div>
+      </section>
 
       <div class="mt-14 rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6">
         <div class="max-w-3xl">
