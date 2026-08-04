@@ -178,12 +178,29 @@ function planSignupHref(plan: RecommendedPlan, claimToken: string | null): strin
   const params = new URLSearchParams({
     plan: plan.id,
     intent: plan.intent,
+    onboarding: claimToken ? 'claim_report' : 'first_domain',
     utm_source: 'audit_report',
     utm_medium: 'result_cta',
     utm_campaign: 'free_audit_to_paid',
   });
-  if (claimToken) params.set('claim', claimToken);
+  if (claimToken) {
+    params.set('claim', claimToken);
+    params.set('claim_source', 'free_audit_report');
+  }
   return `https://app.geoready.dev/signup?${params.toString()}`;
+}
+
+function pricingHref(claimToken: string | null): string {
+  const params = new URLSearchParams({
+    utm_source: 'audit_report',
+    utm_medium: 'result_cta',
+    utm_campaign: 'free_audit_to_paid',
+  });
+  if (claimToken) {
+    params.set('claim', claimToken);
+    params.set('claim_source', 'free_audit_report');
+  }
+  return `/pricing/?${params.toString()}`;
 }
 
 function ReportNextStep({
@@ -265,12 +282,17 @@ function ReportNextStep({
             </svg>
           </a>
           <a
-            href="/pricing/?utm_source=audit_report&utm_medium=result_cta&utm_campaign=free_audit_to_paid"
+            href={pricingHref(claimToken)}
             data-cta="audit_report_next_step_pricing"
             className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-bg-surface px-5 py-2.5 text-sm font-semibold text-text-primary transition-colors hover:bg-bg-subtle"
           >
             Compare plans
           </a>
+          <p className="max-w-xs text-xs leading-relaxed text-text-muted">
+            {claimToken
+              ? 'Signup carries this report into the app so the first paid action is claiming the audited domain.'
+              : 'After signup, the app opens on the first-domain monitoring step.'}
+          </p>
         </div>
       </div>
     </section>

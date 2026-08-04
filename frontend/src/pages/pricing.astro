@@ -33,7 +33,7 @@ const selfServePlans = [
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
     description: 'Weekly monitoring for one domain, score history, regression alerts, PDF export, and API access. For developers and consultants managing one site.',
     cta: 'Start with Pro',
-    ctaHref: 'https://app.geoready.dev/signup?plan=pro',
+    ctaHref: 'https://app.geoready.dev/signup?plan=pro&intent=monitoring&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=pro_card',
     ctaStyle: 'bg-accent-teal text-white hover:bg-accent-teal-dark',
     recommended: true,
     features: [
@@ -54,7 +54,7 @@ const selfServePlans = [
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
     description: 'AI citation tracking, multi-site daily monitoring, unbranded PDF exports, and competitor comparison. For consultants and agencies managing a portfolio.',
     cta: 'Start with Studio',
-    ctaHref: 'https://app.geoready.dev/signup?plan=studio',
+    ctaHref: 'https://app.geoready.dev/signup?plan=studio&intent=citations&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=studio_card',
     ctaStyle: 'border border-border text-text-primary hover:bg-bg-subtle',
     recommended: false,
     features: [
@@ -81,7 +81,7 @@ const scalePlans = [
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
     description: 'Team workspace, 50-domain daily portfolio monitoring, AI answer snapshots, and unlimited batch audits.',
     cta: 'Start with Agency',
-    ctaHref: 'https://app.geoready.dev/signup?plan=agency',
+    ctaHref: 'https://app.geoready.dev/signup?plan=agency&intent=portfolio&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=agency_card',
     features: [
       'Everything in Studio',
       '50 domains — daily monitoring',
@@ -134,7 +134,7 @@ const planChoiceRows = [
     intent: 'I need to know when my site gets worse or better.',
     plan: 'Pro',
     reason: 'Choose Pro when one domain needs weekly monitoring, score history, regression alerts, PDF export, and API access.',
-    href: 'https://app.geoready.dev/signup?plan=pro&intent=monitoring&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid',
+    href: 'https://app.geoready.dev/signup?plan=pro&intent=monitoring&onboarding=first_domain&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid&utm_content=pro_choice',
     cta: 'Start Pro',
     tracking: 'pricing_choice_pro_monitoring',
     planId: 'pro',
@@ -146,7 +146,7 @@ const planChoiceRows = [
     intent: 'I need AI citation tracking or client-ready reports.',
     plan: 'Studio',
     reason: 'Choose Studio when AI citations, competitor comparison, unbranded exports, or several monitored domains matter.',
-    href: 'https://app.geoready.dev/signup?plan=studio&intent=citations&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid',
+    href: 'https://app.geoready.dev/signup?plan=studio&intent=citations&onboarding=first_domain&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid&utm_content=studio_choice',
     cta: 'Start Studio',
     tracking: 'pricing_choice_studio_citations',
     planId: 'studio',
@@ -158,7 +158,7 @@ const planChoiceRows = [
     intent: 'I manage a portfolio and need team or bulk workflows.',
     plan: 'Agency',
     reason: 'Choose Agency when 50 monitored domains, team access, unlimited batch audits, and AI answer snapshots are part of the workflow.',
-    href: 'https://app.geoready.dev/signup?plan=agency&intent=portfolio&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid',
+    href: 'https://app.geoready.dev/signup?plan=agency&intent=portfolio&onboarding=first_domain&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid&utm_content=agency_choice',
     cta: 'Start Agency',
     tracking: 'pricing_choice_agency_portfolio',
     planId: 'agency',
@@ -182,7 +182,7 @@ const afterCheckoutSteps = [
   {
     step: '03',
     title: 'Claim or add your domain',
-    desc: 'If you start from a free report, the claim link carries that report into your account. Otherwise, add the domain from the dashboard.',
+    desc: 'If you start from a free report, the claim link carries that report into your account. Pricing links open the app with the first-domain onboarding context.',
   },
   {
     step: '04',
@@ -842,6 +842,22 @@ const faqs = [
 
   </div>
 
+  <script>
+    const pricingParams = new URLSearchParams(window.location.search);
+    const reportClaim = pricingParams.get('claim');
+    const claimSource = pricingParams.get('claim_source') || 'pricing_page';
+
+    if (reportClaim) {
+      document.querySelectorAll<HTMLAnchorElement>('a[href^="https://app.geoready.dev/signup"]').forEach((link) => {
+        const url = new URL(link.href);
+        url.searchParams.set('claim', reportClaim);
+        url.searchParams.set('claim_source', claimSource);
+        url.searchParams.set('onboarding', 'claim_report');
+        link.href = url.toString();
+      });
+    }
+  </script>
+
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@graph": [
@@ -950,6 +966,11 @@ const faqs = [
             "@type": "Question",
             "name": "Are paid plans available right now?",
             "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pick a plan, create an account, and pay — your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe." }
+          },
+          {
+            "@type": "Question",
+            "name": "What happens after I choose a paid plan?",
+            "acceptedAnswer": { "@type": "Answer", "text": "You complete Stripe checkout, return to the GeoReady app, and the selected plan activates immediately. If you came from a free report, the claim link can attach that report to your account; otherwise you add a domain from the dashboard and monitoring starts from that point." }
           },
           {
             "@type": "Question",
