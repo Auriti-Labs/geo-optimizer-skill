@@ -52,12 +52,29 @@ function handlePlanCta(link: HTMLElement): void {
   const planName = link.getAttribute('data-plan-name');
   if (!planId || !planName) return;
 
+  const currency = link.getAttribute('data-plan-currency') || 'USD';
+  const priceStr = normalizePrice(link.getAttribute('data-plan-price'));
+  // GA4 ecommerce requires a numeric value; skip begin_checkout for "custom"
+  // (non-numeric) price strings like the Enterprise plan.
+  const numericPrice = parseFloat(priceStr);
+
+  // GA4 standard ecommerce event — fires before the custom geo_plan_selected
+  // so the funnel step is captured in GA4 reporting. Uses the same consent-gated
+  // pattern as track(): if gtag isn't loaded (consent not given), this is a no-op.
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function' && !isNaN(numericPrice)) {
+    window.gtag('event', 'begin_checkout', {
+      currency,
+      value: numericPrice,
+      items: [{ item_id: planId, item_name: planName, price: numericPrice, quantity: 1 }],
+    });
+  }
+
   trackPlanSelected({
     plan_id: planId,
     plan_name: planName,
     billing_period: link.getAttribute('data-plan-period') || 'one-time',
-    price: normalizePrice(link.getAttribute('data-plan-price')),
-    currency: link.getAttribute('data-plan-currency') || 'USD',
+    price: priceStr,
+    currency,
     cta_location: link.getAttribute('data-cta-location') || 'pricing_page',
   });
 }
