@@ -146,7 +146,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
                     <div className="mt-3 pt-3 border-t border-border">
                       <div className="space-y-2">
                         {cookies.map((c) => (
-                          <div key={c.name} className="text-xs text-text-secondary">
+                          <div key={`${c.name}-${c.type}`} className="text-xs text-text-secondary">
                             <div className="flex items-center gap-1.5 mb-0.5">
                               <span className="font-mono font-semibold text-text-primary">{c.name}</span>
                               <span className="text-text-muted">{c.type}</span>

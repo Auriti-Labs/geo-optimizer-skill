@@ -19,7 +19,11 @@ export interface CookieEntry {
   notes?: string;
 }
 
-export const CONSENT_VERSION = 'v1.0';
+// Bumped from v1.0 when Google Analytics 4 went live: the previous inventory
+// declared analytics as "not currently used", so a consent choice recorded
+// against it was made on inaccurate information and cannot be carried over.
+// Changing this string invalidates every stored choice and re-prompts everyone.
+export const CONSENT_VERSION = 'v2.0';
 
 export const cookieRegistry: CookieEntry[] = [
   {
@@ -27,49 +31,55 @@ export const cookieRegistry: CookieEntry[] = [
     provider: 'GeoReady',
     domain: 'geoready.dev',
     category: 'necessary',
-    purpose: 'Memorizza le preferenze cookie/privacy dell\'utente per evitare di richiedere il consenso ad ogni visita.',
-    legalBasis: 'Interesse legittimo / necessita tecnica per memorizzare una scelta privacy',
-    duration: '6 mesi o fino a cambio versione policy',
+    purpose:
+      'Stores your cookie and privacy choices so you are not asked again on every visit, and so the choice can be honoured before any non-essential script loads.',
+    legalBasis:
+      'Technical necessity — recording a consent choice is required to demonstrate compliance (GDPR art. 7(1)) and is exempt from consent under the ePrivacy Directive',
+    duration: '6 months, or until the consent version changes',
     type: 'localStorage',
     firstOrThirdParty: 'first',
     isEssential: true,
     isCurrentlyUsed: true,
     service: 'GeoReady Consent Manager',
-    notes: 'Storage locale usato per persistere la scelta privacy. Nessun dato personale raccolto.',
+    notes:
+      'Stays on your device — never sent to a server. Contains only the four category flags, a timestamp and a version string.',
   },
   {
     name: '_ga',
-    provider: 'Google LLC',
+    provider: 'Google Ireland Limited / Google LLC',
     domain: 'geoready.dev',
     category: 'analytics',
-    purpose: 'Distinguere gli utenti unici e generare statistiche aggregate sul traffico.',
-    legalBasis: 'Consenso',
-    duration: '2 anni',
+    purpose:
+      'Distinguishes one visitor from another so aggregate traffic statistics can be produced (visits, pages, referrers).',
+    legalBasis: 'Consent (GDPR art. 6(1)(a) and ePrivacy Directive art. 5(3))',
+    duration: '2 years',
     type: 'cookie',
     firstOrThirdParty: 'third',
     isEssential: false,
-    isCurrentlyUsed: false,
+    isCurrentlyUsed: true,
     service: 'Google Analytics 4',
-    dataShared: 'Dati di navigazione aggregati',
+    dataShared:
+      'Pseudonymous identifier, pages viewed, referrer, approximate location derived from a truncated IP address, device and browser type',
     privacyPolicyUrl: 'https://policies.google.com/privacy',
-    notes: 'Caricato solo se PUBLIC_GA_MEASUREMENT_ID e esplicito consenso analytics. Al momento non attivo.',
+    notes:
+      'Set only after you accept analytics. Google Signals and advertising features are off, IP addresses are truncated before storage and are not retained for EU visitors.',
   },
   {
     name: '_ga_<container-id>',
-    provider: 'Google LLC',
+    provider: 'Google Ireland Limited / Google LLC',
     domain: 'geoready.dev',
     category: 'analytics',
-    purpose: 'Persistenza della sessione all\'interno del container GA4.',
-    legalBasis: 'Consenso',
-    duration: '2 anni',
+    purpose: 'Keeps session state for the specific GA4 property (session start, session number).',
+    legalBasis: 'Consent (GDPR art. 6(1)(a) and ePrivacy Directive art. 5(3))',
+    duration: '2 years',
     type: 'cookie',
     firstOrThirdParty: 'third',
     isEssential: false,
-    isCurrentlyUsed: false,
+    isCurrentlyUsed: true,
     service: 'Google Analytics 4',
-    dataShared: 'Dati di navigazione aggregati',
+    dataShared: 'Pseudonymous session identifier and session counters',
     privacyPolicyUrl: 'https://policies.google.com/privacy',
-    notes: 'Caricato solo se PUBLIC_GA_MEASUREMENT_ID e esplicito consenso analytics. Al momento non attivo.',
+    notes: 'Set only after you accept analytics.',
   },
 ];
 
@@ -98,13 +108,13 @@ export function getCategoryLabel(cat: CookieCategory): string {
 export function getCategoryDescription(cat: CookieCategory): string {
   const descriptions: Record<CookieCategory, string> = {
     necessary:
-      'Essential for the site to function. Cannot be disabled. Includes consent storage and security measures.',
+      'Essential for the site to work. Cannot be disabled. Covers storing your privacy choice itself and basic security measures.',
     preferences:
-      'Remember your settings and choices (language, layout, etc.) to improve the experience.',
+      'Remember settings and choices you make (such as layout or display options) so they persist between visits.',
     analytics:
-      'Help us understand how visitors interact with the site by collecting anonymous statistical data.',
+      'Let us measure how the site is used — which pages are read, which are ignored — through Google Analytics 4. Off unless you accept.',
     marketing:
-      'Used to deliver personalized advertisements and measure campaign performance. Currently not used.',
+      'Would be used to measure advertising campaigns and personalise ads. No marketing cookie or tracker is currently set on this site.',
   };
   return descriptions[cat];
 }

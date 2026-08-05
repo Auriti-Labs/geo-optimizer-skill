@@ -1,5 +1,10 @@
 ---
 import '../styles/global.css';
+// Interpolated into the inline Consent Mode script below: when the consent
+// version changes, that script must stop trusting choices recorded against the
+// previous one. Importing the constant keeps the two copies from drifting apart
+// in silence.
+import { CONSENT_VERSION } from '../lib/cookieRegistry';
 
 interface Props {
   title: string;
@@ -66,7 +71,43 @@ const {
   <link rel="alternate" type="application/atom+xml" title="GEO Optimizer Releases" href="https://github.com/Auriti-Labs/geo-optimizer-skill/releases.atom">
   <link rel="alternate" hreflang="en" href={canonical}>
   <link rel="alternate" hreflang="x-default" href={canonical}>
-  <!-- Google Analytics: caricato da CookieConsentManager solo dopo consenso esplicito -->
+  <!--
+    Google Consent Mode v2 — has to sit here, inline in the head, ahead of any
+    Google tag. `consent default` commands are order-dependent: arriving after
+    gtag.js initialises they are ignored, and the tag behaves as though consent
+    had never been declared. So this cannot wait for CookieConsentManager to
+    hydrate (client:only="react").
+
+    No network request: it only populates dataLayer. gtag.js itself is loaded by
+    loadAnalyticsScript(), and only once analytics consent is explicit.
+  -->
+  <script is:inline define:vars={{ consentVersion: CONSENT_VERSION }}>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      analytics_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500
+    });
+    // Replay a choice already on file straight away, without waiting for React:
+    // without this a visitor who had accepted would be measured in cookieless
+    // mode for the first few hundred milliseconds of every page.
+    try {
+      var stored = JSON.parse(localStorage.getItem('geo_cookie_consent') || 'null');
+      if (stored && stored.version === consentVersion) {
+        gtag('consent', 'update', {
+          analytics_storage: stored.analytics ? 'granted' : 'denied',
+          ad_storage: stored.marketing ? 'granted' : 'denied',
+          ad_user_data: stored.marketing ? 'granted' : 'denied',
+          ad_personalization: stored.marketing ? 'granted' : 'denied'
+        });
+      }
+    } catch (e) { /* localStorage unreachable: the denied defaults stand */ }
+    window.__geoConsentModeReady = true;
+  </script>
+  <!-- Google Analytics: loaded by CookieConsentManager only after explicit consent -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@graph": [
