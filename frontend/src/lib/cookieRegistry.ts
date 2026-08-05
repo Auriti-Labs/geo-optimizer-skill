@@ -114,7 +114,7 @@ export function getCategoryDescription(cat: CookieCategory): string {
     analytics:
       'Let us measure how the site is used — which pages are read, which are ignored — through Google Analytics 4. Off unless you accept.',
     marketing:
-      'Would be used to measure advertising campaigns and personalise ads. No marketing cookie or tracker is currently set on this site.',
+      'Governs advertising signals. No marketing cookie or tracker is set on this site, and no advertising tag is loaded. What this controls is the ad-related consent sent to Google: accepting lets conversion measurement imported into Google Ads be attributed in full, declining keeps it limited.',
   };
   return descriptions[cat];
 }
