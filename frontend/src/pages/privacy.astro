@@ -1,121 +1,359 @@
 ---
 import Shell from '../components/Shell.astro';
+
+const lastUpdated = 'August 5, 2026';
 ---
 
-<Shell title="Privacy Policy — GeoReady" description="Privacy policy for GeoReady, covering data processing, legal basis, retention, and user rights." canonical="https://geoready.dev/privacy/">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
-    <header class="mb-14 md:mb-20">
+<Shell
+  title="Privacy Policy — GeoReady"
+  description="How GeoReady processes personal data on geoready.dev: audits, email collection, analytics, retention, extra-EU transfers and your rights."
+  canonical="https://geoready.dev/privacy/"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    <header class="mb-12 md:mb-16">
       <div class="flex items-center gap-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
         <span>GeoReady</span>
-        <span class="w-1 h-1 rounded-full bg-text-muted" />
+        <span class="w-1 h-1 rounded-full bg-text-muted"></span>
         <span>Privacy Policy</span>
       </div>
       <h1 class="mt-3 font-display text-3xl md:text-4xl font-bold text-text-primary leading-tight tracking-tight">Privacy Policy</h1>
-      <p class="mt-4 text-base text-text-secondary leading-relaxed">Last updated: August 3, 2026</p>
+      <p class="mt-3 text-sm text-text-secondary">Last updated: {lastUpdated}</p>
+      <p class="mt-4 text-base text-text-secondary leading-relaxed max-w-3xl">
+        This policy covers <strong class="text-text-primary">geoready.dev</strong>, the public
+        website: the free audit, the tools, the guides, and the emails you can ask us for. The
+        signed-in application has its own policy at
+        <a href="https://app.geoready.dev/privacy" class="text-accent-teal hover:underline">app.geoready.dev/privacy</a>,
+        because it processes different data.
+      </p>
     </header>
 
     <div class="space-y-10 text-text-secondary leading-relaxed">
       <section>
-        <h2 class="text-lg font-semibold text-text-primary mb-3">Data Controller</h2>
-        <p class="mb-2"><strong class="text-text-primary">Juan Camilo Auriti</strong></p>
-        <p class="mb-2">Email: <a href="mailto:juancamilo.auriti@gmail.com" class="text-accent-teal hover:underline">juancamilo.auriti@gmail.com</a></p>
-        <p class="mb-2">For technical issues, open an issue on our <a href="https://github.com/Auriti-Labs/geo-optimizer-skill/issues" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">GitHub repository</a>.</p>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Data controller</h2>
+        <p class="text-sm mb-1"><strong class="text-text-primary">Juan Camilo Auriti</strong></p>
+        <p class="text-sm mb-2">
+          Email: <a href="mailto:juancamilo.auriti@gmail.com" class="text-accent-teal hover:underline">juancamilo.auriti@gmail.com</a>
+        </p>
+        <p class="text-sm">
+          Write to that address to exercise any of the rights below; we answer within one
+          month, as the GDPR requires. For bugs and technical issues, an
+          <a href="https://github.com/Auriti-Labs/geo-optimizer-skill/issues" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">issue on GitHub</a>
+          is faster.
+        </p>
       </section>
 
       <section>
-        <h2 class="text-lg font-semibold text-text-primary mb-3">What data we process</h2>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">What we process, and why</h2>
         <div class="space-y-3">
           <div class="rounded-lg border border-border bg-bg-surface p-4">
-            <h3 class="text-sm font-semibold text-text-primary mb-1">1. Technical navigation data</h3>
-            <p class="text-sm">IP addresses, browser type, operating system, and request timestamps may be logged by the hosting/server infrastructure for security and operational purposes. These logs are processed under legitimate interest and security obligations.</p>
+            <h3 class="text-sm font-semibold text-text-primary mb-1">1. URLs you submit for audit</h3>
+            <p class="text-sm">
+              When you run an audit we fetch the publicly available pages of the URL you
+              submit, analyse them and return a score. We do not log into your site and read
+              nothing that is not publicly served. The report is generated for you; we do not
+              build a profile of you from it.
+            </p>
+            <p class="text-sm mt-2">
+              The report is <strong class="text-text-primary">stored for 24 hours</strong>, held
+              against a single-use token rather than against you, so that you can claim it into
+              an account if you decide to create one. It contains the URL, the score and the
+              analysis — no name, no email, no IP address. After 24 hours the token stops working
+              and the report is no longer retrievable.
+            </p>
+            <p class="text-sm mt-2">
+              A URL is normally a company address rather than personal data, but it can be
+              personal data — a personal domain, or a URL containing a name. Treat it as such
+              and submit only URLs you are entitled to submit.
+            </p>
+            <p class="text-xs mt-2 text-text-muted">
+              Legal basis: performance of the service you requested, or steps taken at your
+              request before a contract (GDPR art. 6(1)(b)).
+            </p>
           </div>
-          <div class="rounded-lg border border-bg-surface p-4">
-            <h3 class="text-sm font-semibold text-text-primary mb-1">2. URLs submitted for audit</h3>
-            <p class="text-sm">When you voluntarily submit a URL through the audit form, the backend processes that URL to generate a GEO report. The URL is transmitted to the server, analyzed in real time, and the result is returned to you. We do not declare persistent storage of submitted URLs unless explicitly configured in the backend; audit data is processed as a service execution measure.</p>
-          </div>
+
           <div class="rounded-lg border border-border bg-bg-surface p-4">
-            <h3 class="text-sm font-semibold text-text-primary mb-1">3. Cookie and storage preferences</h3>
-            <p class="text-sm">Your consent choices (necessary, preferences, analytics, marketing) are stored in localStorage on your device with a 6-month expiration or until the consent version changes. This data is not transmitted to any server and remains entirely on your device.</p>
+            <h3 class="text-sm font-semibold text-text-primary mb-1">2. Aggregate benchmark statistics</h3>
+            <p class="text-sm">
+              To publish aggregate research on how sites score, we record one row per audit
+              containing a <strong class="text-text-primary">keyed hash of the domain</strong>
+              (not reversible to the domain by a third party), the top-level domain, the score
+              and the date. Published figures are aggregate only: no individual domain or score
+              is identifiable in them.
+            </p>
+            <p class="text-xs mt-2 text-text-muted">
+              Legal basis: legitimate interest in measuring and publishing aggregate research
+              on AI search visibility (GDPR art. 6(1)(f)). You can object — see “Your rights”.
+            </p>
           </div>
+
           <div class="rounded-lg border border-border bg-bg-surface p-4">
-            <h3 class="text-sm font-semibold text-text-primary mb-1">4. Analytics data (optional)</h3>
-            <p class="text-sm">If you explicitly consent to analytics and a Google Analytics 4 measurement ID is configured, aggregated, anonymized navigation data may be collected. This is disabled by default and requires explicit opt-in.</p>
+            <h3 class="text-sm font-semibold text-text-primary mb-1">3. Email address, when you ask for something by email</h3>
+            <p class="text-sm mb-2">
+              There are three places you can give us an email address, and all three are
+              optional:
+            </p>
+            <ul class="list-disc pl-5 space-y-2 text-sm">
+              <li>
+                <strong class="text-text-primary">The full audit report by email.</strong> After
+                an anonymous audit you can have the complete eight-category report sent to you.
+                We store the address so the report can be sent and so we can recognise a repeat
+                request.
+              </li>
+              <li>
+                <strong class="text-text-primary">The GEO Readiness Manual.</strong> We send a
+                download link valid for 24 hours. On that form, marketing updates are a
+                <strong class="text-text-primary">separate checkbox</strong>: leave it unticked
+                and you get the manual and nothing else. If you would rather give no address at
+                all, the <a href="/geo-readiness-manual/" class="text-accent-teal hover:underline">free three-chapter preview</a>
+                requires none.
+              </li>
+              <li>
+                <strong class="text-text-primary">The newsletter.</strong> The State of GEO
+                report and occasional findings, when you subscribe from a guide or resource
+                page.
+              </li>
+            </ul>
+            <p class="text-sm mt-2">
+              In each case we store the address, which page it came from, and the date and
+              content of your consent — the last of these because we have to be able to
+              demonstrate it (GDPR art. 7(1)). Every email has a one-click unsubscribe link.
+              We do not sell, rent or share your address.
+            </p>
+            <p class="text-xs mt-2 text-text-muted">
+              Legal basis: performance of your request for the report or manual
+              (GDPR art. 6(1)(b)); consent for marketing updates and the newsletter
+              (art. 6(1)(a)), withdrawable at any time.
+            </p>
           </div>
+
           <div class="rounded-lg border border-border bg-bg-surface p-4">
-            <h3 class="text-sm font-semibold text-text-primary mb-1">5. Email address for manual download and newsletter</h3>
-            <p class="text-sm"><strong class="text-text-primary">Manual download:</strong> When you request the full GEO Readiness Manual PDF, we collect your email address to send you a signed download link valid for 24 hours. GEO research updates are optional: if you check the marketing consent box, we may also send occasional updates on AI search visibility, new research, benchmark findings, and product updates. Your email is stored in our newsletter subscriber database with the source labeled "geo-readiness-manual"; marketing consent is recorded with a timestamp only when you provide it.</p>
-            <p class="text-sm mt-2"><strong class="text-text-primary">Newsletter signup:</strong> When you subscribe to the State of GEO report or benchmark updates via the signup form on our guides, resource pages, or State of GEO pages, we collect your email address to notify you when new reports are published and to send occasional GEO findings. Your email is stored in the same subscriber database with the source labeled according to the page where you subscribed (e.g., "state-of-geo", "guides"), and your consent is recorded with a timestamp.</p>
-            <p class="text-sm mt-2">You can unsubscribe from updates at any time by clicking the unsubscribe link in any email we send, or by contacting us at the email listed above. We do not sell, rent, or share your email with third parties. We use <a href="https://resend.com" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">Resend</a> as our email delivery provider, which processes email addresses under their <a href="https://resend.com/privacy" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">privacy policy</a>. If you want to read before providing an email, use the <a href="/geo-readiness-manual/" class="text-accent-teal hover:underline">free 3-chapter preview</a> — no email required.</p>
+            <h3 class="text-sm font-semibold text-text-primary mb-1">4. Analytics — only with your consent</h3>
+            <p class="text-sm">
+              If you accept analytics, <strong class="text-text-primary">Google Analytics 4</strong>
+              records which pages you visit, which buttons you use and where you arrived from,
+              so we can tell what is worth building. Until you accept, the tag is not loaded at
+              all: no request goes to Google and no analytics cookie is set. Google Signals and
+              advertising features are off, and IP addresses are truncated and not retained for
+              visitors in the EU.
+            </p>
+            <p class="text-sm mt-2">
+              This is a change from an earlier version of this page, which said analytics was
+              configured but not active. It is active, subject to consent — the
+              <a href="/cookie-policy/" class="text-accent-teal hover:underline">Cookie Policy</a>
+              lists exactly what it sets. That is also why the banner asked you again.
+            </p>
+            <p class="text-xs mt-2 text-text-muted">
+              Legal basis: consent (GDPR art. 6(1)(a); ePrivacy Directive art. 5(3)). Withdraw
+              it at any time from the cookie preferences panel — the button at the bottom left
+              of every page.
+            </p>
+          </div>
+
+          <div class="rounded-lg border border-border bg-bg-surface p-4">
+            <h3 class="text-sm font-semibold text-text-primary mb-1">5. Cookie and privacy choices</h3>
+            <p class="text-sm">
+              Your consent choices are kept in localStorage on your device with a 6-month
+              expiry, or until the policy version changes. This never leaves your device and is
+              not sent to any server.
+            </p>
+            <p class="text-xs mt-2 text-text-muted">
+              Legal basis: technical necessity — recording your choice is what makes it possible
+              to honour it and to demonstrate compliance (GDPR art. 7(1)); exempt from consent
+              under the ePrivacy Directive.
+            </p>
+          </div>
+
+          <div class="rounded-lg border border-border bg-bg-surface p-4">
+            <h3 class="text-sm font-semibold text-text-primary mb-1">6. Abuse prevention</h3>
+            <p class="text-sm">
+              The audit and the email endpoints are rate-limited per IP address, so one visitor
+              cannot exhaust the service or use it to send mail to strangers. Those counters are
+              held in memory only, for the length of the rate-limit window, and are never
+              written to a database or used for anything else.
+            </p>
+            <p class="text-xs mt-2 text-text-muted">
+              Legal basis: legitimate interest in keeping the service available and preventing
+              abuse (GDPR art. 6(1)(f)).
+            </p>
+          </div>
+
+          <div class="rounded-lg border border-border bg-bg-surface p-4">
+            <h3 class="text-sm font-semibold text-text-primary mb-1">7. Log files you upload for analysis</h3>
+            <p class="text-sm">
+              The log-analysis endpoint accepts a server log file and reports which AI crawlers
+              visited your site. The file is written to a temporary file, parsed, and
+              <strong class="text-text-primary">deleted immediately afterwards</strong> — it is
+              never stored and never used for anything else. Server logs typically contain
+              visitor IP addresses, so you are the controller of that data: upload only logs you
+              are entitled to process, and be aware that the request travels to our server.
+            </p>
+            <p class="text-xs mt-2 text-text-muted">
+              Legal basis: performance of the analysis you requested (GDPR art. 6(1)(b)); we act
+              as processor for the contents of the file.
+            </p>
+          </div>
+
+          <div class="rounded-lg border border-border bg-bg-surface p-4">
+            <h3 class="text-sm font-semibold text-text-primary mb-1">8. Server logs</h3>
+            <p class="text-sm">
+              The infrastructure logs IP addresses, request paths, response codes and
+              timestamps, as any web server does, to investigate errors and abuse. These are not
+              used for profiling.
+            </p>
+            <p class="text-xs mt-2 text-text-muted">
+              Legal basis: legitimate interest in operating and securing the service
+              (GDPR art. 6(1)(f)), and art. 32 security obligations.
+            </p>
           </div>
         </div>
       </section>
 
       <section>
-        <h2 class="text-lg font-semibold text-text-primary mb-3">Legal basis</h2>
-        <ul class="list-disc pl-5 space-y-2 text-sm">
-          <li><strong class="text-text-primary">Service execution / pre-contractual measures:</strong> processing URLs you submit for audit, generating reports, delivering audit results, and sending the manual download link you requested.</li>
-          <li><strong class="text-text-primary">Legitimate interest / security obligations:</strong> technical logs (IP, timestamps) required for server security, abuse prevention, and infrastructure monitoring.</li>
-          <li><strong class="text-text-primary">Consent:</strong> optional GEO research updates, newsletter signup, analytics, and marketing cookies/storage. You can revoke consent at any time via the cookie preferences panel or by unsubscribing from emails.</li>
-          <li><strong class="text-text-primary">Legal obligation / technical necessity:</strong> storing your cookie consent choice to comply with ePrivacy and GDPR requirements.</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-lg font-semibold text-text-primary mb-3">How long we keep data</h2>
-        <ul class="list-disc pl-5 space-y-2 text-sm">
-          <li><strong>Audit URL submissions:</strong> Not declared as persistent storage. Processed in real time and not retained beyond the session unless backend configuration specifies otherwise.</li>
-          <li><strong>Email addresses (manual download & newsletter):</strong> Stored in the newsletter subscriber database until you unsubscribe or request deletion. Manual download links expire after 24 hours. If you want to read before providing an email, use the free 3-chapter preview at <a href="/geo-readiness-manual/" class="text-accent-teal hover:underline">geoready.dev/geo-readiness-manual/</a> — no email required.</li>
-          <li><strong>Technical logs:</strong> Technical server logs are rotated and retained for a limited period (typically 14–30 days) for security and abuse-prevention purposes, and are not used for profiling.</li>
-          <li><strong>Cookie consent preferences:</strong> Stored in localStorage for 6 months or until the consent policy version changes.</li>
-          <li><strong>Analytics data (if consented):</strong> Retained by Google Analytics under their data retention policies.</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 class="text-lg font-semibold text-text-primary mb-3">Recipients and transfers</h2>
-        <p class="mb-3">Recipients of your data may include:</p>
-        <ul class="list-disc pl-5 space-y-2 text-sm">
-          <li><strong>Hosting/infrastructure providers:</strong> the server hosting the site and API may process technical logs.</li>
-          <li><strong>Resend Inc.:</strong> processes the email address you provide when requesting the manual PDF to deliver the download link and, if you consented, occasional updates. See <a href="https://resend.com/privacy" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">Resend's privacy policy</a>.</li>
-          <li><strong>Google LLC:</strong> only if Google Analytics 4 is activated and you have provided explicit consent to analytics.</li>
-        </ul>
-        <p class="mt-3 text-sm">Links to GitHub, PyPI, and other external resources in the footer are navigated by you voluntarily; no automatic data sharing occurs with these platforms during normal browsing.</p>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Who else processes your data</h2>
+        <p class="text-sm mb-3">
+          A small number of providers, each acting as a processor under a data processing
+          agreement.
+        </p>
+        <div class="overflow-x-auto rounded-xl border border-border">
+          <table class="w-full text-xs">
+            <thead class="bg-bg-subtle">
+              <tr class="text-left text-text-muted text-[11px] font-mono uppercase tracking-wider">
+                <th class="px-3 py-2 font-semibold border-b border-border">Provider</th>
+                <th class="px-3 py-2 font-semibold border-b border-border">Purpose</th>
+                <th class="px-3 py-2 font-semibold border-b border-border">Where</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              <tr class="bg-bg-surface align-top">
+                <td class="px-3 py-2">
+                  <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">Resend</a>
+                </td>
+                <td class="px-3 py-2">Delivering the reports, manual links and newsletter you request</td>
+                <td class="px-3 py-2">United States</td>
+              </tr>
+              <tr class="bg-bg-base align-top">
+                <td class="px-3 py-2">
+                  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">Google</a>
+                </td>
+                <td class="px-3 py-2">Google Analytics 4 — only with your consent</td>
+                <td class="px-3 py-2">Ireland / United States</td>
+              </tr>
+              <tr class="bg-bg-surface align-top">
+                <td class="px-3 py-2">
+                  <a href="https://launchpadly.co" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">Launchpadly</a>
+                </td>
+                <td class="px-3 py-2">Serves the directory badge image in the footer</td>
+                <td class="px-3 py-2">Outside the EU</td>
+              </tr>
+              <tr class="bg-bg-base align-top">
+                <td class="px-3 py-2">Hosting provider</td>
+                <td class="px-3 py-2">Servers, database, backups, server logs</td>
+                <td class="px-3 py-2">European Union</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-sm mt-3">
+          We do not sell personal data and do not share it with advertising networks or data
+          brokers. Links to GitHub, PyPI and other external sites in the footer are plain links:
+          nothing is sent to them unless you click.
+        </p>
+        <p class="text-sm mt-3">
+          One exception worth naming: the <strong class="text-text-primary">Launchpadly badge</strong>
+          in the footer is an image loaded from launchpadly.co, so displaying it sends your IP
+          address and browser type to that provider, as any remote image does. It sets no cookie
+          and builds no profile. The guides are published from the Sanity content platform, but
+          the pages are generated at build time — your browser makes no request to Sanity when
+          you read them.
+        </p>
       </section>
 
       <section>
         <h2 class="text-lg font-semibold text-text-primary mb-3">Transfers outside the EU</h2>
-        <p class="text-sm">If Google Analytics 4 is activated, data may be transferred to Google servers in the United States under the conditions defined by Google. Resend Inc. (our email delivery provider for the manual download) may process email addresses on servers in the United States under the conditions defined by their privacy policy. We do not currently use analytics by default, and no analytics transfer occurs without your explicit consent.</p>
+        <p class="text-sm mb-3">
+          The site, its database and its logs are hosted in the European Union. Some providers
+          are established in the United States, so a transfer can occur for those services.
+          Where it does, it relies on:
+        </p>
+        <ul class="list-disc pl-5 space-y-2 text-sm">
+          <li>
+            the <strong class="text-text-primary">EU–US Data Privacy Framework</strong>, for which
+            the European Commission adopted an adequacy decision on
+            <strong class="text-text-primary">10 July 2023</strong>
+            (<a href="https://eur-lex.europa.eu/eli/dec_impl/2023/1795/oj" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">decision 2023/1795</a>),
+            where the provider is certified under it — Google states it is; and
+          </li>
+          <li>
+            the European Commission’s <strong class="text-text-primary">Standard Contractual
+            Clauses</strong>, together with the UK Addendum where relevant, as the fallback
+            mechanism.
+          </li>
+        </ul>
+        <p class="text-sm mt-3">
+          Ask us at the address above and we will tell you which mechanism applies to a given
+          provider.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">How long we keep it</h2>
+        <ul class="list-disc pl-5 space-y-2 text-sm">
+          <li><strong class="text-text-primary">Audit results:</strong> stored 24 hours against a single-use claim token, then no longer retrievable. Not linked to your identity — on this site you do not have one.</li>
+          <li><strong class="text-text-primary">Benchmark rows:</strong> retained indefinitely in hashed, aggregate form, as research data.</li>
+          <li><strong class="text-text-primary">Email addresses:</strong> kept until you unsubscribe or ask us to delete them. The record that you consented is kept for as long as we could be asked to prove it.</li>
+          <li><strong class="text-text-primary">Uploaded log files:</strong> deleted as soon as the analysis finishes — seconds.</li>
+          <li><strong class="text-text-primary">Rate-limit counters:</strong> in memory only, for the length of the window.</li>
+          <li><strong class="text-text-primary">Analytics data:</strong> retained by Google under the retention setting on the property; we use the shortest available.</li>
+          <li><strong class="text-text-primary">Server logs:</strong> rotated, typically kept 14–30 days.</li>
+          <li><strong class="text-text-primary">Consent choice:</strong> on your device for 6 months, or until the policy version changes.</li>
+        </ul>
       </section>
 
       <section>
         <h2 class="text-lg font-semibold text-text-primary mb-3">Your rights</h2>
-        <p class="mb-3 text-sm">Under the GDPR and applicable privacy laws, you have the right to:</p>
+        <p class="mb-3 text-sm">Under the GDPR you have the right to:</p>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Access your personal data</li>
-          <li>Request rectification of inaccurate data</li>
-          <li>Request erasure ("right to be forgotten")</li>
-          <li>Request restriction of processing</li>
-          <li>Object to processing based on legitimate interest</li>
-          <li>Data portability</li>
-          <li>Revoke consent at any time (without affecting the lawfulness of processing before revocation)</li>
-          <li>Lodge a complaint with your national Data Protection Authority (e.g., the Italian Garante per la Protezione dei Dati Personali)</li>
+          <li>know what we hold about you and get a copy of it (art. 15);</li>
+          <li>have inaccurate data corrected (art. 16);</li>
+          <li>have data erased (art. 17);</li>
+          <li>restrict processing while a dispute is resolved (art. 18);</li>
+          <li>receive your data in a portable, machine-readable format (art. 20);</li>
+          <li>object to processing based on legitimate interest, including the benchmark statistics (art. 21);</li>
+          <li>withdraw consent at any time, without affecting processing already carried out lawfully (art. 7(3));</li>
+          <li>not be subject to solely automated decisions with legal or similarly significant effects (art. 22) — we make none.</li>
         </ul>
-        <p class="mt-3 text-sm">To exercise your rights, contact the data controller at the email listed above.</p>
+        <p class="mt-3 text-sm">
+          If you believe we have handled your data wrongly you can complain to your national
+          data protection authority. In Italy that is the
+          <a href="https://www.garanteprivacy.it" target="_blank" rel="noopener noreferrer" class="text-accent-teal hover:underline">Garante per la protezione dei dati personali</a>.
+        </p>
       </section>
 
       <section>
-        <h2 class="text-lg font-semibold text-text-primary mb-3">Cookies</h2>
-        <p class="mb-3">This site uses a minimal cookie and storage system designed for privacy-by-default compliance. Only necessary storage is active without consent. Analytics and marketing are disabled by default. For the full inventory and detailed information, see our <a href="/cookie-policy/" class="text-accent-teal hover:underline">Cookie Policy</a>.</p>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Children</h2>
+        <p class="text-sm">
+          GeoReady is a professional tool and is not directed at children. We do not knowingly
+          collect data from anyone under 16.
+        </p>
       </section>
 
       <section>
-        <h2 class="text-lg font-semibold text-text-primary mb-3">Cookie and storage policy</h2>
-        <p class="text-sm">For the complete inventory of cookies and storage technologies used on this site, including categories, providers, and retention, see our <a href="/cookie-policy/" class="text-accent-teal hover:underline">Cookie Policy</a>.</p>
+        <h2 class="text-lg font-semibold text-text-primary mb-3">Cookies and local storage</h2>
+        <p class="text-sm">
+          Only necessary storage is active without consent; analytics is off until you accept.
+          For the full inventory — every cookie and storage key, its purpose, provider, legal
+          basis and duration — see the
+          <a href="/cookie-policy/" class="text-accent-teal hover:underline">Cookie Policy</a>.
+        </p>
       </section>
 
       <section>
         <h2 class="text-lg font-semibold text-text-primary mb-3">Changes to this policy</h2>
-        <p class="text-sm">We may update this Privacy Policy to reflect changes in our practices or legal requirements. The "Last updated" date at the top of this page indicates when the policy was last revised. We encourage you to review this page periodically.</p>
+        <p class="text-sm">
+          We update this policy when what we actually do changes, and the date at the top says
+          when. If a change affects what you consented to, the cookie banner asks again rather
+          than assuming your previous answer still applies.
+        </p>
       </section>
     </div>
   </div>
@@ -124,7 +362,7 @@ import Shell from '../components/Shell.astro';
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": "Privacy Policy — GeoReady",
-    "description": "Privacy policy for GeoReady, covering data processing, legal basis, retention, and user rights.",
+    "description": "How GeoReady processes personal data on geoready.dev: audits, email collection, analytics, retention, extra-EU transfers and your rights.",
     "url": "https://geoready.dev/privacy/",
     "isPartOf": {
       "@type": "WebSite",
