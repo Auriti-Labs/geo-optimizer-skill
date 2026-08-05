@@ -48,19 +48,19 @@ export default function CookieBanner({
         {/* Teal wash in the top-left corner: gives the dark card depth without a second surface. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -left-16 h-48 w-48 rounded-full bg-accent-teal/20 blur-3xl"
+          className="pointer-events-none absolute -top-24 -left-16 h-48 w-48 rounded-full bg-[#5EEAD4]/15 blur-3xl"
         />
         {/* Hairline highlight along the top edge, the way a lit panel catches light. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-teal/60 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#5EEAD4]/50 to-transparent"
         />
 
         <div className="relative p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <span className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-accent-teal/40 bg-accent-teal/10">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-teal">
+              <span className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/[0.06]">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="text-[#5EEAD4]">
                   <path d="M12 3a9 9 0 1 0 9 9 3 3 0 0 1-4-4 3 3 0 0 1-5-5Z" />
                   <circle cx="9.5" cy="14.5" r="1" fill="currentColor" stroke="none" />
                   <circle cx="14" cy="16" r="1" fill="currentColor" stroke="none" />
@@ -69,7 +69,7 @@ export default function CookieBanner({
               </span>
               <div>
                 <p className="font-display text-sm font-semibold text-text-inverse">Your privacy, your call</p>
-                <p className="text-[11px] font-mono uppercase tracking-wider text-white/40">Nothing loads without consent</p>
+                <p className="text-[11px] font-mono uppercase tracking-wider text-white/55">Nothing loads without consent</p>
               </div>
             </div>
 
@@ -77,7 +77,7 @@ export default function CookieBanner({
               onClick={onDismiss}
               aria-label="Close and keep essential settings only"
               title="Close and keep essential settings only"
-              className="-mr-1 -mt-1 shrink-0 rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/5 hover:text-text-inverse"
+              className="-mr-1 -mt-1 shrink-0 rounded-md p-1.5 text-white/55 transition-colors hover:bg-white/5 hover:text-text-inverse"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -104,12 +104,12 @@ export default function CookieBanner({
                 >
                   <span
                     aria-hidden="true"
-                    className={`h-1.5 w-1.5 shrink-0 rounded-full ${isOn ? 'bg-accent-teal' : 'bg-white/25'}`}
+                    className={`h-1.5 w-1.5 shrink-0 rounded-full ${isOn ? 'bg-[#5EEAD4]' : 'bg-white/45'}`}
                   />
                   <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-white/75">
                     {getCategoryLabel(cat)}
                   </span>
-                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-white/35">
+                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-white/55">
                     {isOn ? 'on' : count === 0 ? 'none' : 'off'}
                   </span>
                 </li>
@@ -120,7 +120,7 @@ export default function CookieBanner({
           <div className="mt-4 flex flex-col gap-2">
             <button
               onClick={onAcceptAll}
-              className="w-full rounded-[var(--radius-sm)] bg-accent-teal px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent-teal/20 transition-all duration-200 hover:bg-accent-teal-dark hover:shadow-accent-teal/30 motion-reduce:transition-none"
+              className="w-full rounded-[var(--radius-sm)] bg-[#0F766E] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#0F766E]/25 transition-colors duration-200 hover:bg-[#115E59] motion-reduce:transition-none"
             >
               Accept all
             </button>
@@ -140,12 +140,12 @@ export default function CookieBanner({
             </div>
           </div>
 
-          <p className="mt-3.5 text-[11px] leading-relaxed text-white/40">
-            <a href="/cookie-policy/" className="text-accent-teal/90 underline decoration-accent-teal/30 underline-offset-2 transition-colors hover:text-accent-teal hover:decoration-accent-teal">
+          <p className="mt-3.5 text-[11px] leading-relaxed text-white/55">
+            <a href="/cookie-policy/" className="text-[#5EEAD4] underline decoration-[#5EEAD4]/60 underline-offset-2 transition-colors hover:decoration-[#5EEAD4]">
               Cookie Policy
             </a>
             {' · '}
-            <a href="/privacy/" className="text-accent-teal/90 underline decoration-accent-teal/30 underline-offset-2 transition-colors hover:text-accent-teal hover:decoration-accent-teal">
+            <a href="/privacy/" className="text-[#5EEAD4] underline decoration-[#5EEAD4]/60 underline-offset-2 transition-colors hover:decoration-[#5EEAD4]">
               Privacy Policy
             </a>
             {' — change your mind any time from the cookie button.'}

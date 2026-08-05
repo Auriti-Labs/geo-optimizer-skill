@@ -110,11 +110,11 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
         <div className="relative shrink-0 overflow-hidden border-b border-white/[0.06] bg-bg-dark px-5 py-4 sm:px-6">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -top-20 -left-10 h-40 w-40 rounded-full bg-accent-teal/20 blur-3xl"
+            className="pointer-events-none absolute -top-20 -left-10 h-40 w-40 rounded-full bg-[#5EEAD4]/15 blur-3xl"
           />
           <div className="relative flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-accent-teal/40 bg-accent-teal/10 text-accent-teal">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#5EEAD4]">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 3a9 9 0 1 0 9 9 3 3 0 0 1-4-4 3 3 0 0 1-5-5Z" />
                   <circle cx="9.5" cy="14.5" r="1" fill="currentColor" stroke="none" />
@@ -124,7 +124,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
               </span>
               <div>
                 <h2 className="font-display text-base font-bold text-text-inverse">Cookie preferences</h2>
-                <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-white/40">
+                <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-white/55">
                   Consent version {CONSENT_VERSION}
                 </p>
               </div>
@@ -132,7 +132,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
             <button
               onClick={onClose}
               aria-label="Close preferences"
-              className="-mr-1 shrink-0 rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/5 hover:text-text-inverse"
+              className="-mr-1 shrink-0 rounded-md p-1.5 text-white/55 transition-colors hover:bg-white/5 hover:text-text-inverse"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -146,7 +146,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
           <p className="text-sm leading-relaxed text-text-secondary">
             Choose which categories you accept. Necessary items keep the site working and cannot
             be switched off. Everything else is off until you say otherwise.{' '}
-            <a href="/cookie-policy/" className="text-accent-teal underline decoration-accent-teal/30 underline-offset-2 hover:decoration-accent-teal">
+            <a href="/cookie-policy/" className="text-[#0F766E] underline decoration-[#0F766E] underline-offset-2 hover:text-[#115E59] hover:decoration-[#115E59]">
               Full cookie policy
             </a>
             .
@@ -165,7 +165,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
                 <div
                   key={cat}
                   className={`overflow-hidden rounded-[var(--radius-md)] border bg-bg-surface transition-colors duration-200 motion-reduce:transition-none ${
-                    isActive ? 'border-accent-teal/30' : 'border-border'
+                    isActive ? 'border-[#0F766E]/35' : 'border-border'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4 p-4">
@@ -173,7 +173,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
                       <div className="mb-1 flex flex-wrap items-center gap-2">
                         <span className="text-sm font-semibold text-text-primary">{label}</span>
                         {isNecessary ? (
-                          <span className="rounded border border-accent-success/25 bg-accent-success/[0.06] px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-accent-success">
+                          <span className="rounded border border-[#047857]/25 bg-[#047857]/[0.06] px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-[#047857]">
                             always on
                           </span>
                         ) : (
@@ -188,7 +188,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
                         <button
                           onClick={() => setExpanded(isExpanded ? null : cat)}
                           aria-expanded={isExpanded}
-                          className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-accent-teal transition-colors hover:text-accent-teal-dark"
+                          className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-[#0F766E] transition-colors hover:text-[#115E59]"
                         >
                           {isExpanded ? 'Hide details' : 'What exactly is stored'}
                           <svg
@@ -215,7 +215,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
                       aria-pressed={isActive}
                       aria-label={`Toggle ${label}`}
                       className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 motion-reduce:transition-none ${
-                        isActive ? 'bg-accent-teal' : 'bg-text-secondary/25'
+                        isActive ? 'bg-[#0F766E]' : 'bg-text-secondary/30'
                       } ${isNecessary ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                     >
                       <span
@@ -237,12 +237,12 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
                               <span className="font-mono text-[11px] font-semibold text-text-primary">{c.name}</span>
                               <span className="text-[10px] text-text-secondary">{c.type}</span>
                               {c.firstOrThirdParty === 'third' && (
-                                <span className="rounded border border-accent-warning/25 px-1 font-mono text-[10px] text-accent-warning">
+                                <span className="rounded border border-[#B45309]/25 px-1 font-mono text-[10px] text-[#B45309]">
                                   third party
                                 </span>
                               )}
                               {c.isCurrentlyUsed && (
-                                <span className="rounded border border-accent-success/25 px-1 font-mono text-[10px] text-accent-success">
+                                <span className="rounded border border-[#047857]/25 px-1 font-mono text-[10px] text-[#047857]">
                                   active
                                 </span>
                               )}
@@ -262,7 +262,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
                                 href={c.privacyPolicyUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="mt-1 inline-block text-[11px] text-accent-teal hover:underline"
+                                className="mt-1 inline-block text-[11px] text-[#0F766E] hover:underline"
                               >
                                 Provider privacy policy →
                               </a>
@@ -289,13 +289,13 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
             <div className="order-1 flex gap-2 sm:order-2">
               <button
                 onClick={handleSave}
-                className="flex-1 rounded-[var(--radius-sm)] border border-accent-teal/40 px-4 py-2 text-sm font-medium text-accent-teal transition-colors hover:bg-accent-teal/[0.06] sm:flex-none"
+                className="flex-1 rounded-[var(--radius-sm)] border border-[#0F766E]/40 px-4 py-2 text-sm font-medium text-[#0F766E] transition-colors hover:bg-[#0F766E]/[0.06] sm:flex-none"
               >
                 Save choices
               </button>
               <button
                 onClick={handleAcceptAll}
-                className="flex-1 rounded-[var(--radius-sm)] bg-accent-teal px-4 py-2 text-sm font-semibold text-white shadow-md shadow-accent-teal/20 transition-colors hover:bg-accent-teal-dark sm:flex-none"
+                className="flex-1 rounded-[var(--radius-sm)] bg-[#0F766E] px-4 py-2 text-sm font-semibold text-white shadow-md shadow-[#0F766E]/25 transition-colors hover:bg-[#115E59] sm:flex-none"
               >
                 Accept all
               </button>
