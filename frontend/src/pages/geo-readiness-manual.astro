@@ -480,6 +480,26 @@ const faqSchema = {
 
   {/* Shared handler for every .manual-download-form instance on the page */}
   <script>
+    /**
+     * Read a human-readable message out of an error response body.
+     *
+     * FastAPI shapes `detail` two different ways: a plain string for an explicit
+     * HTTPException, but an array of {loc, msg, ...} objects for a 422 validation
+     * failure. Rendering the latter directly put a literal "[object Object]" in
+     * front of the user, so the array case is unwrapped to its first `msg` and
+     * the pydantic "Value error, " prefix stripped.
+     */
+    function extractError(data: any): string {
+      const fallback = 'Something went wrong. Try again.';
+      const detail = data?.detail;
+      if (typeof detail === 'string' && detail) return detail;
+      if (Array.isArray(detail)) {
+        const msg = detail.find((d) => typeof d?.msg === 'string')?.msg;
+        if (msg) return String(msg).replace(/^Value error,\s*/, '');
+      }
+      return typeof data?.message === 'string' && data.message ? data.message : fallback;
+    }
+
     function initManualForms() {
       document.querySelectorAll<HTMLElement>('.manual-download-form').forEach((container) => {
         if (container.dataset.wired === 'true') return;
@@ -523,7 +543,7 @@ const faqSchema = {
             } else {
               const data = await res.json().catch(() => ({}));
               errorDiv?.classList.remove('hidden');
-              if (errorMsg) errorMsg.textContent = data.detail || data.message || 'Something went wrong. Try again.';
+              if (errorMsg) errorMsg.textContent = extractError(data);
             }
           } catch {
             errorDiv?.classList.remove('hidden');
