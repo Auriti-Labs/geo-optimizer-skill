@@ -239,7 +239,8 @@ class AiDiscoveryResult:
 class CdnAiCrawlerResult:
     """Result of checking if CDN blocks AI crawler user-agents.
 
-    Simulates requests as AI bots (GPTBot, ClaudeBot, PerplexityBot) and
+    Simulates requests as the AI bots that drive citations (GPTBot,
+    OAI-SearchBot, PerplexityBot, Claude-SearchBot, Googlebot, Applebot) and
     compares status codes + content-length to a normal browser request.
     """
 
