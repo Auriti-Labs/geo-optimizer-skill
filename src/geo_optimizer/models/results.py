@@ -746,6 +746,10 @@ class TopicAuthorityResult:
     clusters: list[TopicCluster] = field(default_factory=list)
     authority_score: int = 0  # 0-100
     recommendations: list[str] = field(default_factory=list)
+    # #512: pages with zero inbound internal links from the other analyzed
+    # pages — crawlers relying on link-following (not just the sitemap) may
+    # never reach them, and they carry weak entity association either way.
+    orphan_pages: list[str] = field(default_factory=list)
 
 
 # ─── AI Citation Check (geo citations) ───────────────────────────────────────

@@ -13,6 +13,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Added
 - **`geo access` reports TTFB and page weight.** Two access-layer signals a non-rendering AI crawler is sensitive to were entirely unmeasured: time-to-first-byte (warns above 500ms) and raw initial-HTML weight (warns above 200KB). Both come from the single fetch `geo access` already performs — no extra network call.
+- **`geo authority` flags orphan pages.** Previously reported interlinking only at the cluster/topic level; now also lists individual analyzed pages with zero inbound internal links from the other pages (homepage excluded — it's reachable by definition), since a page only reachable via the sitemap carries weak entity association even when crawled.
 
 ## [4.15.0] — 2026-07-08 · Aperture
 
