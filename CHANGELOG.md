@@ -5,6 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- **Bot roster corrected against current vendor documentation (#512).** `Googlebot` was completely absent from `AI_BOTS`/`CITATION_BOTS` even though Google's own docs confirm AI Overviews are fed by Googlebot's crawl data, not by `Google-Extended` (which is a robots.txt opt-out token for Gemini/Vertex training, not a fetching agent). `Claude-User` (Anthropic's current on-demand fetch bot) was missing entirely, in its place were two identifiers — `anthropic-ai`, `claude-web` — that no longer appear in Anthropic's published crawler docs. `CITATION_BOTS` also mixed in `ClaudeBot` (training-only per Anthropic) while excluding `Googlebot`/`Applebot`; it now reads `{OAI-SearchBot, Claude-SearchBot, PerplexityBot, Googlebot, Applebot}`, matching the crawlers that actually drive AI citations. `Applebot` moved from the `training` to the `search` bot tier (`Applebot-Extended` is the training-only one).
+
 ## [4.15.0] — 2026-07-08 · Aperture
 
 ### Added

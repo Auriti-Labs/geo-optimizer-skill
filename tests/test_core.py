@@ -410,9 +410,10 @@ class TestRobotsParserRFC9309:
 
         robots_content = (
             "User-agent: OAI-SearchBot\nAllow: /\n\n"
-            "User-agent: ClaudeBot\nAllow: /\n\n"
             "User-agent: Claude-SearchBot\nAllow: /\n\n"
-            "User-agent: PerplexityBot\nAllow: /\n"
+            "User-agent: PerplexityBot\nAllow: /\n\n"
+            "User-agent: Googlebot\nAllow: /\n\n"
+            "User-agent: Applebot\nAllow: /\n"
         )
         mock_response = Mock()
         mock_response.status_code = 200
