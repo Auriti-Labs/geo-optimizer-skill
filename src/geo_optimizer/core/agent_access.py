@@ -34,6 +34,29 @@ def run_agent_access_audit(base_url: str) -> AgentAccessResult:
 
             raw_html = resp.text or ""
             soup = BeautifulSoup(raw_html, "html.parser")
+
+            # #512: TTFB proxy — requests' `elapsed` is measured between sending
+            # the request and finishing parsing response headers, unaffected by
+            # body download, which is the same window curl's time_starttransfer
+            # reports. Page weight is the raw HTML a non-rendering crawler pays
+            # to download; both come from the fetch already done for JS/meta.
+            result.ttfb_ms = round(resp.elapsed.total_seconds() * 1000, 1)
+            result.page_weight_bytes = len(raw_html.encode("utf-8"))
+
+            if result.ttfb_ms > 500:
+                result.warnings.append(
+                    f"Slow server response: {result.ttfb_ms:.0f}ms TTFB (target: under 500ms, ideally under 200ms)"
+                )
+            else:
+                result.passing.append(f"Fast server response: {result.ttfb_ms:.0f}ms TTFB")
+
+            if result.page_weight_bytes > 200_000:
+                result.warnings.append(
+                    f"Heavy initial HTML: {result.page_weight_bytes / 1000:.0f}KB "
+                    "(target: under 200KB — bloated HTML slows crawler parsing and may get truncated)"
+                )
+            else:
+                result.passing.append(f"HTML weight OK: {result.page_weight_bytes / 1000:.0f}KB")
         elif err:
             result.blocking_issues.append(f"Page unreachable: {err}")
     except Exception as exc:  # noqa: BLE001

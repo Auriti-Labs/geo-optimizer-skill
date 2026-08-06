@@ -1329,6 +1329,11 @@ class AgentAccessResult:
     x_robots_noai: bool = False
     x_robots_noindex: bool = False
     ai_discovery_score: int = 0
+    # #512: Time-to-first-byte in ms and raw HTML weight in bytes — access-layer
+    # signals a non-rendering AI crawler is sensitive to (slow/heavy pages get
+    # less crawl depth and frequency; 0 means not measured, e.g. fetch failed).
+    ttfb_ms: float = 0.0
+    page_weight_bytes: int = 0
     blocking_issues: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     passing: list[str] = field(default_factory=list)
