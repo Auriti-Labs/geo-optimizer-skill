@@ -391,7 +391,7 @@ def _build_schema_card(result: AuditResult, score: int, max_score: int) -> Panel
     content_parts.append(Text())
 
     if not result.schema.found_types:
-        content_parts.append(Text("  Nessuno schema trovato", style=f"italic {_COLORS['dim']}"))
+        content_parts.append(Text("  No schema found", style=f"italic {_COLORS['dim']}"))
     else:
         # Schemas found as inline tags
         types_text = Text("  ")
@@ -674,9 +674,9 @@ def _build_brand_entity_card(result: AuditResult, score: int, max_score: int) ->
     # Brand name consistency
     coherence = Text("  ")
     if be.brand_name_consistent:
-        coherence.append("✓ Brand name coerente", style=_COLORS["excellent"])
+        coherence.append("✓ Brand name consistent", style=_COLORS["excellent"])
     else:
-        coherence.append("✗ Brand name incoerente", style=_COLORS["critical"])
+        coherence.append("✗ Brand name inconsistent", style=_COLORS["critical"])
     if be.names_found:
         coherence.append(f"  ({', '.join(be.names_found[:3])})", style=_COLORS["dim"])
     content_parts.append(coherence)

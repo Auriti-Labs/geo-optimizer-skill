@@ -102,7 +102,9 @@ def run_factual_accuracy_audit(url: str, max_source_checks: int = _DEFAULT_MAX_S
         base_url = "https://" + base_url
 
     response, err = fetch_url(base_url)
-    if err or not response:
+    # `response is None`: an HTTP error Response is falsy (requests sets __bool__ to
+    # `ok`), so this used to claim the page was unreachable when it had answered.
+    if err or response is None:
         return FactualAccuracyResult(
             checked=False,
             inconsistencies=[f"Unable to reach {base_url}: {err or 'connection failed'}"],
@@ -266,7 +268,11 @@ def _check_source_links(
     for link in links[: max(0, max_source_checks)]:
         result.source_links_checked += 1
         response, err = fetcher(link)
-        if err or not response:
+        # `response is None`, not `not response`: an HTTP error Response is falsy
+        # (requests sets __bool__ to `ok`). The outcome here was right either way —
+        # a link answering 4xx/5xx is broken — because the status check below
+        # catches it. Being explicit keeps the two cases distinguishable.
+        if err or response is None:
             _append_unique(result.broken_source_links, link)
             continue
 
