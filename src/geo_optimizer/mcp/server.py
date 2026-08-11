@@ -225,8 +225,10 @@ def geo_citability(url: str) -> str:
         from geo_optimizer.utils.http import fetch_url
 
         r, err = fetch_url(url)
-        if err or not r:
-            return json.dumps({"error": f"Cannot reach {url}: {err}", "url": url})
+        # `r is None`: a 4xx/5xx Response is falsy (__bool__ is `ok`), which used to
+        # report an unreachable host and interpolate err=None into the message.
+        if err or r is None:
+            return json.dumps({"error": f"Cannot reach {url}: {err or 'connection failed'}", "url": url})
 
         soup = BeautifulSoup(r.text, "html.parser")
         result = audit_citability(soup, url)
