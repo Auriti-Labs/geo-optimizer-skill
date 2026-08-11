@@ -17,6 +17,11 @@ COPY frontend/ ./
 # (WORKDIR is /frontend, so the repo layout is preserved one level up)
 COPY integrations/ /integrations/
 ENV PUBLIC_GA_MEASUREMENT_ID=G-KV5MQTGFZG
+# Regenerates public/sitemap.xml from the live Sanity dataset (guides/resources,
+# same status/scheduledFor gate the site itself uses) before the Astro build picks
+# it up as a static asset — keeps the sitemap current on every rebuild instead of
+# depending on someone remembering to run `npm run generate:sitemap` by hand.
+RUN npm run generate:sitemap
 RUN npm run build
 
 # ─── Stage 1: Python build ────────────────────────────────────────────────────

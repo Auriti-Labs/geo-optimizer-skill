@@ -179,7 +179,8 @@ class TestCdnAiCrawlerCheck:
 
         assert result.checked is True
         assert result.any_blocked is False
-        assert len(result.bot_results) == 3  # GPTBot, ClaudeBot, PerplexityBot
+        # GPTBot, OAI-SearchBot, PerplexityBot, Claude-SearchBot, Googlebot, Applebot
+        assert len(result.bot_results) == 6
 
     @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
     @patch("geo_optimizer.utils.http.create_session_with_retry")

@@ -10,6 +10,38 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Added
 - **MiniMax LLM provider.** `geo citations` can use `MiniMax-M3` or `MiniMax-M2.7` through either supported API wire format, with configurable global or China API roots and optional thinking control.
 
+---
+
+## [4.16.2] — 2026-08-11
+
+### Fixed
+- **An HTTP error status was reported as "Connection failed".** `requests.Response.__bool__` is `ok`, i.e. `status_code < 400`, so a perfectly valid 403 carrying a full body is *falsy*. `if err or not r` therefore routed it down the "no response at all" branch: the audit reported `error="Connection failed"` and `http_status=0` for a request that had completed, and the branch immediately below — written to name the status and point at a Cloudflare/WAF block — was unreachable for every status ≥ 400. Reported from production, where a site answering 200 to a desktop browser and 403 to the server produced "Audit failed — Connection failed", sending the user after a network problem that did not exist. The recommendation string also interpolated a bare `err`, printing "Unable to reach X: None". Now `r is None`: `err` covers transport failures, the status branch covers HTTP errors. Same shape corrected in `mcp/server.py` and `factual_accuracy.py`; left alone in four other call sites where a `status_code != 200` guard or a `continue` immediately follows, so the falsy Response changes nothing observable.
+- **Every URL field rejected a bare hostname.** Five inputs across `AuditForm`, `CompareContainer` and `LlmsTxtGenerator` were `type="url"`, so the browser rejected `example.com` during native constraint validation — which runs *before* any submit handler, making JS normalisation unreachable. Every one of those fields shows a bare hostname as its placeholder, so each form refused exactly what it asked for. Now `type="text"` with `inputMode="url"` (URL keyboard on mobile, no scheme requirement) plus a shared `lib/urlInput.ts` helper, since none of the three components normalised on this branch. The hostname check there carries the weight `type="url"` used to: prepending `https://` makes `new URL()` accept `a`, `...` and `ftp://x.com`, which are now rejected with a readable message instead of a server error.
+
+---
+
+## [4.16.1] — 2026-08-11
+
+### Fixed
+- **Report leaked Italian strings into English output (#509).** Twelve user-facing strings were hardcoded in Italian — nine in the text formatter's `BRAND & ENTITY SIGNALS` section (`Brand name coerente`, `About page collegata`, `Informazioni di contatto presenti`, and the six negative branches), three in the rich formatter (`Nessuno schema trovato`, `Brand name coerente/incoerente`). Every English user saw them; nothing configuration-dependent. The `i18n` layer is imported "for future use" only, so these are now plain English literals rather than a half-wired `gettext` call. Reported by a user running 4.15.0 on Windows, who listed the four they happened to hit.
+- **Section 14 vanished without explanation (#509).** `EMBEDDING PROXIMITY` is conditional on the optional `sentence-transformers` extra, and the formatter used `skipped_reason` solely to suppress the section — never to print it. The reason string already existed upstream in `audit_embedding.py`, naming the exact `pip install geo-optimizer-skill[embedding]` command, so users got a hole in the numbering (13 followed by 15) instead of one actionable line. The header now always prints when the check ran, with `⏭️ Skipped: <reason>` when it did not complete. A test in `test_coverage_m1.py` asserted the Italian string as expected output, pinning the bug in place; it was updated alongside the fix.
+
+### Changed
+- **Scheduled-article publishing runs from the default branch (#512).** `.github/workflows/sanity-scheduled-publish.yml` had existed on a feature branch since 2026-07-28 and never executed once: GitHub only honours `schedule` and `workflow_dispatch` for workflows present on the default branch, so neither its 10-minute cron nor a manual dispatch was reachable. With 29 articles scheduled through 2026-11-23 and the build gate raising on any overdue one, an unpromoted article failed the entire site build silently, once per day. The workflow, the three scripts it invokes, and three `sanity:*` npm scripts are now on `main`. The `prebuild` hook was deliberately not ported: it wires the gate into every build, which would add a new CI failure mode on `main` to fix a problem that lives on the deploy branch.
+- **Codecov badge and upload removed.** The badge reported `unknown`: the OIDC upload in `ci.yml` never reached Codecov, so no report was ever ingested. On a project with 1777 passing tests a badge reading `unknown` misinforms, and generating `coverage.xml` on every run served nothing. Local coverage remains available via `pytest --cov=geo_optimizer`.
+
+---
+
+## [4.16.0] — 2026-08-06 · Ground Truth
+
+### Fixed
+- **Bot roster corrected against current vendor documentation (#512).** `Googlebot` was completely absent from `AI_BOTS`/`CITATION_BOTS` even though Google's own docs confirm AI Overviews are fed by Googlebot's crawl data, not by `Google-Extended` (which is a robots.txt opt-out token for Gemini/Vertex training, not a fetching agent). `Claude-User` (Anthropic's current on-demand fetch bot) was missing entirely, in its place were two identifiers — `anthropic-ai`, `claude-web` — that no longer appear in Anthropic's published crawler docs. `CITATION_BOTS` also mixed in `ClaudeBot` (training-only per Anthropic) while excluding `Googlebot`/`Applebot`; it now reads `{OAI-SearchBot, Claude-SearchBot, PerplexityBot, Googlebot, Applebot}`, matching the crawlers that actually drive AI citations. `Applebot` moved from the `training` to the `search` bot tier (`Applebot-Extended` is the training-only one).
+- **`geo access` CDN/WAF live-fetch check only simulated 3 bots.** `audit_cdn_ai_crawler` tested `GPTBot`/`ClaudeBot`/`PerplexityBot` — none of which include the actual search/citation crawlers the check exists to protect. Now tests the six bots that matter for citation-vs-training visibility: `GPTBot`, `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Googlebot`, `Applebot`.
+
+### Added
+- **`geo access` reports TTFB and page weight.** Two access-layer signals a non-rendering AI crawler is sensitive to were entirely unmeasured: time-to-first-byte (warns above 500ms) and raw initial-HTML weight (warns above 200KB). Both come from the single fetch `geo access` already performs — no extra network call.
+- **`geo authority` flags orphan pages.** Previously reported interlinking only at the cluster/topic level; now also lists individual analyzed pages with zero inbound internal links from the other pages (homepage excluded — it's reachable by definition), since a page only reachable via the sitemap carries weak entity association even when crawled.
+
 ## [4.15.0] — 2026-07-08 · Aperture
 
 ### Added

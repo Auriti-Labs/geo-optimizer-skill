@@ -715,14 +715,17 @@ class TestRichFormatter:
         reason="rich non installato",
     )
     def test_format_audit_rich_schema_nessuno(self):
-        """Senza schema, l'output mostra 'Nessuno schema'."""
+        """Senza schema, l'output segnala l'assenza in inglese."""
         from geo_optimizer.cli.rich_formatter import format_audit_rich
 
         result = _crea_audit_result_vuoto()
         output = format_audit_rich(result)
 
-        # v2: testo in italiano "Nessuno schema trovato"
-        assert "Nessuno schema" in output
+        # Era "Nessuno schema trovato": una delle stringhe italiane hardcoded
+        # nel report inglese, segnalate nella issue #509. Il test asseriva il bug
+        # come comportamento atteso, quindi è stato aggiornato insieme al fix.
+        assert "No schema found" in output
+        assert "Nessuno schema" not in output
 
     def test_score_color_returns_color(self):
         """_score_color() ritorna un colore hex basato sulla percentuale."""

@@ -4,9 +4,12 @@ import AICitationChecker from '../../components/tools/AICitationChecker';
 import CitationSurface from '../../components/product/CitationSurface.astro';
 
 // Metadati SEO della pagina del tool.
-const title = 'ChatGPT Citation Checker: Free AI Citation Tool';
+// Il title bilancia query intent ("cited by ChatGPT & Perplexity" come domanda)
+// e onestà: il check automatico usa Perplexity Sonar, dichiarato in description,
+// badge hero e FAQ. ChatGPT resta solo come claim di correlazione (framing FAQ).
+const title = 'AI Citation Checker — Is Your Site Cited by ChatGPT & Perplexity?';
 const description =
-  'Free AI visibility checker: ask real AI answer engines whether your brand is mentioned and your domain is cited — or who gets cited instead of you.';
+  'Free AI citation checker powered by Perplexity Sonar: see whether AI answer engines mention your brand and cite your domain — with real, verifiable source citations.';
 const canonical = 'https://geoready.dev/tools/ai-citation-checker/';
 
 // I passi del controllo — riusati nello schema HowTo.
@@ -69,15 +72,23 @@ const faqs = [
         </div>
 
         <h1 class="mt-4 max-w-3xl font-display text-4xl md:text-5xl font-bold text-text-primary leading-tight tracking-tight">
-          AI Citation Checker: are you cited by ChatGPT &amp; Perplexity?
+          AI Citation Checker: is your brand cited by AI answer engines?
         </h1>
+
+        {/* Badge onesto: dichiara l'engine effettivamente interrogato. */}
+        <p class="mt-4 inline-flex items-center gap-2 rounded-full border border-accent-teal/30 bg-accent-teal/5 px-3 py-1 text-xs font-mono text-accent-teal">
+          <span class="h-1.5 w-1.5 rounded-full bg-accent-teal" aria-hidden="true"></span>
+          Powered by Perplexity Sonar — real, verifiable source citations
+        </p>
 
         {/* Intro answer-first: cosa fa il tool. */}
         <p class="mt-5 max-w-2xl text-base md:text-lg text-text-secondary leading-relaxed">
           When your customers ask an AI engine "what's the best tool for…", does the
           answer mention <em>your</em> brand and cite <em>your</em> domain — or a
           competitor's? This tool asks a real AI answer engine and shows you the
-          verdict, with the actual sources the AI cited.
+          verdict, with the actual sources the AI cited. Citation patterns correlate
+          across engines: content that Perplexity cites is building the signals other
+          AI engines reward.
         </p>
 
         <div class="mt-8 grid gap-3 sm:grid-cols-3">
@@ -244,7 +255,7 @@ const faqs = [
         "@type": "WebApplication",
         "@id": "https://geoready.dev/tools/ai-citation-checker/#webapp",
         "isPartOf": { "@id": "https://geoready.dev/#webapp" },
-        "name": "Free AI Citation Checker",
+        "name": "AI Citation Checker (Powered by Perplexity Sonar)",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any",
         "url": canonical,
@@ -270,7 +281,7 @@ const faqs = [
       {
         "@type": "HowTo",
         "name": "How to check if AI answers cite you",
-        "description": "Run a free AI citation check: enter your domain, run the check, and read whether ChatGPT- and Perplexity-style answers cite you or a competitor.",
+        "description": "Run a free AI citation check powered by Perplexity Sonar: enter your domain, run the check, and read whether AI answer engines cite you or a competitor.",
         "totalTime": "PT1M",
         "step": HOWTO_STEPS.map(([name, text], index) => ({
           "@type": "HowToStep",
