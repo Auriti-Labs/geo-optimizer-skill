@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.16.1] — 2026-08-11
+
+### Fixed
+- **Report leaked Italian strings into English output (#509).** Twelve user-facing strings were hardcoded in Italian — nine in the text formatter's `BRAND & ENTITY SIGNALS` section (`Brand name coerente`, `About page collegata`, `Informazioni di contatto presenti`, and the six negative branches), three in the rich formatter (`Nessuno schema trovato`, `Brand name coerente/incoerente`). Every English user saw them; nothing configuration-dependent. The `i18n` layer is imported "for future use" only, so these are now plain English literals rather than a half-wired `gettext` call. Reported by a user running 4.15.0 on Windows, who listed the four they happened to hit.
+- **Section 14 vanished without explanation (#509).** `EMBEDDING PROXIMITY` is conditional on the optional `sentence-transformers` extra, and the formatter used `skipped_reason` solely to suppress the section — never to print it. The reason string already existed upstream in `audit_embedding.py`, naming the exact `pip install geo-optimizer-skill[embedding]` command, so users got a hole in the numbering (13 followed by 15) instead of one actionable line. The header now always prints when the check ran, with `⏭️ Skipped: <reason>` when it did not complete. A test in `test_coverage_m1.py` asserted the Italian string as expected output, pinning the bug in place; it was updated alongside the fix.
+
+### Changed
+- **Scheduled-article publishing runs from the default branch (#512).** `.github/workflows/sanity-scheduled-publish.yml` had existed on a feature branch since 2026-07-28 and never executed once: GitHub only honours `schedule` and `workflow_dispatch` for workflows present on the default branch, so neither its 10-minute cron nor a manual dispatch was reachable. With 29 articles scheduled through 2026-11-23 and the build gate raising on any overdue one, an unpromoted article failed the entire site build silently, once per day. The workflow, the three scripts it invokes, and three `sanity:*` npm scripts are now on `main`. The `prebuild` hook was deliberately not ported: it wires the gate into every build, which would add a new CI failure mode on `main` to fix a problem that lives on the deploy branch.
+- **Codecov badge and upload removed.** The badge reported `unknown`: the OIDC upload in `ci.yml` never reached Codecov, so no report was ever ingested. On a project with 1777 passing tests a badge reading `unknown` misinforms, and generating `coverage.xml` on every run served nothing. Local coverage remains available via `pytest --cov=geo_optimizer`.
+
+---
+
 ## [4.16.0] — 2026-08-06 · Ground Truth
 
 ### Fixed
