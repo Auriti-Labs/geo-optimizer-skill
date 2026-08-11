@@ -400,9 +400,10 @@ class TestGuideInternalLinks:
 
 # ── Pubblicazione programmata Sanity ───────────────────────────────────────────
 class TestSanityScheduledPublishing:
-    """La pubblicazione schedulata deve avere uno stato editoriale esplicito e
-    un deploy statico successivo, senza esporre i documenti solo perche' la data
-    e' trascorsa."""
+    """La pubblicazione schedulata ha uno stato editoriale esplicito, e le due
+    superfici filtrano in modo diverso di proposito: le pagine rendono anche uno
+    "scheduled" la cui data e' trascorsa, la sitemap solo cio' che il job ha
+    promosso a "published". Il gate di prebuild e' la guardia sugli scaduti."""
 
     _SANITY_UTIL = _FRONTEND / "src" / "utils" / "sanity.ts"
     _SITEMAP_SCRIPT = _FRONTEND / "scripts" / "generate-sitemap.mjs"
@@ -411,15 +412,26 @@ class TestSanityScheduledPublishing:
     _VERIFY_SCRIPT = _FRONTEND / "scripts" / "verify-scheduled-articles.mjs"
     _PACKAGE_JSON = _FRONTEND / "package.json"
 
-    def test_sito_e_sitemap_espongono_solo_articoli_pubblicati(self):
-        sanity_src = self._SANITY_UTIL.read_text(encoding="utf-8")
-        sitemap_src = self._SITEMAP_SCRIPT.read_text(encoding="utf-8")
-        # The LIVE filter must include published articles and legacy
-        # undefined-status docs. The exact expression may evolve
-        # (e.g. adding scheduled support) so we check the core parts.
-        assert 'status == "published"' in sanity_src
-        assert "!defined(status)" in sanity_src
-        assert 'status == "published"' in sitemap_src or "!defined(status)" in sitemap_src
+    def test_sitemap_espone_solo_articoli_promossi(self):
+        """La sitemap non annuncia ai crawler nulla che il job non abbia promosso."""
+        assert '(!defined(status) || status == "published")' in self._SITEMAP_SCRIPT.read_text(
+            encoding="utf-8"
+        )
+
+    def test_pagine_rendono_anche_uno_scheduled_scaduto(self):
+        """Le pagine servono anche uno "scheduled" la cui data e' passata: senza
+        questo un articolo programmato resterebbe invisibile fino al primo giro
+        del job di promozione."""
+        source = self._SANITY_UTIL.read_text(encoding="utf-8")
+        assert '!defined(status)' in source
+        assert 'status == "published"' in source
+        assert 'status == "scheduled" && dateTime(scheduledFor) <= dateTime(now())' in source
+
+    def test_prebuild_verifica_gli_scaduti(self):
+        """La guardia reale: la build falla se resta uno scheduled scaduto."""
+        package = self._PACKAGE_JSON.read_text(encoding="utf-8")
+        assert '"prebuild": "node scripts/verify-scheduled-articles.mjs"' in package
+        assert "process.exitCode = 1" in self._VERIFY_SCRIPT.read_text(encoding="utf-8")
 
     def test_script_promuove_solo_articoli_scaduti_in_una_transazione(self):
         source = self._PUBLISH_SCRIPT.read_text(encoding="utf-8")
