@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.16.2] — 2026-08-11
+
+### Fixed
+- **An HTTP error status was reported as "Connection failed".** `requests.Response.__bool__` is `ok`, i.e. `status_code < 400`, so a perfectly valid 403 carrying a full body is *falsy*. `if err or not r` therefore routed it down the "no response at all" branch: the audit reported `error="Connection failed"` and `http_status=0` for a request that had completed, and the branch immediately below — written to name the status and point at a Cloudflare/WAF block — was unreachable for every status ≥ 400. Reported from production, where a site answering 200 to a desktop browser and 403 to the server produced "Audit failed — Connection failed", sending the user after a network problem that did not exist. The recommendation string also interpolated a bare `err`, printing "Unable to reach X: None". Now `r is None`: `err` covers transport failures, the status branch covers HTTP errors. Same shape corrected in `mcp/server.py` and `factual_accuracy.py`; left alone in four other call sites where a `status_code != 200` guard or a `continue` immediately follows, so the falsy Response changes nothing observable.
+- **Every URL field rejected a bare hostname.** Five inputs across `AuditForm`, `CompareContainer` and `LlmsTxtGenerator` were `type="url"`, so the browser rejected `example.com` during native constraint validation — which runs *before* any submit handler, making JS normalisation unreachable. Every one of those fields shows a bare hostname as its placeholder, so each form refused exactly what it asked for. Now `type="text"` with `inputMode="url"` (URL keyboard on mobile, no scheme requirement) plus a shared `lib/urlInput.ts` helper, since none of the three components normalised on this branch. The hostname check there carries the weight `type="url"` used to: prepending `https://` makes `new URL()` accept `a`, `...` and `ftp://x.com`, which are now rejected with a readable message instead of a server error.
+
+---
+
 ## [4.16.1] — 2026-08-11
 
 ### Fixed
