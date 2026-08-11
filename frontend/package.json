@@ -11,6 +11,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "sanity:check-schedule": "node scripts/verify-scheduled-articles.mjs",
+    "sanity:publish-due:dry-run": "node scripts/publish-scheduled-articles.mjs --dry-run",
+    "sanity:publish-due": "node scripts/publish-scheduled-articles.mjs",
     "indexnow:dry-run": "node scripts/indexnow-submit.mjs",
     "indexnow:submit": "node scripts/indexnow-submit.mjs --submit"
   },
