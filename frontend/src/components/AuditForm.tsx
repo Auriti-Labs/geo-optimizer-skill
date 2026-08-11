@@ -1,15 +1,6 @@
 import { useState } from 'react';
 import { trackAuditStarted } from '../lib/geo_track';
-
-function isValidUrl(value: string): boolean {
-  if (!value.trim()) return false;
-  try {
-    const parsed = new URL(value);
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
+import { toAuditableUrl } from '../lib/urlInput';
 
 export default function AuditForm() {
   const [url, setUrl] = useState('');
@@ -26,14 +17,17 @@ export default function AuditForm() {
       return;
     }
 
-    if (!isValidUrl(trimmed)) {
-      setErrorMsg('Enter a valid URL, for example https://example.com.');
+    // toAuditableUrl supplies the scheme, so a bare "example.com" — what the
+    // placeholder shows — reaches the report page as a full URL.
+    const normalized = toAuditableUrl(trimmed);
+    if (!normalized) {
+      setErrorMsg('Enter a valid website address, for example example.com.');
       return;
     }
 
     trackAuditStarted();
     setIsLoading(true);
-    window.location.href = `/report/audit?url=${encodeURIComponent(trimmed)}`;
+    window.location.href = `/report/audit?url=${encodeURIComponent(normalized)}`;
   };
 
   return (
@@ -44,7 +38,8 @@ export default function AuditForm() {
         </label>
         <input
           id="audit-url"
-          type="url"
+          type="text"
+          inputMode="url"
           required
           placeholder="https://example.com"
           value={url}

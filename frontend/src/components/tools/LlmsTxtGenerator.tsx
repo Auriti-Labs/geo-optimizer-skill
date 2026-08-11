@@ -8,6 +8,7 @@ import {
   trackLlmsTxtCopied,
   trackLlmsTxtDownloaded,
 } from '../../lib/geo_track';
+import { normalizeUrl, toAuditableUrl } from '../../lib/urlInput';
 
 // Stato del flusso di generazione.
 type Status = 'idle' | 'loading' | 'error' | 'success';
@@ -55,14 +56,14 @@ export default function LlmsTxtGenerator() {
     setErrorMsg('');
 
     // Validazione inline: la URL del sito è obbligatoria.
-    const trimmedWebsite = websiteUrl.trim();
+    const trimmedWebsite = toAuditableUrl(websiteUrl);
     if (!trimmedWebsite) {
       setStatus('error');
-      setErrorMsg('Enter your website URL, for example https://example.com.');
+      setErrorMsg('Enter a valid website address, for example example.com.');
       return;
     }
 
-    const trimmedSitemap = sitemapUrl.trim();
+    const trimmedSitemap = sitemapUrl.trim() ? normalizeUrl(sitemapUrl) : '';
     const hasCustomSitemap = Boolean(trimmedSitemap);
 
     trackLlmsGeneratorStarted({
@@ -138,7 +139,8 @@ export default function LlmsTxtGenerator() {
           </label>
           <input
             id="llms-website"
-            type="url"
+            type="text"
+            inputMode="url"
             required
             placeholder="https://example.com"
             value={websiteUrl}
@@ -158,7 +160,8 @@ export default function LlmsTxtGenerator() {
           </label>
           <input
             id="llms-sitemap"
-            type="url"
+            type="text"
+            inputMode="url"
             placeholder="https://example.com/sitemap.xml"
             value={sitemapUrl}
             onChange={(e) => setSitemapUrl(e.target.value)}
