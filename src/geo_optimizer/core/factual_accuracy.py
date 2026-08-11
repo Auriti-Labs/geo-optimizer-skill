@@ -268,10 +268,11 @@ def _check_source_links(
     for link in links[: max(0, max_source_checks)]:
         result.source_links_checked += 1
         response, err = fetcher(link)
-        # Same falsy-Response trap, but here the outcome is right for the wrong
-        # reason: a link answering 4xx/5xx IS broken. Made explicit so it does not
-        # read as an oversight.
-        if err or response is None or not response.ok:
+        # `response is None`, not `not response`: an HTTP error Response is falsy
+        # (requests sets __bool__ to `ok`). The outcome here was right either way —
+        # a link answering 4xx/5xx is broken — because the status check below
+        # catches it. Being explicit keeps the two cases distinguishable.
+        if err or response is None:
             _append_unique(result.broken_source_links, link)
             continue
 
