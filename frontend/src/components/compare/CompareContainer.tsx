@@ -5,6 +5,7 @@ import ReportHeader from '../report/ReportHeader';
 import ScoreGauge from '../report/ScoreGauge';
 import CategoryBreakdown from '../report/CategoryBreakdown';
 import RecommendationList from '../report/RecommendationList';
+import { toAuditableUrl } from '../../lib/urlInput';
 
 type CompareState =
   | { status: 'idle' }
@@ -119,10 +120,14 @@ export default function CompareContainer() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url1.trim() || !url2.trim()) return;
+    // Normalise before building the query string: the placeholders show bare
+    // hostnames ("site-a.com"), and the raw value used to be forwarded as-is.
+    const first = toAuditableUrl(url1);
+    const second = toAuditableUrl(url2);
+    if (!first || !second) return;
     const u = new URL(window.location.href);
-    u.searchParams.set('url1', url1.trim());
-    u.searchParams.set('url2', url2.trim());
+    u.searchParams.set('url1', first);
+    u.searchParams.set('url2', second);
     window.location.href = u.toString();
   };
 
@@ -203,7 +208,8 @@ export default function CompareContainer() {
               <label htmlFor="url1" className="block text-sm font-medium mb-2">First URL</label>
               <input
                 id="url1"
-                type="url"
+                type="text"
+                inputMode="url"
                 required
                 placeholder="https://site-a.com"
                 value={url1}
@@ -215,7 +221,8 @@ export default function CompareContainer() {
               <label htmlFor="url2" className="block text-sm font-medium mb-2">Second URL</label>
               <input
                 id="url2"
-                type="url"
+                type="text"
+                inputMode="url"
                 required
                 placeholder="https://site-b.com"
                 value={url2}
