@@ -213,6 +213,53 @@ class TestQueryLLM:
 class TestQueryMinimax:
     """Test MiniMax provider over plain HTTP."""
 
+    def test_query_llm_minimax_openai_multimodal_content(self, _mock_env, monkeypatch) -> None:
+        """Pass image and video content through the OpenAI-compatible format."""
+        captured: dict = {}
+
+        def _fake_post(url, headers, json, timeout):
+            captured["json"] = json
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(return_value={"choices": [{"message": {"content": "Multimodal response"}}]})
+            return resp
+
+        content: list[llm_client.LLMContentPart] = [
+            {"type": "text", "text": "Describe the media."},
+            {"type": "image_url", "image_url": {"url": "https://example.com/image.png", "detail": "default"}},
+            {"type": "video_url", "video_url": {"url": "mm_file://video-id", "detail": "default"}},
+        ]
+        monkeypatch.setattr("requests.post", _fake_post)
+
+        resp = llm_client.query_llm(content, provider="minimax", api_key="fake_key", model="MiniMax-M3")
+
+        assert resp.text == "Multimodal response"
+        assert captured["json"]["messages"][-1] == {"role": "user", "content": content}
+
+    def test_query_llm_minimax_anthropic_multimodal_content(self, _mock_env, monkeypatch) -> None:
+        """Pass image and video content through the Anthropic-compatible format."""
+        captured: dict = {}
+
+        def _fake_post(url, headers, json, timeout):
+            captured["json"] = json
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(return_value={"content": [{"type": "text", "text": "Multimodal response"}]})
+            return resp
+
+        content: list[llm_client.LLMContentPart] = [
+            {"type": "text", "text": "Describe the media."},
+            {"type": "image", "source": {"type": "url", "url": "https://example.com/image.png"}},
+            {"type": "video", "source": {"type": "url", "url": "mm_file://video-id"}},
+        ]
+        monkeypatch.setenv("MINIMAX_API_FORMAT", "anthropic")
+        monkeypatch.setattr("requests.post", _fake_post)
+
+        resp = llm_client.query_llm(content, provider="minimax", api_key="fake_key", model="MiniMax-M3")
+
+        assert resp.text == "Multimodal response"
+        assert captured["json"]["messages"] == [{"role": "user", "content": content}]
+
     def test_query_llm_minimax_success(self, _mock_env, monkeypatch) -> None:
         """Use the default model and current chat completion token field."""
         captured: dict = {}
