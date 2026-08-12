@@ -213,8 +213,8 @@ class TestQueryLLM:
 class TestQueryMinimax:
     """Test MiniMax provider over plain HTTP."""
 
-    def test_query_llm_minimax_openai_multimodal_content(self, _mock_env, monkeypatch) -> None:
-        """Pass image and video content through the OpenAI-compatible format."""
+    def test_query_llm_minimax_openai_image_content(self, _mock_env, monkeypatch) -> None:
+        """Pass image content through the OpenAI-compatible format."""
         captured: dict = {}
 
         def _fake_post(url, headers, json, timeout):
@@ -227,7 +227,6 @@ class TestQueryMinimax:
         content: list[llm_client.LLMContentPart] = [
             {"type": "text", "text": "Describe the media."},
             {"type": "image_url", "image_url": {"url": "https://example.com/image.png", "detail": "default"}},
-            {"type": "video_url", "video_url": {"url": "mm_file://video-id", "detail": "default"}},
         ]
         monkeypatch.setattr("requests.post", _fake_post)
 

@@ -59,7 +59,6 @@ class LLMContentPart(TypedDict, total=False):
     type: str
     text: str
     image_url: dict[str, object]
-    video_url: dict[str, object]
     source: dict[str, object]
 
 
