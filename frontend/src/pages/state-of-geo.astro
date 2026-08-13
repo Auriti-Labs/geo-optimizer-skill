@@ -2,6 +2,7 @@
 import Shell from '../components/Shell.astro';
 import VisualStage from '../components/VisualStage.astro';
 import NewsletterSignup from '../components/NewsletterSignup';
+import ArticleVisual from '../components/ArticleVisual.astro';
 import { marketingVisuals } from '../lib/marketingVisuals';
 
 const title = 'State of GEO — AI Search Readiness Benchmark | GeoReady';
@@ -75,7 +76,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
 
           <div class="mt-7 flex flex-col sm:flex-row flex-wrap gap-3">
             <a
-              href="/"
+              href="/ai-seo-audit/"
               data-cta="state_geo_hero_run_audit"
               class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
             >
@@ -120,6 +121,13 @@ const heroVisual = marketingVisuals.commandCenterV2;
 
     <div class="max-w-7xl mx-auto space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
 
+      <ArticleVisual
+        src="/images/article-visuals/L1HeroBenchmarkDistribution.png"
+        alt="Benchmark distribution diagram showing audited sites grouped by AI search readiness bands."
+        caption="The live benchmark turns audited sites into a readable readiness baseline."
+        height={452}
+      />
+
       {/* ── Key findings (live teaser) ──────────────────────────────────── */}
       <section>
         <h2>Key findings</h2>
@@ -142,7 +150,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
           <p class="mt-1">
             The benchmark is computed from sites audited by GeoReady and refreshes
             continuously. You can still
-            <a href="/" data-cta="state_geo_key_findings_run_audit" class="text-accent-teal hover:underline">run a free audit</a>
+            <a href="/ai-seo-audit/" data-cta="state_geo_key_findings_run_audit" class="text-accent-teal hover:underline">run a free audit</a>
             to see exactly where your own site stands right now.
           </p>
         </div>
@@ -220,6 +228,13 @@ const heroVisual = marketingVisuals.commandCenterV2;
       </section>
 
       {/* ── How to improve your score ───────────────────────────────────── */}
+      <ArticleVisual
+        src="/images/article-visuals/D1HeroChecklist.png"
+        alt="Checklist diagram showing crawler access, llms.txt, schema, AI discovery, and monitoring as readiness steps."
+        caption="The path from Foundation to Good runs through crawler access, llms.txt, schema, and AI discovery."
+        height={411}
+      />
+
       <section>
         <h2>How to improve your score</h2>
         <p class="mt-4">
@@ -280,7 +295,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
         </p>
         <div class="mt-6 flex flex-col sm:flex-row gap-3">
           <a
-            href="/"
+            href="/ai-seo-audit/"
             data-cta="state_geo_midpage_run_audit"
             class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
           >
@@ -322,22 +337,39 @@ const heroVisual = marketingVisuals.commandCenterV2;
         </p>
       </section>
 
-      {/* ── June 2026 report link ───────────────────────────────────────── */}
+      {/* ── July 2026 report link ───────────────────────────────────────── */}
       <section class="rounded-2xl border border-accent-teal/30 bg-accent-teal/5 p-6">
-        <p class="text-xs font-mono text-accent-teal uppercase tracking-wider mb-3">June 2026 — Full report published</p>
-        <h2 class="font-display text-xl font-bold text-text-primary leading-tight">State of GEO: June 2026</h2>
+        <p class="text-xs font-mono text-accent-teal uppercase tracking-wider mb-3">July 2026 — Full report published</p>
+        <h2 class="font-display text-xl font-bold text-text-primary leading-tight">State of GEO: July 2026</h2>
         <p class="mt-2 text-sm text-text-secondary">
-          288 unique domains. Average score 53.6/100. AI Discovery at 8.3% efficiency — the biggest gap.
+          360 unique domains. Average score 54.1/100. Schema adoption up 5.5pp, llms.txt down 4.1pp — the first month-over-month comparison.
           Full category breakdown, TLD analysis, and the quick-win checklist to move from Foundation to Good.
         </p>
         <p class="mt-2 text-xs text-text-muted">
-          The June 2026 snapshot covers the 288 domains audited by that cutoff; the live counter above
+          The July 2026 snapshot covers 360 domains audited 1–31 July; the live counter above
           includes sites audited since, so the two numbers will differ.
+        </p>
+        <a
+          href="/state-of-geo/july-2026/"
+          data-cta="state_geo_live_july2026_report"
+          class="mt-4 inline-flex items-center gap-2 rounded-full bg-accent-teal px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+        >
+          Read the July 2026 report →
+        </a>
+      </section>
+
+      {/* ── June 2026 report link ───────────────────────────────────────── */}
+      <section class="rounded-2xl border border-border bg-bg-surface p-6">
+        <p class="text-xs font-mono text-text-muted uppercase tracking-wider mb-3">June 2026 — First edition</p>
+        <h2 class="font-display text-lg font-bold text-text-primary leading-tight">State of GEO: June 2026</h2>
+        <p class="mt-2 text-sm text-text-secondary">
+          288 unique domains. Average score 53.6/100. AI Discovery at 8.3% efficiency — the biggest gap.
+          The baseline report that started the series.
         </p>
         <a
           href="/state-of-geo/june-2026/"
           data-cta="state_geo_live_june2026_report"
-          class="mt-4 inline-flex items-center gap-2 rounded-full bg-accent-teal px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+          class="mt-3 inline-flex items-center gap-2 text-sm font-medium text-accent-teal hover:underline"
         >
           Read the June 2026 report →
         </a>
@@ -348,7 +380,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
         <NewsletterSignup
           client:visible
           source="newsletter-state-of-geo"
-          title="Get the July 2026 report when it drops"
+          title="Get the August 2026 report when it drops"
           detail="The State of GEO publishes monthly. Each edition tracks score trends, adoption rates, and the evolving gap between what sites publish and what AI engines can actually read."
         />
       </section>
@@ -376,7 +408,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
         </p>
         <div class="mt-6 flex flex-col sm:flex-row gap-3">
           <a
-            href="/"
+            href="/ai-seo-audit/"
             data-cta="state_geo_final_run_audit"
             class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
           >

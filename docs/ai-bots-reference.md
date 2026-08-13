@@ -10,10 +10,10 @@ This is the most important distinction in GEO robot configuration.
 
 | Type | What they do | GEO impact | Example |
 |------|-------------|-----------|---------|
-| **Citation bots** | Crawl and index your content for use in AI-generated answers | 🔴 Critical — blocking these = not being cited | `OAI-SearchBot`, `ClaudeBot`, `PerplexityBot` |
-| **Training bots** | Collect data to train AI models (offline process) | ⚠️ Optional — blocking doesn't affect citations | `GPTBot`, `anthropic-ai`, `CCBot` |
+| **Citation bots** | Crawl and index your content for use in AI-generated answers | 🔴 Critical — blocking these = not being cited | `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`, `Googlebot`, `Applebot` |
+| **Training bots** | Collect data to train AI models (offline process) | ⚠️ Optional — blocking doesn't affect citations | `GPTBot`, `ClaudeBot`, `CCBot` |
 
-**Key insight:** You can block training bots (if you have IP concerns) while still allowing citation bots. Blocking `GPTBot` does not prevent ChatGPT from citing you — `OAI-SearchBot` is the relevant bot for citations.
+**Key insight:** You can block training bots (if you have IP concerns) while still allowing citation bots. Blocking `GPTBot` does not prevent ChatGPT from citing you — `OAI-SearchBot` is the relevant bot for citations. Likewise `ClaudeBot` is Anthropic's training crawler, not the one Claude cites through — `Claude-SearchBot` (index) and `Claude-User` (on-demand, when a user asks Claude to visit a URL) are.
 
 ---
 
@@ -21,14 +21,15 @@ This is the most important distinction in GEO robot configuration.
 
 ### 🔴 Critical Citation Bots
 
-These four bots directly determine whether AI search engines cite your site. **Never block them.**
+These five bots directly determine whether AI search engines cite your site. **Never block them.**
 
 | Bot | Vendor | Type | Purpose | Crawl Frequency |
 |-----|--------|------|---------|----------------|
 | `OAI-SearchBot` | OpenAI | **Citation** | ChatGPT Search index — determines citation eligibility | Daily |
-| `ClaudeBot` | Anthropic | **Citation** | Claude.ai real-time web citations | On-demand + regular crawl |
 | `Claude-SearchBot` | Anthropic | **Citation** | Claude search-specific crawler | On-demand |
 | `PerplexityBot` | Perplexity | **Citation** | Perplexity AI citation index | Several times per week |
+| `Googlebot` | Google | **Citation** | Same crawler/index that feeds AI Overviews — see note below | Very frequent |
+| `Applebot` | Apple | **Citation** | Siri, Spotlight Search, Safari Suggestions | Periodic |
 
 ### OpenAI (ChatGPT)
 
@@ -40,12 +41,15 @@ These four bots directly determine whether AI search engines cite your site. **N
 
 ### Anthropic (Claude)
 
+Anthropic's current published crawler docs (support.claude.com) name exactly
+these three bots — `anthropic-ai` and `claude-web` are no longer listed and
+have been removed from this reference.
+
 | Bot | Type | Purpose | Crawl Frequency |
 |-----|------|---------|----------------|
-| `anthropic-ai` | Training | Claude model training | Periodic |
-| `ClaudeBot` | **Citation** | Claude.ai web citations | On-demand + regular |
+| `ClaudeBot` | Training | Claude model training | Periodic |
 | `Claude-SearchBot` | **Citation** | Claude search-specific crawler | On-demand |
-| `claude-web` | Crawl | General Claude web crawling | Periodic |
+| `Claude-User` | On-demand | Fetched when a Claude user asks it to visit a URL | As needed |
 
 ### Perplexity AI
 
@@ -128,11 +132,11 @@ User-agent: ChatGPT-User
 Allow: /
 
 # ——— Anthropic (Claude) ———
-User-agent: anthropic-ai
-Allow: /
 User-agent: ClaudeBot
 Allow: /
-User-agent: claude-web
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: Claude-User
 Allow: /
 
 # ——— Perplexity ———
@@ -199,7 +203,7 @@ If you want to appear in AI answers but prevent your content from being used as 
 User-agent: GPTBot
 Disallow: /
 
-User-agent: anthropic-ai
+User-agent: ClaudeBot
 Disallow: /
 
 User-agent: Google-Extended
@@ -215,7 +219,7 @@ Disallow: /
 User-agent: OAI-SearchBot
 Allow: /
 
-User-agent: ClaudeBot
+User-agent: Claude-SearchBot
 Allow: /
 
 User-agent: PerplexityBot
@@ -245,13 +249,13 @@ Simulate a bot's HTTP request to check what your server returns:
 # Simulate OAI-SearchBot (ChatGPT citations)
 curl -A "OAI-SearchBot/1.0 (+https://openai.com/searchbot)" https://yoursite.com/robots.txt
 
-# Simulate ClaudeBot
-curl -A "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +claudebot@anthropic.com)" https://yoursite.com
+# Simulate Claude-SearchBot (Claude citations)
+curl -A "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-SearchBot/1.0; +https://www.anthropic.com/claude-searchbot)" https://yoursite.com
 
 # Simulate PerplexityBot
 curl -A "PerplexityBot/1.0 (+https://perplexity.ai/bot)" https://yoursite.com
 
-# Simulate GPTBot
+# Simulate GPTBot (training only — does not affect ChatGPT citations)
 curl -A "GPTBot/1.2 (+https://openai.com/gptbot)" https://yoursite.com/robots.txt
 ```
 
@@ -265,7 +269,7 @@ Check if AI bots are actively crawling your site:
 
 ```bash
 # Search nginx access logs for all major AI bots
-grep -E "GPTBot|OAI-SearchBot|ClaudeBot|PerplexityBot|Google-Extended|anthropic-ai" \
+grep -E "GPTBot|OAI-SearchBot|ClaudeBot|Claude-SearchBot|PerplexityBot|Googlebot|Applebot" \
   /var/log/nginx/access.log
 
 # Count hits per bot (last 7 days)

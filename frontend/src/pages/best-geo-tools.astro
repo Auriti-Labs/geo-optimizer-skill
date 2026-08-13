@@ -1,5 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
+import ArticleVisual from '../components/ArticleVisual.astro';
 
 const title = 'Best GEO Tools 2026: Compare AI Visibility Software';
 const description =
@@ -179,6 +180,13 @@ const faqs = [
       </p>
     </header>
 
+    <ArticleVisual
+      src="/images/article-visuals/K1HeroGEOToolSelection.png"
+      alt="Diagram showing how a GEO tool should expose methodology, monitoring, workflow fit, and evidence before a team trusts the score."
+      caption="A useful GEO tool makes the evaluation method visible before asking you to trust the score."
+      height={452}
+    />
+
     {/* What "best" means in a new category */}
     <section class="mb-12 md:mb-16">
       <h2>What "best" means in a category this young</h2>
@@ -231,6 +239,13 @@ const faqs = [
         published scoring model turns a number into a checklist you can act on.
       </p>
     </section>
+
+    <ArticleVisual
+      src="/images/article-visuals/N1HeroScoringWeights.png"
+      alt="Diagram of the eight published GEO scoring weights that turn an audit score into a checklist."
+      caption="Transparent scoring turns a GEO audit from a black-box number into a reproducible checklist."
+      height={452}
+    />
 
     {/* Tool categories */}
     <section class="mb-12 md:mb-16">
@@ -299,6 +314,13 @@ const faqs = [
       </p>
     </section>
 
+    <ArticleVisual
+      src="/images/article-visuals/D4MonitorLoop.png"
+      alt="Loop diagram showing audit snapshots, fixes, rechecks, and ongoing monitoring over time."
+      caption="One-off audits answer where you stand; monitoring shows whether the answer changes over time."
+      height={424}
+    />
+
     {/* GEO Optimizer feature block — verifiable repo facts only */}
     <section class="mb-12 md:mb-16">
       <h2>GEO Optimizer: an open-source option, by the facts</h2>
@@ -334,7 +356,7 @@ const faqs = [
         it runs in CI/CD via a GitHub Action; and its methods are grounded in published
         research. The hosted layer is freemium — the
         {' '}
-        <a href="/" class="text-accent-teal hover:underline">audit</a>,
+        <a href="/ai-seo-audit/" data-cta="best_geo_tools_body_ai_seo_audit" class="text-accent-teal hover:underline">audit</a>,
         {' '}
         <a href="/compare/" class="text-accent-teal hover:underline">two-site comparison</a>, and a free
         {' '}
@@ -432,7 +454,8 @@ const faqs = [
       </p>
       <div class="mt-6 flex flex-col sm:flex-row gap-3">
         <a
-          href="/#audit-form"
+          href="/ai-seo-audit/"
+          data-cta="best_geo_tools_cta_ai_seo_audit"
           class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
         >
           Run the free GEO audit

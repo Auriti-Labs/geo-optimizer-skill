@@ -68,15 +68,21 @@ AI_BOTS = {
     "OAI-SearchBot": "OpenAI (ChatGPT search citations)",
     "ChatGPT-User": "OpenAI (ChatGPT on-demand fetch)",
     # ── Anthropic ───────────────────────────────────────────────────────────
-    "anthropic-ai": "Anthropic (Claude training)",
-    "ClaudeBot": "Anthropic (Claude citations)",
+    # anthropic-ai/claude-web removed (#512): not listed in Anthropic's current
+    # published crawler docs (support.claude.com), which name exactly these three.
+    "ClaudeBot": "Anthropic (Claude training)",
     "Claude-SearchBot": "Anthropic (Claude search citations)",
-    "claude-web": "Anthropic (Claude web crawl)",
+    "Claude-User": "Anthropic (Claude on-demand fetch)",
     # ── Perplexity ──────────────────────────────────────────────────────────
     "PerplexityBot": "Perplexity AI (index builder)",
     "Perplexity-User": "Perplexity (citation fetch on-demand)",
     # ── Google ──────────────────────────────────────────────────────────────
-    "Google-Extended": "Google (Gemini training)",
+    # Googlebot (#512): the same crawler that feeds Search also feeds AI
+    # Overviews — Google's own docs state Google-Extended is a robots.txt
+    # token layered on Googlebot's data, not a separate fetching agent, and
+    # controls only Gemini/Vertex training, not AI Overviews eligibility.
+    "Googlebot": "Google (Search + AI Overviews)",
+    "Google-Extended": "Google (Gemini/Vertex training opt-out — not a crawler)",
     "Google-CloudVertexBot": "Google (Vertex AI)",
     # ── Microsoft ───────────────────────────────────────────────────────────
     "Bingbot": "Microsoft (Bing/Copilot search)",
@@ -111,12 +117,10 @@ AI_BOTS = {
 BOT_TIERS = {
     "training": {
         "GPTBot",
-        "anthropic-ai",
-        "claude-web",
+        "ClaudeBot",
         "Google-Extended",
         "Google-CloudVertexBot",
         "Applebot-Extended",
-        "Applebot",
         "cohere-ai",
         "Bytespider",
         "meta-externalagent",
@@ -127,9 +131,10 @@ BOT_TIERS = {
     },
     "search": {
         "OAI-SearchBot",
-        "ClaudeBot",
         "Claude-SearchBot",
         "PerplexityBot",
+        "Googlebot",
+        "Applebot",
         "Bingbot",
         "DuckAssistBot",
         "YouBot",
@@ -138,18 +143,22 @@ BOT_TIERS = {
     },
     "user": {
         "ChatGPT-User",
+        "Claude-User",
         "Perplexity-User",
         "Meta-ExternalFetcher",
         "facebookexternalhit",
     },
 }
 
-# Critical citation bots (search-tier, directly cite sources in AI responses)
-CITATION_BOTS = {"OAI-SearchBot", "ClaudeBot", "Claude-SearchBot", "PerplexityBot"}
+# Critical citation bots (search-tier bots that actually drive AI citations —
+# #512: matches the "AI search crawlers" set, not the training-only crawlers
+# that happen to share a vendor. ClaudeBot is training-only per Anthropic's
+# current docs, so it is excluded here even though it is Anthropic's bot).
+CITATION_BOTS = {"OAI-SearchBot", "Claude-SearchBot", "PerplexityBot", "Googlebot", "Applebot"}
 
 # Human-readable bot labels for user-facing recommendation messages
 ROBOTS_KEY_BOTS_DISPLAY: str = "GPTBot, ClaudeBot, PerplexityBot"
-CITATION_BOTS_DISPLAY: str = "OAI-SearchBot, ClaudeBot, PerplexityBot"
+CITATION_BOTS_DISPLAY: str = "OAI-SearchBot, Claude-SearchBot, PerplexityBot, Googlebot, Applebot"
 
 # ─── Brand normalization ──────────────────────────────────────────────────────
 

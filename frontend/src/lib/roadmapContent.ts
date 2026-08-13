@@ -284,6 +284,7 @@ export const releaseCadence = [
   { version: 'v4.12.0', name: 'Ledger', status: 'available' as RoadmapStatus },
   { version: 'v4.13.0', name: 'Echo', status: 'available' as RoadmapStatus },
   { version: 'v4.14.0', name: 'Quiet Glass', status: 'available' as RoadmapStatus },
-  { version: 'v4.15.0', name: 'Threshold / Pale Signal', status: 'planned' as RoadmapStatus },
+  { version: 'v4.15.0', name: 'Aperture', status: 'available' as RoadmapStatus },
+  { version: 'v4.16.0', name: 'Ground Truth', status: 'available' as RoadmapStatus },
   { version: 'v5.0.0', name: 'Black Archive', status: 'exploring' as RoadmapStatus },
 ];

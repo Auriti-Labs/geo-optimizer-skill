@@ -1,0 +1,141 @@
+---
+import IntentLanding from '../components/IntentLanding.astro';
+import AuditForm from '../components/AuditForm';
+import ScoreSurface from '../components/product/ScoreSurface.astro';
+
+const title = 'AI SEO Audit for SaaS - Check AI Visibility for Product Pages';
+const description =
+  'Run an AI SEO audit for SaaS product, comparison, pricing, and docs pages. Check crawl access, schema, llms.txt, content citability, and entity signals.';
+const canonical = 'https://geoready.dev/ai-seo-audit-for-saas/';
+const dateModified = '2026-08-04';
+
+const stats = [
+  { value: 'Product', label: 'Commercial pages', detail: 'Check product, pricing, comparison, alternative, and documentation pages.' },
+  { value: 'Prompts', label: 'Buyer intent', detail: 'Prioritize best-tool, alternative, category, and integration questions.' },
+  { value: 'Proof', label: 'Citable facts', detail: 'Find whether answer engines can extract concrete product and pricing facts.' },
+];
+
+const tableRows = [
+  {
+    signal: 'Product category query',
+    freeCheck: 'Shows whether the target page has enough entity clarity and answer-first structure for category prompts.',
+    paidLoop: 'Use Studio when you need to track best-tool and alternative prompts against competitors.',
+  },
+  {
+    signal: 'Pricing and plan clarity',
+    freeCheck: 'Checks whether pricing, offer, and product facts are visible in crawlable HTML and schema.',
+    paidLoop: 'Use Pro when template changes can hide pricing or product facts without warning.',
+  },
+  {
+    signal: 'Comparison and alternative pages',
+    freeCheck: 'Flags missing tables, weak headings, and pages that fail to answer comparison intent directly.',
+    paidLoop: 'Use Studio when competitor-cited answers need recurring evidence.',
+  },
+  {
+    signal: 'Docs and integration pages',
+    freeCheck: 'Checks whether support pages help AI engines verify what the SaaS product can actually do.',
+    paidLoop: 'Use Studio when documentation visibility supports sales and onboarding queries.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'What is an AI SEO audit for SaaS?',
+    a: 'An AI SEO audit for SaaS checks whether product, pricing, comparison, alternative, documentation, and integration pages can be crawled, understood, and cited by AI answer engines.',
+  },
+  {
+    q: 'Which SaaS pages should be audited first?',
+    a: 'Audit the homepage, product page, pricing page, best-alternative page, comparison page, and the docs pages that prove the product works for the main use cases.',
+  },
+  {
+    q: 'Why do SaaS companies need AI citation tracking?',
+    a: 'SaaS buyers ask AI engines category and comparison questions before they visit vendor sites. Tracking shows whether answer engines name your brand, cite your pages, or send buyers to competitors.',
+  },
+  {
+    q: 'What should a SaaS team fix after the audit?',
+    a: 'Fix crawler access and schema first. Then rewrite high-intent pages so each section answers one buyer question with product facts, pricing facts, examples, and comparison tables.',
+  },
+];
+---
+
+<IntentLanding
+  title={title}
+  description={description}
+  canonical={canonical}
+  eyebrow="AI SEO audit for SaaS"
+  badge="For product, pricing, comparison, and docs pages"
+  h1="Run an AI SEO audit before AI buyers ask about your SaaS category."
+  lede="As of August 2026, SaaS discovery is shifting from search results to answer engines. GeoReady checks whether your SaaS pages are crawlable, machine-readable, and specific enough to be cited when buyers ask for tools, alternatives, pricing, and integrations."
+  dateModified={dateModified}
+  primaryCta={{ href: '#audit-form', label: 'Audit a SaaS page', dataCta: 'saas_ai_seo_audit_hero_form' }}
+  secondaryCta={{ href: '/perplexity-citation-checker/', label: 'Check SaaS citations', dataCta: 'saas_ai_seo_audit_hero_citations' }}
+  stats={stats}
+  tableHeading="What a SaaS AI SEO audit should check"
+  tableIntro="A SaaS audit should connect technical readiness to buyer-intent prompts. The free audit gives the first diagnosis; paid monitoring proves whether the fix keeps working."
+  tableRows={tableRows}
+  faqs={faqs}
+  paidStep={{
+    heading: 'Use Studio when SaaS visibility depends on prompt share.',
+    copy: 'SaaS AI visibility is not one page and one keyword. Studio is the next step when you need to track category, alternative, competitor, and integration prompts over time.',
+    proofPoints: [
+      'Measure buyer-intent prompt coverage.',
+      'Track competitor-cited answers.',
+      'Export evidence for growth and sales teams.',
+    ],
+    plan: {
+      id: 'studio',
+      name: 'Studio',
+      price: '$49',
+      period: 'monthly',
+      href: 'https://app.geoready.dev/signup?plan=studio&intent=saas_ai_visibility&onboarding=first_domain&utm_source=ai_seo_audit_for_saas&utm_medium=paid_step&utm_campaign=long_tail_to_paid',
+      cta: 'Start SaaS visibility tracking',
+      ctaLocation: 'saas_ai_seo_audit_paid_step_studio',
+      intent: 'saas_ai_visibility',
+    },
+    secondary: {
+      href: '/pricing/',
+      label: 'Compare plans',
+      dataCta: 'saas_ai_seo_audit_paid_step_pricing',
+    },
+  }}
+>
+  <div slot="heroAside" class="w-full space-y-5">
+    <ScoreSurface
+      variant="light"
+      score={72}
+      band="Fixable"
+      rows={[
+        { label: 'Pricing schema', delta: '+12', state: 'up' },
+        { label: 'Comparison table', delta: '+10', state: 'up' },
+        { label: 'AI bot access', delta: '+18', state: 'good' },
+        { label: 'Entity clarity', delta: '-8', state: 'warn' },
+      ]}
+      class="w-full"
+    />
+    <section id="audit-form" class="rounded-[--radius-lg] border border-border bg-bg-base p-4" aria-label="Run a SaaS AI SEO audit">
+      <p class="mb-3 font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">Free audit</p>
+      <AuditForm client:load />
+      <p class="mt-3 text-xs leading-relaxed text-text-muted">Start with one product, pricing, or comparison URL.</p>
+    </section>
+  </div>
+
+  <section>
+    <h2>Why SaaS AI SEO starts with commercial pages</h2>
+    <p class="mt-4">
+      SaaS AI SEO starts with pages that answer buying questions. The homepage builds entity clarity, but product, pricing, comparison, alternative, and integration pages decide whether an answer engine can recommend the product for a specific use case.
+    </p>
+    <p class="mt-4">
+      A SaaS page should state who the product is for, what problem it solves, which integrations it supports, what the pricing model is, and how it differs from alternatives. If those facts are hidden in images, scripts, or vague paragraphs, the page is weak source material for AI answers.
+    </p>
+  </section>
+
+  <section>
+    <h2>How to prioritize SaaS fixes after the audit</h2>
+    <p class="mt-4">
+      Fix access first: robots.txt, status codes, redirects, and indexable HTML. Fix machine clarity second: Organization, WebSite, Product, SoftwareApplication, FAQ, and Breadcrumb schema. Then rewrite the commercial sections so each block answers one buyer question directly.
+    </p>
+    <p class="mt-4">
+      After the foundation is fixed, check whether answer engines cite your pages for category, alternative, and competitor prompts. The <a href="/perplexity-citation-checker/" class="text-accent-teal hover:underline">Perplexity citation checker</a> is the quickest public snapshot; Studio turns the same idea into a scheduled measurement loop.
+    </p>
+  </section>
+</IntentLanding>

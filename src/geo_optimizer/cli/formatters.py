@@ -373,25 +373,25 @@ def format_audit_text(result: AuditResult) -> str:
         lines.append(f"  [{bar}] {be_pts}/10")
         if be.brand_name_consistent:
             names = ", ".join(be.names_found[:3]) if be.names_found else ""
-            lines.append(f"  ✅ Brand name coerente{f' ({names})' if names else ''}")
+            lines.append(f"  ✅ Brand name consistent{f' ({names})' if names else ''}")
         else:
-            lines.append("  ⚠️  Brand name incoerente tra schema, meta e contenuto")
+            lines.append("  ⚠️  Brand name inconsistent across schema, meta and content")
         if be.kg_pillar_count > 0:
             lines.append(f"  ✅ {be.kg_pillar_count}/4 Knowledge Graph pillars")
         else:
-            lines.append("  ⚠️  Nessun link a Knowledge Graph (Wikipedia, Wikidata, LinkedIn)")
+            lines.append("  ⚠️  No Knowledge Graph links (Wikipedia, Wikidata, LinkedIn)")
         if be.has_about_link:
-            lines.append("  ✅ About page collegata")
+            lines.append("  ✅ About page linked")
         else:
-            lines.append("  ⚠️  About page non rilevata")
+            lines.append("  ⚠️  About page not detected")
         if be.has_contact_info:
-            lines.append("  ✅ Informazioni di contatto presenti")
+            lines.append("  ✅ Contact information present")
         else:
-            lines.append("  ⚠️  Informazioni di contatto mancanti")
+            lines.append("  ⚠️  Contact information missing")
         if be.faq_depth > 0:
-            lines.append(f"  ✅ {be.faq_depth} FAQ trovate")
+            lines.append(f"  ✅ {be.faq_depth} FAQs found")
         if be.has_recent_articles:
-            lines.append("  ✅ Articoli con dateModified trovati")
+            lines.append("  ✅ Articles with dateModified found")
 
     # CDN Check
     if result.cdn_check and result.cdn_check.checked:
@@ -465,13 +465,21 @@ def format_audit_text(result: AuditResult) -> str:
         lines.append(f"  Chunk readiness: {rc.chunk_readiness_score}/100")
 
     # Embedding Proximity (#354)
+    # Printed even when skipped (#509): the check needs the optional
+    # sentence-transformers extra, and silently omitting the section left a hole in
+    # the numbering — 13 followed by 15 — which reads as a bug rather than as a
+    # missing optional dependency. The reason is already recorded upstream in
+    # audit_embedding.py; this only surfaces it.
     ep = getattr(result, "embedding_proximity", None)
-    if ep and ep.checked and not ep.skipped_reason:
+    if ep and ep.checked:
         lines.append("")
         lines.append(_section_header("14. EMBEDDING PROXIMITY"))
-        lines.append(f"  Model: {ep.model_name}")
-        lines.append(f"  Avg similarity: {ep.avg_similarity:.4f} | Top: {ep.top_similarity:.4f}")
-        lines.append(f"  Retrievable chunks: {ep.retrievable_chunks}/{ep.total_chunks}")
+        if ep.skipped_reason:
+            lines.append(f"  ⏭️  Skipped: {ep.skipped_reason}")
+        else:
+            lines.append(f"  Model: {ep.model_name}")
+            lines.append(f"  Avg similarity: {ep.avg_similarity:.4f} | Top: {ep.top_similarity:.4f}")
+            lines.append(f"  Retrievable chunks: {ep.retrievable_chunks}/{ep.total_chunks}")
 
     # Content Decay Predictor (#383)
     cd = getattr(result, "content_decay", None)

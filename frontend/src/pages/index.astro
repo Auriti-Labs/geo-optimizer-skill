@@ -99,8 +99,8 @@ const faqSchema = {
 
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 <Shell
-  title="Free AI SEO & GEO Audit — GeoReady"
-  description="Run a free AI SEO and GEO audit. See how ChatGPT, Perplexity, Claude and Gemini can crawl, understand and cite your site — and what to fix."
+  title="Free AI SEO Audit for ChatGPT & Perplexity — GeoReady"
+  description="Run a free AI SEO and GEO audit. Find crawler, llms.txt, schema, content, and citation gaps that stop ChatGPT, Perplexity, Claude, and Gemini citing your site."
   canonical="https://geoready.dev/"
 >
   {/* Hero */}
@@ -114,42 +114,47 @@ const faqSchema = {
       <div class="grid items-center gap-10 lg:grid-cols-[minmax(0,0.82fr)_minmax(520px,1fr)]">
         <div class="max-w-7xl">
           <p class="mb-5 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-teal-100">
-            AI visibility audit
+            Free AI SEO + GEO audit
           </p>
-          <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
-            Is your website visible to AI search engines?
+          <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05]">
+            Find the gaps that keep your site out of AI answers.
           </h1>
           <p class="mt-6 text-lg md:text-xl text-text-muted leading-relaxed max-w-2xl">
-            AI SEO is about being visible in AI search. GeoReady audits whether a website can be crawled,
-            understood, and cited by AI answer engines like ChatGPT, Perplexity, Claude, and Gemini.
-            Get a 0–100 GEO score across 8 signal categories — free, no account required.
+            Buyers ask ChatGPT, Perplexity, Claude, and Gemini before they click a search result.
+            GeoReady checks whether your URL can be reached, understood, and cited by those answer engines,
+            then gives you a 0–100 score and prioritized fixes across 8 signal categories.
           </p>
 
           <div class="mt-8 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
             <div class="border-l border-teal-300/40 pl-4">
-              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-teal-100">Access</p>
-              <p class="mt-1 text-sm text-text-muted">AI crawler rules and fetchability.</p>
+              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-teal-100">Crawler access</p>
+              <p class="mt-1 text-sm text-text-muted">Robots.txt, headers, rendering, and blocked AI bots.</p>
             </div>
             <div class="border-l border-teal-300/40 pl-4">
-              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-teal-100">Structure</p>
-              <p class="mt-1 text-sm text-text-muted">Schema, llms.txt, and page hierarchy.</p>
+              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-teal-100">Machine clarity</p>
+              <p class="mt-1 text-sm text-text-muted">llms.txt, schema, metadata, and entity signals.</p>
             </div>
             <div class="border-l border-teal-300/40 pl-4">
-              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-teal-100">Citation</p>
-              <p class="mt-1 text-sm text-text-muted">Recommendations ranked by impact.</p>
+              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-teal-100">Citation readiness</p>
+              <p class="mt-1 text-sm text-text-muted">Self-contained answers, facts, and ranked fixes.</p>
             </div>
           </div>
 
           <div class="mt-10">
             <AuditForm client:load />
           </div>
+          <p class="mt-3 text-xs text-text-muted">
+            Free report, no account required. Use Pro when you want weekly monitoring, score history, and regression alerts.
+          </p>
 
           <StatsBar client:load />
 
           <div class="mt-6 flex flex-wrap items-center gap-4 text-sm">
-            <a href="/pricing/" data-cta="home_hero_view_pricing" class="text-text-muted hover:text-text-inverse transition-colors">View pricing</a>
+            <a href="/report/demo/" data-cta="home_hero_demo_report" class="text-text-muted hover:text-text-inverse transition-colors">View demo report</a>
             <span class="text-text-muted/40">·</span>
-            <a href="/pricing/" data-cta="home_hero_see_plans" class="text-text-muted hover:text-text-inverse transition-colors">GeoReady Pro — see plans</a>
+            <a href="/geo-readiness-manual/" data-cta="home_hero_manual" class="text-text-muted hover:text-text-inverse transition-colors">Read the GEO manual</a>
+            <span class="text-text-muted/40">·</span>
+            <a href="/pricing/" data-cta="home_hero_pro_monitoring" class="text-text-muted hover:text-text-inverse transition-colors">Pro monitoring</a>
           </div>
         </div>
 

@@ -14,8 +14,8 @@ interface Props {
 
 export default function NewsletterSignup({
   source,
-  title = 'Get the State of GEO report',
-  detail = 'One email when the benchmark report ships, plus occasional GEO findings. No spam, unsubscribe anytime.',
+  title = 'Get the monthly GeoReady newsletter',
+  detail = 'One email a month: fresh State of GEO benchmark data, one practical GEO lesson, and what changed in AI search. No spam, unsubscribe anytime.',
 }: Props) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<Status>('idle');
@@ -45,7 +45,7 @@ export default function NewsletterSignup({
   if (status === 'done') {
     return (
       <div className="rounded-xl border border-accent-teal/40 bg-accent-teal/5 px-5 py-4 text-sm text-text-primary">
-        ✅ You're on the list. We'll email you when the report is out.
+        ✅ You're on the list. The next monthly issue will land in your inbox.
       </div>
     );
   }
@@ -71,9 +71,12 @@ export default function NewsletterSignup({
           {status === 'loading' ? 'Subscribing…' : 'Notify me'}
         </button>
       </form>
+      {/* Must mirror STATE_OF_GEO_CONSENT_PURPOSE (geoready-newsletter-monthly-2026-v1)
+          recorded server-side on capture — change both together. */}
       <p className="mt-2 text-xs text-text-muted">
-        By submitting, you agree to receive the State of GEO report and occasional GeoReady benchmark
-        updates. You can unsubscribe anytime. See our{' '}
+        By submitting, you agree to receive the monthly GeoReady newsletter: benchmark data from the
+        State of GEO dataset, practical GEO guidance, and product updates. You can unsubscribe
+        anytime. See our{' '}
         <a href="https://geoready.dev/privacy/" className="underline hover:text-text-secondary">
           Privacy Policy
         </a>

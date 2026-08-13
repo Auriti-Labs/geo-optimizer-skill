@@ -24,11 +24,12 @@ Some of these themes will span multiple releases. Specific scope may shift as re
 | v4.13.0 | Jun 2026 | **Echo** | AI citation visibility (`geo citations`) | Shipped |
 | v4.14.0 | Jun 2026 (advanced from Nov 2026) | **Quiet Glass** | Structural pattern recognition (`geo authority`, `geo drift`, multimodal readiness) | Shipped |
 | v4.15.0 | Jul 2026 | **Aperture** | AI Perception Snapshot (`geo perception`, MVP C) | Shipped |
-| v4.16.0-rc1 | Jan 2027 | **Threshold** | Pre-release validation cycle | Planned |
-| v4.16.0-rc2 / v4.17.0 | Mar 2027 | **Pale Signal** | Stabilization and edge resolution | Planned |
+| v4.16.0 | Aug 2026 | **Ground Truth** | Bot-roster and access-layer correctness pass | Shipped |
+| v4.17.0-rc1 | Jan 2027 | **Threshold** | Pre-release validation cycle | Planned |
+| v4.17.0-rc2 / v4.18.0 | Mar 2027 | **Pale Signal** | Stabilization and edge resolution | Planned |
 | v5.0.0 | May 2027 | **Black Archive** | Next-generation audit framework | Planned |
 
-Release windows are estimates. Dates may shift based on validation outcomes and testing discipline. v4.11.0 and v4.12.0 both advanced ahead of their original windows because their scope was validated and stabilised earlier than planned. v4.13.0 (**Echo**) was inserted ahead of schedule to ship the one-shot AI citation check, and v4.14.0 (**Quiet Glass**) advanced from Nov 2026 once its structural-analysis scope (topic authority, drift, multimodal scaffolding) stabilised early. v4.15.0 (**Aperture**) was inserted ahead of schedule to ship MVP C once the deterministic perception-extraction core (built alongside `geo drift`/`geo access`) stabilised; **Threshold** and **Pale Signal** each shift one minor version forward accordingly.
+Release windows are estimates. Dates may shift based on validation outcomes and testing discipline. v4.11.0 and v4.12.0 both advanced ahead of their original windows because their scope was validated and stabilised earlier than planned. v4.13.0 (**Echo**) was inserted ahead of schedule to ship the one-shot AI citation check, and v4.14.0 (**Quiet Glass**) advanced from Nov 2026 once its structural-analysis scope (topic authority, drift, multimodal scaffolding) stabilised early. v4.15.0 (**Aperture**) was inserted ahead of schedule to ship MVP C once the deterministic perception-extraction core (built alongside `geo drift`/`geo access`) stabilised. v4.16.0 (**Ground Truth**) was inserted the same way: an audit against current vendor crawler docs and the manual's own access-layer checklist found the bot roster and `geo access`/`geo authority` had drifted from both, and the fix was small and self-contained enough to ship immediately rather than wait for **Threshold**; **Threshold** and **Pale Signal** each shift one minor version forward accordingly.
 
 ## Static Cycle — MVP Track
 

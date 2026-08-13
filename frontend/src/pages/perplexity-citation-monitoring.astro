@@ -1,0 +1,124 @@
+---
+import IntentLanding from '../components/IntentLanding.astro';
+import CitationSurface from '../components/product/CitationSurface.astro';
+
+const title = 'Perplexity Citation Monitoring - Track AI Source Citations';
+const description =
+  'Monitor whether Perplexity-style AI answers cite your domain, mention your brand without citing you, or cite competitors instead.';
+const canonical = 'https://geoready.dev/perplexity-citation-monitoring/';
+const dateModified = '2026-08-04';
+
+const stats = [
+  { value: 'Weekly', label: 'Prompt checks', detail: 'Repeat the same category prompts instead of trusting one snapshot.' },
+  { value: 'Sources', label: 'Cited URLs', detail: 'Track whether your own domain appears in the answer sources.' },
+  { value: 'Losses', label: 'Competitor swaps', detail: 'See which competitor replaces you when a citation disappears.' },
+];
+
+const tableRows = [
+  {
+    signal: 'Direct citation rate',
+    freeCheck: 'A free checker shows whether your domain is cited in a small source-backed snapshot.',
+    paidLoop: 'Studio tracks the same prompt set over time and exposes whether direct citation share rises or falls.',
+  },
+  {
+    signal: 'Mentioned without citation',
+    freeCheck: 'The snapshot shows whether the AI names the brand but cites other pages.',
+    paidLoop: 'Studio helps prove whether content fixes turn mentions into own-domain citations.',
+  },
+  {
+    signal: 'Competitor-cited sources',
+    freeCheck: 'The checker shows which domains answer engines cite instead of your own domain.',
+    paidLoop: 'Studio keeps a history of competitor-cited answers so replacement patterns are visible.',
+  },
+  {
+    signal: 'Prompt drift',
+    freeCheck: 'A one-time result cannot show whether answers changed after a model or index update.',
+    paidLoop: 'Studio is the recurring loop for answer snapshots, alerts, and reporting.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'What is Perplexity citation monitoring?',
+    a: 'Perplexity citation monitoring repeats source-backed AI prompts over time and records whether the answer cites your domain, mentions your brand, or cites competitors instead.',
+  },
+  {
+    q: 'How is monitoring different from a citation checker?',
+    a: 'A citation checker is one snapshot. Monitoring repeats the same prompts on a schedule, stores the result, and shows when the cited source set changes.',
+  },
+  {
+    q: 'Who needs Perplexity citation monitoring?',
+    a: 'Teams that depend on category, alternative, and comparison prompts need monitoring because buyers can see competitor sources before they ever visit a vendor site.',
+  },
+  {
+    q: 'What should I monitor first?',
+    a: 'Monitor prompts with commercial intent: best tools, alternatives, pricing, comparisons, integrations, and problem-specific questions where your product should be considered.',
+  },
+];
+---
+
+<IntentLanding
+  title={title}
+  description={description}
+  canonical={canonical}
+  eyebrow="Perplexity citation monitoring"
+  badge="For recurring source-backed AI citation checks"
+  h1="Monitor whether Perplexity-style answers keep citing your domain."
+  lede="As of August 2026, AI citations can change without a ranking drop or a Search Console warning. Perplexity-style answers expose source URLs, which makes them practical for recurring citation monitoring."
+  dateModified={dateModified}
+  primaryCta={{ href: '/tools/ai-citation-checker/', label: 'Run a citation snapshot', dataCta: 'perplexity_monitoring_hero_snapshot' }}
+  secondaryCta={{ href: '/perplexity-citation-checker/', label: 'Read citation verdicts', dataCta: 'perplexity_monitoring_hero_checker' }}
+  stats={stats}
+  tableHeading="What Perplexity citation monitoring tracks"
+  tableIntro="Monitoring matters when the same commercial prompts have to be checked repeatedly, not when you need one quick diagnostic."
+  tableRows={tableRows}
+  faqs={faqs}
+  paidStep={{
+    heading: 'Use Studio when citation loss would affect pipeline.',
+    copy: 'Studio turns source-backed AI citation checks into a recurring measurement loop for commercial prompts, competitor replacements, and client-ready evidence.',
+    proofPoints: [
+      'Scheduled citation checks.',
+      'Competitor source history.',
+      'Evidence exports for reporting.',
+    ],
+    plan: {
+      id: 'studio',
+      name: 'Studio',
+      price: '$49',
+      period: 'monthly',
+      href: 'https://app.geoready.dev/signup?plan=studio&intent=perplexity_citation_monitoring&onboarding=first_domain&utm_source=perplexity_citation_monitoring&utm_medium=paid_step&utm_campaign=long_tail_to_paid',
+      cta: 'Start citation monitoring',
+      ctaLocation: 'perplexity_monitoring_paid_step_studio',
+      intent: 'perplexity_citation_monitoring',
+    },
+    secondary: {
+      href: '/pricing/',
+      label: 'Compare plans',
+      dataCta: 'perplexity_monitoring_paid_step_pricing',
+    },
+  }}
+>
+  <div slot="heroAside" class="w-full">
+    <CitationSurface mode="verdict" variant="light" class="w-full" />
+  </div>
+
+  <section>
+    <h2>Why a single Perplexity citation check is not enough</h2>
+    <p class="mt-4">
+      A single Perplexity citation check answers what happened today. It does not show whether a competitor replaced your source last week, whether a content fix increased citation share, or whether an answer changed after a model or index refresh.
+    </p>
+    <p class="mt-4">
+      Monitoring is useful when the prompt has business value. If buyers ask for the best product in your category and Perplexity cites someone else, the cited domain shapes the shortlist before the buyer reaches your site.
+    </p>
+  </section>
+
+  <section>
+    <h2>How to choose prompts for citation monitoring</h2>
+    <p class="mt-4">
+      Start with prompts that match a buyer's next action: choosing a tool, comparing vendors, checking pricing, validating an integration, or replacing a competitor. Keep the prompt pool stable so changes in citation share are measurable.
+    </p>
+    <p class="mt-4">
+      Use the <a href="/ai-seo-audit/" class="text-accent-teal hover:underline">AI SEO audit</a> when monitoring shows that competitors are cited instead of you. The audit points to the crawler, schema, content, or entity gap behind the missing citation.
+    </p>
+  </section>
+</IntentLanding>

@@ -5,6 +5,9 @@ import NewsletterSignup from '../../components/NewsletterSignup';
 import Callout from '../../components/Callout.astro';
 import CodeBlock from '../../components/CodeBlock.astro';
 import Image from '../../components/Image.astro';
+import PortableTextLink from '../../components/PortableTextLink.astro';
+import ArticleVisual from '../../components/ArticleVisual.astro';
+import { guidePrimaryVisuals, guideSupplementalVisuals } from '../../lib/articleVisuals';
 import { getAllArticleSlugs, getArticleBySlug, urlForImage } from '../../utils/sanity';
 
 // ── Static paths ──────────────────────────────────────────────────────────────
@@ -28,6 +31,148 @@ const ogImageUrl = article.ogImage?.asset
   ? urlForImage(article.ogImage).width(1200).height(630).fit('crop').auto('format').url()
   : undefined;
 
+const primaryVisual = guidePrimaryVisuals[slug as keyof typeof guidePrimaryVisuals];
+const supplementalVisuals = guideSupplementalVisuals[slug as keyof typeof guideSupplementalVisuals] ?? [];
+
+type CommercialGuideLink = {
+  href: string;
+  label: string;
+  dataCta: string;
+};
+
+type CommercialGuideBlock = {
+  eyebrow: string;
+  heading: string;
+  copy: string;
+  primary: CommercialGuideLink;
+  secondary: CommercialGuideLink;
+  proofPoints: string[];
+};
+
+const commercialGuideBlocks = {
+  aiAudit: {
+    eyebrow: 'Apply this guide',
+    heading: 'Run an AI SEO audit before you change pages.',
+    copy:
+      'Use the audit to find which signal is holding the site back: crawler access, schema, llms.txt, content clarity, AI discovery, or entity strength.',
+    primary: {
+      href: '/ai-seo-audit/',
+      label: 'Run the free AI SEO audit',
+      dataCta: 'guide_next_ai_seo_audit',
+    },
+    secondary: {
+      href: '/chatgpt-visibility-checker/',
+      label: 'Check ChatGPT visibility',
+      dataCta: 'guide_next_chatgpt_visibility',
+    },
+    proofPoints: [
+      'Best for pages that need a technical and content baseline.',
+      'Next metric: AI readiness score plus the weakest signal category.',
+    ],
+  },
+  chatgpt: {
+    eyebrow: 'Apply this guide',
+    heading: 'Check whether ChatGPT can understand and cite your site.',
+    copy:
+      'Start with the ChatGPT visibility path when the goal is brand mentions, answer inclusion, and source eligibility in ChatGPT-style answers.',
+    primary: {
+      href: '/chatgpt-visibility-checker/',
+      label: 'Check ChatGPT visibility',
+      dataCta: 'guide_next_chatgpt_visibility',
+    },
+    secondary: {
+      href: '/ai-seo-audit/',
+      label: 'Audit AI SEO readiness',
+      dataCta: 'guide_next_ai_seo_audit',
+    },
+    proofPoints: [
+      'Best for prompts where ChatGPT should mention the brand or cite the domain.',
+      'Next metric: visibility by prompt cluster, not only organic sessions.',
+    ],
+  },
+  perplexity: {
+    eyebrow: 'Apply this guide',
+    heading: 'Check whether Perplexity-style answers cite your domain.',
+    copy:
+      'Use the citation checker path when the risk is that answer engines quote competitors, review sites, or third-party sources instead of your own pages.',
+    primary: {
+      href: '/perplexity-citation-checker/',
+      label: 'Check Perplexity citations',
+      dataCta: 'guide_next_perplexity_citations',
+    },
+    secondary: {
+      href: '/ai-seo-audit/',
+      label: 'Audit citation readiness',
+      dataCta: 'guide_next_ai_seo_audit',
+    },
+    proofPoints: [
+      'Best for source-backed answers where the cited URL matters.',
+      'Next metric: direct citations, competitor citations, and missing citations.',
+    ],
+  },
+  technical: {
+    eyebrow: 'Apply this guide',
+    heading: 'Find the technical blockers before adding more content.',
+    copy:
+      'Run the audit when the guide points to crawler access, structured data, llms.txt, or parsing issues that can stop AI systems from using the page.',
+    primary: {
+      href: '/ai-seo-audit/',
+      label: 'Run the technical AI SEO audit',
+      dataCta: 'guide_next_ai_seo_audit',
+    },
+    secondary: {
+      href: '/perplexity-citation-checker/',
+      label: 'Check cited source coverage',
+      dataCta: 'guide_next_perplexity_citations',
+    },
+    proofPoints: [
+      'Best for crawlability, schema, robots.txt, and llms.txt work.',
+      'Next metric: pass/fail technical signals before content rewriting.',
+    ],
+  },
+  saas: {
+    eyebrow: 'Apply this guide',
+    heading: 'Turn SaaS GEO research into a prioritized audit.',
+    copy:
+      'Use the audit to see which product, comparison, documentation, and entity signals need work before AI engines can recommend the company.',
+    primary: {
+      href: '/ai-seo-audit/',
+      label: 'Run the SaaS AI SEO audit',
+      dataCta: 'guide_next_ai_seo_audit',
+    },
+    secondary: {
+      href: '/perplexity-citation-checker/',
+      label: 'Check competitor citations',
+      dataCta: 'guide_next_perplexity_citations',
+    },
+    proofPoints: [
+      'Best for best-tool, comparison, alternative, and category prompts.',
+      'Next metric: mention share and citation share by buyer-intent prompt.',
+    ],
+  },
+} satisfies Record<string, CommercialGuideBlock>;
+
+type CommercialGuideBlockKey = keyof typeof commercialGuideBlocks;
+
+const guideCommercialIntent: Record<string, CommercialGuideBlockKey> = {
+  'ai-citations-check': 'perplexity',
+  'how-perplexity-chooses-sources': 'perplexity',
+  'schema-markup-for-ai-citations': 'perplexity',
+  'appear-in-chatgpt-perplexity': 'perplexity',
+  'check-if-chatgpt-sees-your-website': 'chatgpt',
+  'chatgpt-search-vs-google-search': 'chatgpt',
+  'how-long-to-get-cited-by-chatgpt': 'chatgpt',
+  'robots-txt-ai-bots': 'technical',
+  'does-robots-txt-block-chatgpt': 'technical',
+  'llms-txt-wordpress': 'technical',
+  'what-is-llms-txt': 'technical',
+  'do-you-need-llms-txt-2026': 'technical',
+  'what-is-an-ai-crawler-bot-list': 'technical',
+  'geo-for-saas-companies': 'saas',
+};
+
+const commercialLinkBlock = commercialGuideBlocks[guideCommercialIntent[slug as string] ?? 'aiAudit'];
+
 // ── Portable Text components ──────────────────────────────────────────────────
 // astro-portabletext requires .astro component files for custom renderers.
 // Block/list/marks use the library defaults (semantic HTML) styled via CSS below.
@@ -36,6 +181,9 @@ const ptComponents = {
     callout: Callout,
     codeBlock: CodeBlock,
     image: Image,
+  },
+  mark: {
+    link: PortableTextLink,
   },
 };
 
@@ -128,10 +276,63 @@ const jsonLd = {
       </div>
     </header>
 
+    {primaryVisual && (
+      <ArticleVisual
+        src={primaryVisual.src}
+        alt={primaryVisual.alt}
+        caption={primaryVisual.caption}
+        height={primaryVisual.height}
+      />
+    )}
+
     {/* ── Body ─────────────────────────────────────────────────────────────── */}
     <div class="pt-prose">
       <PortableText value={article.body} components={ptComponents} />
     </div>
+
+    <section class="mt-12 max-w-3xl rounded-[--radius-lg] border border-accent-teal/25 bg-accent-teal/5 p-5 md:p-6" aria-labelledby="guide-next-step-heading">
+      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">{commercialLinkBlock.eyebrow}</p>
+      <h2 id="guide-next-step-heading" class="mt-2 font-display text-2xl font-bold leading-tight tracking-tight text-text-primary">
+        {commercialLinkBlock.heading}
+      </h2>
+      <p class="mt-3 text-sm md:text-base leading-relaxed text-text-secondary">
+        {commercialLinkBlock.copy}
+      </p>
+      <div class="mt-5 flex flex-col gap-3 sm:flex-row">
+        <a
+          href={commercialLinkBlock.primary.href}
+          data-cta={`${commercialLinkBlock.primary.dataCta}_${slug}`}
+          class="inline-flex items-center justify-center rounded-[--radius-lg] bg-accent-teal px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+        >
+          {commercialLinkBlock.primary.label}
+        </a>
+        <a
+          href={commercialLinkBlock.secondary.href}
+          data-cta={`${commercialLinkBlock.secondary.dataCta}_${slug}`}
+          class="inline-flex items-center justify-center rounded-[--radius-lg] border border-border bg-bg-base px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-accent-teal/40 hover:text-accent-teal"
+        >
+          {commercialLinkBlock.secondary.label}
+        </a>
+      </div>
+      <ul class="mt-5 grid gap-2 text-sm leading-relaxed text-text-secondary md:grid-cols-2">
+        {commercialLinkBlock.proofPoints.map((point) => (
+          <li class="border-l border-accent-teal/30 pl-3">{point}</li>
+        ))}
+      </ul>
+    </section>
+
+    {supplementalVisuals.length > 0 && (
+      <div class="mt-10 space-y-8">
+        {supplementalVisuals.map((visual) => (
+          <ArticleVisual
+            src={visual.src}
+            alt={visual.alt}
+            caption={visual.caption}
+            height={visual.height}
+          />
+        ))}
+      </div>
+    )}
 
     {/* ── FAQs ─────────────────────────────────────────────────────────────── */}
     {article.faqs && article.faqs.length > 0 && (

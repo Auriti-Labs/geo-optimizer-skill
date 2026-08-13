@@ -6,8 +6,11 @@ from geo_optimizer.models.results import CdnAiCrawlerResult
 def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
     """Check if CDN/WAF blocks AI crawler user-agents (#225).
 
-    Simulates requests with AI bot User-Agents (GPTBot, ClaudeBot, PerplexityBot)
-    and compares response status/size to a normal browser request.
+    Simulates requests with the AI bot User-Agents that actually drive AI
+    citations (GPTBot, OAI-SearchBot, PerplexityBot, Claude-SearchBot,
+    Googlebot, Applebot) and compares response status/size to a normal
+    browser request. #512: bot roster matches CITATION_BOTS plus GPTBot
+    (kept for training-block visibility, per-vendor precedent).
 
     Based on OtterlyAI Citation Report 2026: 73% of sites have technical
     barriers blocking AI crawlers. CDN restrictions are barrier #2.
@@ -24,12 +27,32 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
 
     # AI bots to test (most impactful for citations)
     test_bots = {
-        "GPTBot": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)",
-        "ClaudeBot": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +https://claudebot.ai)",
-        "PerplexityBot": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)",
+        "GPTBot": (
+            "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)"
+        ),
+        "OAI-SearchBot": (
+            "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; OAI-SearchBot/1.0; "
+            "+https://openai.com/searchbot)"
+        ),
+        "PerplexityBot": (
+            "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; PerplexityBot/1.0; "
+            "+https://perplexity.ai/perplexitybot)"
+        ),
+        "Claude-SearchBot": (
+            "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-SearchBot/1.0; "
+            "+https://www.anthropic.com/claude-searchbot)"
+        ),
+        "Googlebot": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        "Applebot": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) "
+            "Version/13.1.1 Safari/605.1.15 (Applebot/0.1; +http://www.apple.com/go/applebot)"
+        ),
     }
 
-    browser_ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    browser_ua = (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0.0.0 Safari/537.36"
+    )
 
     # Challenge page indicators (Cloudflare, AWS WAF, etc.)
     challenge_indicators = [

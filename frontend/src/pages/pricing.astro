@@ -33,7 +33,7 @@ const selfServePlans = [
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
     description: 'Weekly monitoring for one domain, score history, regression alerts, PDF export, and API access. For developers and consultants managing one site.',
     cta: 'Start with Pro',
-    ctaHref: 'https://app.geoready.dev/signup?plan=pro',
+    ctaHref: 'https://app.geoready.dev/signup?plan=pro&intent=monitoring&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=pro_card',
     ctaStyle: 'bg-accent-teal text-white hover:bg-accent-teal-dark',
     recommended: true,
     features: [
@@ -54,7 +54,7 @@ const selfServePlans = [
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
     description: 'AI citation tracking, multi-site daily monitoring, unbranded PDF exports, and competitor comparison. For consultants and agencies managing a portfolio.',
     cta: 'Start with Studio',
-    ctaHref: 'https://app.geoready.dev/signup?plan=studio',
+    ctaHref: 'https://app.geoready.dev/signup?plan=studio&intent=citations&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=studio_card',
     ctaStyle: 'border border-border text-text-primary hover:bg-bg-subtle',
     recommended: false,
     features: [
@@ -81,7 +81,7 @@ const scalePlans = [
     statusStyle: 'bg-accent-teal/10 text-accent-teal',
     description: 'Team workspace, 50-domain daily portfolio monitoring, AI answer snapshots, and unlimited batch audits.',
     cta: 'Start with Agency',
-    ctaHref: 'https://app.geoready.dev/signup?plan=agency',
+    ctaHref: 'https://app.geoready.dev/signup?plan=agency&intent=portfolio&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=agency_card',
     features: [
       'Everything in Studio',
       '50 domains — daily monitoring',
@@ -117,6 +117,87 @@ const scalePlans = [
   },
 ];
 
+const planChoiceRows = [
+  {
+    intent: 'I need one current GEO score before I change anything.',
+    plan: 'Free audit',
+    reason: 'Use the free audit when you need a one-time diagnosis for one URL, with the full 8-category report and no account.',
+    href: '/#audit-form',
+    cta: 'Run free audit',
+    tracking: 'pricing_choice_free_audit',
+    planId: '',
+    planName: '',
+    price: '',
+    period: '',
+  },
+  {
+    intent: 'I need to know when my site gets worse or better.',
+    plan: 'Pro',
+    reason: 'Choose Pro when one domain needs weekly monitoring, score history, regression alerts, PDF export, and API access.',
+    href: 'https://app.geoready.dev/signup?plan=pro&intent=monitoring&onboarding=first_domain&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid&utm_content=pro_choice',
+    cta: 'Start Pro',
+    tracking: 'pricing_choice_pro_monitoring',
+    planId: 'pro',
+    planName: 'Pro',
+    price: '$19',
+    period: 'monthly',
+  },
+  {
+    intent: 'I need AI citation tracking or client-ready reports.',
+    plan: 'Studio',
+    reason: 'Choose Studio when AI citations, competitor comparison, unbranded exports, or several monitored domains matter.',
+    href: 'https://app.geoready.dev/signup?plan=studio&intent=citations&onboarding=first_domain&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid&utm_content=studio_choice',
+    cta: 'Start Studio',
+    tracking: 'pricing_choice_studio_citations',
+    planId: 'studio',
+    planName: 'Studio',
+    price: '$49',
+    period: 'monthly',
+  },
+  {
+    intent: 'I manage a portfolio and need team or bulk workflows.',
+    plan: 'Agency',
+    reason: 'Choose Agency when 50 monitored domains, team access, unlimited batch audits, and AI answer snapshots are part of the workflow.',
+    href: 'https://app.geoready.dev/signup?plan=agency&intent=portfolio&onboarding=first_domain&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid&utm_content=agency_choice',
+    cta: 'Start Agency',
+    tracking: 'pricing_choice_agency_portfolio',
+    planId: 'agency',
+    planName: 'Agency',
+    price: '$89',
+    period: 'monthly',
+  },
+] as const;
+
+const afterCheckoutSteps = [
+  {
+    step: '01',
+    title: 'Stripe checkout',
+    desc: 'Payment is handled by Stripe. GeoReady does not store card details on its own servers.',
+  },
+  {
+    step: '02',
+    title: 'Plan activates immediately',
+    desc: 'After payment, the selected plan is available in the app without a sales call or manual approval.',
+  },
+  {
+    step: '03',
+    title: 'Claim or add your domain',
+    desc: 'If you start from a free report, the claim link carries that report into your account. Pricing links open the app with the first-domain onboarding context.',
+  },
+  {
+    step: '04',
+    title: 'Monitoring starts from there',
+    desc: 'Pro runs weekly for one domain. Studio and Agency move to daily multi-site monitoring with longer history and client workflows.',
+  },
+] as const;
+
+const trustAssurances = [
+  ['Free stays useful', 'The free audit remains a complete 8-category report with no account and no card.'],
+  ['Cancel anytime', 'There is no annual lock-in or sales contract for self-serve plans.'],
+  ['Open methodology', 'The core audit engine, scoring logic, and CLI are MIT-licensed and auditable.'],
+  ['Founding price lock', 'The founding price stays locked while the subscription remains active.'],
+] as const;
+
 const comparisonRows: [string, string, string, string, string][] = [
   ['GEO score (0–100)',      '✓',       '✓',        '✓',        '✓'],
   ['Full 8-category report', '✓',       '✓',        '✓',        '✓'],
@@ -151,6 +232,10 @@ const faqs = [
   {
     q: 'Are paid plans available right now?',
     a: 'Yes. Pick a plan, create an account, and pay — your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe.',
+  },
+  {
+    q: 'What happens after I choose a paid plan?',
+    a: 'You complete Stripe checkout, return to the GeoReady app, and the selected plan activates immediately. If you came from a free report, the claim link can attach that report to your account; otherwise you add a domain from the dashboard and monitoring starts from that point.',
   },
   {
     q: 'What is the founding price?',
@@ -383,6 +468,116 @@ const faqs = [
             )}
           </div>
         ))}
+      </div>
+
+      <section class="mt-14 rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6" aria-labelledby="after-checkout-heading">
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(320px,0.55fr)]">
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">After checkout</p>
+            <h2 id="after-checkout-heading" class="mt-2 font-display text-2xl font-bold text-text-primary">
+              What happens after you pick a paid plan
+            </h2>
+            <p class="mt-3 max-w-2xl text-sm leading-relaxed text-text-secondary">
+              The next screen is not a vague "contact sales" handoff. Self-serve plans activate through
+              Stripe, then the app guides you to claim the report or add the first monitored domain.
+            </p>
+
+            <ol class="mt-6 grid gap-3 sm:grid-cols-2">
+              {afterCheckoutSteps.map((item) => (
+                <li class="border-l border-accent-teal/30 bg-bg-base p-4">
+                  <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-teal">{item.step}</p>
+                  <h3 class="mt-2 text-sm font-semibold text-text-primary">{item.title}</h3>
+                  <p class="mt-1 text-sm leading-relaxed text-text-secondary">{item.desc}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div class="border-t border-border pt-6 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">Buyer checks</p>
+            <ul class="mt-4 space-y-4">
+              {trustAssurances.map(([label, text]) => (
+                <li>
+                  <p class="text-sm font-semibold text-text-primary">{label}</p>
+                  <p class="mt-1 text-sm leading-relaxed text-text-secondary">{text}</p>
+                </li>
+              ))}
+            </ul>
+            <a
+              href="/report/demo/"
+              data-cta="pricing_after_checkout_demo_report"
+              class="mt-6 inline-flex rounded-[--radius-md] border border-border px-4 py-2.5 text-sm font-semibold text-text-primary transition-colors hover:border-accent-teal"
+            >
+              View a demo report
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <div class="mt-14 rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6">
+        <div class="max-w-3xl">
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">Plan chooser</p>
+          <h2 class="mt-2 font-display text-2xl font-bold text-text-primary">
+            Which GeoReady plan should you choose?
+          </h2>
+          <p class="mt-3 text-sm leading-relaxed text-text-secondary">
+            Pick the plan by the job after the audit, not by feature count. A one-time
+            diagnosis stays free. Ongoing monitoring starts with Pro. AI citation
+            tracking and client workflows start with Studio.
+          </p>
+        </div>
+
+        <div class="mt-6 overflow-x-auto">
+          <table class="min-w-full border-collapse text-left text-sm">
+            <thead class="bg-bg-subtle text-text-primary">
+              <tr>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">If your next job is...</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Choose</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Why</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {planChoiceRows.map((row) => (
+                <tr>
+                  <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">
+                    {row.intent}
+                  </th>
+                  <td class="border-b border-border px-4 py-3 font-mono text-xs text-accent-teal">
+                    {row.plan}
+                  </td>
+                  <td class="border-b border-border px-4 py-3 text-text-secondary">
+                    {row.reason}
+                  </td>
+                  <td class="border-b border-border px-4 py-3">
+                    {row.planId ? (
+                      <a
+                        href={row.href}
+                        data-plan-id={row.planId}
+                        data-plan-name={row.planName}
+                        data-plan-price={row.price}
+                        data-plan-period={row.period}
+                        data-plan-currency="USD"
+                        data-cta-location={row.tracking}
+                        class="inline-flex whitespace-nowrap rounded-[--radius-md] border border-border px-3 py-2 text-xs font-semibold text-text-primary transition-colors hover:border-accent-teal"
+                      >
+                        {row.cta}
+                      </a>
+                    ) : (
+                      <a
+                        href={row.href}
+                        data-cta={row.tracking}
+                        class="inline-flex whitespace-nowrap rounded-[--radius-md] border border-border px-3 py-2 text-xs font-semibold text-text-primary transition-colors hover:border-accent-teal"
+                      >
+                        {row.cta}
+                      </a>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -647,6 +842,22 @@ const faqs = [
 
   </div>
 
+  <script>
+    const pricingParams = new URLSearchParams(window.location.search);
+    const reportClaim = pricingParams.get('claim');
+    const claimSource = pricingParams.get('claim_source') || 'pricing_page';
+
+    if (reportClaim) {
+      document.querySelectorAll<HTMLAnchorElement>('a[href^="https://app.geoready.dev/signup"]').forEach((link) => {
+        const url = new URL(link.href);
+        url.searchParams.set('claim', reportClaim);
+        url.searchParams.set('claim_source', claimSource);
+        url.searchParams.set('onboarding', 'claim_report');
+        link.href = url.toString();
+      });
+    }
+  </script>
+
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@graph": [
@@ -755,6 +966,11 @@ const faqs = [
             "@type": "Question",
             "name": "Are paid plans available right now?",
             "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pick a plan, create an account, and pay — your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe." }
+          },
+          {
+            "@type": "Question",
+            "name": "What happens after I choose a paid plan?",
+            "acceptedAnswer": { "@type": "Answer", "text": "You complete Stripe checkout, return to the GeoReady app, and the selected plan activates immediately. If you came from a free report, the claim link can attach that report to your account; otherwise you add a domain from the dashboard and monitoring starts from that point." }
           },
           {
             "@type": "Question",

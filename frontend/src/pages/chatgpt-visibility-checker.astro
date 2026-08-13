@@ -1,0 +1,137 @@
+---
+import IntentLanding from '../components/IntentLanding.astro';
+import CitationSurface from '../components/product/CitationSurface.astro';
+
+const title = 'ChatGPT Visibility Checker - Check If AI Can Find Your Site';
+const description =
+  'Check whether your site has the crawler access, schema, content structure, and citation signals needed to appear in ChatGPT-style AI answers.';
+const canonical = 'https://geoready.dev/chatgpt-visibility-checker/';
+const dateModified = '2026-08-04';
+
+const stats = [
+  { value: 'Access', label: 'Can AI crawlers reach the page?', detail: 'Check robots.txt, AI bot rules, status codes, and blocking headers before changing copy.' },
+  { value: 'Clarity', label: 'Can machines identify the entity?', detail: 'Check schema, metadata, canonical URLs, sameAs signals, and brand consistency.' },
+  { value: 'Citation', label: 'Can an answer engine quote it?', detail: 'Check answer-first sections, concrete claims, source-worthy facts, lists, and tables.' },
+];
+
+const tableRows = [
+  {
+    signal: 'Does ChatGPT-style search see the page?',
+    freeCheck: 'The audit checks access, indexable HTML, canonical signals, and named AI crawler permissions.',
+    paidLoop: 'Use Pro when crawler access and metadata need recurring checks after site releases.',
+  },
+  {
+    signal: 'Does the page describe the brand clearly?',
+    freeCheck: 'The audit checks Organization, WebSite, Article, Product, FAQ, and entity consistency signals.',
+    paidLoop: 'Use Studio when entity clarity must be compared against competitors in AI answers.',
+  },
+  {
+    signal: 'Is the page likely to be cited?',
+    freeCheck: 'The free report flags missing answer-first structure, weak evidence, and low citability signals.',
+    paidLoop: 'Use Studio when you need recurring AI citation tracking and answer snapshots.',
+  },
+  {
+    signal: 'Which result can be verified today?',
+    freeCheck: 'Use the AI Citation Checker for source-backed Perplexity results with visible cited URLs.',
+    paidLoop: 'Use Studio when those citation checks need history, alerts, and client reporting.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Does this page query ChatGPT directly?',
+    a: 'No. The free public check does not query ChatGPT directly. It checks the on-page and technical signals ChatGPT-style retrieval systems need, then points you to a source-backed citation checker for verifiable AI answers.',
+  },
+  {
+    q: 'Why not promise exact ChatGPT rankings?',
+    a: 'ChatGPT answers are generated, personalized, and model-dependent. A responsible visibility check measures access, structure, entity clarity, and citation evidence rather than promising a fixed position.',
+  },
+  {
+    q: 'What is the fastest way to improve ChatGPT visibility?',
+    a: 'Start with crawler access and indexable HTML. Then add schema and entity signals. After that, rewrite important pages so each section answers one question with concrete evidence.',
+  },
+  {
+    q: 'How do I know if ChatGPT mentions my brand?',
+    a: 'Use a tracked prompt pool and measure Share of Mentions over time. For source-backed evidence, run the AI Citation Checker and monitor whether answer engines cite your own domain or competitors.',
+  },
+];
+---
+
+<IntentLanding
+  title={title}
+  description={description}
+  canonical={canonical}
+  eyebrow="ChatGPT visibility checker"
+  badge="Readiness check plus verifiable citation path"
+  h1="Check whether your site is ready to appear in ChatGPT-style answers."
+  lede="As of August 2026, ChatGPT visibility is not a single ranking position. A page has to be reachable, machine-readable, entity-clear, and useful enough for an answer engine to quote or cite."
+  dateModified={dateModified}
+  primaryCta={{ href: '/ai-seo-audit/', label: 'Run readiness audit', dataCta: 'chatgpt_visibility_hero_audit' }}
+  secondaryCta={{ href: '/tools/ai-citation-checker/', label: 'Check AI citations', dataCta: 'chatgpt_visibility_hero_citation_checker' }}
+  stats={stats}
+  tableHeading="What a ChatGPT visibility check should measure"
+  tableIntro="Treat ChatGPT visibility as a funnel from crawl access to answer inclusion. Each layer has a different check and a different paid reason."
+  tableRows={tableRows}
+  faqs={faqs}
+  paidStep={{
+    heading: 'Use Studio when visibility has to become a monitored prompt set.',
+    copy: 'A readiness check tells you whether the page can be found and understood. Studio is the next step when you need recurring prompt checks, competitor context, and evidence that answer engines mention or cite the brand.',
+    proofPoints: [
+      'Track a fixed prompt pool over time.',
+      'Compare brand mentions against competitors.',
+      'Turn answer snapshots into client-ready evidence.',
+    ],
+    plan: {
+      id: 'studio',
+      name: 'Studio',
+      price: '$49',
+      period: 'monthly',
+      href: 'https://app.geoready.dev/signup?plan=studio&intent=chatgpt_visibility&onboarding=first_domain&utm_source=chatgpt_visibility_checker&utm_medium=paid_step&utm_campaign=intent_to_paid',
+      cta: 'Start Studio tracking',
+      ctaLocation: 'chatgpt_visibility_paid_step_studio',
+      intent: 'chatgpt_visibility',
+    },
+    secondary: {
+      href: '/pricing/',
+      label: 'Compare plans',
+      dataCta: 'chatgpt_visibility_paid_step_pricing',
+    },
+  }}
+>
+  <div slot="heroAside" class="w-full">
+    <CitationSurface mode="sov" variant="light" class="w-full" />
+  </div>
+
+  <section>
+    <h2>What does ChatGPT visibility mean?</h2>
+    <p class="mt-4">
+      ChatGPT visibility means the brand, domain, or page can appear inside an AI-generated answer when a user asks a relevant question. That can happen as a direct source citation, a brand mention, or an answer that sends the user toward a third-party source about the brand. The strongest outcome is a direct citation to your own domain, because the answer engine treats your page as the source of record.
+    </p>
+    <p class="mt-4">
+      A visibility checker should not reduce this to a fake rank. The useful question is whether the page clears the retrieval path: accessible URL, readable HTML, clear entity signals, structured data, current information, and self-contained answer blocks.
+    </p>
+  </section>
+
+  <section>
+    <h2>Why ChatGPT may ignore a page that ranks in Google</h2>
+    <p class="mt-4">
+      A page can rank in Google and still fail in AI answers. Common reasons are blocked AI crawlers, thin schema, ambiguous brand naming, content that hides the direct answer too low on the page, and claims that are too vague to quote. AI systems often need one clear block that answers the prompt and names the entity directly.
+    </p>
+    <ul class="mt-5 grid gap-3 md:grid-cols-2" role="list">
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4">If robots.txt blocks AI crawlers, the page can be technically invisible.</li>
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4">If schema and sameAs signals are weak, the model may not connect the page to the right entity.</li>
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4">If the text is generic, a competing page with a sharper answer block can win retrieval.</li>
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4">If third-party pages explain the product better than your site, the AI may cite them instead.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>How to use GeoReady for ChatGPT visibility work</h2>
+    <p class="mt-4">
+      Start with the <a href="/ai-seo-audit/" class="text-accent-teal hover:underline">free AI SEO audit</a> to find the weakest technical or content signal. Then use the <a href="/tools/ai-citation-checker/" class="text-accent-teal hover:underline">AI Citation Checker</a> to inspect source-backed answers and see whether AI engines cite your own domain, mention your brand without citing you, or cite competitors instead.
+    </p>
+    <p class="mt-4">
+      For ongoing work, define a fixed prompt pool around your product category and measure Share of Mentions every week. The goal is not one lucky answer. The goal is a repeatable pattern where answer engines name the brand and cite your own pages when the query matches your offer.
+    </p>
+  </section>
+</IntentLanding>

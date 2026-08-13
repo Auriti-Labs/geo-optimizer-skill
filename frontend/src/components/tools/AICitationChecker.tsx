@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { checkCitations } from '../../lib/api';
 import type { CitationsCheckResult } from '../../lib/api';
+import {
+  trackCitationCheckerCompleted,
+  trackCitationCheckerFailed,
+  trackCitationCheckerStarted,
+  trackPlanSelected,
+} from '../../lib/geo_track';
 
 type Status = 'idle' | 'loading' | 'error' | 'success';
 
@@ -56,16 +62,19 @@ export default function AICitationChecker() {
     if (trimmedBrand.length < 2) {
       setStatus('error');
       setErrorMsg('Enter your brand name (at least 2 characters).');
+      trackCitationCheckerFailed({ reason: 'validation' });
       return;
     }
     if (!trimmedDomain.includes('.')) {
       setStatus('error');
       setErrorMsg('Enter your domain, for example example.com.');
+      trackCitationCheckerFailed({ reason: 'validation' });
       return;
     }
 
     setStatus('loading');
     setResult(null);
+    trackCitationCheckerStarted({ has_topic: Boolean(topic.trim()) });
 
     const { data, error } = await checkCitations({
       brand: trimmedBrand,
@@ -76,10 +85,17 @@ export default function AICitationChecker() {
     if (error || !data) {
       setStatus('error');
       setErrorMsg(error || 'Unexpected error. Try again.');
+      trackCitationCheckerFailed({ reason: 'server' });
       return;
     }
     setResult(data);
     setStatus('success');
+    trackCitationCheckerCompleted({
+      verdict: data.verdict,
+      brand_mention_rate: data.brand_mention_rate,
+      domain_citation_rate: data.domain_citation_rate,
+      cited_competitor_count: data.top_cited_domains.length,
+    });
   }
 
   const verdict = result ? VERDICT_COPY[result.verdict] : null;
@@ -200,10 +216,18 @@ export default function AICitationChecker() {
               who replaced you.
             </p>
             <a
-              href="https://app.geoready.dev/signup?utm_source=citation-checker&intent=citations"
+              href="https://app.geoready.dev/signup?plan=studio&intent=citations&utm_source=ai_citation_checker&utm_medium=tool_result&utm_campaign=tool_to_paid"
+              onClick={() => trackPlanSelected({
+                plan_id: 'studio',
+                plan_name: 'Studio',
+                billing_period: 'monthly',
+                price: '49',
+                currency: 'USD',
+                cta_location: 'citation_checker_result_tracking',
+              })}
               className="mt-3 inline-block rounded-lg bg-accent-teal px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
             >
-              Track my citations →
+              Track weekly citations
             </a>
           </div>
         </div>

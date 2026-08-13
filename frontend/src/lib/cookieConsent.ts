@@ -12,6 +12,17 @@ export interface ConsentState {
 const STORAGE_KEY = 'geo_cookie_consent';
 const GA_MEASUREMENT_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
 
+/**
+ * Dispatched on the window every time the stored consent changes, and once on
+ * page load for an already-recorded choice.
+ *
+ * Exists so that trackers which are not Google Analytics — PostHog on the app
+ * domain — can be gated by this same module without it having to import them.
+ * Keeping the dependency one-way lets both domains run a byte-identical copy of
+ * this file instead of two drifting variants.
+ */
+export const CONSENT_EVENT = 'geo:consentchange';
+
 const defaultConsent: ConsentState = {
   necessary: true,
   preferences: false,
@@ -35,7 +46,7 @@ export function loadConsent(): ConsentState | null {
   }
 }
 
-/** Salva il consenso in localStorage. */
+/** Salva il consenso in localStorage e notifica i tracker in ascolto. */
 export function saveConsent(consent: Omit<ConsentState, 'timestamp' | 'version'>): void {
   if (typeof window === 'undefined') return;
   const full: ConsentState = {
@@ -44,6 +55,8 @@ export function saveConsent(consent: Omit<ConsentState, 'timestamp' | 'version'>
     version: CONSENT_VERSION,
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(full));
+  updateConsentMode(full);
+  announceConsent(full);
 }
 
 /** Ritorna il consenso corrente o il default. */
@@ -115,6 +128,77 @@ export function revokeCategory(category: CookieCategory): void {
   }
 }
 
+/** Notify non-Google trackers of the current consent state. */
+function announceConsent(consent: ConsentState): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent<ConsentState>(CONSENT_EVENT, { detail: consent }));
+}
+
+// ─── Google Consent Mode v2 ───────────────────────────────────────────────────
+
+/**
+ * Queue a gtag command on dataLayer.
+ *
+ * Deliberately uses the canonical `function(){dataLayer.push(arguments)}` shim
+ * rather than pushing an array: gtag.js reads each queued entry as an
+ * `arguments` object, and a plain array is not guaranteed to be interpreted as
+ * a command. For consent defaults a silently ignored command is the worst
+ * possible failure — the tag would run as if consent had never been declared.
+ */
+const gtag = function (): void {
+  const w = window as any;
+  w.dataLayer = w.dataLayer || [];
+  w.dataLayer.push(arguments);
+} as (...args: unknown[]) => void;
+
+/**
+ * Declare every consent type as denied, before any Google tag can load.
+ *
+ * Must run on every page load, including pages that will never load gtag.js:
+ * Consent Mode is order-dependent — a `default` command arriving after gtag.js
+ * has initialised is ignored, and the tag would then behave as if consent had
+ * never been declared. This costs no network request, it only seeds dataLayer.
+ *
+ * `ad_user_data` and `ad_personalization` are the two types Google added in
+ * Consent Mode v2 and requires for EU/EEA/UK/CH conversion measurement; they
+ * are declared here even though no advertising tag is currently installed, so
+ * that adding one later cannot silently start from an undeclared state.
+ */
+export function initConsentMode(): void {
+  if (typeof window === 'undefined') return;
+  const w = window as any;
+  if (w.__geoConsentModeReady) return;
+  w.__geoConsentModeReady = true;
+
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    analytics_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    // Give an async banner a moment to restore a stored choice before the tag
+    // decides how to behave, so a returning visitor who already accepted is
+    // not measured cookielessly for the first few hundred milliseconds.
+    wait_for_update: 500,
+  });
+
+  const stored = loadConsent();
+  if (stored) {
+    updateConsentMode(stored);
+    announceConsent(stored);
+  }
+}
+
+/** Report the visitor's choice to Google. */
+export function updateConsentMode(consent: ConsentState): void {
+  if (typeof window === 'undefined') return;
+  gtag('consent', 'update', {
+    analytics_storage: consent.analytics ? 'granted' : 'denied',
+    ad_storage: consent.marketing ? 'granted' : 'denied',
+    ad_user_data: consent.marketing ? 'granted' : 'denied',
+    ad_personalization: consent.marketing ? 'granted' : 'denied',
+  });
+}
+
 /** Carica lo script analytics se consentito e configurato. */
 export function loadAnalyticsScript(): void {
   if (typeof window === 'undefined') return;
@@ -122,6 +206,11 @@ export function loadAnalyticsScript(): void {
   const consent = getConsent();
   if (!consent.analytics) return;
   if (document.getElementById('ga-script')) return;
+
+  // Defaults first: injecting the tag before the `consent default` command has
+  // been queued would let it initialise with consent undeclared.
+  initConsentMode();
+  updateConsentMode(consent);
 
   const script = document.createElement('script');
   script.id = 'ga-script';
@@ -145,18 +234,60 @@ export function removeAnalyticsCookies(): void {
   if (typeof document === 'undefined') return;
   const domains = [window.location.hostname, `.${window.location.hostname}`];
   const analyticsCookies = cookieRegistry
-    .filter((c) => c.category === 'analytics')
+    .filter((c) => c.category === 'analytics' && c.type === 'cookie')
     .map((c) => c.name);
 
-  for (const cookieName of analyticsCookies) {
+  // Registry names carry a `<placeholder>` where the provider substitutes a
+  // property or project id at runtime (`_ga_<container-id>`,
+  // `ph_<project-token>_posthog`), so the literal name never matches a real
+  // cookie. Expand those into the prefix before the placeholder and sweep every
+  // cookie that starts with it — all first-party, all ours.
+  const exact: string[] = [];
+  const prefixes: string[] = [];
+  for (const name of analyticsCookies) {
+    const placeholder = name.indexOf('<');
+    if (placeholder === -1) exact.push(name);
+    else prefixes.push(name.slice(0, placeholder));
+  }
+  for (const entry of document.cookie.split(';')) {
+    const cookieName = entry.split('=')[0]?.trim();
+    if (!cookieName) continue;
+    if (prefixes.some((p) => cookieName.startsWith(p))) exact.push(cookieName);
+  }
+
+  for (const cookieName of new Set(exact)) {
     for (const domain of domains) {
       document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}`;
     }
     document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
   }
 
-  // Pulisce anche dataLayer se presente
-  if ((window as any).dataLayer) {
-    (window as any).dataLayer = [];
+  // Drop any localStorage an analytics provider left behind (PostHog persists
+  // its distinct id there as well as in a cookie).
+  const analyticsStorageKeys = cookieRegistry
+    .filter((c) => c.category === 'analytics' && c.type === 'localStorage')
+    .map((c) => c.name);
+  try {
+    for (const key of Object.keys(localStorage)) {
+      const matches = analyticsStorageKeys.some((n) => {
+        const placeholder = n.indexOf('<');
+        return placeholder === -1 ? key === n : key.startsWith(n.slice(0, placeholder));
+      });
+      if (matches) localStorage.removeItem(key);
+    }
+  } catch {
+    // localStorage can throw in private-browsing modes; nothing to clean then.
+  }
+
+  // Drop anything the tag queued, then immediately re-declare the consent
+  // defaults. Clearing dataLayer also discards the `consent default` command
+  // that must precede gtag.js: without re-seeding, a visitor who rejects and
+  // later accepts would load the tag with consent undeclared, since
+  // initConsentMode() short-circuits on its own guard.
+  const w = window as any;
+  if (w.dataLayer) {
+    w.dataLayer = [];
+    w.__geoConsentModeReady = false;
+    initConsentMode();
   }
 }

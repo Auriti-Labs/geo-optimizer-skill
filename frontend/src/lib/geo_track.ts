@@ -7,11 +7,8 @@
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
+    dataLayer?: unknown[];
   }
-}
-
-function gtagReady(): boolean {
-  return typeof window !== 'undefined' && typeof window.gtag === 'function';
 }
 
 /** Estrae i parametri UTM dall'URL corrente. */
@@ -46,12 +43,23 @@ export interface TrackParams {
 
 /** Invia un evento GA4. Silenzioso se gtag non è disponibile (consenso non dato). */
 export function track(eventName: string, params: TrackParams = {}): void {
-  if (!gtagReady()) return;
-  window.gtag!('event', eventName, {
+  if (typeof window === 'undefined') return;
+
+  const payload = {
+    transport_type: 'beacon',
     referrer_type: referrerType(),
     ...getUtmParams(),
     ...params,
-  });
+  };
+
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', eventName, payload);
+    return;
+  }
+
+  if (Array.isArray(window.dataLayer)) {
+    window.dataLayer.push(['event', eventName, payload]);
+  }
 }
 
 // ── Shorthand per gli eventi pre-launch ──────────────────────────────────────
@@ -138,6 +146,45 @@ export function trackPlanSelected(params: {
   track('geo_plan_selected', params);
 }
 
+export function trackSignupStarted(params: {
+  plan_id?: string;
+  intent?: string;
+  onboarding?: string;
+  claim_present: boolean;
+  cta_location: string;
+  cta_text: string;
+}): void {
+  track('geo_signup_started', params);
+}
+
+export function trackOnboardingStarted(params: {
+  onboarding: string;
+  plan_id?: string;
+  intent?: string;
+  cta_location: string;
+  claim_present: boolean;
+}): void {
+  track('geo_onboarding_started', params);
+}
+
+export function trackReportClaimStarted(params: {
+  claim_source: string;
+  destination: 'signup' | 'login' | 'unknown';
+  cta_location: string;
+}): void {
+  track('geo_report_claim_started', params);
+}
+
+export function trackUpgradeIntent(params: {
+  plan_id: string;
+  plan_name?: string;
+  intent?: string;
+  cta_location: string;
+  claim_present: boolean;
+}): void {
+  track('geo_upgrade_intent_clicked', params);
+}
+
 /** Obiezione pricing — risposta alla micro-survey "What's stopping you today?".
  *  `reason` è una delle opzioni predefinite; `note` è testo libero opzionale
  *  (troncato lato client, nessun dato personale richiesto). */
@@ -184,4 +231,23 @@ export function trackLlmsTxtCopied(): void {
 /** File llms.txt scaricato — riporta la dimensione del file. */
 export function trackLlmsTxtDownloaded(params: { size_bytes: number }): void {
   track('geo_llms_txt_downloaded', params);
+}
+
+export function trackCitationCheckerStarted(params: { has_topic: boolean }): void {
+  track('geo_citation_checker_started', params);
+}
+
+export function trackCitationCheckerCompleted(params: {
+  verdict: string;
+  brand_mention_rate: number;
+  domain_citation_rate: number;
+  cited_competitor_count: number;
+}): void {
+  track('geo_citation_checker_completed', params);
+}
+
+export function trackCitationCheckerFailed(params: {
+  reason: 'validation' | 'server';
+}): void {
+  track('geo_citation_checker_failed', params);
 }
