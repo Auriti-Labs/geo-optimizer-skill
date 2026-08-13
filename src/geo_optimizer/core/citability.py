@@ -2215,7 +2215,15 @@ def detect_voice_search(soup) -> MethodScore:
 
 # ─── Multi-Platform Presence (+10%) — Batch A v3.16.0 ────────────────────────
 
-# Recognized platforms for multi-platform presence
+# Recognized platforms for multi-platform presence.
+#
+# Kept deliberately wider than SOCIAL_PROOF_DOMAINS in config.py: GitHub, Medium,
+# Reddit and Wikipedia are platforms a brand can be present on without being social
+# proof, so their absence from that list is correct. The reverse was not — Instagram,
+# TikTok and Threads were in SOCIAL_PROOF_DOMAINS but missing here, so a brand whose
+# `sameAs` pointed at them lost credit for a presence it actually had. Since the
+# scoring is by count (>=5 → 4 points, >=3 → 2), three missing entries could drop a
+# page a whole band.
 _PLATFORM_DOMAINS = {
     "github.com": "GitHub",
     "linkedin.com": "LinkedIn",
@@ -2226,6 +2234,9 @@ _PLATFORM_DOMAINS = {
     "wikipedia.org": "Wikipedia",
     "medium.com": "Medium",
     "facebook.com": "Facebook",
+    "instagram.com": "Instagram",
+    "tiktok.com": "TikTok",
+    "threads.net": "Threads",
 }
 
 

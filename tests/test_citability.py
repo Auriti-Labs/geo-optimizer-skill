@@ -1361,6 +1361,40 @@ class TestMultiPlatform:
         assert not result.detected
         assert result.score == 0
 
+    def test_instagram_tiktok_threads_sono_piattaforme(self):
+        """A `sameAs` pointing at Instagram, TikTok or Threads counts (#4.16.3).
+
+        These three were in SOCIAL_PROOF_DOMAINS but missing from
+        _PLATFORM_DOMAINS, so a brand present on them scored as if it were not.
+        """
+        html = """
+        <html><body>
+            <script type="application/ld+json">
+            {"@type": "Organization", "sameAs": [
+                "https://www.instagram.com/test",
+                "https://www.tiktok.com/@test",
+                "https://www.threads.net/@test"
+            ]}
+            </script>
+        </body></html>
+        """
+        result = detect_multi_platform(_soup(html))
+        assert result.details["platform_count"] == 3
+        assert result.details["platforms_found"] == ["Instagram", "Threads", "TikTok"]
+
+    def test_ogni_social_proof_domain_e_anche_una_piattaforma(self):
+        """SOCIAL_PROOF_DOMAINS must be a subset of _PLATFORM_DOMAINS (#4.16.3).
+
+        Not the reverse: GitHub, Medium, Reddit and Wikipedia are platforms
+        without being social proof, so the wider set is intentional. This pins
+        the direction that is a defect, which is how the three above slipped in.
+        """
+        from geo_optimizer.core.citability import _PLATFORM_DOMAINS
+        from geo_optimizer.models.config import SOCIAL_PROOF_DOMAINS
+
+        missing = sorted(set(SOCIAL_PROOF_DOMAINS) - set(_PLATFORM_DOMAINS))
+        assert not missing, f"social domains absent from _PLATFORM_DOMAINS: {missing}"
+
 
 # ============================================================================
 # TEST: Entity Disambiguation (+8%) — Batch A v3.16.0
@@ -2109,10 +2143,9 @@ class TestGraphUnpacking:
 
     def test_multi_platform_legge_sameas_nel_graph(self):
         result = detect_multi_platform(_soup(_YOAST_GRAPH_HTML))
-        # 4, non 5: instagram.com non è in _PLATFORM_DOMAINS. Difetto separato,
-        # fuori dallo scopo di questo fix; qui conta che i sameAs nel @graph
-        # vengano letti (prima erano 0).
-        assert result.details["platform_count"] == 4
+        # 5 since instagram.com joined _PLATFORM_DOMAINS; before the @graph fix
+        # this was 0, because none of the sameAs URLs were reachable at all.
+        assert result.details["platform_count"] == 5
         assert result.detected is True
 
     def test_blog_structure_trova_article_nel_graph(self):

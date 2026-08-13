@@ -5,6 +5,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- **Instagram, TikTok and Threads did not count as platforms.** `_PLATFORM_DOMAINS` in `citability.py` listed nine domains; `SOCIAL_PROOF_DOMAINS` in `config.py` listed eight, and three of those — `instagram.com`, `tiktok.com`, `threads.net` — were absent from the first. A brand whose `sameAs` pointed at them got no credit for a presence it genuinely had. Since `multi_platform` scores by count (5 or more → 4 points, 3 or more → 2), three missing entries could cost a page a whole band, so this moves scores rather than only labels. The two lists are deliberately *not* identical in the other direction — GitHub, Medium, Reddit and Wikipedia are platforms without being social proof — so the new regression test pins `SOCIAL_PROOF_DOMAINS ⊆ _PLATFORM_DOMAINS` as a subset rather than an equality, which is the direction that was a defect. Found while fixing the `@graph` walkers in 4.16.3, where a test had been written asserting `platform_count == 4` on a fixture carrying five platforms, documenting the gap instead of failing on it.
+
+---
+
 ## [4.16.3] — 2026-08-13
 
 Patch release for four defects found by running this project's own audit against its own
