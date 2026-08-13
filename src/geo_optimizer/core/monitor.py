@@ -82,6 +82,7 @@ def build_passive_monitor_result(
         latest_geo_band=audit_result.band,
         signals=signals,
         recommendations=recommendations,
+        error=audit_result.error,
     )
 
 

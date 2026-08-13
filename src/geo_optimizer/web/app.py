@@ -162,7 +162,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "style-src 'self' 'unsafe-inline'; "
             "font-src 'self' data:; "
             "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com "
-            "https://launchpadly.co; "
+            "https://launchpadly.co https://cdn.sanity.io; "
             # region1.google-analytics.com: endpoint regionale GA4 (usato da gtag.js)
             "connect-src 'self' https://www.google-analytics.com https://analytics.google.com "
             "https://stats.g.doubleclick.net https://region1.google-analytics.com; "
@@ -449,6 +449,7 @@ _DOCS_PAGES = {
     "mcp-server": "MCP Server",
     "ai-context": "Using as AI Context",
     "geo-methods": "The 11 GEO Methods",
+    "geo-perception": "AI Perception Snapshot",
     "ai-bots-reference": "AI Bots Reference",
     "ci-cd": "CI/CD Integration",
     "scoring-rubric": "Scoring Rubric",

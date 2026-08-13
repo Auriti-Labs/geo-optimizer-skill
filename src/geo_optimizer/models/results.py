@@ -239,7 +239,8 @@ class AiDiscoveryResult:
 class CdnAiCrawlerResult:
     """Result of checking if CDN blocks AI crawler user-agents.
 
-    Simulates requests as AI bots (GPTBot, ClaudeBot, PerplexityBot) and
+    Simulates requests as the AI bots that drive citations (GPTBot,
+    OAI-SearchBot, PerplexityBot, Claude-SearchBot, Googlebot, Applebot) and
     compares status codes + content-length to a normal browser request.
     """
 
@@ -745,6 +746,10 @@ class TopicAuthorityResult:
     clusters: list[TopicCluster] = field(default_factory=list)
     authority_score: int = 0  # 0-100
     recommendations: list[str] = field(default_factory=list)
+    # #512: pages with zero inbound internal links from the other analyzed
+    # pages — crawlers relying on link-following (not just the sitemap) may
+    # never reach them, and they carry weak entity association either way.
+    orphan_pages: list[str] = field(default_factory=list)
 
 
 # ─── AI Citation Check (geo citations) ───────────────────────────────────────
@@ -1143,6 +1148,10 @@ class MonitorResult:
     latest_geo_band: str | None = None
     signals: list[MonitorSignal] = field(default_factory=list)
     recommendations: list[str] = field(default_factory=list)
+    # None on a successful audit; the underlying AuditResult.error when the
+    # site was unreachable — every signal/score above is then computed from
+    # a default-empty audit, not a real "no visibility" result.
+    error: str | None = None
 
 
 # ─── Answer snapshots ───────────────────────────────────────────────────────
@@ -1324,6 +1333,11 @@ class AgentAccessResult:
     x_robots_noai: bool = False
     x_robots_noindex: bool = False
     ai_discovery_score: int = 0
+    # #512: Time-to-first-byte in ms and raw HTML weight in bytes — access-layer
+    # signals a non-rendering AI crawler is sensitive to (slow/heavy pages get
+    # less crawl depth and frequency; 0 means not measured, e.g. fetch failed).
+    ttfb_ms: float = 0.0
+    page_weight_bytes: int = 0
     blocking_issues: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     passing: list[str] = field(default_factory=list)

@@ -9,7 +9,7 @@ const description =
   'See GeoReady’s live benchmark of audited sites and their AI search readiness, including GEO score, llms.txt adoption, schema usage, and the biggest AI visibility gaps.';
 const canonical = 'https://geoready.dev/state-of-geo/';
 const datePublished = '2026-06-11';
-const dateModified = '2026-06-15';
+const dateModified = '2026-07-01';
 
 // FAQ condivise tra il corpo della pagina (visibili) e lo schema FAQPage in fondo.
 // Risposte answer-first, claim-safe: mai "the web", sempre "audited sites".
@@ -51,7 +51,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
 
 <Shell title={title} description={description} canonical={canonical}>
   <article class="px-4 sm:px-6 py-10 md:py-16">
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-7xl mx-auto">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <header class="mb-12 grid gap-8 md:mb-16 lg:grid-cols-[minmax(0,0.92fr)_minmax(360px,0.7fr)] lg:items-center">
         <div>
@@ -118,7 +118,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
       </header>
     </div>
 
-    <div class="max-w-3xl mx-auto space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
+    <div class="max-w-7xl mx-auto space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
 
       {/* ── Key findings (live teaser) ──────────────────────────────────── */}
       <section>
@@ -322,7 +322,28 @@ const heroVisual = marketingVisuals.commandCenterV2;
         </p>
       </section>
 
-      {/* ── Full report capture ─────────────────────────────────────────── */}
+      {/* ── June 2026 report link ───────────────────────────────────────── */}
+      <section class="rounded-2xl border border-accent-teal/30 bg-accent-teal/5 p-6">
+        <p class="text-xs font-mono text-accent-teal uppercase tracking-wider mb-3">June 2026 — Full report published</p>
+        <h2 class="font-display text-xl font-bold text-text-primary leading-tight">State of GEO: June 2026</h2>
+        <p class="mt-2 text-sm text-text-secondary">
+          288 unique domains. Average score 53.6/100. AI Discovery at 8.3% efficiency — the biggest gap.
+          Full category breakdown, TLD analysis, and the quick-win checklist to move from Foundation to Good.
+        </p>
+        <p class="mt-2 text-xs text-text-muted">
+          The June 2026 snapshot covers the 288 domains audited by that cutoff; the live counter above
+          includes sites audited since, so the two numbers will differ.
+        </p>
+        <a
+          href="/state-of-geo/june-2026/"
+          data-cta="state_geo_live_june2026_report"
+          class="mt-4 inline-flex items-center gap-2 rounded-full bg-accent-teal px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
+        >
+          Read the June 2026 report →
+        </a>
+      </section>
+
+      {/* ── Newsletter ──────────────────────────────────────────────────── */}
       <section>
         <NewsletterSignup
           client:visible

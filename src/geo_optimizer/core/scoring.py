@@ -223,17 +223,33 @@ def _penalty_negative_signals(negative_signals) -> int:
     return 0
 
 
+#  brand_entity_coherence and brand_about_contact are each a single SCORING
+#  budget split across two sub-signals below. They aren't separate SCORING
+#  keys because formatters._MAX_BRAND (and similar) sum SCORING by
+#  "brand_"-prefix — a new sub-key would double-count into that total. The
+#  assertions make a future edit to the parent SCORING value fail loudly
+#  here instead of silently letting CATEGORY_MAX drift out of sync with what
+#  this function can actually award (fix #410 introduced the hardcoded
+#  literals; this only ties them back to their source of truth).
+_BRAND_COHERENCE_NAME = 2
+_BRAND_COHERENCE_DESC = 1
+assert SCORING["brand_entity_coherence"] == _BRAND_COHERENCE_NAME + _BRAND_COHERENCE_DESC
+
+_BRAND_ABOUT_LINK = 1
+_BRAND_CONTACT_INFO = 1
+assert SCORING["brand_about_contact"] == _BRAND_ABOUT_LINK + _BRAND_CONTACT_INFO
+
+
 def _score_brand_entity(brand_entity) -> int:
     """Compute the Brand & Entity score (v4.3)."""
     if brand_entity is None:
         return 0
     s = 0
     # Entity Coherence (3 points total = 2pt name + 1pt description)
-    # Fix #410: use explicit values instead of SCORING[key] - 1
     if brand_entity.brand_name_consistent:
-        s += 2
+        s += _BRAND_COHERENCE_NAME
     if brand_entity.schema_desc_matches_meta:
-        s += 1
+        s += _BRAND_COHERENCE_DESC
     # Knowledge Graph Readiness (3 points)
     pillars = brand_entity.kg_pillar_count
     if pillars >= 3:
@@ -244,9 +260,9 @@ def _score_brand_entity(brand_entity) -> int:
         s += 1
     # About/Contact (2 points)
     if brand_entity.has_about_link:
-        s += 1
+        s += _BRAND_ABOUT_LINK
     if brand_entity.has_contact_info:
-        s += 1
+        s += _BRAND_CONTACT_INFO
     # Geographic Identity (1 point)
     if brand_entity.has_geo_schema or brand_entity.has_hreflang:
         s += SCORING["brand_geo_identity"]

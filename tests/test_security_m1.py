@@ -48,6 +48,7 @@ class TestSitemapSsrf:
         """
         mock_response = MagicMock()
         mock_response.content = sitemap_xml.encode()
+        mock_response.iter_content = MagicMock(return_value=[sitemap_xml.encode()])
         mock_response.raise_for_status = MagicMock()
 
         with patch("geo_optimizer.core.llms_generator.create_session_with_retry") as mock_session:
@@ -72,10 +73,12 @@ class TestSitemapSsrf:
         """
         mock_resp_index = MagicMock()
         mock_resp_index.content = sitemap_index_xml.encode()
+        mock_resp_index.iter_content = MagicMock(return_value=[sitemap_index_xml.encode()])
         mock_resp_index.raise_for_status = MagicMock()
 
         mock_resp_posts = MagicMock()
         mock_resp_posts.content = sitemap_posts_xml.encode()
+        mock_resp_posts.iter_content = MagicMock(return_value=[sitemap_posts_xml.encode()])
         mock_resp_posts.raise_for_status = MagicMock()
 
         with patch("geo_optimizer.core.llms_generator.create_session_with_retry") as mock_session:

@@ -127,6 +127,29 @@ def _build_clusters(
     return clusters[:_MAX_CLUSTERS]
 
 
+def _find_orphan_pages(urls: list[str], page_links: dict[str, set[str]]) -> list[str]:
+    """Pages with zero inbound internal links from the other analyzed pages.
+
+    The homepage is excluded — it is reachable by definition (URL bar,
+    external links, browser bookmark) and does not need in-site links
+    pointing back to it the way a deep content page does.
+    """
+    inbound: set[str] = set()
+    for source_url, links in page_links.items():
+        for target in links:
+            if target != _normalize_page_url(source_url):
+                inbound.add(target)
+
+    orphans = []
+    for url in urls:
+        normalized = _normalize_page_url(url)
+        if normalized.endswith("/"):  # homepage (root path normalizes to ".../")
+            continue
+        if normalized not in inbound:
+            orphans.append(url)
+    return orphans
+
+
 def _score(clusters: list[TopicCluster]) -> int:
     if not clusters:
         return 0
@@ -212,10 +235,19 @@ def run_topic_authority(
         return TopicAuthorityResult(checked=True, skipped_reason="No pages could be fetched")
 
     clusters = _build_clusters(extracts, page_links, brand=brand)
+    orphans = _find_orphan_pages([e.url for e in extracts], page_links)
+    recommendations = _recommendations(clusters, len(extracts))
+    if orphans:
+        preview = ", ".join(orphans[:3]) + (f" (+{len(orphans) - 3} more)" if len(orphans) > 3 else "")
+        recommendations.append(
+            f"{len(orphans)} page(s) have no internal links pointing to them (orphan pages) — "
+            f"crawlers following links may never discover them: {preview}"
+        )
     return TopicAuthorityResult(
         checked=True,
         pages_analyzed=len(extracts),
         clusters=clusters,
         authority_score=_score(clusters),
-        recommendations=_recommendations(clusters, len(extracts)),
+        recommendations=recommendations,
+        orphan_pages=orphans,
     )

@@ -148,6 +148,7 @@ li{{margin-bottom:.4rem;line-height:1.5}}
 </style>
 </head>
 <body>
+{f'<div class="section" style="background:#fef2f2;border:1px solid #ef4444;color:#991b1b;padding:16px;margin-bottom:16px;"><strong>Audit failed:</strong> {_escape(result.error)}. The site could not be reached — every check below reflects an empty result, not a real score.</div>' if result.error else ""}
 <div class="header">
     <h1>GEO Audit Report</h1>
     <div class="url">{_escape(result.url)}</div>

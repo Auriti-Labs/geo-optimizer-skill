@@ -64,6 +64,9 @@ def fix(url, output_dir, dry_run, do_apply, only, config_file):
     project_config = load_config(config_path)
 
     result = run_full_audit(safe_url, project_config=project_config)
+    if result.error:
+        click.echo(f"\n❌ Audit failed, no fixes generated: {result.error}", err=True)
+        sys.exit(1)
     click.echo(f"📊 Current score: {result.score}/100 ({result.band})\n", err=True)
 
     # Generate fixes

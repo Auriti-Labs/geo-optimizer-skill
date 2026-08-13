@@ -129,6 +129,20 @@ def test_severity_warning_schema_removed():
     assert _classify_severity(delta, -1) == "warning"
 
 
+def test_severity_critical_crawlable_lost_wins_over_coincident_schema_drop():
+    """Crawlability loss must classify as critical even when it coincides
+    with an independent schema regression that would otherwise match
+    "warning" first — regression test for a branch-ordering bug where the
+    schema_types_removed check ran before the crawlability check."""
+    delta = SemanticDriftDelta(
+        crawlable_before=True,
+        crawlable_after=False,
+        schema_types_removed=["FAQPage"],
+        score_delta=-4,  # above -_SCORE_DROP_WARNING (-5), so that branch doesn't fire first
+    )
+    assert _classify_severity(delta, -4) == "critical"
+
+
 def test_severity_info_category_change():
     delta = SemanticDriftDelta(
         category_deltas={"llms": -2},

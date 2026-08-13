@@ -7,15 +7,15 @@ import { saveScore } from '../../lib/scoreHistory';
 import ReportHeader from './ReportHeader';
 import ScoreGauge from './ScoreGauge';
 import ScoreHistory from './ScoreHistory';
+import BenchmarkComparison from './BenchmarkComparison';
 import CategoryBreakdown from './CategoryBreakdown';
-import GateBanner from './GateBanner';
+import EmailGateBanner from './EmailGateBanner';
 import TechnicalSignals from './TechnicalSignals';
 import RecommendationList from './RecommendationList';
 import ExportActions from './ExportActions';
 
 const FREE_SLUGS = new Set(['robots', 'meta', 'signals']);
-const LOCKED_SLUGS = ['llms', 'schema', 'content', 'ai_discovery', 'brand_entity'];
-const LOCKED_MAX_POINTS = 18 + 16 + 12 + 6 + 10; // 62
+const ALL_LOCKED_SLUGS = ['llms', 'schema', 'content', 'ai_discovery', 'brand_entity'];
 
 interface AuditReportContainerProps {
   reportId: string;
@@ -27,9 +27,6 @@ type State =
   | { status: 'ready'; report: AuditReport; claim_token: string | null; expires_at: string | null };
 
 export default function AuditReportContainer({ reportId }: AuditReportContainerProps) {
-  // La demo è una pagina marketing indicizzabile: inizializza già con i dati mock
-  // così l'isola viene renderizzata lato server (SSG) con il contenuto completo
-  // del report, invece di uno shell vuoto idratato solo client-side.
   const [state, setState] = useState<State>(() =>
     reportId === 'demo'
       ? { status: 'ready', report: mockAuditReport, claim_token: null, expires_at: null }
@@ -38,12 +35,9 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
 
   useEffect(() => {
     if (reportId === 'demo') {
-      // Stato già pronto dall'initializer; nessun fetch necessario per la demo.
       return;
     }
 
-    // In una pagina statica i query params non sono disponibili a build time.
-    // Leggiamo l'URL direttamente dal browser quando siamo client-side.
     let targetUrl: string | null = null;
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -53,7 +47,6 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
       }
     }
 
-    // Fallback alla prop reportId (cache hash o URL codificato)
     if (!targetUrl && reportId) {
       const isHexId = /^[a-f0-9]{32}$/i.test(reportId);
       targetUrl = isHexId ? null : decodeURIComponent(reportId);
@@ -115,7 +108,10 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
   const report = state.report;
 
   const isDemo = reportId === 'demo';
-  const lockedSlugs = isDemo ? [] : LOCKED_SLUGS;
+  // All categories are visible on screen: the free report is complete, matching
+  // the public API and the pricing promise ("no email required"). Email capture
+  // below is optional (send-me-a-copy), not a gate.
+  const lockedSlugs: string[] = [];
   const lockedSet = new Set(lockedSlugs);
 
   const criticalCount = report.recommendations.filter((r) => r.priority === 'critical').length;
@@ -187,6 +183,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
           </div>
 
           <ScoreHistory url={report.url} currentScore={report.geoScore} />
+          <BenchmarkComparison score={report.geoScore} grade={report.grade} />
         </div>
 
         <div className="lg:col-span-9 space-y-8">
@@ -194,19 +191,16 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-xs font-mono font-semibold uppercase tracking-wider text-text-muted">Category Breakdown</h2>
               <span className="text-[11px] text-text-muted">
-                {activeCategories} of {report.categories.filter((c) => !lockedSet.has(c.slug)).length} visible
-                {lockedSlugs.length > 0 && (
-                  <span className="ml-1 text-accent-teal">· {lockedSlugs.length} locked</span>
-                )}
+                {activeCategories} of {report.categories.length} active
               </span>
             </div>
             <CategoryBreakdown categories={report.categories} lockedSlugs={lockedSlugs} />
-            {lockedSlugs.length > 0 && (
+            {!isDemo && state.claim_token && (
               <div className="mt-4">
-                <GateBanner
+                <EmailGateBanner
                   score={report.geoScore}
-                  lockedCount={lockedSlugs.length}
-                  totalLockedPoints={LOCKED_MAX_POINTS}
+                  categories={report.categories}
+                  claimToken={state.claim_token}
                 />
               </div>
             )}

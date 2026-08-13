@@ -1,87 +1,27 @@
 ---
+import type { GetStaticPaths } from 'astro';
 import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
 import ScoreSurface from '../../components/product/ScoreSurface.astro';
+import { getArticlesByCategory, urlForImage } from '../../utils/sanity';
 
-// Guides hub. Kept as a simple static index — add one entry per guide here.
-const guides = [
-  {
-    href: '/guides/ai-citations-check/',
-    title: 'How to check if AI engines cite your brand (ChatGPT, Perplexity)',
-    description:
-      'A practical method to find out whether AI answers mention your brand and cite your domain as a source — manually, with the free checker, and with ongoing monitoring.',
-    readingTime: '8 min read',
-  },
-  {
-    href: '/guides/entity-authority/',
-    title: 'Entity-based authority: why five pages beat one strong page',
-    description:
-      'AI engines map entities and multi-page topic coverage, not keywords. How topic clusters, pillar pages, and hub-and-spoke internal links build the authority that earns citations.',
-    readingTime: '9 min read',
-  },
-  {
-    href: '/guides/multimodal-geo/',
-    title: 'Multimodal GEO: making images and video citable by AI engines',
-    description:
-      'Gemini and GPT-4o reach images, video, and audio through their text scaffolding: alt text, captions, VideoObject schema, subtitle tracks, and transcripts. What to add, per medium.',
-    readingTime: '8 min read',
-  },
-  {
-    href: '/guides/generative-engine-optimization/',
-    title: 'Generative Engine Optimization: a practical guide to GEO',
-    description:
-      'What GEO is, why it matters now, and how to make your site crawlable, understandable, and citable by AI answer engines. The pillar guide to the discipline behind AI SEO.',
-    readingTime: '11 min read',
-  },
-  {
-    href: '/guides/what-is-llms-txt/',
-    title: 'What is llms.txt? A practical guide with example',
-    description:
-      'What llms.txt is, how it differs from robots.txt, what to include, and a concrete example. An orientation file for AI systems — not a confirmed ranking factor.',
-    readingTime: '9 min read',
-  },
-  {
-    href: '/guides/appear-in-chatgpt-perplexity/',
-    title: 'How to make your website appear in ChatGPT and Perplexity sources',
-    description:
-      'A practical checklist for becoming citable by AI answer engines — crawlability, llms.txt, structured data, and the content patterns models tend to quote.',
-    readingTime: '12 min read',
-  },
-  {
-    href: '/guides/geo-vs-seo/',
-    title: 'GEO vs SEO: what changes when AI engines become the interface',
-    description:
-      'SEO and GEO share technical foundations but diverge in what they optimize for. A guide to the overlap, the differences, and where to focus effort when AI answer engines matter.',
-    readingTime: '10 min read',
-  },
-  {
-    href: '/guides/llms-txt-wordpress/',
-    title: 'llms.txt for WordPress and AI visibility: a practical guide',
-    description:
-      'What llms.txt is, what it actually does, and how to implement it on WordPress — manually or with a plugin. Includes format reference and what to include.',
-    readingTime: '9 min read',
-  },
-  {
-    href: '/guides/ai-visibility-checklist/',
-    title: 'AI visibility checklist: how to make your website easier to find, cite, and recommend',
-    description:
-      'All the technical and content signals that affect AI answer engine visibility, organized by category with clear pass/fail criteria. Crawlability, schema, llms.txt, brand signals, and more.',
-    readingTime: '14 min read',
-  },
-  {
-    href: '/guides/how-to-improve-ai-visibility/',
-    title: 'How to improve AI visibility: a step-by-step plan from baseline to monitoring',
-    description:
-      'A sequenced plan for raising your AI visibility — start from a baseline audit, fix crawler access and schema first, rewrite key pages to be quotable, then monitor as models change.',
-    readingTime: '12 min read',
-  },
-];
+export const getStaticPaths = (async ({ paginate }) => {
+  const articles = await getArticlesByCategory('guides');
+  return paginate(articles, { pageSize: 6 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const articles = page.data;
+const canonical = `https://geoready.dev/guides/${page.currentPage > 1 ? `${page.currentPage}/` : ''}`;
+const title = page.currentPage > 1
+  ? `Guides — Page ${page.currentPage} of ${page.lastPage} — GeoReady`
+  : 'Guides — AI Search Visibility & Generative Engine Optimization';
 ---
 
 <Shell
-  title="Guides — AI Search Visibility & Generative Engine Optimization"
+  title={title}
   description="Practical, no-hype guides on making your website visible and citable to AI answer engines like ChatGPT, Perplexity, Claude, and Gemini."
-  canonical="https://geoready.dev/guides/"
+  canonical={canonical}
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
     {/* Header */}
@@ -140,23 +80,77 @@ const guides = [
 
     {/* Guide list */}
     <ul class="grid gap-4 md:grid-cols-2">
-      {guides.map((g) => (
+      {articles.map((a) => (
         <li>
           <a
-            href={g.href}
-            class="group block h-full rounded-xl border border-border bg-bg-surface p-5 md:p-6 transition-colors hover:border-accent-teal/30"
+            href={`/guides/${a.slug.current}/`}
+            class="group block h-full overflow-hidden rounded-xl border border-border bg-bg-surface transition-colors hover:border-accent-teal/30"
           >
-            <p class="mb-4 text-xs font-mono text-text-muted">{g.readingTime}</p>
-            <h2 class="font-display text-lg md:text-xl font-semibold text-text-primary leading-snug group-hover:text-accent-teal">
-              {g.title}
-            </h2>
-            <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
-              {g.description}
-            </p>
+            {a.ogImage?.asset ? (
+              <img
+                src={urlForImage(a.ogImage).width(640).height(360).fit('crop').auto('format').url()}
+                alt={a.ogImage.alt || ''}
+                width="640"
+                height="360"
+                loading="lazy"
+                class="aspect-[16/9] w-full object-cover"
+              />
+            ) : null}
+            <div class="p-5 md:p-6">
+              <p class="mb-4 text-xs font-mono text-text-muted">
+                {new Date(a.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
+              <h2 class="font-display text-lg md:text-xl font-semibold text-text-primary leading-snug group-hover:text-accent-teal">
+                {a.title}
+              </h2>
+              <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
+                {a.description}
+              </p>
+            </div>
           </a>
         </li>
       ))}
     </ul>
+
+    {/* Pagination */}
+    {page.lastPage > 1 && (
+      <nav class="mt-10 flex items-center justify-between gap-4" aria-label="Guides pagination">
+        {page.url.prev ? (
+          <a
+            href={page.url.prev}
+            class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:border-accent-teal/30 hover:text-text-primary"
+          >
+            ← Newer
+          </a>
+        ) : <span />}
+
+        <div class="flex items-center gap-1.5 font-mono text-xs text-text-muted">
+          {Array.from({ length: page.lastPage }, (_, i) => i + 1).map((n) => (
+            n === page.currentPage ? (
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-teal font-semibold text-white">
+                {n}
+              </span>
+            ) : (
+              <a
+                href={n === 1 ? '/guides/' : `/guides/${n}/`}
+                class="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-bg-surface hover:text-text-primary"
+              >
+                {n}
+              </a>
+            )
+          ))}
+        </div>
+
+        {page.url.next ? (
+          <a
+            href={page.url.next}
+            class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:border-accent-teal/30 hover:text-text-primary"
+          >
+            Older →
+          </a>
+        ) : <span />}
+      </nav>
+    )}
 
     {/* Tools — strumenti gratuiti collegati alle guide */}
     <section class="mt-12 border-t border-border pt-10 md:mt-16 md:pt-12">

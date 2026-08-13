@@ -740,12 +740,16 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
                 cache.put(base_url, r.status_code, r.text, dict(r.headers))
     else:
         r, err = fetch_url(base_url)  # type: ignore[assignment]
-    if err or not r:
+    # `r is None`, not `not r`: requests.Response.__bool__ is `ok`, so any 4xx/5xx
+    # is falsy and would land here — reporting "Connection failed" for a request
+    # that succeeded, and skipping the status branch below that exists to name the
+    # code and point at a WAF. Fixes the 403 reported as a connection error.
+    if err or r is None:
         result = AuditResult(
             url=base_url,
             error=str(err) if err else "Connection failed",
         )
-        result.recommendations = [f"Unable to reach {base_url}: {err}"]
+        result.recommendations = [f"Unable to reach {base_url}: {err or 'connection failed'}"]
         result.audit_duration_ms = int((time.perf_counter() - _t0) * 1000)
         return result
 

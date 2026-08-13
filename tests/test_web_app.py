@@ -349,6 +349,8 @@ def test_security_headers_presenti(client):
     assert "x-frame-options" in response.headers
     assert "content-security-policy" in response.headers
     assert "https://launchpadly.co" in response.headers["content-security-policy"]
+    # cdn.sanity.io: le immagini degli articoli (ogImage + body) sono servite da lì
+    assert "https://cdn.sanity.io" in response.headers["content-security-policy"]
 
 
 # ─── Test: _audit_result_to_dict ────────────────────────────────────────────

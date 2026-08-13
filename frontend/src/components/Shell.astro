@@ -9,12 +9,14 @@ interface Props {
   description?: string;
   canonical?: string;
   robots?: string;
+  ogImage?: string;
+  twitterImage?: string;
 }
 
-const { title, description, canonical, robots } = Astro.props;
+const { title, description, canonical, robots, ogImage, twitterImage } = Astro.props;
 ---
 
-<Layout title={title} description={description} canonical={canonical} robots={robots}>
+<Layout title={title} description={description} canonical={canonical} robots={robots} ogImage={ogImage} twitterImage={twitterImage}>
   <Navbar />
   <main id="main-content" class="flex-1 site-main">
     <slot />

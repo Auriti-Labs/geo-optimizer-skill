@@ -223,7 +223,12 @@ def audit(
 
     history_result = None
     history_entry = None
-    persist_history = bool(url and (save_history or regression))
+    # A transient network blip must not corrupt the trend history with a
+    # fake 0/100 "critical" snapshot: --regression would then report a false
+    # positive against real content (comparing against a fabricated
+    # baseline), and any later real regression would be masked as an
+    # "improvement" relative to that same fabricated 0.
+    persist_history = bool(url and (save_history or regression) and not getattr(result, "error", None))
     if persist_history:
         store = HistoryStore(Path(history_db) if history_db else None)
         history_entry = store.save_audit_result(result, retention_days=retention_days)

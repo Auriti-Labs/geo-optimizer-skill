@@ -50,8 +50,8 @@ def _format_text(delta, before, after) -> str:
         lines.append("No significant drift between the last two snapshots.")
 
     lines.append("")
-    lines.append("One-shot comparison. Continuous drift monitoring with email")
-    lines.append("alerts runs on every plan with monitoring → https://geoready.dev")
+    lines.append("One-shot comparison. The free plan at https://geoready.dev monitors")
+    lines.append("1 domain and emails you weekly when drift like this happens.")
     return "\n".join(lines)
 
 
