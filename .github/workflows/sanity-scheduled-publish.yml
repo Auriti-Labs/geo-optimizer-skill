@@ -76,10 +76,12 @@ jobs:
         if: (steps.sanity_publish.outputs.published_count != '0' || env.FORCE_DEPLOY == 'true') && env.DRY_RUN != 'true'
         env:
           GEOREADY_DEPLOY_WEBHOOK_URL: ${{ secrets.GEOREADY_DEPLOY_WEBHOOK_URL }}
+          DEPLOY_TRIGGER_TOKEN: ${{ secrets.DEPLOY_TRIGGER_TOKEN }}
           PUBLISHED_SLUGS: ${{ steps.sanity_publish.outputs.published_slugs }}
         run: |
           curl --fail --silent --show-error --retry 3 --retry-all-errors --connect-timeout 10 --max-time 120 \
             --request POST \
             --header 'Content-Type: application/json' \
+            --header "Authorization: Bearer $DEPLOY_TRIGGER_TOKEN" \
             --data "{\"event\":\"sanity-scheduled-publish\",\"slugs\":\"$PUBLISHED_SLUGS\",\"sha\":\"$GITHUB_SHA\"}" \
             "$GEOREADY_DEPLOY_WEBHOOK_URL"
