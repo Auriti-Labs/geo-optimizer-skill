@@ -184,6 +184,45 @@ def _get_clean_text(soup, soup_clean=None) -> str:
     return str(working.get_text(separator=" ", strip=True))
 
 
+def _iter_jsonld_objects(soup):
+    """Yield every JSON-LD object on the page, with `@graph` containers unpacked.
+
+    gap #4.16.3: fix #326 added `@graph` unpacking to three of the twelve places in
+    this module that walk `script[type="application/ld+json"]`. The other nine read
+    only top-level keys, so on any site whose schema is emitted as a single
+    `{"@context", "@graph": [...]}` block — the Yoast and RankMath default, i.e. most
+    of WordPress — Organization, WebSite, Article and their `sameAs` were invisible.
+    Those detectors then reported the signals as absent and scored them at zero.
+
+    Nested `@graph` containers are unpacked too, and malformed JSON is skipped rather
+    than raised, matching the previous per-call-site behaviour.
+
+    Args:
+        soup: BeautifulSoup of the HTML page.
+
+    Yields:
+        dict: One JSON-LD object at a time, in document order.
+    """
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+        queue = list(data) if isinstance(data, list) else [data]
+        while queue:
+            item = queue.pop(0)
+            if not isinstance(item, dict):
+                continue
+            graph = item.get("@graph")
+            if isinstance(graph, list):
+                # Prepend so the graph's own members keep document order ahead of
+                # whatever follows this container.
+                queue = list(graph) + queue
+                continue
+            yield item
+
+
 def _extract_dates_from_soup(soup) -> dict[str, str | None]:
     """Estrae dateModified e datePublished da JSON-LD e meta tag.
 
@@ -194,23 +233,12 @@ def _extract_dates_from_soup(soup) -> dict[str, str | None]:
     """
     dates: dict[str, str | None] = {"dateModified": None, "datePublished": None}
 
-    # JSON-LD schema
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if isinstance(item, dict):
-                    # Fix #326: unpack @graph (Yoast/RankMath)
-                    if "@graph" in item and isinstance(item["@graph"], list):
-                        items.extend(item["@graph"])
-                        continue
-                    if "dateModified" in item and not dates["dateModified"]:
-                        dates["dateModified"] = item["dateModified"]
-                    if "datePublished" in item and not dates["datePublished"]:
-                        dates["datePublished"] = item["datePublished"]
-        except (json.JSONDecodeError, TypeError):
-            continue
+    # JSON-LD schema — fix #326 unpacks @graph (Yoast/RankMath), now via the shared helper
+    for item in _iter_jsonld_objects(soup):
+        if "dateModified" in item and not dates["dateModified"]:
+            dates["dateModified"] = item["dateModified"]
+        if "datePublished" in item and not dates["datePublished"]:
+            dates["datePublished"] = item["datePublished"]
 
     # Meta tag fallback
     if not dates["dateModified"]:
@@ -1918,19 +1946,12 @@ def detect_blog_structure(soup) -> MethodScore:
     """
     # Look for Article or BlogPosting schema in JSON-LD
     article_schema = None
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if isinstance(item, dict):
-                    schema_type = item.get("@type", "")
-                    types = schema_type if isinstance(schema_type, list) else [schema_type]
-                    if any(t in ("Article", "BlogPosting", "NewsArticle") for t in types):
-                        article_schema = item
-                        break
-        except (json.JSONDecodeError, TypeError):
-            continue
+    for item in _iter_jsonld_objects(soup):
+        schema_type = item.get("@type", "")
+        types = schema_type if isinstance(schema_type, list) else [schema_type]
+        if any(t in ("Article", "BlogPosting", "NewsArticle") for t in types):
+            article_schema = item
+            break
         if article_schema:
             break
 
@@ -1998,19 +2019,12 @@ def detect_shopping_readiness(soup) -> MethodScore:
     Only scores if Product schema is present (non-ecommerce pages get 0).
     """
     product_schema = None
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if isinstance(item, dict):
-                    schema_type = item.get("@type", "")
-                    types = schema_type if isinstance(schema_type, list) else [schema_type]
-                    if "Product" in types:
-                        product_schema = item
-                        break
-        except (json.JSONDecodeError, TypeError):
-            continue
+    for item in _iter_jsonld_objects(soup):
+        schema_type = item.get("@type", "")
+        types = schema_type if isinstance(schema_type, list) else [schema_type]
+        if "Product" in types:
+            product_schema = item
+            break
         if product_schema:
             break
 
@@ -2074,19 +2088,12 @@ def detect_chatgpt_shopping(soup) -> MethodScore:
     Cannot verify chatgpt.com/merchants registration, but verifies field completeness.
     """
     product_schema = None
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if isinstance(item, dict):
-                    schema_type = item.get("@type", "")
-                    types = schema_type if isinstance(schema_type, list) else [schema_type]
-                    if "Product" in types:
-                        product_schema = item
-                        break
-        except (json.JSONDecodeError, TypeError):
-            continue
+    for item in _iter_jsonld_objects(soup):
+        schema_type = item.get("@type", "")
+        types = schema_type if isinstance(schema_type, list) else [schema_type]
+        if "Product" in types:
+            product_schema = item
+            break
         if product_schema:
             break
 
@@ -2183,17 +2190,9 @@ def detect_voice_search(soup) -> MethodScore:
         score += 1
 
     # 2. Look for speakable schema in any JSON-LD
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if isinstance(item, dict) and "speakable" in item:
-                    has_speakable = True
-                    break
-        except (json.JSONDecodeError, TypeError):
-            continue
-        if has_speakable:
+    for item in _iter_jsonld_objects(soup):
+        if "speakable" in item:
+            has_speakable = True
             break
 
     if has_speakable:
@@ -2235,26 +2234,18 @@ def detect_multi_platform(soup) -> MethodScore:
     platforms_found: set[str] = set()
 
     # Extract sameAs from all JSON-LD schemas
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if not isinstance(item, dict):
-                    continue
-                same_as = item.get("sameAs", [])
-                if isinstance(same_as, str):
-                    same_as = [same_as]
-                for url in same_as:
-                    if not isinstance(url, str):
-                        continue
-                    parsed = urlparse(url)
-                    domain = parsed.netloc.lower().removeprefix("www.")
-                    for plat_domain, plat_name in _PLATFORM_DOMAINS.items():
-                        if domain.endswith(plat_domain):
-                            platforms_found.add(plat_name)
-        except (json.JSONDecodeError, TypeError):
-            continue
+    for item in _iter_jsonld_objects(soup):
+        same_as = item.get("sameAs", [])
+        if isinstance(same_as, str):
+            same_as = [same_as]
+        for url in same_as:
+            if not isinstance(url, str):
+                continue
+            parsed = urlparse(url)
+            domain = parsed.netloc.lower().removeprefix("www.")
+            for plat_domain, plat_name in _PLATFORM_DOMAINS.items():
+                if domain.endswith(plat_domain):
+                    platforms_found.add(plat_name)
 
     count = len(platforms_found)
     if count >= 5:
@@ -2304,22 +2295,15 @@ def detect_entity_disambiguation(soup) -> MethodScore:
     # Name from JSON-LD schema
     schema_name = None
     sameas_count = 0
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if isinstance(item, dict):
-                    if "name" in item and not schema_name:
-                        schema_name = str(item["name"]).strip().lower()
-                        names.append(schema_name)
-                    same_as = item.get("sameAs", [])
-                    if isinstance(same_as, str):
-                        same_as = [same_as]
-                    if isinstance(same_as, list):
-                        sameas_count = max(sameas_count, len(same_as))
-        except (json.JSONDecodeError, TypeError):
-            continue
+    for item in _iter_jsonld_objects(soup):
+        if "name" in item and not schema_name:
+            schema_name = str(item["name"]).strip().lower()
+            names.append(schema_name)
+        same_as = item.get("sameAs", [])
+        if isinstance(same_as, str):
+            same_as = [same_as]
+        if isinstance(same_as, list):
+            sameas_count = max(sameas_count, len(same_as))
 
     # Check consistency: at least 2 names and all matching
     if len(names) >= 2:
@@ -2520,19 +2504,19 @@ def detect_social_proof(soup, clean_text: str | None = None) -> MethodScore:
 
     # 2. AggregateRating in schema with reviewCount > 10
     has_rating = False
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if isinstance(item, dict):
-                    rating = item.get("aggregateRating", {})
-                    if isinstance(rating, dict):
-                        review_count = int(rating.get("reviewCount", 0))
-                        if review_count > 10:
-                            has_rating = True
-        except (json.JSONDecodeError, TypeError, ValueError):
+    for item in _iter_jsonld_objects(soup):
+        rating = item.get("aggregateRating", {})
+        if not isinstance(rating, dict):
             continue
+        try:
+            review_count = int(rating.get("reviewCount", 0))
+        except (TypeError, ValueError):
+            # A non-numeric reviewCount is bad data, not a reason to stop reading
+            # the remaining schemas — the old per-script try/except skipped the
+            # whole script here.
+            continue
+        if review_count > 10:
+            has_rating = True
 
     if has_rating:
         score += 1
@@ -2740,20 +2724,12 @@ def detect_temporal_coherence(soup, clean_text: str | None = None) -> MethodScor
     dates_found: dict[str, datetime] = {}
 
     # 1. Schema JSON-LD: dateModified, datePublished
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if not isinstance(item, dict):
-                    continue
-                for key in ("dateModified", "datePublished"):
-                    if key in item:
-                        parsed = _parse_date_flexible(str(item[key]))
-                        if parsed:
-                            dates_found[f"schema_{key}"] = parsed
-        except (json.JSONDecodeError, TypeError):
-            continue
+    for item in _iter_jsonld_objects(soup):
+        for key in ("dateModified", "datePublished"):
+            if key in item:
+                parsed = _parse_date_flexible(str(item[key]))
+                if parsed:
+                    dates_found[f"schema_{key}"] = parsed
 
     # 2. Meta tag article:modified_time / article:published_time
     for meta_prop, label in [
@@ -2944,17 +2920,9 @@ def detect_international_geo(soup) -> MethodScore:
 
     # 3. Schema inLanguage
     in_language = None
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if isinstance(item, dict) and "inLanguage" in item:
-                    in_language = item["inLanguage"]
-                    break
-        except (json.JSONDecodeError, TypeError):
-            continue
-        if in_language:
+    for item in _iter_jsonld_objects(soup):
+        if "inLanguage" in item:
+            in_language = item["inLanguage"]
             break
 
     # Only assign a score if the site has hreflang
@@ -3291,37 +3259,24 @@ def detect_entity_resolution(soup) -> MethodScore:
     entity_types_found: list[str] = []
 
     # 1. Check JSON-LD for well-typed entities with description
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if not isinstance(item, dict):
-                    continue
-                # Support @graph arrays
-                graph = item.get("@graph", [])
-                if graph and isinstance(graph, list):
-                    items.extend(graph)
-                    continue
-                entity_type = item.get("@type")
-                name = item.get("name")
-                desc = item.get("description")
-                if entity_type and name:
-                    has_schema_entity = True
-                    if isinstance(entity_type, list):
-                        entity_types_found.extend(entity_type)
-                    else:
-                        entity_types_found.append(str(entity_type))
-                    if desc:
-                        score += 1  # well-described entity
-                # sameAs check (same item may have both @type and sameAs)
-                same_as = item.get("sameAs", [])
-                if isinstance(same_as, str):
-                    same_as = [same_as]
-                if isinstance(same_as, list) and len(same_as) >= 2:
-                    has_sameas = True
-        except (json.JSONDecodeError, TypeError):
-            continue
+    for item in _iter_jsonld_objects(soup):
+        entity_type = item.get("@type")
+        name = item.get("name")
+        desc = item.get("description")
+        if entity_type and name:
+            has_schema_entity = True
+            if isinstance(entity_type, list):
+                entity_types_found.extend(entity_type)
+            else:
+                entity_types_found.append(str(entity_type))
+            if desc:
+                score += 1  # well-described entity
+        # sameAs check (same item may have both @type and sameAs)
+        same_as = item.get("sameAs", [])
+        if isinstance(same_as, str):
+            same_as = [same_as]
+        if isinstance(same_as, list) and len(same_as) >= 2:
+            has_sameas = True
 
     if has_schema_entity:
         score += 1
@@ -3385,38 +3340,26 @@ def detect_kg_density(soup, clean_text: str | None = None) -> MethodScore:
 
     # Check for structured data relationships too (schema.org)
     schema_relations = 0
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if not isinstance(item, dict):
-                    continue
-                graph = item.get("@graph", [])
-                if graph and isinstance(graph, list):
-                    items.extend(graph)
-                    continue
-                # Count relationship properties
-                for key in (
-                    "author",
-                    "creator",
-                    "publisher",
-                    "founder",
-                    "parentOrganization",
-                    "memberOf",
-                    "worksFor",
-                    "location",
-                    "address",
-                    "brand",
-                    "manufacturer",
-                    "isPartOf",
-                    "hasPart",
-                    "mainEntity",
-                ):
-                    if item.get(key):
-                        schema_relations += 1
-        except (json.JSONDecodeError, TypeError):
-            continue
+    for item in _iter_jsonld_objects(soup):
+        # Count relationship properties
+        for key in (
+            "author",
+            "creator",
+            "publisher",
+            "founder",
+            "parentOrganization",
+            "memberOf",
+            "worksFor",
+            "location",
+            "address",
+            "brand",
+            "manufacturer",
+            "isPartOf",
+            "hasPart",
+            "mainEntity",
+        ):
+            if item.get(key):
+                schema_relations += 1
 
     # Score: content relations + schema relations
     if density >= 8 or (density >= 5 and schema_relations >= 3):
@@ -3644,7 +3587,8 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         soup_clean: (optional) soup pre-cleaned from script/style (fix #285).
 
     Returns:
-        CitabilityResult with score 0-100 and per-method detail.
+        CitabilityResult with a 0-100 score normalized over the maximum the methods
+        expose, the raw/max figures behind it, and per-method detail.
     """
     # Fix #285: pass soup_clean to _get_clean_text to avoid re-parsing
     clean_text = _get_clean_text(soup, soup_clean=soup_clean)
@@ -3706,8 +3650,14 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         detect_retrieval_triggers(soup, clean_text=clean_text),
     ]
 
-    # Sum scores (max possible = 100)
-    total = sum(m.score for m in methods)
+    # gap #4.16.3: the 47 methods add up to well over 100 raw points, so clamping the
+    # sum at 100 made the top of the scale reachable roughly halfway through — a page
+    # could score "excellent" while a third of the methods sat at zero. Normalize
+    # against the maximum the methods actually expose, derived from the methods
+    # themselves so adding a check later cannot silently reshape the scale again.
+    raw = sum(m.score for m in methods)
+    max_possible = sum(m.max_score for m in methods)
+    total = round(100 * raw / max_possible) if max_possible else 0
     total = max(min(total, 100), 0)
 
     # Top 3 improvements: undetected methods, ordered by impact
@@ -3731,4 +3681,6 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         total_score=total,
         grade=_compute_grade(total),
         top_improvements=improvements[:3],
+        raw_score=raw,
+        max_possible=max_possible,
     )

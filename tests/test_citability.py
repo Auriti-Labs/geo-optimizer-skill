@@ -1166,9 +1166,23 @@ class TestWeightSum:
         result = audit_citability(_soup(html), "https://example.com")
         # 18 base=100, 7 batch2=31, 5 batch3+4=18, 8 batchA=27, 4 batchB=13, 5 RAG=19 → 208
         total_max = sum(m.max_score for m in result.methods)
-        assert total_max == 208, f"Somma max_score = {total_max}, atteso 208 (189 precedenti + 19 RAG batch)"
-        # Ma il total_score è sempre cappato a 100
-        assert result.total_score <= 100
+        assert total_max == 208, f"max_score sum = {total_max}, expected 208 (189 before + 19 RAG batch)"
+        # gap #4.16.3: total_score is normalized over the reachable maximum, not clamped
+        # at 100. The clamp put the top of the scale halfway up.
+        assert result.max_possible == total_max
+        assert result.raw_score == sum(m.score for m in result.methods)
+        assert result.total_score == round(100 * result.raw_score / total_max)
+        assert 0 <= result.total_score <= 100
+
+    def test_normalizzazione_non_satura_a_meta_scala(self):
+        """Una pagina con ~metà dei punti grezzi non deve risultare 'excellent'."""
+        html = "<html><body><p>Test content.</p></body></html>"
+        result = audit_citability(_soup(html), "https://example.com")
+        # Con la normalizzazione il grade deriva dalla percentuale reale, quindi
+        # raw_score/max_possible e total_score/100 esprimono la stessa frazione.
+        assert result.total_score == round(100 * result.raw_score / result.max_possible)
+        if result.raw_score < result.max_possible * 0.86:
+            assert result.grade != "excellent"
 
 
 # ============================================================================
@@ -1215,7 +1229,9 @@ class TestAuditCitability:
         result = audit_citability(_soup(html), "https://example.com")
 
         assert result.total_score > 0
-        assert result.grade in ("low", "medium", "high", "excellent")
+        # fix #26 allineò le bande a SCORE_BANDS: i grade sono questi, non low/medium/high.
+        # Il vecchio elenco passava solo perché il clamp portava ogni pagina a "excellent".
+        assert result.grade in ("critical", "foundation", "good", "excellent")
         assert len(result.methods) == 47
 
         # Verifica che ogni metodo abbia un nome
@@ -2051,3 +2067,102 @@ class TestRetrievalTriggers:
         result = detect_retrieval_triggers(_soup(html))
         assert result.details["question_headings"] >= 2
         assert result.score >= 1
+
+
+# ============================================================================
+# TEST: @graph unpacking (gap #4.16.3)
+# ============================================================================
+
+
+_YOAST_GRAPH_HTML = """
+<html lang="en"><head>
+  <title>Acme Corp — Widgets</title>
+  <meta property="og:title" content="Acme Corp">
+  <link rel="alternate" hreflang="en" href="https://acme.com/">
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[
+    {"@type":"Organization","name":"Acme Corp","inLanguage":"en",
+     "aggregateRating":{"@type":"AggregateRating","reviewCount":250},
+     "sameAs":["https://linkedin.com/company/acme","https://x.com/acme",
+               "https://youtube.com/@acme","https://facebook.com/acme",
+               "https://instagram.com/acme"]},
+    {"@type":"Article","headline":"H","datePublished":"2026-01-01",
+     "dateModified":"2026-01-02","author":{"@type":"Person","name":"A"},
+     "speakable":{"@type":"SpeakableSpecification","cssSelector":["h1"]}}
+  ]}</script>
+</head><body><h1>Acme Corp</h1><p>Text.</p></body></html>
+"""
+
+
+class TestGraphUnpacking:
+    """Gli schemi dentro @graph (default Yoast/RankMath) devono essere visibili.
+
+    Il fix #326 srotolava @graph in 3 punti su 12: gli altri nove detector
+    leggevano solo le chiavi top-level, quindi su un sito WordPress Organization,
+    Article e i loro sameAs risultavano assenti. Misurato su questo fixture:
+    2/17 punti prima, 9/17 dopo.
+    """
+
+    def test_entity_disambiguation_legge_name_e_sameas_nel_graph(self):
+        result = detect_entity_disambiguation(_soup(_YOAST_GRAPH_HTML))
+        assert result.details["sameas_count"] >= 5
+        assert result.detected is True
+
+    def test_multi_platform_legge_sameas_nel_graph(self):
+        result = detect_multi_platform(_soup(_YOAST_GRAPH_HTML))
+        # 4, non 5: instagram.com non è in _PLATFORM_DOMAINS. Difetto separato,
+        # fuori dallo scopo di questo fix; qui conta che i sameAs nel @graph
+        # vengano letti (prima erano 0).
+        assert result.details["platform_count"] == 4
+        assert result.detected is True
+
+    def test_blog_structure_trova_article_nel_graph(self):
+        result = detect_blog_structure(_soup(_YOAST_GRAPH_HTML))
+        assert result.details["has_article_schema"] is True
+
+    def test_social_proof_trova_aggregate_rating_nel_graph(self):
+        result = detect_social_proof(_soup(_YOAST_GRAPH_HTML))
+        assert result.details["has_aggregate_rating"] is True
+
+    def test_international_geo_trova_inlanguage_nel_graph(self):
+        result = detect_international_geo(_soup(_YOAST_GRAPH_HTML))
+        assert result.details["schema_inLanguage"] == "en"
+
+    def test_voice_search_trova_speakable_nel_graph(self):
+        result = detect_voice_search(_soup(_YOAST_GRAPH_HTML))
+        assert result.details["has_speakable_schema"] is True
+
+    def test_temporal_coherence_trova_le_date_nel_graph(self):
+        result = detect_temporal_coherence(_soup(_YOAST_GRAPH_HTML))
+        assert "schema_datePublished" in result.details["dates_found"]
+        assert "schema_dateModified" in result.details["dates_found"]
+
+    def test_graph_annidato_srotolato(self):
+        """Un @graph dentro un @graph non deve fermare la lettura."""
+        html = """<html><body><script type="application/ld+json">
+        {"@context":"https://schema.org","@graph":[
+          {"@graph":[{"@type":"Organization","name":"Nested Co",
+                      "sameAs":["https://linkedin.com/company/n","https://x.com/n"]}]}
+        ]}</script></body></html>"""
+        result = detect_entity_resolution(_soup(html))
+        assert result.details["has_sameas"] is True
+        assert "Organization" in result.details["entity_types"]
+
+    def test_json_malformato_non_interrompe_gli_altri_script(self):
+        """Uno script rotto non deve nascondere quelli validi che lo seguono."""
+        html = """<html><body>
+        <script type="application/ld+json">{ this is not json </script>
+        <script type="application/ld+json">{"@context":"https://schema.org","@graph":[
+          {"@type":"Organization","name":"Valid Co",
+           "sameAs":["https://linkedin.com/company/v","https://x.com/v"]}]}</script>
+        </body></html>"""
+        result = detect_entity_resolution(_soup(html))
+        assert result.details["has_sameas"] is True
+
+    def test_reviewcount_non_numerico_non_scarta_gli_schemi_successivi(self):
+        """Un reviewCount non numerico è dato sporco, non un motivo per fermarsi."""
+        html = """<html><body><script type="application/ld+json">{"@graph":[
+          {"@type":"Product","aggregateRating":{"reviewCount":"many"}},
+          {"@type":"Organization","aggregateRating":{"reviewCount":99}}
+        ]}</script></body></html>"""
+        result = detect_social_proof(_soup(html))
+        assert result.details["has_aggregate_rating"] is True

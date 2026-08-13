@@ -136,6 +136,39 @@ class TestHallucinationBait:
         result = audit_hallucination_bait(soup, html, _content(h1="AI Content"), _meta(), _schema())
         assert result.ai_generated_signals == 0
 
+    def test_ai_generated_bare_assistant_mention_not_flagged(self):
+        """Naming an assistant is not declaring machine authorship (#4.16.3).
+
+        This is the ordinary copy of any site writing about AI search — the exact
+        audience this tool serves. The pattern used to match the bare product names
+        and report the page as undisclosed AI content at severity high.
+        """
+        html = (
+            "<html><body><main>"
+            "<h1>Find the gaps that keep your site out of AI answers</h1>"
+            "<p>Find crawler, llms.txt, schema, content, and citation gaps that stop "
+            "ChatGPT, Perplexity, Claude, and Gemini from citing your site.</p>"
+            "<p>GEO is the practice of making websites citable by AI search engines "
+            "such as ChatGPT, Perplexity, Claude, and Gemini.</p>"
+            "</main></body></html>"
+        )
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_hallucination_bait(soup, html, _content(h1="AI answers"), _meta(), _schema())
+        assert result.ai_generated_signals == 0
+        assert result.ai_generated_samples == []
+
+    def test_ai_generated_authoring_verb_still_flagged(self):
+        """A construct that does declare machine authorship is still caught (#4.16.3)."""
+        for phrase in (
+            "This post was written by ChatGPT.",
+            "Article created with Claude.",
+            "This page was drafted using an LLM.",
+        ):
+            html = f"<html><body><main><h1>T</h1><p>{phrase}</p></main></body></html>"
+            soup = BeautifulSoup(html, "html.parser")
+            result = audit_hallucination_bait(soup, html, _content(h1="T"), _meta(), _schema())
+            assert result.ai_generated_signals > 0, f"non rilevato: {phrase}"
+
     def test_medical_claims(self):
         """Affermazioni mediche → rilevate."""
         html = (
