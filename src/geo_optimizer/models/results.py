@@ -214,6 +214,10 @@ class CitabilityResult:
     total_score: int = 0  # 0-100 (normalized sum)
     grade: str = "low"  # low/medium/high/excellent
     top_improvements: list[str] = field(default_factory=list)
+    # gap #4.16.3: raw points and the reachable maximum behind total_score, so the
+    # normalized value stays auditable instead of being an opaque 0-100 figure.
+    raw_score: int = 0
+    max_possible: int = 0
 
 
 # ─── AI Discovery (geo-checklist.dev) ────────────────────────────────────────

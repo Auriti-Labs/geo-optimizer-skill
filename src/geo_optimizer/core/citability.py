@@ -3644,7 +3644,8 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         soup_clean: (optional) soup pre-cleaned from script/style (fix #285).
 
     Returns:
-        CitabilityResult with score 0-100 and per-method detail.
+        CitabilityResult with a 0-100 score normalized over the maximum the methods
+        expose, the raw/max figures behind it, and per-method detail.
     """
     # Fix #285: pass soup_clean to _get_clean_text to avoid re-parsing
     clean_text = _get_clean_text(soup, soup_clean=soup_clean)
@@ -3706,8 +3707,14 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         detect_retrieval_triggers(soup, clean_text=clean_text),
     ]
 
-    # Sum scores (max possible = 100)
-    total = sum(m.score for m in methods)
+    # gap #4.16.3: the 47 methods add up to well over 100 raw points, so clamping the
+    # sum at 100 made the top of the scale reachable roughly halfway through — a page
+    # could score "excellent" while a third of the methods sat at zero. Normalize
+    # against the maximum the methods actually expose, derived from the methods
+    # themselves so adding a check later cannot silently reshape the scale again.
+    raw = sum(m.score for m in methods)
+    max_possible = sum(m.max_score for m in methods)
+    total = round(100 * raw / max_possible) if max_possible else 0
     total = max(min(total, 100), 0)
 
     # Top 3 improvements: undetected methods, ordered by impact
@@ -3731,4 +3738,6 @@ def audit_citability(soup, base_url: str, soup_clean=None) -> CitabilityResult:
         total_score=total,
         grade=_compute_grade(total),
         top_improvements=improvements[:3],
+        raw_score=raw,
+        max_possible=max_possible,
     )
