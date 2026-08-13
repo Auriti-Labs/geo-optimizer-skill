@@ -247,10 +247,11 @@ class TestAriaHiddenInjection:
         assert result.aria_hidden_injection_found is False
 
     def test_aria_hidden_menu_mobile_non_flaggato(self):
-        """Un menu mobile collassato è lungo per progetto, non è testo occultato (#4.16.3).
+        """A collapsed mobile menu is long by design, not concealed prose (#4.16.3).
 
-        Rilevato su geoready.dev: 143 parole in un div `md:hidden`, 99% dentro <a>,
-        zero pattern LLM → risk_level medium per la sola lunghezza.
+        Found on geoready.dev: 143 words in an `md:hidden` div, 99% of them inside
+        <a> tags, zero LLM-instruction patterns — reported at risk_level medium on
+        length alone.
         """
         links = "".join(f'<a href="/p{i}">Section number {i} of the site</a>' for i in range(20))
         html = f'<html><body><div aria-hidden="true" class="md:hidden">{links}</div></body></html>'

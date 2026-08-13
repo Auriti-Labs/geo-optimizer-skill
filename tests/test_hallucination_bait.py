@@ -137,11 +137,11 @@ class TestHallucinationBait:
         assert result.ai_generated_signals == 0
 
     def test_ai_generated_bare_assistant_mention_not_flagged(self):
-        """Menzionare ChatGPT/Claude/Gemini NON è dichiararsi generati dall'AI (#4.16.3).
+        """Naming an assistant is not declaring machine authorship (#4.16.3).
 
-        È il copy tipico di un sito che parla di AI search — il nostro stesso ICP.
-        Prima il pattern matchava i nomi nudi e marcava la pagina come contenuto AI
-        non dichiarato, con severity high.
+        This is the ordinary copy of any site writing about AI search — the exact
+        audience this tool serves. The pattern used to match the bare product names
+        and report the page as undisclosed AI content at severity high.
         """
         html = (
             "<html><body><main>"
@@ -158,7 +158,7 @@ class TestHallucinationBait:
         assert result.ai_generated_samples == []
 
     def test_ai_generated_authoring_verb_still_flagged(self):
-        """Un costrutto che dichiara la paternità AI resta rilevato (#4.16.3)."""
+        """A construct that does declare machine authorship is still caught (#4.16.3)."""
         for phrase in (
             "This post was written by ChatGPT.",
             "Article created with Claude.",

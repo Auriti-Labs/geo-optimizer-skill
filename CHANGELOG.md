@@ -5,7 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
-## [Unreleased]
+## [4.16.3] — 2026-08-13
+
+Patch release for four defects found by running this project's own audit against its own
+site. All four are corrections to checks that returned a confident wrong answer rather than
+an error, which is why none had been reported: the number looked plausible.
+
+The first one changes numbers users have already seen. **Citability scores will drop** —
+the scale was saturating at 100 halfway up, so a page reaching the top of the band was
+often only halfway there. Nothing about any audited page got worse; the metre was wrong and
+is now right. `raw_score` and `max_possible` are exposed alongside the total so the figure
+can be checked rather than trusted.
 
 ### Fixed
 - **Citability saturated at 100 halfway up the scale.** `audit_citability` summed the 47 method scores and then clamped the result with `min(total, 100)`, under a comment reading `# Sum scores (max possible = 100)`. The methods actually expose **208** points — a figure the test suite has asserted since the RAG batch landed — so every page scoring 100 raw points or more was reported as `100/100 excellent`, and the top of the scale was reachable while roughly half the methods sat at zero. The report then contradicted itself: `grade: excellent` printed directly above "Add attributed quotes (+41% AI visibility)". Measured on this project's own homepage: 105 raw points out of 208 (**50.5%**, 14 methods at zero) was reported as `100/100 excellent`, and is now `50/100 foundation`. The score is normalized over the maximum the methods expose, derived from the methods themselves so adding a check later cannot silently reshape the scale again; `raw_score` and `max_possible` are now on `CitabilityResult`, so the normalized figure is auditable rather than opaque. **Existing scores will drop** — this corrects the metre, not the pages. Platform thresholds in `audit_platform.py` (`>= 60`, `>= 70`) were deliberately left untouched: they are expressed on a 0-100 scale and now finally receive a real percentage instead of a saturated one. A test asserting `total_score <= 100` documented the clamp as intentional and was updated; a second test asserting `grade in ("low", "medium", "high", "excellent")` turned out to be dead — `_compute_grade` has returned `critical/foundation/good/excellent` since fix #26 aligned it to `SCORE_BANDS`, and it only ever passed because the clamp forced every page to `excellent`.

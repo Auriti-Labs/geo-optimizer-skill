@@ -1166,9 +1166,9 @@ class TestWeightSum:
         result = audit_citability(_soup(html), "https://example.com")
         # 18 base=100, 7 batch2=31, 5 batch3+4=18, 8 batchA=27, 4 batchB=13, 5 RAG=19 → 208
         total_max = sum(m.max_score for m in result.methods)
-        assert total_max == 208, f"Somma max_score = {total_max}, atteso 208 (189 precedenti + 19 RAG batch)"
-        # gap #4.16.3: total_score è normalizzato sul massimo reale, non cappato a 100.
-        # Prima il clamp rendeva la cima della scala raggiungibile a metà strada.
+        assert total_max == 208, f"max_score sum = {total_max}, expected 208 (189 before + 19 RAG batch)"
+        # gap #4.16.3: total_score is normalized over the reachable maximum, not clamped
+        # at 100. The clamp put the top of the scale halfway up.
         assert result.max_possible == total_max
         assert result.raw_score == sum(m.score for m in result.methods)
         assert result.total_score == round(100 * result.raw_score / total_max)
