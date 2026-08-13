@@ -115,7 +115,7 @@ def run_citation_check(
             checked=True,
             skipped_reason=(
                 "No AI provider configured. Set PERPLEXITY_API_KEY (recommended: real web citations) "
-                "or OPENAI_API_KEY / ANTHROPIC_API_KEY / GROQ_API_KEY."
+                "or OPENAI_API_KEY / ANTHROPIC_API_KEY / GROQ_API_KEY / MINIMAX_API_KEY."
             ),
             brand=brand,
             domain=domain,

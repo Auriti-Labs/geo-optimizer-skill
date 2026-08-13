@@ -128,12 +128,14 @@ class TestRunCitationCheck:
             "OPENAI_API_KEY",
             "ANTHROPIC_API_KEY",
             "GROQ_API_KEY",
+            "MINIMAX_API_KEY",
             "GEO_LLM_API_KEY",
             "GEO_LLM_PROVIDER",
         ):
             monkeypatch.delenv(var, raising=False)
         result = run_citation_check("Acme", "acme.com")
         assert result.skipped_reason is not None
+        assert "MINIMAX_API_KEY" in result.skipped_reason
 
     def test_all_queries_error_returns_skipped(self):
         with patch.object(citations_mod, "query_llm") as mock_q:
@@ -164,6 +166,12 @@ class TestResolveProvider:
         monkeypatch.delenv("GEO_LLM_API_KEY", raising=False)
         provider, key = citations_mod.resolve_provider("groq")
         assert provider == "groq" and key is None
+
+    def test_explicit_minimax_provider_uses_its_env_key(self, monkeypatch):
+        monkeypatch.setenv("MINIMAX_API_KEY", "minimax-test")
+        monkeypatch.delenv("GEO_LLM_API_KEY", raising=False)
+        provider, key = citations_mod.resolve_provider("minimax")
+        assert (provider, key) == ("minimax", "minimax-test")
 
 
 class TestCitationsCli:
@@ -199,6 +207,7 @@ class TestCitationsCli:
             "OPENAI_API_KEY",
             "ANTHROPIC_API_KEY",
             "GROQ_API_KEY",
+            "MINIMAX_API_KEY",
             "GEO_LLM_API_KEY",
             "GEO_LLM_PROVIDER",
         ):
@@ -207,6 +216,7 @@ class TestCitationsCli:
         result = runner.invoke(cli, ["citations", "--brand", "Acme", "--domain", "acme.com"])
         assert result.exit_code == 1
         assert "No AI provider configured" in result.output
+        assert "MINIMAX_API_KEY" in result.output
 
 
 class TestPerplexityProvider:
