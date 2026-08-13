@@ -1,0 +1,134 @@
+---
+import IntentLanding from '../components/IntentLanding.astro';
+import CitationSurface from '../components/product/CitationSurface.astro';
+
+const title = 'Perplexity Citation Checker - See If AI Cites Your Domain';
+const description =
+  'Use GeoReady to check whether Perplexity-style AI answers mention your brand, cite your domain, or cite competitors instead.';
+const canonical = 'https://geoready.dev/perplexity-citation-checker/';
+const dateModified = '2026-08-04';
+
+const stats = [
+  { value: '2 prompts', label: 'Free snapshot', detail: 'The free checker asks customer-style questions and returns source-backed answers.' },
+  { value: 'Sources', label: 'Visible cited URLs', detail: 'Perplexity-style answers expose cited URLs, which makes the result auditable.' },
+  { value: 'Verdict', label: 'Mentioned, cited, or absent', detail: 'See whether your own domain is cited or competitors own the answer.' },
+];
+
+const tableRows = [
+  {
+    signal: 'Own-domain citation',
+    freeCheck: 'Shows whether your domain appears among the cited sources in the checked answers.',
+    paidLoop: 'Use Studio when you need to track this rate over time across a prompt pool.',
+  },
+  {
+    signal: 'Brand mention without citation',
+    freeCheck: 'Shows whether the answer names the brand but cites third-party sources instead.',
+    paidLoop: 'Use Studio when you need to turn mentioned-only visibility into own-domain citations.',
+  },
+  {
+    signal: 'Competitor-cited answer',
+    freeCheck: 'Shows which other domains are cited when your domain is missing.',
+    paidLoop: 'Use Studio or Agency when competitor comparison needs recurring evidence and exports.',
+  },
+  {
+    signal: 'Technical readiness',
+    freeCheck: 'Run the AI SEO audit to find crawler, schema, llms.txt, and content barriers behind poor citation results.',
+    paidLoop: 'Use Pro when the main job is keeping those technical fixes stable.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'What is a Perplexity citation checker?',
+    a: 'A Perplexity citation checker asks source-backed AI answers about a product category and reports whether the answer cites your own domain, mentions your brand, or cites competitors instead.',
+  },
+  {
+    q: 'Why use Perplexity for citation checking?',
+    a: 'Perplexity-style answers expose source URLs, so the result can be verified. That makes it useful for measuring direct citations instead of relying on unverifiable model claims.',
+  },
+  {
+    q: 'Does a Perplexity citation guarantee ChatGPT visibility?',
+    a: 'No. Different AI engines use different retrieval systems. A Perplexity citation is useful evidence that the page is citable, but it does not guarantee that ChatGPT will cite the same page.',
+  },
+  {
+    q: 'What should I fix if competitors are cited instead?',
+    a: 'First run a free AI SEO audit on the page you want cited. Fix crawler access, schema, metadata, llms.txt, and answer-first content. Then repeat citation checks against the same prompt pool.',
+  },
+];
+---
+
+<IntentLanding
+  title={title}
+  description={description}
+  canonical={canonical}
+  eyebrow="Perplexity citation checker"
+  badge="Source-backed citation snapshot"
+  h1="Check whether Perplexity-style answers cite your domain or a competitor."
+  lede="As of August 2026, Perplexity-style AI answers are one of the most practical ways to inspect citations because the answer exposes source URLs. GeoReady uses that source-backed pattern to show whether your brand is cited, mentioned only, competitor-cited, or invisible."
+  dateModified={dateModified}
+  primaryCta={{ href: '/tools/ai-citation-checker/', label: 'Run citation check', dataCta: 'perplexity_citation_hero_checker' }}
+  secondaryCta={{ href: '/ai-seo-audit/', label: 'Audit citation readiness', dataCta: 'perplexity_citation_hero_audit' }}
+  stats={stats}
+  tableHeading="How to read a Perplexity citation result"
+  tableIntro="A citation result is useful when it tells you what to do next. Separate own-domain citations from mentions and competitor citations."
+  tableRows={tableRows}
+  faqs={faqs}
+  paidStep={{
+    heading: 'Use Studio when one citation snapshot is not enough.',
+    copy: 'A Perplexity citation check shows the current source set. Studio is the next step when you need to repeat the same prompts, catch citation losses, and see which competitor replaced your domain.',
+    proofPoints: [
+      'Scheduled citation checks.',
+      'Competitor-cited domain history.',
+      'Alerts when citation status changes.',
+    ],
+    plan: {
+      id: 'studio',
+      name: 'Studio',
+      price: '$49',
+      period: 'monthly',
+      href: 'https://app.geoready.dev/signup?plan=studio&intent=perplexity_citations&onboarding=first_domain&utm_source=perplexity_citation_checker&utm_medium=paid_step&utm_campaign=intent_to_paid',
+      cta: 'Start citation tracking',
+      ctaLocation: 'perplexity_citation_paid_step_studio',
+      intent: 'perplexity_citations',
+    },
+    secondary: {
+      href: '/pricing/',
+      label: 'Compare plans',
+      dataCta: 'perplexity_citation_paid_step_pricing',
+    },
+  }}
+>
+  <div slot="heroAside" class="w-full">
+    <CitationSurface mode="verdict" variant="light" class="w-full" />
+  </div>
+
+  <section>
+    <h2>Why Perplexity citations matter</h2>
+    <p class="mt-4">
+      Perplexity citations matter because the user sees a generated answer and a small set of source links. If your domain is cited, your page is part of the evidence behind the answer. If a competitor is cited instead, that competitor becomes the reference point for the query even when your product might be relevant.
+    </p>
+    <p class="mt-4">
+      The citation is not just a traffic source. It is a trust signal inside the answer. A buyer comparing tools can form a shortlist before visiting any website. That is why GeoReady treats citations as a separate outcome from classic search rankings.
+    </p>
+  </section>
+
+  <section>
+    <h2>What the GeoReady citation verdicts mean</h2>
+    <ul class="mt-5 grid gap-3 md:grid-cols-2" role="list">
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4"><strong class="text-text-primary">Cited.</strong> Your domain appears among answer sources. Keep monitoring because citations can change silently.</li>
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4"><strong class="text-text-primary">Mentioned only.</strong> The answer names the brand but uses another source. Your own pages need stronger source value.</li>
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4"><strong class="text-text-primary">Competitor-cited.</strong> Another domain owns the source slot. Compare that page against your target page.</li>
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4"><strong class="text-text-primary">Invisible.</strong> The brand and domain are absent. Start with crawlability, schema, and entity signals.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>How to improve Perplexity citation rate</h2>
+    <p class="mt-4">
+      Improving Perplexity citation rate starts with making one URL the best source for one answer. The page should answer the category question directly, include concrete claims, expose structured data, and avoid forcing the reader or crawler through unclear navigation. Add real tables for comparisons, not visual-only card grids, because tables are easier for answer engines to extract.
+    </p>
+    <p class="mt-4">
+      After each rewrite, use the same prompts again. A one-time win is fragile. The stronger signal is a rising share of prompts where Perplexity-style answers cite your own domain rather than a competitor.
+    </p>
+  </section>
+</IntentLanding>

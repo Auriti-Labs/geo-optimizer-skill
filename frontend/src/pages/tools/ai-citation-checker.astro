@@ -2,6 +2,7 @@
 import Shell from '../../components/Shell.astro';
 import AICitationChecker from '../../components/tools/AICitationChecker';
 import CitationSurface from '../../components/product/CitationSurface.astro';
+import ArticleVisual from '../../components/ArticleVisual.astro';
 
 // Metadati SEO della pagina del tool.
 // Il title bilancia query intent ("cited by ChatGPT & Perplexity" come domanda)
@@ -112,6 +113,35 @@ const faqs = [
     </header>
 
     {/* ── Isola React: il checker vero e proprio ──────────────────────────── */}
+    <ArticleVisual
+      src="/images/article-visuals/B2RankingVsCitation.png"
+      alt="Side-by-side diagram comparing traditional search ranking with AI answer citation."
+      caption="AI citation checks measure source inclusion, not traditional ranking position."
+      height={377}
+      class="mx-auto"
+    />
+
+    <section class="mx-auto mb-12 max-w-5xl rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6" aria-labelledby="citation-intent-links-heading">
+      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">Choose the right check</p>
+      <h2 id="citation-intent-links-heading" class="mt-2 font-display text-2xl font-bold leading-tight tracking-tight text-text-primary">
+        Citation checks and visibility checks answer different questions.
+      </h2>
+      <div class="mt-5 grid gap-3 md:grid-cols-3">
+        <a href="/perplexity-citation-checker/" class="rounded-[--radius-lg] border border-border bg-bg-base p-4 transition-colors hover:border-accent-teal">
+          <span class="text-sm font-semibold text-text-primary">Perplexity citation checker</span>
+          <span class="mt-2 block text-sm leading-relaxed text-text-secondary">Use this when you need source-backed answers with visible cited URLs.</span>
+        </a>
+        <a href="/chatgpt-visibility-checker/" class="rounded-[--radius-lg] border border-border bg-bg-base p-4 transition-colors hover:border-accent-teal">
+          <span class="text-sm font-semibold text-text-primary">ChatGPT visibility checker</span>
+          <span class="mt-2 block text-sm leading-relaxed text-text-secondary">Use this when the question is whether the page is ready for ChatGPT-style retrieval.</span>
+        </a>
+        <a href="/ai-seo-audit/" class="rounded-[--radius-lg] border border-border bg-bg-base p-4 transition-colors hover:border-accent-teal">
+          <span class="text-sm font-semibold text-text-primary">AI SEO audit</span>
+          <span class="mt-2 block text-sm leading-relaxed text-text-secondary">Use this when a poor citation result needs a technical and content diagnosis.</span>
+        </a>
+      </div>
+    </section>
+
     <section class="mx-auto mb-14 max-w-5xl md:mb-16" aria-labelledby="citation-tool-heading">
       <div class="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div>
@@ -142,6 +172,13 @@ const faqs = [
           classic SEO, with different winners.
         </p>
       </section>
+
+      <ArticleVisual
+        src="/images/article-visuals/A1HeroAIDiscovery.png"
+        alt="End-to-end diagram showing a website becoming crawlable, understandable, quotable, and eligible for AI citation."
+        caption="A brand has to be crawlable, understandable, and quotable before an answer engine can cite it."
+        height={452}
+      />
 
       <section>
         <h2>What the four verdicts mean</h2>
@@ -184,7 +221,7 @@ const faqs = [
                 <path d="m9 9 6 6" />
               </svg>
             </span>
-            <p><strong>Invisible</strong> — neither mentioned nor cited. Start with a <a href="/" class="text-accent-teal hover:underline">free GEO audit</a> and fix the high-impact items first.</p>
+            <p><strong>Invisible</strong> — neither mentioned nor cited. Start with a <a href="/ai-seo-audit/" data-cta="citation_checker_verdict_ai_seo_audit" class="text-accent-teal hover:underline">free GEO audit</a> and fix the high-impact items first.</p>
           </li>
         </ul>
       </section>
@@ -198,7 +235,7 @@ const faqs = [
           quotable statistics, and multi-page topical coverage. The
           {' '}<a href="/guides/generative-engine-optimization/" class="text-accent-teal hover:underline">GEO guide</a>{' '}
           covers the full playbook, and the
-          {' '}<a href="/" class="text-accent-teal hover:underline">free GEO audit</a>{' '}
+          {' '}<a href="/ai-seo-audit/" data-cta="citation_checker_content_ai_seo_audit" class="text-accent-teal hover:underline">free GEO audit</a>{' '}
           scores your site on 100 points across 8 categories. For the background
           method behind this tool, see our step-by-step guide on
           {' '}<a href="/guides/ai-citations-check/" class="text-accent-teal hover:underline">how to tell if ChatGPT is citing your brand</a>.
@@ -207,7 +244,61 @@ const faqs = [
         </p>
       </section>
 
+      <section>
+        <h2>Which AI citation result should trigger action?</h2>
+        <p class="mt-4">
+          A single AI citation check is useful only if it leads to the right next
+          step. Use the result below to decide whether to monitor, improve the
+          source page, or rebuild the visibility foundation.
+        </p>
+        <div class="mt-5 overflow-x-auto rounded-[--radius-lg] border border-border bg-bg-surface">
+          <table class="min-w-full border-collapse text-left text-sm">
+            <thead class="bg-bg-subtle text-text-primary">
+              <tr>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Result</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Risk</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Next action</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">GeoReady workflow</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">Strong</th>
+                <td class="border-b border-border px-4 py-3">You can lose citations without noticing.</td>
+                <td class="border-b border-border px-4 py-3">Track the same prompts weekly.</td>
+                <td class="border-b border-border px-4 py-3">Studio citation snapshots and alerts.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">Cited</th>
+                <td class="border-b border-border px-4 py-3">Competitors still appear in adjacent prompts.</td>
+                <td class="border-b border-border px-4 py-3">Find the prompts where your domain is missing.</td>
+                <td class="border-b border-border px-4 py-3">Prompt tracking plus competitor comparison.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">Mentioned only</th>
+                <td class="border-b border-border px-4 py-3">Third-party pages define your brand for AI answers.</td>
+                <td class="border-b border-border px-4 py-3">Make your own domain the better source.</td>
+                <td class="border-b border-border px-4 py-3">Audit, source gaps, structured content fixes.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="px-4 py-3 font-semibold text-text-primary">Invisible</th>
+                <td class="px-4 py-3">AI answers send buyers to other domains.</td>
+                <td class="px-4 py-3">Fix crawlability, schema, content, and authority first.</td>
+                <td class="px-4 py-3">Free GEO audit, then monitored fixes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* FAQ visibili (stesse del FAQPage schema) */}
+      <ArticleVisual
+        src="/images/article-visuals/D4MonitorLoop.png"
+        alt="Loop diagram showing citation checks repeated over time through snapshots, fixes, rechecks, and monitoring."
+        caption="A citation check is a snapshot; monitoring shows when answers change."
+        height={424}
+      />
+
       <section>
         <h2>Frequently asked questions</h2>
         <div class="mt-6 space-y-6">
@@ -231,13 +322,20 @@ const faqs = [
         </p>
         <div class="mt-6 flex flex-wrap gap-3">
           <a
-            href="https://app.geoready.dev/signup?utm_source=citation-checker-page&intent=citations"
+            href="https://app.geoready.dev/signup?plan=studio&intent=citations&utm_source=ai_citation_checker_page&utm_medium=content_cta&utm_campaign=tool_to_paid"
+            data-plan-id="studio"
+            data-plan-name="Studio"
+            data-plan-period="monthly"
+            data-plan-price="$49"
+            data-plan-currency="USD"
+            data-cta-location="citation_checker_final_tracking"
             class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
           >
-            Start tracking citations
+            Track citations weekly
           </a>
           <a
             href="/pricing/"
+            data-cta="citation_checker_final_pricing"
             class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
           >
             See pricing

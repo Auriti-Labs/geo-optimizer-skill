@@ -1,6 +1,7 @@
 ---
 import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
+import ArticleVisual from '../../components/ArticleVisual.astro';
 
 const title = 'State of GEO: June 2026 — AI Search Readiness Benchmark Report';
 const description =
@@ -127,6 +128,13 @@ const faqs = [
         <meta itemprop="author" content="Juan Camilo Auriti" />
       </header>
 
+      <ArticleVisual
+        src="/images/article-visuals/L1HeroBenchmarkDistribution.png"
+        alt="Benchmark distribution diagram showing most audited sites below the Good AI readiness threshold."
+        caption="The June 2026 benchmark shows most audited sites still below the Good readiness threshold."
+        height={452}
+      />
+
       {/* ── Executive summary box ───────────────────────────────────────────── */}
       <section class="rounded-2xl border border-accent-teal/30 bg-accent-teal/5 p-6 mb-12 not-prose">
         <p class="text-xs font-mono text-accent-teal uppercase tracking-wider mb-4">Executive summary — June 2026</p>
@@ -218,6 +226,13 @@ const faqs = [
         </section>
 
         {/* ── 2. Category breakdown ──────────────────────────────────────────── */}
+        <ArticleVisual
+          src="/images/article-visuals/N1HeroScoringWeights.png"
+          alt="Diagram of the eight public scoring weights that make the benchmark comparable across domains."
+          caption="The benchmark is readable because every domain is scored against the same public 100-point model."
+          height={452}
+        />
+
         <section>
           <h2>Category breakdown: where every site is winning and losing</h2>
           <p class="mt-4">
@@ -403,6 +418,13 @@ const faqs = [
         </section>
 
         {/* ── 7. Quick wins checklist ────────────────────────────────────────── */}
+        <ArticleVisual
+          src="/images/article-visuals/D1HeroChecklist.png"
+          alt="Checklist diagram showing llms.txt, schema, AI discovery, and crawler access as fast AI readiness wins."
+          caption="The fastest June 2026 wins cluster around llms.txt, schema, AI discovery, and crawler access."
+          height={411}
+        />
+
         <section>
           <h2>The June 2026 quick-win checklist</h2>
           <p class="mt-4">
@@ -438,7 +460,7 @@ const faqs = [
           </p>
           <div class="mt-6 flex flex-col sm:flex-row gap-3">
             <a
-              href="/"
+              href="/ai-seo-audit/"
               data-cta="state_geo_june2026_mid_audit"
               class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
             >
@@ -503,7 +525,7 @@ const faqs = [
           </p>
           <div class="mt-6 flex flex-col sm:flex-row gap-3">
             <a
-              href="/"
+              href="/ai-seo-audit/"
               data-cta="state_geo_june2026_final_audit"
               class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-teal-dark"
             >

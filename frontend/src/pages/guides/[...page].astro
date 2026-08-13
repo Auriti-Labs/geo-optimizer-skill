@@ -3,6 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import Shell from '../../components/Shell.astro';
 import NewsletterSignup from '../../components/NewsletterSignup';
 import ScoreSurface from '../../components/product/ScoreSurface.astro';
+import { guidePrimaryVisuals } from '../../lib/articleVisuals';
 import { getArticlesByCategory, urlForImage } from '../../utils/sanity';
 
 export const getStaticPaths = (async ({ paginate }) => {
@@ -16,6 +17,93 @@ const canonical = `https://geoready.dev/guides/${page.currentPage > 1 ? `${page.
 const title = page.currentPage > 1
   ? `Guides — Page ${page.currentPage} of ${page.lastPage} — GeoReady`
   : 'Guides — AI Search Visibility & Generative Engine Optimization';
+const guideActionLinks = [
+  { href: '/ai-seo-audit/', label: 'AI SEO audit' },
+  { href: '/chatgpt-visibility-checker/', label: 'ChatGPT visibility' },
+  { href: '/perplexity-citation-checker/', label: 'Perplexity citations' },
+  { href: '/research/', label: 'Research foundation' },
+] as const;
+
+const guideToolCards = [
+  {
+    href: '/ai-seo-audit/',
+    title: 'Free AI SEO audit',
+    copy:
+      'Check crawler access, schema, llms.txt, content quality, AI discovery, and entity signals before prioritizing fixes.',
+    meta: 'Audit',
+    dataCta: 'guides_tools_ai_seo_audit',
+  },
+  {
+    href: '/chatgpt-visibility-checker/',
+    title: 'ChatGPT visibility checker',
+    copy:
+      'Use this path when the question is whether ChatGPT can understand, mention, or cite your website.',
+    meta: 'Visibility',
+    dataCta: 'guides_tools_chatgpt_visibility',
+  },
+  {
+    href: '/perplexity-citation-checker/',
+    title: 'Perplexity citation checker',
+    copy:
+      'Inspect source-backed answers and see whether Perplexity-style results cite your domain or competitors.',
+    meta: 'Citations',
+    dataCta: 'guides_tools_perplexity_citations',
+  },
+  {
+    href: '/tools/llms-txt-generator/',
+    title: 'Free llms.txt generator',
+    copy:
+      'Generate a starter llms.txt from your sitemap, then publish the editable Markdown at your domain root.',
+    meta: 'Tool',
+    dataCta: 'guides_tools_llms_generator',
+  },
+] as const;
+
+const guideIntentCards = [
+  {
+    href: '/ai-seo-audit-for-saas/',
+    title: 'AI SEO audit for SaaS',
+    copy: 'Audit product, pricing, comparison, alternative, and docs pages before buyer-intent prompts send users elsewhere.',
+    dataCta: 'guides_intent_saas_audit',
+  },
+  {
+    href: '/chatgpt-visibility-audit/',
+    title: 'ChatGPT visibility audit',
+    copy: 'Find the access, entity, schema, or content blocker that keeps a page out of ChatGPT-style answers.',
+    dataCta: 'guides_intent_chatgpt_audit',
+  },
+  {
+    href: '/perplexity-citation-monitoring/',
+    title: 'Perplexity citation monitoring',
+    copy: 'Move from one citation snapshot to recurring checks for source losses and competitor replacements.',
+    dataCta: 'guides_intent_perplexity_monitoring',
+  },
+  {
+    href: '/llms-txt-generator-wordpress/',
+    title: 'llms.txt generator for WordPress',
+    copy: 'Generate the file, publish it at the WordPress domain root, then audit AI discovery and crawler access.',
+    dataCta: 'guides_intent_wordpress_llms',
+  },
+] as const;
+
+function getCardImage(article: (typeof articles)[number]) {
+  if (article.ogImage?.asset) {
+    return {
+      src: urlForImage(article.ogImage).width(640).height(360).fit('crop').auto('format').url(),
+      alt: article.ogImage.alt || '',
+      fit: 'cover',
+    };
+  }
+
+  const fallback = guidePrimaryVisuals[article.slug.current as keyof typeof guidePrimaryVisuals];
+  return fallback
+    ? {
+        src: fallback.src,
+        alt: fallback.alt,
+        fit: 'contain',
+      }
+    : undefined;
+}
 ---
 
 <Shell
@@ -57,12 +145,15 @@ const title = page.currentPage > 1
           ))}
         </div>
 
-        <div class="mt-8 flex flex-wrap gap-3 text-sm">
-          <a href="/research/" class="text-accent-teal hover:text-accent-teal-dark transition-colors">Research foundation</a>
-          <span class="text-text-muted">·</span>
-          <a href="/manifesto/" class="text-accent-teal hover:text-accent-teal-dark transition-colors">Manifesto</a>
-          <span class="text-text-muted">·</span>
-          <a href="/tools/ai-citation-checker/" class="text-accent-teal hover:text-accent-teal-dark transition-colors">Citation checker</a>
+        <div class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
+          {guideActionLinks.map((link, index) => (
+            <>
+              <a href={link.href} class="text-accent-teal hover:text-accent-teal-dark transition-colors">
+                {link.label}
+              </a>
+              {index < guideActionLinks.length - 1 && <span class="text-text-muted">/</span>}
+            </>
+          ))}
         </div>
       </div>
 
@@ -80,21 +171,26 @@ const title = page.currentPage > 1
 
     {/* Guide list */}
     <ul class="grid gap-4 md:grid-cols-2">
-      {articles.map((a) => (
+      {articles.map((a) => {
+        const cardImage = getCardImage(a);
+        return (
         <li>
           <a
             href={`/guides/${a.slug.current}/`}
             class="group block h-full overflow-hidden rounded-xl border border-border bg-bg-surface transition-colors hover:border-accent-teal/30"
           >
-            {a.ogImage?.asset ? (
-              <img
-                src={urlForImage(a.ogImage).width(640).height(360).fit('crop').auto('format').url()}
-                alt={a.ogImage.alt || ''}
-                width="640"
-                height="360"
-                loading="lazy"
-                class="aspect-[16/9] w-full object-cover"
-              />
+            {cardImage ? (
+              <div class="aspect-[16/9] w-full bg-bg-subtle">
+                <img
+                  src={cardImage.src}
+                  alt={cardImage.alt}
+                  width="640"
+                  height="360"
+                  loading="lazy"
+                  decoding="async"
+                  class={`h-full w-full ${cardImage.fit === 'contain' ? 'object-contain p-4 md:p-5' : 'object-cover'}`}
+                />
+              </div>
             ) : null}
             <div class="p-5 md:p-6">
               <p class="mb-4 text-xs font-mono text-text-muted">
@@ -109,7 +205,8 @@ const title = page.currentPage > 1
             </div>
           </a>
         </li>
-      ))}
+        );
+      })}
     </ul>
 
     {/* Pagination */}
@@ -162,22 +259,55 @@ const title = page.currentPage > 1
             Use the tools when a guide turns into an implementation task.
           </p>
         </div>
-      <ul class="space-y-4">
-        <li>
-          <a
-            href="/tools/llms-txt-generator/"
-            class="block rounded-xl border border-border bg-bg-surface p-5 md:p-6 transition-colors hover:border-accent-teal/30"
-          >
-            <h3 class="font-display text-base md:text-lg font-semibold text-text-primary leading-snug">
-              Free llms.txt generator
-            </h3>
-            <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
-              Generate a starter llms.txt from your sitemap — categorized, editable Markdown you can download and publish at your domain root.
-            </p>
-            <p class="mt-3 text-xs font-mono text-text-muted">Tool</p>
-          </a>
-        </li>
-      </ul>
+        <ul class="grid gap-4 sm:grid-cols-2">
+          {guideToolCards.map((tool) => (
+            <li>
+              <a
+                href={tool.href}
+                data-cta={tool.dataCta}
+                class="block h-full rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6 transition-colors hover:border-accent-teal/30"
+              >
+                <h3 class="font-display text-base md:text-lg font-semibold text-text-primary leading-snug">
+                  {tool.title}
+                </h3>
+                <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
+                  {tool.copy}
+                </p>
+                <p class="mt-3 text-xs font-mono text-text-muted">{tool.meta}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="mt-12 border-t border-border pt-10 md:mt-16 md:pt-12">
+      <div class="grid gap-6 md:grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)] md:items-start">
+        <div>
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">High-intent paths</p>
+          <h2 class="mt-2 font-display text-2xl font-semibold text-text-primary">Pages for commercial questions</h2>
+          <p class="mt-3 text-sm leading-relaxed text-text-secondary">
+            Use these when the guide topic maps to a buyer, SaaS, WordPress, or monitoring workflow.
+          </p>
+        </div>
+        <ul class="grid gap-4 sm:grid-cols-2">
+          {guideIntentCards.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                data-cta={item.dataCta}
+                class="block h-full rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6 transition-colors hover:border-accent-teal/30"
+              >
+                <h3 class="font-display text-base md:text-lg font-semibold text-text-primary leading-snug">
+                  {item.title}
+                </h3>
+                <p class="mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
+                  {item.copy}
+                </p>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
 

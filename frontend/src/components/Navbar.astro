@@ -1,27 +1,46 @@
 ---
-const version = "v4.14.0";
+const version = `v${__ENGINE_VERSION__}`;
 
-// Visibili sempre in desktop
-const primaryLinks = [
-  { label: "Audit", href: "/" },
-  { label: "Compare", href: "/compare/" },
-  { label: "Analyze", href: "/analyze-competitors/" },
+// Il menu è diviso per intento: "Tools" sono le cose che l'utente può fare adesso,
+// "Learn" quelle che spiegano. Prima erano 3 voci in barra contro 13 in un unico
+// dropdown "More" che mescolava tool, guide, un PDF e le pagine di brand, quindi
+// le voci in fondo non venivano mai viste — comprese /best-geo-tools/ e /research/,
+// che sono le due pagine con più impression dopo la home.
+type NavLink = { label: string; href: string; desc: string };
+type NavGroup = { id: string; label: string; links: NavLink[] };
+
+const navGroups: NavGroup[] = [
+  {
+    id: "tools",
+    label: "Tools",
+    links: [
+      { label: "Audit", href: "/", desc: "Free GEO audit of any URL" },
+      { label: "Compare", href: "/compare/", desc: "Score your site against another" },
+      { label: "Analyze competitors", href: "/analyze-competitors/", desc: "Benchmark several domains at once" },
+      { label: "ChatGPT visibility", href: "/chatgpt-visibility-checker/", desc: "Check whether your site is ready for AI answers" },
+      { label: "Perplexity citation", href: "/perplexity-citation-checker/", desc: "See whether AI answers cite your domain" },
+      { label: "AI SEO audit", href: "/ai-seo-audit/", desc: "Free ChatGPT and Perplexity readiness audit" },
+      { label: "AI citation checker", href: "/tools/ai-citation-checker/", desc: "Is your brand cited by AI? Free check" },
+      { label: "llms.txt generator", href: "/tools/llms-txt-generator/", desc: "Free AI-ready llms.txt from your sitemap" },
+    ],
+  },
+  {
+    id: "learn",
+    label: "Learn",
+    links: [
+      { label: "Guides", href: "/guides/", desc: "Practical AI visibility guides" },
+      { label: "Best GEO tools", href: "/best-geo-tools/", desc: "How to choose a GEO tool" },
+      { label: "Research", href: "/research/", desc: "Princeton KDD + AutoGEO ICLR" },
+      { label: "Methodology", href: "/methodology/", desc: "How GEO scores are calculated" },
+      { label: "State of GEO", href: "/state-of-geo/", desc: "Live benchmark of audited sites" },
+      { label: "GEO Readiness Manual", href: "/geo-readiness-manual/", desc: "160-page technical PDF guide" },
+      { label: "Roadmap", href: "/roadmap/", desc: "What's coming next" },
+      { label: "Manifesto", href: "/manifesto/", desc: "Why we built GeoReady" },
+    ],
+  },
 ];
 
-// Nascoste nel dropdown "More"
-const moreLinks = [
-  { label: "Guides", href: "/guides/", desc: "Practical AI visibility guides" },
-  { label: "State of GEO", href: "/state-of-geo/", desc: "Live benchmark of audited sites" },
-  { label: "AI Citation Checker", href: "/tools/ai-citation-checker/", desc: "Is your brand cited by AI? Free check" },
-  { label: "llms.txt Generator", href: "/tools/llms-txt-generator/", desc: "Free AI-ready llms.txt from your sitemap" },
-  { label: "Methodology", href: "/methodology/", desc: "How GEO scores are calculated" },
-  { label: "Best GEO Tools", href: "/best-geo-tools/", desc: "How to choose a GEO tool" },
-  { label: "Research", href: "/research/", desc: "Princeton KDD + AutoGEO ICLR" },
-  { label: "Roadmap", href: "/roadmap/", desc: "What's coming next" },
-  { label: "Manifesto", href: "/manifesto/", desc: "Why we built GeoReady" },
-];
-
-// Promosso fuori dal dropdown ma fuori da primary
+// Promosso fuori dai dropdown
 const featuredLink = { label: "Pricing", href: "/pricing/" };
 ---
 
@@ -44,14 +63,36 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
 
     <!-- Desktop nav -->
     <div class="hidden md:flex items-center gap-0.5">
-      {primaryLinks.map((l) => (
-        <a
-          href={l.href}
-          data-nav-link
-          class="nav-link relative px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors"
-        >
-          <span class="relative z-10">{l.label}</span>
-        </a>
+      <!-- Grouped dropdowns -->
+      {navGroups.map((g) => (
+        <div class="relative" data-nav-group>
+          <button
+            id={`${g.id}-menu-btn`}
+            class="more-btn px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors flex items-center gap-1"
+            aria-expanded="false"
+            aria-controls={`${g.id}-menu`}
+          >
+            {g.label}
+            <svg data-nav-chevron width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="transition-transform duration-200">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            id={`${g.id}-menu`}
+            class="more-menu absolute top-full left-0 mt-3 w-72 backdrop-blur-2xl backdrop-saturate-150 rounded-2xl opacity-0 invisible translate-y-1 transition-all duration-200 overflow-hidden p-1"
+          >
+            {g.links.map((l) => (
+              <a
+                href={l.href}
+                data-nav-link
+                class="more-item flex flex-col gap-0.5 px-3 py-2.5 rounded-xl text-sm transition-colors"
+              >
+                <span class="more-item-title font-medium">{l.label}</span>
+                <span class="more-item-desc text-xs">{l.desc}</span>
+              </a>
+            ))}
+          </div>
+        </div>
       ))}
 
       <!-- Featured: Pricing pill -->
@@ -63,39 +104,6 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
         <span class="w-1.5 h-1.5 rounded-full bg-accent-teal animate-pulse"></span>
         <span class="relative z-10">{featuredLink.label}</span>
       </a>
-
-      <!-- More dropdown -->
-      <div class="relative ml-0.5">
-        <button
-          id="more-menu-btn"
-          class="more-btn px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors flex items-center gap-1"
-          aria-haspopup="true"
-          aria-expanded="false"
-          aria-controls="more-menu"
-        >
-          More
-          <svg id="more-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="transition-transform duration-200">
-            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <div
-          id="more-menu"
-          role="menu"
-          aria-labelledby="more-menu-btn"
-          class="more-menu absolute top-full right-0 mt-3 w-64 backdrop-blur-2xl backdrop-saturate-150 rounded-2xl opacity-0 invisible translate-y-1 transition-all duration-200 overflow-hidden p-1"
-        >
-          {moreLinks.map((l) => (
-            <a
-              href={l.href}
-              role="menuitem"
-              class="more-item flex flex-col gap-0.5 px-3 py-2.5 rounded-xl text-sm transition-colors"
-            >
-              <span class="more-item-title font-medium">{l.label}</span>
-              <span class="more-item-desc text-xs">{l.desc}</span>
-            </a>
-          ))}
-        </div>
-      </div>
 
       <!-- Divider -->
       <span class="nav-divider mx-2 h-5 w-px" aria-hidden="true"></span>
@@ -180,37 +188,23 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
         </svg>
       </a>
 
-      <!-- Section: Tools -->
-      <p class="text-[10px] font-mono uppercase tracking-[0.15em] text-text-muted mb-1.5 mt-4 px-1">Tools</p>
-      <div class="flex flex-col mb-2">
-        {primaryLinks.map((l) => (
-          <a
-            href={l.href}
-            data-mobile-link
-            class="flex items-center justify-between py-3 px-1 text-[15px] font-medium text-text-primary border-b border-border last:border-0 hover:text-accent-teal transition-colors"
-          >
-            <span>{l.label}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-text-muted" aria-hidden="true">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          </a>
-        ))}
-      </div>
-
-      <!-- Section: Learn more -->
-      <p class="text-[10px] font-mono uppercase tracking-[0.15em] text-text-muted mb-1.5 mt-5 px-1">Learn more</p>
-      <div class="flex flex-col mb-2">
-        {moreLinks.map((l) => (
-          <a
-            href={l.href}
-            data-mobile-link
-            class="flex flex-col gap-0.5 py-3 px-1 border-b border-border last:border-0 hover:bg-bg-subtle/50 transition-colors"
-          >
-            <span class="text-[15px] font-medium text-text-primary">{l.label}</span>
-            <span class="text-[11px] text-text-secondary">{l.desc}</span>
-          </a>
-        ))}
-      </div>
+      {navGroups.map((g) => (
+        <div>
+          <p class="text-[10px] font-mono uppercase tracking-[0.15em] text-text-muted mb-1.5 mt-5 px-1">{g.label}</p>
+          <div class="flex flex-col mb-2">
+            {g.links.map((l) => (
+              <a
+                href={l.href}
+                data-mobile-link
+                class="flex flex-col gap-0.5 py-3 px-1 border-b border-border last:border-0 hover:bg-bg-subtle/50 transition-colors"
+              >
+                <span class="text-[15px] font-medium text-text-primary">{l.label}</span>
+                <span class="text-[11px] text-text-secondary">{l.desc}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
 
       <!-- Bottom CTAs -->
       <div class="flex flex-col gap-2.5 mt-7 pt-5 border-t border-border">
@@ -313,51 +307,69 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
     if (e.matches) closeMobile();
   });
 
-  // ─── Desktop "More" dropdown ─────────────────────────────────────────────────
-  const moreBtn = document.getElementById('more-menu-btn');
-  const moreMenu = document.getElementById('more-menu');
-  const moreChevron = document.getElementById('more-chevron');
+  // ─── Desktop grouped dropdowns ───────────────────────────────────
+  // The bar now has two menus ("Tools", "Learn"), so opening one has to close the
+  // other, and moving focus out of one has to close it too — otherwise it stays
+  // open over the page while focus is already somewhere else.
+  const navGroupEls = Array.from(document.querySelectorAll<HTMLElement>('[data-nav-group]'));
 
-  function openMore() {
-    moreMenu?.classList.remove('opacity-0', 'invisible', 'translate-y-1');
-    moreMenu?.classList.add('opacity-100', 'visible', 'translate-y-0');
-    moreBtn?.setAttribute('aria-expanded', 'true');
-    moreChevron?.style.setProperty('transform', 'rotate(180deg)');
+  function setGroupOpen(group: HTMLElement, open: boolean) {
+    const btn = group.querySelector<HTMLButtonElement>('button');
+    const menu = group.querySelector<HTMLElement>('.more-menu');
+    const chevron = group.querySelector<SVGElement>('[data-nav-chevron]');
+    if (!btn || !menu) return;
+
+    menu.classList.toggle('opacity-0', !open);
+    menu.classList.toggle('invisible', !open);
+    menu.classList.toggle('translate-y-1', !open);
+    menu.classList.toggle('opacity-100', open);
+    menu.classList.toggle('visible', open);
+    menu.classList.toggle('translate-y-0', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    chevron?.style.setProperty('transform', open ? 'rotate(180deg)' : '');
   }
 
-  function closeMore() {
-    moreMenu?.classList.add('opacity-0', 'invisible', 'translate-y-1');
-    moreMenu?.classList.remove('opacity-100', 'visible', 'translate-y-0');
-    moreBtn?.setAttribute('aria-expanded', 'false');
-    moreChevron?.style.setProperty('transform', '');
+  function closeAllGroups(except?: HTMLElement) {
+    navGroupEls.forEach((g) => {
+      if (g !== except) setGroupOpen(g, false);
+    });
   }
 
-  if (moreBtn && moreMenu) {
-    const wrapper = moreBtn.parentElement!;
+  navGroupEls.forEach((group) => {
+    const btn = group.querySelector<HTMLButtonElement>('button');
+    if (!btn) return;
 
-    wrapper.addEventListener('mouseenter', openMore);
-    wrapper.addEventListener('mouseleave', closeMore);
+    group.addEventListener('mouseenter', () => {
+      closeAllGroups(group);
+      setGroupOpen(group, true);
+    });
+    group.addEventListener('mouseleave', () => setGroupOpen(group, false));
 
-    moreBtn.addEventListener('keydown', (e: KeyboardEvent) => {
+    btn.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        const isOpen = moreBtn.getAttribute('aria-expanded') === 'true';
-        isOpen ? closeMore() : openMore();
+        const isOpen = btn.getAttribute('aria-expanded') === 'true';
+        closeAllGroups(group);
+        setGroupOpen(group, !isOpen);
       }
-      if (e.key === 'Escape') closeMore();
     });
 
-    document.addEventListener('click', (e) => {
-      if (!wrapper.contains(e.target as Node)) closeMore();
-    });
-
-    moreMenu.addEventListener('keydown', (e: KeyboardEvent) => {
+    group.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        closeMore();
-        moreBtn.focus();
+        setGroupOpen(group, false);
+        btn.focus();
       }
     });
-  }
+
+    group.addEventListener('focusout', (e: FocusEvent) => {
+      if (!group.contains(e.relatedTarget as Node)) setGroupOpen(group, false);
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    const inside = navGroupEls.some((g) => g.contains(e.target as Node));
+    if (!inside) closeAllGroups();
+  });
 
   // ─── Floating pill scroll-shrink ─────────────────────────────────────────────
   const floatNav = document.getElementById('floating-nav');
@@ -426,10 +438,18 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
   const navLinks = document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]');
   const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
   navLinks.forEach((link) => {
-    const href = link.getAttribute('href')?.replace(/\/$/, '') || '';
+    const href = link.getAttribute('href')?.replace(/\/$/, '') || '/';
     if (href === currentPath) {
       link.classList.add('nav-link-active');
       link.setAttribute('aria-current', 'page');
+    }
+  });
+
+  // The current page usually sits inside a dropdown now, so mark its group button
+  // too — otherwise nothing in the visible bar reflects where the user is.
+  navGroupEls.forEach((group) => {
+    if (group.querySelector('.nav-link-active')) {
+      group.querySelector('button')?.classList.add('nav-link-active');
     }
   });
 </script>

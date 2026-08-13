@@ -2,6 +2,7 @@
 import Shell from '../../components/Shell.astro';
 import LlmsTxtGenerator from '../../components/tools/LlmsTxtGenerator';
 import LlmsPreview from '../../components/product/LlmsPreview.astro';
+import ArticleVisual from '../../components/ArticleVisual.astro';
 
 // Metadati SEO della pagina del tool.
 const title = 'Free llms.txt Generator — Create an AI-Ready llms.txt';
@@ -109,6 +110,14 @@ const faqs = [
       </div>
     </header>
 
+    <ArticleVisual
+      src="/images/article-visuals/M1HeroLlmsGeneratorFlow.png"
+      alt="Flow diagram showing a sitemap becoming grouped URLs, editable Markdown, and a published llms.txt file."
+      caption="The generator turns a sitemap into editable llms.txt Markdown that can be published at the domain root."
+      height={452}
+      class="mx-auto"
+    />
+
     {/* ── Isola React: il generatore vero e proprio ───────────────────────── */}
     <section class="mx-auto mb-14 max-w-5xl md:mb-16" aria-labelledby="llms-tool-heading">
       <div class="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
@@ -151,6 +160,13 @@ const faqs = [
         </p>
       </section>
 
+      <ArticleVisual
+        src="/images/article-visuals/H1HeroLlmsTxtOrientation.png"
+        alt="Diagram showing llms.txt as an orientation layer that points AI tools to canonical URLs and summaries."
+        caption="llms.txt is an orientation layer: it prioritizes canonical URLs and short summaries for AI tools."
+        height={452}
+      />
+
       {/* 2. Come funziona */}
       <section>
         <h2>How this generator works</h2>
@@ -170,6 +186,13 @@ const faqs = [
           you can refine titles and descriptions yourself in the editable output.
         </p>
       </section>
+
+      <ArticleVisual
+        src="/images/article-visuals/C2LlmsTxtStructure.png"
+        alt="Diagram of a useful llms.txt structure with a title, summary, section headings, and important page links."
+        caption="A useful llms.txt is short, sectioned, and explicit about which pages matter most."
+        height={565}
+      />
 
       {/* 3. Cosa fare dopo */}
       <section>
@@ -199,11 +222,55 @@ const faqs = [
           {' '}takes a couple of extra steps — see the guide to
           {' '}
           <a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">adding llms.txt to WordPress</a>.
+          For a direct WordPress workflow, use the
+          {' '}
+          <a href="/llms-txt-generator-wordpress/" data-cta="llms_generator_content_wordpress_workflow" class="text-accent-teal hover:underline">llms.txt generator for WordPress</a>.
           When you want the full picture beyond llms.txt — crawlability, schema,
           content signals, and AI discovery — run a
           {' '}
-          <a href="/#audit-form" class="text-accent-teal hover:underline">free AI visibility audit</a>.
+          <a href="/ai-seo-audit/" data-cta="llms_generator_content_ai_seo_audit" class="text-accent-teal hover:underline">free AI visibility audit</a>.
         </p>
+      </section>
+
+      <section>
+        <h2>What llms.txt covers and what it does not cover</h2>
+        <p class="mt-4">
+          Publishing llms.txt improves orientation, but it does not replace a full
+          GEO workflow. Use this table to decide the next check after the file is live.
+        </p>
+        <div class="mt-5 overflow-x-auto rounded-[--radius-lg] border border-border bg-bg-surface">
+          <table class="min-w-full border-collapse text-left text-sm">
+            <thead class="bg-bg-subtle text-text-primary">
+              <tr>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Need</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Covered by llms.txt?</th>
+                <th scope="col" class="border-b border-border px-4 py-3 font-semibold">Next GeoReady step</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">List important URLs</th>
+                <td class="border-b border-border px-4 py-3">Yes. llms.txt can summarize canonical pages and sections.</td>
+                <td class="border-b border-border px-4 py-3">Generate the file, edit descriptions, publish at /llms.txt.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">Allow AI crawler access</th>
+                <td class="border-b border-border px-4 py-3">No. robots.txt and server rules still control access.</td>
+                <td class="border-b border-border px-4 py-3">Run the free audit to check robots.txt, redirects, and blocked agents.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="border-b border-border px-4 py-3 font-semibold text-text-primary">Earn AI citations</th>
+                <td class="border-b border-border px-4 py-3">No. Citations depend on source quality, structure, and off-page signals.</td>
+                <td class="border-b border-border px-4 py-3">Track citation prompts and competitor sources over time.</td>
+              </tr>
+              <tr>
+                <th scope="row" class="px-4 py-3 font-semibold text-text-primary">Catch regressions</th>
+                <td class="px-4 py-3">No. A static file will not tell you when visibility drops.</td>
+                <td class="px-4 py-3">Monitor weekly changes with GeoReady Pro.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       {/* 4. FAQ */}
@@ -230,13 +297,27 @@ const faqs = [
         </p>
         <div class="mt-6 flex flex-col sm:flex-row gap-3">
           <a
-            href="/#audit-form"
+            href="/ai-seo-audit/"
+            data-cta="llms_generator_final_free_audit"
             class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
           >
             Run a free AI visibility audit
           </a>
           <a
+            href="https://app.geoready.dev/signup?plan=pro&intent=llms&utm_source=llms_txt_generator_page&utm_medium=content_cta&utm_campaign=tool_to_paid"
+            data-plan-id="pro"
+            data-plan-name="Pro"
+            data-plan-period="monthly"
+            data-plan-price="$19"
+            data-plan-currency="USD"
+            data-cta-location="llms_generator_final_monitoring"
+            class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
+          >
+            Monitor weekly changes
+          </a>
+          <a
             href="/ai-seo/"
+            data-cta="llms_generator_final_ai_seo"
             class="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:border-accent-teal"
           >
             Learn about AI SEO

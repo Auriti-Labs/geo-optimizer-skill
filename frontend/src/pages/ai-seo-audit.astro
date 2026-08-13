@@ -1,0 +1,144 @@
+---
+import IntentLanding from '../components/IntentLanding.astro';
+import AuditForm from '../components/AuditForm';
+import ScoreSurface from '../components/product/ScoreSurface.astro';
+
+const title = 'Free AI SEO Audit - Check ChatGPT & Perplexity Readiness';
+const description =
+  'Run a free AI SEO audit for crawler access, llms.txt, schema, metadata, content quality, freshness, AI discovery, and brand entity signals.';
+const canonical = 'https://geoready.dev/ai-seo-audit/';
+const dateModified = '2026-08-04';
+
+const stats = [
+  { value: '8 groups', label: 'AI SEO signals', detail: 'Crawler access, llms.txt, schema, content, freshness, discovery, and entity clarity.' },
+  { value: '47 checks', label: 'Citability methods', detail: 'The audit looks for answer-first structure, evidence, headings, lists, tables, and quote-ready claims.' },
+  { value: '27 bots', label: 'Crawler access', detail: 'robots.txt is checked against named AI crawlers including GPTBot, ClaudeBot, and PerplexityBot.' },
+];
+
+const tableRows = [
+  {
+    signal: 'AI crawler access',
+    freeCheck: 'Shows whether robots.txt and blocking headers make the page reachable to AI crawlers.',
+    paidLoop: 'Use Pro when releases, CMS edits, or security changes can break access without anyone noticing.',
+  },
+  {
+    signal: 'Structured data',
+    freeCheck: 'Reports whether JSON-LD exists and whether the page gives machines clear entity and page meaning.',
+    paidLoop: 'Use Pro when templates change often and schema regressions need weekly detection.',
+  },
+  {
+    signal: 'Content citability',
+    freeCheck: 'Flags pages that lack answer-first blocks, concrete claims, real lists, or extractable tables.',
+    paidLoop: 'Use Studio when you need citation tracking and competitor comparison after content changes.',
+  },
+  {
+    signal: 'llms.txt and AI discovery',
+    freeCheck: 'Checks whether the site exposes orientation files and machine-readable summary endpoints.',
+    paidLoop: 'Use Pro when you want to keep discovery files live and consistent over time.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'What is an AI SEO audit?',
+    a: 'An AI SEO audit checks whether a page can be crawled, parsed, trusted, and cited by AI answer engines. GeoReady scores the page across 8 signal groups instead of checking only classic search metadata.',
+  },
+  {
+    q: 'Is this the same as a normal SEO audit?',
+    a: 'No. A normal SEO audit focuses on ranking and click-through signals. An AI SEO audit focuses on whether ChatGPT-style and Perplexity-style systems can reach the page, understand the entity, and extract a useful answer block.',
+  },
+  {
+    q: 'Do I need an account to run the audit?',
+    a: 'No. The free audit runs without an account and returns the full 8-category report. Paid plans add monitoring, history, alerts, exports, and citation workflows.',
+  },
+  {
+    q: 'What should I do after the audit?',
+    a: 'Fix crawler access first, then schema and metadata, then content structure. If the domain matters commercially, move it into monitoring so regressions are visible before AI citations or search traffic drop.',
+  },
+];
+---
+
+<IntentLanding
+  title={title}
+  description={description}
+  canonical={canonical}
+  eyebrow="AI SEO audit"
+  badge="Free audit - no account required"
+  h1="Run an AI SEO audit before your next content or technical fix."
+  lede="As of August 2026, AI visibility depends on more than ranking in Google. GeoReady checks whether a page can be reached by AI crawlers, described by structured data, summarized through llms.txt, and quoted by answer engines."
+  dateModified={dateModified}
+  primaryCta={{ href: '#audit-form', label: 'Run free AI SEO audit', dataCta: 'ai_seo_audit_hero_form' }}
+  secondaryCta={{ href: '/report/demo/', label: 'View sample report', dataCta: 'ai_seo_audit_hero_demo' }}
+  stats={stats}
+  tableHeading="What the AI SEO audit tells you"
+  tableIntro="Use the free audit for the first diagnosis. Move to a paid loop only when the same signal needs monitoring, history, or client-ready proof."
+  tableRows={tableRows}
+  faqs={faqs}
+  paidStep={{
+    heading: 'Use Pro when the audit exposes a recurring technical risk.',
+    copy: 'An AI SEO audit gives the current diagnosis. Pro is the next step when crawler access, schema, metadata, llms.txt, or freshness signals need weekly monitoring and regression alerts.',
+    proofPoints: [
+      'Weekly checks for one domain.',
+      'Score history for the same URL set.',
+      'Alerts when a working setup regresses.',
+    ],
+    plan: {
+      id: 'pro',
+      name: 'Pro',
+      price: '$19',
+      period: 'monthly',
+      href: 'https://app.geoready.dev/signup?plan=pro&intent=ai_seo_monitoring&onboarding=first_domain&utm_source=ai_seo_audit&utm_medium=paid_step&utm_campaign=intent_to_paid',
+      cta: 'Start Pro monitoring',
+      ctaLocation: 'ai_seo_audit_paid_step_pro',
+      intent: 'ai_seo_monitoring',
+    },
+    secondary: {
+      href: '/pricing/',
+      label: 'Compare plans',
+      dataCta: 'ai_seo_audit_paid_step_pricing',
+    },
+  }}
+>
+  <div slot="heroAside" class="w-full space-y-5">
+    <ScoreSurface variant="light" class="w-full" />
+    <section id="audit-form" class="rounded-[--radius-lg] border border-border bg-bg-base p-4" aria-label="Run a free AI SEO audit">
+      <p class="mb-3 font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">Free audit</p>
+      <AuditForm client:load />
+      <p class="mt-3 text-xs leading-relaxed text-text-muted">
+        The report opens immediately. No email, no account, no card.
+      </p>
+    </section>
+  </div>
+
+  <section>
+    <h2>What does GeoReady check in an AI SEO audit?</h2>
+    <p class="mt-4">
+      GeoReady checks the technical and content surfaces that decide whether an answer engine can use a page. The audit starts with access: robots.txt, status codes, blocking headers, and AI crawler directives. It then checks machine clarity: canonical URL, title, meta description, Open Graph, JSON-LD schema, llms.txt, and AI discovery files. Finally, it checks citability: whether the page has self-contained sections, concrete claims, lists, tables, and enough structure for retrieval systems to extract a useful passage.
+    </p>
+    <ul class="mt-5 grid gap-3 md:grid-cols-3" role="list">
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4"><strong class="text-text-primary">Access first.</strong> A blocked page cannot be cited, even if the writing is strong.</li>
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4"><strong class="text-text-primary">Structure second.</strong> Machines need canonical URLs, schema, headings, and extractable HTML.</li>
+      <li class="rounded-[--radius-lg] border border-border bg-bg-surface p-4"><strong class="text-text-primary">Evidence third.</strong> Answer engines prefer pages with specific claims they can summarize or cite.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>When should you run an AI SEO audit?</h2>
+    <p class="mt-4">
+      Run an AI SEO audit before a migration, after a CMS template change, before publishing a commercial landing page, and whenever organic traffic looks stable but AI assistants do not mention the brand. The audit is most useful before rewriting content, because it separates technical invisibility from weak citability.
+    </p>
+    <p class="mt-4">
+      If the score is low because of robots.txt, schema, metadata, or missing discovery files, fix the foundation before editing copy. If the foundation is sound but content quality or brand entity signals are weak, rewrite the page into answer-first blocks and add stronger proof. The <a href="/geo-readiness-manual/" class="text-accent-teal hover:underline">GEO Readiness Manual</a> explains the full repair order.
+    </p>
+  </section>
+
+  <section>
+    <h2>How should the audit connect to a paid funnel?</h2>
+    <p class="mt-4">
+      A free AI SEO audit should answer one question: what is the highest-impact gap on this URL today? The paid funnel should answer the next question: will that gap stay fixed next week and will AI engines cite the domain after the fix? That is why GeoReady keeps the free audit complete and sells monitoring, history, alerts, exports, and citation tracking rather than hiding the diagnosis.
+    </p>
+    <p class="mt-4">
+      For one domain, start with <a href="/pricing/" class="text-accent-teal hover:underline">Pro monitoring</a>. For AI citation tracking, competitor comparison, and client reporting, use Studio. The <a href="/report/demo/" class="text-accent-teal hover:underline">demo report</a> shows how the free result becomes the next-step recommendation.
+    </p>
+  </section>
+</IntentLanding>

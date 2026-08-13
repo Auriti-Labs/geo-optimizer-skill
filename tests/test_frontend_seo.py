@@ -398,6 +398,66 @@ class TestGuideInternalLinks:
                 pytest.fail(f"{relpath}: link a /report/demo senza slash (usare /report/demo/)")
 
 
+# ── Pubblicazione programmata Sanity ───────────────────────────────────────────
+class TestSanityScheduledPublishing:
+    """La pubblicazione schedulata deve avere uno stato editoriale esplicito e
+    un deploy statico successivo, senza esporre i documenti solo perche' la data
+    e' trascorsa."""
+
+    _SANITY_UTIL = _FRONTEND / "src" / "utils" / "sanity.ts"
+    _SITEMAP_SCRIPT = _FRONTEND / "scripts" / "generate-sitemap.mjs"
+    _PUBLISH_SCRIPT = _FRONTEND / "scripts" / "publish-scheduled-articles.mjs"
+    _STATE_SCRIPT = _FRONTEND / "scripts" / "sanity-publication-state.mjs"
+    _VERIFY_SCRIPT = _FRONTEND / "scripts" / "verify-scheduled-articles.mjs"
+    _PACKAGE_JSON = _FRONTEND / "package.json"
+
+    def test_sito_e_sitemap_espongono_solo_articoli_pubblicati(self):
+        sanity_src = self._SANITY_UTIL.read_text(encoding="utf-8")
+        sitemap_src = self._SITEMAP_SCRIPT.read_text(encoding="utf-8")
+        # The LIVE filter must include published articles and legacy
+        # undefined-status docs. The exact expression may evolve
+        # (e.g. adding scheduled support) so we check the core parts.
+        assert 'status == "published"' in sanity_src
+        assert "!defined(status)" in sanity_src
+        assert 'status == "published"' in sitemap_src or "!defined(status)" in sitemap_src
+
+    def test_script_promuove_solo_articoli_scaduti_in_una_transazione(self):
+        source = self._PUBLISH_SCRIPT.read_text(encoding="utf-8")
+        state_source = self._STATE_SCRIPT.read_text(encoding="utf-8")
+        assert 'status == "scheduled"' in state_source
+        assert 'dateTime(scheduledFor) <= dateTime(now())' in state_source
+        assert "const transaction = client.transaction()" in source
+        assert "set: { status: 'published' }" in source
+        assert "SANITY_API_TOKEN" in source
+        assert "--dry-run" in source
+
+    def test_build_e_sitemap_si_fermano_se_esistono_articoli_scaduti(self):
+        state_source = self._STATE_SCRIPT.read_text(encoding="utf-8")
+        verify_source = self._VERIFY_SCRIPT.read_text(encoding="utf-8")
+        sitemap_source = self._SITEMAP_SCRIPT.read_text(encoding="utf-8")
+        package_source = self._PACKAGE_JSON.read_text(encoding="utf-8")
+        assert "assertNoDueScheduledArticles" in state_source
+        assert "assertNoDueScheduledArticles" in verify_source
+        assert "assertNoDueScheduledArticles" in sitemap_source
+        assert '"prebuild": "node scripts/verify-scheduled-articles.mjs"' in package_source
+        assert '"sanity:check-schedule": "node scripts/verify-scheduled-articles.mjs"' in package_source
+
+
+class TestSanityScheduledWorkflow:
+    """Il workflow deve promuovere il contenuto prima di avviare il deploy."""
+
+    _WORKFLOW = Path(__file__).parent.parent / ".github" / "workflows" / "sanity-scheduled-publish.yml"
+
+    def test_workflow_richiede_secret_e_deploy_solo_dopo_pubblicazioni(self):
+        source = self._WORKFLOW.read_text(encoding="utf-8")
+        assert "cron: '*/10 * * * *'" in source
+        assert "SANITY_API_TOKEN" in source
+        assert "GEOREADY_DEPLOY_WEBHOOK_URL" in source
+        assert "publish-scheduled-articles.mjs" in source
+        assert "published_count != '0'" in source
+        assert "force_deploy" in source
+
+
 # ── Test SEO del report demo ─────────────────────────────────────────────────────
 class TestDemoReportSeo:
     """La demo pubblica deve essere indicizzabile con canonical slash; i report con

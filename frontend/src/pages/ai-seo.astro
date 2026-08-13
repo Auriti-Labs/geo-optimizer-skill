@@ -1,6 +1,7 @@
 ---
 import Shell from '../components/Shell.astro';
 import RetrievalPath from '../components/product/RetrievalPath.astro';
+import ArticleVisual from '../components/ArticleVisual.astro';
 
 const title = 'AI SEO Guide — Optimize for ChatGPT, Perplexity & Gemini';
 const description =
@@ -79,6 +80,40 @@ const faqs = [
           <RetrievalPath variant="light" class="w-full" />
         </div>
       </header>
+
+      <ArticleVisual
+        src="/images/article-visuals/J1HeroAISEOStack.png"
+        alt="Diagram showing crawler access, structured meaning, and quotable passages leading to cited AI answers."
+        caption="AI SEO connects crawler access, structured meaning, and quotable passages to cited answers."
+        height={452}
+      />
+
+      <section class="mt-10 rounded-[--radius-lg] border border-border bg-bg-surface p-5 md:p-6" aria-labelledby="ai-seo-checks-heading">
+        <div class="max-w-3xl">
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-teal">High-intent checks</p>
+          <h2 id="ai-seo-checks-heading" class="mt-2 font-display text-2xl font-bold leading-tight tracking-tight text-text-primary">
+            Turn the concept into a measurable check.
+          </h2>
+          <p class="mt-3 text-sm leading-relaxed text-text-secondary">
+            If you already know the AI SEO basics, start with the surface closest to your question: audit readiness, ChatGPT-style visibility, or source-backed Perplexity citations.
+          </p>
+        </div>
+        <div class="mt-5 grid gap-3 md:grid-cols-3">
+          {[
+            ['/ai-seo-audit/', 'Free AI SEO audit', 'Check crawler access, schema, llms.txt, content, and discovery signals.'],
+            ['/ai-seo-audit-for-saas/', 'AI SEO audit for SaaS', 'Check product, pricing, comparison, and docs pages for buyer-intent prompts.'],
+            ['/chatgpt-visibility-checker/', 'ChatGPT visibility checker', 'Inspect the readiness path for ChatGPT-style answer inclusion.'],
+            ['/chatgpt-visibility-audit/', 'ChatGPT visibility audit', 'Find the blocker that keeps a page out of ChatGPT-style answers.'],
+            ['/perplexity-citation-checker/', 'Perplexity citation checker', 'See whether source-backed answers cite your domain or competitors.'],
+            ['/perplexity-citation-monitoring/', 'Perplexity citation monitoring', 'Track citation losses, source changes, and competitor replacements over time.'],
+          ].map(([href, label, text]) => (
+            <a href={href} data-cta={`ai_seo_high_intent_${label.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`} class="rounded-[--radius-lg] border border-border bg-bg-base p-4 transition-colors hover:border-accent-teal">
+              <span class="text-sm font-semibold text-text-primary">{label}</span>
+              <span class="mt-2 block text-sm leading-relaxed text-text-secondary">{text}</span>
+            </a>
+          ))}
+        </div>
+      </section>
     </div>
 
     <div class="max-w-7xl mx-auto space-y-12 md:space-y-16 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-text-primary [&_h2]:leading-tight [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-text-primary [&_p]:text-text-secondary [&_p]:leading-relaxed [&_li]:text-text-secondary [&_li]:leading-relaxed">
@@ -145,6 +180,13 @@ const faqs = [
           dedicated <a href="/guides/geo-vs-seo/" class="text-accent-teal hover:underline">GEO vs SEO guide</a>.
         </p>
       </section>
+
+      <ArticleVisual
+        src="/images/article-visuals/A2TechFoundations.png"
+        alt="Diagram of the technical SEO foundation: crawl access, clean HTML, canonical URLs, and structured data."
+        caption="AI SEO still depends on the technical SEO foundation: crawl access, clean HTML, canonical URLs, and structured data."
+        height={377}
+      />
 
       {/* Where GEO fits */}
       <section>
@@ -230,6 +272,13 @@ const faqs = [
           accumulation of many small, consistent signals over time.
         </p>
       </section>
+
+      <ArticleVisual
+        src="/images/article-visuals/F1HeroEntityAuthority.png"
+        alt="Diagram showing connected entity signals across a topic cluster feeding AI source trust."
+        caption="Trust is reconstructed from connected entity signals, not from one isolated page."
+        height={452}
+      />
 
       {/* Audit checklist */}
       <section>
@@ -367,6 +416,7 @@ const faqs = [
         <ul class="mt-3 space-y-2 list-disc pl-5">
           <li><a href="/guides/what-is-llms-txt/" class="text-accent-teal hover:underline">What is llms.txt</a> — what the orientation file does, with a concrete example.</li>
           <li><a href="/guides/llms-txt-wordpress/" class="text-accent-teal hover:underline">llms.txt for WordPress</a> — implementing the file manually or with a plugin.</li>
+          <li><a href="/llms-txt-generator-wordpress/" class="text-accent-teal hover:underline">llms.txt generator for WordPress</a> — generate the file, publish it at the root, then audit AI discovery.</li>
           <li><a href="/guides/appear-in-chatgpt-perplexity/" class="text-accent-teal hover:underline">Appear in ChatGPT and Perplexity sources</a> — the full content and technical checklist.</li>
           <li><a href="/guides/ai-visibility-checklist/" class="text-accent-teal hover:underline">AI visibility checklist</a> — every technical and content signal in one place, with pass/fail criteria.</li>
           <li><a href="/guides/ai-citations-check/" class="text-accent-teal hover:underline">How to check if AI engines cite your brand</a> — a practical method for ChatGPT and Perplexity.</li>
@@ -410,7 +460,8 @@ const faqs = [
         </p>
         <div class="mt-6 flex flex-col sm:flex-row gap-3">
           <a
-            href="/#audit-form"
+            href="/ai-seo-audit/"
+            data-cta="ai_seo_final_ai_seo_audit"
             class="inline-flex items-center justify-center rounded-full bg-accent-teal px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-teal-dark"
           >
             Run a free AI visibility audit
@@ -424,7 +475,7 @@ const faqs = [
         </div>
         <p class="mt-4 text-xs text-text-muted">
           Want to save reports and track changes over time? You can
-          <a href="https://app.geoready.dev/signup" class="text-accent-teal hover:underline">create a GeoReady account</a>
+          <a href="https://app.geoready.dev/signup?onboarding=first_domain&utm_source=ai_seo&utm_medium=final_cta&utm_campaign=content_to_signup" data-cta="ai_seo_final_signup" class="text-accent-teal hover:underline">create a GeoReady account</a>
           or browse all our <a href="/guides/" class="text-accent-teal hover:underline">AI visibility guides</a> first.
         </p>
       </section>
