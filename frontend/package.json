@@ -16,6 +16,7 @@
     "sanity:check-schedule": "node scripts/verify-scheduled-articles.mjs",
     "sanity:publish-due:dry-run": "node scripts/publish-scheduled-articles.mjs --dry-run",
     "sanity:publish-due": "node scripts/publish-scheduled-articles.mjs",
+    "site:check-drift": "node scripts/check-live-drift.mjs",
     "indexnow:dry-run": "node scripts/indexnow-submit.mjs",
     "indexnow:submit": "node scripts/indexnow-submit.mjs --submit"
   },
