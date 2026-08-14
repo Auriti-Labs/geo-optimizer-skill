@@ -2293,45 +2293,86 @@ def detect_multi_platform(soup) -> MethodScore:
 
 # ─── Entity Disambiguation (+8%) — Batch A v3.16.0 ───────────────────────────
 
+# Separators that split a title into "page name" and "brand" parts. "·" is included
+# because it is a common bullet separator in page titles.
+_TITLE_SEPARATOR_RE = re.compile(r"\s*[|\-–—·]\s*")
+
+
+def _split_title_segments(raw: str) -> list[str]:
+    """Split a title into its lowercased segments, dropping empties."""
+    return [seg.strip().lower() for seg in _TITLE_SEPARATOR_RE.split(raw.strip()) if seg.strip()]
+
+
+def _names_are_consistent(title_segments: set[str], schema_names: list[str]) -> bool:
+    """Whether the entity is named the same way across title, og:title and schema.
+
+    With a schema name available, a single one of them matching any title segment is
+    enough: a page titled "Free Audit — Brand" whose graph names the organization is
+    consistent, not contradictory. Matching allows containment in either direction so
+    that "brand" still resolves against "brand pricing".
+
+    Without a schema name there is nothing to anchor to, so the title surfaces
+    themselves must agree.
+    """
+    if not schema_names:
+        return len(title_segments) == 1 if title_segments else False
+    if not title_segments:
+        return False
+    return any(
+        schema_name == segment or schema_name in segment or segment in schema_name
+        for schema_name in schema_names
+        for segment in title_segments
+    )
+
 
 def detect_entity_disambiguation(soup) -> MethodScore:
     """Detect entity disambiguation signals: consistent naming and explicit definitions."""
     score = 0
 
     # 1. Collect names from title, og:title, schema name
+    #
+    # gap #4.16.5: this used to keep only the segment *before* the first separator, so a
+    # title that ends with the brand — "Some Page Title — Brand", the most common
+    # convention — never exposed the brand at all, and the schema name could not match
+    # anything. Keep every segment instead and let the comparison below decide.
     names: list[str] = []
     title_tag = soup.find("title")
     if title_tag and title_tag.string:
-        # Take the part before common separators
-        raw = title_tag.string.strip()
-        parts = re.split(r"\s*[|\-–—]\s*", raw)
-        if parts:
-            names.append(parts[0].strip().lower())
+        names.extend(_split_title_segments(title_tag.string))
 
     og_title = soup.find("meta", attrs={"property": "og:title"})
     if og_title and og_title.get("content"):
-        parts = re.split(r"\s*[|\-–—]\s*", og_title["content"])
-        if parts:
-            names.append(parts[0].strip().lower())
+        names.extend(_split_title_segments(og_title["content"]))
 
-    # Name from JSON-LD schema
-    schema_name = None
+    title_segments = set(names)
+
+    # Names from JSON-LD schema.
+    #
+    # gap #4.16.5: the loop stopped at the first `name` it met, which on an @graph is
+    # whichever entity the CMS happens to emit first (often Organization). A site whose
+    # title carries the product name while the graph opens with the company name looked
+    # inconsistent. Collect every name, and sum sameAs across entities instead of taking
+    # the largest single list — the links disambiguate the site as a whole.
+    schema_names: list[str] = []
     sameas_count = 0
     for item in _iter_jsonld_objects(soup):
-        if "name" in item and not schema_name:
+        if "name" in item:
             schema_name = str(item["name"]).strip().lower()
-            names.append(schema_name)
+            if schema_name:
+                schema_names.append(schema_name)
+                names.append(schema_name)
         same_as = item.get("sameAs", [])
         if isinstance(same_as, str):
             same_as = [same_as]
         if isinstance(same_as, list):
-            sameas_count = max(sameas_count, len(same_as))
+            sameas_count += len(same_as)
 
-    # Check consistency: at least 2 names and all matching
-    if len(names) >= 2:
-        unique_names = set(names)
-        if len(unique_names) == 1:
-            score += 1
+    # Check consistency: the entity is named the same way across surfaces. With a schema
+    # name present, one of them matching any title segment is enough; without one, the
+    # title and og:title must agree.
+    names_consistent = _names_are_consistent(title_segments, schema_names)
+    if names_consistent:
+        score += 1
 
     # 2. First sentence contains an explicit definition of the brand/site
     body = soup.find("body")
@@ -2357,7 +2398,7 @@ def detect_entity_disambiguation(soup) -> MethodScore:
         impact="+8%",
         details={
             "names_found": names,
-            "names_consistent": len(set(names)) <= 1 if names else False,
+            "names_consistent": names_consistent,
             "sameas_count": sameas_count,
         },
     )
