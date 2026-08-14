@@ -1,0 +1,87 @@
+# Russian translations for GEO Optimizer
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: geo-optimizer-skill 2.2.0\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# ─── Audit ───────────────────────────────────────────────────────────────
+
+msgid "GEO AUDIT REPORT"
+msgstr "ОТЧЕТ О GEO-АУДИТЕ"
+
+msgid "Score"
+msgstr "Оценка"
+
+msgid "Band"
+msgstr "Категория"
+
+msgid "excellent"
+msgstr "отлично"
+
+msgid "good"
+msgstr "хорошо"
+
+msgid "foundation"
+msgstr "базовый"
+
+msgid "critical"
+msgstr "критический"
+
+# ─── Check names ─────────────────────────────────────────────────────────
+
+msgid "Robots.txt"
+msgstr "Robots.txt"
+
+msgid "llms.txt"
+msgstr "llms.txt"
+
+msgid "Schema JSON-LD"
+msgstr "Схема JSON-LD"
+
+msgid "Meta Tags"
+msgstr "Мета-теги"
+
+msgid "Content Quality"
+msgstr "Качество контента"
+
+# ─── Status ──────────────────────────────────────────────────────────────
+
+msgid "Found"
+msgstr "Найдено"
+
+msgid "Not found"
+msgstr "Не найдено"
+
+msgid "Passed"
+msgstr "Пройдено"
+
+msgid "Failed"
+msgstr "Не пройдено"
+
+# ─── Recommendations ────────────────────────────────────────────────────
+
+msgid "NEXT PRIORITY STEPS"
+msgstr "СЛЕДУЮЩИЕ ПРИОРИТЕТНЫЕ ШАГИ"
+
+msgid "No recommendations — great job!"
+msgstr "Нет рекомендаций — отличная работа!"
+
+# ─── Cache ───────────────────────────────────────────────────────────────
+
+msgid "Cache cleared"
+msgstr "Кэш очищен"
+
+msgid "files removed"
+msgstr "файлов удалено"
+
+# ─── Errors ──────────────────────────────────────────────────────────────
+
+msgid "Unsafe URL"
+msgstr "Небезопасный URL"
+
+msgid "Missing --url option"
+msgstr "Отсутствует параметр --url"
