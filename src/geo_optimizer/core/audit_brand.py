@@ -106,6 +106,7 @@ def audit_brand_entity(
             names.append(og_name)
 
     # Schema Organization name
+    schema_org_names: list[str] = []
     for raw_schema in schema_result.raw_schemas:
         schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
@@ -114,8 +115,24 @@ def audit_brand_entity(
                 s_type = s_type[0] if s_type else ""
             if s_type == "Organization" and s.get("name"):
                 names.append(s["name"])
+                schema_org_names.append(s["name"])
 
     result.names_found = names[:10]
+
+    # Primary name: schema Organization name is structured data, so it outranks
+    # positional guesses from H1/title/og:title — an H1 with no separator (e.g. a
+    # sentence-style hero heading) would otherwise be read as the brand name verbatim.
+    # Falls back to the most-frequent candidate, then the first one found (#perception).
+    if schema_org_names:
+        result.primary_name = schema_org_names[0]
+    elif names:
+        lower_names = [_normalize_brand_name(n) for n in names]
+        freq = Counter(lower_names)
+        most_common_name, most_common_count = freq.most_common(1)[0]
+        if most_common_count >= 2:
+            result.primary_name = next(n for n in names if _normalize_brand_name(n) == most_common_name)
+        else:
+            result.primary_name = names[0]
 
     # Consistency: at least 2 names, most-frequent one appears 2+ times after legal suffix removal (#397)
     if len(names) >= 2:

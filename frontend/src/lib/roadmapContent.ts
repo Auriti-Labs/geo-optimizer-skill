@@ -19,7 +19,7 @@ export const roadmapPhases: RoadmapPhase[] = [
   {
     id: 'current',
     label: 'Current Foundation',
-    subtitle: 'What exists today in v4.14.x',
+    subtitle: 'What exists today in v4.16.x',
     statusColor: 'border-accent-success',
     items: [
       {
@@ -286,5 +286,8 @@ export const releaseCadence = [
   { version: 'v4.14.0', name: 'Quiet Glass', status: 'available' as RoadmapStatus },
   { version: 'v4.15.0', name: 'Aperture', status: 'available' as RoadmapStatus },
   { version: 'v4.16.0', name: 'Ground Truth', status: 'available' as RoadmapStatus },
+  { version: 'v4.16.1', name: 'Ground Truth (patch)', status: 'available' as RoadmapStatus },
+  { version: 'v4.16.2', name: 'Ground Truth (patch)', status: 'available' as RoadmapStatus },
+  { version: 'v4.16.3', name: 'Ground Truth (patch)', status: 'available' as RoadmapStatus },
   { version: 'v5.0.0', name: 'Black Archive', status: 'exploring' as RoadmapStatus },
 ];

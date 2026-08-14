@@ -251,6 +251,26 @@ def _detect_data_attr_injection(soup) -> tuple[bool, int, list[str]]:
 # ─── Category 8: aria-hidden injection ───────────────────────────────────────
 
 
+def _is_mostly_link_text(el, total_words: int, threshold: float = 0.8) -> bool:
+    """Report whether an element's text lives almost entirely inside anchors.
+
+    Navigation is the legitimate reason for a long aria-hidden block (a collapsed
+    mobile menu), and it is recognisable by shape: nearly every word is a link label.
+
+    Args:
+        el: The element to inspect.
+        total_words: Word count of the element's text, already computed by the caller.
+        threshold: Link-word ratio above which the block reads as navigation.
+
+    Returns:
+        True when at least `threshold` of the words sit inside <a> tags.
+    """
+    if total_words <= 0:
+        return False
+    link_words = sum(len(_get_text_safe(a).split()) for a in el.find_all("a"))
+    return link_words / total_words >= threshold
+
+
 def _detect_aria_hidden_injection(soup) -> tuple[bool, int, list[str]]:
     """Detect aria-hidden elements with instructional AI content."""
     found_count = 0
@@ -263,8 +283,15 @@ def _detect_aria_hidden_injection(soup) -> tuple[bool, int, list[str]]:
 
         is_suspicious = False
 
-        # Text is too long for a decorative element
-        if len(text.split()) > 50:
+        # Text is too long for a decorative element.
+        #
+        # gap #4.16.3: a collapsed mobile menu is a long aria-hidden block by design —
+        # duplicated navigation, not concealed prose — and the length rule alone flagged
+        # it as an injection. Skip the length rule when the text is essentially all link
+        # labels; the LLM-instruction rule below still runs on the same text, so hiding
+        # directives inside anchors stays detected.
+        words = text.split()
+        if len(words) > 50 and not _is_mostly_link_text(el, len(words)):
             is_suspicious = True
 
         # Contains LLM instructions

@@ -9,8 +9,7 @@
 [![PyPI](https://img.shields.io/pypi/v/geo-optimizer-skill?style=flat-square&color=3b82f6)](https://pypi.org/project/geo-optimizer-skill/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![CI](https://github.com/auriti-labs/geo-optimizer-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/auriti-labs/geo-optimizer-skill/actions)
-[![codecov](https://codecov.io/gh/Auriti-Labs/geo-optimizer-skill/branch/main/graph/badge.svg)](https://app.codecov.io/gh/Auriti-Labs/geo-optimizer-skill)
-[![Tests](https://img.shields.io/badge/tests-1720%20passed-22c55e?style=flat-square)](https://github.com/Auriti-Labs/geo-optimizer-skill/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-1788%20passed-22c55e?style=flat-square)](https://github.com/Auriti-Labs/geo-optimizer-skill/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE)
 [![MCP Compatible](https://img.shields.io/badge/MCP-compatible-8b5cf6?style=flat-square)](https://modelcontextprotocol.io)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?style=flat-square&logo=buymeacoffee&logoColor=000000)](https://buymeacoffee.com/auritidesign)
@@ -253,7 +252,7 @@ Treat AI visibility like test coverage: gate every deploy on it. The GitHub Acti
 
 ```yaml
 # .github/workflows/geo.yml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.15.0
+- uses: Auriti-Labs/geo-optimizer-skill@v4.16.4
   with:
     url: https://yoursite.com
     min-score: 70        # Fail the build if the GEO score drops below 70
@@ -417,8 +416,9 @@ This project follows a deliberate release cadence — focused waves, not noisy p
 | v4.13.0 | Jun 2026 | Echo | Shipped |
 | v4.14.0 | Jun 2026 | Quiet Glass | Shipped |
 | v4.15.0 | Jul 2026 | Aperture | Shipped |
-| v4.16.0-rc1 | Jan 2027 | Threshold | Planned |
-| v4.16.0-rc2 / v4.17.0 | Mar 2027 | Pale Signal | Planned |
+| v4.16.0 | Aug 2026 | Ground Truth | Shipped |
+| v4.17.0-rc1 | Jan 2027 | Threshold | Planned |
+| v4.17.0-rc2 / v4.18.0 | Mar 2027 | Pale Signal | Planned |
 | v5.0.0 | May 2027 | Black Archive | Exploring |
 
 Next focus areas: signal architecture, retrieval surface analysis, scoring recalibration, and structural pattern recognition. The v5.0 cycle represents a broader architectural evolution.
@@ -442,7 +442,7 @@ Yes. `geo llms` generates an `llms.txt` from your sitemap, the audit scores its 
 Yes — MIT licensed, free forever via `pip install geo-optimizer-skill` or `uvx`. The hosted [GeoReady](https://geoready.dev) platform adds continuous monitoring, score history, citation tracking, and team features on top of the same engine.
 
 **Which AI engines does it cover?**
-ChatGPT (GPTBot, OAI-SearchBot), Perplexity (PerplexityBot), Claude (ClaudeBot, anthropic-ai), Google (Google-Extended, Gemini), plus 27 AI bots total and per-platform readiness profiles for ChatGPT, Perplexity, and Google AI Overviews.
+ChatGPT (GPTBot, OAI-SearchBot), Perplexity (PerplexityBot), Claude (ClaudeBot, Claude-SearchBot), Google (Googlebot, Google-Extended, Gemini), plus 27 AI bots total and per-platform readiness profiles for ChatGPT, Perplexity, and Google AI Overviews.
 
 **How is it different from a traditional SEO tool?**
 Traditional SEO tools optimize for Google rankings and backlinks. GEO Optimizer measures AI *citation readiness* — whether answer engines can crawl, parse, and quote your content — using signals (llms.txt, AI-bot access, schema richness, citability, topical authority) that classic SEO ignores.

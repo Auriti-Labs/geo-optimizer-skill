@@ -128,6 +128,40 @@ class TestAuditBrandEntity:
         result = audit_brand_entity(soup, schema, meta, content)
         assert result.brand_name_consistent is False
 
+    def test_primary_name_prefers_schema_org_over_positional_h1(self):
+        """A sentence-style H1 with no separator (e.g. a hero heading) must not become the
+        brand name just because it's positionally first; schema Organization name — structured
+        data — outranks it (#perception, found via geoready.dev's own homepage)."""
+        html = """<html><head>
+            <title>Free AI SEO Audit for ChatGPT &amp; Perplexity — GeoReady</title>
+            <script type="application/ld+json">{"@type":"Organization","name":"GeoReady"}</script>
+        </head><body><h1>Find the gaps that keep your site out of AI answers.</h1></body></html>"""
+        soup = _soup(html)
+        schema = SchemaResult(
+            raw_schemas=[{"@type": "Organization", "name": "GeoReady"}],
+            has_organization=True,
+        )
+        meta = MetaResult(has_title=True, title_text="Free AI SEO Audit for ChatGPT & Perplexity — GeoReady")
+        content = ContentResult(has_h1=True, h1_text="Find the gaps that keep your site out of AI answers.")
+        result = audit_brand_entity(soup, schema, meta, content)
+        assert result.primary_name == "GeoReady"
+        # names_found keeps the raw candidate order — only primary_name is corrected
+        assert result.names_found[0] == "Find the gaps that keep your site out of AI answers."
+
+    def test_primary_name_falls_back_to_most_frequent_without_schema(self):
+        """No schema Organization name: fall back to the candidate that repeats across
+        sources, not just whichever was found first."""
+        html = """<html><head>
+            <title>Acme</title>
+            <meta property="og:title" content="Acme">
+        </head><body><h1>Building the future of widgets</h1></body></html>"""
+        soup = _soup(html)
+        schema = SchemaResult(raw_schemas=[])
+        meta = MetaResult(has_title=True, title_text="Acme", has_og_title=True)
+        content = ContentResult(has_h1=True, h1_text="Building the future of widgets")
+        result = audit_brand_entity(soup, schema, meta, content)
+        assert result.primary_name == "Acme"
+
     def test_kg_pillars_wikipedia_wikidata(self):
         """sameAs con Wikipedia e Wikidata → kg_pillar_count >= 2."""
         schema_data = {

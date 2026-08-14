@@ -7,6 +7,8 @@
  *   /llms.txt                 Markdown index of your pages, grouped by section
  *   /.well-known/ai.txt       AI crawler welcome file
  *   /ai/summary.json          machine-readable site summary
+ *   /ai/faq.json              curated FAQ (when `faqs` is provided)
+ *   /ai/service.json          service/offer descriptor (when `service` is provided)
  *
  * Existing files are never overwritten (your hand-curated llms.txt wins);
  * pass `overwrite: true` to regenerate on every build.
@@ -95,6 +97,40 @@ function buildSummaryJson({ siteName, description, siteUrl, pages }) {
   ) + '\n';
 }
 
+/** Machine-readable FAQ for AI answer engines, from the curated `faqs` option. */
+function buildFaqJson({ siteName, siteUrl, faqs }) {
+  return JSON.stringify(
+    {
+      name: `${siteName} — FAQ`,
+      url: siteUrl,
+      questions: faqs.map(({ q, a }) => ({ question: q, answer: a })),
+      generated_by: 'astro-geoready',
+      generated_at: new Date().toISOString(),
+    },
+    null,
+    2,
+  ) + '\n';
+}
+
+/** Machine-readable service/offer descriptor for AI answer engines. */
+function buildServiceJson({ siteName, description, siteUrl, service }) {
+  return JSON.stringify(
+    {
+      name: siteName,
+      description: description || undefined,
+      url: siteUrl,
+      service_type: service.type || undefined,
+      provider: service.provider || undefined,
+      offers: service.offers || undefined,
+      features: service.features || undefined,
+      generated_by: 'astro-geoready',
+      generated_at: new Date().toISOString(),
+    },
+    null,
+    2,
+  ) + '\n';
+}
+
 /**
  * @param {object} [options]
  * @param {string} [options.siteName]      Site name for headers (default: site hostname).
@@ -103,6 +139,8 @@ function buildSummaryJson({ siteName, description, siteUrl, pages }) {
  * @param {boolean} [options.aiDiscovery]  Generate /.well-known/ai.txt and /ai/summary.json (default true).
  * @param {boolean} [options.overwrite]    Overwrite files that already exist (default false).
  * @param {number}  [options.maxPerSection] Max links per llms.txt section (default 20).
+ * @param {Array<{q: string, a: string}>} [options.faqs] Curated FAQ — emits /ai/faq.json when non-empty.
+ * @param {object} [options.service] Service/offer descriptor — emits /ai/service.json when set.
  * @returns {import('astro').AstroIntegration}
  */
 export default function geoReady(options = {}) {
@@ -113,6 +151,8 @@ export default function geoReady(options = {}) {
     aiDiscovery = true,
     overwrite = false,
     maxPerSection = 20,
+    faqs = [],
+    service = null,
   } = options;
 
   let siteUrl = '';
@@ -141,12 +181,14 @@ export default function geoReady(options = {}) {
         }
         const dirPath = fileURLToPath(dir);
         const name = siteName || new URL(siteUrl).hostname;
-        const ctx = { siteName: name, description, siteUrl, pages, maxPerSection };
+        const ctx = { siteName: name, description, siteUrl, pages, maxPerSection, faqs, service };
 
         if (llmsTxt) await emit(dirPath, 'llms.txt', buildLlmsTxt(ctx), logger);
         if (aiDiscovery) {
           await emit(dirPath, path.join('.well-known', 'ai.txt'), buildAiTxt(ctx), logger);
           await emit(dirPath, path.join('ai', 'summary.json'), buildSummaryJson(ctx), logger);
+          if (faqs.length) await emit(dirPath, path.join('ai', 'faq.json'), buildFaqJson(ctx), logger);
+          if (service) await emit(dirPath, path.join('ai', 'service.json'), buildServiceJson(ctx), logger);
         }
       },
     },

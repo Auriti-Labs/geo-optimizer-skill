@@ -166,6 +166,7 @@ class BrandEntityResult:
     # Entity Coherence (3 points)
     brand_name_consistent: bool = False
     names_found: list[str] = field(default_factory=list)
+    primary_name: str | None = None  # best single candidate: schema Organization name, else most-frequent
     schema_desc_matches_meta: bool = False
 
     # Knowledge Graph Readiness (3 points)
@@ -214,6 +215,10 @@ class CitabilityResult:
     total_score: int = 0  # 0-100 (normalized sum)
     grade: str = "low"  # low/medium/high/excellent
     top_improvements: list[str] = field(default_factory=list)
+    # gap #4.16.3: raw points and the reachable maximum behind total_score, so the
+    # normalized value stays auditable instead of being an opaque 0-100 figure.
+    raw_score: int = 0
+    max_possible: int = 0
 
 
 # ─── AI Discovery (geo-checklist.dev) ────────────────────────────────────────
@@ -239,7 +244,8 @@ class AiDiscoveryResult:
 class CdnAiCrawlerResult:
     """Result of checking if CDN blocks AI crawler user-agents.
 
-    Simulates requests as AI bots (GPTBot, ClaudeBot, PerplexityBot) and
+    Simulates requests as the AI bots that drive citations (GPTBot,
+    OAI-SearchBot, PerplexityBot, Claude-SearchBot, Googlebot, Applebot) and
     compares status codes + content-length to a normal browser request.
     """
 
@@ -745,6 +751,10 @@ class TopicAuthorityResult:
     clusters: list[TopicCluster] = field(default_factory=list)
     authority_score: int = 0  # 0-100
     recommendations: list[str] = field(default_factory=list)
+    # #512: pages with zero inbound internal links from the other analyzed
+    # pages — crawlers relying on link-following (not just the sitemap) may
+    # never reach them, and they carry weak entity association either way.
+    orphan_pages: list[str] = field(default_factory=list)
 
 
 # ─── AI Citation Check (geo citations) ───────────────────────────────────────
@@ -1328,6 +1338,11 @@ class AgentAccessResult:
     x_robots_noai: bool = False
     x_robots_noindex: bool = False
     ai_discovery_score: int = 0
+    # #512: Time-to-first-byte in ms and raw HTML weight in bytes — access-layer
+    # signals a non-rendering AI crawler is sensitive to (slow/heavy pages get
+    # less crawl depth and frequency; 0 means not measured, e.g. fetch failed).
+    ttfb_ms: float = 0.0
+    page_weight_bytes: int = 0
     blocking_issues: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     passing: list[str] = field(default_factory=list)
@@ -1387,5 +1402,7 @@ class PerceptionSnapshot:
     ai_readable_summary: str | None = None
     schema_types_present: list[str] = field(default_factory=list)
     trust_score: float | None = None
+    trust_max: float | None = None  # trust_score is on this scale, not 0-100 (#perception)
+    trust_grade: str | None = None
     citability_grade: str | None = None
     disclaimer: str = "Simulated AI perception based on deterministic analysis. Not a real AI system output."

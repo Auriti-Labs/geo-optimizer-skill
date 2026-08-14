@@ -7,7 +7,23 @@ const description =
   'Compare GEO and AI visibility tools by audit depth, monitoring, llms.txt support, schema, workflows, and pricing fit. Includes GEO Optimizer.';
 const canonical = 'https://geoready.dev/best-geo-tools/';
 const datePublished = '2026-06-16';
-const dateModified = '2026-06-17';
+const dateModified = '2026-08-13';
+
+// Aggregati della coorte GeoReady, letti da GET /api/public/benchmark.
+// Sono hardcoded di proposito: la build Docker gira prima che l'app sia in piedi,
+// quindi un fetch nel frontmatter fallirebbe, e i numeri caricati via JS (come fa
+// state-of-geo.astro) non entrano nell'HTML che un crawler AI legge senza eseguire
+// script. Il prezzo è che invecchiano: `measuredOn` rende la stagionatura visibile
+// al lettore invece di lasciarla implicita. Riallineare all'endpoint quando cambia.
+const BENCHMARK = {
+  measuredOn: '13 August 2026',
+  sampleLabel: '750+ audited sites',
+  average: '54.3',
+  median: '56',
+  llmsTxtAdoption: '58%',
+  schemaAdoption: '74%',
+  biggestGap: 'AI discovery files',
+} as const;
 
 // Criteri di valutazione di un GEO tool — riusati nella tabella visibile.
 // Ogni criterio è una domanda concreta che un reviewer tecnico può verificare.
@@ -237,6 +253,58 @@ const faqs = [
         Methodology transparency sits at the top for a reason: if you cannot see how a
         score is calculated, you cannot reproduce it, contest it, or learn from it. A
         published scoring model turns a number into a checklist you can act on.
+      </p>
+    </section>
+
+    {/* First-party benchmark — what the audited cohort actually scores.
+        Own measurements, not vendor claims: this is the part of the comparison no
+        competitor can restate, and it gives an answer engine something quotable. */}
+    <section class="mb-12 md:mb-16">
+      <h2>What sites actually score, measured</h2>
+      <p class="mt-4">
+        Criteria tell you how to judge a tool. They do not tell you how much room a
+        typical site has to gain. We measured that: our data shows what sites score when
+        the same open-source 100-point rubric is applied to every site audited through
+        GeoReady. The baseline below is measurement, not estimation.
+      </p>
+      <figure class="mt-6 rounded-2xl border border-border bg-bg-surface p-6">
+        <blockquote class="border-l-2 border-accent pl-4">
+          <p class="text-lg text-text-primary leading-relaxed">
+            The average audited site scores <strong>{BENCHMARK.average} out of 100</strong>,
+            with a median of {BENCHMARK.median}. Only {BENCHMARK.llmsTxtAdoption} publish
+            an llms.txt file and {BENCHMARK.schemaAdoption} ship JSON-LD schema, which
+            makes {BENCHMARK.biggestGap} the single largest readiness gap in the sample.
+          </p>
+        </blockquote>
+        <figcaption class="mt-4 text-sm text-text-muted">
+          GeoReady benchmark, {BENCHMARK.sampleLabel}, measured {BENCHMARK.measuredOn}.
+          Latest audit per domain, aggregates only.
+          <a href="/state-of-geo/" class="underline hover:no-underline">See the live benchmark</a>
+          and the <a href="/methodology/" class="underline hover:no-underline">scoring methodology</a>.
+        </figcaption>
+      </figure>
+      <p class="mt-4">
+        Two things follow. First, a score in the fifties is ordinary rather than alarming
+        — most sites are in the same position. Second, the gaps concentrate in signals a
+        tool can find mechanically: a missing orientation file or absent structured data
+        is a specific, fixable defect, not a matter of judgment. That is what an audit
+        should hand you.
+      </p>
+      <h3 class="mt-8">Methodology</h3>
+      <p class="mt-3">
+        Every figure above comes from one audit per domain — the most recent, with
+        scheduled re-audits excluded so an actively monitored site cannot weight the
+        average. Each site is scored with the same published 100-point, 8-category rubric,
+        so the numbers reflect one consistent definition of readiness rather than a blend
+        of methods. Only aggregates are published: no domain, URL, or identifier leaves
+        the sample.
+      </p>
+      <p class="mt-3">
+        The limits are worth stating plainly. This is a benchmark of sites audited by
+        GeoReady, not a survey of the whole web, and the sample skews toward teams already
+        curious about AI visibility — a site whose owner ran an audit is not a random site.
+        Read it as a directional baseline among sites that chose to measure, not a
+        universal figure.
       </p>
     </section>
 
@@ -481,6 +549,27 @@ const faqs = [
         ))}
       </div>
     </section>
+
+    {/* Author attribution — an E-E-A-T signal, and the page's own advice applied:
+        a comparison that asks who computed a score should say who wrote it. */}
+    <section class="mt-12 border-t border-border pt-8 md:mt-16">
+      <h2 class="sr-only">About the author</h2>
+      <div class="rounded-2xl border border-border bg-bg-surface p-6">
+        <p class="font-display font-semibold text-text-primary">Juan Camilo Auriti</p>
+        <p class="mt-2 text-sm">
+          Founder of Auriti Labs and author of GEO Optimizer, the MIT-licensed engine
+          whose scoring weights and 47 citability methods are published in the
+          <a href="https://github.com/Auriti-Labs/geo-optimizer-skill" class="text-accent-teal hover:underline" rel="noopener">public repository</a>.
+          The benchmark figures on this page come from that engine, run across every
+          site audited through GeoReady.
+        </p>
+        <p class="mt-3 text-sm text-text-muted">
+          Reviewed and updated {BENCHMARK.measuredOn} ·
+          <a href="/methodology/" class="underline hover:no-underline">Methodology</a> ·
+          <a href="/about/" class="underline hover:no-underline">About</a>
+        </p>
+      </div>
+    </section>
   </article>
 
   {/* Page-specific schema — Article */}
@@ -492,7 +581,10 @@ const faqs = [
     "url": canonical,
     "datePublished": datePublished,
     "dateModified": dateModified,
-    "author": { "@id": "https://geoready.dev/#organization" },
+    // Il byline visibile è una persona, quindi l'author dello schema punta al
+    // Person #founder già nel @graph di Layout.astro, non all'Organization:
+    // un autore nominato è un segnale E-E-A-T più forte di un autore aziendale.
+    "author": { "@id": "https://geoready.dev/#founder" },
     "publisher": { "@id": "https://geoready.dev/#organization" }
   })} />
 
