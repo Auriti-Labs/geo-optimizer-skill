@@ -89,3 +89,4 @@ Disallow: /health
 Disallow: /badge
 
 Sitemap: https://geoready.dev/sitemap.xml
+Feed: https://geoready.dev/feed.xml

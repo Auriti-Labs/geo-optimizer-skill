@@ -70,6 +70,13 @@ def _print_text(result) -> None:
                 f"{int(cluster.interlink_ratio * 100)}% interlinked, {pillar}"
             )
 
+    if result.orphan_pages:
+        click.echo(f"\n⚠️  Orphan pages ({len(result.orphan_pages)}, no inbound internal links):")
+        for url in result.orphan_pages[:10]:
+            click.echo(f"  • {url}")
+        if len(result.orphan_pages) > 10:
+            click.echo(f"  … +{len(result.orphan_pages) - 10} more")
+
     if result.recommendations:
         click.echo("\nRecommendations:")
         for rec in result.recommendations:

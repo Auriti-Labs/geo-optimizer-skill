@@ -60,7 +60,7 @@ export default function LlmsTxtGenerator() {
     const trimmedWebsite = toAuditableUrl(websiteUrl);
     if (!trimmedWebsite) {
       setStatus('error');
-      setErrorMsg('Enter your website URL, for example https://example.com.');
+      setErrorMsg('Enter a valid website address, for example example.com.');
       return;
     }
 

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>GeoReady — Guides</title>
+  <subtitle>Guides on AI visibility, GEO, and getting cited by AI answer engines.</subtitle>
+  <link href="https://geoready.dev/guides/"/>
+  <link rel="self" href="https://geoready.dev/feed.xml"/>
+  <id>https://geoready.dev/feed.xml</id>
+  <updated>2026-06-17T00:00:00Z</updated>
+  <author><name>Auriti Labs</name></author>
+  <entry>
+    <title>How to Tell If ChatGPT &amp; Perplexity Cite Your Brand</title>
+    <link href="https://geoready.dev/guides/ai-citations-check/"/>
+    <id>https://geoready.dev/guides/ai-citations-check/</id>
+    <published>2026-06-11T00:00:00Z</published>
+    <updated>2026-06-17T00:00:00Z</updated>
+    <summary>A step-by-step way to tell if ChatGPT or Perplexity mention and cite your brand — a manual check, a free tool, and ongoing monitoring of your AI citations.</summary>
+  </entry>
+  <entry>
+    <title>Generative Engine Optimization Guide — GEO for AI Search</title>
+    <link href="https://geoready.dev/guides/generative-engine-optimization/"/>
+    <id>https://geoready.dev/guides/generative-engine-optimization/</id>
+    <published>2026-06-10T00:00:00Z</published>
+    <updated>2026-06-17T00:00:00Z</updated>
+    <summary>Learn what Generative Engine Optimization is, how GEO differs from SEO, and how to make your site crawlable, understandable and citable by AI search engines.</summary>
+  </entry>
+  <entry>
+    <title>What Is llms.txt? Guide, Example &amp; AI SEO Use Cases</title>
+    <link href="https://geoready.dev/guides/what-is-llms-txt/"/>
+    <id>https://geoready.dev/guides/what-is-llms-txt/</id>
+    <published>2026-06-10T00:00:00Z</published>
+    <updated>2026-06-17T00:00:00Z</updated>
+    <summary>Learn what llms.txt is, how it differs from robots.txt, and how to use it to make your site easier for AI systems to understand.</summary>
+  </entry>
+  <entry>
+    <title>How to Improve AI Visibility</title>
+    <link href="https://geoready.dev/guides/how-to-improve-ai-visibility/"/>
+    <id>https://geoready.dev/guides/how-to-improve-ai-visibility/</id>
+    <published>2026-06-16T00:00:00Z</published>
+    <updated>2026-06-16T00:00:00Z</updated>
+    <summary>A practical, ordered playbook for becoming citable by AI answer engines like ChatGPT, Perplexity, Claude, and Gemini: crawler access, llms.txt, JSON-LD schema, meta, answer-first content, entity signals, freshness, and AI discovery endpoints.</summary>
+  </entry>
+  <entry>
+    <title>Entity-Based Authority: Why Five Pages Beat One Strong Page in AI Search</title>
+    <link href="https://geoready.dev/guides/entity-authority/"/>
+    <id>https://geoready.dev/guides/entity-authority/</id>
+    <published>2026-06-11T00:00:00Z</published>
+    <updated>2026-06-11T00:00:00Z</updated>
+    <summary>AI engines map entities and multi-page topic coverage, not keywords. How topic clusters, pillar pages, and internal links build the authority that earns citations.</summary>
+  </entry>
+  <entry>
+    <title>Multimodal GEO: Making Images and Video Citable by Gemini and GPT-4o</title>
+    <link href="https://geoready.dev/guides/multimodal-geo/"/>
+    <id>https://geoready.dev/guides/multimodal-geo/</id>
+    <published>2026-06-11T00:00:00Z</published>
+    <updated>2026-06-11T00:00:00Z</updated>
+    <summary>Multimodal AI engines reach images, video, and audio through their text scaffolding: alt text, captions, VideoObject schema, subtitle tracks, and transcripts. A practical guide.</summary>
+  </entry>
+  <entry>
+    <title>AI Visibility Checklist — Get Found and Cited by AI</title>
+    <link href="https://geoready.dev/guides/ai-visibility-checklist/"/>
+    <id>https://geoready.dev/guides/ai-visibility-checklist/</id>
+    <published>2026-06-05T00:00:00Z</published>
+    <updated>2026-06-05T00:00:00Z</updated>
+    <summary>A practical checklist of the technical and content signals that decide whether AI answer engines can find, parse, and cite your site, organized by category.</summary>
+  </entry>
+  <entry>
+    <title>GEO vs SEO: What Changes for AI Answer Engines</title>
+    <link href="https://geoready.dev/guides/geo-vs-seo/"/>
+    <id>https://geoready.dev/guides/geo-vs-seo/</id>
+    <published>2026-06-05T00:00:00Z</published>
+    <updated>2026-06-05T00:00:00Z</updated>
+    <summary>SEO and GEO share technical foundations but optimize for different goals. What stays the same, what changes, and where to focus when AI engines answer queries.</summary>
+  </entry>
+  <entry>
+    <title>llms.txt for WordPress and AI Visibility: A Practical Guide</title>
+    <link href="https://geoready.dev/guides/llms-txt-wordpress/"/>
+    <id>https://geoready.dev/guides/llms-txt-wordpress/</id>
+    <published>2026-06-05T00:00:00Z</published>
+    <updated>2026-06-05T00:00:00Z</updated>
+    <summary>llms.txt helps AI tools understand your site. What it is, what it does, and how to implement it on WordPress — manually, via functions.php, or a plugin.</summary>
+  </entry>
+  <entry>
+    <title>How to Make Your Website Appear in ChatGPT and Perplexity Sources</title>
+    <link href="https://geoready.dev/guides/appear-in-chatgpt-perplexity/"/>
+    <id>https://geoready.dev/guides/appear-in-chatgpt-perplexity/</id>
+    <published>2026-06-04T00:00:00Z</published>
+    <updated>2026-06-04T00:00:00Z</updated>
+    <summary>A practical, no-hype guide to becoming citable by AI answer engines like ChatGPT, Perplexity, Claude, and Gemini: crawlability, llms.txt, structured data, and the content patterns models tend to quote.</summary>
+  </entry>
+</feed>

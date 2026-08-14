@@ -79,6 +79,10 @@ def _format_text(result) -> str:
             lines.append(f"   • {p}")
 
     lines.append(f"\n   AI Discovery score: {result.ai_discovery_score}/4")
+    if result.ttfb_ms:
+        lines.append(f"   TTFB: {result.ttfb_ms:.0f}ms")
+    if result.page_weight_bytes:
+        lines.append(f"   Page weight (HTML): {result.page_weight_bytes / 1000:.0f}KB")
     lines.append("")
     return "\n".join(lines)
 
@@ -95,6 +99,8 @@ def _format_json(result) -> str:
         "x_robots_noai": result.x_robots_noai,
         "x_robots_noindex": result.x_robots_noindex,
         "ai_discovery_score": result.ai_discovery_score,
+        "ttfb_ms": result.ttfb_ms,
+        "page_weight_bytes": result.page_weight_bytes,
         "blocking_issues": result.blocking_issues,
         "warnings": result.warnings,
         "passing": result.passing,

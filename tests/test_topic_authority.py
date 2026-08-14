@@ -98,6 +98,27 @@ class TestRunTopicAuthority:
         assert any("interlinked" in r for r in result.recommendations)
         assert any("supporting pages" in r for r in result.recommendations)  # 2 < target 5
 
+    def test_orphan_pages_detected_excludes_homepage(self):
+        pages = {
+            "https://a.com/": _page("Home", "Welcome here now."),
+            "https://a.com/geo-audit": _page("Geo Audit Guide", _TOPIC_BODY, links=["/geo-audit-faq"]),
+            "https://a.com/geo-audit-faq": _page("FAQ", _TOPIC_BODY, links=["/geo-audit"]),
+            "https://a.com/lost-page": _page("Lost", "Nobody links here at all."),
+        }
+        result = self._run(pages)
+
+        assert result.orphan_pages == ["https://a.com/lost-page"]
+        assert any("orphan" in r.lower() for r in result.recommendations)
+
+    def test_no_orphan_pages_when_all_linked(self):
+        pages = {
+            "https://a.com/geo-audit": _page("Geo Audit Guide", _TOPIC_BODY, links=["/geo-audit-faq"]),
+            "https://a.com/geo-audit-faq": _page("FAQ", _TOPIC_BODY, links=["/geo-audit"]),
+        }
+        result = self._run(pages)
+
+        assert result.orphan_pages == []
+
     def test_brand_excluded_from_clusters(self):
         body = "Acme Corp ships fast. Acme Corp is loved. Acme Corp grows."
         pages = {

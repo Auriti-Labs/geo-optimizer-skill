@@ -46,9 +46,11 @@ def _make_discovery(endpoints_found=2):
     return d
 
 
-def _make_resp(text="<html><body>content</body></html>"):
+def _make_resp(text="<html><body>content</body></html>", elapsed_seconds=0.05):
     r = MagicMock()
     r.text = text
+    r.elapsed = MagicMock()
+    r.elapsed.total_seconds.return_value = elapsed_seconds
     return r
 
 
@@ -130,6 +132,69 @@ def test_status_partial_js_required():
     assert result.overall_status == "partial"
     assert result.js_required is True
     assert any("JavaScript" in w for w in result.warnings)
+
+
+def test_ttfb_fast_is_passing():
+    with (
+        patch(_PATCHES["fetch"], return_value=(_make_resp(elapsed_seconds=0.1), None)),
+        patch(_PATCHES["robots"], return_value=_make_robots()),
+        patch(_PATCHES["cdn"], return_value=_make_cdn()),
+        patch(_PATCHES["js"], return_value=_make_js()),
+        patch(_PATCHES["meta"], return_value=_make_meta()),
+        patch(_PATCHES["discovery"], return_value=_make_discovery()),
+    ):
+        result = run_agent_access_audit("https://example.com")
+
+    assert result.ttfb_ms == 100.0
+    assert any("TTFB" in p for p in result.passing)
+    assert not any("TTFB" in w for w in result.warnings)
+
+
+def test_ttfb_slow_is_warning():
+    with (
+        patch(_PATCHES["fetch"], return_value=(_make_resp(elapsed_seconds=0.8), None)),
+        patch(_PATCHES["robots"], return_value=_make_robots()),
+        patch(_PATCHES["cdn"], return_value=_make_cdn()),
+        patch(_PATCHES["js"], return_value=_make_js()),
+        patch(_PATCHES["meta"], return_value=_make_meta()),
+        patch(_PATCHES["discovery"], return_value=_make_discovery()),
+    ):
+        result = run_agent_access_audit("https://example.com")
+
+    assert result.ttfb_ms == 800.0
+    assert any("Slow server response" in w for w in result.warnings)
+    assert result.overall_status == "partial"
+
+
+def test_page_weight_heavy_is_warning():
+    heavy_html = "<html><body>" + ("x" * 250_000) + "</body></html>"
+    with (
+        patch(_PATCHES["fetch"], return_value=(_make_resp(text=heavy_html), None)),
+        patch(_PATCHES["robots"], return_value=_make_robots()),
+        patch(_PATCHES["cdn"], return_value=_make_cdn()),
+        patch(_PATCHES["js"], return_value=_make_js()),
+        patch(_PATCHES["meta"], return_value=_make_meta()),
+        patch(_PATCHES["discovery"], return_value=_make_discovery()),
+    ):
+        result = run_agent_access_audit("https://example.com")
+
+    assert result.page_weight_bytes > 200_000
+    assert any("Heavy initial HTML" in w for w in result.warnings)
+
+
+def test_page_weight_light_is_passing():
+    with (
+        patch(_PATCHES["fetch"], return_value=(_make_resp(), None)),
+        patch(_PATCHES["robots"], return_value=_make_robots()),
+        patch(_PATCHES["cdn"], return_value=_make_cdn()),
+        patch(_PATCHES["js"], return_value=_make_js()),
+        patch(_PATCHES["meta"], return_value=_make_meta()),
+        patch(_PATCHES["discovery"], return_value=_make_discovery()),
+    ):
+        result = run_agent_access_audit("https://example.com")
+
+    assert result.page_weight_bytes < 200_000
+    assert any("HTML weight OK" in p for p in result.passing)
 
 
 def test_status_partial_noai_meta():
