@@ -1561,6 +1561,27 @@ class TestEntityDisambiguation:
         result = detect_entity_disambiguation(_soup(html))
         assert result.details["sameas_count"] == 4, "the two lists must be summed, not maxed"
 
+    def test_definizione_cercata_nel_contenuto_non_nella_navbar(self):
+        """gap #4.16.5: the definition check read the first <p> of the whole body, which on
+        a site whose nav is built out of paragraphs is a menu label — so the opening
+        sentence was never examined."""
+        html = """
+        <html>
+        <head><title>AgencyPilot</title></head>
+        <body>
+            <nav><p>Pricing — plans from $0</p><p>Tools</p></nav>
+            <main>
+                <h1>Some headline</h1>
+                <p>AgencyPilot is a SaaS for WordPress management.</p>
+            </main>
+        </body>
+        </html>
+        """
+        # 2 points: consistent naming, plus the definition sentence inside <main>. Only
+        # the naming point survives if the check stops at the nav's first paragraph.
+        result = detect_entity_disambiguation(_soup(html))
+        assert result.score == 2, "the definition in <main> must be found past the nav"
+
     def test_titolo_incoerente_senza_schema_resta_incoerente(self):
         """Guard against the fix over-reaching: with no schema name to anchor to, title
         and og:title disagreeing must still count as inconsistent."""

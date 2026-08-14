@@ -2375,15 +2375,19 @@ def detect_entity_disambiguation(soup) -> MethodScore:
         score += 1
 
     # 2. First sentence contains an explicit definition of the brand/site
-    body = soup.find("body")
-    if body:
-        # Find the first meaningful paragraph
-        first_p = body.find("p")
-        if first_p:
-            first_text = first_p.get_text(strip=True)
+    #
+    # gap #4.16.5: this read the first <p> of the whole body, which on any site with a
+    # nav built out of paragraphs is a menu label ("Pricing — plans from $0"), never the
+    # opening sentence. Scope to the main content the way the other detectors already do,
+    # and scan the first few paragraphs since a hero often leads with a headline blurb.
+    main = soup.find("main") or soup.find("article") or soup.find("body")
+    if main:
+        for paragraph in main.find_all("p", limit=3):
+            text = paragraph.get_text(strip=True)
             # Look for definition pattern: "X is...", "X è..."
-            if re.search(r"\b(?:is|are|è|sono)\s+(?:a|an|the|un|una|il|la|lo)\b", first_text, re.I):
+            if re.search(r"\b(?:is|are|è|sono)\s+(?:a|an|the|un|una|il|la|lo)\b", text, re.I):
                 score += 1
+                break
 
     # 3. sameAs with > 3 links (disambiguation bonus)
     if sameas_count > 3:
