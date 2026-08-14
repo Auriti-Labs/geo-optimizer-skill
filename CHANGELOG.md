@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [4.16.5] — 2026-08-14
+
+Patch release for two defects in `entity_disambiguation`, both found while investigating why
+Gemini describes this project as a local-SEO tool. **Citability scores will rise slightly** —
+the opposite direction from 4.16.3, and for the opposite reason: that release removed a clamp
+that inflated scores, this one removes false negatives that suppressed them. Neither changes
+the scoring model.
+
+### Fixed
+- **No page whose title ends with the brand could score the naming point.** `detect_entity_disambiguation` compared names across title, `og:title` and JSON-LD, but kept only the segment *before* the first separator — so on "Page Name — Brand", the most common title convention there is, the brand was discarded before the comparison ran and the schema name had nothing to match. Two further details compounded it: the loop over the JSON-LD stopped at the first `name` it found, which on an `@graph` is whichever entity the CMS emits first (usually the company, while the title carries the product), and `sameAs` was combined with `max()` across entities instead of summed, so links split between `Organization` and `Person` never reached the `> 3` bonus. On this project's own homepage `sameas_count` read 4 against 6 actual links, and the schema name `Auriti Labs` was compared against the page title alone. Consistency now holds when any schema name matches any title segment, in either containment direction; with no schema name to anchor to, title and `og:title` must still agree, pinned by a regression test so the fix cannot over-reach. `·` joins the recognised separators.
+- **The definition check read the navigation bar instead of the content.** The same detector looks for a defining sentence ("X is a …") in what its comment called the "first meaningful paragraph", but took the first `<p>` of the entire `<body>`. On any site whose header is built out of paragraphs that is a menu label — here it read `Pricing — plans from $0` — so the opening sentence was never examined and the point was unreachable no matter what the copy said. Now scoped to `<main>`/`<article>`, matching what `detect_easy_to_understand` and the other content detectors already do, and scanning the first three paragraphs because a hero commonly opens with a short eyebrow before the sentence that defines the product.
+
+Measured on this project's own homepage: `entity_disambiguation` 1/3 → 3/3, citability 60 → 62.
+
+---
+
 ## [4.16.4] — 2026-08-14
 
 Patch release continuing the 4.16.3 dogfooding sweep — this time by running commands beyond
