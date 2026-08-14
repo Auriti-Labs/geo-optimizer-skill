@@ -6,6 +6,31 @@ import ScoreSurface from '../components/product/ScoreSurface.astro';
 import RetrievalPath from '../components/product/RetrievalPath.astro';
 import MonitorSurface from '../components/product/MonitorSurface.astro';
 
+// Gli otto pesi di scoring, come pubblicati in models/config.py (SCORING).
+// Sono qui perché la pagina rivendica "auditable scoring": affermarlo e non mostrarlo
+// è la stessa opacità che il prodotto critica. Tenere allineato ai pesi reali.
+const SCORING_WEIGHTS = [
+  ['Robots.txt', 18, 'Whether citation crawlers are allowed to fetch the site at all.'],
+  ['llms.txt', 18, 'Presence and depth of the root-level orientation file, including llms-full.txt.'],
+  ['Schema JSON-LD', 16, 'Valid structured data: Organization, WebSite, Article, FAQ.'],
+  ['Meta tags', 14, 'Title, description, canonical, and Open Graph completeness.'],
+  ['Content', 12, 'Heading hierarchy, word count, lists, front-loaded answers.'],
+  ['Signals', 6, 'Declared language, feed availability, freshness date.'],
+  ['AI discovery', 6, 'The .well-known/ai.txt and /ai/*.json endpoints.'],
+  ['Brand & entity', 10, 'Naming coherence, Knowledge Graph readiness, topic authority.'],
+] as const;
+
+// Aggregati della coorte, da GET /api/public/benchmark. Hardcoded perché la build
+// Docker gira prima che l'app sia in piedi e i numeri caricati via JS non entrano
+// nell'HTML che un crawler AI legge. `measuredOn` rende visibile la stagionatura.
+const BENCHMARK = {
+  measuredOn: '13 August 2026',
+  sampleLabel: '750+ audited sites',
+  average: '54.3',
+  median: '56',
+  llmsTxtAdoption: '58%',
+} as const;
+
 const trustCards = [
   {
     title: 'Open source (MIT)',
@@ -223,9 +248,32 @@ const faqSchema = {
         <div>
           <h3 class="text-lg font-semibold text-text-primary">2. Get a GEO score</h3>
           <p class="mt-2 text-text-secondary leading-relaxed">
-            The audit evaluates 8 signal categories — robots.txt, llms.txt, schema, meta tags,
-            content quality, technical signals, AI discovery, and brand entity — producing a
-            0–100 score with per-category breakdown.
+            The audit evaluates eight signal categories and returns a 0–100 score with a
+            per-category breakdown. These are the published weights — the same numbers the
+            open-source engine uses, so any score can be recomputed by hand:
+          </p>
+          <div class="mt-4 overflow-x-auto rounded-[--radius-lg] border border-border bg-bg-surface">
+            <table class="w-full text-left text-sm">
+              <thead>
+                <tr class="border-b border-border text-text-muted">
+                  <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Category</th>
+                  <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Points</th>
+                  <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">What it measures</th>
+                </tr>
+              </thead>
+              <tbody>
+                {SCORING_WEIGHTS.map(([name, points, what]) => (
+                  <tr class="border-b border-border/60 last:border-0 align-top">
+                    <th scope="row" class="px-4 py-3 font-display font-semibold text-text-primary whitespace-nowrap">{name}</th>
+                    <td class="px-4 py-3 font-mono text-accent-teal">{points}</td>
+                    <td class="px-4 py-3 text-text-secondary leading-relaxed">{what}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-3 text-sm text-text-muted">
+            Bands: 86–100 excellent · 68–85 good · 36–67 foundation · 0–35 critical.
           </p>
         </div>
         <div>
@@ -235,6 +283,30 @@ const faqSchema = {
             actionable recommendations with specific file changes and schema additions.
           </p>
         </div>
+      </div>
+
+      {/* First-party baseline — a self-contained, quotable passage. Our own
+          measurement is the one claim on this page no competitor can restate. */}
+      <div class="mt-10 rounded-[--radius-lg] border border-border bg-bg-surface p-6">
+        <h3 class="text-lg font-semibold text-text-primary">What a typical site scores</h3>
+        <figure class="mt-3">
+          <blockquote class="border-l-2 border-accent-teal pl-4">
+            <p class="text-text-secondary leading-relaxed">
+              We measured the sites audited through GeoReady, and our data shows the average
+              scores <strong class="text-text-primary">{BENCHMARK.average} out of 100</strong>,
+              with a median of {BENCHMARK.median}. Only {BENCHMARK.llmsTxtAdoption} publish an
+              llms.txt file. A score in the fifties is therefore ordinary rather than alarming:
+              most sites leave a large share of their AI-visibility points unclaimed, and the
+              gaps sit in signals a tool can find mechanically.
+            </p>
+          </blockquote>
+          <figcaption class="mt-3 text-sm text-text-muted">
+            GeoReady benchmark, {BENCHMARK.sampleLabel}, measured {BENCHMARK.measuredOn}.
+            Latest audit per domain, aggregates only — the sample is self-selected, so read it
+            as a baseline among sites that chose to measure.
+            <a href="/state-of-geo/" class="underline hover:no-underline">See the live benchmark</a>.
+          </figcaption>
+        </figure>
       </div>
     </div>
   </section>

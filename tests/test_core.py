@@ -2276,6 +2276,35 @@ class TestAnalyzeHtmlFile:
         finally:
             os.unlink(path)
 
+    def test_analyze_file_unpacks_at_graph(self):
+        """A {"@context", "@graph": [...]} container (Yoast/RankMath default) must not
+        read as a single 'Unknown' schema (#schema-analyze, same class as citability #326)."""
+        html = """<html><head>
+        <script type="application/ld+json">
+        {"@context":"https://schema.org","@graph":[
+            {"@type":"Organization","name":"Test Org"},
+            {"@type":"WebSite","name":"Test","url":"https://example.com"},
+            {"@type":["WebApplication","SoftwareApplication"],"name":"Test App"}
+        ]}
+        </script>
+        </head><body></body></html>"""
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
+            f.write(html)
+            f.flush()
+            path = f.name
+
+        try:
+            analysis = analyze_html_file(path)
+            assert "Unknown" not in analysis.found_types
+            assert "Organization" in analysis.found_types
+            assert "WebSite" in analysis.found_types
+            assert "WebApplication" in analysis.found_types
+            assert "webapp" not in analysis.missing
+            assert "website" not in analysis.missing
+        finally:
+            os.unlink(path)
+
 
 class TestInjectSchemaIntoHtml:
     """Tests for inject_schema_into_html()."""

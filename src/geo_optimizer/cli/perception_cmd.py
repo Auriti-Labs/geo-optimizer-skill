@@ -91,7 +91,9 @@ def _format_text(snapshot) -> str:
     if snapshot.citability_grade:
         lines.append(f"Citability grade: {snapshot.citability_grade}")
     if snapshot.trust_score is not None:
-        lines.append(f"Trust score:      {snapshot.trust_score:.0f}/100")
+        max_part = f"/{snapshot.trust_max:.0f}" if snapshot.trust_max is not None else ""
+        grade_part = f" ({snapshot.trust_grade})" if snapshot.trust_grade else ""
+        lines.append(f"Trust score:      {snapshot.trust_score:.0f}{max_part}{grade_part}")
     if snapshot.schema_types_present:
         lines.append(f"Schema types:     {', '.join(snapshot.schema_types_present)}")
 
