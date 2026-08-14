@@ -166,6 +166,7 @@ class BrandEntityResult:
     # Entity Coherence (3 points)
     brand_name_consistent: bool = False
     names_found: list[str] = field(default_factory=list)
+    primary_name: str | None = None  # best single candidate: schema Organization name, else most-frequent
     schema_desc_matches_meta: bool = False
 
     # Knowledge Graph Readiness (3 points)
@@ -1401,5 +1402,7 @@ class PerceptionSnapshot:
     ai_readable_summary: str | None = None
     schema_types_present: list[str] = field(default_factory=list)
     trust_score: float | None = None
+    trust_max: float | None = None  # trust_score is on this scale, not 0-100 (#perception)
+    trust_grade: str | None = None
     citability_grade: str | None = None
     disclaimer: str = "Simulated AI perception based on deterministic analysis. Not a real AI system output."

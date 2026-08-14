@@ -207,13 +207,21 @@ def analyze_html_file(file_path: str) -> SchemaAnalysis:
             script_content = script.string
             if script_content:
                 data = json.loads(script_content.strip())
-                if isinstance(data, list):
-                    for item in data:
-                        schema_type = item.get("@type", "Unknown")
-                        found_schemas.append({"type": schema_type, "data": item, "index": idx})
-                else:
-                    schema_type = data.get("@type", "Unknown")
-                    found_schemas.append({"type": schema_type, "data": data, "index": idx})
+                items = data if isinstance(data, list) else [data]
+                # Unpack {"@context", "@graph": [...]} — the Yoast/RankMath default, already
+                # handled in citability.py's twelve JSON-LD walkers (fix #326); this analyzer
+                # was the gap left uncovered (#schema-analyze).
+                schemas = []
+                for item in items:
+                    if isinstance(item, dict) and "@graph" in item:
+                        schemas.extend(s for s in item["@graph"] if isinstance(s, dict))
+                    elif isinstance(item, dict):
+                        schemas.append(item)
+                for item in schemas:
+                    schema_type = item.get("@type", "Unknown")
+                    if isinstance(schema_type, list):
+                        schema_type = schema_type[0] if schema_type else "Unknown"
+                    found_schemas.append({"type": schema_type, "data": item, "index": idx})
         except json.JSONDecodeError as exc:
             # Log at debug — does not block analysis of other scripts (#119)
             logger.debug("Invalid JSON-LD in script #%d: %s", idx, exc)

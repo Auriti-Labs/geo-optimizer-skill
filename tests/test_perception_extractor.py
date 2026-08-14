@@ -10,9 +10,13 @@ from geo_optimizer.models.results import AuditResult
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 
 
-def _make_brand(names=None, has_about=True, has_contact=True, kg_count=1):
+def _make_brand(names=None, primary_name=..., has_about=True, has_contact=True, kg_count=1):
     b = MagicMock()
     b.names_found = names if names is not None else ["Acme Corp"]
+    # Mirrors audit_brand.py: primary_name is the extractor's best single candidate.
+    # Default it from names_found so mocks behave like the real dataclass unless a
+    # test explicitly wants to exercise a mismatch (pass primary_name=None).
+    b.primary_name = (b.names_found[0] if b.names_found else None) if primary_name is ... else primary_name
     b.has_about_link = has_about
     b.has_contact_info = has_contact
     b.kg_pillar_count = kg_count
@@ -35,9 +39,10 @@ def _make_citability(grade="A", methods=None):
     return c
 
 
-def _make_trust(composite_score=0.85):
+def _make_trust(composite_score=0.85, grade="A"):
     t = MagicMock()
     t.composite_score = composite_score
+    t.grade = grade
     return t
 
 
@@ -82,6 +87,26 @@ def test_brand_name_empty_when_no_names():
     audit = _make_audit(brand_entity=_make_brand(names=[]))
     snap = extract_perception(audit)
     assert snap.brand_name is None
+
+
+def test_brand_name_prefers_primary_name_over_first_candidate():
+    """names_found[0] can be a raw H1 sentence with no separator (e.g. a hero heading);
+    primary_name — schema Organization name or the most-frequent candidate, computed in
+    audit_brand.py — must win over blind positional order (#perception)."""
+    brand = _make_brand(
+        names=["Find the gaps that keep your site out of AI answers.", "GeoReady"],
+        primary_name="GeoReady",
+    )
+    audit = _make_audit(brand_entity=brand)
+    snap = extract_perception(audit)
+    assert snap.brand_name == "GeoReady"
+
+
+def test_brand_name_falls_back_to_first_candidate_without_primary_name():
+    brand = _make_brand(names=["Acme Corp"], primary_name=None)
+    audit = _make_audit(brand_entity=brand)
+    snap = extract_perception(audit)
+    assert snap.brand_name == "Acme Corp"
 
 
 def test_brand_entity_type_organization():
@@ -153,6 +178,18 @@ def test_trust_score_none_when_missing():
     assert snap.trust_score is None
 
 
+def test_trust_score_carries_its_own_scale():
+    """trust_score is 0-25, not 0-100 — the scale must travel with it so a CLI/JSON
+    consumer can't print a misleading fixed denominator (#perception)."""
+    from geo_optimizer.models.config import TRUST_STACK_MAX_SCORE
+
+    audit = _make_audit(trust_stack=_make_trust(composite_score=18, grade="B"))
+    snap = extract_perception(audit)
+    assert snap.trust_score == 18
+    assert snap.trust_max == TRUST_STACK_MAX_SCORE
+    assert snap.trust_grade == "B"
+
+
 # ─── Tests: factual claims ────────────────────────────────────────────────────
 
 
@@ -222,6 +259,18 @@ def test_ai_readable_summary_built():
     snap = extract_perception(audit)
     assert snap.ai_readable_summary is not None
     assert "Acme" in snap.ai_readable_summary
+
+
+def test_ai_readable_summary_uses_an_before_vowel_entity_type():
+    """'Organization' starts with a vowel sound — the summary must read 'an Organization',
+    not 'a Organization' (#perception)."""
+    audit = _make_audit(
+        brand_entity=_make_brand(names=["Acme"]),
+        schema=_make_schema(found_types=["Organization"]),
+    )
+    snap = extract_perception(audit)
+    assert "is an Organization" in snap.ai_readable_summary
+    assert "is a Organization" not in snap.ai_readable_summary
 
 
 def test_ai_readable_summary_none_when_no_signals():

@@ -8,6 +8,7 @@ IMPORTANT: The output is always labeled as 'simulated perception', not real AI o
 
 from __future__ import annotations
 
+from geo_optimizer.models.config import TRUST_STACK_MAX_SCORE
 from geo_optimizer.models.results import AuditResult, PerceptionSnapshot
 
 
@@ -37,7 +38,9 @@ def _extract_brand_entity(snapshot: PerceptionSnapshot, audit: AuditResult) -> N
     brand = getattr(audit, "brand_entity", None)
     if brand is None:
         return
-    if brand.names_found:
+    if brand.primary_name:
+        snapshot.brand_name = brand.primary_name
+    elif brand.names_found:
         snapshot.brand_name = brand.names_found[0]
     # Entity type from schema if available
     schema = getattr(audit, "schema", None)
@@ -94,7 +97,10 @@ def _extract_trust(snapshot: PerceptionSnapshot, audit: AuditResult) -> None:
         return
     composite = getattr(trust, "composite_score", None)
     if composite is not None:
+        # composite_score is 0-25 (5 layers, 5 points each), not 0-100 (#perception)
         snapshot.trust_score = float(composite)
+        snapshot.trust_max = float(TRUST_STACK_MAX_SCORE)
+        snapshot.trust_grade = getattr(trust, "grade", None)
 
 
 # ── Factual claims ────────────────────────────────────────────────────────────
@@ -139,7 +145,8 @@ def _build_ai_readable_summary(snapshot: PerceptionSnapshot, audit: AuditResult)
     parts = []
     if snapshot.brand_name:
         entity_label = snapshot.brand_entity_type or "entity"
-        parts.append(f"{snapshot.brand_name} is a {entity_label}")
+        article = "an" if entity_label[0].upper() in "AEIOU" else "a"
+        parts.append(f"{snapshot.brand_name} is {article} {entity_label}")
     if snapshot.main_topic:
         parts.append(f"focused on {snapshot.main_topic}")
     if snapshot.detected_services:

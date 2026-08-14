@@ -457,6 +457,19 @@ class TestSanityScheduledWorkflow:
         assert "published_count != '0'" in source
         assert "force_deploy" in source
 
+    def test_preflight_valida_ogni_secret_usato_a_valle(self):
+        """Ogni secret referenziato più avanti nel workflow deve essere validato nel
+        pre-flight — altrimenti un secret mancante manda un Authorization header vuoto
+        invece di far fallire subito il workflow (regressione dell'incidente httpbin-echo)."""
+        source = self._WORKFLOW.read_text(encoding="utf-8")
+        preflight_start = source.index("Verify production automation configuration")
+        preflight_end = source.index("Publish due Sanity articles")
+        preflight_block = source[preflight_start:preflight_end]
+        assert "DEPLOY_TRIGGER_TOKEN" in preflight_block, (
+            "DEPLOY_TRIGGER_TOKEN è usato nello step di deploy ma non validato nel pre-flight"
+        )
+        assert 'echo "::error::Missing DEPLOY_TRIGGER_TOKEN' in preflight_block
+
 
 # ── Test SEO del report demo ─────────────────────────────────────────────────────
 class TestDemoReportSeo:

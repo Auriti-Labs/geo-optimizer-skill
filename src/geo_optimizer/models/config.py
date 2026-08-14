@@ -617,6 +617,8 @@ TRUST_STACK_GRADE_BANDS = [
     (6, "D", "low"),
     (0, "F", "low"),
 ]
+# 5 layers (technical, identity, social, academic, consistency), 5 points max each (#perception)
+TRUST_STACK_MAX_SCORE = 25
 
 # Authoritative source domains for Academic Trust
 ACADEMIC_AUTHORITY_DOMAINS = [

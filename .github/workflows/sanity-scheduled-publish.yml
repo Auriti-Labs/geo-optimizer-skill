@@ -48,6 +48,7 @@ jobs:
         env:
           SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
           GEOREADY_DEPLOY_WEBHOOK_URL: ${{ secrets.GEOREADY_DEPLOY_WEBHOOK_URL }}
+          DEPLOY_TRIGGER_TOKEN: ${{ secrets.DEPLOY_TRIGGER_TOKEN }}
         run: |
           if [[ "$DRY_RUN" == "true" ]]; then
             exit 0
@@ -58,6 +59,10 @@ jobs:
           fi
           if [[ -z "$GEOREADY_DEPLOY_WEBHOOK_URL" ]]; then
             echo "::error::Missing GEOREADY_DEPLOY_WEBHOOK_URL repository secret."
+            exit 1
+          fi
+          if [[ -z "$DEPLOY_TRIGGER_TOKEN" ]]; then
+            echo "::error::Missing DEPLOY_TRIGGER_TOKEN repository secret."
             exit 1
           fi
 
