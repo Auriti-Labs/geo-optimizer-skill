@@ -20,10 +20,10 @@ from pathlib import Path
 LOCALES_DIR = Path(__file__).parent / "locales"
 
 # Default language
-DEFAULT_LANG = "it"
+DEFAULT_LANG = "en"
 
 # Supported languages
-SUPPORTED_LANGS = {"it", "en"}
+SUPPORTED_LANGS = {"ru", "it", "en"}
 
 # Global translation instance
 _current_translation = None
