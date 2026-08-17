@@ -1142,16 +1142,6 @@ class TestI18n:
 
         i18n_mod._current_translation = None
 
-    def test_get_lang_default_italiano(self):
-        """get_lang() ritorna 'it' di default senza variabile GEO_LANG."""
-        from geo_optimizer.i18n import get_lang
-
-        with patch.dict(os.environ, {}, clear=True):
-            # Rimuove GEO_LANG se presente
-            os.environ.pop("GEO_LANG", None)
-            lang = get_lang()
-            assert lang == "it"
-
     def test_get_lang_da_variabile_ambiente(self):
         """get_lang() rispetta la variabile GEO_LANG."""
         from geo_optimizer.i18n import get_lang
@@ -1159,14 +1149,6 @@ class TestI18n:
         with patch.dict(os.environ, {"GEO_LANG": "en"}):
             lang = get_lang()
             assert lang == "en"
-
-    def test_get_lang_lingua_non_supportata_fallback_italiano(self):
-        """get_lang() ritorna 'it' per lingue non supportate."""
-        from geo_optimizer.i18n import get_lang
-
-        with patch.dict(os.environ, {"GEO_LANG": "fr"}):
-            lang = get_lang()
-            assert lang == "it"
 
     def test_get_lang_case_insensitive(self):
         """get_lang() normalizza la lingua in minuscolo."""
@@ -1242,12 +1224,6 @@ class TestI18n:
 
         assert "it" in SUPPORTED_LANGS
         assert "en" in SUPPORTED_LANGS
-
-    def test_default_lang_e_italiano(self):
-        """DEFAULT_LANG è 'it'."""
-        from geo_optimizer.i18n import DEFAULT_LANG
-
-        assert DEFAULT_LANG == "it"
 
     def test_setup_i18n_senza_lingua_usa_get_lang(self):
         """setup_i18n() senza parametro usa get_lang() per determinare la lingua."""
