@@ -54,7 +54,16 @@ _MINIMAX_THINKING_MODES = {"adaptive", "disabled"}
 
 
 class LLMContentPart(TypedDict, total=False):
-    """Structured text, image, or video content passed to an LLM."""
+    """A structured text or image content part passed to an LLM.
+
+    Content parts are forwarded to the provider verbatim, so the caller is
+    responsible for using the shape the selected wire format expects: the
+    OpenAI-compatible format reads ``{"type": "image_url", "image_url":
+    {...}}`` while the Anthropic-compatible format reads ``{"type": "image",
+    "source": {...}}``. Both key sets are declared optional so one type covers
+    both formats; a part built for one format is still rejected at runtime by
+    the other. Video parts are not modelled yet.
+    """
 
     type: str
     text: str
@@ -112,7 +121,9 @@ def query_llm(
     """Send a prompt to an LLM and return the response.
 
     Args:
-        prompt: Text or structured content parts supported by the selected model.
+        prompt: Plain text, or structured content parts the selected model and
+            wire format accept. See `LLMContentPart` for the caller's
+            responsibility when passing parts.
         system: Optional system message.
         provider: LLM provider (auto-detected if not set).
         api_key: API key (auto-detected if not set).
