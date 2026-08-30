@@ -5,7 +5,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
-## [4.17.0] — 2026-08-30
+## [4.17.0] — 2026-08-30 · Parallax
 
 New LLM provider and multimodal prompt support (community-contributed), a User-Agent
 override for sites that block the default identity, a WebMCP readiness fix, and a
