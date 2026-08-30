@@ -71,7 +71,7 @@ def _format_text(result) -> str:
 @click.option("--query", "queries", multiple=True, help="Custom query to ask (repeatable, overrides defaults)")
 @click.option(
     "--provider",
-    type=click.Choice(["perplexity", "openai", "anthropic", "groq"]),
+    type=click.Choice(["perplexity", "openai", "anthropic", "groq", "minimax"]),
     default=None,
     help="AI provider (default: perplexity if PERPLEXITY_API_KEY is set, else auto-detect)",
 )
@@ -102,7 +102,7 @@ def citations(brand, domain, topic, queries, provider, output_format, output_fil
         click.echo(
             "\n❌ No AI provider configured.\n"
             "   Set PERPLEXITY_API_KEY (recommended: real web citations from Sonar)\n"
-            "   or OPENAI_API_KEY / ANTHROPIC_API_KEY / GROQ_API_KEY.",
+            "   or OPENAI_API_KEY / ANTHROPIC_API_KEY / GROQ_API_KEY / MINIMAX_API_KEY.",
             err=True,
         )
         sys.exit(1)
