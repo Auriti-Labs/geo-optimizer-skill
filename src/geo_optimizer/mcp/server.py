@@ -56,9 +56,9 @@ def _to_json(data: object) -> str:
 
 def _normalize_url(url: str) -> str:
     """Normalize URL by adding scheme if missing."""
-    if not url.startswith(("http://", "https://")):
-        url = "https://" + url
-    return url.rstrip("/")
+    from geo_optimizer.utils.validators import normalize_url_scheme
+
+    return normalize_url_scheme(url).rstrip("/")
 
 
 # ─── Tool 1: geo_audit ───────────────────────────────────────────────────────

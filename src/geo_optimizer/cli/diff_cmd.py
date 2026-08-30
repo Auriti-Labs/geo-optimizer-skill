@@ -8,7 +8,7 @@ import click
 
 from geo_optimizer.cli.formatters import format_audit_diff_json, format_audit_diff_text
 from geo_optimizer.core.diffing import run_diff_audit
-from geo_optimizer.utils.validators import validate_public_url
+from geo_optimizer.utils.validators import normalize_url_scheme, validate_public_url
 
 
 @click.command()
@@ -38,7 +38,7 @@ def diff(before_url, after_url, output_format, output_file, cache, config_file):
     project_config = load_config(config_path)
 
     for label, url in (("before", before_url), ("after", after_url)):
-        safe, reason = validate_public_url(url if url.startswith(("http://", "https://")) else f"https://{url}")
+        safe, reason = validate_public_url(normalize_url_scheme(url))
         if not safe:
             click.echo(f"\n❌ Unsafe {label} URL: {reason}", err=True)
             sys.exit(1)

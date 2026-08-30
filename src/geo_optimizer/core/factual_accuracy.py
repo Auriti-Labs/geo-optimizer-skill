@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 
 from geo_optimizer.models.results import FactualAccuracyResult
 from geo_optimizer.utils.http import fetch_url
+from geo_optimizer.utils.validators import normalize_url_scheme
 
 _NUMERIC_CLAIM_RE = re.compile(
     r"\b\d+(?:[.,]\d+)?%"
@@ -97,9 +98,7 @@ _DEFAULT_MAX_SOURCE_CHECKS = 8
 
 def run_factual_accuracy_audit(url: str, max_source_checks: int = _DEFAULT_MAX_SOURCE_CHECKS) -> FactualAccuracyResult:
     """Scarica una pagina e restituisce un audit fattuale euristico."""
-    base_url = url.rstrip("/")
-    if not base_url.startswith(("http://", "https://")):
-        base_url = "https://" + base_url
+    base_url = normalize_url_scheme(url.rstrip("/"))
 
     response, err = fetch_url(base_url)
     # `response is None`: an HTTP error Response is falsy (requests sets __bool__ to

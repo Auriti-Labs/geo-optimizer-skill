@@ -161,6 +161,32 @@ def resolve_and_validate_url(url: str) -> tuple[bool, str | None, list[str]]:
     return True, None, ip_validi
 
 
+def normalize_url_scheme(url: str) -> str:
+    """Ensure a URL has an http(s) scheme, adding ``https://`` if it has none.
+
+    Case-insensitive on purpose: 15 call sites across this codebase used to
+    each inline ``if not url.startswith(("http://", "https://"))``, a
+    case-sensitive check. A URL a user typed or pasted with an uppercase
+    scheme — ``HTTP://example.com`` — fails that check despite already
+    having a scheme, so it gets a second one prepended:
+    ``https://HTTP://example.com``. `urlparse` then reads ``HTTP:`` as the
+    netloc and the real host disappears into the path, and the URL fails
+    DNS resolution with an error that blames the domain instead of the
+    parsing. Confirmed live: ``geo audit --url HTTP://geoready.dev`` failed
+    with "DNS resolution failed" against a domain that resolves fine.
+
+    Args:
+        url: Raw URL or bare hostname (e.g. "example.com").
+
+    Returns:
+        The URL unchanged if it already has any http(s) scheme in any case,
+        otherwise the URL prefixed with ``https://``.
+    """
+    if not url.lower().startswith(("http://", "https://")):
+        return f"https://{url}"
+    return url
+
+
 def validate_public_url(url: str) -> tuple[bool, str | None]:
     """
     Verify that the URL points to a public host, not internal networks.

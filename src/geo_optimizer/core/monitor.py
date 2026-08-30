@@ -17,15 +17,14 @@ from geo_optimizer.models.config import (
     SCORING,
 )
 from geo_optimizer.models.results import AuditResult, HistoryResult, MonitorResult, MonitorSignal
+from geo_optimizer.utils.validators import normalize_url_scheme
 
 _MAX_BRAND_SCORE = sum(value for key, value in SCORING.items() if key.startswith("brand_"))
 
 
 def normalize_monitor_domain(domain: str) -> str:
     """Normalizza input domain/url verso la homepage canonica del dominio."""
-    raw = domain.strip()
-    if not raw.lower().startswith(("http://", "https://")):
-        raw = f"https://{raw}"
+    raw = normalize_url_scheme(domain.strip())
     parsed = urlparse(raw)
     scheme = parsed.scheme or "https"
     hostname = (parsed.hostname or "").lower()

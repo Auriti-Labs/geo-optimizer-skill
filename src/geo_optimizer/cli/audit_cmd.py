@@ -26,7 +26,7 @@ from geo_optimizer.models.config import (
     resolve_user_agent_override,
     set_user_agent_override,
 )
-from geo_optimizer.utils.validators import validate_public_url
+from geo_optimizer.utils.validators import normalize_url_scheme, validate_public_url
 
 
 @click.command()
@@ -152,9 +152,7 @@ def audit(
         raise click.UsageError("Batch audit via '--sitemap' supports only '--format text' or '--format json'")
 
     target_url = sitemap or url
-    safe, reason = validate_public_url(
-        target_url if target_url.startswith(("http://", "https://")) else f"https://{target_url}"
-    )
+    safe, reason = validate_public_url(normalize_url_scheme(target_url))
     if not safe:
         hint = (
             " Please use a public URL (e.g., https://example.com)."

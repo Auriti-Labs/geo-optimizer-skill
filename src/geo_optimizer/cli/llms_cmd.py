@@ -17,7 +17,7 @@ from geo_optimizer.core.llms_generator import (
     generate_llms_txt,
 )
 from geo_optimizer.models.config import resolve_user_agent_override, set_user_agent_override
-from geo_optimizer.utils.validators import validate_public_url
+from geo_optimizer.utils.validators import normalize_url_scheme, validate_public_url
 
 
 @click.command()
@@ -51,9 +51,7 @@ def llms(
     """Generate llms.txt from XML sitemap for GEO optimization."""
     set_user_agent_override(resolve_user_agent_override(user_agent))
 
-    base_url = base_url.rstrip("/")
-    if not base_url.startswith(("http://", "https://")):
-        base_url = "https://" + base_url
+    base_url = normalize_url_scheme(base_url.rstrip("/"))
 
     # Anti-SSRF validation: block URLs pointing to private/internal networks
     safe, reason = validate_public_url(base_url)

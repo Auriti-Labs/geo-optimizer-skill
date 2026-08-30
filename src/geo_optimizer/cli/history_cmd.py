@@ -10,7 +10,7 @@ import click
 from geo_optimizer.cli.formatters import format_history_json, format_history_text
 from geo_optimizer.core.history import HistoryStore
 from geo_optimizer.models.config import DEFAULT_HISTORY_LIMIT, DEFAULT_HISTORY_RETENTION_DAYS
-from geo_optimizer.utils.validators import validate_public_url
+from geo_optimizer.utils.validators import normalize_url_scheme, validate_public_url
 
 
 @click.command(name="history")
@@ -35,7 +35,7 @@ from geo_optimizer.utils.validators import validate_public_url
 @click.option("--history-db", default=None, hidden=True, help="Override local tracking DB path")
 def history(url, output_format, output_file, limit, retention_days, history_db):
     """Show the saved GEO score trend for a URL."""
-    normalized_url = url if url.startswith(("http://", "https://")) else f"https://{url}"
+    normalized_url = normalize_url_scheme(url)
     safe, reason = validate_public_url(normalized_url)
     if not safe:
         click.echo(f"\n❌ Unsafe URL: {reason}", err=True)

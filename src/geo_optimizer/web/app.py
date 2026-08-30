@@ -1370,6 +1370,8 @@ def _normalize_url(raw: str) -> tuple[str | None, str]:
     """
     from urllib.parse import urlparse
 
+    from geo_optimizer.utils.validators import normalize_url_scheme
+
     url = raw.strip()
 
     # Empty or contains spaces — not a URL
@@ -1377,8 +1379,7 @@ def _normalize_url(raw: str) -> tuple[str | None, str]:
         return None, "Invalid input: please enter a URL (e.g. https://example.com)"
 
     # Add https:// if protocol is missing
-    if not url.startswith(("http://", "https://")):
-        url = "https://" + url
+    url = normalize_url_scheme(url)
 
     # Must have a hostname with at least one dot (real domain)
     parsed = urlparse(url)

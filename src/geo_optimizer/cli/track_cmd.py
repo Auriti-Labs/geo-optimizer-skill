@@ -18,7 +18,7 @@ from geo_optimizer.core.audit import run_full_audit
 from geo_optimizer.core.history import HistoryStore
 from geo_optimizer.models.config import DEFAULT_HISTORY_LIMIT, DEFAULT_HISTORY_RETENTION_DAYS
 from geo_optimizer.models.project_config import load_config
-from geo_optimizer.utils.validators import validate_public_url
+from geo_optimizer.utils.validators import normalize_url_scheme, validate_public_url
 
 
 @click.command(name="track")
@@ -50,7 +50,7 @@ def track(url, show_history, report, output_format, output_file, cache, config_f
     if show_history and report:
         raise click.UsageError("Use either '--history' or '--report', not both")
 
-    normalized_url = url if url.startswith(("http://", "https://")) else f"https://{url}"
+    normalized_url = normalize_url_scheme(url)
     safe, reason = validate_public_url(normalized_url)
     if not safe:
         click.echo(f"\n❌ Unsafe URL: {reason}", err=True)

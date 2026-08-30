@@ -18,7 +18,7 @@ import click
 
 from geo_optimizer.core.audit import run_full_audit
 from geo_optimizer.core.perception_extractor import extract_perception
-from geo_optimizer.utils.validators import validate_public_url
+from geo_optimizer.utils.validators import normalize_url_scheme, validate_public_url
 
 
 @click.command(name="perception")
@@ -42,7 +42,7 @@ def perception(url: str, output_format: str, output_file: str | None, cache: boo
     authority signals. Deterministic and disclosed as simulated — not a
     call to a real AI model.
     """
-    target = url if url.startswith(("http://", "https://")) else f"https://{url}"
+    target = normalize_url_scheme(url)
     safe, reason = validate_public_url(target)
     if not safe:
         click.echo(f"\n❌ Unsafe URL: {reason}", err=True)
