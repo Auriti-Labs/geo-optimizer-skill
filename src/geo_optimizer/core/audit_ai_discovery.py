@@ -60,6 +60,14 @@ def audit_ai_discovery(base_url: str) -> AiDiscoveryResult:
                 and len(str(data.get("description", ""))) >= AI_DISCOVERY_SUMMARY_DESC_MIN_LEN
             ):
                 result.summary_valid = True
+            # #535: a "webmcp" block here is a documented discovery signal for tools
+            # registered at runtime by external bundled JS, which the static WebMCP
+            # detector in audit_webmcp.py cannot see without executing that JS.
+            if isinstance(data, dict) and isinstance(data.get("webmcp"), dict) and data["webmcp"].get("available"):
+                result.has_webmcp_declaration = True
+                tools = data["webmcp"].get("tools")
+                if isinstance(tools, list):
+                    result.webmcp_declared_tool_count = len(tools)
         except (json.JSONDecodeError, ValueError):
             pass
 
@@ -138,6 +146,14 @@ def _audit_ai_discovery_from_responses(r_ai_txt, r_summary, r_faq, r_service) ->
                 and len(str(data.get("description", ""))) >= AI_DISCOVERY_SUMMARY_DESC_MIN_LEN
             ):
                 result.summary_valid = True
+            # #535: a "webmcp" block here is a documented discovery signal for tools
+            # registered at runtime by external bundled JS, which the static WebMCP
+            # detector in audit_webmcp.py cannot see without executing that JS.
+            if isinstance(data, dict) and isinstance(data.get("webmcp"), dict) and data["webmcp"].get("available"):
+                result.has_webmcp_declaration = True
+                tools = data["webmcp"].get("tools")
+                if isinstance(tools, list):
+                    result.webmcp_declared_tool_count = len(tools)
         except (json.JSONDecodeError, ValueError):
             pass
 

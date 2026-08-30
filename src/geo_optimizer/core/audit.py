@@ -824,8 +824,8 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     # v4.3: Brand & Entity signals (zero HTTP requests, uses pre-fetched data only)
     brand_entity_result = audit_brand_entity(soup, schema, meta, content)
 
-    # v4.3: WebMCP Readiness check (#233) — zero HTTP fetch
-    webmcp_result = audit_webmcp_readiness(soup, r.text, schema)
+    # v4.3: WebMCP Readiness check (#233) — zero extra HTTP fetch (#535: ai_disc reused)
+    webmcp_result = audit_webmcp_readiness(soup, r.text, schema, ai_disc)
 
     # v4.3: Negative Signals detection — zero HTTP fetch
     negative_signals_result = audit_negative_signals(soup, r.text, content, meta, schema)
@@ -1025,8 +1025,8 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     # v4.3: Brand & Entity signals (zero HTTP requests, uses pre-fetched data only)
     brand_entity_result = audit_brand_entity(soup, schema, meta, content)
 
-    # v4.3: WebMCP Readiness check (#233) — zero HTTP fetch
-    webmcp_result = audit_webmcp_readiness(soup, r_home.text, schema)
+    # v4.3: WebMCP Readiness check (#233) — zero extra HTTP fetch (#535: ai_disc reused)
+    webmcp_result = audit_webmcp_readiness(soup, r_home.text, schema, ai_disc)
 
     # v4.3: Negative Signals detection — zero HTTP fetch
     negative_signals_result = audit_negative_signals(soup, r_home.text, content, meta, schema)

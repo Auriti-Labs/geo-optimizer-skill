@@ -872,6 +872,7 @@ def _build_webmcp_card(result: AuditResult) -> Panel | None:
     webmcp_items = [
         ("registerTool() API", wm.has_register_tool),
         ("toolname attributes", wm.has_tool_attributes),
+        ("Declared in ai/summary.json", wm.has_webmcp_declaration),
     ]
     for label, present in webmcp_items:
         line = Text("  ")
@@ -879,6 +880,8 @@ def _build_webmcp_card(result: AuditResult) -> Panel | None:
             line.append(f"✓ {label}", style=_COLORS["excellent"])
             if label == "toolname attributes" and wm.tool_count:
                 line.append(f" ({wm.tool_count})", style=_COLORS["dim"])
+            elif label == "Declared in ai/summary.json" and wm.declared_tool_count:
+                line.append(f" ({wm.declared_tool_count})", style=_COLORS["dim"])
         else:
             line.append(f"✗ {label}", style=_COLORS["dim"])
         content_parts.append(line)

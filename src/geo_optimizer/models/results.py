@@ -235,6 +235,8 @@ class AiDiscoveryResult:
     summary_valid: bool = False  # ha i campi richiesti (name + description)
     faq_count: int = 0  # number of FAQs found
     endpoints_found: int = 0  # total count of endpoints found (0-4)
+    has_webmcp_declaration: bool = False  # /ai/summary.json declares a "webmcp" block (#535)
+    webmcp_declared_tool_count: int = 0  # tool names listed in that declaration, if any
 
 
 # ─── CDN AI Crawler Check (#225) ─────────────────────────────────────────────
@@ -318,6 +320,12 @@ class WebMcpResult:
     has_register_tool: bool = False  # navigator.modelContext.registerTool()
     has_tool_attributes: bool = False  # HTML attributes toolname/tooldescription
     tool_count: int = 0  # number of declared tools
+    has_webmcp_declaration: bool = False  # webmcp block in /ai/summary.json (#535) — the
+    # detectors above only see raw HTML, so registerTool() calls made by an
+    # external bundled JS module (any bundler: Astro, Vite, Next, SvelteKit)
+    # are invisible without executing JS. A published discovery document is
+    # a partial, zero-extra-fetch substitute credited toward readiness.
+    declared_tool_count: int = 0
 
     # Agent-readiness signals
     has_potential_action: bool = False  # schema potentialAction (SearchAction, etc.)

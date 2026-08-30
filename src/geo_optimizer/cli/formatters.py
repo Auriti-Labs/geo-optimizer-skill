@@ -141,6 +141,8 @@ def format_audit_json(result: AuditResult) -> str:
             "has_labeled_forms": result.webmcp.has_labeled_forms,
             "labeled_forms_count": result.webmcp.labeled_forms_count,
             "has_openapi": result.webmcp.has_openapi,
+            "has_webmcp_declaration": result.webmcp.has_webmcp_declaration,
+            "declared_tool_count": result.webmcp.declared_tool_count,
         }
 
     # Negative Signals (v4.3) — separate informational section

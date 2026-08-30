@@ -10,7 +10,7 @@ import json  # noqa: F401 (available for future extensions)
 import re  # noqa: F401 (available for future extensions)
 from typing import TYPE_CHECKING
 
-from geo_optimizer.models.results import SchemaResult, WebMcpResult
+from geo_optimizer.models.results import AiDiscoveryResult, SchemaResult, WebMcpResult
 
 if TYPE_CHECKING:
     from bs4 import BeautifulSoup
@@ -47,7 +47,12 @@ def _extract_actions(schema_obj, action_types: set) -> None:
             _extract_actions(item, action_types)
 
 
-def audit_webmcp_readiness(soup: BeautifulSoup | None, raw_html: str, schema_result: SchemaResult) -> WebMcpResult:
+def audit_webmcp_readiness(
+    soup: BeautifulSoup | None,
+    raw_html: str,
+    schema_result: SchemaResult,
+    ai_discovery: AiDiscoveryResult | None = None,
+) -> WebMcpResult:
     """Check WebMCP readiness and agent-readiness signals (#233).
 
     Analyzes:
@@ -55,13 +60,17 @@ def audit_webmcp_readiness(soup: BeautifulSoup | None, raw_html: str, schema_res
     2. Schema potentialAction: SearchAction, BuyAction, OrderAction
     3. Accessible forms: form with label + aria-label/placeholder
     4. OpenAPI: link to /api-docs, /swagger, openapi.json
+    5. Declared WebMCP tools in /ai/summary.json (#535, see note below)
 
-    Zero HTTP fetches — works only on already-available data.
+    Zero HTTP fetches of its own — works only on already-available data.
+    ai_discovery, when passed, comes from a fetch the caller already made
+    for a different check (audit_ai_discovery.py), not a new request.
 
     Args:
         soup: BeautifulSoup of the page.
         raw_html: Raw HTML of the page.
         schema_result: SchemaResult with the JSON-LD schemas found.
+        ai_discovery: Already-fetched /ai/summary.json check result, if any.
 
     Returns:
         WebMcpResult with detected readiness signals.
@@ -73,7 +82,12 @@ def audit_webmcp_readiness(soup: BeautifulSoup | None, raw_html: str, schema_res
     result.checked = True
 
     # ── 1. WebMCP Detection ──────────────────────────────────────
-    # API imperativa: navigator.modelContext.registerTool()
+    # API imperativa: navigator.modelContext.registerTool(). This only sees
+    # the raw HTML response, so a registration performed by an external
+    # bundled JS module (Astro, Vite, Next, SvelteKit all emit registerTool()
+    # calls into hashed bundles, not inline scripts) is invisible here — #535.
+    # The ai_discovery declaration below is the zero-extra-fetch mitigation:
+    # crediting it as partial readiness when the static scan finds nothing.
     if "modelContext" in raw_html and "registerTool" in raw_html:
         result.has_register_tool = True
 
@@ -136,8 +150,13 @@ def audit_webmcp_readiness(soup: BeautifulSoup | None, raw_html: str, schema_res
                 result.has_openapi = True
                 break
 
+    # ── 5. Declared WebMCP tools (/ai/summary.json) ──────────────
+    if ai_discovery is not None and ai_discovery.has_webmcp_declaration:
+        result.has_webmcp_declaration = True
+        result.declared_tool_count = ai_discovery.webmcp_declared_tool_count
+
     # ── Readiness level ──────────────────────────────────────────
-    webmcp_signals = sum([result.has_register_tool, result.has_tool_attributes])
+    webmcp_signals = sum([result.has_register_tool, result.has_tool_attributes, result.has_webmcp_declaration])
     agent_signals = sum([result.has_potential_action, result.has_labeled_forms, result.has_openapi])
 
     if webmcp_signals > 0 and agent_signals >= 2:

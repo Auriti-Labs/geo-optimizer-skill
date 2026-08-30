@@ -12,6 +12,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - **Multimodal prompt content for `query_llm`.** The LLM client now accepts structured text/image content parts (`LLMContentPart`) alongside plain strings, forwarded verbatim to the provider's wire format. Video parts are not modelled yet.
 - **User-Agent override (#528).** `GEO_USER_AGENT` env var and `--user-agent` flag on `audit`, `access`, `fix` and `llms` let a request identify itself to sites that block the default `GEO-Optimizer/2.0` string (Akamai/Cloudflare bot management commonly return 403 to it, which previously read as a 0/100 "critical" score rather than a fetch problem). The override is resolved once per CLI invocation and deliberately does **not** apply to the CDN AI-crawler check, which sends a specific bot identity on purpose. Reported with a live repro (403→0/100 vs. 200→54/100 on the same site) in #528.
 
+### Fixed
+- **WebMCP readiness didn't credit tools registered by external bundled JS (#535).** `audit_webmcp_readiness` only scanned the raw HTML response for `registerTool()`; a modern bundler (Astro, Vite, Next, SvelteKit) emits that call into a hashed external script, not an inline one, so every production WebMCP implementation built with one scored `readiness_level: "none"` — reported live against a site with five working tools, a published `/webmcp/manifest.json`, and a `webmcp` block in `/ai/summary.json`, none of which moved the score. The check now reads that `/ai/summary.json` block via `ai_discovery`, already fetched by the audit for a different check, so crediting it costs no extra HTTP request — a genuine capability declared but statically invisible now counts as partial readiness instead of `none`.
+
 ---
 
 ## [4.16.4] — 2026-08-14
