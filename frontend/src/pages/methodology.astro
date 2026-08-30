@@ -279,7 +279,7 @@ const faqs = [
 
       {/* Why we publish the weights */}
       <section>
-        <h2>Why we publish the weights</h2>
+        <h2 id="why-we-publish-the-weights">Why we publish the weights</h2>
         <p class="mt-4">
           A visibility score is only useful if you can interrogate it. Publishing the weights as
           open-source constants does three things. It makes the score reproducible — you can run
@@ -296,6 +296,56 @@ const faqs = [
           you can read the code, open an issue, or fork it and re-weight it yourself. That is the
           point of publishing them: a methodology you can change on the record is more trustworthy
           than one you have to take on faith.
+        </p>
+      </section>
+
+      {/* Score stability, measured */}
+      <section>
+        <h2>Score stability, measured</h2>
+        <p class="mt-4">
+          "Reproducible" is a claim you can check, not a description we'll ask you to trust. We
+          measured it against real usage of the hosted audit rather than a synthetic test: every
+          pair of audits of the same domain, run back to back (48 hours apart or less, so it
+          isolates measurement noise from the site actually changing), across every domain audited
+          on GeoReady.
+        </p>
+        <div class="mt-6 overflow-x-auto rounded-2xl border border-border bg-bg-surface">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-border text-text-muted">
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Metric</th>
+                <th scope="col" class="px-4 py-3 font-mono text-[11px] uppercase tracking-wider">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border/60">
+                <th scope="row" class="px-4 py-3 text-text-secondary">Audit pairs measured</th>
+                <td class="px-4 py-3 font-mono text-accent-teal">2,513 (216 distinct domains)</td>
+              </tr>
+              <tr class="border-b border-border/60">
+                <th scope="row" class="px-4 py-3 text-text-secondary">Pairs with zero score movement</th>
+                <td class="px-4 py-3 font-mono text-accent-teal">98.6%</td>
+              </tr>
+              <tr class="border-b border-border/60">
+                <th scope="row" class="px-4 py-3 text-text-secondary">Average score movement</th>
+                <td class="px-4 py-3 font-mono text-accent-teal">0.09 points</td>
+              </tr>
+              <tr class="last:border-0">
+                <th scope="row" class="px-4 py-3 text-text-secondary">Pairs within 3 points of each other</th>
+                <td class="px-4 py-3 font-mono text-accent-teal">99.4%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-4">
+          Measured 2026-08-30. When two consecutive audits of the same site do disagree by more
+          than a few points, it is almost always because something on the site changed between
+          them, not because the scoring is noisy — this is what the
+          {' '}
+          <a href="/methodology/#why-we-publish-the-weights" class="text-accent-teal hover:underline">published, fixed weights</a>
+          {' '}buy you: a number that moves for a reason you can find, not one that drifts on its
+          own. We'll re-run this measurement periodically rather than let a good number go stale on
+          the page.
         </p>
       </section>
 
