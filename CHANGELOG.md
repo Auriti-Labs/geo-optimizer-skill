@@ -15,6 +15,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Fixed
 - **WebMCP readiness didn't credit tools registered by external bundled JS (#535).** `audit_webmcp_readiness` only scanned the raw HTML response for `registerTool()`; a modern bundler (Astro, Vite, Next, SvelteKit) emits that call into a hashed external script, not an inline one, so every production WebMCP implementation built with one scored `readiness_level: "none"` — reported live against a site with five working tools, a published `/webmcp/manifest.json`, and a `webmcp` block in `/ai/summary.json`, none of which moved the score. The check now reads that `/ai/summary.json` block via `ai_discovery`, already fetched by the audit for a different check, so crediting it costs no extra HTTP request — a genuine capability declared but statically invisible now counts as partial readiness instead of `none`.
 
+### Changed
+- **JSON-LD `@graph` parsing consolidated into one shared walker.** `citability.py`, `audit_schema.py` and `schema_injector.py` each carried an independent implementation of the same logic, with a different subset of edge cases covered by each — the exact duplication pattern behind fix #326, the 4.16.3 "twelve-walker" fix, and the 4.16.4 `schema_injector.py` gap. All three now call `utils.jsonld.iter_jsonld_objects()`, which combines the safest behavior found across them: nested `@graph` unpacking at any depth, `@context`/`@id` propagation to children, the DoS size guard from fix #182, and per-script parse-error tracking. `schema_injector.py`'s `analyze_html_file` gains nested-`@graph` support and the size guard it never had; no behavior change for `audit_schema.py` or `citability.py`. Not a response to a specific bug report — closing the duplication itself, since it is what made each individual fix necessary in the first place.
+
 ---
 
 ## [4.16.4] — 2026-08-14

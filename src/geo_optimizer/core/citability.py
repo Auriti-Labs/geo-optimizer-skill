@@ -10,7 +10,6 @@ Paper: "GEO: Generative Engine Optimization" (arxiv.org/abs/2311.09735)
 from __future__ import annotations
 
 import functools
-import json
 import re
 from collections import Counter
 from datetime import datetime, timezone
@@ -26,6 +25,7 @@ from geo_optimizer.models.config import (
     TTR_WINDOW_SIZE,
 )
 from geo_optimizer.models.results import CitabilityResult, MethodScore
+from geo_optimizer.utils.jsonld import iter_jsonld_objects
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -184,43 +184,11 @@ def _get_clean_text(soup, soup_clean=None) -> str:
     return str(working.get_text(separator=" ", strip=True))
 
 
-def _iter_jsonld_objects(soup):
-    """Yield every JSON-LD object on the page, with `@graph` containers unpacked.
-
-    gap #4.16.3: fix #326 added `@graph` unpacking to three of the twelve places in
-    this module that walk `script[type="application/ld+json"]`. The other nine read
-    only top-level keys, so on any site whose schema is emitted as a single
-    `{"@context", "@graph": [...]}` block — the Yoast and RankMath default, i.e. most
-    of WordPress — Organization, WebSite, Article and their `sameAs` were invisible.
-    Those detectors then reported the signals as absent and scored them at zero.
-
-    Nested `@graph` containers are unpacked too, and malformed JSON is skipped rather
-    than raised, matching the previous per-call-site behaviour.
-
-    Args:
-        soup: BeautifulSoup of the HTML page.
-
-    Yields:
-        dict: One JSON-LD object at a time, in document order.
-    """
-    for script in soup.find_all("script", type="application/ld+json"):
-        try:
-            data = json.loads(script.string or "")
-        except (json.JSONDecodeError, TypeError):
-            continue
-
-        queue = list(data) if isinstance(data, list) else [data]
-        while queue:
-            item = queue.pop(0)
-            if not isinstance(item, dict):
-                continue
-            graph = item.get("@graph")
-            if isinstance(graph, list):
-                # Prepend so the graph's own members keep document order ahead of
-                # whatever follows this container.
-                queue = list(graph) + queue
-                continue
-            yield item
+# gap #4.16.3 / #535-cleanup: this module's twelve JSON-LD walkers used to have
+# their own @graph-unpacking copy (fix #326, then the "twelve-walker" fix).
+# Consolidated into utils/jsonld.py so this file, audit_schema.py and
+# schema_injector.py share one implementation instead of three.
+_iter_jsonld_objects = iter_jsonld_objects
 
 
 def _extract_dates_from_soup(soup) -> dict[str, str | None]:

@@ -16,6 +16,7 @@ from bs4 import BeautifulSoup
 from geo_optimizer.core.schema_validator import validate_jsonld
 from geo_optimizer.models.config import SCHEMA_TEMPLATES
 from geo_optimizer.models.results import SchemaAnalysis
+from geo_optimizer.utils.jsonld import iter_jsonld_objects
 
 logger = logging.getLogger(__name__)
 
@@ -200,31 +201,21 @@ def analyze_html_file(file_path: str) -> SchemaAnalysis:
 
     soup = BeautifulSoup(content, "html.parser")
     found_schemas = []
-    scripts = soup.find_all("script", type="application/ld+json")
+    total_scripts = len(soup.find_all("script", type="application/ld+json"))
 
-    for idx, script in enumerate(scripts):
-        try:
-            script_content = script.string
-            if script_content:
-                data = json.loads(script_content.strip())
-                items = data if isinstance(data, list) else [data]
-                # Unpack {"@context", "@graph": [...]} — the Yoast/RankMath default, already
-                # handled in citability.py's twelve JSON-LD walkers (fix #326); this analyzer
-                # was the gap left uncovered (#schema-analyze).
-                schemas = []
-                for item in items:
-                    if isinstance(item, dict) and "@graph" in item:
-                        schemas.extend(s for s in item["@graph"] if isinstance(s, dict))
-                    elif isinstance(item, dict):
-                        schemas.append(item)
-                for item in schemas:
-                    schema_type = item.get("@type", "Unknown")
-                    if isinstance(schema_type, list):
-                        schema_type = schema_type[0] if schema_type else "Unknown"
-                    found_schemas.append({"type": schema_type, "data": item, "index": idx})
-        except json.JSONDecodeError as exc:
-            # Log at debug — does not block analysis of other scripts (#119)
-            logger.debug("Invalid JSON-LD in script #%d: %s", idx, exc)
+    def _log_parse_error(exc: Exception) -> None:
+        # Log at debug — does not block analysis of other scripts (#119)
+        logger.debug("Invalid JSON-LD ignored: %s", exc)
+
+    # #schema-analyze / #535-cleanup: this used to have its own one-level-only
+    # @graph unpacking, the gap left uncovered when fix #326 taught citability.py's
+    # walkers the same trick. Shared with citability.py and audit_schema.py via
+    # utils/jsonld.py so a future edge case is fixed once, not per call site.
+    for idx, item in enumerate(iter_jsonld_objects(soup, on_parse_error=_log_parse_error)):
+        schema_type = item.get("@type", "Unknown")
+        if isinstance(schema_type, list):
+            schema_type = schema_type[0] if schema_type else "Unknown"
+        found_schemas.append({"type": schema_type, "data": item, "index": idx})
 
     found_types = [s["type"] for s in found_schemas]
     missing = []
@@ -252,7 +243,7 @@ def analyze_html_file(file_path: str) -> SchemaAnalysis:
         extracted_faqs=extracted_faqs,
         duplicates=duplicates,
         has_head=bool(soup.find("head")),
-        total_scripts=len(scripts),
+        total_scripts=total_scripts,
     )
 
 
