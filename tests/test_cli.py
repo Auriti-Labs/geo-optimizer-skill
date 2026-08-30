@@ -1347,6 +1347,32 @@ class TestSchemaGenerateCommand:
         assert '"@type": "BreadcrumbList"' in result.output
         assert '"itemListElement"' in result.output
 
+    def test_generate_howto_schema(self, runner):
+        """geo schema --type howto generates a HowTo script tag (#535-cleanup follow-up:
+        audit_schema.py already scores has_howto, but --type had no matching template)."""
+        result = runner.invoke(cli, ["schema", "--type", "howto"])
+        assert result.exit_code == 0
+        assert '"@type": "HowTo"' in result.output
+        assert '"@type": "HowToStep"' in result.output
+
+    def test_generate_review_schema(self, runner):
+        """geo schema --type review generates a Review script tag with a nested Rating."""
+        result = runner.invoke(cli, ["schema", "--type", "review", "--name", "Acme Widget", "--author", "Jane Doe"])
+        assert result.exit_code == 0
+        assert '"@type": "Review"' in result.output
+        assert '"@type": "Rating"' in result.output
+        assert '"name": "Jane Doe"' in result.output
+
+    def test_generate_product_schema(self, runner):
+        """geo schema --type product generates a Product script tag with a nested Offer."""
+        result = runner.invoke(
+            cli, ["schema", "--type", "product", "--name", "Widget Pro", "--description", "A widget"]
+        )
+        assert result.exit_code == 0
+        assert '"@type": "Product"' in result.output
+        assert '"@type": "Offer"' in result.output
+        assert '"name": "Widget Pro"' in result.output
+
     def test_generate_schema_with_all_fields(self, runner):
         """All optional fields are reflected in the generated schema."""
         result = runner.invoke(

@@ -350,6 +350,47 @@ SCHEMA_TEMPLATES = {
         "@type": "BreadcrumbList",
         "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "{{url}}"}],
     },
+    # HowTo, Review and Product close the detect->generate gap: audit_schema.py already
+    # scores has_howto/has_product, and Review/AggregateRating is one of the more
+    # citation-relevant types per GEO research, but `geo schema --type` had no template
+    # for any of the three — a user told "you're missing HowTo schema" had no way to ask
+    # the tool that told them so to generate it.
+    "howto": {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "{{title}}",
+        "description": "{{description}}",
+        "image": "{{image_url}}",
+        "totalTime": "{{total_time}}",
+        "step": [
+            {"@type": "HowToStep", "name": "{{step_1_name}}", "text": "{{step_1_text}}"},
+        ],
+    },
+    "review": {
+        "@context": "https://schema.org",
+        "@type": "Review",
+        "itemReviewed": {"@type": "Thing", "name": "{{name}}"},
+        # ratingValue/bestRating as strings: schema.org accepts Number or Text, and a
+        # template placeholder is text until the user fills it in — matches how every
+        # other numeric-looking field in this file's templates is handled.
+        "reviewRating": {"@type": "Rating", "ratingValue": "{{rating_value}}", "bestRating": "5"},
+        "author": {"@type": "Person", "name": "{{author}}"},
+        "reviewBody": "{{review_body}}",
+    },
+    "product": {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "{{name}}",
+        "description": "{{description}}",
+        "image": "{{image_url}}",
+        "brand": {"@type": "Brand", "name": "{{author}}"},
+        "offers": {
+            "@type": "Offer",
+            "price": "{{price}}",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock",
+        },
+    },
 }
 
 # ─── llms.txt patterns ──────────────────────────────────────────────────────
