@@ -105,7 +105,7 @@ class CompetitiveNarrativeResult:
 # ─── LLM Prompts ──────────────────────────────────────────────────────────────
 
 
-_NARRATIVE_EXTRACTOR_PROMPT = """Analizza come l'AI crawler (ChatGPT, Perplexity, Claude) potrebbe descrivere questo brand.
+_NARRATIVE_EXTRACTOR_PROMPT = """Analyze how an AI crawler (ChatGPT, Perplexity, Claude) might describe this brand.
 
 Page info:
 - URL: {url}
@@ -116,14 +116,14 @@ Page info:
 - Content word count: {word_count}
 - Key sections: {sections}
 
-Richieste:
-1. Estrai 3-5 aggettivi dominanti che definiscono questo brand
-2. Identifica 2-4 "frames" o positioning chiave (es. "AI-first", "developer-friendly", "enterprise-grade")
-3. Scrivi una frase di posizionamento (massimo 15 parole)
-4. Estrai segnali di credibilità presenti (case study, testimonials, certifications)
-5. Segnala cosa potrebbe mancare in termini di narrative (es. "nessuna menzione di sostenibilità")
+Tasks:
+1. Extract 3-5 dominant adjectives that define this brand
+2. Identify 2-4 key "frames" or positioning angles (e.g. "AI-first", "developer-friendly", "enterprise-grade")
+3. Write a one-line positioning statement (max 15 words)
+4. Extract the credibility signals present (case studies, testimonials, certifications)
+5. Flag what might be missing from the narrative (e.g. "no mention of sustainability")
 
-Rispondi in JSON con struttura:
+Respond in JSON with this structure:
 {{
   "dominant_adjectives": ["...", "..."],
   "key_frames": ["...", "..."],
@@ -134,33 +134,33 @@ Rispondi in JSON con struttura:
 }}""".strip()
 
 
-_COMPETITIVE_COMPARISON_PROMPT = """Confronta il posizionamento di due brand nello stesso settore.
+_COMPETITIVE_COMPARISON_PROMPT = """Compare the positioning of two brands in the same market.
 
-Brand Target (il tuo):
+Target brand (yours):
 - URL: {target_url}
 - Brand name: {target_brand}
 - Positioning: {target_positioning}
 - Key frames: {target_frames}
 
-Brand Competitor:
+Competitor brand:
 - URL: {competitor_url}
 - Brand name: {competitor_name}
 - Positioning: {competitor_positioning}
 - Key frames: {competitor_frames}
 
-Richieste:
-1. Quali sono le principali differenze di positioning?
-2. Quali segmenti di mercato il competitor copre che mancano al target?
-3. Quali signal manca al target che il competitor ha?
-4. Quale contenuto dovrebbe creare il target per colmare il gap?
+Tasks:
+1. What are the main positioning differences?
+2. Which market segments does the competitor cover that the target misses?
+3. Which signals does the target lack that the competitor has?
+4. What content should the target create to close the gap?
 
-Rispondi in JSON con struttura:
+Respond in JSON with this structure:
 {{
-  "positioning_gap": "descrizione del gap principale",
-  "missing_market_segment": "segmento mancante",
+  "positioning_gap": "description of the main gap",
+  "missing_market_segment": "missing segment",
   "missing_signals": ["signal1", "signal2"],
-  "suggested_content": "idea contenuto per colmare il gap",
-  "geo_impact": 3  // 1-5, stima impatto GEO
+  "suggested_content": "content idea to close the gap",
+  "geo_impact": 3  // 1-5, estimated GEO impact
 }}""".strip()
 
 
