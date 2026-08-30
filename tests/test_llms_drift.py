@@ -144,6 +144,33 @@ class TestCheckLlmsDrift:
         assert result.checked is False
         assert result.error == "Sitemap not found"
 
+    def test_infra_companion_files_not_flagged_as_stale(self):
+        """Caught live against geoready.dev during smoke testing: llms.txt linking its
+        own companion file and the AI-discovery endpoints must not read as drift just
+        because sitemaps never list non-page infrastructure files."""
+        llms_txt = (
+            "# Example\n\n> Desc\n\n## Main Pages\n\n- [Home](https://example.com/)\n\n"
+            "## Optional\n\n"
+            "- [llms-full.txt](https://example.com/llms-full.txt)\n"
+            "- [AI summary](https://example.com/ai/summary.json)\n"
+            "- [AI FAQ](https://example.com/ai/faq.json)\n"
+            "- [AI service](https://example.com/ai/service.json)\n"
+            "- [ai.txt](https://example.com/.well-known/ai.txt)\n"
+        )
+        with (
+            patch("geo_optimizer.core.llms_generator.discover_sitemap", return_value="https://example.com/sitemap.xml"),
+            patch(
+                "geo_optimizer.core.llms_generator.fetch_sitemap",
+                return_value=_sitemap(["https://example.com/"]),
+            ),
+        ):
+            result = check_llms_drift("https://example.com", llms_txt_content=llms_txt)
+
+        assert result.stale_url_count == 0
+        assert result.stale_urls == []
+        # the raw count still reflects everything actually linked
+        assert result.llms_txt_url_count == 6
+
     def test_large_diff_is_capped_but_count_is_exact(self):
         stale_llms_txt = "# Example\n\n> Desc\n\n" + "\n".join(
             f"- [Page {i}](https://example.com/gone-{i})" for i in range(30)

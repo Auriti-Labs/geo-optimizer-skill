@@ -594,6 +594,26 @@ def _discover_sitemap_inner(
     return None
 
 
+# llms.txt commonly links to these alongside content pages (its own companion
+# file, the AI-discovery endpoints, robots.txt/sitemap.xml) — none of them are
+# content pages, and no XML sitemap lists them, so their absence from the
+# sitemap is not drift. Caught live against geoready.dev's own llms.txt during
+# smoke testing (#535-cleanup follow-up): all four AI-discovery files were
+# flagged "stale" despite being live, intentional, and correctly linked.
+_LLMS_TXT_INFRA_PATHS = frozenset(
+    {
+        "/llms.txt",
+        "/llms-full.txt",
+        "/robots.txt",
+        "/sitemap.xml",
+        "/.well-known/ai.txt",
+        "/ai/summary.json",
+        "/ai/faq.json",
+        "/ai/service.json",
+    }
+)
+
+
 def _normalize_drift_url(url: str, domain: str) -> str | None:
     """Normalize a URL for llms.txt drift comparison.
 
@@ -665,7 +685,8 @@ def check_llms_drift(
     sitemap_urls.discard(None)
     result.sitemap_url_count = len(sitemap_urls)
 
-    stale = sorted(llms_urls - sitemap_urls)
+    infra_urls = {f"{base_url}{path}" for path in _LLMS_TXT_INFRA_PATHS}
+    stale = sorted((llms_urls - infra_urls) - sitemap_urls)
     missing = sorted(sitemap_urls - llms_urls)
 
     result.stale_url_count = len(stale)
