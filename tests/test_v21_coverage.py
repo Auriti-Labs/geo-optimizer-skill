@@ -674,7 +674,7 @@ class TestSchemaCmdPathTraversalValidation:
             ],
         )
         assert result.exit_code == 1
-        assert "non valido" in result.output or "Percorso" in result.output
+        assert "Invalid file path" in result.output
 
     def test_righe_71_72_faq_file_non_esistente_bloccato(self):
         """Righe 71-72: --faq-file con percorso non esistente → errore e exit code 1."""
@@ -695,7 +695,7 @@ class TestSchemaCmdPathTraversalValidation:
                 ],
             )
         assert result.exit_code == 1
-        assert "non valido" in result.output or "FAQ" in result.output
+        assert "Invalid FAQ file path" in result.output
 
     def test_file_con_estensione_non_consentita_bloccato(self):
         """--file con estensione .txt non consentita → errore."""

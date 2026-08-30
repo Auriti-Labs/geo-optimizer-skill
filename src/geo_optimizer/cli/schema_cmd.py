@@ -65,12 +65,12 @@ def schema(
     if file_path:
         safe, reason = validate_safe_path(file_path, allowed_extensions=_ALLOWED_HTML_EXT, must_exist=True)
         if not safe:
-            click.echo(f"❌ Percorso file non valido: {reason}", err=True)
+            click.echo(f"❌ Invalid file path: {reason}", err=True)
             sys.exit(1)
     if faq_file:
         safe, reason = validate_safe_path(faq_file, allowed_extensions={".json"}, must_exist=True)
         if not safe:
-            click.echo(f"❌ Percorso FAQ file non valido: {reason}", err=True)
+            click.echo(f"❌ Invalid FAQ file path: {reason}", err=True)
             sys.exit(1)
 
     # Mode 1: Analyze

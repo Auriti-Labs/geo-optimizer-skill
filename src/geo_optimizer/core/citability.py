@@ -1073,9 +1073,9 @@ def detect_content_freshness(soup, clean_text: str | None = None) -> MethodScore
     warnings: list[str] = []
 
     if freshness_level == "stale" and has_date_signal and months_old is not None:
-        warnings.append(f"Contenuto aggiornato {int(months_old)} mesi fa")
+        warnings.append(f"Content last updated {int(months_old)} months ago")
     elif not has_date_signal:
-        warnings.append("Nessun segnale di data (dateModified/datePublished) trovato")
+        warnings.append("No date signal (dateModified/datePublished) found")
         score += 1  # Base point to avoid penalizing too harshly
 
     if has_current_year_refs:

@@ -56,7 +56,7 @@ def llms(
     # Anti-SSRF validation: block URLs pointing to private/internal networks
     safe, reason = validate_public_url(base_url)
     if not safe:
-        click.echo(f"\n❌ URL non sicuro: {reason}", err=True)
+        click.echo(f"\n❌ Unsafe URL: {reason}", err=True)
         sys.exit(1)
 
     if check_drift:

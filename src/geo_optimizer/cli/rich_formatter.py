@@ -276,7 +276,7 @@ def _build_robots_card(result: AuditResult, score: int, max_score: int) -> Panel
     content_parts.append(Text())
 
     if not result.robots.found:
-        content_parts.append(Text("  File non trovato", style=f"italic {_COLORS['dim']}"))
+        content_parts.append(Text("  File not found", style=f"italic {_COLORS['dim']}"))
     else:
         # Bot info with detail
         info = Text()
@@ -327,7 +327,7 @@ def _build_llms_card(result: AuditResult, score: int, max_score: int) -> Panel:
     content_parts.append(Text())
 
     if not result.llms.found:
-        content_parts.append(Text("  File non trovato", style=f"italic {_COLORS['dim']}"))
+        content_parts.append(Text("  File not found", style=f"italic {_COLORS['dim']}"))
     else:
         # Structure details
         features = []
@@ -814,9 +814,9 @@ def _build_js_card(result: AuditResult) -> Panel | None:
         content_parts.append(fw)
 
     if js.has_empty_root:
-        content_parts.append(Text("  ⚠ Container SPA vuoto rilevato", style=_COLORS["foundation"]))
+        content_parts.append(Text("  ⚠ Empty SPA container detected", style=_COLORS["foundation"]))
     if js.has_noscript_content:
-        content_parts.append(Text("  ℹ Fallback <noscript> presente", style=_COLORS["dim"]))
+        content_parts.append(Text("  ℹ Fallback <noscript> present", style=_COLORS["dim"]))
 
     color = _COLORS["excellent"] if not js.js_dependent else _COLORS["critical"]
     status = "PASS" if not js.js_dependent else "JS-DEPENDENT"

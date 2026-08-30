@@ -666,8 +666,8 @@ class TestRichFormatter:
         result = _crea_audit_result_vuoto()
         output = format_audit_rich(result)
 
-        # v2: testo in italiano "File non trovato"
-        assert "non trovato" in output
+        # v2: English-only output ("File not found")
+        assert "not found" in output
 
     @pytest.mark.skipif(
         not __import__("importlib").util.find_spec("rich"),
@@ -680,8 +680,8 @@ class TestRichFormatter:
         result = _crea_audit_result_vuoto()
         output = format_audit_rich(result)
 
-        # v2: testo in italiano "File non trovato"
-        assert "non trovato" in output
+        # v2: English-only output ("File not found")
+        assert "not found" in output
 
     @pytest.mark.skipif(
         not __import__("importlib").util.find_spec("rich"),
