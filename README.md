@@ -278,7 +278,7 @@ Treat AI visibility like test coverage: gate every deploy on it. The GitHub Acti
 
 ```yaml
 # .github/workflows/geo.yml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.16.4
+- uses: Auriti-Labs/geo-optimizer-skill@v4.17.0
   with:
     url: https://yoursite.com
     min-score: 70        # Fail the build if the GEO score drops below 70

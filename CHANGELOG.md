@@ -5,7 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
-## [Unreleased]
+## [4.17.0] — 2026-08-30
+
+New LLM provider and multimodal prompt support (community-contributed), a User-Agent
+override for sites that block the default identity, a WebMCP readiness fix, and a
+duplication cleanup across the three JSON-LD `@graph` parsers.
 
 ### Added
 - **MiniMax LLM provider.** `geo citations` can use `MiniMax-M3` or `MiniMax-M2.7` through either supported API wire format, with configurable global or China API roots and optional thinking control.
