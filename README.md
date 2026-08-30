@@ -154,6 +154,10 @@ geo fix --url https://yoursite.com --apply
 # Generate llms.txt from sitemap
 geo llms --base-url https://yoursite.com --output ./public/llms.txt
 
+# Check whether an existing llms.txt still matches the current sitemap
+# (exits 1 on stale URLs — CI-gateable, no per-link HTTP request)
+geo llms --base-url https://yoursite.com --check-drift
+
 # Generate JSON-LD schema
 geo schema --type faq --url https://yoursite.com
 ```

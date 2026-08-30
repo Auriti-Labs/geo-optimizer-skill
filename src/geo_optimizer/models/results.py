@@ -68,6 +68,29 @@ class LlmsTxtResult:
     validation_warnings: list[str] = field(default_factory=list)  # conformance warnings
 
 
+@dataclass
+class LlmsDriftResult:
+    """Compares an llms.txt's listed URLs against the site's current sitemap.
+
+    llms.txt is generated once and then trusted by AI agents as a map of the
+    site — nothing previously checked whether that map still matches reality.
+    `stale_urls` (listed in llms.txt, absent from the current sitemap) is the
+    signal that actively hurts citability: an agent following those links
+    hits 404s or redirects instead of the content it was told to expect.
+    `missing_urls` (in the sitemap, not yet in llms.txt) means llms.txt is
+    just behind, not wrong.
+    """
+
+    checked: bool = False
+    llms_txt_url_count: int = 0
+    sitemap_url_count: int = 0
+    stale_urls: list[str] = field(default_factory=list)  # in llms.txt, gone from the sitemap
+    stale_url_count: int = 0
+    missing_urls: list[str] = field(default_factory=list)  # in the sitemap, not yet in llms.txt (sample)
+    missing_url_count: int = 0
+    error: str | None = None
+
+
 # ─── Schema JSON-LD ──────────────────────────────────────────────────────────
 
 

@@ -1152,6 +1152,68 @@ class TestLlmsCommand:
         result = runner.invoke(cli, ["llms"])
         assert result.exit_code != 0
 
+    @patch("geo_optimizer.cli.llms_cmd.check_llms_drift")
+    def test_llms_check_drift_no_stale_urls_exits_zero(self, mock_drift, runner):
+        """geo llms --check-drift with no stale URLs exits 0."""
+        from geo_optimizer.models.results import LlmsDriftResult
+
+        mock_drift.return_value = LlmsDriftResult(
+            checked=True, llms_txt_url_count=5, sitemap_url_count=5, stale_url_count=0, missing_url_count=0
+        )
+        result = runner.invoke(cli, ["llms", "--check-drift", "--base-url", "https://example.com"])
+        assert result.exit_code == 0
+        assert "No stale URLs" in result.output
+
+    @patch("geo_optimizer.cli.llms_cmd.check_llms_drift")
+    def test_llms_check_drift_stale_urls_exits_one(self, mock_drift, runner):
+        """geo llms --check-drift exits 1 when it finds stale URLs (CI-gateable)."""
+        from geo_optimizer.models.results import LlmsDriftResult
+
+        mock_drift.return_value = LlmsDriftResult(
+            checked=True,
+            llms_txt_url_count=5,
+            sitemap_url_count=4,
+            stale_url_count=1,
+            stale_urls=["https://example.com/gone"],
+        )
+        result = runner.invoke(cli, ["llms", "--check-drift", "--base-url", "https://example.com"])
+        assert result.exit_code == 1
+        assert "https://example.com/gone" in result.output
+
+    @patch("geo_optimizer.cli.llms_cmd.check_llms_drift")
+    def test_llms_check_drift_error_exits_one(self, mock_drift, runner):
+        from geo_optimizer.models.results import LlmsDriftResult
+
+        mock_drift.return_value = LlmsDriftResult(checked=False, error="Sitemap not found")
+        result = runner.invoke(cli, ["llms", "--check-drift", "--base-url", "https://example.com"])
+        assert result.exit_code == 1
+        assert "Sitemap not found" in result.output
+
+    @patch("geo_optimizer.cli.llms_cmd.check_llms_drift")
+    def test_llms_check_drift_reads_local_file(self, mock_drift, runner):
+        """--llms-file reads local content instead of fetching it live."""
+        from geo_optimizer.models.results import LlmsDriftResult
+
+        mock_drift.return_value = LlmsDriftResult(checked=True)
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
+            f.write("# Example\n\n> Desc\n\n- [Home](https://example.com/)\n")
+            path = f.name
+        try:
+            result = runner.invoke(
+                cli, ["llms", "--check-drift", "--base-url", "https://example.com", "--llms-file", path]
+            )
+            assert result.exit_code == 0
+            assert mock_drift.call_args.kwargs["llms_txt_content"] is not None
+        finally:
+            os.unlink(path)
+
+    def test_llms_check_drift_missing_local_file(self, runner):
+        result = runner.invoke(
+            cli, ["llms", "--check-drift", "--base-url", "https://example.com", "--llms-file", "/no/such/file.txt"]
+        )
+        assert result.exit_code == 1
+        assert "Could not read" in result.output
+
 
 # ============================================================================
 # 4. SCHEMA COMMAND — ANALYZE

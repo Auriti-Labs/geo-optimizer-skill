@@ -11,6 +11,7 @@ import sys
 import click
 
 from geo_optimizer.core.llms_generator import (
+    check_llms_drift,
     discover_sitemap,
     fetch_sitemap,
     generate_llms_txt,
@@ -33,7 +34,20 @@ from geo_optimizer.utils.validators import validate_public_url
     help="Override the User-Agent sent when fetching the site (also via GEO_USER_AGENT). "
     "Does not affect the CDN AI-crawler check, which needs its own bot identity.",
 )
-def llms(base_url, output, sitemap, site_name, description, fetch_titles, max_per_section, user_agent):
+@click.option(
+    "--check-drift",
+    is_flag=True,
+    help="Check whether an existing llms.txt still matches the current sitemap, instead of "
+    "generating a new one. Exits 1 if it finds stale URLs (listed in llms.txt, gone from the sitemap).",
+)
+@click.option(
+    "--llms-file",
+    default=None,
+    help="Local llms.txt file to check (with --check-drift). Default: fetch {base-url}/llms.txt live.",
+)
+def llms(
+    base_url, output, sitemap, site_name, description, fetch_titles, max_per_section, user_agent, check_drift, llms_file
+):
     """Generate llms.txt from XML sitemap for GEO optimization."""
     set_user_agent_override(resolve_user_agent_override(user_agent))
 
@@ -46,6 +60,10 @@ def llms(base_url, output, sitemap, site_name, description, fetch_titles, max_pe
     if not safe:
         click.echo(f"\n❌ URL non sicuro: {reason}", err=True)
         sys.exit(1)
+
+    if check_drift:
+        _run_check_drift(base_url, llms_file)
+        return
 
     # Status messages on stderr to avoid interfering with redirected output (fix #143)
     click.echo("\n🌐 GEO llms.txt Generator", err=True)
@@ -103,3 +121,48 @@ def llms(base_url, output, sitemap, site_name, description, fetch_titles, max_pe
         click.echo(content)
         click.echo("─" * 50, err=True)
         click.echo("\n✅ Save with: --output /path/to/public/llms.txt", err=True)
+
+
+def _run_check_drift(base_url: str, llms_file: str | None) -> None:
+    """Handle `geo llms --check-drift`: report stale/missing URLs and exit non-zero on drift."""
+    llms_txt_content = None
+    if llms_file:
+        try:
+            with open(llms_file, encoding="utf-8") as f:
+                llms_txt_content = f.read()
+        except OSError as exc:
+            click.echo(f"\n❌ Could not read {llms_file}: {exc}", err=True)
+            sys.exit(1)
+
+    click.echo("\n🔍 Checking llms.txt against the current sitemap...", err=True)
+    drift = check_llms_drift(
+        base_url,
+        llms_txt_content=llms_txt_content,
+        on_status=lambda msg: click.echo(f"   {msg}", err=True),
+    )
+
+    if drift.error:
+        click.echo(f"\n❌ {drift.error}", err=True)
+        sys.exit(1)
+
+    click.echo(f"\n   llms.txt URLs: {drift.llms_txt_url_count}", err=True)
+    click.echo(f"   Sitemap URLs:  {drift.sitemap_url_count}", err=True)
+
+    if drift.stale_url_count:
+        click.echo(f"\n⚠️  {drift.stale_url_count} URL(s) in llms.txt are no longer in the sitemap:", err=True)
+        for url in drift.stale_urls:
+            click.echo(f"   - {url}", err=True)
+        if drift.stale_url_count > len(drift.stale_urls):
+            click.echo(f"   ... and {drift.stale_url_count - len(drift.stale_urls)} more", err=True)
+    else:
+        click.echo("\n✅ No stale URLs — llms.txt matches the current sitemap", err=True)
+
+    if drift.missing_url_count:
+        click.echo(f"\n💡 {drift.missing_url_count} sitemap URL(s) not yet in llms.txt:", err=True)
+        for url in drift.missing_urls:
+            click.echo(f"   - {url}", err=True)
+        if drift.missing_url_count > len(drift.missing_urls):
+            click.echo(f"   ... and {drift.missing_url_count - len(drift.missing_urls)} more", err=True)
+
+    if drift.stale_url_count:
+        sys.exit(1)

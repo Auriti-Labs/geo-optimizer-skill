@@ -26,8 +26,8 @@ from geo_optimizer.models.config import (
     SKIP_PATTERNS,
     get_headers,
 )
-from geo_optimizer.models.results import SitemapUrl
-from geo_optimizer.utils.http import MAX_RESPONSE_SIZE, create_session_with_retry
+from geo_optimizer.models.results import LlmsDriftResult, SitemapUrl
+from geo_optimizer.utils.http import MAX_RESPONSE_SIZE, create_session_with_retry, fetch_url
 from geo_optimizer.utils.validators import (
     resolve_and_validate_url,
     url_belongs_to_domain,
@@ -592,3 +592,85 @@ def _discover_sitemap_inner(
     if on_status:
         on_status("No sitemap found automatically")
     return None
+
+
+def _normalize_drift_url(url: str, domain: str) -> str | None:
+    """Normalize a URL for llms.txt drift comparison.
+
+    Absolute, same-domain, no trailing slash or fragment — so the same page
+    linked two different ways (with/without trailing slash, with a #anchor)
+    compares equal instead of reading as drift that isn't real.
+    """
+    if not url.startswith("http"):
+        return None
+    if not url_belongs_to_domain(url, domain):
+        return None
+    parsed = urlparse(url)
+    path = parsed.path.rstrip("/") or "/"
+    return f"{parsed.scheme}://{parsed.netloc}{path}"
+
+
+def check_llms_drift(
+    base_url: str,
+    llms_txt_content: str | None = None,
+    on_status: Callable[[str], None] | None = None,
+) -> LlmsDriftResult:
+    """Compare an llms.txt's listed URLs against the site's current sitemap.
+
+    llms.txt is generated once and then trusted by AI agents as a map of the
+    site; nothing previously checked whether that map still matches reality.
+    This reuses the sitemap fetch `geo llms` already does for generation —
+    no per-link HTTP request, so the check stays fast and deterministic
+    instead of pinging every listed URL individually.
+
+    Args:
+        base_url: The site's base URL.
+        llms_txt_content: llms.txt content to check. If None, fetched live
+            from ``{base_url}/llms.txt``.
+        on_status: Optional callback for progress messages.
+
+    Returns:
+        LlmsDriftResult with stale/missing URL counts and a capped sample
+        of each (full lists can be large on big sites).
+    """
+    result = LlmsDriftResult()
+    base_url = base_url.rstrip("/")
+    domain = urlparse(base_url).netloc
+
+    if llms_txt_content is None:
+        if on_status:
+            on_status("Fetching llms.txt...")
+        r, err = fetch_url(f"{base_url}/llms.txt")
+        if not r or err:
+            result.error = err or "llms.txt not reachable"
+            return result
+        llms_txt_content = r.text
+
+    llms_urls = {
+        _normalize_drift_url(urljoin(base_url, link_url), domain)
+        for _label, link_url in _MARKDOWN_LINK_RE.findall(llms_txt_content)
+    }
+    llms_urls.discard(None)
+    result.llms_txt_url_count = len(llms_urls)
+
+    if on_status:
+        on_status("Discovering sitemap...")
+    sitemap_url = discover_sitemap(base_url, on_status=on_status)
+    if not sitemap_url:
+        result.error = "Sitemap not found"
+        return result
+
+    sitemap_entries = fetch_sitemap(sitemap_url, on_status=on_status)
+    sitemap_urls = {_normalize_drift_url(urljoin(base_url, entry.url), domain) for entry in sitemap_entries}
+    sitemap_urls.discard(None)
+    result.sitemap_url_count = len(sitemap_urls)
+
+    stale = sorted(llms_urls - sitemap_urls)
+    missing = sorted(sitemap_urls - llms_urls)
+
+    result.stale_url_count = len(stale)
+    result.stale_urls = stale[:20]
+    result.missing_url_count = len(missing)
+    result.missing_urls = missing[:20]
+    result.checked = True
+    return result

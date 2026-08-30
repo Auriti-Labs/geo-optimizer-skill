@@ -52,6 +52,27 @@ geo llms \
 | `--description` | none | Short description of the site (1–2 sentences) |
 | `--max-per-section` | `20` | Max URLs per content section |
 | `--fetch-titles` | false | Fetch each URL to extract its `<title>` tag (slower but richer output) |
+| `--check-drift` | false | Check an existing llms.txt against the current sitemap instead of generating one; exits 1 on stale URLs |
+| `--llms-file` | fetched live | Local llms.txt to check with `--check-drift`, instead of fetching `{base-url}/llms.txt` |
+
+---
+
+## Checking for drift
+
+llms.txt is generated once and then trusted by AI agents as a map of the site — nothing checks
+whether that map is still accurate as pages get renamed or removed. `--check-drift` compares the
+URLs listed in llms.txt against the site's *current* sitemap (reusing the sitemap fetch `geo llms`
+already does for generation, so it costs no extra per-link HTTP request):
+
+```bash
+geo llms --base-url https://yoursite.com --check-drift
+```
+
+- **Stale URLs** — listed in llms.txt, gone from the sitemap. These actively hurt citability: an
+  agent following the link hits a 404 or redirect instead of the content it was told to expect.
+  Presence of any stale URL exits with code 1, so this is safe to run in CI.
+- **Missing URLs** — in the sitemap, not yet in llms.txt. This means llms.txt is behind, not wrong
+  — regenerate it with `geo llms --base-url ... --output ...`.
 
 ---
 
