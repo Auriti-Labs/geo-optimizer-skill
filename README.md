@@ -179,7 +179,9 @@ Set `GEO_LLM_MODEL` to select either supported model. Model capabilities are:
 | `MiniMax-M3` | 1,000,000 tokens | Text, image, video | `adaptive` or `disabled` |
 | `MiniMax-M2.7` | 204,800 tokens | Text | Always on |
 
-`geo citations` currently sends text prompts. See the
+`geo citations` currently sends text prompts. The modalities column lists what each model's API
+accepts; `query_llm` currently types text and image content parts, so video input needs a schema
+addition before it can be passed. See the
 [official MiniMax pricing page](https://platform.minimax.io/docs/pricing/overview) for current rates.
 
 ---

@@ -21,6 +21,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass, field
+from typing import TypedDict, Union
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,27 @@ _MINIMAX_API_FORMATS = {
     "anthropic": {"base_url": "https://api.minimax.io/anthropic", "path": "v1/messages"},
 }
 _MINIMAX_THINKING_MODES = {"adaptive", "disabled"}
+
+
+class LLMContentPart(TypedDict, total=False):
+    """A structured text or image content part passed to an LLM.
+
+    Content parts are forwarded to the provider verbatim, so the caller is
+    responsible for using the shape the selected wire format expects: the
+    OpenAI-compatible format reads ``{"type": "image_url", "image_url":
+    {...}}`` while the Anthropic-compatible format reads ``{"type": "image",
+    "source": {...}}``. Both key sets are declared optional so one type covers
+    both formats; a part built for one format is still rejected at runtime by
+    the other. Video parts are not modelled yet.
+    """
+
+    type: str
+    text: str
+    image_url: dict[str, object]
+    source: dict[str, object]
+
+
+LLMPrompt = Union[str, list[LLMContentPart]]
 
 
 @dataclass
@@ -88,7 +110,7 @@ def detect_provider() -> tuple[str | None, str | None]:
 
 
 def query_llm(
-    prompt: str,
+    prompt: LLMPrompt,
     *,
     system: str = "",
     provider: str | None = None,
@@ -99,7 +121,9 @@ def query_llm(
     """Send a prompt to an LLM and return the response.
 
     Args:
-        prompt: User message to send.
+        prompt: Plain text, or structured content parts the selected model and
+            wire format accept. See `LLMContentPart` for the caller's
+            responsibility when passing parts.
         system: Optional system message.
         provider: LLM provider (auto-detected if not set).
         api_key: API key (auto-detected if not set).
@@ -141,7 +165,7 @@ def query_llm(
     return LLMResponse(error=f"Unknown provider: {provider}")
 
 
-def _query_openai(prompt: str, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
+def _query_openai(prompt: LLMPrompt, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
     try:
         from openai import OpenAI
         from openai.types.chat import (
@@ -172,7 +196,7 @@ def _query_openai(prompt: str, *, system: str, api_key: str, model: str, max_tok
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="openai", model=model)
 
 
-def _query_anthropic(prompt: str, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
+def _query_anthropic(prompt: LLMPrompt, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
     try:
         from anthropic import Anthropic
     except ImportError:
@@ -197,7 +221,7 @@ def _query_anthropic(prompt: str, *, system: str, api_key: str, model: str, max_
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="anthropic", model=model)
 
 
-def _query_perplexity(prompt: str, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
+def _query_perplexity(prompt: LLMPrompt, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
     """Query Perplexity Sonar via plain HTTP (OpenAI-compatible, returns web citations)."""
     import requests
 
@@ -237,7 +261,7 @@ def _query_perplexity(prompt: str, *, system: str, api_key: str, model: str, max
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="perplexity", model=model)
 
 
-def _query_groq(prompt: str, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
+def _query_groq(prompt: LLMPrompt, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
     try:
         from groq import Groq
         from openai.types.chat import (
@@ -268,7 +292,7 @@ def _query_groq(prompt: str, *, system: str, api_key: str, model: str, max_token
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="groq", model=model)
 
 
-def _query_minimax(prompt: str, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
+def _query_minimax(prompt: LLMPrompt, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
     """Query MiniMax via either supported HTTP wire format."""
     import requests
 
