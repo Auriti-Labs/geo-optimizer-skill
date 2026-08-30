@@ -1,10 +1,10 @@
 """
 Provider-agnostic LLM query client for GEO Optimizer.
 
-Supports OpenAI, Anthropic, Groq (optional dependencies), Perplexity and
-MiniMax (both use the core `requests` dependency, no extra needed).
+Supports OpenAI, Anthropic, Groq (optional dependencies), Perplexity, MiniMax
+and Gemini (all three use the core `requests` dependency, no extra needed).
 Configuration via environment variables:
-  GEO_LLM_PROVIDER  — openai | anthropic | groq | perplexity | minimax (auto-detected if not set)
+  GEO_LLM_PROVIDER  — openai | anthropic | groq | perplexity | minimax | gemini (auto-detected if not set)
   GEO_LLM_API_KEY   — API key (falls back to provider-specific env vars)
   GEO_LLM_MODEL     — model name (provider default if not set)
 
@@ -13,7 +13,7 @@ MiniMax-specific configuration:
   MINIMAX_API_BASE_URL  — API root override for another supported region
   MINIMAX_THINKING      — adaptive | disabled for MiniMax-M3 (MiniMax-M2.7 is always on)
 
-Requires: pip install geo-optimizer-skill[llm] (except Perplexity and MiniMax)
+Requires: pip install geo-optimizer-skill[llm] (except Perplexity, MiniMax and Gemini)
 """
 
 from __future__ import annotations
@@ -33,6 +33,7 @@ _PROVIDER_DEFAULTS = {
     "groq": "llama-3.3-70b-versatile",
     "perplexity": "sonar",
     "minimax": "MiniMax-M3",
+    "gemini": "gemini-3.7-flash",
 }
 
 # Keep existing providers ahead of newly added ones so a new key does not
@@ -43,6 +44,7 @@ _PROVIDER_ENV_KEYS = {
     "groq": "GROQ_API_KEY",
     "perplexity": "PERPLEXITY_API_KEY",
     "minimax": "MINIMAX_API_KEY",
+    "gemini": "GEMINI_API_KEY",
 }
 
 _PERPLEXITY_API_URL = "https://api.perplexity.ai/chat/completions"
@@ -51,6 +53,7 @@ _MINIMAX_API_FORMATS = {
     "anthropic": {"base_url": "https://api.minimax.io/anthropic", "path": "v1/messages"},
 }
 _MINIMAX_THINKING_MODES = {"adaptive", "disabled"}
+_GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
 
 class LLMContentPart(TypedDict, total=False):
@@ -161,6 +164,8 @@ def query_llm(
         return _query_perplexity(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
     if provider == "minimax":
         return _query_minimax(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
+    if provider == "gemini":
+        return _query_gemini(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
 
     return LLMResponse(error=f"Unknown provider: {provider}")
 
@@ -375,3 +380,58 @@ def _query_minimax(prompt: LLMPrompt, *, system: str, api_key: str, model: str, 
     except Exception as exc:
         logger.warning("MiniMax query failed: %s: %s", type(exc).__name__, exc)
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="minimax", model=model)
+
+
+def _query_gemini(prompt: LLMPrompt, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
+    """Query Gemini via the Generative Language API (plain HTTP, no SDK needed)."""
+    import requests
+
+    if isinstance(prompt, str):
+        parts: list[dict] = [{"text": prompt}]
+    else:
+        # Gemini's part shape ({"text": ...} / {"inline_data": ...}) differs from both
+        # the OpenAI- and Anthropic-compatible LLMContentPart shapes; only the text
+        # field is portable across all three, so that is what gets forwarded here.
+        parts = [{"text": item["text"]} for item in prompt if "text" in item]
+
+    payload: dict = {
+        "contents": [{"role": "user", "parts": parts}],
+        "generationConfig": {"maxOutputTokens": max_tokens},
+    }
+    if system:
+        payload["systemInstruction"] = {"parts": [{"text": system}]}
+
+    try:
+        resp = requests.post(
+            _GEMINI_API_URL.format(model=model),
+            headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
+            json=payload,
+            timeout=_LLM_TIMEOUT,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        candidates = data.get("candidates") or []
+        if not candidates:
+            # No candidate can mean the prompt was blocked by a safety filter — an
+            # empty string here would silently read as "brand not mentioned" instead
+            # of "the query never actually ran".
+            block_reason = (data.get("promptFeedback") or {}).get("blockReason")
+            if block_reason:
+                return LLMResponse(error=f"Gemini blocked the prompt: {block_reason}", provider="gemini", model=model)
+            return LLMResponse(text="", model=model, provider="gemini")
+
+        candidate_parts = (candidates[0].get("content") or {}).get("parts") or []
+        text = "".join(part.get("text", "") for part in candidate_parts)
+        usage = data.get("usageMetadata") or {}
+
+        return LLMResponse(
+            text=text,
+            model=data.get("modelVersion", model),
+            provider="gemini",
+            prompt_tokens=usage.get("promptTokenCount", 0),
+            completion_tokens=usage.get("candidatesTokenCount", 0),
+        )
+    except Exception as exc:
+        logger.warning("Gemini query failed: %s: %s", type(exc).__name__, exc)
+        return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="gemini", model=model)

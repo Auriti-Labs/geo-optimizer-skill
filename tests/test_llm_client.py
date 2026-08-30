@@ -117,6 +117,7 @@ def _mock_env(monkeypatch) -> None:
     monkeypatch.delenv("MINIMAX_API_FORMAT", raising=False)
     monkeypatch.delenv("MINIMAX_API_BASE_URL", raising=False)
     monkeypatch.delenv("MINIMAX_THINKING", raising=False)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.setenv("GEO_LLM_MODEL", "test-model")
 
 
@@ -394,3 +395,139 @@ class TestQueryMinimax:
 
         assert resp.error is not None
         assert resp.provider == "minimax"
+
+
+class TestDetectProviderGemini:
+    def test_detect_provider_gemini_env(self, _mock_env, monkeypatch) -> None:
+        """Detect Gemini from GEMINI_API_KEY."""
+        monkeypatch.setenv("GEMINI_API_KEY", "env_key")
+        provider, api_key = llm_client.detect_provider()
+        assert provider == "gemini"
+        assert api_key == "env_key"
+
+
+class TestQueryGemini:
+    """Test the Gemini provider over plain HTTP."""
+
+    def test_query_llm_gemini_success(self, _mock_env, monkeypatch) -> None:
+        """Use the default model and read text/usage from the response shape."""
+        captured: dict = {}
+
+        def _fake_post(url, headers, json, timeout):
+            captured["url"] = url
+            captured["headers"] = headers
+            captured["json"] = json
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(
+                return_value={
+                    "modelVersion": "gemini-3.7-flash",
+                    "candidates": [{"content": {"parts": [{"text": "Gemini response"}]}}],
+                    "usageMetadata": {"promptTokenCount": 8, "candidatesTokenCount": 4},
+                }
+            )
+            return resp
+
+        monkeypatch.delenv("GEO_LLM_MODEL")
+        monkeypatch.setattr("requests.post", _fake_post)
+        resp = llm_client.query_llm("test", provider="gemini", api_key="fake_key", system="system prompt")
+
+        assert resp.text == "Gemini response"
+        assert resp.provider == "gemini"
+        assert resp.model == "gemini-3.7-flash"
+        assert resp.prompt_tokens == 8
+        assert resp.completion_tokens == 4
+        assert (
+            captured["url"]
+            == "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent"
+        )
+        assert captured["headers"]["x-goog-api-key"] == "fake_key"
+        assert captured["json"]["contents"][0]["parts"] == [{"text": "test"}]
+        assert captured["json"]["systemInstruction"] == {"parts": [{"text": "system prompt"}]}
+
+    def test_query_llm_gemini_custom_model(self, _mock_env, monkeypatch) -> None:
+        """A custom model name is interpolated into the URL and forwarded in the payload."""
+        captured: dict = {}
+
+        def _fake_post(url, headers, json, timeout):
+            captured["url"] = url
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(
+                return_value={
+                    "candidates": [{"content": {"parts": [{"text": "ok"}]}}],
+                    "usageMetadata": {},
+                }
+            )
+            return resp
+
+        monkeypatch.setattr("requests.post", _fake_post)
+        resp = llm_client.query_llm("test", provider="gemini", api_key="fake_key", model="gemini-2.5-flash")
+
+        assert resp.text == "ok"
+        assert (
+            captured["url"]
+            == "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+        )
+
+    def test_query_llm_gemini_content_parts_text_only(self, _mock_env, monkeypatch) -> None:
+        """Structured content parts: only the portable 'text' field is forwarded."""
+        captured: dict = {}
+
+        def _fake_post(url, headers, json, timeout):
+            captured["json"] = json
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(return_value={"candidates": [{"content": {"parts": [{"text": "ok"}]}}]})
+            return resp
+
+        monkeypatch.setattr("requests.post", _fake_post)
+        content: list[llm_client.LLMContentPart] = [
+            {"type": "text", "text": "Describe this image"},
+            {"type": "image_url", "image_url": {"url": "https://example.com/image.png"}},
+        ]
+        llm_client.query_llm(content, provider="gemini", api_key="fake_key")
+
+        assert captured["json"]["contents"][0]["parts"] == [{"text": "Describe this image"}]
+
+    def test_query_llm_gemini_blocked_by_safety_filter(self, _mock_env, monkeypatch) -> None:
+        """No candidates + a blockReason must surface as an error, not an empty citation."""
+
+        def _fake_post(url, headers, json, timeout):
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(return_value={"promptFeedback": {"blockReason": "SAFETY"}})
+            return resp
+
+        monkeypatch.setattr("requests.post", _fake_post)
+        resp = llm_client.query_llm("test", provider="gemini", api_key="fake_key")
+
+        assert resp.error == "Gemini blocked the prompt: SAFETY"
+        assert resp.provider == "gemini"
+        assert resp.text == ""
+
+    def test_query_llm_gemini_no_candidates_no_block_reason(self, _mock_env, monkeypatch) -> None:
+        """No candidates and no blockReason: empty text, no fabricated error."""
+
+        def _fake_post(url, headers, json, timeout):
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(return_value={"candidates": []})
+            return resp
+
+        monkeypatch.setattr("requests.post", _fake_post)
+        resp = llm_client.query_llm("test", provider="gemini", api_key="fake_key")
+
+        assert resp.error is None
+        assert resp.text == ""
+        assert resp.provider == "gemini"
+
+    def test_query_llm_gemini_http_error(self, _mock_env) -> None:
+        """Return HTTP/connection errors in LLMResponse.error."""
+        import requests as requests_mod
+
+        with patch("requests.post", side_effect=requests_mod.ConnectionError("down")):
+            resp = llm_client.query_llm("test", provider="gemini", api_key="fake_key")
+
+        assert resp.error is not None
+        assert resp.provider == "gemini"

@@ -184,6 +184,16 @@ accepts; `query_llm` currently types text and image content parts, so video inpu
 addition before it can be passed. See the
 [official MiniMax pricing page](https://platform.minimax.io/docs/pricing/overview) for current rates.
 
+Gemini is checked directly, not just simulated via crawler user-agents:
+
+```bash
+export GEMINI_API_KEY="your-api-key"
+geo citations --provider gemini --brand "YourBrand" --domain yoursite.com
+```
+
+Set `GEO_LLM_MODEL` to pick a specific model (default: `gemini-3.7-flash`). Uses the Gemini API
+directly (`generativelanguage.googleapis.com`), not Vertex AI — no extra dependency needed.
+
 ---
 
 ## What it checks

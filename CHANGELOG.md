@@ -5,6 +5,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Google Gemini LLM provider.** `geo citations` can query Gemini directly (`GEMINI_API_KEY`, `--provider gemini`) via the Generative Language API — plain HTTP, no extra dependency. Closes a gap between the README's own headline claim ("ChatGPT, Perplexity, Gemini, Claude, and Google AI Overviews") and what `geo citations` could actually query: previously there was no way to check whether Gemini mentions/cites a brand, only OpenAI/Anthropic/Groq/Perplexity/MiniMax. A response with no candidates and a `promptFeedback.blockReason` (safety-filtered prompt) surfaces as an error rather than an empty citation result, matching this project's "don't let an ambiguous state read as a confident answer" convention.
+
+---
+
 ## [4.17.0] — 2026-08-30 · Parallax
 
 New LLM provider and multimodal prompt support (community-contributed), a User-Agent
