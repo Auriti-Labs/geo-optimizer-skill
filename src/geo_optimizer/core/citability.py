@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 from geo_optimizer.models.config import (
+    ARTICLE_TYPES,
     FRESHNESS_AGING_DAYS,
     FRESHNESS_FRESH_DAYS,
     FRESHNESS_VERY_FRESH_DAYS,
@@ -1481,8 +1482,30 @@ def detect_comparison_content(soup, clean_text: str | None = None) -> MethodScor
 # ─── 22. E-E-A-T Composite (+15%) — Quality Signal Batch 2 ──────────────────
 
 
+def _extract_article_author(soup) -> dict | None:
+    """Return the `author` value of the first Article-type JSON-LD schema found, if any."""
+    for item in iter_jsonld_objects(soup):
+        item_type = item.get("@type")
+        types = item_type if isinstance(item_type, list) else [item_type]
+        if any(t in ARTICLE_TYPES for t in types):
+            author = item.get("author")
+            if isinstance(author, list):
+                author = author[0] if author else None
+            if isinstance(author, dict):
+                return author
+    return None
+
+
 def detect_eeat(soup) -> MethodScore:
-    """Detect E-E-A-T trust signals not covered by detect_authoritative_tone."""
+    """Detect E-E-A-T trust signals not covered by detect_authoritative_tone.
+
+    The strongest signal here is a structured author: an Article-type schema
+    whose `author` is a `Person` object with `sameAs` links to a verifiable
+    profile (LinkedIn, ORCID, a personal site) is a claim an AI system can
+    check, unlike a text bio saying "10 years of experience" that anyone can
+    write regardless of whether it is true. Both signals are credited —
+    structured data is not required, but it is worth more when present.
+    """
     score = 0
 
     # Trust signals: privacy policy, terms, about, contact
@@ -1519,6 +1542,24 @@ def detect_eeat(soup) -> MethodScore:
     if has_detailed_bio:
         score += 1
 
+    # Structured author: Article-type schema with a Person author, credited
+    # higher when that Person carries sameAs (a checkable claim, not prose).
+    article_author = _extract_article_author(soup)
+    has_structured_author = False
+    has_verified_author = False
+    if article_author:
+        author_type = article_author.get("@type")
+        author_types = author_type if isinstance(author_type, list) else [author_type]
+        if "Person" in author_types:
+            has_structured_author = True
+            score += 1
+            same_as = article_author.get("sameAs")
+            if isinstance(same_as, str):
+                same_as = [same_as]
+            if isinstance(same_as, list) and any(same_as):
+                has_verified_author = True
+                score += 1
+
     # HTTPS (look for canonical or og:url starting with https)
     canonical = soup.find("link", attrs={"rel": "canonical"})
     og_url = soup.find("meta", attrs={"property": "og:url"})
@@ -1535,14 +1576,16 @@ def detect_eeat(soup) -> MethodScore:
     return MethodScore(
         name="eeat_signals",
         label="E-E-A-T Signals",
-        detected=trust_count >= 2 or (has_detailed_bio and trust_count >= 1),
-        score=min(score, 5),
-        max_score=5,
+        detected=trust_count >= 2 or (has_detailed_bio and trust_count >= 1) or has_structured_author,
+        score=min(score, 7),
+        max_score=7,
         impact="+15%",
         details={
             "trust_links": trust_links,
             "trust_link_count": trust_count,
             "has_detailed_bio": has_detailed_bio,
+            "has_structured_author": has_structured_author,
+            "has_verified_author": has_verified_author,
             "is_https": is_https,
         },
     )

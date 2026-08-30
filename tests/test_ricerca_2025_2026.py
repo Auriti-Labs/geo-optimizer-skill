@@ -323,7 +323,8 @@ class TestPesiCitability:
         html = "<html><body><p>Test content.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
         total_max = sum(m.max_score for m in result.methods)
-        assert total_max == 208, f"Max totale citability: {total_max}, atteso 208 (189 precedenti + 19 RAG batch)"
+        # +2 for eeat_signals' structured-author credit (Person + sameAs) → 210
+        assert total_max == 210, f"Max totale citability: {total_max}, atteso 210 (208 + 2 structured-author E-E-A-T)"
 
     def test_metodi_sono_25(self):
         """Devono esserci 30 metodi (18 base + 7 Batch 2 + 5 Batch 3+4)."""

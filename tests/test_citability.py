@@ -835,6 +835,68 @@ class TestEeat:
         assert result.details["trust_link_count"] == 0
         assert result.score == 0
 
+    def test_structured_author_with_sameas_scores_higher_than_bio_text(self):
+        """A verifiable Person + sameAs is a stronger, checkable claim than prose."""
+        html = """
+        <html><body>
+        <script type="application/ld+json">
+        {"@context":"https://schema.org","@type":"Article","headline":"Test",
+         "author":{"@type":"Person","name":"Jane Doe","sameAs":["https://linkedin.com/in/janedoe"]}}
+        </script>
+        </body></html>
+        """
+        result = detect_eeat(_soup(html))
+        assert result.detected is True
+        assert result.details["has_structured_author"] is True
+        assert result.details["has_verified_author"] is True
+        assert result.score == 2
+
+    def test_structured_author_without_sameas_scores_less(self):
+        html = """
+        <html><body>
+        <script type="application/ld+json">
+        {"@context":"https://schema.org","@type":"Article","headline":"Test",
+         "author":{"@type":"Person","name":"Jane Doe"}}
+        </script>
+        </body></html>
+        """
+        result = detect_eeat(_soup(html))
+        assert result.details["has_structured_author"] is True
+        assert result.details["has_verified_author"] is False
+        assert result.score == 1
+
+    def test_author_as_plain_string_not_credited_as_structured(self):
+        """A string author (not a Person object) carries no verifiable claim."""
+        html = """
+        <html><body>
+        <script type="application/ld+json">
+        {"@context":"https://schema.org","@type":"Article","headline":"Test","author":"Jane Doe"}
+        </script>
+        </body></html>
+        """
+        result = detect_eeat(_soup(html))
+        assert result.details["has_structured_author"] is False
+        assert result.score == 0
+
+    def test_max_score_is_7_with_all_signals(self):
+        html = """
+        <html><body>
+            <a href="/privacy-policy">Privacy Policy</a>
+            <a href="/terms-of-service">Terms of Service</a>
+            <a href="/about">About Us</a>
+            <a href="/contact">Contact</a>
+            <link rel="canonical" href="https://example.com/page">
+            <div class="author-bio">Jane Doe has 12 years of professional experience in this field.</div>
+            <script type="application/ld+json">
+            {"@context":"https://schema.org","@type":"Article","headline":"Test",
+             "author":{"@type":"Person","name":"Jane Doe","sameAs":["https://linkedin.com/in/janedoe"]}}
+            </script>
+        </body></html>
+        """
+        result = detect_eeat(_soup(html))
+        assert result.max_score == 7
+        assert result.score == 7
+
 
 # ============================================================================
 # TEST: Content Decay Detection (-10%) — Batch 2
@@ -1165,8 +1227,9 @@ class TestWeightSum:
         html = "<html><body><p>Test content.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
         # 18 base=100, 7 batch2=31, 5 batch3+4=18, 8 batchA=27, 4 batchB=13, 5 RAG=19 → 208
+        # +2 for eeat_signals' structured-author credit (Person + sameAs) → 210
         total_max = sum(m.max_score for m in result.methods)
-        assert total_max == 208, f"max_score sum = {total_max}, expected 208 (189 before + 19 RAG batch)"
+        assert total_max == 210, f"max_score sum = {total_max}, expected 210 (208 + 2 for structured-author E-E-A-T)"
         # gap #4.16.3: total_score is normalized over the reachable maximum, not clamped
         # at 100. The clamp put the top of the scale halfway up.
         assert result.max_possible == total_max
