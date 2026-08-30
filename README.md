@@ -428,6 +428,19 @@ We focus on **technical infrastructure** (robots.txt, llms.txt, schema, meta) ov
 
 GEO Optimizer translates these findings into technical and content-level signals that can be operationally audited and tracked over time.
 
+## Related Tools
+
+GEO Optimizer scores **input-side readiness** — the technical and content signals that make a
+site reachable, parseable, and citable by AI crawlers. It does not observe what AI engines
+actually say about a brand outside `geo citations`' own lightweight LLM check, and doesn't
+cover Chinese AI engines (Doubao, Qwen, DeepSeek, Yuanbao) at all.
+
+[**OpenGEO**](https://github.com/cangqiaoGEO) is a complementary, open GEO standard effort
+focused on **output-side observation**: whether AI engines actually mention or cite a brand,
+with a published interchange format for those observations. The two approaches are
+deliberately split along that boundary — readiness vs. results — see [#534](https://github.com/Auriti-Labs/geo-optimizer-skill/issues/534)
+for the discussion.
+
 ---
 
 ## Roadmap
