@@ -1,10 +1,11 @@
 """
 Provider-agnostic LLM query client for GEO Optimizer.
 
-Supports OpenAI, Anthropic, Groq (optional dependencies), Perplexity, MiniMax
-and Gemini (all three use the core `requests` dependency, no extra needed).
+Supports OpenAI, Anthropic, Groq (optional dependencies), Perplexity, MiniMax,
+Gemini and DeepSeek (all four use the core `requests` dependency, no extra
+needed).
 Configuration via environment variables:
-  GEO_LLM_PROVIDER  — openai | anthropic | groq | perplexity | minimax | gemini (auto-detected if not set)
+  GEO_LLM_PROVIDER  — openai | anthropic | groq | perplexity | minimax | gemini | deepseek (auto-detected if not set)
   GEO_LLM_API_KEY   — API key (falls back to provider-specific env vars)
   GEO_LLM_MODEL     — model name (provider default if not set)
 
@@ -13,7 +14,7 @@ MiniMax-specific configuration:
   MINIMAX_API_BASE_URL  — API root override for another supported region
   MINIMAX_THINKING      — adaptive | disabled for MiniMax-M3 (MiniMax-M2.7 is always on)
 
-Requires: pip install geo-optimizer-skill[llm] (except Perplexity, MiniMax and Gemini)
+Requires: pip install geo-optimizer-skill[llm] (except Perplexity, MiniMax, Gemini and DeepSeek)
 """
 
 from __future__ import annotations
@@ -34,6 +35,7 @@ _PROVIDER_DEFAULTS = {
     "perplexity": "sonar",
     "minimax": "MiniMax-M3",
     "gemini": "gemini-3.7-flash",
+    "deepseek": "deepseek-v4-flash",
 }
 
 # Keep existing providers ahead of newly added ones so a new key does not
@@ -45,9 +47,11 @@ _PROVIDER_ENV_KEYS = {
     "perplexity": "PERPLEXITY_API_KEY",
     "minimax": "MINIMAX_API_KEY",
     "gemini": "GEMINI_API_KEY",
+    "deepseek": "DEEPSEEK_API_KEY",
 }
 
 _PERPLEXITY_API_URL = "https://api.perplexity.ai/chat/completions"
+_DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions"
 _MINIMAX_API_FORMATS = {
     "openai": {"base_url": "https://api.minimax.io/v1", "path": "chat/completions"},
     "anthropic": {"base_url": "https://api.minimax.io/anthropic", "path": "v1/messages"},
@@ -166,6 +170,8 @@ def query_llm(
         return _query_minimax(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
     if provider == "gemini":
         return _query_gemini(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
+    if provider == "deepseek":
+        return _query_deepseek(prompt, system=system, api_key=api_key, model=model, max_tokens=max_tokens)
 
     return LLMResponse(error=f"Unknown provider: {provider}")
 
@@ -435,3 +441,35 @@ def _query_gemini(prompt: LLMPrompt, *, system: str, api_key: str, model: str, m
     except Exception as exc:
         logger.warning("Gemini query failed: %s: %s", type(exc).__name__, exc)
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="gemini", model=model)
+
+
+def _query_deepseek(prompt: LLMPrompt, *, system: str, api_key: str, model: str, max_tokens: int) -> LLMResponse:
+    """Query DeepSeek via plain HTTP (fully OpenAI-compatible wire format)."""
+    import requests
+
+    messages: list[dict] = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": prompt})
+
+    try:
+        resp = requests.post(
+            _DEEPSEEK_API_URL,
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={"model": model, "messages": messages, "max_tokens": max_tokens},
+            timeout=_LLM_TIMEOUT,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        choice = (data.get("choices") or [{}])[0]
+        usage = data.get("usage") or {}
+        return LLMResponse(
+            text=(choice.get("message") or {}).get("content", ""),
+            model=data.get("model", model),
+            provider="deepseek",
+            prompt_tokens=usage.get("prompt_tokens", 0),
+            completion_tokens=usage.get("completion_tokens", 0),
+        )
+    except Exception as exc:
+        logger.warning("DeepSeek query failed: %s: %s", type(exc).__name__, exc)
+        return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="deepseek", model=model)

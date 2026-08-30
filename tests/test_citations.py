@@ -130,6 +130,7 @@ class TestRunCitationCheck:
             "GROQ_API_KEY",
             "MINIMAX_API_KEY",
             "GEMINI_API_KEY",
+            "DEEPSEEK_API_KEY",
             "GEO_LLM_API_KEY",
             "GEO_LLM_PROVIDER",
         ):
@@ -138,6 +139,7 @@ class TestRunCitationCheck:
         assert result.skipped_reason is not None
         assert "MINIMAX_API_KEY" in result.skipped_reason
         assert "GEMINI_API_KEY" in result.skipped_reason
+        assert "DEEPSEEK_API_KEY" in result.skipped_reason
 
     def test_all_queries_error_returns_skipped(self):
         with patch.object(citations_mod, "query_llm") as mock_q:
@@ -181,6 +183,12 @@ class TestResolveProvider:
         provider, key = citations_mod.resolve_provider("gemini")
         assert (provider, key) == ("gemini", "gemini-test")
 
+    def test_explicit_deepseek_provider_uses_its_env_key(self, monkeypatch):
+        monkeypatch.setenv("DEEPSEEK_API_KEY", "deepseek-test")
+        monkeypatch.delenv("GEO_LLM_API_KEY", raising=False)
+        provider, key = citations_mod.resolve_provider("deepseek")
+        assert (provider, key) == ("deepseek", "deepseek-test")
+
 
 class TestCitationsCli:
     def test_cli_text_output(self, monkeypatch):
@@ -217,6 +225,7 @@ class TestCitationsCli:
             "GROQ_API_KEY",
             "MINIMAX_API_KEY",
             "GEMINI_API_KEY",
+            "DEEPSEEK_API_KEY",
             "GEO_LLM_API_KEY",
             "GEO_LLM_PROVIDER",
         ):
@@ -227,6 +236,7 @@ class TestCitationsCli:
         assert "No AI provider configured" in result.output
         assert "MINIMAX_API_KEY" in result.output
         assert "GEMINI_API_KEY" in result.output
+        assert "DEEPSEEK_API_KEY" in result.output
 
 
 class TestPerplexityProvider:

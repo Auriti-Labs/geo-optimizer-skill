@@ -198,6 +198,17 @@ geo citations --provider gemini --brand "YourBrand" --domain yoursite.com
 Set `GEO_LLM_MODEL` to pick a specific model (default: `gemini-3.7-flash`). Uses the Gemini API
 directly (`generativelanguage.googleapis.com`), not Vertex AI — no extra dependency needed.
 
+DeepSeek and MiniMax cover citation checks against the Chinese AI answer-engine ecosystem, which
+Western-only providers miss entirely:
+
+```bash
+export DEEPSEEK_API_KEY="your-api-key"
+geo citations --provider deepseek --brand "YourBrand" --domain yoursite.com
+```
+
+Fully OpenAI-compatible wire format against `api.deepseek.com`. Default model `deepseek-v4-flash`;
+set `GEO_LLM_MODEL=deepseek-v4-pro` for the higher-capability tier.
+
 ---
 
 ## What it checks

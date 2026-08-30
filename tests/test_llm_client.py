@@ -118,6 +118,7 @@ def _mock_env(monkeypatch) -> None:
     monkeypatch.delenv("MINIMAX_API_BASE_URL", raising=False)
     monkeypatch.delenv("MINIMAX_THINKING", raising=False)
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     monkeypatch.setenv("GEO_LLM_MODEL", "test-model")
 
 
@@ -531,3 +532,87 @@ class TestQueryGemini:
 
         assert resp.error is not None
         assert resp.provider == "gemini"
+
+
+class TestDetectProviderDeepseek:
+    def test_detect_provider_deepseek_env(self, _mock_env, monkeypatch) -> None:
+        """Detect DeepSeek from DEEPSEEK_API_KEY."""
+        monkeypatch.setenv("DEEPSEEK_API_KEY", "env_key")
+        provider, api_key = llm_client.detect_provider()
+        assert provider == "deepseek"
+        assert api_key == "env_key"
+
+
+class TestQueryDeepseek:
+    """Test the DeepSeek provider (fully OpenAI-compatible wire format)."""
+
+    def test_query_llm_deepseek_success(self, _mock_env, monkeypatch) -> None:
+        captured: dict = {}
+
+        def _fake_post(url, headers, json, timeout):
+            captured["url"] = url
+            captured["headers"] = headers
+            captured["json"] = json
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(
+                return_value={
+                    "model": "deepseek-v4-flash",
+                    "choices": [{"message": {"content": "DeepSeek response"}}],
+                    "usage": {"prompt_tokens": 9, "completion_tokens": 6},
+                }
+            )
+            return resp
+
+        monkeypatch.delenv("GEO_LLM_MODEL")
+        monkeypatch.setattr("requests.post", _fake_post)
+        resp = llm_client.query_llm("test", provider="deepseek", api_key="fake_key", system="system prompt")
+
+        assert resp.text == "DeepSeek response"
+        assert resp.provider == "deepseek"
+        assert resp.model == "deepseek-v4-flash"
+        assert resp.prompt_tokens == 9
+        assert resp.completion_tokens == 6
+        assert captured["url"] == "https://api.deepseek.com/chat/completions"
+        assert captured["headers"]["Authorization"] == "Bearer fake_key"
+        assert captured["json"]["messages"][0] == {"role": "system", "content": "system prompt"}
+        assert captured["json"]["messages"][1] == {"role": "user", "content": "test"}
+
+    def test_query_llm_deepseek_custom_model(self, _mock_env, monkeypatch) -> None:
+        captured: dict = {}
+
+        def _fake_post(url, headers, json, timeout):
+            captured["json"] = json
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(return_value={"choices": [{"message": {"content": "ok"}}], "usage": {}})
+            return resp
+
+        monkeypatch.setattr("requests.post", _fake_post)
+        llm_client.query_llm("test", provider="deepseek", api_key="fake_key", model="deepseek-v4-pro")
+
+        assert captured["json"]["model"] == "deepseek-v4-pro"
+
+    def test_query_llm_deepseek_no_system_prompt(self, _mock_env, monkeypatch) -> None:
+        captured: dict = {}
+
+        def _fake_post(url, headers, json, timeout):
+            captured["json"] = json
+            resp = Mock()
+            resp.raise_for_status = Mock()
+            resp.json = Mock(return_value={"choices": [{"message": {"content": "ok"}}], "usage": {}})
+            return resp
+
+        monkeypatch.setattr("requests.post", _fake_post)
+        llm_client.query_llm("test", provider="deepseek", api_key="fake_key")
+
+        assert captured["json"]["messages"] == [{"role": "user", "content": "test"}]
+
+    def test_query_llm_deepseek_http_error(self, _mock_env) -> None:
+        import requests as requests_mod
+
+        with patch("requests.post", side_effect=requests_mod.ConnectionError("down")):
+            resp = llm_client.query_llm("test", provider="deepseek", api_key="fake_key")
+
+        assert resp.error is not None
+        assert resp.provider == "deepseek"
