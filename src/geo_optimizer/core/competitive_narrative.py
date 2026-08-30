@@ -269,13 +269,20 @@ def run_competitive_narrative_analysis(
     Returns:
         CompetitiveNarrativeResult con gap e recommendations
     """
+    from geo_optimizer.utils.validators import normalize_url_scheme
+
+    target_url = normalize_url_scheme(target_url)
     result = CompetitiveNarrativeResult(target_url=target_url)
 
     # Audit target
     try:
         from geo_optimizer.utils.validators import validate_public_url
 
-        # Anti-SSRF validation
+        # Anti-SSRF validation. Scheme normalized above: validate_public_url
+        # rejects a bare domain like "example.com" outright ("Scheme not
+        # allowed: ''"), since it has no scheme for urlparse to read — the
+        # same bug class fixed project-wide in normalize_url_scheme(), just
+        # not yet applied here when this endpoint was added.
         safe, reason = validate_public_url(target_url)
         if not safe:
             result.summary = f"Error: Invalid target URL - {reason}"
@@ -289,7 +296,8 @@ def run_competitive_narrative_analysis(
     result.target_audit = target_audit  # Store for later use
 
     # Audit each competitor
-    for url in competitor_urls:
+    for raw_url in competitor_urls:
+        url = normalize_url_scheme(raw_url)
         try:
             safe, reason = validate_public_url(url)
             if not safe:

@@ -137,6 +137,28 @@ class TestRunCompetitiveNarrativeAnalysis:
         assert len(result.competitors) == 1
         assert result.summary != ""
 
+    def test_run_competitive_narrative_analysis_normalizes_bare_domain(
+        self, mock_audit_result: AuditResult, llm_success_response: LLMResponse
+    ):
+        """A bare domain (no scheme) — a plausible real API input — must not be
+        rejected as 'Scheme not allowed' before it ever gets a chance to be
+        normalized; urlparse reads no scheme/hostname at all from a bare domain,
+        so validate_public_url must run on the normalized URL, not the raw one."""
+        with (
+            patch(
+                "geo_optimizer.core.competitive_narrative.run_full_audit",
+                side_effect=[mock_audit_result, mock_audit_result],
+            ),
+            patch("geo_optimizer.utils.validators.validate_public_url", return_value=(True, "")),
+            patch("geo_optimizer.core.competitive_narrative.query_llm", return_value=llm_success_response),
+        ):
+            result = run_competitive_narrative_analysis("geoready.dev", ["competitor.com"])
+
+        assert result.target_url == "https://geoready.dev"
+        assert not result.summary.startswith("Error:")
+        assert len(result.competitors) == 1
+        assert result.competitors[0].url == "https://competitor.com"
+
     def test_run_competitive_narrative_analysis_invalid_target_url(self):
         """Invalid target URL returns early with error."""
         target_url = "invalid-url"
