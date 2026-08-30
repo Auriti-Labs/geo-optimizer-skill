@@ -105,26 +105,42 @@ def audit_brand_entity(
         if og_name:
             names.append(og_name)
 
-    # Schema Organization name
-    schema_org_names: list[str] = []
+    # Schema names: WebSite/WebApplication/SoftwareApplication describe what the
+    # page's primary subject IS, Organization more often names the publisher — a
+    # distinct, valid entity that shouldn't override a page's own subject when
+    # the two disagree. Found live on this project's own geoready.dev homepage:
+    # WebSite and WebApplication schema both say "GeoReady" (the product), but
+    # Organization schema says "Auriti Labs" (the company that publishes it) —
+    # treating both types as equally authoritative picked the publisher's name
+    # as if it were the page's brand (#brand-primary-name).
+    _PRIMARY_SCHEMA_TYPES = {"WebSite", "WebApplication", "SoftwareApplication"}
+    primary_schema_names: list[str] = []
+    org_schema_names: list[str] = []
     for raw_schema in schema_result.raw_schemas:
         schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
+            if not s.get("name"):
+                continue
             s_type = s.get("@type", "")
-            if isinstance(s_type, list):
-                s_type = s_type[0] if s_type else ""
-            if s_type == "Organization" and s.get("name"):
+            s_types = s_type if isinstance(s_type, list) else [s_type]
+            if any(t in _PRIMARY_SCHEMA_TYPES for t in s_types):
                 names.append(s["name"])
-                schema_org_names.append(s["name"])
+                primary_schema_names.append(s["name"])
+            elif "Organization" in s_types:
+                names.append(s["name"])
+                org_schema_names.append(s["name"])
 
     result.names_found = names[:10]
 
-    # Primary name: schema Organization name is structured data, so it outranks
-    # positional guesses from H1/title/og:title — an H1 with no separator (e.g. a
-    # sentence-style hero heading) would otherwise be read as the brand name verbatim.
+    # Primary name: schema data outranks positional guesses from H1/title/og:title
+    # — an H1 with no separator (e.g. a sentence-style hero heading) would otherwise
+    # be read as the brand name verbatim. Among schema signals, WebSite/WebApplication
+    # (the page's own subject) outranks Organization (typically the publisher).
     # Falls back to the most-frequent candidate, then the first one found (#perception).
-    if schema_org_names:
-        result.primary_name = schema_org_names[0]
+    if primary_schema_names:
+        result.primary_name = primary_schema_names[0]
+    elif org_schema_names:
+        result.primary_name = org_schema_names[0]
     elif names:
         lower_names = [_normalize_brand_name(n) for n in names]
         freq = Counter(lower_names)

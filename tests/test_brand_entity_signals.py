@@ -148,6 +148,51 @@ class TestAuditBrandEntity:
         # names_found keeps the raw candidate order — only primary_name is corrected
         assert result.names_found[0] == "Find the gaps that keep your site out of AI answers."
 
+    def test_primary_name_prefers_website_over_organization_when_they_disagree(self):
+        """Found live on this project's own geoready.dev homepage: WebSite and
+        WebApplication schema both say "GeoReady" (the product/page subject),
+        Organization schema says "Auriti Labs" (the publisher) — the two are
+        legitimately different entities, and the page's own subject must win,
+        not whichever schema type happened to be checked first."""
+        html = """<html><head><title>GeoReady</title>
+            <script type="application/ld+json">[
+                {"@type":"Organization","name":"Auriti Labs"},
+                {"@type":"WebSite","name":"GeoReady"},
+                {"@type":["WebApplication","SoftwareApplication"],"name":"GeoReady"}
+            ]</script>
+        </head><body><h1>Find the gaps that keep your site out of AI answers.</h1></body></html>"""
+        soup = _soup(html)
+        schema = SchemaResult(
+            raw_schemas=[
+                {"@type": "Organization", "name": "Auriti Labs"},
+                {"@type": "WebSite", "name": "GeoReady"},
+                {"@type": ["WebApplication", "SoftwareApplication"], "name": "GeoReady"},
+            ],
+            has_organization=True,
+        )
+        meta = MetaResult(has_title=True, title_text="GeoReady")
+        content = ContentResult(has_h1=True, h1_text="Find the gaps that keep your site out of AI answers.")
+        result = audit_brand_entity(soup, schema, meta, content)
+        assert result.primary_name == "GeoReady"
+
+    def test_primary_name_uses_organization_when_no_website_schema(self):
+        """No WebSite/WebApplication schema at all: Organization is still the only
+        structured signal available and must still outrank positional guesses —
+        this is the original #perception fix, still valid on its own terms."""
+        html = """<html><head>
+            <title>Free AI SEO Audit for ChatGPT &amp; Perplexity — GeoReady</title>
+            <script type="application/ld+json">{"@type":"Organization","name":"GeoReady"}</script>
+        </head><body><h1>Find the gaps that keep your site out of AI answers.</h1></body></html>"""
+        soup = _soup(html)
+        schema = SchemaResult(
+            raw_schemas=[{"@type": "Organization", "name": "GeoReady"}],
+            has_organization=True,
+        )
+        meta = MetaResult(has_title=True, title_text="Free AI SEO Audit for ChatGPT & Perplexity — GeoReady")
+        content = ContentResult(has_h1=True, h1_text="Find the gaps that keep your site out of AI answers.")
+        result = audit_brand_entity(soup, schema, meta, content)
+        assert result.primary_name == "GeoReady"
+
     def test_primary_name_falls_back_to_most_frequent_without_schema(self):
         """No schema Organization name: fall back to the candidate that repeats across
         sources, not just whichever was found first."""
