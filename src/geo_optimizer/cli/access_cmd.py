@@ -8,6 +8,7 @@ import sys
 import click
 
 from geo_optimizer.core.agent_access import run_agent_access_audit
+from geo_optimizer.models.config import resolve_user_agent_override, set_user_agent_override
 from geo_optimizer.utils.validators import validate_public_url
 
 _STATUS_EMOJI = {
@@ -29,13 +30,21 @@ _STATUS_EMOJI = {
     help="Output format",
 )
 @click.option("--output", "output_file", default=None, help="Write output to file")
-def access(url, output_format, output_file):
+@click.option(
+    "--user-agent",
+    default=None,
+    help="Override the User-Agent sent when fetching the site (also via GEO_USER_AGENT). "
+    "Does not affect the CDN AI-crawler check, which needs its own bot identity.",
+)
+def access(url, output_format, output_file, user_agent):
     """Audit how AI agents can access a URL.
 
     Checks robots.txt, CDN/WAF challenges, JS rendering requirements,
     noai/noimageai meta directives, and AI discovery endpoints.
     Returns an overall status: accessible | partial | blocked | unknown.
     """
+    set_user_agent_override(resolve_user_agent_override(user_agent))
+
     safe, reason = validate_public_url(url)
     if not safe:
         click.echo(f"\n❌ Unsafe URL: {reason}", err=True)

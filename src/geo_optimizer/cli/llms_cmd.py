@@ -15,6 +15,7 @@ from geo_optimizer.core.llms_generator import (
     fetch_sitemap,
     generate_llms_txt,
 )
+from geo_optimizer.models.config import resolve_user_agent_override, set_user_agent_override
 from geo_optimizer.utils.validators import validate_public_url
 
 
@@ -26,8 +27,16 @@ from geo_optimizer.utils.validators import validate_public_url
 @click.option("--description", default=None, help="Site description (blockquote)")
 @click.option("--fetch-titles", is_flag=True, help="Fetch titles from pages (slow)")
 @click.option("--max-per-section", type=int, default=20, help="Max URLs per section (default: 20)")
-def llms(base_url, output, sitemap, site_name, description, fetch_titles, max_per_section):
+@click.option(
+    "--user-agent",
+    default=None,
+    help="Override the User-Agent sent when fetching the site (also via GEO_USER_AGENT). "
+    "Does not affect the CDN AI-crawler check, which needs its own bot identity.",
+)
+def llms(base_url, output, sitemap, site_name, description, fetch_titles, max_per_section, user_agent):
     """Generate llms.txt from XML sitemap for GEO optimization."""
+    set_user_agent_override(resolve_user_agent_override(user_agent))
+
     base_url = base_url.rstrip("/")
     if not base_url.startswith(("http://", "https://")):
         base_url = "https://" + base_url

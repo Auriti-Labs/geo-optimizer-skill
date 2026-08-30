@@ -9,6 +9,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Added
 - **MiniMax LLM provider.** `geo citations` can use `MiniMax-M3` or `MiniMax-M2.7` through either supported API wire format, with configurable global or China API roots and optional thinking control.
+- **Multimodal prompt content for `query_llm`.** The LLM client now accepts structured text/image content parts (`LLMContentPart`) alongside plain strings, forwarded verbatim to the provider's wire format. Video parts are not modelled yet.
+- **User-Agent override (#528).** `GEO_USER_AGENT` env var and `--user-agent` flag on `audit`, `access`, `fix` and `llms` let a request identify itself to sites that block the default `GEO-Optimizer/2.0` string (Akamai/Cloudflare bot management commonly return 403 to it, which previously read as a 0/100 "critical" score rather than a fetch problem). The override is resolved once per CLI invocation and deliberately does **not** apply to the CDN AI-crawler check, which sends a specific bot identity on purpose. Reported with a live repro (403→0/100 vs. 200→54/100 on the same site) in #528.
 
 ---
 

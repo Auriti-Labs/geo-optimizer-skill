@@ -17,7 +17,7 @@ import asyncio
 import contextvars
 from typing import Any
 
-from geo_optimizer.models.config import HEADERS
+from geo_optimizer.models.config import get_headers
 from geo_optimizer.utils.http import MAX_RESPONSE_SIZE
 
 # Maximum number of redirects to follow manually
@@ -90,7 +90,7 @@ async def fetch_url_async(
 
         if own_client:
             client = httpx.AsyncClient(
-                headers=HEADERS,
+                headers=get_headers(),
                 follow_redirects=False,  # Manual redirect with SSRF revalidation (fix #179)
                 timeout=httpx.Timeout(timeout),
             )
@@ -177,7 +177,7 @@ async def fetch_urls_async(
     results = {}
 
     async with httpx.AsyncClient(
-        headers=HEADERS,
+        headers=get_headers(),
         follow_redirects=False,  # Redirect handled in fetch_url_async (fix #179)
         timeout=httpx.Timeout(timeout),
     ) as client:

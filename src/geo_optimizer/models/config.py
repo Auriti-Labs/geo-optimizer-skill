@@ -7,6 +7,7 @@ so that core modules, CLI, and tests can import from a single source.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 # ─── HTTP ────────────────────────────────────────────────────────────────────
@@ -14,6 +15,40 @@ from pathlib import Path
 USER_AGENT = "GEO-Optimizer/2.0 (https://github.com/auriti-labs/geo-optimizer-skill)"
 
 HEADERS = {"User-Agent": USER_AGENT}
+
+# Process-wide User-Agent override for the generic fetch layer (#528). Resolved
+# once at CLI startup from --user-agent / GEO_USER_AGENT and read by
+# utils/http.py, utils/http_async.py and llms_generator.py via get_headers().
+# Deliberately does NOT affect AI_BOTS / CITATION_BOTS-based checks (e.g. the
+# CDN AI-crawler probe, #225): those send a specific bot identity on purpose,
+# and overriding it would defeat the test.
+_user_agent_override: str | None = None
+
+
+def set_user_agent_override(user_agent: str | None) -> None:
+    """Set (or clear, with None) the process-wide User-Agent override."""
+    global _user_agent_override
+    _user_agent_override = user_agent.strip() if user_agent and user_agent.strip() else None
+
+
+def resolve_user_agent_override(cli_value: str | None) -> str | None:
+    """Resolve a User-Agent override from a CLI flag or the GEO_USER_AGENT env var.
+
+    The CLI flag takes precedence. Returns None if neither is set, meaning the
+    default USER_AGENT applies.
+    """
+    if cli_value and cli_value.strip():
+        return cli_value.strip()
+    env_value = os.environ.get("GEO_USER_AGENT", "").strip()
+    return env_value or None
+
+
+def get_headers() -> dict:
+    """Return the current fetch headers, honoring any active User-Agent override."""
+    if _user_agent_override:
+        return {"User-Agent": _user_agent_override}
+    return dict(HEADERS)
+
 
 # HTTP response size limit: 10 MB (prevents DoS from huge responses) — fix #91
 MAX_RESPONSE_SIZE: int = 10 * 1024 * 1024

@@ -19,12 +19,12 @@ from bs4 import BeautifulSoup
 
 from geo_optimizer.models.config import (
     CATEGORY_PATTERNS,
-    HEADERS,
     MAX_SUB_SITEMAPS,
     MAX_TOTAL_URLS,
     OPTIONAL_CATEGORIES,
     SECTION_PRIORITY_ORDER,
     SKIP_PATTERNS,
+    get_headers,
 )
 from geo_optimizer.models.results import SitemapUrl
 from geo_optimizer.utils.http import MAX_RESPONSE_SIZE, create_session_with_retry
@@ -122,7 +122,7 @@ def fetch_sitemap(
         # non-streamed call previously here had no real DoS protection —
         # every other network call in this codebase streams for this reason;
         # see utils.http.fetch_url).
-        r = session.get(sitemap_url, headers=HEADERS, timeout=15, stream=True)
+        r = session.get(sitemap_url, headers=get_headers(), timeout=15, stream=True)
         r.raise_for_status()
 
         body = bytearray()
@@ -540,7 +540,7 @@ def _discover_sitemap_inner(
     base_domain = parsed_base.netloc
     robots_url = urljoin(base_url, "/robots.txt")
     try:
-        r = session.get(robots_url, headers=HEADERS, timeout=5)
+        r = session.get(robots_url, headers=get_headers(), timeout=5)
         for line in r.text.splitlines():
             if line.lower().startswith("sitemap:"):
                 sitemap_url = line.split(":", 1)[1].strip()
@@ -563,7 +563,7 @@ def _discover_sitemap_inner(
     for path in common_paths:
         url = urljoin(base_url, path)
         try:
-            r = session.head(url, headers=HEADERS, timeout=5)
+            r = session.head(url, headers=get_headers(), timeout=5)
             if r.status_code == 200:
                 logger.info("Sitemap found: %s", url)
                 if on_status:
@@ -571,7 +571,7 @@ def _discover_sitemap_inner(
                 return url
             if r.status_code == 405:
                 logger.debug("HEAD 405 for %s, fallback to GET", url)
-                r_get = session.get(url, headers=HEADERS, timeout=5)
+                r_get = session.get(url, headers=get_headers(), timeout=5)
                 if r_get.status_code == 200:
                     logger.info("Sitemap found (via GET): %s", url)
                     if on_status:
@@ -579,7 +579,7 @@ def _discover_sitemap_inner(
                     return url
         except Exception:
             try:
-                r_get = session.get(url, headers=HEADERS, timeout=5)
+                r_get = session.get(url, headers=get_headers(), timeout=5)
                 if r_get.status_code == 200:
                     logger.info("Sitemap found (via GET fallback): %s", url)
                     if on_status:

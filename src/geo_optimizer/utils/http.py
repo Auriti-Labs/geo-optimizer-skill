@@ -26,7 +26,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from geo_optimizer.models.config import HEADERS
+from geo_optimizer.models.config import get_headers
 
 _logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ def create_session_with_retry(
         allowed_methods = ["GET", "HEAD"]
 
     session = requests.Session()
-    session.headers.update(HEADERS)
+    session.headers.update(get_headers())
 
     retry_strategy = Retry(
         total=total_retries,

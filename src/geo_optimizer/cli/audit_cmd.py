@@ -21,7 +21,11 @@ from geo_optimizer.cli.formatters import (
 from geo_optimizer.core.audit import run_full_audit
 from geo_optimizer.core.batch_audit import run_batch_audit
 from geo_optimizer.core.history import HistoryStore, summarize_history
-from geo_optimizer.models.config import DEFAULT_HISTORY_RETENTION_DAYS
+from geo_optimizer.models.config import (
+    DEFAULT_HISTORY_RETENTION_DAYS,
+    resolve_user_agent_override,
+    set_user_agent_override,
+)
 from geo_optimizer.utils.validators import validate_public_url
 
 
@@ -61,6 +65,12 @@ from geo_optimizer.utils.validators import validate_public_url
     type=click.IntRange(0, 100),
     help="Minimum score threshold (0-100). Exit code 1 if score is below.",
 )
+@click.option(
+    "--user-agent",
+    default=None,
+    help="Override the User-Agent sent when fetching the site (also via GEO_USER_AGENT). "
+    "Does not affect the CDN AI-crawler check, which needs its own bot identity.",
+)
 def audit(
     url,
     sitemap,
@@ -78,8 +88,11 @@ def audit(
     retention_days,
     history_db,
     threshold,
+    user_agent,
 ):
     """Audit a website's GEO (Generative Engine Optimization) readiness."""
+    set_user_agent_override(resolve_user_agent_override(user_agent))
+
     # Load project configuration (if available)
     from geo_optimizer.models.project_config import load_config
 
