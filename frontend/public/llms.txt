@@ -90,26 +90,35 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 ## Main sections
 
 - [Audit](https://geoready.dev/): Run a GEO audit on any URL — free, no account required.
+- [About](https://geoready.dev/about/): Who builds GeoReady and GEO Optimizer — Auriti Labs.
 - [AI SEO Guide](https://geoready.dev/ai-seo/): What AI SEO is, how it differs from traditional SEO, and how to audit a site for visibility in ChatGPT, Perplexity, Claude, and Gemini.
 - [Free AI SEO Audit](https://geoready.dev/ai-seo-audit/): High-intent audit landing page with a no-account form for checking crawler access, llms.txt, schema, content quality, AI discovery, and entity signals.
+- [AI SEO Audit for SaaS](https://geoready.dev/ai-seo-audit-for-saas/): Audit landing page for SaaS product, comparison, pricing, and docs pages — crawl access, schema, llms.txt, content citability, and entity signals.
+- [ChatGPT Visibility Audit](https://geoready.dev/chatgpt-visibility-audit/): Audit landing page for crawler access, entity clarity, structured data, and prompt-level ChatGPT visibility signals.
 - [ChatGPT Visibility Checker](https://geoready.dev/chatgpt-visibility-checker/): Readiness page explaining how to check whether a site can appear in ChatGPT-style answers, with a path from audit to source-backed citation checks.
 - [Perplexity Citation Checker](https://geoready.dev/perplexity-citation-checker/): Commercial citation page for checking whether Perplexity-style answers cite the user's own domain or cite competitors instead.
+- [Perplexity Citation Monitoring](https://geoready.dev/perplexity-citation-monitoring/): Monitor whether Perplexity-style answers cite a domain, mention the brand without citing it, or cite competitors instead.
 - [Compare](https://geoready.dev/compare/): Side-by-side comparison of two URLs.
 - [Analyze Competitors](https://geoready.dev/analyze-competitors/): Multi-URL competitor analysis.
 - [Research](https://geoready.dev/research/): Peer-reviewed research foundation.
 - [Methodology](https://geoready.dev/methodology/): Transparent scoring weights, score bands, signal categories, and research-backed assumptions behind the GEO score.
 - [State of GEO](https://geoready.dev/state-of-geo/): Live AI search readiness benchmark across sites audited by GeoReady — average and median GEO score, llms.txt and schema adoption, and the biggest readiness gap. Aggregated and anonymized; an audited sample, not a survey of the whole web.
+- [State of GEO: July 2026](https://geoready.dev/state-of-geo/july-2026/): Monthly benchmark report — 360 domains audited, average GEO score 54.1/100, only 24.7% reach "Good" or above.
+- [State of GEO: June 2026](https://geoready.dev/state-of-geo/june-2026/): Monthly benchmark report — 288 domains audited, average GEO score 53.6/100, only 20.8% reach "Good" or above.
 - [Best GEO Tools](https://geoready.dev/best-geo-tools/): Criteria-based guide to evaluating generative engine optimization software, including methodology transparency, audit vs monitoring, CI/CD support, and answer-engine citation checks.
+- [Open-Source Alternative to Profound & Otterly](https://geoready.dev/open-source-profound-otterly-alternative/): Why GEO Optimizer is a free, MIT-licensed, self-hostable alternative to commercial GEO platforms — audit, AI citation tracking, and CI/CD support.
 - [Roadmap](https://geoready.dev/roadmap/): Planned and in-progress features.
 - [GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/): 160-page technical guide to AI search visibility, citations, and Generative Engine Optimization — access, schema, quotability, entity authority, measurement, and security.
 - [Manifesto](https://geoready.dev/manifesto/): Why the open-source GEO Optimizer engine exists and what it stands for.
 - [Pricing](https://geoready.dev/pricing/): Free and Pro plan comparison.
 - [Privacy Policy](https://geoready.dev/privacy/): GDPR-compliant privacy policy.
+- [Guides](https://geoready.dev/guides/): Index of practical, no-hype guides on AI search visibility and Generative Engine Optimization.
 
 ## Tools
 
 - [Free AI Citation Checker](https://geoready.dev/tools/ai-citation-checker/): Check whether a brand is mentioned or cited by AI answer engines, with outcome labels for cited, mentioned, competitor-cited, or invisible.
 - [Free llms.txt Generator](https://geoready.dev/tools/llms-txt-generator/): Generate a starter llms.txt from your sitemap — categorized, editable Markdown you can download and publish at your domain root. Free, no account required.
+- [llms.txt Generator for WordPress](https://geoready.dev/llms-txt-generator-wordpress/): Generate a starter llms.txt for a WordPress site, then audit whether AI crawlers can discover and cite the important pages.
 
 ## Guides
 
@@ -123,6 +132,34 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 - [How to check AI citations](https://geoready.dev/guides/ai-citations-check/): Measurement guide for checking whether AI engines mention and cite a brand.
 - [Entity Authority](https://geoready.dev/guides/entity-authority/): How consistent entity signals, topical clusters, and public references help AI systems disambiguate a brand.
 - [Multimodal GEO](https://geoready.dev/guides/multimodal-geo/): Image, chart, screenshot, and media optimization patterns for AI visibility.
+- [What is Generative Engine Optimization (GEO)?](https://geoready.dev/guides/what-is-generative-engine-optimization/): What GEO is, how it differs from SEO, and how to measure it.
+- [GEO vs SEO: 7 Key Differences](https://geoready.dev/guides/geo-vs-seo-7-key-differences/): Seven concrete differences between GEO and traditional SEO — ranking vs. citation, backlinks vs. mentions, keywords vs. entities.
+- [Is AI Search Traffic Actually Growing?](https://geoready.dev/guides/is-ai-search-traffic-growing/): What's directionally clear versus still unconfirmed about how ChatGPT Search, Perplexity, and Google AI Overviews are reshaping search traffic.
+- [Do Backlinks Still Matter for AI Search?](https://geoready.dev/guides/do-backlinks-matter-for-ai-search/): Why AI answer engines weigh unlinked brand mentions across independent sources as heavily as traditional backlinks.
+- [5 Signs AI Isn't Citing Your Website](https://geoready.dev/guides/signs-your-website-isnt-cited-by-ai/): Five concrete signs a site is invisible to AI search, and the fix for each.
+- [Free Tools to Check AI Search Visibility](https://geoready.dev/guides/free-ai-search-visibility-tools-2026/): A roundup of free crawler-access checkers, llms.txt generators, and manual prompt tests for checking AI visibility.
+- [How to Check If ChatGPT Can See Your Site](https://geoready.dev/guides/check-if-chatgpt-sees-your-website/): A 5-minute test to check whether ChatGPT and Perplexity can access and cite a site, plus what to fix if not.
+- [ChatGPT Search vs Google Search](https://geoready.dev/guides/chatgpt-search-vs-google-search/): The mechanical differences between one synthesized answer with citations and ten blue links plus an AI Overview.
+- [How Long Until ChatGPT Cites a New Page?](https://geoready.dev/guides/how-long-to-get-cited-by-chatgpt/): How domain authority, crawl frequency, and structured data affect the time it takes ChatGPT to cite a new page.
+- [How Perplexity Chooses Its Sources](https://geoready.dev/guides/how-perplexity-chooses-sources/): What's observable about how Perplexity selects and weighs the multiple sources it cites per answer.
+- [How AI Overviews Cite Their Sources](https://geoready.dev/guides/how-google-ai-overviews-cite-sources/): The citation carousel and multi-source attribution mechanism behind Google AI Overviews.
+- [AI Overviews vs. Featured Snippets](https://geoready.dev/guides/ai-overviews-vs-featured-snippets/): What changed when AI Overviews began synthesizing several sources instead of selecting one Featured Snippet winner.
+- [AI Overviews and E-E-A-T](https://geoready.dev/guides/ai-overviews-eeat-author-authority/): How Google's E-E-A-T quality signals factor into AI Overview citations.
+- [How to Optimize for Google AI Overviews](https://geoready.dev/guides/google-ai-overviews-optimization/): How sources get selected for Google AI Overviews and the concrete steps to get cited.
+- [Google AI Overviews for Local Businesses](https://geoready.dev/guides/google-ai-overviews-local-business/): What moves the needle for local "near me" queries answered by AI Overviews.
+- [How to Track Google AI Overview Visibility](https://geoready.dev/guides/track-google-ai-overviews-visibility/): A repeatable manual process for tracking AI Overview visibility, plus how to turn it into a scheduled monitoring workflow.
+- [AI Crawlers and robots.txt: The 2026 Guide](https://geoready.dev/guides/robots-txt-ai-bots/): Which AI crawlers (GPTBot, OAI-SearchBot, PerplexityBot) to allow or block in robots.txt, and why blocking them makes a site invisible to AI search.
+- [Does robots.txt Block ChatGPT?](https://geoready.dev/guides/does-robots-txt-block-chatgpt/): Which robots.txt rules block ChatGPT and other AI crawlers, and the minimal fix to let them back in.
+- [What Is an AI Crawler? Bot Types Explained](https://geoready.dev/guides/what-is-an-ai-crawler-bot-list/): The difference between training crawlers, retrieval bots, and on-demand fetchers, and which ones to allow.
+- [Prompt Injection Attacks on AI Crawlers](https://geoready.dev/guides/prompt-injection-ai-crawlers/): The 8 known ways to hide instructions for AI crawlers inside a normal-looking web page, and how to check for them.
+- [Do You Actually Need an llms.txt File?](https://geoready.dev/guides/do-you-need-llms-txt-2026/): What llms.txt actually does, what it doesn't do, and how to decide if a site needs one.
+- [Structured Data for AI Citations](https://geoready.dev/guides/schema-markup-for-ai-citations/): A complete implementation guide to schema markup as a way for AI answer engines to parse and cite a page unambiguously.
+- [FAQPage Schema for AI Search](https://geoready.dev/guides/faqpage-schema-ai-search/): How FAQPage schema turns Q&A content into short, self-contained statements a synthesis model can lift almost verbatim.
+- [Organization & sameAs Schema for LLMs](https://geoready.dev/guides/organization-sameas-schema-entity-authority/): How the sameAs array tells AI systems, in a machine-readable way, that a website and its social/Wikipedia/review profiles are the same entity.
+- [Does HowTo Schema Still Matter in 2026?](https://geoready.dev/guides/howto-schema-ai-search-2026/): Why HowTo schema still helps AI answer engines parse step-based content, separate from its reduced role in Google rich results.
+- [Product Schema for AI Shopping Assistants](https://geoready.dev/guides/product-schema-ai-shopping/): The Product schema that AI shopping assistants actually read when recommending directly from structured data.
+- [GEO for SaaS: Getting Cited by AI](https://geoready.dev/guides/geo-for-saas-companies/): How SaaS companies get included in ChatGPT/Perplexity answers to "what's the best tool for X" queries.
+- [GEO for E-commerce: AI Shopping Assistants](https://geoready.dev/guides/geo-for-ecommerce/): How ChatGPT Shopping, Perplexity Shopping, and Google's AI-powered product results select products, and what merchants need to fix first.
 
 ## Research sources
 
