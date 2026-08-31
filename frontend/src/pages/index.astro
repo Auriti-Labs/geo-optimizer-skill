@@ -56,7 +56,7 @@ const trustCards = [
 
 const actions = [
   {
-    label: 'Run a free audit',
+    label: 'Run a free check',
     desc: 'Enter any public URL above — no account required.',
     href: '#audit-form',
     badge: 'Available now',
@@ -64,7 +64,7 @@ const actions = [
   },
   {
     label: 'Use the open-source CLI',
-    desc: 'pip install geo-optimizer-skill — audit, access simulation, crawler log analysis. MIT licensed.',
+    desc: 'pip install geo-optimizer-skill — scoring, access simulation, crawler log analysis. MIT licensed.',
     href: 'https://github.com/Auriti-Labs/geo-optimizer-skill',
     badge: 'Free forever',
     badgeStyle: 'bg-accent-success/10 text-accent-success',
@@ -248,7 +248,7 @@ const faqSchema = {
         <div>
           <h3 class="text-lg font-semibold text-text-primary">2. Get a GEO score</h3>
           <p class="mt-2 text-text-secondary leading-relaxed">
-            The audit evaluates eight signal categories and returns a 0–100 score with a
+            The scan evaluates eight signal categories and returns a 0–100 score with a
             per-category breakdown. These are the published weights — the same numbers the
             open-source engine uses, so any score can be recomputed by hand:
           </p>
@@ -292,7 +292,7 @@ const faqSchema = {
         <figure class="mt-3">
           <blockquote class="border-l-2 border-accent-teal pl-4">
             <p class="text-text-secondary leading-relaxed">
-              We measured the sites audited through GeoReady, and our data shows the average
+              We measured the sites scored through GeoReady, and our data shows the average
               scores <strong class="text-text-primary">{BENCHMARK.average} out of 100</strong>,
               with a median of {BENCHMARK.median}. Only {BENCHMARK.llmsTxtAdoption} publish an
               llms.txt file. A score in the fifties is therefore ordinary rather than alarming:
@@ -454,7 +454,7 @@ const faqSchema = {
               href="#audit-form"
               class="inline-block py-2.5 px-6 rounded-[--radius-md] bg-accent-teal text-white text-sm font-semibold hover:bg-accent-teal-dark transition-colors"
             >
-              Start free audit
+              Start free check
             </a>
             <a
               href="/pricing/"
