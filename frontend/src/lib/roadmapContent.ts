@@ -291,5 +291,6 @@ export const releaseCadence = [
   { version: 'v4.16.3', name: 'Ground Truth (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.16.4', name: 'Ground Truth (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.17.0', name: 'Parallax', status: 'available' as RoadmapStatus },
+  { version: 'v4.17.1', name: 'Parallax (patch)', status: 'available' as RoadmapStatus },
   { version: 'v5.0.0', name: 'Black Archive', status: 'exploring' as RoadmapStatus },
 ];

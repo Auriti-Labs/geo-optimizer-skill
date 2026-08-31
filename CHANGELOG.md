@@ -5,7 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
-## [Unreleased]
+## [4.17.1] — 2026-08-31
+
+Patch release from a dogfooding sweep against this project's own production
+infrastructure (geoready.dev, live audits, a hosted API endpoint): a batch of
+"confident wrong answer" bugs found and fixed the same way most of this
+project's patches have been — running the tool against real sites and reading
+the output critically — plus three small, additive capabilities that came out
+of the same review pass (schema templates, an llms.txt freshness check,
+a stronger E-E-A-T signal).
 
 ### Added
 - **E-E-A-T scoring credits a structured, verifiable author.** `detect_eeat` previously only looked for a text bio matching "N years of experience" — prose anyone can write regardless of whether it's true. It now also checks whether the page's Article-type schema has an `author` that is a `Person` object (not a bare string), crediting it further when that `Person` carries `sameAs` links to a checkable profile (LinkedIn, ORCID, a personal site) — a claim an AI system can actually verify, unlike a bio. `eeat_signals` max score moves from 5 to 7; total citability `max_possible` moves from 208 to 210 accordingly (same normalization as always — nothing is clamped, the ceiling just moved because a real signal was added).
