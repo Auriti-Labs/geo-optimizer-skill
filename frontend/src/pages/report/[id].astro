@@ -80,5 +80,11 @@ const robots = isDemo ? 'index, follow' : 'noindex, nofollow';
     </section>
   )}
 
-  <AuditReportContainer client:load reportId={decodedId} />
+  {/* min-h-svh reserves a viewport of space for the report island: the
+      sections below start under the fold at first paint, so the async
+      report growth (loading strip → full height) cannot shift any
+      viewport-visible content. */}
+  <div class="min-h-svh">
+    <AuditReportContainer client:load reportId={decodedId} />
+  </div>
 </Shell>

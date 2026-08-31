@@ -28,7 +28,12 @@ const robots = 'noindex, nofollow';
     <p class="mt-2 text-xs text-text-muted font-mono">Generated on demand · not indexed</p>
   </header>
 
-  <AuditReportContainer client:only="react" reportId={url} />
+  {/* min-h-svh reserves a viewport of space for the client-only island: the
+      sections below start under the fold at first paint, so the report
+      mounting (0px → full height) cannot shift any viewport-visible content. */}
+  <div class="min-h-svh">
+    <AuditReportContainer client:only="react" reportId={url} />
+  </div>
 
   {/* Static next-step CTA — server-rendered, visible after the report */}
   <section class="max-w-7xl mx-auto px-4 sm:px-6 pb-16 md:pb-24">
