@@ -160,6 +160,10 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 - [Product Schema for AI Shopping Assistants](https://geoready.dev/guides/product-schema-ai-shopping/): The Product schema that AI shopping assistants actually read when recommending directly from structured data.
 - [GEO for SaaS: Getting Cited by AI](https://geoready.dev/guides/geo-for-saas-companies/): How SaaS companies get included in ChatGPT/Perplexity answers to "what's the best tool for X" queries.
 - [GEO for E-commerce: AI Shopping Assistants](https://geoready.dev/guides/geo-for-ecommerce/): How ChatGPT Shopping, Perplexity Shopping, and Google's AI-powered product results select products, and what merchants need to fix first.
+- [What Is WebMCP? The Next Layer of AI Discovery](https://geoready.dev/guides/what-is-webmcp/): How a page declares interactive tools (search, checkout, forms) for MCP-compatible AI agents, and how readiness is actually measured.
+- [How Claude Cites Sources: What We Know So Far](https://geoready.dev/guides/how-claude-cites-sources/): The three distinct Anthropic crawlers (ClaudeBot, Claude-SearchBot, Claude-User), how Claude's web search surfaces citations, and the MCP/WebMCP connection.
+- [How Google Gemini and AI Mode Cite Sources](https://geoready.dev/guides/gemini-ai-mode-citations/): Why the Gemini app and Google AI Overviews are different products, what Grounding with Google Search does, and what Google-Extended actually controls.
+- [GEO for Agencies: Auditing and Reporting AI Visibility for Clients](https://geoready.dev/guides/geo-for-agencies/): How to add AI-visibility audits to an existing SEO retainer and translate an 8-category score into a client report.
 
 ## Research sources
 
