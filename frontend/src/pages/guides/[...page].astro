@@ -86,6 +86,25 @@ const guideIntentCards = [
   },
 ] as const;
 
+const guideFaqs = [
+  {
+    q: 'What topics do these guides cover?',
+    a: 'Three areas: foundations (AI SEO, GEO, llms.txt, crawler access), citability (how answer engines choose and weigh sources), and execution (checklists and implementation paths for real sites).',
+  },
+  {
+    q: 'Are these guides free to read?',
+    a: 'Yes. Every guide is free with no account required, along with the free AI SEO check and other tools linked throughout.',
+  },
+  {
+    q: 'How do these guides relate to the GEO Optimizer scoring engine?',
+    a: "Each guide maps to specific signals in the open-source GEO Optimizer's 8-category score — the free tool measures whether a site actually implements what a given guide recommends.",
+  },
+  {
+    q: 'How often are new guides published?',
+    a: 'New guides are published on an ongoing basis, alongside monthly State of GEO benchmark reports that track what changes in AI search visibility.',
+  },
+] as const;
+
 function getCardImage(article: (typeof articles)[number]) {
   if (article.ogImage?.asset) {
     return {
@@ -311,6 +330,22 @@ function getCardImage(article: (typeof articles)[number]) {
       </div>
     </section>
 
+    {page.currentPage === 1 && (
+      <section class="mt-12 border-t border-border pt-10 md:mt-16 md:pt-12" aria-labelledby="guides-faq-heading">
+        <h2 id="guides-faq-heading" class="font-display text-2xl font-semibold text-text-primary">
+          Frequently asked questions
+        </h2>
+        <div class="mt-6 space-y-6">
+          {guideFaqs.map((faq) => (
+            <div>
+              <h3 class="font-display text-lg font-semibold text-text-primary">{faq.q}</h3>
+              <p class="mt-2 text-sm md:text-base leading-relaxed text-text-secondary">{faq.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
     <section class="mt-12">
       <NewsletterSignup
         client:visible
@@ -320,4 +355,16 @@ function getCardImage(article: (typeof articles)[number]) {
       />
     </section>
   </div>
+
+  {page.currentPage === 1 && (
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: guideFaqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.q,
+        acceptedAnswer: { '@type': 'Answer', text: faq.a },
+      })),
+    })} />
+  )}
 </Shell>
