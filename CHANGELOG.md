@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- **CJK content was under-counted ~10× by every word-count gate (#537).** `audit_content.py` and `audit_llms.py` measured length with `str.split()`, which counts whitespace-delimited tokens — but Chinese, Japanese and Korean text has no inter-word spaces, so a normal-length Chinese article measured as a handful of "words". Concretely: the `content_word_count` credit (≥300 words) and `content_front_loading` credit were arithmetically unreachable for a CJK page whose English translation passes both comfortably — the 50-token front-loading floor sat above the entire measured length. A new `utils/text.py` tokenizer counts each CJK codepoint (Han, Hiragana, Katakana, Hangul, half-width Katakana) as one word-like unit alongside normal whitespace tokens; for text with no CJK codepoints it returns byte-for-byte the same result as `str.split()`, so Latin-script scoring is unchanged. Reported with reproductions by @isafesoft.
+- **`audit_negative_signals` read the raw DOM instead of the shared cleaned tree (#537).** It was the one audit module still calling `soup.get_text()` on the un-stripped soup; every other module uses the `soup_clean` the orchestrator already builds. It now takes `soup_clean` and uses it for keyword-stuffing density, CTA density and the boilerplate ratio — so an inline stylesheet (on a bs4 build old enough to include `<style>` text in `get_text()`) or a large `<noscript>` fallback menu can no longer be mistaken for keyword-stuffed page copy. The shared `soup_clean` now also strips `<noscript>` and `<template>`, whose text is never page copy but which `get_text()` still returns.
+
+---
+
 ## [4.17.1] — 2026-08-31
 
 Patch release from a dogfooding sweep against this project's own production
