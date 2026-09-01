@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from geo_optimizer.models.results import ContentResult
+from geo_optimizer.utils.text import tokenize_words
 
 if TYPE_CHECKING:
     from bs4 import BeautifulSoup
@@ -43,7 +44,7 @@ def audit_content_quality(
     # Use copy.deepcopy() instead of BS(str(soup)) to avoid costly re-parsing
     if soup_clean is None:
         soup_clean = copy.deepcopy(soup)
-        for tag in soup_clean(["script", "style"]):
+        for tag in soup_clean(["script", "style", "noscript", "template"]):
             tag.decompose()
 
     # Fix #107: separator=" " prevents word concatenation from adjacent tags
@@ -55,7 +56,11 @@ def audit_content_quality(
         result.has_numbers = True
 
     # Word count
-    words = body_text.split()
+    # CJK-aware: languages without inter-word spaces (Chinese, Japanese, Korean)
+    # count each codepoint as a word-like unit, so a CJK page is measured
+    # comparably to its Latin-script translation. CJK-free text tokenizes
+    # identically to str.split(). (#537)
+    words = tokenize_words(body_text)
     result.word_count = len(words)
 
     # External links (citations)
@@ -86,6 +91,8 @@ def audit_content_quality(
 
     # Front-loading: first 30% of text has substantial content with concrete data
     # Fix #306: threshold was computed incorrectly (always >= 50 for pages >= 50 words)
+    # #537: the 50-token floor now applies to a CJK-aware count (see tokenize_words),
+    # so a well-written CJK page can reach front-loading the way its translation does.
     if words:
         soglia_30 = max(len(words) * 30 // 100, 1)
         first_30pct = words[:soglia_30]
