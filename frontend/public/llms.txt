@@ -103,6 +103,7 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 - [Research](https://geoready.dev/research/): Peer-reviewed research foundation.
 - [Methodology](https://geoready.dev/methodology/): Transparent scoring weights, score bands, signal categories, and research-backed assumptions behind the GEO score.
 - [State of GEO](https://geoready.dev/state-of-geo/): Live AI search readiness benchmark across sites audited by GeoReady — average and median GEO score, llms.txt and schema adoption, and the biggest readiness gap. Aggregated and anonymized; an audited sample, not a survey of the whole web.
+- [State of GEO: August 2026](https://geoready.dev/state-of-geo/august-2026/): Monthly benchmark report — 282 domains audited, average GEO score 56.4/100 (up 2.3 points), 29.1% reach "Good" or above, llms.txt adoption rebounded to 62.8%.
 - [State of GEO: July 2026](https://geoready.dev/state-of-geo/july-2026/): Monthly benchmark report — 360 domains audited, average GEO score 54.1/100, only 24.7% reach "Good" or above.
 - [State of GEO: June 2026](https://geoready.dev/state-of-geo/june-2026/): Monthly benchmark report — 288 domains audited, average GEO score 53.6/100, only 20.8% reach "Good" or above.
 - [Best GEO Tools](https://geoready.dev/best-geo-tools/): Criteria-based guide to evaluating generative engine optimization software, including methodology transparency, audit vs monitoring, CI/CD support, and answer-engine citation checks.
