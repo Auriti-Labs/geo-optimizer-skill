@@ -408,6 +408,14 @@ class PromptInjectionResult:
     aria_hidden_injection_count: int = 0
     aria_hidden_samples: list[str] = field(default_factory=list)
 
+    # UGC injection surface: comment/review/forum regions where a third party
+    # (not the site owner) can place content an AI crawler will read. Not an
+    # injection by itself — an attack surface to moderate. (Deep-Research Agents
+    # Can Be Poisoned via User-Generated Content, arXiv:2605.24245)
+    ugc_surface_found: bool = False
+    ugc_surface_samples: list[str] = field(default_factory=list)
+    ugc_injection_risk: bool = False  # an injection pattern was found AND a UGC region is present
+
     # Summary
     patterns_found: int = 0  # active categories (0-8)
     severity: str = "clean"  # "clean" | "suspicious" | "critical"
@@ -793,14 +801,17 @@ class TopicAuthorityResult:
 
 @dataclass
 class CitationCheckEntry:
-    """A single query result in the one-shot AI citation check."""
+    """A single query result in the AI citation check (aggregated across runs)."""
 
     query: str = ""
     platform: str = ""
     model: str = ""
-    brand_mentioned: bool = False
-    domain_cited: bool = False
-    cited_sources: list[str] = field(default_factory=list)  # source URLs from the answer
+    runs: int = 1  # successful answers collected for this query
+    mention_runs: int = 0  # of `runs`, how many answers mentioned the brand
+    citation_runs: int = 0  # of `runs`, how many answers cited the domain
+    brand_mentioned: bool = False  # brand mentioned in at least one run
+    domain_cited: bool = False  # domain cited in at least one run
+    cited_sources: list[str] = field(default_factory=list)  # union of source URLs across runs
     snippet: str = ""
     error: str | None = None
 
@@ -814,9 +825,14 @@ class CitationCheckResult:
     brand: str = ""
     domain: str = ""
     entries: list[CitationCheckEntry] = field(default_factory=list)
-    queries_run: int = 0
+    queries_run: int = 0  # distinct queries that returned at least one answer
+    runs_per_query: int = 1  # how many times each query was asked
+    total_answers: int = 0  # queries_run x runs_per_query, minus failed calls
     brand_mention_rate: float = 0.0  # 0-1, share of answers mentioning the brand
     domain_citation_rate: float = 0.0  # 0-1, share of answers citing the domain as a source
+    brand_mention_rate_ci: tuple[float, float] = (0.0, 0.0)  # 95% Wilson interval
+    domain_citation_rate_ci: tuple[float, float] = (0.0, 0.0)  # 95% Wilson interval
+    stable: bool = False  # True when the CI does not straddle a verdict boundary (needs runs > 1)
     top_cited_domains: list[tuple[str, int]] = field(default_factory=list)  # (domain, count), own domain excluded
     verdict: str = ""  # strong | cited | mentioned_only | invisible
 

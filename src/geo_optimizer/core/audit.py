@@ -151,6 +151,21 @@ def build_recommendations(
                 "AI crawlers can read it and may penalize this cloaking pattern"
             )
 
+    # UGC injection surface — advisory, runs regardless of severity
+    if prompt_injection is not None and prompt_injection.checked and prompt_injection.ugc_surface_found:
+        _surfaces = ", ".join(prompt_injection.ugc_surface_samples[:3])
+        if prompt_injection.ugc_injection_risk:
+            _critical.append(
+                f"Injection pattern found on a page that also exposes user-generated content ({_surfaces}) — "
+                "the payload may be a third-party comment/review, not your own markup. Moderate the UGC area, "
+                'mark links inside it rel="ugc", and consider excluding unmoderated UGC from AI crawlers.'
+            )
+        else:
+            _l_content.append(
+                f"This page exposes user-generated content ({_surfaces}). It is an injection surface — a third "
+                'party can place text there that AI crawlers read. Keep it moderated and mark its links rel="ugc".'
+            )
+
     # ── HIGH — robots(18pt), llms(18pt), meta title(5pt) ──────────────────
     # Fix #453: split robots recommendation — create vs update
     if not robots.found:

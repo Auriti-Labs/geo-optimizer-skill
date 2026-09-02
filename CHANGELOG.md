@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Added
+- **`geo citations --runs N` samples each query multiple times.** AI answers are non-deterministic — the same question returns different sources run to run (Schulte et al. 2026, arXiv:2604.07585). A one-shot check is a coin flip. `--runs 5` asks each query five times, reports a 95% Wilson confidence interval on the citation rate, and marks the verdict `stable` only when that interval does not straddle a verdict boundary. `--runs 1` (default) is unchanged and byte-for-byte backwards compatible; the new `CitationCheckResult` fields (`runs_per_query`, `total_answers`, `*_rate_ci`, `stable`) all default to the previous behaviour.
+- **UGC injection-surface detection.** `audit_prompt_injection` now flags comment / review / forum regions — Disqus, Facebook Comments, giscus/utterances, WordPress comment lists, `schema.org/Comment` and repeated `itemprop="review"` markup. A UGC area is not an injection by itself, so it does not change the severity or risk level; it is surfaced as an advisory. When an injection pattern *is* found and a UGC region is present (`ugc_injection_risk`), the recommendation escalates to "the payload may be third-party content — moderate the UGC area, mark its links `rel=ugc`, consider excluding unmoderated UGC from AI crawlers" (Deep-Research Agents Can Be Poisoned via User-Generated Content, arXiv:2605.24245).
+
+### Changed
+- The `/methodology` page now cites the 2026 GEO survey (arXiv:2607.14035), C-SEO Bench (arXiv:2506.11097) and Schulte et al. (arXiv:2604.07585) alongside the Princeton and AutoGEO papers, and notes that a deterministic score and a non-deterministic live citation check are two different measurements.
+
+---
+
 ## [4.17.1] — 2026-08-31
 
 Patch release from a dogfooding sweep against this project's own production

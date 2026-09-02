@@ -139,6 +139,9 @@ geo monitor --domain yoursite.com
 # BYO API key — PERPLEXITY_API_KEY recommended (real web citations)
 geo citations --brand "YourBrand" --domain yoursite.com --topic "your product category"
 
+# AI answers vary run to run — sample each query 5x for a confidence interval
+geo citations --brand "YourBrand" --domain yoursite.com --runs 5
+
 # Save or query archived AI answer snapshots
 geo snapshots --query "best GEO tool" --from 2026-03-01 --to 2026-03-30
 

@@ -441,6 +441,10 @@ def format_audit_text(result: AuditResult) -> str:
             lines.append(f"  ⚠️  Data attribute injection: {pi.data_attr_injection_count} found")
         if pi.aria_hidden_injection_found:
             lines.append(f"  ❌ aria-hidden injection: {pi.aria_hidden_injection_count} found")
+        if pi.ugc_surface_found:
+            icon = "❌" if pi.ugc_injection_risk else "ℹ️ "
+            note = " — injection found here, may be third-party UGC" if pi.ugc_injection_risk else ""
+            lines.append(f"  {icon} UGC injection surface: {', '.join(pi.ugc_surface_samples[:3])}{note}")
 
     # Trust Stack Score (#273)
     if result.trust_stack and result.trust_stack.checked:

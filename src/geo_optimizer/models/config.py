@@ -663,6 +663,23 @@ PROMPT_INJECTION_UNICODE_THRESHOLD = 5
 PROMPT_INJECTION_COMMENT_MAX_LEN = 500
 MICROFONT_SIZE_THRESHOLD_PX = 2.0
 
+# UGC injection surface (#537 follow-up): named third-party comment widgets, and
+# id/class fragments that mark a user-generated content region. Kept narrow to
+# avoid flagging author-written testimonial blocks or generic list containers.
+UGC_WIDGET_MARKERS = [
+    ("disqus_thread", "Disqus embed"),
+    ("fb-comments", "Facebook Comments plugin"),
+    ("commento", "Commento embed"),
+    ("utterances", "utterances (GitHub-issue comments)"),
+    ("giscus", "giscus (GitHub-discussion comments)"),
+    ("hyvor-talk", "Hyvor Talk comments"),
+    ("cusdis_thread", "Cusdis embed"),
+    ("remark42", "Remark42 comments"),
+    ("coral-talk", "Coral (Talk) comments"),
+]
+UGC_SCRIPT_HOSTS = ["disqus.com", "commento.io", "hyvor.com", "cusdis.com", "utteranc.es", "giscus.app"]
+UGC_ID_CLASS_RE = r"(?:^|[-_ ])(?:comment-?list|comments?-?(?:section|area|wrapper|thread)?|respond|review-?list|reviews?-?(?:section|list|wrapper)?|user-?reviews?|discussion-?thread)(?:$|[-_ ])"
+
 # ─── Shared thresholds (fix #388) ────────────────────────────────────────────
 
 # Keyword stuffing threshold: single-word density above which it is considered spam

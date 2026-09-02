@@ -35,14 +35,20 @@ def _format_text(result) -> str:
         lines.append(f"⚠️  Skipped: {result.skipped_reason}")
         return "\n".join(lines)
 
+    multi = result.runs_per_query > 1
+
     for entry in result.entries:
         lines.append("")
         lines.append(f'Q: "{entry.query}"  [{entry.platform}]')
         if entry.error:
             lines.append(f"   ⚠️ error: {entry.error}")
             continue
-        lines.append(f"   Brand mentioned: {'✅' if entry.brand_mentioned else '❌'}")
-        lines.append(f"   Domain cited:    {'✅' if entry.domain_cited else '❌'}")
+        if multi:
+            lines.append(f"   Brand mentioned: {entry.mention_runs}/{entry.runs} runs")
+            lines.append(f"   Domain cited:    {entry.citation_runs}/{entry.runs} runs")
+        else:
+            lines.append(f"   Brand mentioned: {'✅' if entry.brand_mentioned else '❌'}")
+            lines.append(f"   Domain cited:    {'✅' if entry.domain_cited else '❌'}")
         if entry.cited_sources:
             shown = ", ".join(entry.cited_sources[:3])
             extra = len(entry.cited_sources) - 3
@@ -50,9 +56,23 @@ def _format_text(result) -> str:
 
     lines.append("")
     lines.append("-" * 60)
-    lines.append(f"Answers analyzed:     {result.queries_run}")
-    lines.append(f"Brand mention rate:   {int(result.brand_mention_rate * 100)}%")
-    lines.append(f"Domain citation rate: {int(result.domain_citation_rate * 100)}%")
+    if multi:
+        lines.append(
+            f"Answers analyzed:     {result.total_answers} ({result.queries_run} queries x {result.runs_per_query} runs)"
+        )
+        clo, chi = result.domain_citation_rate_ci
+        lines.append(
+            f"Domain citation rate: {int(result.domain_citation_rate * 100)}% "
+            f"(95% CI {int(clo * 100)}–{int(chi * 100)}%)"
+        )
+        lines.append(f"Brand mention rate:   {int(result.brand_mention_rate * 100)}%")
+        lines.append(
+            f"Verdict stable:       {'✅ yes' if result.stable else '⚠️  no — re-run with more --runs or read as directional'}"
+        )
+    else:
+        lines.append(f"Answers analyzed:     {result.queries_run}")
+        lines.append(f"Brand mention rate:   {int(result.brand_mention_rate * 100)}%")
+        lines.append(f"Domain citation rate: {int(result.domain_citation_rate * 100)}%")
     if result.top_cited_domains:
         competitors = ", ".join(f"{d} ({n})" for d, n in result.top_cited_domains)
         lines.append(f"Cited instead of you: {competitors}")
@@ -60,7 +80,12 @@ def _format_text(result) -> str:
     lines.append(_VERDICT_LINES[result.verdict].format(brand=result.brand, domain=result.domain))
     lines.append(f"→ {_VERDICT_ADVICE[result.verdict].format(domain=result.domain)}")
     lines.append("")
-    lines.append("One-shot check. Track citations over time with alerts → https://geoready.dev")
+    if multi:
+        lines.append("AI answers are non-deterministic. Track citations over time with alerts → https://geoready.dev")
+    else:
+        lines.append(
+            "One-shot check — a single sample. Re-run with --runs 5 for a confidence interval, or track over time → https://geoready.dev"
+        )
     return "\n".join(lines)
 
 
@@ -69,6 +94,13 @@ def _format_text(result) -> str:
 @click.option("--domain", required=True, help="Your domain (e.g. example.com) to look for among cited sources")
 @click.option("--topic", default="", help="Topic for the default queries (defaults to brand)")
 @click.option("--query", "queries", multiple=True, help="Custom query to ask (repeatable, overrides defaults)")
+@click.option(
+    "--runs",
+    type=click.IntRange(1, 20),
+    default=1,
+    show_default=True,
+    help="Ask each query this many times. AI answers vary run to run; >1 gives a confidence interval. Costs runs x queries API calls.",
+)
 @click.option(
     "--provider",
     type=click.Choice(["perplexity", "openai", "anthropic", "groq", "minimax", "gemini", "deepseek"]),
@@ -84,7 +116,7 @@ def _format_text(result) -> str:
     help="Output format",
 )
 @click.option("--output", "output_file", default=None, help="Output file path (optional)")
-def citations(brand, domain, topic, queries, provider, output_format, output_file):
+def citations(brand, domain, topic, queries, runs, provider, output_format, output_file):
     """Check if AI answer engines mention your brand and cite your domain.
 
     Bring your own API key: PERPLEXITY_API_KEY is recommended because
@@ -92,10 +124,14 @@ def citations(brand, domain, topic, queries, provider, output_format, output_fil
     URLs. Parametric providers (OpenAI/Anthropic/Groq) only reveal whether
     the model knows your brand.
 
+    AI answers are non-deterministic — the same question returns different
+    sources run to run. Pass --runs 5 to sample each query multiple times and
+    get a 95% confidence interval on the citation rate instead of one coin flip.
+
     \b
     Examples:
       geo citations --brand "GeoReady" --domain geoready.dev --topic "GEO audit tools"
-      geo citations --brand "Acme" --domain acme.com --query "best CRM for startups"
+      geo citations --brand "Acme" --domain acme.com --query "best CRM for startups" --runs 5
     """
     resolved_provider, resolved_key = resolve_provider(provider)
     if not resolved_provider or not resolved_key:
@@ -115,6 +151,7 @@ def citations(brand, domain, topic, queries, provider, output_format, output_fil
         queries=list(queries) if queries else None,
         provider=resolved_provider,
         api_key=resolved_key,
+        runs=runs,
     )
 
     if output_format == "json":
