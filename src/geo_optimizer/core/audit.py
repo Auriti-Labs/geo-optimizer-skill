@@ -771,8 +771,10 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
 
     # Fix #285: compute soup_clean once and pass it to all sub-audits
     # Avoids 3-4 re-parses of the same HTML (saves 50-200ms per page)
+    # #537: also strip <noscript>/<template> — their text is not page copy but
+    # get_text() still includes <noscript>, inflating word counts and boilerplate.
     soup_clean = copy.deepcopy(soup)
-    for tag in soup_clean(["script", "style"]):
+    for tag in soup_clean(["script", "style", "noscript", "template"]):
         tag.decompose()
 
     # Fetch robots.txt, llms.txt, llms-full.txt and AI discovery with local fetch_url
@@ -827,7 +829,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     webmcp_result = audit_webmcp_readiness(soup, r.text, schema, ai_disc)
 
     # v4.3: Negative Signals detection — zero HTTP fetch
-    negative_signals_result = audit_negative_signals(soup, r.text, content, meta, schema)
+    negative_signals_result = audit_negative_signals(soup, r.text, content, meta, schema, soup_clean=soup_clean)
 
     # v4.4: Prompt Injection Pattern Detection (#276) — zero HTTP fetch
     from geo_optimizer.core.injection_detector import audit_prompt_injection
@@ -984,8 +986,9 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     soup = BeautifulSoup(r_home.text, "html.parser")
 
     # Fix #285: compute soup_clean once for the async path
+    # #537: strip <noscript>/<template> too (their text is not page copy)
     soup_clean = copy.deepcopy(soup)
-    for tag in soup_clean(["script", "style"]):
+    for tag in soup_clean(["script", "style", "noscript", "template"]):
         tag.decompose()
 
     # Sub-audit robots.txt (uses pre-fetched response with extra_bots)
@@ -1026,7 +1029,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     webmcp_result = audit_webmcp_readiness(soup, r_home.text, schema, ai_disc)
 
     # v4.3: Negative Signals detection — zero HTTP fetch
-    negative_signals_result = audit_negative_signals(soup, r_home.text, content, meta, schema)
+    negative_signals_result = audit_negative_signals(soup, r_home.text, content, meta, schema, soup_clean=soup_clean)
 
     # v4.4: Prompt Injection Pattern Detection (#276) — zero HTTP fetch
     from geo_optimizer.core.injection_detector import audit_prompt_injection
