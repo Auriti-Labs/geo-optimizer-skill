@@ -130,7 +130,7 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 - [How to improve AI visibility](https://geoready.dev/guides/how-to-improve-ai-visibility/): Step-by-step playbook for improving crawlability, structured data, entity clarity, quotable content, and measurement after an audit.
 - [llms.txt for WordPress](https://geoready.dev/guides/llms-txt-wordpress/): Practical implementation guide for WordPress sites.
 - [AI Visibility Checklist](https://geoready.dev/guides/ai-visibility-checklist/): All technical and content signals organized by category.
-- [How to check AI citations](https://geoready.dev/guides/ai-citations-check/): Measurement guide for checking whether AI engines mention and cite a brand.
+- [How to check AI citations](https://geoready.dev/guides/ai-citations-check/): Three ways to verify whether ChatGPT and Perplexity mention or cite a brand — manual check, free automated tool, and ongoing monitoring.
 - [Entity Authority](https://geoready.dev/guides/entity-authority/): How consistent entity signals, topical clusters, and public references help AI systems disambiguate a brand.
 - [Multimodal GEO](https://geoready.dev/guides/multimodal-geo/): Image, chart, screenshot, and media optimization patterns for AI visibility.
 - [What is Generative Engine Optimization (GEO)?](https://geoready.dev/guides/what-is-generative-engine-optimization/): What GEO is, how it differs from SEO, and how to measure it.
@@ -148,7 +148,7 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 - [AI Overviews and E-E-A-T](https://geoready.dev/guides/ai-overviews-eeat-author-authority/): How Google's E-E-A-T quality signals factor into AI Overview citations.
 - [How to Optimize for Google AI Overviews](https://geoready.dev/guides/google-ai-overviews-optimization/): How sources get selected for Google AI Overviews and the concrete steps to get cited.
 - [Google AI Overviews for Local Businesses](https://geoready.dev/guides/google-ai-overviews-local-business/): What moves the needle for local "near me" queries answered by AI Overviews.
-- [How to Track Google AI Overview Visibility](https://geoready.dev/guides/track-google-ai-overviews-visibility/): A repeatable manual process for tracking AI Overview visibility, plus how to turn it into a scheduled monitoring workflow.
+- [AI Overviews Tracking: What Tools Exist](https://geoready.dev/guides/track-google-ai-overviews-visibility/): No tool pulls AI Overview data directly from Google — what works today is a scheduled manual check paired with automated monitoring of the citation-readiness signals.
 - [AI Crawlers and robots.txt: The 2026 Guide](https://geoready.dev/guides/robots-txt-ai-bots/): Which AI crawlers (GPTBot, OAI-SearchBot, PerplexityBot) to allow or block in robots.txt, and why blocking them makes a site invisible to AI search.
 - [Does robots.txt Block ChatGPT?](https://geoready.dev/guides/does-robots-txt-block-chatgpt/): Which robots.txt rules block ChatGPT and other AI crawlers, and the minimal fix to let them back in.
 - [What Is an AI Crawler? Bot Types Explained](https://geoready.dev/guides/what-is-an-ai-crawler-bot-list/): The difference between training crawlers, retrieval bots, and on-demand fetchers, and which ones to allow.
