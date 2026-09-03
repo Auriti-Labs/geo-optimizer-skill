@@ -26,6 +26,9 @@ from geo_optimizer.models.config import (
     PROMPT_INJECTION_MAX_SAMPLES,
     PROMPT_INJECTION_SAMPLE_MAX_LEN,
     PROMPT_INJECTION_UNICODE_THRESHOLD,
+    UGC_ID_CLASS_RE,
+    UGC_SCRIPT_HOSTS,
+    UGC_WIDGET_MARKERS,
 )
 from geo_optimizer.models.results import PromptInjectionResult
 
@@ -47,6 +50,8 @@ _HTML_COMMENT_RE = re.compile(r"<!--(.*?)-->", re.DOTALL)
 _FONT_SIZE_RE = re.compile(r"font-size\s*:\s*([\d.]+)\s*(px|pt|em|rem)", re.IGNORECASE)
 
 _DATA_ATTR_RE = re.compile(r"^data-(?:ai|prompt|llm|instruction|context|system)-", re.IGNORECASE)
+
+_UGC_ID_CLASS_RE = re.compile(UGC_ID_CLASS_RE, re.IGNORECASE)
 
 _COLOR_HEX_RE = re.compile(r"color\s*:\s*#([0-9a-fA-F]{3,6})", re.IGNORECASE)
 _BG_HEX_RE = re.compile(r"background(?:-color)?\s*:\s*#([0-9a-fA-F]{3,6})", re.IGNORECASE)
@@ -306,6 +311,62 @@ def _detect_aria_hidden_injection(soup) -> tuple[bool, int, list[str]]:
     return found_count > 0, found_count, samples
 
 
+# ─── UGC injection surface ──────────────────────────────────────────────────
+
+
+def _detect_ugc_surface(soup, raw_html: str) -> tuple[bool, list[str]]:
+    """Detect user-generated-content regions on the page.
+
+    A comments/reviews/forum area is content a third party — not the site
+    owner — can put in front of an AI crawler. It is not an injection by
+    itself, but it is where a poisoning payload would land, so it is worth
+    surfacing so the owner keeps it moderated.
+    """
+    labels: list[str] = []
+    haystack = raw_html.lower()
+
+    # 1. Named third-party comment widgets (id/class markers or their script host).
+    for marker, label in UGC_WIDGET_MARKERS:
+        if marker in haystack and label not in labels:
+            labels.append(label)
+    for tag in soup.find_all("script", src=True):
+        src = str(tag.get("src", "")).lower()
+        for host in UGC_SCRIPT_HOSTS:
+            if host in src:
+                label = f"third-party comment script ({host})"
+                if label not in labels:
+                    labels.append(label)
+
+    # 2. Schema.org UGC types (Comment / UserComments / review markup).
+    for el in soup.find_all(attrs={"itemtype": True}):
+        itemtype = str(el.get("itemtype", "")).lower()
+        if ("schema.org/comment" in itemtype or "schema.org/usercomments" in itemtype) and (
+            "Comment schema markup" not in labels
+        ):
+            labels.append("Comment schema markup")
+    review_items = soup.find_all(attrs={"itemprop": "review"})
+    if len(review_items) >= 2 and f"review schema ({len(review_items)} reviews)" not in labels:
+        labels.append(f"review schema ({len(review_items)} reviews)")
+
+    # 3. Conventional comment/review containers with actual content in them.
+    for el in soup.find_all(["section", "div", "ol", "ul", "article"]):
+        ident = " ".join(
+            [str(el.get("id", "")), " ".join(el.get("class", []) if isinstance(el.get("class"), list) else [])]
+        ).strip()
+        if not ident or not _UGC_ID_CLASS_RE.search(ident):
+            continue
+        # A real UGC region has children; an empty <div id="comments"> placeholder does too little to matter.
+        if len(el.find_all(["li", "article", "div"], recursive=True)) < 2 and len(_get_text_safe(el)) < 40:
+            continue
+        label = f"'{(el.get('id') or (el.get('class') or ['?'])[0])}' region"
+        if label not in labels:
+            labels.append(label)
+        if len(labels) >= 6:
+            break
+
+    return bool(labels), labels[:6]
+
+
 # ─── Orchestrator ─────────────────────────────────────────────────────────────
 
 
@@ -355,8 +416,16 @@ def audit_prompt_injection(soup, raw_html: str) -> PromptInjectionResult:
         _detect_aria_hidden_injection(soup)
     )
 
+    # UGC injection surface (advisory — not counted in severity)
+    result.ugc_surface_found, result.ugc_surface_samples = _detect_ugc_surface(soup, raw_html)
+
     # Compute summary
     _compute_severity(result)
+
+    # An injection pattern found *and* a UGC region present: the payload may be
+    # third-party content the owner did not write, which changes the remediation
+    # (moderate/exclude the UGC area, not "clean your own page").
+    result.ugc_injection_risk = result.ugc_surface_found and result.patterns_found > 0
 
     return result
 

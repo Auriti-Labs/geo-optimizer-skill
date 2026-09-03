@@ -24,7 +24,8 @@ const SCORE_BANDS = [
 ] as const;
 
 // Segnali di citability con il lift verificato dalla ricerca.
-// Fonti: Princeton KDD 2024 (arXiv:2311.09735), AutoGEO ICLR 2026 (arXiv:2510.11438).
+// Fonti: Princeton KDD 2024 (arXiv:2311.09735), AutoGEO ICLR 2026 (arXiv:2510.11438),
+// GEO survey 2026 (arXiv:2607.14035), C-SEO Bench (arXiv:2506.11097).
 const CITABILITY_SIGNALS = [
   ['Quotations', '+41%', 'Direct quotes from named sources give an engine a self-contained, attributable passage it can lift verbatim.'],
   ['Statistics', '+33%', 'Concrete numbers anchor a claim and are easier for a model to surface than a general assertion.'],
@@ -268,6 +269,15 @@ const faqs = [
           Princeton baseline by optimizing content automatically. The full list of sources behind
           every signal is on the <a href="/research/" class="text-accent-teal hover:underline">research page</a>.
         </p>
+        <p class="mt-4">
+          A 2026 <a href="https://arxiv.org/abs/2607.14035" rel="noopener" class="text-accent-teal hover:underline">critical survey of GEO</a>
+          {' '}(arXiv:2607.14035) reviewed 45 studies and reached a conclusion that shapes how we
+          weight these checks: topical relevance and passage structure are the levers with
+          reproducible effects, while any single copy tactic loses value as more sites adopt it
+          (<a href="https://arxiv.org/abs/2506.11097" rel="noopener" class="text-accent-teal hover:underline">C-SEO Bench</a>,
+          arXiv:2506.11097). That is why the citability layer scores structure a model can lift and
+          attribute — not a formula for a guaranteed ranking gain.
+        </p>
       </section>
 
       <ArticleVisual
@@ -347,6 +357,14 @@ const faqs = [
           own. We'll re-run this measurement periodically rather than let a good number go stale on
           the page.
         </p>
+        <p class="mt-4">
+          The GEO score is deterministic on purpose. What an AI engine actually cites is not:
+          research on AI-search visibility finds the same query returns different sources run to
+          run (<a href="https://arxiv.org/abs/2604.07585" rel="noopener" class="text-accent-teal hover:underline">Schulte et al. 2026</a>,
+          arXiv:2604.07585). So a live citation check is a sample, not a verdict — the
+          {' '}<code class="font-mono text-sm">geo citations --runs</code> flag asks each query
+          several times and reports a confidence interval instead of one coin flip.
+        </p>
       </section>
 
       {/* FAQ */}
@@ -374,7 +392,7 @@ const faqs = [
     "author": { "@id": "https://geoready.dev/#organization" },
     "publisher": { "@id": "https://geoready.dev/#organization" },
     "datePublished": "2026-06-16",
-    "dateModified": "2026-06-16",
+    "dateModified": "2026-09-02",
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https://geoready.dev/methodology/"
@@ -390,6 +408,21 @@ const faqs = [
         "@type": "CreativeWork",
         "name": "AutoGEO (ICLR 2026)",
         "url": "https://arxiv.org/abs/2510.11438"
+      },
+      {
+        "@type": "CreativeWork",
+        "name": "A Critical Survey of Generative Engine Optimization (2023–2026)",
+        "url": "https://arxiv.org/abs/2607.14035"
+      },
+      {
+        "@type": "CreativeWork",
+        "name": "C-SEO Bench: Does Conversational SEO Work?",
+        "url": "https://arxiv.org/abs/2506.11097"
+      },
+      {
+        "@type": "CreativeWork",
+        "name": "Don't Measure Once: Measuring Visibility in AI Search (Schulte et al. 2026)",
+        "url": "https://arxiv.org/abs/2604.07585"
       }
     ]
   })} />

@@ -190,7 +190,99 @@ class TestResolveProvider:
         assert (provider, key) == ("deepseek", "deepseek-test")
 
 
+class TestWilsonInterval:
+    def test_zero_samples(self):
+        assert citations_mod._wilson_interval(0, 0) == (0.0, 0.0)
+
+    def test_all_success_small_n(self):
+        lo, hi = citations_mod._wilson_interval(5, 5)
+        assert 0.0 < lo < 1.0 and hi == 1.0  # never certain from 5 samples
+
+    def test_half_success(self):
+        lo, hi = citations_mod._wilson_interval(5, 10)
+        assert lo < 0.5 < hi
+        assert hi - lo > 0.3  # wide at n=10
+
+
+class TestMultiRun:
+    def test_runs_multiplies_calls_and_aggregates(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("GeoReady is great.", citations=["https://geoready.dev/x"])
+            result = run_citation_check(
+                "GeoReady", "geoready.dev", provider="perplexity", api_key="pk-test", runs=4
+            )
+
+        assert mock_q.call_count == 3 * 4  # 3 templates x 4 runs
+        assert result.runs_per_query == 4
+        assert result.total_answers == 12
+        assert result.queries_run == 3
+        assert result.domain_citation_rate == 1.0
+        assert result.domain_citation_rate_ci[1] == 1.0
+        assert result.domain_citation_rate_ci[0] < 1.0
+        assert result.stable is True
+        for entry in result.entries:
+            assert entry.runs == 4 and entry.citation_runs == 4
+
+    def test_flaky_citation_is_not_stable(self):
+        # Cited in 2 of every 4 runs → rate 0.5, CI straddles the strong/cited line.
+        cited = _sonar_response("GeoReady rocks.", citations=["https://geoready.dev"])
+        not_cited = _sonar_response("Other tools are fine.", citations=["https://other.com"])
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.side_effect = [cited, not_cited, cited, not_cited] * 3
+            result = run_citation_check(
+                "GeoReady", "geoready.dev", provider="perplexity", api_key="pk-test", runs=4
+            )
+
+        assert result.domain_citation_rate == 0.5
+        assert result.stable is False
+        assert result.entries[0].citation_runs == 2 and result.entries[0].runs == 4
+
+    def test_single_run_is_backwards_compatible(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("GeoReady.", citations=["https://geoready.dev"])
+            result = run_citation_check("GeoReady", "geoready.dev", provider="perplexity", api_key="pk-test")
+
+        assert result.runs_per_query == 1
+        assert result.total_answers == 3
+        assert result.stable is False  # one sample is never "stable"
+        assert result.domain_citation_rate == 1.0
+
+    def test_partial_run_failures_still_counted(self):
+        ok = _sonar_response("GeoReady.", citations=["https://geoready.dev"])
+        err = LLMResponse(error="timeout", provider="perplexity")
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.side_effect = [ok, err, ok] * 3  # 2 of 3 runs answer per query
+            result = run_citation_check(
+                "GeoReady", "geoready.dev", provider="perplexity", api_key="pk-test", runs=3
+            )
+
+        assert result.total_answers == 6  # 3 queries x 2 successful runs
+        assert all(e.runs == 2 for e in result.entries)
+
+
 class TestCitationsCli:
+    def test_cli_multirun_output(self, monkeypatch):
+        monkeypatch.setenv("PERPLEXITY_API_KEY", "pk-test")
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("GeoReady leads.", citations=["https://geoready.dev"])
+            runner = CliRunner()
+            result = runner.invoke(
+                cli, ["citations", "--brand", "GeoReady", "--domain", "geoready.dev", "--runs", "5"]
+            )
+
+        assert result.exit_code == 0
+        assert "runs" in result.output
+        assert "95% CI" in result.output
+        assert "Verdict stable" in result.output
+
+    def test_cli_runs_out_of_range_rejected(self, monkeypatch):
+        monkeypatch.setenv("PERPLEXITY_API_KEY", "pk-test")
+        runner = CliRunner()
+        result = runner.invoke(
+            cli, ["citations", "--brand", "X", "--domain", "x.com", "--runs", "99"]
+        )
+        assert result.exit_code != 0
+
     def test_cli_text_output(self, monkeypatch):
         monkeypatch.setenv("PERPLEXITY_API_KEY", "pk-test")
         with patch.object(citations_mod, "query_llm") as mock_q:
