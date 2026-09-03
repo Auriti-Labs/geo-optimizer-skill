@@ -12,6 +12,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "generate:llms": "node scripts/generate-llms.mjs",
     "generate:feed": "node scripts/generate-feed.mjs",
     "sanity:check-schedule": "node scripts/verify-scheduled-articles.mjs",
     "sanity:publish-due:dry-run": "node scripts/publish-scheduled-articles.mjs --dry-run",
