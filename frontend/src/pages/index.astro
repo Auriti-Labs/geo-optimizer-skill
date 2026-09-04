@@ -5,6 +5,7 @@ import StatsBar from '../components/StatsBar';
 import ScoreSurface from '../components/product/ScoreSurface.astro';
 import RetrievalPath from '../components/product/RetrievalPath.astro';
 import MonitorSurface from '../components/product/MonitorSurface.astro';
+import { getBenchmark } from '../utils/benchmark';
 
 // Gli otto pesi di scoring, come pubblicati in models/config.py (SCORING).
 // Sono qui perché la pagina rivendica "auditable scoring": affermarlo e non mostrarlo
@@ -20,16 +21,13 @@ const SCORING_WEIGHTS = [
   ['Brand & entity', 10, 'Naming coherence, Knowledge Graph readiness, topic authority.'],
 ] as const;
 
-// Aggregati della coorte, da GET /api/public/benchmark. Hardcoded perché la build
-// Docker gira prima che l'app sia in piedi e i numeri caricati via JS non entrano
-// nell'HTML che un crawler AI legge. `measuredOn` rende visibile la stagionatura.
-const BENCHMARK = {
-  measuredOn: '13 August 2026',
-  sampleLabel: '750+ audited sites',
-  average: '54.3',
-  median: '56',
-  llmsTxtAdoption: '58%',
-} as const;
+// Aggregati della coorte, letti a build time da GET /api/public/benchmark: erano
+// hardcoded perché la build Docker gira prima che l'app locale sia in piedi, ma
+// l'endpoint è pubblico e la build lo raggiunge come già fa con Sanity. I valori scritti
+// a mano restavano indietro senza che nessuno se ne accorgesse — «750+ siti, media 54.3»
+// contro i 900+ e 54.6 reali. Se l'endpoint non risponde si usano i valori di fallback:
+// vedi utils/benchmark.ts.
+const BENCHMARK = await getBenchmark();
 
 const trustCards = [
   {
@@ -301,7 +299,7 @@ const faqSchema = {
             </p>
           </blockquote>
           <figcaption class="mt-3 text-sm text-text-muted">
-            GeoReady benchmark, {BENCHMARK.sampleLabel}, measured {BENCHMARK.measuredOn}.
+            GeoReady benchmark, {BENCHMARK.sampleLabel}, as of {BENCHMARK.asOf}.
             Latest audit per domain, aggregates only — the sample is self-selected, so read it
             as a baseline among sites that chose to measure.
             <a href="/state-of-geo/" class="underline hover:no-underline">See the live benchmark</a>.
