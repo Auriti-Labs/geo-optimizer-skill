@@ -25,6 +25,12 @@ ENV PUBLIC_GA_MEASUREMENT_ID=G-KV5MQTGFZG
 # it up as a static asset — keeps the sitemap current on every rebuild instead of
 # depending on someone remembering to run `npm run generate:sitemap` by hand.
 RUN npm run generate:sitemap
+# Same reasoning for public/llms.txt: it used to be a hand-maintained file, so every
+# article published from Sanity was born invisible to LLMs until someone remembered to
+# add it (patched by hand in 386777a, 5c8f01e, 609bb60). Regenerating the "## Guides"
+# section here keeps the discovery file as current as the sitemap. Fails the build if
+# Sanity is unreachable or the section would shrink — same fail-fast stance as above.
+RUN npm run generate:llms
 RUN npm run build
 
 # ─── Stage 1: Python build ────────────────────────────────────────────────────
