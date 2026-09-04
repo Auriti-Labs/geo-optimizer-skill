@@ -1498,6 +1498,105 @@ class TestEntityDisambiguation:
         result = detect_entity_disambiguation(_soup(html))
         assert result.score <= 1
 
+    def test_brand_in_fondo_al_title_e_coerente(self):
+        """gap #4.16.5: keeping only the segment before the first separator made the most
+        common title convention — page name first, brand last — read as inconsistent, so
+        no such page could ever score the naming point."""
+        html = """
+        <html>
+        <head>
+            <title>Free AI SEO Audit for ChatGPT &amp; Perplexity — AgencyPilot</title>
+            <meta property="og:title" content="Free AI SEO Audit for ChatGPT &amp; Perplexity — AgencyPilot">
+            <script type="application/ld+json">
+            {"@type": "Organization", "name": "AgencyPilot"}
+            </script>
+        </head>
+        <body><p>Some intro copy without a definition.</p></body>
+        </html>
+        """
+        result = detect_entity_disambiguation(_soup(html))
+        assert result.details["names_consistent"] is True
+
+    def test_graph_name_diverso_dal_titolo_resta_coerente(self):
+        """The first @graph entity is often the company while the title carries the
+        product. Reading only the first name made the two look contradictory."""
+        html = """
+        <html>
+        <head>
+            <title>Free AI SEO Audit — AgencyPilot</title>
+            <script type="application/ld+json">
+            {"@graph": [
+                {"@type": "Organization", "name": "Auriti Labs"},
+                {"@type": "WebSite", "name": "AgencyPilot"}
+            ]}
+            </script>
+        </head>
+        <body><p>Some intro copy.</p></body>
+        </html>
+        """
+        result = detect_entity_disambiguation(_soup(html))
+        assert result.details["names_consistent"] is True
+
+    def test_sameas_sommato_tra_le_entita_del_graph(self):
+        """sameAs used to be max() across entities, so links spread over Organization and
+        Person never added up and the >3 bonus stayed out of reach."""
+        html = """
+        <html>
+        <head>
+            <title>AgencyPilot</title>
+            <script type="application/ld+json">
+            {"@graph": [
+                {"@type": "Organization", "name": "AgencyPilot", "sameAs": [
+                    "https://github.com/test", "https://pypi.org/project/test/"
+                ]},
+                {"@type": "Person", "name": "AgencyPilot", "sameAs": [
+                    "https://x.com/test", "https://linkedin.com/in/test"
+                ]}
+            ]}
+            </script>
+        </head>
+        <body><p>Some intro copy.</p></body>
+        </html>
+        """
+        result = detect_entity_disambiguation(_soup(html))
+        assert result.details["sameas_count"] == 4, "the two lists must be summed, not maxed"
+
+    def test_definizione_cercata_nel_contenuto_non_nella_navbar(self):
+        """gap #4.16.5: the definition check read the first <p> of the whole body, which on
+        a site whose nav is built out of paragraphs is a menu label — so the opening
+        sentence was never examined."""
+        html = """
+        <html>
+        <head><title>AgencyPilot</title></head>
+        <body>
+            <nav><p>Pricing — plans from $0</p><p>Tools</p></nav>
+            <main>
+                <h1>Some headline</h1>
+                <p>AgencyPilot is a SaaS for WordPress management.</p>
+            </main>
+        </body>
+        </html>
+        """
+        # 2 points: consistent naming, plus the definition sentence inside <main>. Only
+        # the naming point survives if the check stops at the nav's first paragraph.
+        result = detect_entity_disambiguation(_soup(html))
+        assert result.score == 2, "the definition in <main> must be found past the nav"
+
+    def test_titolo_incoerente_senza_schema_resta_incoerente(self):
+        """Guard against the fix over-reaching: with no schema name to anchor to, title
+        and og:title disagreeing must still count as inconsistent."""
+        html = """
+        <html>
+        <head>
+            <title>Some Page — AgencyPilot</title>
+            <meta property="og:title" content="Totally Different Thing">
+        </head>
+        <body><p>Random content here.</p></body>
+        </html>
+        """
+        result = detect_entity_disambiguation(_soup(html))
+        assert result.details["names_consistent"] is False
+
 
 # ============================================================================
 # TEST: First-Party Data (+12%) — Batch A v3.16.0
