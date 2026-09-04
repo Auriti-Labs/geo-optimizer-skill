@@ -6,6 +6,7 @@ import ScoreSurface from '../components/product/ScoreSurface.astro';
 import RetrievalPath from '../components/product/RetrievalPath.astro';
 import MonitorSurface from '../components/product/MonitorSurface.astro';
 import { getBenchmark } from '../utils/benchmark';
+import { getPublicStats } from '../utils/publicStats';
 
 // Gli otto pesi di scoring, come pubblicati in models/config.py (SCORING).
 // Sono qui perché la pagina rivendica "auditable scoring": affermarlo e non mostrarlo
@@ -28,6 +29,10 @@ const SCORING_WEIGHTS = [
 // contro i 900+ e 54.6 reali. Se l'endpoint non risponde si usano i valori di fallback:
 // vedi utils/benchmark.ts.
 const BENCHMARK = await getBenchmark();
+
+// Stessa ragione: i contatori di StatsBar arrivavano solo via JS, quindi l'HTML statico
+// mostrava a un crawler il fallback fermo a luglio (587 stelle, 5.134 download).
+const { stats: PUBLIC_STATS, isLive: STATS_ARE_LIVE } = await getPublicStats();
 
 const trustCards = [
   {
@@ -170,7 +175,7 @@ const faqSchema = {
             Free report, no account required. Use Pro when you want weekly monitoring, score history, and regression alerts.
           </p>
 
-          <StatsBar client:load />
+          <StatsBar client:load initial={PUBLIC_STATS} initialIsLive={STATS_ARE_LIVE} />
 
           <div class="mt-6 flex flex-wrap items-center gap-4 text-sm">
             <a href="/report/demo/" data-cta="home_hero_demo_report" class="text-text-muted hover:text-text-inverse transition-colors">View demo report</a>

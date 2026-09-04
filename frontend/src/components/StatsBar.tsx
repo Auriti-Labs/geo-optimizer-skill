@@ -12,12 +12,22 @@ function fmt(n: number): string {
   return String(n);
 }
 
-// Static fallback shown until /stats responds. github_stars verified via GitHub API on 2026-07-15.
-const FALLBACK: Stats = { github_stars: 587, pypi_downloads_month: 5134, audits_run: 1593 };
+// I valori iniziali arrivano dal build (vedi utils/publicStats.ts): così l'HTML servito a
+// un crawler AI porta già i contatori aggiornati, invece del vecchio fallback statico che
+// dichiarava 5.134 download/mese contro i 71.997 reali. Il fetch qui sotto resta perché
+// aggiorna i numeri nel browser fra un rebuild e l'altro.
+interface StatsBarProps {
+  initial?: Stats;
+  /** true = i valori iniziali vengono dall'endpoint, non da un fallback hardcoded. */
+  initialIsLive?: boolean;
+}
 
-export default function StatsBar() {
-  const [stats, setStats] = useState<Stats>(FALLBACK);
-  const [live, setLive] = useState(false);
+// Usato solo se la pagina non passa nulla (nessun chiamante oggi lo fa).
+const FALLBACK: Stats = { github_stars: 767, pypi_downloads_month: 71997, audits_run: 1912 };
+
+export default function StatsBar({ initial, initialIsLive = false }: StatsBarProps) {
+  const [stats, setStats] = useState<Stats>(initial ?? FALLBACK);
+  const [live, setLive] = useState(initialIsLive);
 
   useEffect(() => {
     fetch(buildApiUrl('/stats'))
@@ -60,7 +70,7 @@ export default function StatsBar() {
         </div>
       </div>
       {!live && (
-        <p className="mt-2 text-xs text-text-muted font-mono">Snapshot: as of July 2026 — not live data</p>
+        <p className="mt-2 text-xs text-text-muted font-mono">Snapshot — counters could not be refreshed</p>
       )}
     </div>
   );
