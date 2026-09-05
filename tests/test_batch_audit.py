@@ -25,6 +25,11 @@ def _make_audit_result(url: str, score: int, band: str, breakdown: dict[str, int
 class TestBatchAudit:
     """Test per `run_batch_audit_async` e aggregazione risultati."""
 
+    # _async_runtime_available() probes for httpx. Pinned to True so the test
+    # exercises the async branch it mocks: without this, an environment lacking
+    # httpx falls through to to_thread(run_full_audit, ...) — unmocked — and the
+    # audit hits the network instead of the fixtures.
+    @patch("geo_optimizer.core.batch_audit._async_runtime_available", return_value=True)
     @patch("geo_optimizer.core.batch_audit.asyncio.to_thread", new_callable=AsyncMock)
     @patch("geo_optimizer.core.batch_audit.fetch_sitemap")
     @patch("geo_optimizer.core.batch_audit.run_full_audit_async")
@@ -33,6 +38,7 @@ class TestBatchAudit:
         mock_run_full_audit_async,
         mock_fetch_sitemap,
         mock_to_thread,
+        mock_async_available,
     ):
         """La sitemap viene auditata e aggregata in un risultato batch coerente."""
         mock_to_thread.side_effect = lambda func, *args, **kwargs: func(*args, **kwargs)

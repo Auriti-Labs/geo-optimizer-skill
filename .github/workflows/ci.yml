@@ -16,10 +16,8 @@ jobs:
     name: Test Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
 
-    # id-token enables Codecov tokenless (OIDC) upload on public repos
     permissions:
       contents: read
-      id-token: write
 
     strategy:
       fail-fast: false
