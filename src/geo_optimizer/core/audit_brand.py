@@ -9,7 +9,12 @@ from __future__ import annotations
 from collections import Counter
 from typing import TYPE_CHECKING
 
-from geo_optimizer.models.config import ABOUT_LINK_PATTERNS, BRAND_LEGAL_SUFFIXES, KG_PILLAR_DOMAINS
+from geo_optimizer.models.config import (
+    ABOUT_LINK_PATTERNS,
+    BRAND_LEGAL_SUFFIXES,
+    KG_PILLAR_DOMAINS,
+    ORGANIZATION_TYPES,
+)
 from geo_optimizer.models.results import BrandEntityResult, ContentResult, MetaResult, SchemaResult
 
 if TYPE_CHECKING:
@@ -215,7 +220,7 @@ def audit_brand_entity(
             s_type = s.get("@type", "")
             if isinstance(s_type, list):
                 s_type = s_type[0] if s_type else ""
-            if s_type == "Organization" and (
+            if s_type in ORGANIZATION_TYPES and (
                 s.get("address") or s.get("telephone") or s.get("email") or s.get("contactPoint")
             ):
                 result.has_contact_info = True

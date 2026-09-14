@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from geo_optimizer.models.config import (
     ARTICLE_TYPES,
+    ORGANIZATION_TYPES,
     SCHEMA_ORG_REQUIRED,
     SCHEMA_RAW_SCHEMAS_CAP,
     SCHEMA_RICHNESS_HIGH,
@@ -57,7 +58,7 @@ def audit_schema(soup: BeautifulSoup | None, url: str) -> SchemaResult:
                     result.has_faq = True
                 elif t in ARTICLE_TYPES:
                     result.has_article = True
-                elif t == "Organization":
+                elif t in ORGANIZATION_TYPES:
                     result.has_organization = True
                 elif t == "HowTo":
                     result.has_howto = True

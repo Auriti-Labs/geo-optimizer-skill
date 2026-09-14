@@ -248,6 +248,50 @@ ARTICLE_TYPES: frozenset[str] = frozenset(
     }
 )
 
+# schema.org Organization subtypes that count as Organization for GEO scoring
+# (entity/trust signals, contact-info validation). Same fix shape as
+# ARTICLE_TYPES/#392: a node typed "LocalBusiness" (or one of its own common
+# subtypes) IS an Organization per schema.org's hierarchy, but was previously
+# only matched by the literal string "Organization" — which most real-world
+# small-business sites never use directly, since LocalBusiness and its
+# subtypes are schema.org's own recommended, more specific types for exactly
+# that audience.
+ORGANIZATION_TYPES: frozenset[str] = frozenset(
+    {
+        "Organization",
+        # Direct schema.org subtypes of Organization
+        "LocalBusiness",
+        "Corporation",
+        "EducationalOrganization",
+        "GovernmentOrganization",
+        "MedicalOrganization",
+        "NGO",
+        "NewsMediaOrganization",
+        "OnlineBusiness",
+        "PerformingGroup",
+        "SportsOrganization",
+        # Common LocalBusiness subtypes used directly as @type
+        "Store",
+        "Restaurant",
+        "FoodEstablishment",
+        "ProfessionalService",
+        "HomeAndConstructionBusiness",
+        "AutomotiveBusiness",
+        "MedicalBusiness",
+        "Dentist",
+        "Attorney",
+        "LegalService",
+        "FinancialService",
+        "RealEstateAgent",
+        "LodgingBusiness",
+        "Hotel",
+        "HealthAndBeautyBusiness",
+        "EntertainmentBusiness",
+        "GovernmentOffice",
+        "Library",
+    }
+)
+
 VALUABLE_SCHEMAS = [
     "WebSite",
     "WebApplication",
