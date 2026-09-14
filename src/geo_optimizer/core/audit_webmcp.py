@@ -10,6 +10,7 @@ import json  # noqa: F401 (available for future extensions)
 import re  # noqa: F401 (available for future extensions)
 from typing import TYPE_CHECKING
 
+from geo_optimizer.models.config import KNOWN_FORM_EMBED_HOSTS
 from geo_optimizer.models.results import AiDiscoveryResult, SchemaResult, WebMcpResult
 
 if TYPE_CHECKING:
@@ -134,6 +135,25 @@ def audit_webmcp_readiness(
     if labeled_count > 0:
         result.has_labeled_forms = True
         result.labeled_forms_count = labeled_count
+    else:
+        # No native <form> found accessible — but a form's fields can live
+        # inside a cross-origin <iframe> (Tally, Typeform, HubSpot, JotForm,
+        # Google Forms, etc.), invisible to this static fetch. A known
+        # provider's embed is credited toward agent-usable forms since these
+        # providers build accessible markup into their hosted forms by
+        # default (same pattern as has_webmcp_declaration above).
+        for iframe in soup.find_all("iframe"):
+            # Some embed snippets (e.g. Tally's data-tally-src) set the real
+            # URL on a data-*-src attribute and leave src empty until a
+            # loader script runs client-side — check src and every such
+            # data-*-src attribute.
+            candidates = [(iframe.get("src") or "").lower()] + [
+                v.lower() for k, v in iframe.attrs.items() if k.startswith("data-") and k.endswith("-src")
+            ]
+            if any(host in candidate for candidate in candidates for host in KNOWN_FORM_EMBED_HOSTS):
+                result.has_labeled_forms = True
+                result.has_embedded_form_provider = True
+                break
 
     # ── 4. OpenAPI/Swagger detection ─────────────────────────────
     openapi_patterns = ["/api-docs", "/swagger", "openapi.json", "openapi.yaml", "swagger.json"]

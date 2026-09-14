@@ -700,6 +700,28 @@ ABOUT_LINK_PATTERNS = [
     "/azienda",
 ]
 
+# Hostnames of third-party form-embed providers whose fields live inside a
+# cross-origin <iframe> — invisible to a static HTML fetch, the same
+# invisible-to-static-crawl limitation as has_webmcp_declaration (#535).
+# These providers build accessible markup (label/aria-label) into their
+# hosted forms by default, so a known-provider embed is credited toward
+# agent-usable forms instead of scoring as "no form found."
+KNOWN_FORM_EMBED_HOSTS = (
+    "tally.so",
+    "typeform.com",
+    "hsforms.com",
+    "hsforms.net",
+    "jotform.com",
+    "forms.gle",
+    "docs.google.com",
+    "airtable.com",
+    "formspree.io",
+    "wufoo.com",
+    "cognitoforms.com",
+    "123formbuilder.com",
+    "paperform.co",
+)
+
 # ─── Trust Stack Score (#273) ─────────────────────────────────────────────────
 
 # Composite grading thresholds (0-25): (min_threshold, grade, trust_level)

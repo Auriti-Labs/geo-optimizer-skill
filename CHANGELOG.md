@@ -5,6 +5,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- **Contact forms embedded via a third-party provider always scored as "no accessible form."** The agent-usable-forms check in `audit_webmcp.py` only inspected `soup.find_all("form")` — native `<form>` elements in the fetched HTML. A very common small-business pattern (Tally, Typeform, HubSpot, JotForm, Google Forms, ...) puts the actual form fields inside a cross-origin `<iframe>`, on a page this static fetch never touches, so it was always scored as missing — even though these providers build accessible (labeled) markup into their hosted forms by default. Adds `KNOWN_FORM_EMBED_HOSTS` in `models/config.py`; a matching iframe (checked against both `src` and any `data-*-src` attribute, since some embed snippets like Tally's leave `src` empty until a loader script runs) is now credited toward `has_labeled_forms` via a new `has_embedded_form_provider` flag on `WebMcpResult`, same pattern as the existing `has_webmcp_declaration` fallback for JS-invisible signals.
+
+---
+
 ## [4.18.0] — 2026-09-12 · Quorum
 
 A sampling-and-false-negatives release: `geo citations` can ask each query multiple

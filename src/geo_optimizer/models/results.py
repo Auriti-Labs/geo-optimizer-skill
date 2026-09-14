@@ -355,6 +355,12 @@ class WebMcpResult:
     potential_actions: list[str] = field(default_factory=list)  # action types found
     has_labeled_forms: bool = False  # forms with accessible label + description
     labeled_forms_count: int = 0
+    has_embedded_form_provider: bool = False  # form via known third-party embed
+    # (Tally, Typeform, etc.) — same invisible-to-static-crawl limitation as
+    # has_webmcp_declaration above: the fields live inside a cross-origin
+    # <iframe> a static fetch can't see into. Credited toward
+    # has_labeled_forms since these providers build accessible markup into
+    # their hosted forms by default.
     has_openapi: bool = False  # link to OpenAPI/Swagger spec
 
     # Summary
