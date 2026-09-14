@@ -5,6 +5,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- **The About-link check missed single-page sites entirely.** `ABOUT_LINK_PATTERNS` in `models/config.py` only listed `/`-prefixed URL paths (`/about`, `/chi-siamo`, `/team`, ...), so a single-page marketing site — which has no dedicated About URL, only a same-page section like `<a href="#about">About</a>` — always failed the check, even with a permanently visible About link in its nav. Added the `#`-prefixed anchor equivalent of every existing pattern; the substring match already in place picks these up with no other code changes needed.
+
+---
+
 ## [4.18.0] — 2026-09-12 · Quorum
 
 A sampling-and-false-negatives release: `geo citations` can ask each query multiple

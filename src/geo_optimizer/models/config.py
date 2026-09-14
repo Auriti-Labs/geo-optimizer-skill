@@ -698,6 +698,20 @@ ABOUT_LINK_PATTERNS = [
     "/who-we-are",
     "/storia",
     "/azienda",
+    # In-page anchors — single-page sites (common for small-business marketing
+    # sites) have no dedicated /about URL to link to, only a same-page section
+    # like href="#about". A substring check still applies, so this also
+    # matches longer anchors like "#about-us".
+    "#about",
+    "#manifesto",
+    "#chi-siamo",
+    "#team",
+    "#company",
+    "#mission",
+    "#our-story",
+    "#who-we-are",
+    "#storia",
+    "#azienda",
 ]
 
 # ─── Trust Stack Score (#273) ─────────────────────────────────────────────────
