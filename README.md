@@ -514,10 +514,11 @@ The open-source engine for **Answer Engine Optimization** — get your site cite
 
 ## Star History
 
-<a href="https://star-history.dera.page/#Auriti-Labs/geo-optimizer-skill&type=timeline">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/image?repos=Auriti-Labs/geo-optimizer-skill&type=timeline&theme=dark&logscale&legend=bottom-right" />
-   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/image?repos=Auriti-Labs/geo-optimizer-skill&type=timeline&logscale&legend=bottom-right" />
-   <img alt="Star History Chart" src="https://star-history.dera.page/image?repos=Auriti-Labs/geo-optimizer-skill&type=timeline&logscale&legend=bottom-right" />
- </picture>
+<a href="https://star-history.com/#Auriti-Labs/geo-optimizer-skill&type=Date">
+<picture>
+          <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Auriti-Labs/geo-optimizer-skill&type=Date&theme=dark" />
+          <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Auriti-Labs/geo-optimizer-skill&type=Date" />
+          <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Auriti-Labs/geo-optimizer-skill&type=Date" />
+</picture>
 </a>
+</picture>
