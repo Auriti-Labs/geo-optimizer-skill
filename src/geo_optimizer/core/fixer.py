@@ -185,18 +185,18 @@ def generate_schema_fix(result: AuditResult, base_url: str) -> list[FixItem]:
             "mainEntity": [
                 {
                     "@type": "Question",
-                    "name": f"Cos'è {site_name}?",
+                    "name": f"What is {site_name}?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": result.meta.description_text or f"Descrizione di {site_name}.",
+                        "text": result.meta.description_text or f"About {site_name}.",
                     },
                 },
                 {
                     "@type": "Question",
-                    "name": f"Come contattare {site_name}?",
+                    "name": f"How can I contact {site_name}?",
                     "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": f"Visita la pagina contatti su {base_url}/contatti",
+                        "text": f"Visit the contact page at {base_url}/contact",
                     },
                 },
             ],

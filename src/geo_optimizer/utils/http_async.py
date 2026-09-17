@@ -113,6 +113,15 @@ async def fetch_url_async(
                 if len(r.content) > max_size:
                     return None, f"Response too large: {len(r.content)} bytes (max: {max_size})"
 
+                # Port of fix #338 (utils/http.py) for the httpx path: httpx trusts a
+                # declared charset even when it's wrong (e.g. servers that default to
+                # ISO-8859-1), which mangles multi-byte characters like em dashes.
+                if r.charset_encoding is None or r.charset_encoding.upper() == "ISO-8859-1":
+                    from charset_normalizer import from_bytes
+
+                    best_guess = from_bytes(r.content).best()
+                    r.encoding = str(best_guess.encoding) if best_guess else "utf-8"
+
                 return r, None
 
             # Redirect: check body size to prevent RAM exhaustion (fix #197)

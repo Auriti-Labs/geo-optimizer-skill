@@ -280,20 +280,15 @@ SCHEMA_ORG_REQUIRED = {
 }
 
 SCHEMA_TEMPLATES = {
+    # No `potentialAction`/`SearchAction` here: the generator has no way to confirm
+    # the site actually has a search endpoint at `{{url}}/search`, and asserting one
+    # that 404s is a claim the site can't honor. Add it by hand if a search page exists.
     "website": {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "{{name}}",
         "url": "{{url}}",
         "description": "{{description}}",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": "{{url}}/search?q={search_term_string}",
-            },
-            "query-input": "required name=search_term_string",
-        },
     },
     "webapp": {
         "@context": "https://schema.org",
