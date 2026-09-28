@@ -170,7 +170,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             # le famiglie di dominio usate da GA4.
             "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com "
             "https://analytics.google.com https://*.analytics.google.com "
-            "https://stats.g.doubleclick.net; "
+            "https://stats.g.doubleclick.net "
+            # Waitlist, newsletter e survey fanno fetch cross-origin verso la SaaS:
+            # senza questa origine il browser blocca la richiesta prima che parta.
+            "https://app.geoready.dev; "
             "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
         )
         # Fix #413: restrict browser API access
