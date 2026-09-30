@@ -242,6 +242,10 @@ Treat AI visibility like test coverage. The GitHub Action scores your site, fail
 
 Any CI that runs Python works (GitLab, Jenkins, CircleCI). For longitudinal checks: `geo drift --url … --fail-on warning`. Output formats: `text`, `json`, `rich`, `html`, `pdf`, `sarif`, `junit`, `github`. The JSON format is the stable integration contract — see [docs/json-contract.md](docs/json-contract.md).
 
+`--format html` writes a self-contained report you can hand to a client. This one is the real report for geoready.dev:
+
+<img src="assets/html-report.png" alt="GEO Optimizer HTML report for geoready.dev — score 91/100, per-category results, and recommendations" width="560"/>
+
 ### MCP Server
 
 Use GEO Optimizer from Claude, Cursor, Windsurf, or any MCP client:
