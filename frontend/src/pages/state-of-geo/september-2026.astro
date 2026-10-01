@@ -1,0 +1,902 @@
+---
+import Shell from '../../components/Shell.astro';
+import NewsletterSignup from '../../components/NewsletterSignup';
+import ArticleVisual from '../../components/ArticleVisual.astro';
+
+const title = 'State of GEO September 2026: 704-Site AI Search Benchmark';
+const description =
+  'State of GEO September 2026: 704 domains audited, avg GEO score 56.2/100, flat vs August. llms.txt adoption 57.4%; AI-crawler blocking fell to 8.8%.';
+const canonical = 'https://geoready.dev/state-of-geo/september-2026/';
+const datePublished = '2026-10-01';
+const dateModified = '2026-10-01';
+
+// Every figure below comes from the closed 1–30 Sep 2026 benchmark_audit_events
+// export (source = 'web', latest audit per domain, UTC window). Prior-month
+// figures are the ones already printed in the June/July/August editions.
+const stats = {
+  domains: 704,
+  avgScore: 56.2,
+  median: 58,
+  p25: 46,
+  p75: 69,
+  minScore: 4,
+  maxScore: 100,
+  pctExcellent: 1.8,
+  pctGood: 27.0,
+  pctFoundation: 58.4,
+  pctCritical: 12.8,
+  nExcellent: 13,
+  nGood: 190,
+  nFoundation: 411,
+  nCritical: 90,
+  pctBelowGood: 71.2,
+  pctGoodOrAbove: 28.8,
+  pctLlmsTxt: 57.4,
+  pctLlmsFull: 26.0,
+  pctSchema: 77.4,
+  pctOrgSchema: 61.5,
+  pctWebSchema: 61.8,
+  pctFaqSchema: 21.3,
+  pctArticleSchema: 5.4,
+  pctCanonical: 84.8,
+  pctH1: 84.9,
+  pctLang: 95.6,
+  pctAnswerFirst: 81.1,
+  pctContentFaq: 21.3,
+  pctAiDiscovery: 15.2,
+  pctBlockAnyBot: 8.8,
+  pctBlockThreeBots: 5.1,
+  avgBotsAllowed: 23.8,
+  avgWordCount: 1331,
+  llmsAdopters: 404,
+  llmsFullFile: 183,
+  llmsStub: 221,
+  llmsStubShareOfAdopters: 54.7,
+  corrLlmsWith: 65.3,
+  corrLlmsWithout: 43.9,
+  corrSchemaWith: 62.6,
+  corrSchemaWithout: 34.1,
+  corrFaqWith: 71.5,
+  corrFaqWithout: 52.1,
+  corrAnswerWith: 59.4,
+  corrAnswerWithout: 42.5,
+  // Skills-transfer cross-tab (share of cohort)
+  xtabBoth: 48.9,
+  xtabSchemaOnly: 28.6,
+  xtabLlmsOnly: 8.5,
+  xtabNeither: 14.1,
+  // Returning domains audited in both August and September
+  returning: 43,
+  returningAvgAug: 55.7,
+  returningAvgSep: 57.6,
+  returningImproved: 15,
+  returningDeclined: 11,
+  returningFlat: 17,
+  // Engine version that scored each cohort row (geo_optimizer_version)
+  engineVersions: [
+    { version: '4.17.1', released: '31 Aug 2026', rows: 289, change: 'Baseline for the month. Predates the 4.18.x detection changes below.' },
+    { version: '4.18.1', released: '17 Sep 2026', rows: 55, change: 'LocalBusiness and ~25 Organization subtypes count as Organization schema; Brand & entity checks handle en-dash title separators and #about anchors. Includes 4.18.0 (12 Sep): CJK word counts no longer under-counted ~10×; the negative-signal check reads cleaned page text.' },
+    { version: '4.18.2', released: '19 Sep 2026', rows: 259, change: 'Security patch (sitemap redirect validation). No scoring change described in the changelog.' },
+    { version: '4.18.3', released: '22 Sep 2026', rows: 101, change: 'No scoring change applies to the figures in this report.' },
+  ],
+  categories: [
+    { name: 'Meta tags', avg: 12.7, max: 14, pct: 90.7, augPct: 90.0, julPct: 88.6, junPct: 88.6 },
+    { name: 'Content quality', avg: 9.9, max: 12, pct: 82.5, augPct: 78.3, julPct: 80.0, junPct: 80.0 },
+    { name: 'Robots & crawler access', avg: 13.8, max: 18, pct: 76.7, augPct: 77.8, julPct: 76.1, junPct: 75.6 },
+    { name: 'Technical signals', avg: 3.7, max: 6, pct: 61.7, augPct: 61.7, julPct: 61.7, junPct: 61.7 },
+    { name: 'Schema markup', avg: 7.2, max: 16, pct: 45.0, augPct: 45.0, julPct: 42.5, junPct: 38.1 },
+    { name: 'Brand & entity', avg: 4.1, max: 10, pct: 41.0, augPct: 41.0, julPct: 38.0, junPct: 38.0 },
+    { name: 'LLMs.txt', avg: 7.1, max: 18, pct: 39.4, augPct: 43.3, julPct: 36.1, junPct: 38.9 },
+    { name: 'AI discovery', avg: 0.5, max: 6, pct: 8.3, augPct: 10.0, julPct: 10.0, junPct: 8.3 },
+  ],
+  // TLDs with at least 8 domains in the September cohort
+  tlds: [
+    { tld: '.com', n: 375, avg: 56.6, pctLlms: 58.9, pctSchema: 80.0 },
+    { tld: '.ai', n: 29, avg: 61.0, pctLlms: 75.9, pctSchema: 72.4 },
+    { tld: '.fr', n: 25, avg: 57.0, pctLlms: 40.0, pctSchema: 92.0 },
+    { tld: '.de', n: 24, avg: 60.3, pctLlms: 54.2, pctSchema: 83.3 },
+    { tld: '.ca', n: 15, avg: 54.6, pctLlms: 66.7, pctSchema: 60.0 },
+    { tld: '.io', n: 15, avg: 56.5, pctLlms: 66.7, pctSchema: 80.0 },
+    { tld: '.org', n: 13, avg: 41.8, pctLlms: 23.1, pctSchema: 53.8 },
+    { tld: '.app', n: 12, avg: 56.3, pctLlms: 66.7, pctSchema: 83.3 },
+    { tld: '.net', n: 12, avg: 55.9, pctLlms: 50.0, pctSchema: 75.0 },
+    { tld: '.it', n: 10, avg: 49.8, pctLlms: 40.0, pctSchema: 40.0 },
+    { tld: '.cn', n: 10, avg: 40.5, pctLlms: 60.0, pctSchema: 30.0 },
+    { tld: '.in', n: 9, avg: 50.3, pctLlms: 33.3, pctSchema: 55.6 },
+    { tld: '.cz', n: 8, avg: 46.5, pctLlms: 62.5, pctSchema: 37.5 },
+    { tld: '.dev', n: 8, avg: 56.5, pctLlms: 62.5, pctSchema: 75.0 },
+    { tld: '.nl', n: 8, avg: 69.8, pctLlms: 87.5, pctSchema: 100.0 },
+  ],
+};
+
+const faqs = [
+  {
+    question: 'What is the average GEO score in September 2026?',
+    answer: `The average GEO score across 704 unique domains audited by GeoReady in September 2026 is 56.2 out of 100, essentially flat versus August's 56.4 (−0.2) and the first month since the benchmark began in which the average did not rise. The median is 58. 28.8% of audited sites reach the "Good" band (68–85) or above, versus 29.1% in August; 71.2% sit below Good. The sample grew from 282 to 704 domains, so the cohort is a different population from August's.`,
+  },
+  {
+    question: 'Why are September 2026 month-over-month changes only indicative?',
+    answer: `September's rows were scored by four engine versions — 4.17.1 (289 domains), 4.18.1 (55), 4.18.2 (259) and 4.18.3 (101) — whereas August's cohort was scored predominantly on 4.16.2. Releases during the month changed detection in ways that can affect the score: LocalBusiness and its subtypes now count as Organization schema, several Brand & entity checks were corrected, and CJK word counts are no longer under-counted (4.18.0 and 4.18.1; 415 of the 704 domains were scored on 4.18.1 or later). A month-over-month delta therefore mixes behaviour change, a different population and engine changes.`,
+  },
+  {
+    question: 'Did llms.txt adoption fall in September 2026?',
+    answer: `The measured rate fell from 62.8% in August to 57.4% in September, and full, structured files from 30.1% to 26.0%. Read it with two caveats. The cohort is 2.5 times larger and largely new. And an llms.txt that a CDN or WAF serves to the auditor with a 403 or 406 is counted as absent — in this edition as in every earlier one — so 57.4%, like the prior months' figures, is a floor rather than an exact level. Because the same limitation applied to August, it does not explain the drop. Of the 404 sites with a file, 54.7% publish a thin stub.`,
+  },
+  {
+    question: 'What is the biggest AI search readiness gap in September 2026?',
+    answer: `AI Discovery, for the fourth month running. Only 15.2% of audited sites expose any AI discovery endpoint (such as /.well-known/ai.txt), and the average AI Discovery score is 0.5 out of 6 points — 8.3% efficiency, the lowest of the eight categories. Across four editions efficiency reads 8.3% → 10.0% → 10.0% → 8.3%, and adoption 16.0% → 17.5% → 16.7% → 15.2%.`,
+  },
+  {
+    question: 'Are more sites blocking AI crawlers in September 2026?',
+    answer: `No — fewer. 8.8% of audited sites block at least one major AI crawler in robots.txt, down from 14.2% in August and below July's 9.7%; 5.1% block three or more (10.6% in August). The August edition reported the first rise in blocking; September did not continue it. The series is not monotonic, and with a population that changes every month, one month's move in either direction is not a trend. The average site still explicitly allows 23.8 AI bots.`,
+  },
+  {
+    question: 'Which TLD leads AI search readiness in September 2026?',
+    answer: `Among TLDs with at least eight domains, .nl has the highest average at 69.8 (87.5% llms.txt, 100% schema), but on only 8 domains. Among larger groups, .ai averages 61.0 across 29 domains with 75.9% llms.txt adoption, and .de 60.3 across 24. .com, with 375 of the 704 domains, sits at 56.6, close to the overall average. .cn (40.5) and .org (41.8) are lowest. Most TLD groups are small, so single-TLD figures swing a lot from month to month.`,
+  },
+  {
+    question: 'How does this benchmark compare to the whole web?',
+    answer: `This is a benchmark of sites that chose to audit with GeoReady, not a random sample of the web. Only 43 of September's 704 domains were also in August's cohort, so each monthly edition is largely an independent sample shaped by who visited GeoReady that month. The cohort skews toward teams already interested in AI visibility, so these figures almost certainly overestimate readiness across all websites. Read month-over-month deltas as directional — and, this month, as partly an engine-version effect.`,
+  },
+];
+
+// Recurring mono annotation: sample and window as declared in the Methodology
+// section (704 domains, 1–30 September 2026). No invented figures.
+const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
+---
+
+<Shell title={title} description={description} canonical={canonical}>
+  <article itemscope itemtype="https://schema.org/Article" class="bg-paper font-text text-ink">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <header class="mb-12 max-w-3xl">
+        <nav aria-label="Breadcrumb" class="mb-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-mute">
+          <a href="/" class="transition-colors hover:text-ink">GeoReady</a>
+          <span class="h-1 w-1 rounded-full bg-ink-mute" aria-hidden="true" />
+          <a href="/state-of-geo/" class="transition-colors hover:text-ink">State of GEO</a>
+          <span class="h-1 w-1 rounded-full bg-ink-mute" aria-hidden="true" />
+          <span>September 2026</span>
+        </nav>
+
+        <h1 itemprop="headline" class="font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+          State of GEO: September 2026
+        </h1>
+        <p class="mt-2 font-head text-xl font-bold tracking-[-0.02em] text-ink-soft md:text-2xl">
+          AI Search Readiness Across 704 Domains
+        </p>
+
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <span class="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">
+            September 2026 Report
+          </span>
+          <span class="font-mono text-[11px] text-ink-mute">704 domains · Published <time datetime="2026-10-01">1 October 2026</time></span>
+        </div>
+
+        <p class="mt-5 text-base leading-relaxed text-ink-soft md:text-lg" itemprop="description">
+          In September 2026 (1–30 September), the <strong class="text-ink">704 unique domains</strong> audited by GeoReady averaged a GEO score of <strong class="text-ink">56.2 out of 100</strong> — flat versus August's 56.4, while the sample grew from 282 domains. 28.8% reached the "Good" band or better, 57.4% had a detectable llms.txt, and 8.8% blocked at least one AI crawler. This fourth edition is the first in which the average did not rise. It also comes with a caveat the earlier ones did not need: September's rows were scored by <a href="#engine-versions" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">four engine versions</a>, with Organization-schema, Brand &amp; entity and CJK detection changes landing mid-month. Month-over-month deltas are indicative, not purely behavioural.
+        </p>
+
+        <meta itemprop="datePublished" content={datePublished} />
+        <meta itemprop="dateModified" content={dateModified} />
+        <meta itemprop="author" content="Juan Camilo Auriti" />
+      </header>
+
+      <ArticleVisual
+        src="/images/article-visuals/L1HeroBenchmarkDistribution.png"
+        alt="Benchmark distribution diagram showing audited sites grouped by AI search readiness band, with most still below the Good threshold."
+        caption="September 2026: 704 domains scored on the GEO Optimizer 100-point rubric. 71.2% still sit below the Good threshold."
+        height={452}
+      />
+
+      {/* ── Executive summary — the page's single dark well: frames the month's
+          main measured result (first-party data). Stat ids are dated anchors. ── */}
+      <section class="mb-12 overflow-hidden rounded-[4px] bg-well text-well-ink" aria-label="Executive summary — September 2026">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-well-ink/15 px-6 py-3">
+          <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-well-mute">Executive summary — September 2026</p>
+          <span class="font-mono text-[11px] uppercase tracking-[0.08em] text-well-mute">{SAMPLE_NOTE}</span>
+        </div>
+        <div class="px-6 py-6 md:px-8">
+          <div class="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-4">
+            <div id="avg-score-september-2026">
+              <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-white">{stats.avgScore}</p>
+              <p class="mt-1 text-xs leading-relaxed text-well-mute">avg GEO score / 100 <span>(−0.2 vs August)</span></p>
+            </div>
+            <div id="domains-september-2026">
+              <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-white">{stats.domains}</p>
+              <p class="mt-1 text-xs leading-relaxed text-well-mute">unique domains <span>(+422 vs August)</span></p>
+            </div>
+            <div id="llms-txt-september-2026">
+              <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-white">{stats.pctLlmsTxt}%</p>
+              <p class="mt-1 text-xs leading-relaxed text-well-mute">have llms.txt <span>(−5.4pp vs August; a lower bound in both months)</span></p>
+            </div>
+            <div id="good-or-better-september-2026">
+              <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-white">{stats.pctGoodOrAbove}%</p>
+              <p class="mt-1 text-xs leading-relaxed text-well-mute">Good or better <span>(−0.3pp vs August)</span></p>
+            </div>
+          </div>
+          <ul class="mt-6 space-y-2 text-sm leading-relaxed text-well-ink">
+            <li class="flex items-start gap-2.5">
+              <svg class="mt-1 h-3.5 w-3.5 shrink-0 text-well-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+              <span>The sample grew from 282 to 704 domains and the average stayed flat (56.4 → 56.2). After 20.8% → 24.7% → 29.1%, the Good-or-better share paused at 28.8%.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <svg class="mt-1 h-3.5 w-3.5 shrink-0 text-well-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+              <span>Four engine versions scored this cohort. 289 domains (41.1%) were audited on 4.17.1, before the month's detection changes; the other 415 on 4.18.1 or later. August was scored predominantly on 4.16.2.</span>
+            </li>
+            <li id="ai-crawler-blocking-september-2026" class="flex items-start gap-2.5">
+              <svg class="mt-1 h-3.5 w-3.5 shrink-0 text-well-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+              <span>AI-crawler blocking fell back to 8.8% after August's first-ever rise to 14.2%. The series (9.7% → 14.2% → 8.8%) is not monotonic.</span>
+            </li>
+            <li id="ai-discovery-september-2026" class="flex items-start gap-2.5">
+              <svg class="mt-1 h-3.5 w-3.5 shrink-0 text-well-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+              <span>AI Discovery is the lowest category for the fourth month: 8.3% efficiency, 15.2% adoption.</span>
+            </li>
+          </ul>
+        </div>
+        <div class="border-t border-well-ink/15 px-6 py-3">
+          <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-well-mute">source: benchmark_audit_events · closed window 1–30 Sep 2026</p>
+        </div>
+      </section>
+
+      <div class="space-y-14 leading-relaxed text-ink-soft [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-extrabold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-extrabold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
+
+        {/* ── 1. Engine-version mix — read before any month-over-month delta ── */}
+        <section id="engine-versions">
+          <h2>Read this first: four engine versions in one month</h2>
+          <p class="mt-4">
+            Every earlier edition was scored on a near-single engine version — August's cohort was scored predominantly on 4.16.2. September's was not. The audit engine shipped several releases during the month, and each domain's latest audit was scored by whichever version was live that day:
+          </p>
+
+          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
+              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">engine version mix</span>
+              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[640px] text-left text-sm">
+                <caption class="sr-only">Engine versions that scored the September 2026 cohort</caption>
+                <thead>
+                  <tr class="border-b border-rail bg-paper">
+                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Version</th>
+                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Released</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Domains</th>
+                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Scoring-relevant change</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-rail">
+                  {stats.engineVersions.map((row) => (
+                    <tr>
+                      <th scope="row" class="px-4 py-3 text-left font-mono font-semibold text-ink">{row.version}</th>
+                      <td class="px-4 py-3 font-mono tabular-nums text-ink-mute">{row.released}</td>
+                      <td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">{row.rows}</td>
+                      <td class="px-4 py-3 text-xs">{row.change}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <p class="mt-5">
+            Three groups of changes matter for this report, all in 4.18.0 and 4.18.1 — so in this cohort they reach the 415 domains audited on 4.18.1 or later. <strong class="text-ink">Organization schema:</strong> before 4.18.1, only the literal <code class="text-sm font-mono">Organization</code> type counted, so a site marked up as <code class="text-sm font-mono">LocalBusiness</code> or a subtype such as <code class="text-sm font-mono">Restaurant</code> scored as having no Organization schema and lost Brand &amp; entity credit. <strong class="text-ink">Brand &amp; entity detection:</strong> 4.18.1 also cuts titles at an en-dash separator when comparing brand names, and recognises same-page About links such as <code class="text-sm font-mono">#about</code> on single-page sites. <strong class="text-ink">Content:</strong> before 4.18.0, Chinese, Japanese and Korean pages were measured roughly ten times too short, which affected the word-count and front-loading checks and the llms.txt depth points (31 of the 704 September domains, 4.4%, declare a CJK page language); 4.18.0 also made the negative-signal check read the same cleaned page text as the other checks, so a large <code class="text-sm font-mono">&lt;noscript&gt;</code> fallback menu is no longer mistaken for keyword-stuffed copy.
+          </p>
+          <p class="mt-4">
+            These changes were made to correct missed credit and false penalties. Two consequences follow. First, 289 domains (41.1%) were scored on 4.17.1, before any of them, and August was scored predominantly on 4.16.2, which also lacked them. Second, <em>our interpretation</em> is that they are more likely to raise a September figure than to lower it — but their effect was not measured, and a change such as the brand-name separator can move an individual site's comparison either way. Every release is documented in the <a href="https://github.com/Auriti-Labs/geo-optimizer-skill/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">public changelog</a>.
+          </p>
+        </section>
+
+        {/* ── 2. Score distribution ──────────────────────────────────────────── */}
+        <section id="score-distribution">
+          <h2>Score distribution: a bigger sample, a flat average</h2>
+          <p class="mt-4">
+            The average GEO score across {stats.domains} unique domains is <strong class="text-ink">{stats.avgScore} out of 100</strong> — 0.2 points below August's 56.4, and still above July's 54.1 and June's 53.6. The median is {stats.median}, with the bottom quarter of sites scoring at or below {stats.p25} and the top quarter at or above {stats.p75}. The highest score is {stats.maxScore}; the lowest is {stats.minScore}. After two consecutive increases, this is the first month the average did not rise — in a cohort that is two and a half times larger than August's and, for the most part, made of different sites.
+          </p>
+          <p class="mt-4">
+            The band breakdown moved only slightly:
+          </p>
+
+          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
+              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">score bands</span>
+              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[640px] text-left text-sm">
+                <caption class="sr-only">Score bands, September 2026 versus August 2026</caption>
+                <thead>
+                  <tr class="border-b border-rail bg-paper">
+                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Band</th>
+                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Score range</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Domains</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Share</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">August 2026</th>
+                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">What it means</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-rail">
+                  <tr>
+                    <th scope="row" class="px-4 py-3 text-left font-semibold text-ink">Excellent</th>
+                    <td class="px-4 py-3 font-mono tabular-nums">86–100</td>
+                    <td class="px-4 py-3 text-right font-mono tabular-nums text-ink">{stats.nExcellent}</td>
+                    <td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">{stats.pctExcellent}%</td>
+                    <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">2.5% (7)</td>
+                    <td class="px-4 py-3 text-xs">All 8 categories well covered. Citable by AI with confidence.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="px-4 py-3 text-left font-semibold text-ink">Good</th>
+                    <td class="px-4 py-3 font-mono tabular-nums">68–85</td>
+                    <td class="px-4 py-3 text-right font-mono tabular-nums text-ink">{stats.nGood}</td>
+                    <td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">{stats.pctGood}%</td>
+                    <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">26.6% (75)</td>
+                    <td class="px-4 py-3 text-xs">Strong fundamentals. Minor gaps in entity signals or AI discovery.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="px-4 py-3 text-left font-semibold text-ink">Foundation</th>
+                    <td class="px-4 py-3 font-mono tabular-nums">36–67</td>
+                    <td class="px-4 py-3 text-right font-mono tabular-nums text-ink">{stats.nFoundation}</td>
+                    <td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">{stats.pctFoundation}%</td>
+                    <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">57.4% (162)</td>
+                    <td class="px-4 py-3 text-xs">Reachable by AI but thin on structure, entity, and discovery signals.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="px-4 py-3 text-left font-semibold text-ink">Critical</th>
+                    <td class="px-4 py-3 font-mono tabular-nums">0–35</td>
+                    <td class="px-4 py-3 text-right font-mono tabular-nums text-ink">{stats.nCritical}</td>
+                    <td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">{stats.pctCritical}%</td>
+                    <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">13.5% (38)</td>
+                    <td class="px-4 py-3 text-xs">Significant barriers — blocked crawlers, missing schema, no AI signals.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <p class="mt-5">
+            The practical reading is unchanged: <strong class="text-ink">roughly seven in ten audited sites still cannot be described, cited, or recommended by an AI engine with confidence</strong>. The Good band edged up from 26.6% to 27.0% and Critical shrank from 13.5% to 12.8%, while Excellent slipped from 2.5% to 1.8% and Foundation grew from 57.4% to 58.4%. Four months in, the "below Good" series reads 79.2% → 75.3% → 70.9% → 71.2%: the decline paused rather than reversed.
+          </p>
+        </section>
+
+        {/* ── 3. Category breakdown ──────────────────────────────────────────── */}
+        <ArticleVisual
+          src="/images/article-visuals/N1HeroScoringWeights.png"
+          alt="Diagram of the eight public scoring weights that make the benchmark comparable across every audited domain."
+          caption="Every domain is scored against the same public 100-point model: Robots 18, LLMs.txt 18, Schema 16, Meta 14, Content 12, Brand & Entity 10, Signals 6, AI Discovery 6."
+          height={452}
+        />
+
+        <section id="category-breakdown">
+          <h2>Category breakdown: content up, llms.txt down</h2>
+          <p class="mt-4">
+            The GEO rubric scores eight categories, each with a different maximum. The table below shows the September 2026 average for each, the maximum, and the efficiency percentage — how much of the available points the average site captures — alongside the August, July and June efficiencies for context.
+          </p>
+
+          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
+              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">category efficiency</span>
+              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[640px] text-left text-sm">
+                <caption class="sr-only">Category efficiency, June to September 2026</caption>
+                <thead>
+                  <tr class="border-b border-rail bg-paper">
+                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Category</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Avg</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Max</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Sep eff.</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Aug</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Jul</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Jun</th>
+                    <th scope="col" class="px-4 py-3"><span class="sr-only">Efficiency bar</span></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-rail">
+                  {stats.categories.map((cat) => (
+                    <tr>
+                      <th scope="row" class="px-4 py-3 text-left font-medium text-ink">{cat.name}</th>
+                      <td class="px-4 py-3 text-right font-mono tabular-nums">{cat.avg}</td>
+                      <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">{cat.max}</td>
+                      <td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">{cat.pct}%</td>
+                      <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">{cat.augPct}%</td>
+                      <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">{cat.julPct}%</td>
+                      <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">{cat.junPct}%</td>
+                      <td class="px-4 py-3 w-32">
+                        <div class="h-2 rounded-[2px] border border-dashed border-ink-mute/60" aria-hidden="true">
+                          <div class="h-full bg-ink-mute/25" style={`width:${cat.pct}%`} />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <p class="mt-6">
+            The hygiene categories held. <strong class="text-ink">Meta tags</strong> lead at 90.7% efficiency and <strong class="text-ink">Robots and crawler access</strong> sits at 76.7%, with the average site still explicitly allowing 23.8 AI bots. <strong class="text-ink">Content quality</strong> posted the largest gain of any category, from 78.3% to 82.5%. Part of that may be the engine rather than the sites: the CJK word-count fix reached the domains audited on 4.18.1 or later. How much, the data cannot say.
+          </p>
+
+          <p class="mt-4">
+            The middle split. <strong class="text-ink">Schema markup</strong> (45.0%) and <strong class="text-ink">Brand &amp; entity</strong> (41.0%) were unchanged from August — even though the LocalBusiness fix added Organization and entity credit for the 415 domains audited on 4.18.1 or later. <strong class="text-ink">LLMs.txt efficiency fell from 43.3% to 39.4%</strong>, the largest drop of any category, back near June's 38.9%. As in every edition, an llms.txt that a CDN or WAF refuses to serve to the auditor counts as absent, so this category is a lower bound — see the llms.txt section below.
+          </p>
+
+          <p class="mt-4">
+            <strong class="text-ink">AI Discovery</strong> is last again at 8.3% — an average of 0.5 points out of 6, down from 10.0% and back to June's level. It is the only category in the rubric that has been at the bottom in all four editions.
+          </p>
+        </section>
+
+        {/* ── 4. Adoption rates ──────────────────────────────────────────────── */}
+        <section id="adoption-rates">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+            <h2>Adoption rates: the machine-readability stack</h2>
+            <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</p>
+          </div>
+          <p class="mt-4">
+            Beyond category scores, the rubric checks specific technical signals. These adoption rates show where the default behaviour of an audited site sits in September 2026 — and what changed from August.
+          </p>
+
+          <div class="mt-6 space-y-3">
+            {[
+              { label: 'HTML lang attribute set', pct: 95.6, note: 'Up from 94.7%. Still the most implemented signal.' },
+              { label: 'H1 tag present', pct: 84.9, note: 'Up from 80.5%, the largest move among the basic signals.' },
+              { label: 'Canonical URL present', pct: 84.8, note: 'Essentially flat (84.4% in August).' },
+              { label: 'Answer-first content structure', pct: 81.1, note: 'Up from 78.0%. Sites that open with a direct statement average 16.9 points higher.' },
+              { label: 'Any schema markup', pct: 77.4, note: 'Up 1.2pp from 76.2% — a third consecutive monthly increase.' },
+              { label: 'WebSite schema', pct: 61.8, note: 'Up from 58.2%.' },
+              { label: 'Organization schema', pct: 61.5, note: 'Essentially flat (62.1% in August), despite the LocalBusiness fix on later engine versions.' },
+              { label: 'llms.txt file (any)', pct: 57.4, note: 'Down 5.4pp from 62.8%. A lower bound, as in every edition: files a CDN/WAF blocks for the auditor count as absent.' },
+              { label: 'llms.txt (full / structured)', pct: 26.0, note: 'Down from 30.1%. 54.7% of llms.txt adopters publish a thin stub, not a real file.' },
+              { label: 'FAQ schema', pct: 21.3, note: 'Down 1.0pp from 22.3%.' },
+              { label: 'FAQ content on page', pct: 21.3, note: 'Down from 22.3%, still in lockstep with FAQ schema.' },
+              { label: 'AI discovery endpoints', pct: 15.2, note: 'Down 1.5pp from 16.7%. The lowest of the four editions.' },
+              { label: 'Blocks ≥ 1 AI crawler in robots.txt', pct: 8.8, note: 'Down from 14.2%. August’s rise did not continue.' },
+            ].map(item => (
+              <div>
+                <div class="flex items-baseline justify-between gap-2 text-sm">
+                  <span class="text-ink-soft">{item.label}</span>
+                  <span class="font-mono text-[12px] font-semibold tabular-nums text-ink">{item.pct}%</span>
+                </div>
+                <div class="mt-1.5 h-2 rounded-[2px] border border-dashed border-ink-mute/60" aria-hidden="true">
+                  <div class="h-full bg-ink-mute/25" style={`width:${item.pct}%`} />
+                </div>
+                <p class="mt-1 text-xs text-ink-mute">{item.note}</p>
+              </div>
+            ))}
+          </div>
+
+          <p class="mt-6">
+            The pattern of June and July is back: <strong class="text-ink">traditional on-page signals rose while the AI-specific ones slipped</strong>. H1, answer-first structure and schema went up; llms.txt, FAQ schema and AI discovery went down. In August both halves had moved up together. Our reading is that a much larger cohort brought in more sites with mature SEO habits and fewer AI-native ones — but with a new population and a mixed engine, that is an interpretation, not a measurement.
+          </p>
+
+          <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <div class="overflow-hidden rounded-[4px] border border-rail bg-white">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-5 py-2.5">
+                <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">llms.txt correlation</p>
+                <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+              </div>
+              <div class="px-5 py-4">
+                <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-ink">+21.4 pts</p>
+                <p class="mt-1 text-sm leading-relaxed text-ink-soft">
+                  Sites <em>with</em> llms.txt average <strong class="text-ink">{stats.corrLlmsWith}/100</strong>. Sites <em>without</em> average <strong class="text-ink">{stats.corrLlmsWithout}/100</strong>. The gap narrowed from +23.3 pts in August but remains one of the clearest dividing lines in the dataset.
+                </p>
+              </div>
+            </div>
+            <div class="overflow-hidden rounded-[4px] border border-rail bg-white">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-5 py-2.5">
+                <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Schema markup correlation</p>
+                <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+              </div>
+              <div class="px-5 py-4">
+                <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-ink">+28.5 pts</p>
+                <p class="mt-1 text-sm leading-relaxed text-ink-soft">
+                  Sites <em>with</em> valid JSON-LD average <strong class="text-ink">{stats.corrSchemaWith}/100</strong>. Sites <em>without</em> average <strong class="text-ink">{stats.corrSchemaWithout}/100</strong>. The gap is identical to August's +28.5 pts. Structured data stays the highest-leverage technical signal.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 5. Four-month trend ──────────────────────────────────────────── */}
+        <section id="four-month-trend">
+          <h2>Four months in: June → July → August → September</h2>
+          <p class="mt-4">
+            The table below tracks the headline metrics across all four editions. The sample size of every month is printed above the table, because the population changes month to month.
+          </p>
+
+          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
+              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">four-month trend</span>
+              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">jun n = 288 · jul n = 360 · aug n = 282 · sep n = 704</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[720px] text-left text-sm">
+                <caption class="sr-only">Headline metrics, June to September 2026</caption>
+                <thead>
+                  <tr class="border-b border-rail bg-paper">
+                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Metric</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">June</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">July</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">August</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">September</th>
+                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Trend</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-rail">
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">Unique domains</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">288</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">360</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">282</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">704</td><td class="px-4 py-3 text-xs text-ink-mute">Largest cohort yet</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">Average GEO score</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">53.6</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">54.1</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">56.4</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">56.2</td><td class="px-4 py-3 text-xs text-ink-mute">Rose twice, then flat</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">Median score</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">57</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">55</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">59</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">58</td><td class="px-4 py-3 text-xs text-ink-mute">Range-bound</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">Good or better</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">20.8%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">24.7%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">29.1%</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">28.8%</td><td class="px-4 py-3 text-xs text-ink-mute">Climb paused</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">Below Good</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">79.2%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">75.3%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">70.9%</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">71.2%</td><td class="px-4 py-3 text-xs text-ink-mute">Decline paused</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">llms.txt adoption</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">58.3%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">54.2%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">62.8%</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">57.4%</td><td class="px-4 py-3 text-xs text-ink-mute">Oscillating; a floor every month</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">llms.txt (full / structured)</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">27.8%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">26.9%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">30.1%</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">26.0%</td><td class="px-4 py-3 text-xs text-ink-mute">No clear trend</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">Any schema markup</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">70.1%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">75.6%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">76.2%</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">77.4%</td><td class="px-4 py-3 text-xs text-ink-mute">Up every month</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">Organization schema</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">51.0%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">52.2%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">62.1%</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">61.5%</td><td class="px-4 py-3 text-xs text-ink-mute">Held the August jump</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">FAQ schema</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">13.2%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">18.1%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">22.3%</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">21.3%</td><td class="px-4 py-3 text-xs text-ink-mute">Rise paused</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">AI discovery endpoints</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">16.0%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">17.5%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">16.7%</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">15.2%</td><td class="px-4 py-3 text-xs text-ink-mute">Flat to down</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">Blocks ≥ 1 AI crawler</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">—</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">9.7%</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">14.2%</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">8.8%</td><td class="px-4 py-3 text-xs text-ink-mute">Up, then down: not monotonic</td></tr>
+                  <tr><th scope="row" class="px-4 py-3 text-left font-medium text-ink">Avg word count</th><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">1,224</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">1,157</td><td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">1,299</td><td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">1,331</td><td class="px-4 py-3 text-xs text-ink-mute">Noisy; CJK fix applies from 4.18.1</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <p class="mt-5">
+            Two caveats govern how to read every row. <strong class="text-ink">Only 43 of September's 704 domains were also audited in August</strong>, so each edition is largely an independent sample of whoever came to GeoReady that month; a month-over-month delta blends real behaviour change with cohort composition. And this month, as described <a href="#engine-versions" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">above</a>, it also blends in engine-version changes.
+          </p>
+          <p class="mt-4">
+            The 43 returning domains are the only like-for-like signal in the dataset. Their average moved from {stats.returningAvgAug} in August to {stats.returningAvgSep} in September — up 1.9 points, with {stats.returningImproved} improving, {stats.returningDeclined} declining, and {stats.returningFlat} unchanged. That is a small group, and its September audits may themselves have run on a newer engine version than its August ones, so it is a hint rather than a finding: the sites that came back scored a little higher, while the cohort as a whole did not.
+          </p>
+        </section>
+
+        {/* ── 6. llms.txt ─────────────────────────────────────────────────── */}
+        <ArticleVisual
+          src="/images/article-visuals/H1HeroLlmsTxtOrientation.png"
+          alt="Diagram showing how an llms.txt file orients an AI tool toward a site's most important pages."
+          caption="An llms.txt file is an orientation map for AI tools. In September, 57.4% of audited sites had one detected — and only 26.0% published a complete, structured version."
+          height={452}
+        />
+
+        <section id="llms-txt">
+          <h2>llms.txt adoption: 57.4%, a measured drop and a measurement floor</h2>
+          <p class="mt-4">
+            In September 2026, <strong class="text-ink">404 of the 704 audited sites (57.4%)</strong> had a detectable llms.txt, down from 62.8% in August; full, structured files fell from 30.1% to 26.0%. Over four editions the series reads 58.3% → 54.2% → 62.8% → 57.4%: it oscillates with the cohort rather than moving in one direction. With four closed monthly windows there is now enough history to say that much — and not much more.
+          </p>
+          <p class="mt-4">
+            Like every earlier figure, it is a floor. An llms.txt that a CDN or WAF refuses to serve to the auditor (HTTP 403 or 406) is recorded as missing, so the true September adoption rate is at or above 57.4%; how far above was not measured. Note what this does <em>not</em> explain: the same limitation applied to June, July and August, so it cannot account for the month-over-month drop. Our interpretation is that the larger, less AI-specific cohort did most of the work.
+          </p>
+          <p class="mt-4">
+            The quality gap underneath is unchanged. Of the {stats.llmsAdopters} sites with a detected file, {stats.llmsFullFile} publish a complete version and {stats.llmsStub} publish a stub — a single line, or a handful of links with no structure. <strong class="text-ink">54.7% of llms.txt adopters are shipping a placeholder</strong>, up from 52% in August — see <a href="/guides/llms-txt-placeholder-problem/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">the llms.txt placeholder problem</a>. A stub gives an AI tool almost no orientation: no description of what the site is, no map of the important pages. The correlation still favours doing it properly — sites with any llms.txt average {stats.corrLlmsWith}/100, sites without {stats.corrLlmsWithout} — though that gap is not all causal: prepared teams do many things at once. New to the format? Start with <a href="/guides/what-is-llms-txt/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">what llms.txt is</a>.
+          </p>
+        </section>
+
+        {/* ── 7. AI Discovery ─────────────────────────────────────────────── */}
+        <ArticleVisual
+          src="/images/article-visuals/A1HeroAIDiscovery.png"
+          alt="Diagram of AI discovery endpoints such as /.well-known/ai.txt that make a site explicitly machine-navigable."
+          caption="Only 15.2% of audited sites exposed an AI discovery endpoint in September 2026 — the lowest of four editions."
+          height={452}
+        />
+
+        <section id="ai-discovery">
+          <h2>AI Discovery: last place, four editions running</h2>
+          <p class="mt-4">
+            In September 2026, only 15.2% of the 704 audited sites exposed any AI discovery endpoint, and the average AI Discovery score was <strong class="text-ink">0.5 points out of 6</strong> — an 8.3% capture rate, the lowest of the eight categories. Across four editions, efficiency reads 8.3% → 10.0% → 10.0% → 8.3%, and adoption of any AI discovery endpoint 16.0% → 17.5% → 16.7% → 15.2%. AI Discovery scoring did not change between 4.16.2, August's main engine, and 4.18.3, so its movement reflects cohort and behaviour, not the engine.
+          </p>
+          <p class="mt-4">
+            AI discovery files — <code class="text-sm font-mono">/.well-known/ai.txt</code>, and the structured signals inside a complete <code class="text-sm font-mono">llms.txt</code> — describe a site's purpose and its most important content in a form an AI can navigate deliberately. Nothing in a default CMS or hosting setup creates them. They exist only when someone decides to publish them.
+          </p>
+
+          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+            <div class="border-b border-rail px-5 py-2.5">
+              <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Opportunity sizing</p>
+            </div>
+            <p class="px-5 py-4 text-sm leading-relaxed text-ink-soft">
+              AI Discovery is worth 6 of the rubric's 100 points and requires no content work. In September 2026, 84.8% of audited sites had not published a single AI discovery endpoint — a few lines at <code class="text-sm font-mono">/.well-known/ai.txt</code> would move a site into the 15.2% that have.
+            </p>
+          </div>
+        </section>
+
+        {/* ── 8. Crawler blocking ─────────────────────────────────────────── */}
+        <section id="crawler-blocking">
+          <h2>AI-crawler blocking fell back to 8.8%</h2>
+          <p class="mt-4">
+            In September 2026, <strong class="text-ink">8.8% of the 704 audited sites blocked at least one major AI crawler</strong> in robots.txt, down from 14.2% in August and below July's 9.7%; 5.1% blocked three or more, down from 10.6%. The August edition reported the first month-over-month rise in AI-crawler blocking; September did not continue it. The average site still explicitly allows 23.8 AI bots, unchanged from August.
+          </p>
+          <p class="mt-4">
+            Put plainly: the movement is not monotonic. Three data points — 9.7%, 14.2%, 8.8% — measured on three largely different populations do not make a trend in either direction, and August's rise should not be read as the start of one. Blocking remains a minority behaviour in this sample. The robots.txt check and its AI-bot list did not change between 4.16.2 and 4.18.3, so this is a cohort-and-behaviour signal, not an engine one.
+          </p>
+          <p class="mt-4">
+            The practical takeaway is unchanged: if you want AI visibility, confirm that <code class="text-sm font-mono">GPTBot</code>, <code class="text-sm font-mono">ClaudeBot</code>, <code class="text-sm font-mono">PerplexityBot</code>, <code class="text-sm font-mono">Google-Extended</code>, and <code class="text-sm font-mono">GoogleOther</code> are not being blocked by a rule you did not write on purpose. If you are deliberately opting out of unpaid crawling, do it explicitly and know which engines it affects. The <a href="/guides/robots-txt-ai-bots/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">robots.txt guide for AI bots</a> lists the user agents.
+          </p>
+        </section>
+
+        {/* ── 9. TLD analysis ────────────────────────────────────────────────── */}
+        <section id="tld-breakdown">
+          <h2>By TLD: who is leading AI search readiness in September 2026</h2>
+          <p class="mt-4">
+            .com dominates the cohort at 375 of 704 domains and sits close to the overall average at 56.6. The table lists every TLD with at least eight domains in September; most groups are still small.
+          </p>
+
+          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
+              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">tld breakdown</span>
+              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[560px] text-left text-sm">
+                <caption class="sr-only">Breakdown by top-level domain, September 2026</caption>
+                <thead>
+                  <tr class="border-b border-rail bg-paper">
+                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">TLD</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Domains</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Avg score</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">llms.txt</th>
+                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Schema</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-rail">
+                  {stats.tlds.map((row) => (
+                    <tr>
+                      <th scope="row" class="px-4 py-3 text-left font-mono font-semibold text-ink">{row.tld}</th>
+                      <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">{row.n}</td>
+                      <td class="px-4 py-3 text-right font-mono font-semibold tabular-nums text-ink">{row.avg}</td>
+                      <td class="px-4 py-3 text-right font-mono tabular-nums">{row.pctLlms}%</td>
+                      <td class="px-4 py-3 text-right font-mono tabular-nums">{row.pctSchema}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <p class="mt-5">
+            <strong class="text-ink">.ai is the strongest group with real sample size</strong>: 29 domains, a 61.0 average and 75.9% llms.txt adoption, the highest llms.txt rate of any TLD with more than ten domains. <strong class="text-ink">.de</strong> follows at 60.3 across 24 domains, with llms.txt adoption at 54.2% — on a much larger group than August's seven .de domains. <strong class="text-ink">.nl</strong> has the highest average of all at 69.8, with 100% schema adoption, but on only 8 domains.
+          </p>
+          <p class="mt-4">
+            <strong class="text-ink">.fr is this month's skills-transfer case</strong>: 92.0% schema adoption but only 40.0% llms.txt — strong on the mature practice, weak on the new one. <strong class="text-ink">.org</strong> (41.8) and <strong class="text-ink">.cn</strong> (40.5) are the lowest-scoring groups; .org combines the lowest llms.txt rate in the table (23.1%) with 53.8% schema, and .cn the lowest schema rate (30.0%).
+          </p>
+          <p class="mt-4">
+            <strong class="text-ink">.it shows how small groups swing</strong>: 10 domains at 49.8 with 40.0% schema, against 9 domains at 64.7 with 100% schema in August. A handful of different sites is enough to move a small TLD's numbers that far, so single-TLD comparisons across months should be read with care.
+          </p>
+        </section>
+
+        {/* ── 10. What the data tells us ─────────────────────────────────────── */}
+        <section>
+          <h2>What September 2026 tells us about AI search readiness</h2>
+          <p class="mt-4">
+            The honest version: <strong class="text-ink">a sample two and a half times larger did not move the average</strong>. That is informative on its own. August's 56.4 came from 282 sites; September's 56.2 comes from 704, most of them new to the benchmark. Readiness in this audited population looks closer to a plateau in the mid-50s than to the steady climb the first three editions suggested — with the caveat, again, that the engine mix and the population both changed.
+          </p>
+          <p class="mt-4">
+            The cross-tab shows where the cohort shifted. In September, {stats.xtabBoth}% of audited sites have both schema and an llms.txt, down from 53.9% in August. The "schema but no llms.txt" group — the skills-transfer gap — grew from 22.3% to {stats.xtabSchemaOnly}%. {stats.xtabLlmsOnly}% have only an llms.txt and {stats.xtabNeither}% have neither. Given that the llms.txt figure is a floor, part of the schema-only group may in fact have a file the auditor could not reach.
+          </p>
+          <p class="mt-4">
+            The correlations held their order. Schema is worth +28.5 points of average score, llms.txt +21.4, FAQ schema +19.4, answer-first structure +16.9. These gaps describe the audited sample, not a causal effect, but they have pointed the same way in every edition.
+          </p>
+        </section>
+
+        {/* ── 11. Quick wins checklist ───────────────────────────────────────── */}
+        <ArticleVisual
+          src="/images/article-visuals/D1HeroChecklist.png"
+          alt="Checklist diagram showing llms.txt, schema, AI discovery, and crawler access as the fastest AI readiness wins."
+          caption="The fastest September 2026 wins still cluster around llms.txt completeness, Organization schema, and AI discovery files."
+          height={411}
+        />
+
+        <section id="quick-wins">
+          <h2>The September 2026 quick-win checklist</h2>
+          <p class="mt-4">
+            Based on where audited sites lose the most points in September — and the four-month trend — these are the highest-leverage actions:
+          </p>
+          <ol class="mt-5 space-y-4 list-decimal pl-5">
+            <li>
+              <strong class="text-ink">Upgrade a stub llms.txt to a real one.</strong> 54.7% of detected llms.txt files are placeholders. The win is a complete file: a site description, sections for your key page groups, and real URLs to docs, product, pricing, and blog. Use the free <a href="/tools/llms-txt-generator/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">llms.txt generator</a> as a starting structure, then fill it in properly.
+            </li>
+            <li>
+              <strong class="text-ink">Make sure crawlers can actually fetch your llms.txt.</strong> If a CDN or WAF answers bots with 403 or 406, AI tools may never see the file. Request it with a non-browser User-Agent to check.
+            </li>
+            <li>
+              <strong class="text-ink">Add Organization JSON-LD if you are in the 38.5% without it.</strong> Include <code class="text-sm font-mono">name</code>, <code class="text-sm font-mono">url</code>, <code class="text-sm font-mono">logo</code>, <code class="text-sm font-mono">sameAs</code> (your verified social and Wikidata/Crunchbase profiles), and <code class="text-sm font-mono">description</code>, and pair it with WebSite schema. <code class="text-sm font-mono">LocalBusiness</code> and its subtypes count from engine 4.18.1 onward. Sites with schema average 28.5 points higher. More on <a href="/guides/organization-sameas-schema-entity-authority/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">Organization schema and sameAs</a>.
+            </li>
+            <li>
+              <strong class="text-ink">Publish a <code class="text-sm font-mono">/.well-known/ai.txt</code>.</strong> Still the clearest arbitrage: 84.8% of audited sites have not done it, and adoption is lower than in June (16.0%).
+            </li>
+            <li>
+              <strong class="text-ink">Check robots.txt for crawler blocks you did not intend.</strong> 8.8% of audited sites block at least one AI bot. Confirm <code class="text-sm font-mono">GPTBot</code>, <code class="text-sm font-mono">ClaudeBot</code>, <code class="text-sm font-mono">PerplexityBot</code>, <code class="text-sm font-mono">Google-Extended</code>, and <code class="text-sm font-mono">GoogleOther</code> are allowed — or, if you are opting out on purpose, that you know exactly which engines the rule covers.
+            </li>
+            <li>
+              <strong class="text-ink">Structure your Q&amp;A content — but adjust your expectations.</strong> Google retired FAQ rich results for all sites in May 2026, so FAQPage markup no longer earns a SERP feature. It still helps AI answer engines lift a clean question-and-answer pair. Only 21.3% of audited sites mark it up. See <a href="/guides/faqpage-schema-ai-search/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">FAQPage schema for AI search</a>.
+            </li>
+            <li>
+              <strong class="text-ink">Lead key pages with a direct answer.</strong> 81.1% of audited sites do this, and they average 16.9 points higher than those that do not. Open your important pages with a self-contained, quotable statement before the marketing context.
+            </li>
+            <li>
+              <strong class="text-ink">Re-audit if your last audit predates engine 4.18.1 (released 17 September).</strong> Earlier engine versions could miss LocalBusiness schema and under-count CJK pages. A fresh <a href="/ai-seo-audit/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">audit</a> runs on the current engine.
+            </li>
+          </ol>
+        </section>
+
+        {/* ── 12. Mid-page CTA ────────────────────────────────────────────────── */}
+        <section class="rounded-[4px] border border-rail bg-white p-6 md:p-8">
+          <h2>See where your site stands against the September 2026 benchmark</h2>
+          <p class="mt-3">
+            The average score in September 2026 is 56.2. Run a free audit to see your GEO score across all eight categories, identify which band you are in, and get the specific actions that recover the most points first.
+          </p>
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="/ai-seo-audit/"
+              data-cta="state_geo_sep2026_mid_audit"
+              class="inline-flex items-center justify-center rounded-[4px] bg-pass-deep px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+            >
+              Audit my site free
+            </a>
+            <a
+              href="/state-of-geo/"
+              data-cta="state_geo_sep2026_live_benchmark"
+              class="inline-flex items-center justify-center rounded-[4px] border border-rail bg-white px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+            >
+              See live benchmark data
+            </a>
+          </div>
+        </section>
+
+        {/* ── 13. Methodology ─────────────────────────────────────────────────── */}
+        <section id="methodology">
+          <h2>Methodology</h2>
+          <p class="mt-4">
+            This report covers {stats.domains} unique domains audited by GeoReady between 1 September 00:00 UTC and 1 October 00:00 UTC 2026. When a domain was audited multiple times in the window, only its latest audit is included — so repeat users do not inflate the cohort, and each domain appears once, at the state of its last audit that month. 502 of the 704 domains were audited exactly once.
+          </p>
+          <ul class="mt-4 space-y-2 list-disc pl-5 text-sm">
+            <li><strong class="text-ink">Population filter:</strong> user-initiated audits recorded by the GeoReady web app (<code class="text-sm font-mono">source = 'web'</code>). Scheduled monitoring re-checks are excluded, so the same domains are not counted repeatedly. Audits were recorded on every day of the month; a one-day spike on 10 September (150 audits across 114 distinct domains, 147 of them without a signed-in user) is included.</li>
+            <li><strong class="text-ink">Engine version:</strong> GEO Optimizer 4.17.1 (289 domains), 4.18.1 (55), 4.18.2 (259) and 4.18.3 (101) — the open-source 100-point, 8-category rubric. Scoring weights did not change, but detection changes landed mid-month (see <a href="#engine-versions" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">engine versions</a>). Month-over-month deltas are indicative. <a href="https://github.com/Auriti-Labs/geo-optimizer-skill" target="_blank" rel="noopener noreferrer" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">Source available on GitHub</a>.</li>
+            <li><strong class="text-ink">Audited sample:</strong> sites that chose to audit with GeoReady — not a random sample of the web. Only 43 of the 704 September domains were also in August's cohort, so each monthly edition is largely an independent sample, and the population changes month to month. The cohort skews toward teams already interested in AI visibility, so these figures likely overestimate readiness across all websites.</li>
+            <li><strong class="text-ink">Domain identity:</strong> a domain is identified by the last two labels of its hostname. For multi-part country suffixes (<code class="text-sm font-mono">co.uk</code>, <code class="text-sm font-mono">com.au</code>, <code class="text-sm font-mono">co.nz</code>, <code class="text-sm font-mono">co.kr</code>, <code class="text-sm font-mono">org.nz</code>) this merges distinct sites into one row, so they are slightly under-counted. In September this affected 5 cohort rows. The same rule applied in every earlier edition.</li>
+            <li><strong class="text-ink">Anonymized:</strong> domains are deduplicated by a salted HMAC-SHA256 hash of the domain. This report publishes aggregates only — no domain names.</li>
+            <li><strong class="text-ink">Reproducibility check:</strong> before computing September, the same query was re-run on the August window and reproduced the published August figures (282 domains).</li>
+            <li><strong class="text-ink">Consistent rubric:</strong> category maxima are Robots 18, LLMs.txt 18, Schema 16, Meta 14, Content 12, Brand &amp; Entity 10, Signals 6, AI Discovery 6. Full definitions are on the <a href="/methodology/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">methodology page</a>.</li>
+            <li><strong class="text-ink">Month-over-month comparison:</strong> June, July and August figures are the ones published in their editions, drawn from the same benchmark dataset with the same method (288 domains audited 10–30 June; 360 audited 1–31 July; 282 audited 1–31 August).</li>
+            <li><strong class="text-ink">Efficiency percentages</strong> are the category average divided by the category maximum, computed from one-decimal averages, so they may differ by ±0.1pp from a full-precision calculation.</li>
+            <li><strong class="text-ink">License and citation:</strong> the figures in this report are published under <a href="https://creativecommons.org/licenses/by/4.0/" rel="license" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">CC BY 4.0</a>. Cite as: GeoReady, "State of GEO: September 2026", geoready.dev/state-of-geo/september-2026/.</li>
+          </ul>
+          <p class="mt-4 text-sm">
+            The underlying benchmark dataset is the <code class="text-sm font-mono">benchmark_audit_events</code> table in the GeoReady production database. The public API endpoint (<code class="text-sm font-mono">GET /api/public/benchmark</code>) returns aggregated figures only — no per-domain data is ever exposed.
+          </p>
+        </section>
+
+        {/* ── 14. Newsletter ─────────────────────────────────────────────────── */}
+        <section>
+          <NewsletterSignup
+            client:visible
+            source="newsletter-state-of-geo-september-2026"
+            title="Get the October 2026 report when it drops"
+            detail="The State of GEO publishes monthly. Each edition adds a month to the trend line, tracks adoption rates signal by signal, and goes deeper on the categories that decide whether AI engines can cite you. Subscribe to get it the day it ships."
+          />
+        </section>
+
+        {/* ── 15. FAQ ────────────────────────────────────────────────────────── */}
+        <section id="faq">
+          <h2>Frequently asked questions</h2>
+          <div class="mt-4 space-y-7">
+            {faqs.map((faq) => (
+              <div>
+                <h3>{faq.question}</h3>
+                <p class="mt-2">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── 16. Final CTA ──────────────────────────────────────────────────── */}
+        <section class="rounded-[4px] border border-rail bg-white p-6 md:p-8">
+          <h2>Beat the September 2026 average of 56.2</h2>
+          <p class="mt-3">
+            Run a free AI SEO audit to get your full GEO score, see which of the 8 categories is costing you the most points, and get a ranked action list. No account required for the baseline snapshot.
+          </p>
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="/ai-seo-audit/"
+              data-cta="state_geo_sep2026_final_audit"
+              class="inline-flex items-center justify-center rounded-[4px] bg-pass-deep px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+            >
+              Run your free AI SEO audit
+            </a>
+            <a
+              href="/guides/generative-engine-optimization/"
+              data-cta="state_geo_sep2026_geo_guide"
+              class="inline-flex items-center justify-center rounded-[4px] border border-rail bg-white px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+            >
+              Read the full GEO guide
+            </a>
+          </div>
+          <p class="mt-4 text-xs text-ink-mute">
+            New to AI search readiness?
+            <a href="/ai-seo/" class="ml-1 text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">What is AI SEO</a> ·
+            <a href="/guides/what-is-llms-txt/" class="ml-1 text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">What is llms.txt</a> ·
+            <a href="/state-of-geo/august-2026/" class="ml-1 text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">The August 2026 report</a> ·
+            <a href="/state-of-geo/july-2026/" class="ml-1 text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">July 2026</a> ·
+            <a href="/state-of-geo/june-2026/" class="ml-1 text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">June 2026</a>
+          </p>
+        </section>
+
+      </div>
+    </div>
+  </article>
+
+  {/* ── Structured data ──────────────────────────────────────────────────────── */}
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "@id": `${canonical}#article`,
+        "url": canonical,
+        "headline": "State of GEO: September 2026 — AI Search Readiness Across 704 Domains",
+        "description": description,
+        "datePublished": datePublished,
+        "dateModified": dateModified,
+        "author": { "@id": "https://geoready.dev/#founder" },
+        "publisher": { "@id": "https://geoready.dev/#organization" },
+        "isPartOf": { "@id": "https://geoready.dev/#website" },
+        "about": [
+          "Generative Engine Optimization",
+          "AI search readiness",
+          "AI SEO benchmark",
+          "llms.txt adoption statistics",
+          "Schema markup adoption",
+          "AI discovery signals"
+        ],
+        "keywords": "State of GEO, GEO score, AI search readiness, llms.txt adoption, schema markup, AI SEO benchmark, September 2026, month-over-month benchmark",
+        "image": "https://geoready.dev/og/september-2026.png",
+        "mainEntityOfPage": canonical
+      },
+      {
+        "@type": "Dataset",
+        "@id": `${canonical}#dataset`,
+        "name": "State of GEO — September 2026 AI Search Readiness Benchmark",
+        "description": `Aggregated, anonymized AI search readiness statistics across ${stats.domains} unique domains audited by GeoReady in September 2026. Average GEO score: ${stats.avgScore}/100. Includes per-category scores, adoption rates for llms.txt, schema markup, AI discovery endpoints, TLD breakdowns, the engine-version mix of the cohort, and a four-month trend versus June (288 domains), July (360 domains) and August (282 domains).`,
+        "url": canonical,
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "isAccessibleForFree": true,
+        "datePublished": datePublished,
+        "dateModified": dateModified,
+        "temporalCoverage": "2026-09-01/2026-09-30",
+        "spatialCoverage": "Global",
+        "creator": { "@id": "https://geoready.dev/#organization" },
+        "measurementTechnique": "GEO Optimizer 100-point, 8-category audit engine (open source), versions 4.17.1–4.18.3. One row per unique domain, latest audit per domain within the UTC month window.",
+        "variableMeasured": [
+          `Average GEO score: ${stats.avgScore}/100`,
+          `Median GEO score: ${stats.median}/100`,
+          `llms.txt adoption: ${stats.pctLlmsTxt}%`,
+          `Full llms.txt adoption: ${stats.pctLlmsFull}%`,
+          `Schema markup adoption: ${stats.pctSchema}%`,
+          `Organization schema adoption: ${stats.pctOrgSchema}%`,
+          `AI discovery adoption: ${stats.pctAiDiscovery}%`,
+          `Answer-first content: ${stats.pctAnswerFirst}%`,
+          `Sites blocking at least one AI crawler: ${stats.pctBlockAnyBot}%`,
+          `Month-over-month avg score: 56.4 → ${stats.avgScore} (−0.2)`,
+          `Four-month avg score: 53.6 → 54.1 → 56.4 → ${stats.avgScore}`
+        ],
+        "size": `${stats.domains} unique domains`
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": faqs.map(faq => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer
+          }
+        }))
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "GeoReady", "item": "https://geoready.dev/" },
+          { "@type": "ListItem", "position": 2, "name": "State of GEO", "item": "https://geoready.dev/state-of-geo/" },
+          { "@type": "ListItem", "position": 3, "name": "September 2026", "item": canonical }
+        ]
+      }
+    ]
+  })} />
+</Shell>

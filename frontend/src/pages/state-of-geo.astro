@@ -7,10 +7,10 @@ import { marketingVisuals } from '../lib/marketingVisuals';
 
 const title = 'State of GEO — AI Search Readiness Benchmark | GeoReady';
 const description =
-  'See GeoReady’s live benchmark of audited sites and their AI search readiness, including GEO score, llms.txt adoption, schema usage, and the biggest AI visibility gaps.';
+  'GeoReady’s live AI search readiness benchmark, with a full report every month: average GEO score, llms.txt and schema adoption, and the biggest gaps.';
 const canonical = 'https://geoready.dev/state-of-geo/';
 const datePublished = '2026-06-11';
-const dateModified = '2026-09-01';
+const dateModified = '2026-10-01';
 
 // FAQ condivise tra il corpo della pagina (visibili) e lo schema FAQPage in fondo.
 // Risposte answer-first, claim-safe: mai "the web", sempre "audited sites".
@@ -342,28 +342,28 @@ const heroVisual = marketingVisuals.commandCenterV2;
         </p>
       </section>
 
-      {/* ── August 2026 report link ─────────────────────────────────────── */}
+      {/* ── September 2026 report link ──────────────────────────────────── */}
       <section class="overflow-hidden rounded-[4px] border border-rail bg-white">
         <div class="border-b border-rail px-6 py-2.5">
-          <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">August 2026 — Full report published</p>
+          <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">September 2026 — Full report published</p>
         </div>
         <div class="px-6 py-5">
-          <h2>State of GEO: August 2026</h2>
+          <h2>State of GEO: September 2026</h2>
           <p class="mt-2 text-sm text-ink-soft">
-            282 unique domains. Average score 56.4/100 — up 2.3 points, the biggest month-over-month jump yet.
-            llms.txt adoption rebounded to 62.8%, Organization schema jumped almost 10 points, and AI Discovery
-            stayed frozen at 10% efficiency for the third month running.
+            704 unique domains. Average score 56.2/100 — flat (−0.2) while the sample grew from 282 to 704.
+            Scored across four engine versions, so month-over-month deltas are indicative. AI-crawler blocking
+            fell back to 8.8%, and AI Discovery is the lowest category for the fourth month running.
           </p>
           <p class="mt-2 text-xs text-ink-mute">
-            The August 2026 snapshot covers 282 domains audited 1–31 August; the live counter above
+            The September 2026 snapshot covers 704 domains audited 1–30 September; the live counter above
             includes sites audited since, so the two numbers will differ.
           </p>
           <a
-            href="/state-of-geo/august-2026/"
-            data-cta="state_geo_live_aug2026_report"
+            href="/state-of-geo/september-2026/"
+            data-cta="state_geo_live_sep2026_report"
             class="mt-4 inline-flex items-center gap-2 rounded-[4px] bg-pass-deep px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
           >
-            Read the August 2026 report
+            Read the September 2026 report
             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
           </a>
         </div>
@@ -375,6 +375,10 @@ const heroVisual = marketingVisuals.commandCenterV2;
           <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Earlier editions</p>
         </div>
         <ul class="divide-y divide-rail text-sm">
+          <li class="px-6 py-4">
+            <a href="/state-of-geo/august-2026/" data-cta="state_geo_live_aug2026_report" class="font-medium text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">State of GEO: August 2026</a>
+            <span class="mt-1 block text-ink-mute">282 domains · avg 56.4/100 · up 2.3 points, the biggest month-over-month jump yet; llms.txt rebounded to 62.8%.</span>
+          </li>
           <li class="px-6 py-4">
             <a href="/state-of-geo/july-2026/" data-cta="state_geo_live_july2026_report" class="font-medium text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">State of GEO: July 2026</a>
             <span class="mt-1 block text-ink-mute">360 domains · avg 54.1/100 · schema +5.5pp, llms.txt −4.1pp — the first month-over-month comparison.</span>
@@ -391,7 +395,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
         <NewsletterSignup
           client:visible
           source="newsletter-state-of-geo"
-          title="Get the September 2026 report when it drops"
+          title="Get the October 2026 report when it drops"
           detail="The State of GEO publishes monthly. Each edition tracks score trends, adoption rates, and the evolving gap between what sites publish and what AI engines can actually read."
         />
       </section>
@@ -473,11 +477,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
         "url": canonical,
         "license": "https://creativecommons.org/licenses/by/4.0/",
         "isAccessibleForFree": true,
-        "creator": {
-          "@type": "Organization",
-          "name": "Auriti Labs",
-          "url": "https://github.com/Auriti-Labs"
-        },
+        "creator": { "@id": "https://geoready.dev/#organization" },
         "measurementTechnique": "GEO Optimizer 100-point, 8-category audit (open source)",
         "variableMeasured": [
           "Average GEO score (0–100)",
