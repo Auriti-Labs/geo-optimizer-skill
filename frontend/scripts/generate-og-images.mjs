@@ -122,7 +122,7 @@ async function main() {
         || rel.split('/').filter(Boolean).pop() || 'index';
     const outName = pageName + '.png';
     writeFileSync(join(OUT_DIR,outName), png);
-    const assetUrl = '/og/'+outName;
+    const assetUrl = 'https://geoready.dev/og/'+outName;
     let html = readFileSync(join(pageDir,'index.html'),'utf-8');
     if (/<meta property="og:image"/.test(html)) {
       html = html.replace(/<meta property="og:image"[^>]*>/, `<meta property="og:image" content="${assetUrl}">`);
