@@ -206,13 +206,11 @@ const jsonLd = {
         : {}),
       datePublished: article.datePublished,
       dateModified: article.dateModified,
-      author: { '@type': 'Person', name: author, url: 'https://geoready.dev/about/' },
-      publisher: {
-        '@type': 'Organization',
-        name: 'GeoReady',
-        url: 'https://geoready.dev',
-        logo: { '@type': 'ImageObject', url: 'https://geoready.dev/icon-512.png' },
-      },
+      // Founder and Organization are defined once in the global graph (Layout.astro)
+      author: author === 'Juan Camilo Auriti'
+        ? { '@id': 'https://geoready.dev/#founder' }
+        : { '@type': 'Person', name: author, url: 'https://geoready.dev/about/' },
+      publisher: { '@id': 'https://geoready.dev/#organization' },
       mainEntityOfPage: canonical,
       isPartOf: { '@id': 'https://geoready.dev/#website' },
     },
