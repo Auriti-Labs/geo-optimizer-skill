@@ -65,7 +65,7 @@ python -m geo_optimizer.mcp.server
 
 ---
 
-## Tools (10)
+## Tools (12)
 
 ### 1. `geo_audit`
 
