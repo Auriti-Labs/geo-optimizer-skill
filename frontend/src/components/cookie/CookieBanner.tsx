@@ -45,9 +45,9 @@ export default function CookieBanner({
           entered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`}
       >
-        <div className="relative p-5">
+        <div className="relative p-3 sm:p-5">
           <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2.5">
+            <div className="hidden items-center gap-2.5 sm:flex">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[2px] border border-rail bg-paper text-ink">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 3a9 9 0 1 0 9 9 3 3 0 0 1-4-4 3 3 0 0 1-5-5Z" />
@@ -62,6 +62,22 @@ export default function CookieBanner({
               </div>
             </div>
 
+            {/* Mobile: one short line replaces title, description, categories and
+                footer, so the banner stays a low bar instead of covering the page. */}
+            <p className="min-w-0 flex-1 text-[13px] leading-5 text-ink-soft sm:hidden">
+              Analytics cookies stay off unless you accept.{' '}
+              <a href="/cookie-policy/" className="text-pass-deep underline decoration-rail underline-offset-2">
+                Cookie Policy
+              </a>
+              {' · '}
+              <button
+                onClick={onCustomize}
+                className="text-pass-deep underline decoration-rail underline-offset-2"
+              >
+                Preferences
+              </button>
+            </p>
+
             <button
               onClick={onDismiss}
               aria-label="Close and keep essential settings only"
@@ -75,14 +91,14 @@ export default function CookieBanner({
             </button>
           </div>
 
-          <p className="mt-3.5 text-[13px] leading-relaxed text-ink-soft">
+          <p className="mt-3.5 hidden text-[13px] leading-relaxed text-ink-soft sm:block">
             We load only what the site needs to work. Analytics and marketing stay off until you
             turn them on — and the site behaves identically either way.
           </p>
 
           {/* Category summary: makes the default state legible before any click, so
               "reject" is an informed choice rather than a leap of faith. */}
-          <ul className="mt-4 grid grid-cols-2 gap-1.5">
+          <ul className="mt-4 hidden grid-cols-2 gap-1.5 sm:grid">
             {categories.map((cat) => {
               const isOn = CATEGORY_STATE[cat] === 'on';
               const count = getCookiesByCategory(cat).length;
@@ -106,30 +122,30 @@ export default function CookieBanner({
             })}
           </ul>
 
-          <div className="mt-4 flex flex-col gap-2">
+          {/* Mobile: Accept and Essential only side by side, same size; Customise
+              moves to the "Preferences" link above. Desktop layout unchanged. */}
+          <div className="mt-2.5 grid grid-cols-2 gap-2 sm:mt-4">
             <button
               onClick={onAcceptAll}
-              className="w-full rounded-[4px] bg-pass-deep px-4 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors duration-200 hover:bg-pass motion-reduce:transition-none"
+              className="min-h-11 w-full rounded-[4px] sm:col-span-2 sm:min-h-0 bg-pass-deep px-4 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors duration-200 hover:bg-pass motion-reduce:transition-none"
             >
               Accept all
             </button>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={onRejectNonEssential}
-                className="rounded-[4px] border border-rail bg-white px-3 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
-              >
-                Essential only
-              </button>
-              <button
-                onClick={onCustomize}
-                className="rounded-[4px] border border-rail bg-white px-3 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
-              >
-                Customise
-              </button>
-            </div>
+            <button
+              onClick={onRejectNonEssential}
+              className="min-h-11 rounded-[4px] sm:min-h-0 border border-rail bg-white px-3 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+            >
+              Essential only
+            </button>
+            <button
+              onClick={onCustomize}
+              className="hidden rounded-[4px] sm:block border border-rail bg-white px-3 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+            >
+              Customise
+            </button>
           </div>
 
-          <p className="mt-3.5 text-[11px] leading-relaxed text-ink-mute">
+          <p className="mt-3.5 hidden text-[11px] leading-relaxed text-ink-mute sm:block">
             <a href="/cookie-policy/" className="text-pass-deep underline decoration-rail underline-offset-2 transition-colors hover:decoration-pass-deep">
               Cookie Policy
             </a>
