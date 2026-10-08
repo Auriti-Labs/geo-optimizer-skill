@@ -106,4 +106,4 @@ The quality report assigns:
 
 - `geo snapshots` does not query AI APIs by itself
 - it acts as the local persistence layer for answer archives
-- it pairs well with [`geo monitor`](geo-monitor.md) and future active visibility checks
+- it pairs well with [`geo monitor`](/docs/geo-monitor/) and future active visibility checks

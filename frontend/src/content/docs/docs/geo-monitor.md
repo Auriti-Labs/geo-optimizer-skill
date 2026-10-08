@@ -75,9 +75,9 @@ Band meanings:
 
 ## Relationship to other commands
 
-- [`geo audit`](geo-audit.md): full homepage GEO audit with detailed scoring and recommendations
-- [`geo history`](geo-history.md): saved GEO score trend only
-- [`geo track`](geo-track.md): recurring GEO audit snapshots and HTML trend reports
+- [`geo audit`](/docs/geo-audit/): full homepage GEO audit with detailed scoring and recommendations
+- [`geo history`](/docs/geo-history/): saved GEO score trend only
+- [`geo track`](/docs/geo-track/): recurring GEO audit snapshots and HTML trend reports
 
 Use `geo monitor` when you want a quick passive answer to:
 

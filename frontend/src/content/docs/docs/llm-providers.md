@@ -9,13 +9,13 @@ order: 17
 `geo citations` asks a real AI answer engine the questions your customers ask, then checks
 whether your brand is mentioned and your domain is cited as a source. It needs an API key for
 whichever provider you want to query. This page covers provider-specific setup that doesn't fit
-in the [README Quick Start](../README.md#quick-start): wire formats, regional endpoints, and
+in the [README Quick Start](https://github.com/Auriti-Labs/geo-optimizer-skill#quick-start): wire formats, regional endpoints, and
 model capabilities.
 
 Perplexity is the recommended default (`PERPLEXITY_API_KEY`) because Perplexity Sonar returns
 real web citation URLs, not just parametric knowledge. OpenAI, Anthropic, and Groq reveal what
 the model already knows about your brand from training data, which is a different (and weaker)
-signal — see the README's [Additional tools](../README.md#additional-tools) section for the
+signal — see the README's [Additional tools](https://github.com/Auriti-Labs/geo-optimizer-skill#additional-tools) section for the
 distinction.
 
 ---
