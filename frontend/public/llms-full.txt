@@ -59,10 +59,10 @@ Also available as an MCP server for integration with AI coding assistants.
 
 ## Research foundation
 
-### Peer-reviewed papers
+### Research papers
 
 - **GEO: Generative Engine Optimization** (KDD 2024). Tested 9 optimization strategies across 10,000 queries on GEO-bench. Demonstrated that structural and authoritative signals significantly increase LLM citation rates. https://arxiv.org/abs/2311.09701
-- **AutoGEO: Automatic Generative Engine Optimization** (ICLR 2026). Automated pipelines for generative engine optimization using reinforcement learning from LLM feedback. https://openreview.net/forum?id=K8EinVWtUB
+- **AutoGEO: What Generative Search Engines Like and How to Optimize Web Content Cooperatively** (arXiv preprint, 2025). Automated pipelines for generative engine optimization using reinforcement learning from LLM feedback. https://arxiv.org/abs/2510.11438
 
 ### Industry reports
 
@@ -120,7 +120,7 @@ Also available as an MCP server for integration with AI coding assistants.
 
 ## Update policy
 
-The GEO Optimizer engine is actively maintained. Scoring methods and weights are updated when new academic research or significant industry data becomes available. The current scoring reflects KDD 2024, ICLR 2026, and 2025–2026 industry analysis. Version history: https://github.com/Auriti-Labs/geo-optimizer-skill/releases
+The GEO Optimizer engine is actively maintained. Scoring methods and weights are updated when new academic research or significant industry data becomes available. The current scoring reflects KDD 2024, AutoGEO (arXiv:2510.11438, preprint), and 2025–2026 industry analysis. Version history: https://github.com/Auriti-Labs/geo-optimizer-skill/releases
 
 ## Companion files
 

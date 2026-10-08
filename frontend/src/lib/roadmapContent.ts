@@ -37,7 +37,7 @@ export const roadmapPhases: RoadmapPhase[] = [
       {
         id: 'citability-score',
         title: 'Citability score',
-        description: '47-method citability analysis derived from Princeton KDD 2024 and AutoGEO ICLR 2026.',
+        description: '47-method citability analysis derived from Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint).',
         status: 'available',
       },
       {
