@@ -37,7 +37,7 @@ from geo_optimizer.cli.scoring_helpers import (
 from geo_optimizer.cli.scoring_helpers import (
     signals_score as _signals_score,
 )
-from geo_optimizer.models.config import CATEGORY_MAX, SCORE_BANDS
+from geo_optimizer.models.config import SCORE_BANDS
 from geo_optimizer.models.results import (
     AnswerSnapshot,
     AnswerSnapshotArchive,
@@ -672,18 +672,23 @@ def format_batch_audit_text(result: BatchAuditResult) -> str:
     lines.append("")
     lines.append(_section_header("1. CATEGORY AVERAGES"))
     if result.average_score_breakdown:
+        page_reference = next(
+            (page for page in result.pages if not page.error), result.pages[0] if result.pages else None
+        )
         category_labels = {
-            "robots": ("Robots.txt", CATEGORY_MAX["robots"]),
-            "llms": ("llms.txt", CATEGORY_MAX["llms"]),
-            "schema": ("Schema", CATEGORY_MAX["schema"]),
-            "meta": ("Meta", CATEGORY_MAX["meta"]),
-            "content": ("Content", CATEGORY_MAX["content"]),
-            "signals": ("Signals", CATEGORY_MAX["signals"]),
-            "ai_discovery": ("AI Discovery", CATEGORY_MAX["ai_discovery"]),
-            "brand_entity": ("Brand & Entity", CATEGORY_MAX["brand_entity"]),
+            "robots": "Robots.txt",
+            "llms": "llms.txt",
+            "schema": "Schema",
+            "meta": "Meta",
+            "content": "Content",
+            "signals": "Signals",
+            "ai_discovery": "AI Discovery",
+            "brand_entity": "Brand & Entity",
+            "google_ai": "Google AI Search",
         }
         for category, score in result.average_score_breakdown.items():
-            label, max_score = category_labels.get(category, (category.replace("_", " ").title(), 0))
+            label = category_labels.get(category, category.replace("_", " ").title())
+            max_score = category_max(page_reference, category) if page_reference else 0
             suffix = f"/{max_score}" if max_score else ""
             lines.append(f"  • {label}: {score:.2f}{suffix}")
     else:

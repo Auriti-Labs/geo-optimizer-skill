@@ -28,6 +28,11 @@ def compute_semantic_drift(
         detected_at=datetime.now(timezone.utc).isoformat(),
     )
 
+    # Snapshot di rubric diverse non sono confrontabili: nessun drift fittizio (es. llms 18 → 6)
+    if entry_before.score_version != entry_after.score_version:
+        delta.severity = "none"
+        return delta
+
     score_delta = entry_after.score - entry_before.score
     delta.score_delta = score_delta
 

@@ -25,6 +25,7 @@ from geo_optimizer.core.batch_audit import run_batch_audit
 from geo_optimizer.core.history import HistoryStore, summarize_history
 from geo_optimizer.models.config import (
     DEFAULT_HISTORY_RETENTION_DAYS,
+    DEFAULT_SCORE_VERSION,
     resolve_user_agent_override,
     set_user_agent_override,
 )
@@ -96,6 +97,13 @@ def _history_footer(history_result, history_entry) -> str:
 @click.option("--no-plugins", is_flag=True, help="Disable loading of third-party check plugins")
 @click.option("--max-urls", default=50, type=int, show_default=True, help="Maximum number of sitemap URLs to audit")
 @click.option("--concurrency", default=5, type=int, show_default=True, help="Concurrent page audits in sitemap mode")
+@click.option(
+    "--score-version",
+    type=click.Choice(["1", "2"]),
+    default=str(DEFAULT_SCORE_VERSION),
+    show_default=True,
+    help="Scoring rubric: 2 (Google AI readiness, default) or 1 (legacy, to compare with old history)",
+)
 @click.option("--save-history", is_flag=True, help="Save the audit result in local GEO history")
 @click.option("--regression", is_flag=True, help="Exit with code 1 if score regressed vs the previous saved snapshot")
 @click.option(
@@ -130,6 +138,7 @@ def audit(
     no_plugins,
     max_urls,
     concurrency,
+    score_version,
     save_history,
     regression,
     retention_days,
@@ -139,6 +148,7 @@ def audit(
 ):
     """Audit a website's GEO (Generative Engine Optimization) readiness."""
     set_user_agent_override(resolve_user_agent_override(user_agent))
+    score_version = int(score_version)
 
     # Load project configuration (if available)
     from geo_optimizer.models.project_config import load_config
@@ -219,6 +229,7 @@ def audit(
                 project_config=project_config,
                 max_urls=max_urls,
                 concurrency=concurrency,
+                score_version=score_version,
             )
             if output_format != "json":
                 click.echo("✅ Batch analysis complete.\n", err=True)
@@ -237,9 +248,12 @@ def audit(
                     pass
 
             def _run(on_step=None):
+                audit_kwargs = {"project_config": project_config, "on_step": on_step}
+                if score_version != DEFAULT_SCORE_VERSION:
+                    audit_kwargs["score_version"] = score_version
                 if _use_async:
-                    return asyncio.run(run_full_audit_async(url, project_config=project_config, on_step=on_step))
-                return run_full_audit(url, use_cache=cache, project_config=project_config, on_step=on_step)
+                    return asyncio.run(run_full_audit_async(url, **audit_kwargs))
+                return run_full_audit(url, use_cache=cache, **audit_kwargs)
 
             if output_format == "rich" and sys.stderr.isatty():
                 result = _run_with_live_progress(_run)

@@ -1100,6 +1100,8 @@ class BatchAuditPageResult:
     error: str | None = None
     score_breakdown: dict[str, int] = field(default_factory=dict)
     recommendations_count: int = 0
+    score_version: int = 1
+    score_max: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass
@@ -1337,6 +1339,7 @@ class HistoryEntry:
     recommendations_count: int = 0
     score_breakdown: dict[str, int] = field(default_factory=dict)
     delta: int | None = None
+    score_version: int = 1
 
 
 @dataclass

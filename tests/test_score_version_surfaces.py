@@ -5,15 +5,20 @@ from __future__ import annotations
 import json
 import re
 import xml.etree.ElementTree as ET
+from unittest.mock import patch
+
+from click.testing import CliRunner
 
 from geo_optimizer.cli.ci_formatter import format_audit_junit, format_audit_sarif
 from geo_optimizer.cli.formatters import (
     format_audit_diff_text,
     format_audit_json,
     format_audit_text,
+    format_batch_audit_text,
 )
 from geo_optimizer.cli.github_formatter import format_audit_github
 from geo_optimizer.cli.html_formatter import format_audit_html
+from geo_optimizer.cli.main import cli
 from geo_optimizer.cli.rich_formatter import format_audit_rich
 from geo_optimizer.cli.scoring_helpers import categories, category_max, category_score
 from geo_optimizer.core.diffing import build_audit_diff
@@ -23,6 +28,8 @@ from geo_optimizer.core.monitor import build_passive_monitor_result
 from geo_optimizer.models.config import CATEGORY_MAX, CATEGORY_MAX_V2
 from geo_optimizer.models.results import (
     AuditResult,
+    BatchAuditPageResult,
+    BatchAuditResult,
     BrandEntityResult,
     GoogleAiReadinessResult,
     MetaResult,
@@ -214,3 +221,146 @@ def test_sarif_rule_without_source_has_no_help_uri():
     r.google_ai.checks[0].source_url = ""
     rules = json.loads(format_audit_sarif(r))["runs"][0]["tool"]["driver"]["rules"]
     assert all(rule.get("helpUri", "x") for rule in rules)
+
+
+@patch.dict("sys.modules", {"httpx": None})
+@patch("geo_optimizer.cli.audit_cmd.validate_public_url", return_value=(True, ""))
+@patch("geo_optimizer.cli.audit_cmd.run_full_audit")
+def test_cli_score_version_flag_reaches_core(mock_audit, _validate):
+    mock_audit.return_value = AuditResult(url="https://x.test", score_version=1)
+
+    result = CliRunner().invoke(
+        cli,
+        ["audit", "--url", "https://x.test", "--format", "json", "--score-version", "1"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert mock_audit.call_args.kwargs["score_version"] == 1
+
+
+@patch("geo_optimizer.utils.validators.validate_public_url", return_value=(True, ""))
+@patch("geo_optimizer.core.audit.run_full_audit")
+def test_mcp_score_version_reaches_core(mock_audit, _validate):
+    from geo_optimizer.mcp import server
+
+    mock_audit.return_value = AuditResult(url="https://x.test", score_version=1)
+
+    with patch.object(server, "_normalize_url", return_value="https://x.test"):
+        output = server.geo_audit("https://x.test", score_version=1)
+
+    assert '"score_version": 1' in output
+    assert mock_audit.call_args.kwargs["score_version"] == 1
+
+
+def test_batch_text_uses_v2_page_maxima():
+    page = BatchAuditPageResult(
+        url="https://x.test",
+        score=50,
+        score_breakdown={"llms": 6, "google_ai": 10},
+        score_version=2,
+        score_max=dict(CATEGORY_MAX_V2),
+    )
+    batch = BatchAuditResult(
+        sitemap_url="https://x.test/sitemap.xml",
+        audited_urls=1,
+        successful_urls=1,
+        average_score=50.0,
+        average_score_breakdown={"llms": 6.0, "google_ai": 10.0},
+        pages=[page],
+    )
+
+    output = format_batch_audit_text(batch)
+
+    assert "llms.txt: 6.00/6" in output
+    assert "Google AI Search: 10.00/20" in output
+
+
+@patch("geo_optimizer.core.batch_audit._async_runtime_available", return_value=True)
+@patch("geo_optimizer.core.batch_audit.run_full_audit_async")
+def test_batch_score_version_reaches_page_audits(mock_audit, _runtime):
+    from geo_optimizer.core.batch_audit import _audit_single_url
+
+    async def fake_audit(*args, **kwargs):
+        return _v2()
+
+    mock_audit.side_effect = fake_audit
+
+    import asyncio
+
+    result = asyncio.run(_audit_single_url("https://x.test", use_cache=False, project_config=None, score_version=1))
+
+    assert mock_audit.call_args.kwargs["score_version"] == 1
+    assert result.score_max == CATEGORY_MAX_V2
+
+
+def test_history_never_compares_scores_across_rubric_versions(tmp_path):
+    import sqlite3
+
+    from geo_optimizer.core.history import HistoryStore
+
+    db = tmp_path / "tracking.db"
+    # DB creato prima della rubric v2: schema originale senza score_version (niente DROP COLUMN, SQLite < 3.35)
+    cols = ", ".join(
+        f"{c}_score INTEGER NOT NULL"
+        for c in ("robots", "llms", "schema", "meta", "content", "signals", "ai_discovery", "brand_entity")
+    )
+    with sqlite3.connect(db) as conn:
+        conn.execute(
+            "CREATE TABLE audit_history (id INTEGER PRIMARY KEY AUTOINCREMENT, canonical_url TEXT NOT NULL, "
+            "domain TEXT NOT NULL, recorded_at TEXT NOT NULL, score INTEGER NOT NULL, band TEXT NOT NULL, "
+            f"http_status INTEGER NOT NULL, recommendations_count INTEGER NOT NULL, {cols})"
+        )
+    store = HistoryStore(db)
+    HistoryStore(db)  # seconda inizializzazione: migrazione idempotente
+
+    old = AuditResult(url="https://x.test", score=90, score_version=1, timestamp="2026-10-01T00:00:00+00:00")
+    store.save_audit_result(old)
+    new = AuditResult(url="https://x.test", score=60, score_version=2, timestamp="2026-10-09T00:00:00+00:00")
+    entry = store.save_audit_result(new)
+    history = store.build_history_result("https://x.test")
+
+    assert entry.delta is None
+    assert history.regression_detected is False and history.score_delta is None
+    assert [e.score_version for e in history.entries] == [2, 1]
+
+    worse = AuditResult(url="https://x.test", score=50, score_version=2, timestamp="2026-10-10T00:00:00+00:00")
+    store.save_audit_result(worse)
+    assert store.build_history_result("https://x.test").regression_detected is True
+
+
+def test_history_migration_tolerates_concurrent_add_column(tmp_path, monkeypatch):
+    import sqlite3
+
+    from geo_optimizer.core import history
+
+    db = tmp_path / "tracking.db"
+    history.HistoryStore(db)
+    real_connect = sqlite3.connect
+
+    class _RacingConn(sqlite3.Connection):
+        def execute(self, sql, *args):
+            if sql.startswith("PRAGMA table_info"):
+                return iter([])  # simula: colonna non ancora vista, ma un altro processo l'ha appena aggiunta
+            return super().execute(sql, *args)
+
+    monkeypatch.setattr(history.sqlite3, "connect", lambda p: real_connect(p, factory=_RacingConn))
+    history.HistoryStore(db)  # non deve sollevare "duplicate column"
+
+
+def test_mcp_geo_audit_rejects_unknown_score_version():
+    import pytest
+
+    server = pytest.importorskip("geo_optimizer.mcp.server")
+    with patch("geo_optimizer.utils.validators.validate_public_url", return_value=(True, "")):
+        for bad in (3, 0, True):
+            assert "score_version must be 1 or 2" in server.geo_audit("https://x.test", score_version=bad)
+
+
+def test_drift_ignores_snapshots_of_different_rubric_versions():
+    from geo_optimizer.core.drift_detector import compute_semantic_drift
+    from geo_optimizer.models.results import HistoryEntry
+
+    old = HistoryEntry(url="https://x.test", timestamp="t1", score=90, score_breakdown={"llms": 18}, score_version=1)
+    new = HistoryEntry(url="https://x.test", timestamp="t2", score=60, score_breakdown={"llms": 6}, score_version=2)
+    drift = compute_semantic_drift(old, new)
+    assert drift.severity == "none" and drift.score_delta == 0
