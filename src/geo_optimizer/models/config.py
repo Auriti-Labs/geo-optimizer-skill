@@ -73,6 +73,14 @@ MAX_TOTAL_URLS: int = 10_000
 # Performance budget: warn if a single-page audit exceeds this threshold (#290)
 AUDIT_TIMEOUT_SECONDS: int = 10
 
+# Fasi reali di run_full_audit / run_full_audit_async, notificate via on_step (progresso CLI)
+AUDIT_STEPS: tuple[str, ...] = (
+    "Fetching page, robots.txt, llms.txt and AI files",
+    "Analyzing schema, meta tags and content",
+    "Checking CDN access for AI bots",
+    "Running trust, brand and extra checks",
+)
+
 GEO_OPTIMIZER_HOME = Path.home() / ".geo-optimizer"
 TRACKING_DB_PATH = GEO_OPTIMIZER_HOME / "tracking.db"
 SNAPSHOTS_DB_PATH = GEO_OPTIMIZER_HOME / "snapshots.db"

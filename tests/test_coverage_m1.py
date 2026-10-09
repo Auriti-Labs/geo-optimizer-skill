@@ -652,8 +652,8 @@ class TestRichFormatter:
         assert "Robots.txt" in output
         assert "llms.txt" in output
         assert "Schema JSON-LD" in output
-        assert "Meta Tags" in output
-        assert "Content Quality" in output
+        assert "Meta tags" in output
+        assert "Content" in output
 
     @pytest.mark.skipif(
         not __import__("importlib").util.find_spec("rich"),
@@ -707,8 +707,8 @@ class TestRichFormatter:
         result = _crea_audit_result_completo()
         output = format_audit_rich(result)
 
-        # The bar uses line-drawing characters
-        assert "━" in output
+        # Design v3: barra a blocchi pieni/vuoti
+        assert "█" in output
 
     @pytest.mark.skipif(
         not __import__("importlib").util.find_spec("rich"),
@@ -719,7 +719,8 @@ class TestRichFormatter:
         from geo_optimizer.cli.rich_formatter import format_audit_rich
 
         result = _crea_audit_result_vuoto()
-        output = format_audit_rich(result)
+        # Design v3: il messaggio vive nella card Schema, mostrata con --verbose
+        output = format_audit_rich(result, verbose=True)
 
         # Era "Nessuno schema trovato": una delle stringhe italiane hardcoded
         # nel report inglese, segnalate nella issue #509. Il test asseriva il bug
@@ -1356,7 +1357,7 @@ class TestProjectConfig:
             config = load_config(Path(tmpdir) / "non_esiste.yml")
 
         assert isinstance(config, ProjectConfig)
-        assert config.audit.format == "text"
+        assert config.audit.format is None  # non impostato: decide la CLI (rich su TTY)
         assert config.audit.min_score == 0
         assert config.llms.max_urls == 50
 
@@ -1568,7 +1569,7 @@ extra_bots:
         cfg = AuditConfig()
 
         assert cfg.url is None
-        assert cfg.format == "text"
+        assert cfg.format is None
         assert cfg.output is None
         assert cfg.min_score == 0
         assert cfg.cache is False

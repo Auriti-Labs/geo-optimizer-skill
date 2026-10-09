@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
+from typing import Callable
 from urllib.parse import urljoin
 
 # ─── Re-exports from split modules (backward compatibility, #402) ────────────
@@ -44,6 +45,7 @@ from geo_optimizer.core.scoring import (  # noqa: F401 (re-exported for backward
 from geo_optimizer.models.config import (  # noqa: F401 (VALUABLE_SCHEMAS re-exported)
     ABOUT_LINK_PATTERNS,
     AI_BOTS,
+    AUDIT_STEPS,
     AUDIT_TIMEOUT_SECONDS,
     CATEGORY_MAX,
     CITATION_BOTS,
@@ -711,15 +713,28 @@ def _build_audit_result(
     return result
 
 
-def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> AuditResult:
+def _notify(on_step: Callable[[str], None] | None, step: str) -> None:
+    """Segnala l'inizio di una fase reale al chiamante (la CLI mostra il progresso)."""
+    if on_step is not None:
+        on_step(step)
+
+
+def run_full_audit(
+    url: str,
+    use_cache: bool = False,
+    project_config=None,
+    on_step: Callable[[str], None] | None = None,
+) -> AuditResult:
     """Run complete audit and return AuditResult with all sub-results, score, band, and recommendations.
 
     Args:
         url: URL of the site to analyze.
         use_cache: If True, use disk cache for HTTP requests.
         project_config: Optional ProjectConfig — if it has extra_bots, merges them with AI_BOTS (fix #120).
+        on_step: Optional callback called with the name of each phase (AUDIT_STEPS) as it starts.
     """
     _t0 = time.perf_counter()
+    _notify(on_step, AUDIT_STEPS[0])
     from bs4 import BeautifulSoup
 
     # Fix #120: if config has extra_bots, merge with AI_BOTS for this audit
@@ -810,6 +825,7 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     r_ai_faq, _ = fetch_url(ai_faq_url)
     r_ai_service, _ = fetch_url(ai_service_url)
 
+    _notify(on_step, AUDIT_STEPS[1])
     # Run all sub-audits using the pre-downloaded responses
     # Fix #120: pass effective_bots which includes any extra_bots from project_config
     robots = _audit_robots_from_response(r_robots, bots=effective_bots)
@@ -831,10 +847,12 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     ai_disc = _audit_ai_discovery_from_responses(r_ai_txt, r_ai_summary, r_ai_faq, r_ai_service)
 
     # v4.2: CDN AI Crawler check (#225) + JS Rendering check (#226)
+    _notify(on_step, AUDIT_STEPS[2])
     cdn_result = audit_cdn_ai_crawler(base_url)
     js_result = audit_js_rendering(soup, r.text)
 
     # Fix #281: compute technical signals (lang, RSS, freshness)
+    _notify(on_step, AUDIT_STEPS[3])
     signals = audit_signals(soup, schema)
 
     # v4.3: Brand & Entity signals (zero HTTP requests, uses pre-fetched data only)
@@ -912,7 +930,11 @@ def run_full_audit(url: str, use_cache: bool = False, project_config=None) -> Au
     return result
 
 
-async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
+async def run_full_audit_async(
+    url: str,
+    project_config=None,
+    on_step: Callable[[str], None] | None = None,
+) -> AuditResult:
     """Async variant of the full audit with parallel fetch (httpx).
 
     Runs homepage, robots.txt and llms.txt in parallel for a
@@ -924,10 +946,12 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     Args:
         url: URL of the site to analyze.
         project_config: Optional ProjectConfig — if it has extra_bots, merges them with AI_BOTS.
+        on_step: Optional callback called with the name of each phase (AUDIT_STEPS) as it starts.
 
     Requires: pip install geo-optimizer-skill[async]
     """
     _t0 = time.perf_counter()
+    _notify(on_step, AUDIT_STEPS[0])
     from bs4 import BeautifulSoup
 
     from geo_optimizer.utils.http_async import fetch_urls_async
@@ -1006,6 +1030,7 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
     for tag in soup_clean(["script", "style", "noscript", "template"]):
         tag.decompose()
 
+    _notify(on_step, AUDIT_STEPS[1])
     # Sub-audit robots.txt (uses pre-fetched response with extra_bots)
     robots = _audit_robots_from_response(r_robots, bots=effective_bots)
 
@@ -1031,10 +1056,12 @@ async def run_full_audit_async(url: str, project_config=None) -> AuditResult:
 
     # v4.2: CDN AI Crawler check (#225) + JS Rendering check (#226)
     # Fix: wrap synchronous calls with asyncio.to_thread to avoid blocking the event loop
+    _notify(on_step, AUDIT_STEPS[2])
     cdn_result = await asyncio.to_thread(audit_cdn_ai_crawler, base_url)
     js_result = audit_js_rendering(soup, r_home.text)
 
     # Fix #281: compute technical signals (lang, RSS, freshness)
+    _notify(on_step, AUDIT_STEPS[3])
     signals = audit_signals(soup, schema)
 
     # v4.3: Brand & Entity signals (zero HTTP requests, uses pre-fetched data only)
