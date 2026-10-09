@@ -124,6 +124,7 @@ class SchemaResult:
     # Schema completeness: types found but missing required fields (gap #3)
     schema_missing_fields: dict = field(default_factory=dict)
     incomplete_schema_types: list = field(default_factory=list)
+    visible_match: bool = False
 
 
 # ─── Meta tags ───────────────────────────────────────────────────────────────
@@ -166,6 +167,7 @@ class ContentResult:
     has_heading_hierarchy: bool = False  # H2+H3 present in correct hierarchy
     has_lists_or_tables: bool = False  # <ul>/<ol>/<table> found
     has_front_loading: bool = False  # key info in the first 30%
+    images_alt_ok: bool = False
 
 
 # ─── Signals tecnici (v4.0) ──────────────────────────────────────────────────
@@ -181,6 +183,7 @@ class SignalsResult:
     rss_url: str = ""
     has_freshness: bool = False
     freshness_date: str = ""
+    freshness_valid: bool = False
 
 
 # ─── Brand & Entity (v4.3) ────────────────────────────────────────────────────
@@ -264,6 +267,7 @@ class AiDiscoveryResult:
     endpoints_found: int = 0  # total count of endpoints found (0-4)
     has_webmcp_declaration: bool = False  # /ai/summary.json declares a "webmcp" block (#535)
     webmcp_declared_tool_count: int = 0  # tool names listed in that declaration, if any
+    has_markdown: bool = False
 
 
 # ─── CDN AI Crawler Check (#225) ─────────────────────────────────────────────

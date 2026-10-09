@@ -6,8 +6,11 @@ Extracted from core/audit.py for maintainability (#402).
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
+from geo_optimizer.core.audit_google_ai import _parse_date
+from geo_optimizer.models.config import AI_READINESS_FUTURE_TOLERANCE_DAYS
 from geo_optimizer.models.results import SchemaResult, SignalsResult
 
 if TYPE_CHECKING:
@@ -60,5 +63,12 @@ def audit_signals(soup: BeautifulSoup | None, schema_result: SchemaResult) -> Si
         if meta_mod and meta_mod.get("content", "").strip():
             signals.has_freshness = True
             signals.freshness_date = meta_mod["content"].strip()
+
+    if signals.has_freshness:
+        parsed_date = _parse_date(signals.freshness_date)
+        signals.freshness_valid = bool(
+            parsed_date
+            and parsed_date <= datetime.now(timezone.utc) + timedelta(days=AI_READINESS_FUTURE_TOLERANCE_DAYS)
+        )
 
     return signals

@@ -92,10 +92,12 @@ def test_on_step_order_sync():
     page = Mock(status_code=200, text=_HTML, headers={})
     with (
         patch("geo_optimizer.core.audit.fetch_url", return_value=(page, None)),
+        patch("geo_optimizer.core.audit.check_markdown_negotiation", return_value=True),
         patch("geo_optimizer.core.audit.audit_cdn_ai_crawler") as cdn,
     ):
         cdn.return_value.checked = False
-        run_full_audit("https://example.com", on_step=steps.append)
+        result = run_full_audit("https://example.com", on_step=steps.append)
+    assert result.ai_discovery.has_markdown is True
     assert steps == list(AUDIT_STEPS)
 
 
@@ -108,10 +110,13 @@ def test_on_step_order_async():
 
     with (
         patch("geo_optimizer.utils.http_async.fetch_urls_async", AsyncMock(side_effect=_fetch)),
+        patch("geo_optimizer.core.audit.check_markdown_negotiation_async", AsyncMock(return_value=True)),
+        patch("geo_optimizer.core.audit.asyncio.to_thread", AsyncMock(return_value=Mock(checked=False))),
         patch("geo_optimizer.core.audit.audit_cdn_ai_crawler") as cdn,
     ):
         cdn.return_value.checked = False
-        asyncio.run(run_full_audit_async("https://example.com", on_step=steps.append))
+        result = asyncio.run(run_full_audit_async("https://example.com", on_step=steps.append))
+    assert result.ai_discovery.has_markdown is True
     assert steps == list(AUDIT_STEPS)
 
 

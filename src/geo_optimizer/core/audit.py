@@ -17,6 +17,8 @@ from urllib.parse import urljoin
 from geo_optimizer.core.audit_ai_discovery import (
     _audit_ai_discovery_from_responses,
     audit_ai_discovery,  # noqa: F401
+    check_markdown_negotiation,
+    check_markdown_negotiation_async,
 )
 from geo_optimizer.core.audit_brand import audit_brand_entity  # noqa: F401
 from geo_optimizer.core.audit_cdn import audit_cdn_ai_crawler  # noqa: F401
@@ -845,6 +847,7 @@ def run_full_audit(
 
     # v4.1: AI discovery endpoints audit (usa risposte pre-scaricate)
     ai_disc = _audit_ai_discovery_from_responses(r_ai_txt, r_ai_summary, r_ai_faq, r_ai_service)
+    ai_disc.has_markdown = check_markdown_negotiation(base_url)
 
     # v4.2: CDN AI Crawler check (#225) + JS Rendering check (#226)
     _notify(on_step, AUDIT_STEPS[2])
@@ -1057,7 +1060,11 @@ async def run_full_audit_async(
     # v4.2: CDN AI Crawler check (#225) + JS Rendering check (#226)
     # Fix: wrap synchronous calls with asyncio.to_thread to avoid blocking the event loop
     _notify(on_step, AUDIT_STEPS[2])
-    cdn_result = await asyncio.to_thread(audit_cdn_ai_crawler, base_url)
+    cdn_result, markdown_ok = await asyncio.gather(
+        asyncio.to_thread(audit_cdn_ai_crawler, base_url),
+        check_markdown_negotiation_async(None, base_url),
+    )
+    ai_disc.has_markdown = markdown_ok
     js_result = audit_js_rendering(soup, r_home.text)
 
     # Fix #281: compute technical signals (lang, RSS, freshness)

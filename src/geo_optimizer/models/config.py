@@ -894,6 +894,11 @@ AI_DISCOVERY_FAQ_ANSWER_MIN_LEN: int = 20
 # Minimum length for service.json name field
 AI_DISCOVERY_SERVICE_NAME_MIN_LEN: int = 3
 
+# Google AI readiness rubric v2 thresholds
+AI_READINESS_IMAGE_ALT_MIN_RATIO: float = 0.9
+AI_READINESS_SCHEMA_NAME_MIN_LEN: int = 3
+AI_READINESS_FUTURE_TOLERANCE_DAYS: int = 1
+
 # ─── Score bands ─────────────────────────────────────────────────────────────
 
 SCORE_BANDS = {
