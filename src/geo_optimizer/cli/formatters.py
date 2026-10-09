@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from dataclasses import asdict
 from html import escape
+from typing import Any
 from urllib.parse import quote
 
 from geo_optimizer.cli.scoring_helpers import (
@@ -52,7 +53,7 @@ from geo_optimizer.models.results import (
 
 def format_audit_json(result: AuditResult) -> str:
     """Format AuditResult as JSON string."""
-    data = {
+    data: dict[str, Any] = {
         "url": result.url,
         "timestamp": result.timestamp,
         "score": result.score,
@@ -689,7 +690,9 @@ def format_batch_audit_text(result: BatchAuditResult) -> str:
         }
         for category, score in result.average_score_breakdown.items():
             label = category_labels.get(category, category.replace("_", " ").title())
-            max_score = category_max(page_reference, category) if page_reference else 0
+            # I BatchAuditPageResult portano il proprio score_max (per versione
+            # di rubrica): si legge direttamente dalla pagina di riferimento.
+            max_score = page_reference.score_max.get(category, 0) if page_reference else 0
             suffix = f"/{max_score}" if max_score else ""
             lines.append(f"  • {label}: {score:.2f}{suffix}")
     else:

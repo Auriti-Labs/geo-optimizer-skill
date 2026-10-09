@@ -204,7 +204,9 @@ class HistoryStore:
         self.prune_old_entries(retention_days=retention_days)
 
         comparable = previous is not None and previous.score_version == result.score_version
-        delta = int(result.score) - previous.score if comparable else None
+        delta: int | None = None
+        if comparable and previous is not None:
+            delta = int(result.score) - previous.score
         return HistoryEntry(
             url=canonical_url,
             timestamp=result.timestamp,
@@ -248,7 +250,10 @@ class HistoryStore:
             previous = entries[index + 1] if index + 1 < len(entries) else None
             # Score di rubric diverse non sono confrontabili: nessun delta, nessuna regressione fittizia
             same = previous is not None and previous.score_version == entry.score_version
-            entry.delta = entry.score - previous.score if same else None
+            if same and previous is not None:
+                entry.delta = entry.score - previous.score
+            else:
+                entry.delta = None
 
         latest = entries[0] if entries else None
         previous = entries[1] if len(entries) > 1 else None

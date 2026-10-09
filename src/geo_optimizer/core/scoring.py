@@ -120,7 +120,7 @@ def _score_robots(robots, w: dict = SCORING, partial: int = ROBOTS_PARTIAL_SCORE
     """Compute the robots.txt score."""
     if not robots.found:
         return 0
-    s = w.get("robots_found", 0)
+    s: int = w.get("robots_found", 0)
     if robots.citation_bots_ok:
         if robots.citation_bots_explicit:
             # Full score: citation bots explicitly allowed
@@ -137,7 +137,7 @@ def _score_llms(llms, w: dict = SCORING) -> int:
     """Compute the llms.txt score with graduated quality."""
     if not llms.found:
         return 0
-    s = w.get("llms_found", 0)
+    s: int = w.get("llms_found", 0)
     s += w.get("llms_h1", 0) if llms.has_h1 else 0
     # #39: blockquote bonus (1 point from reduced llms_found budget)
     s += w.get("llms_blockquote", 0) if getattr(llms, "has_blockquote", False) else 0
