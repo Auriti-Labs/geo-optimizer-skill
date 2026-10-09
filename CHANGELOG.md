@@ -7,8 +7,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+---
+
+## [4.19.0] — 2026-10-09
+
 ### Changed
 - Rubric v2 is now the default; all category scores change. Use `--score-version 1` for legacy comparisons.
+- Brand consistency no longer counts title + og:title alone as consistent; this also lowers some v1 brand scores.
 
 ### Added
 - Added the `google_ai` category and Google readiness checks, markdown negotiation, image alt coverage, visible schema name matching, SARIF rules with Google `helpUri`, `score_version` and `score_max` in JSON, MCP `score_version`, and the offline calibration test.
