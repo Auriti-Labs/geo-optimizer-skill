@@ -10,16 +10,14 @@ from geo_optimizer.core.audit import run_full_audit
 from geo_optimizer.core.history import HistoryStore
 from geo_optimizer.models.config import (
     BOT_TIERS,
+    CATEGORY_MAX_BY_VERSION,
     CITATION_BOTS,
     DEFAULT_HISTORY_RETENTION_DAYS,
     MONITOR_BANDS,
     MONITOR_SCORING,
-    SCORING,
 )
 from geo_optimizer.models.results import AuditResult, HistoryResult, MonitorResult, MonitorSignal
 from geo_optimizer.utils.validators import normalize_url_scheme
-
-_MAX_BRAND_SCORE = sum(value for key, value in SCORING.items() if key.startswith("brand_"))
 
 
 def normalize_monitor_domain(domain: str) -> str:
@@ -180,7 +178,8 @@ def _entity_signal(audit_result: AuditResult) -> MonitorSignal:
     """Valuta segnali di entity/brand alignment utili alla visibilita' AI."""
     max_score = int(MONITOR_SCORING["entity_strength"])
     raw_score = int(audit_result.score_breakdown.get("brand_entity", 0))
-    score = round(max_score * (raw_score / max(1, _MAX_BRAND_SCORE)))
+    rubric_max = (audit_result.score_max or CATEGORY_MAX_BY_VERSION[audit_result.score_version])["brand_entity"]
+    score = round(max_score * (raw_score / max(1, rubric_max)))
     status = "strong" if score >= 11 else "partial" if score > 0 else "missing"
     return MonitorSignal(
         key="entity_strength",

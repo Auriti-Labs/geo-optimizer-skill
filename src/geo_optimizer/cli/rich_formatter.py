@@ -13,8 +13,12 @@ import os
 import shutil
 
 from geo_optimizer.cli.scoring_helpers import (
+    ai_discovery_score as _ai_discovery_score,
+)
+from geo_optimizer.cli.scoring_helpers import (
     brand_entity_score as _brand_entity_score,
 )
+from geo_optimizer.cli.scoring_helpers import category_max, category_score
 from geo_optimizer.cli.scoring_helpers import (
     content_score as _content_score,
 )
@@ -33,7 +37,6 @@ from geo_optimizer.cli.scoring_helpers import (
 from geo_optimizer.cli.scoring_helpers import (
     signals_score as _signals_score,
 )
-from geo_optimizer.models.config import CATEGORY_MAX as _CATEGORY_MAX
 from geo_optimizer.models.results import AuditResult
 
 try:
@@ -476,11 +479,8 @@ def _build_ai_discovery_card(result: AuditResult) -> Panel | None:
 
     content_parts = []
 
-    # AI Discovery score
-    from geo_optimizer.core.scoring import _score_ai_discovery
-
-    score = _score_ai_discovery(ai)
-    max_score = 6
+    score = _ai_discovery_score(result)
+    max_score = category_max(result, "ai_discovery")
 
     bar = _micro_bar(score, max_score)
     content_parts.append(bar)
@@ -888,9 +888,7 @@ def _missing(pairs: list[tuple[str, bool]]) -> str:
 
 
 def _category_rows(result: AuditResult) -> list[tuple[str, int, int, str]]:
-    """(label, score, max, dettaglio breve) per le 8 categorie del punteggio."""
-    from geo_optimizer.core.scoring import _score_ai_discovery
-
+    """(label, score, max, dettaglio breve) per le categorie del punteggio."""
     r, ll, sc, m, c = result.robots, result.llms, result.schema, result.meta, result.content
     sig, ai, be = result.signals, result.ai_discovery, result.brand_entity
 
@@ -915,31 +913,45 @@ def _category_rows(result: AuditResult) -> list[tuple[str, int, int, str]]:
     )
     signals = _missing([("lang", sig.has_lang), ("RSS", sig.has_rss), ("freshness", sig.has_freshness)])
 
-    return [
-        ("Robots.txt", _robots_score(result), _CATEGORY_MAX["robots"], robots),
-        ("llms.txt", _llms_score(result), _CATEGORY_MAX["llms"], llms),
-        ("Schema JSON-LD", _schema_score(result), _CATEGORY_MAX["schema"], schema),
-        ("Meta tags", _meta_score(result), _CATEGORY_MAX["meta"], meta),
+    llms_label = "llms.txt"
+    if result.score_version >= 2:
+        llms_label += " (Other AI agents · not used by Google Search)"
+    rows = [
+        ("Robots.txt", _robots_score(result), category_max(result, "robots"), robots),
+        (llms_label, _llms_score(result), category_max(result, "llms"), llms),
+        ("Schema JSON-LD", _schema_score(result), category_max(result, "schema"), schema),
+        ("Meta tags", _meta_score(result), category_max(result, "meta"), meta),
         (
             "Content",
             _content_score(result),
-            _CATEGORY_MAX["content"],
+            category_max(result, "content"),
             f"{c.word_count:,} words · {c.heading_count} headings",
         ),
-        ("Signals", _signals_score(result), _CATEGORY_MAX["signals"], signals),
+        ("Signals", _signals_score(result), category_max(result, "signals"), signals),
         (
             "AI discovery",
-            _score_ai_discovery(ai) if ai else 0,
-            _CATEGORY_MAX["ai_discovery"],
+            _ai_discovery_score(result),
+            category_max(result, "ai_discovery"),
             f"{ai.endpoints_found}/4 endpoints" if ai else "",
         ),
         (
             "Brand & entity",
             _brand_entity_score(result),
-            _CATEGORY_MAX["brand_entity"],
+            category_max(result, "brand_entity"),
             f"{be.kg_pillar_count}/4 Knowledge Graph pillars",
         ),
     ]
+    if "google_ai" in result.score_max:
+        rows.insert(
+            0,
+            (
+                "Google AI Search",
+                category_score(result, "google_ai"),
+                category_max(result, "google_ai"),
+                f"{sum(check.status == 'pass' for check in result.google_ai.checks)}/{len(result.google_ai.checks)} checks passed",
+            ),
+        )
+    return rows
 
 
 def _extra_checks(result: AuditResult) -> Text | None:
@@ -974,16 +986,20 @@ def _extra_checks(result: AuditResult) -> Text | None:
 
 def _detail_cards(result: AuditResult, rows: list[tuple[str, int, int, str]]) -> list[Panel]:
     """Le card per categoria esistenti, mostrate solo con --verbose."""
-    s = [score for _, score, _, _ in rows]
+    del rows
     cards = [
-        _build_robots_card(result, s[0], _CATEGORY_MAX["robots"]),
-        _build_llms_card(result, s[1], _CATEGORY_MAX["llms"]),
-        _build_schema_card(result, s[2], _CATEGORY_MAX["schema"]),
-        _build_meta_card(result, s[3], _CATEGORY_MAX["meta"]),
-        _build_content_card(result, s[4], _CATEGORY_MAX["content"]),
-        _build_signals_card(result, s[5], _CATEGORY_MAX["signals"]),
+        _build_robots_card(result, _robots_score(result), category_max(result, "robots")),
+        _build_llms_card(result, _llms_score(result), category_max(result, "llms")),
+        _build_schema_card(result, _schema_score(result), category_max(result, "schema")),
+        _build_meta_card(result, _meta_score(result), category_max(result, "meta")),
+        _build_content_card(result, _content_score(result), category_max(result, "content")),
+        _build_signals_card(result, _signals_score(result), category_max(result, "signals")),
         _build_ai_discovery_card(result),
-        _build_brand_entity_card(result, s[7], _CATEGORY_MAX["brand_entity"]),
+        _build_brand_entity_card(
+            result,
+            _brand_entity_score(result),
+            category_max(result, "brand_entity"),
+        ),
         _build_cdn_card(result),
         _build_js_card(result),
         _build_webmcp_card(result),

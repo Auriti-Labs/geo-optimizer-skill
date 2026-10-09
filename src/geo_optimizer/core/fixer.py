@@ -437,74 +437,76 @@ def _estimate_score_after(result: AuditResult, fixes: list[FixItem]) -> int:
     Calculates the delta as the difference between the maximum achievable score
     and the current score for each fixed category (fix #187).
     """
-    from geo_optimizer.models.config import ROBOTS_PARTIAL_SCORE, SCORING
+    from geo_optimizer.models.config import ROBOTS_PARTIAL_BY_VERSION, SCORING_BY_VERSION
 
     bonus = 0
     categories_fixed = {f.category for f in fixes}
+    scoring = SCORING_BY_VERSION[result.score_version]
+    robots_partial = ROBOTS_PARTIAL_BY_VERSION[result.score_version]
 
     if "robots" in categories_fixed:
         # Delta = maximum possible - current (fix #187, #203: inline to avoid core→cli import)
-        max_robots = SCORING["robots_found"] + SCORING["robots_citation_ok"]
+        max_robots = scoring["robots_found"] + scoring["robots_citation_ok"]
         current_robots = 0
         if result.robots.found:
-            current_robots = SCORING["robots_found"]
+            current_robots = scoring["robots_found"]
             if result.robots.citation_bots_ok:
                 current_robots += (
-                    SCORING["robots_citation_ok"] if result.robots.citation_bots_explicit else ROBOTS_PARTIAL_SCORE
+                    scoring["robots_citation_ok"] if result.robots.citation_bots_explicit else robots_partial
                 )
             elif result.robots.bots_allowed:
-                current_robots += ROBOTS_PARTIAL_SCORE
+                current_robots += robots_partial
         bonus += max_robots - current_robots
 
     if "llms" in categories_fixed and not result.llms.found:
         # Fix #420: include all llms SCORING keys (was missing blockquote, depth, full)
         bonus += (
-            SCORING["llms_found"]
-            + SCORING["llms_h1"]
-            + SCORING["llms_sections"]
-            + SCORING["llms_links"]
-            + SCORING.get("llms_blockquote", 0)
-            + SCORING.get("llms_depth", 0)
-            + SCORING.get("llms_full", 0)
+            scoring["llms_found"]
+            + scoring["llms_h1"]
+            + scoring["llms_sections"]
+            + scoring["llms_links"]
+            + scoring.get("llms_blockquote", 0)
+            + scoring.get("llms_depth", 0)
+            + scoring.get("llms_full", 0)
         )
 
     if "schema" in categories_fixed:
         if not result.schema.has_website:
-            bonus += SCORING["schema_website"]
+            bonus += scoring["schema_website"]
         if not result.schema.has_faq:
-            bonus += SCORING["schema_faq"]
+            bonus += scoring["schema_faq"]
 
     if "meta" in categories_fixed:
         if not result.meta.has_title:
-            bonus += SCORING["meta_title"]
+            bonus += scoring["meta_title"]
         if not result.meta.has_description:
-            bonus += SCORING["meta_description"]
+            bonus += scoring["meta_description"]
         if not result.meta.has_canonical:
-            bonus += SCORING["meta_canonical"]
+            bonus += scoring["meta_canonical"]
         if not result.meta.has_og_title and not result.meta.has_og_description:
-            bonus += SCORING["meta_og"]
+            bonus += scoring["meta_og"]
 
     if "ai_discovery" in categories_fixed:
         if not result.ai_discovery.has_summary or not result.ai_discovery.summary_valid:
-            bonus += SCORING["ai_discovery_summary"]
+            bonus += scoring["ai_discovery_summary"]
         if not result.ai_discovery.has_faq:
-            bonus += SCORING["ai_discovery_faq"]
+            bonus += scoring["ai_discovery_faq"]
 
     if "content" in categories_fixed:
         if not result.content.has_h1:
-            bonus += SCORING["content_h1"]
+            bonus += scoring["content_h1"]
         if not result.content.has_numbers:
-            bonus += SCORING["content_numbers"]
+            bonus += scoring["content_numbers"]
         if not result.content.has_links:
-            bonus += SCORING["content_links"]
+            bonus += scoring["content_links"]
         if result.content.word_count < 300:
-            bonus += SCORING["content_word_count"]
+            bonus += scoring["content_word_count"]
         if not result.content.has_heading_hierarchy:
-            bonus += SCORING.get("content_heading_hierarchy", 0)
+            bonus += scoring.get("content_heading_hierarchy", 0)
         if not result.content.has_lists_or_tables:
-            bonus += SCORING.get("content_lists_or_tables", 0)
+            bonus += scoring.get("content_lists_or_tables", 0)
         if not result.content.has_front_loading:
-            bonus += SCORING.get("content_front_loading", 0)
+            bonus += scoring.get("content_front_loading", 0)
 
     return min(100, result.score + bonus)
 

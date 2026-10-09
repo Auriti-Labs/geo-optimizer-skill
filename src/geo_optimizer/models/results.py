@@ -1161,6 +1161,7 @@ class AuditDiffResult:
     improved_categories: list[CategoryDelta] = field(default_factory=list)
     regressed_categories: list[CategoryDelta] = field(default_factory=list)
     unchanged_categories: list[CategoryDelta] = field(default_factory=list)
+    version_mismatch: bool = False
 
 
 # ─── Gap analysis ────────────────────────────────────────────────────────────
