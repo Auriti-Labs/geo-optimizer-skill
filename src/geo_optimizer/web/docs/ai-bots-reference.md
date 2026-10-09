@@ -57,10 +57,10 @@ These four bots directly determine whether AI search engines cite your site. **N
 
 | Bot | Type | Purpose | Crawl Frequency |
 |-----|------|---------|----------------|
-| `Google-Extended` | Training + AI Overviews | Gemini training and Google AI Overviews | Frequent |
+| `Google-Extended` | Training only | Gemini Apps and Vertex AI generative model training/grounding | Frequent |
 | `Googlebot` | Search + Citation | Traditional Google Search and AI-assisted results | Very frequent |
 
-Note: `Google-Extended` is a `robots.txt` token, not a separate user-agent. Blocking it removes your site from Google AI Overviews.
+Note: `Google-Extended` is a `robots.txt` token, not a separate user-agent. It does not affect Google Search or Google AI Overviews: it only controls use of content for Gemini/Vertex AI training and grounding. Googlebot is what matters for AI Overviews.
 
 ### Microsoft (Copilot)
 
