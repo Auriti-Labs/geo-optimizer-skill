@@ -547,3 +547,12 @@ class TestDemoBuiltContent:
         assert "Running audit" not in html, (
             "HTML demo mostra solo lo spinner 'Running audit' — contenuto non server-rendered"
         )
+
+
+def test_homepage_hero_defines_the_brand():
+    # detect_entity_disambiguation legge solo i primi 3 <p> di <main>: la definizione
+    # "GeoReady is a ..." deve restare nell'hero (persa una volta nel redesign console)
+    src = (_FRONTEND / "src" / "pages" / "index.astro").read_text(encoding="utf-8")
+    main = src[src.index('id="audit-form"') :]
+    first_ps = re.findall(r"<p\b[^>]*>(.*?)</p>", main, re.S)[:2]
+    assert any(re.search(r"\bGeoReady is a\b", " ".join(p.split())) for p in first_ps)
