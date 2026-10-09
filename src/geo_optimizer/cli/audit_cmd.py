@@ -161,12 +161,10 @@ def audit(
     # Fix #121/#144: verbose from config/CLI sets the logging level
     if not verbose:
         verbose = project_config.audit.verbose
-    if verbose:
-        # --verbose: show DEBUG logs for detailed diagnostics
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        # Without --verbose: suppress logs below WARNING (fix #144)
-        logging.basicConfig(level=logging.WARNING)
+    # Root sempre a WARNING (#144): con --verbose httpx/httpcore/urllib3 inondavano il terminale.
+    # --verbose alza a DEBUG solo i log del progetto; NOTSET lo riporta al root negli altri casi.
+    logging.basicConfig(level=logging.WARNING)
+    logging.getLogger("geo_optimizer").setLevel(logging.DEBUG if verbose else logging.NOTSET)
 
     # Fix #145: --threshold takes precedence over min_score from config (YAML as fallback)
     if threshold is not None:

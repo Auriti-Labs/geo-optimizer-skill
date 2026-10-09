@@ -162,3 +162,29 @@ def test_cli_text_format_prints_real_steps():
     assert res.exit_code == 0
     for step in AUDIT_STEPS:
         assert f"⏳ {step}..." in res.output
+
+
+@patch.dict("sys.modules", {"httpx": None})
+def test_cli_verbose_keeps_third_party_logs_quiet():
+    """--verbose impostava il root logger a DEBUG: httpx/httpcore/urllib3 inondavano il terminale."""
+    import logging
+
+    from click.testing import CliRunner
+
+    from geo_optimizer.cli.main import cli
+
+    pkg_logger = logging.getLogger("geo_optimizer")
+    old_level = pkg_logger.level
+    try:
+        with (
+            patch("geo_optimizer.cli.audit_cmd.run_full_audit", side_effect=_fake_audit),
+            patch("geo_optimizer.cli.audit_cmd.validate_public_url", return_value=(True, None)),
+            patch("geo_optimizer.cli.audit_cmd.logging.basicConfig") as basic,
+        ):
+            res = CliRunner().invoke(cli, ["audit", "--url", "https://example.com", "--format", "text", "--verbose"])
+
+        assert res.exit_code == 0, res.output
+        basic.assert_called_once_with(level=logging.WARNING)
+        assert pkg_logger.level == logging.DEBUG
+    finally:
+        pkg_logger.setLevel(old_level)
