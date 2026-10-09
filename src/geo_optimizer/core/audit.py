@@ -875,14 +875,18 @@ def run_full_audit(
         meta.x_robots_tag = _x_robots
         if "noindex" in _x_robots.lower():
             meta.x_robots_noindex = True
-    google_ai_result = run_google_ai_checks(
-        soup,
-        final_url=str(getattr(r, "url", "") or base_url),
-        http_status=r.status_code,
-        headers=response_headers,
-        robots=robots,
-        schemas=schema.raw_schemas,
-    )
+    # Check Google AI solo se la rubrica li prevede: in v1 non entrano né nello score né negli output
+    if "google_ai" in CATEGORY_MAX_BY_VERSION[score_version]:
+        google_ai_result = run_google_ai_checks(
+            soup,
+            final_url=str(getattr(r, "url", "") or base_url),
+            http_status=r.status_code,
+            headers=response_headers,
+            robots=robots,
+            schemas=schema.raw_schemas,
+        )
+    else:
+        google_ai_result = GoogleAiReadinessResult()
     content = audit_content_quality(soup, base_url, soup_clean=soup_clean)
 
     # v4.1: AI discovery endpoints audit (usa risposte pre-scaricate)
@@ -1100,14 +1104,18 @@ async def run_full_audit_async(
         meta.x_robots_tag = _x_robots_async
         if "noindex" in _x_robots_async.lower():
             meta.x_robots_noindex = True
-    google_ai_result = run_google_ai_checks(
-        soup,
-        final_url=str(getattr(r_home, "url", "") or base_url),
-        http_status=r_home.status_code,
-        headers=response_headers_async,
-        robots=robots,
-        schemas=schema.raw_schemas,
-    )
+    # Check Google AI solo se la rubrica li prevede: in v1 non entrano né nello score né negli output
+    if "google_ai" in CATEGORY_MAX_BY_VERSION[score_version]:
+        google_ai_result = run_google_ai_checks(
+            soup,
+            final_url=str(getattr(r_home, "url", "") or base_url),
+            http_status=r_home.status_code,
+            headers=response_headers_async,
+            robots=robots,
+            schemas=schema.raw_schemas,
+        )
+    else:
+        google_ai_result = GoogleAiReadinessResult()
     content = audit_content_quality(soup, base_url, soup_clean=soup_clean)
 
     # v4.1: AI discovery from pre-fetched responses

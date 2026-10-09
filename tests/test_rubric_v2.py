@@ -273,3 +273,35 @@ def test_json_output_exposes_score_max_of_the_result_version():
     assert (
         json.loads(format_audit_json(AuditResult(url="https://example.com")))["score_max"] == CATEGORY_MAX_BY_VERSION[1]
     )
+
+
+def test_v1_real_audit_has_no_google_ai_in_any_output():
+    """--score-version 1 su un audit reale (mockato): nessun check G-* in text/SARIF/JUnit/raccomandazioni."""
+    from geo_optimizer.cli.ci_formatter import format_audit_junit, format_audit_sarif
+    from geo_optimizer.cli.formatters import format_audit_text
+
+    response = _successful_response()
+    response.text = response.text.replace('<link rel="canonical" href="https://example.com">', "")
+    response.content = response.text.encode()
+    with (
+        patch("geo_optimizer.core.audit.fetch_url", return_value=(response, None)),
+        patch("geo_optimizer.core.audit.check_markdown_negotiation", return_value=False),
+        patch("geo_optimizer.core.audit.audit_cdn_ai_crawler", return_value=CdnAiCrawlerResult()),
+    ):
+        result = run_full_audit("https://example.com", score_version=1)
+
+    assert result.google_ai.checked is False
+    for output in (format_audit_text(result), format_audit_sarif(result), format_audit_junit(result)):
+        assert "G-CANONICAL" not in output and "G-INDEX" not in output
+    assert not any("[G-" in rec for rec in result.recommendations)
+
+    with (
+        patch(
+            "geo_optimizer.utils.http_async.fetch_urls_async",
+            new=AsyncMock(return_value={"https://example.com": (response, None)}),
+        ),
+        patch("geo_optimizer.core.audit.check_markdown_negotiation_async", new=AsyncMock(return_value=False)),
+        patch("geo_optimizer.core.audit.asyncio.to_thread", new=AsyncMock(return_value=CdnAiCrawlerResult())),
+    ):
+        async_result = asyncio.run(run_full_audit_async("https://example.com", score_version=1))
+    assert async_result.google_ai.checked is False
