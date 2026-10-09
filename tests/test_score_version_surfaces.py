@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import re
 import xml.etree.ElementTree as ET
+
+import pytest
 from unittest.mock import patch
 
 from click.testing import CliRunner
@@ -241,6 +243,10 @@ def test_cli_score_version_flag_reaches_core(mock_audit, _validate):
 @patch("geo_optimizer.utils.validators.validate_public_url", return_value=(True, ""))
 @patch("geo_optimizer.core.audit.run_full_audit")
 def test_mcp_score_version_reaches_core(mock_audit, _validate):
+    # mcp e' un extra opzionale (geo-optimizer-skill[mcp]): su CI senza extra
+    # il modulo non c'e' e il test salta invece di fallire (pattern di
+    # test_mcp.py / test_mcp_server.py).
+    pytest.importorskip("mcp", reason="mcp non installato (pip install geo-optimizer-skill[mcp])")
     from geo_optimizer.mcp import server
 
     mock_audit.return_value = AuditResult(url="https://x.test", score_version=1)
