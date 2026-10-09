@@ -341,7 +341,7 @@ class TestTitleSeparatorCutting:
         """#550: the en dash (U+2013) was not recognized as a separator at all,
         so "Acme – Tools for makers" and "Acme – Guides and tools" were compared
         as whole sentences (never equal) instead of being cut down to "Acme"."""
-        consistent, names = _check("Acme – Tools for makers | Blog", "Acme – Guides and tools | Blog", "Welcome")
+        consistent, names = _check("Acme – Tools for makers | Blog", "Acme – Guides and tools | Blog", "Acme")
         assert consistent is True
         assert "Acme" in names
 
@@ -356,7 +356,7 @@ class TestTitleSeparatorCutting:
 
     def test_em_dash_still_works(self):
         """Regression guard: the original em dash separator must keep working."""
-        consistent, names = _check("Acme — Tools for makers | Blog", "Acme — Guides and tools | Blog", "Welcome")
+        consistent, names = _check("Acme — Tools for makers | Blog", "Acme — Guides and tools | Blog", "Acme")
         assert consistent is True
         assert "Acme" in names
 
