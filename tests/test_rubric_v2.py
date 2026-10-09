@@ -254,3 +254,22 @@ def test_google_ai_points_are_capped_at_category_max():
     perfect["google_ai"].points = 999
     breakdown = compute_score_breakdown(**perfect, version=2)
     assert breakdown["google_ai"] == CATEGORY_MAX_V2["google_ai"]
+
+
+def test_json_output_exposes_score_max_of_the_result_version():
+    """Il JSON espone i massimi della rubrica del risultato (contratto documentato in json-contract.md)."""
+    import json
+
+    from geo_optimizer.cli.formatters import format_audit_json
+    from geo_optimizer.models.config import CATEGORY_MAX_BY_VERSION
+    from geo_optimizer.models.results import AuditResult
+
+    for version in (1, 2):
+        result = AuditResult(
+            url="https://example.com", score_version=version, score_max=dict(CATEGORY_MAX_BY_VERSION[version])
+        )
+        assert json.loads(format_audit_json(result))["score_max"] == CATEGORY_MAX_BY_VERSION[version]
+    # Risultato legacy senza score_max: fallback ai massimi v1
+    assert (
+        json.loads(format_audit_json(AuditResult(url="https://example.com")))["score_max"] == CATEGORY_MAX_BY_VERSION[1]
+    )

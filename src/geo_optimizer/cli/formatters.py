@@ -18,7 +18,7 @@ from geo_optimizer.cli.scoring_helpers import (
 from geo_optimizer.cli.scoring_helpers import (
     brand_entity_score as _brand_entity_score,
 )
-from geo_optimizer.cli.scoring_helpers import category_max, category_score
+from geo_optimizer.cli.scoring_helpers import categories, category_max, category_score
 from geo_optimizer.cli.scoring_helpers import (
     content_score as _content_score,
 )
@@ -64,6 +64,7 @@ def format_audit_json(result: AuditResult) -> str:
         # trusting score/checks.
         "error": result.error,
         "score_version": result.score_version,
+        "score_max": {cat: category_max(result, cat) for cat in categories(result)},
         "google_ai": asdict(result.google_ai),
         "checks": {
             "robots_txt": {
