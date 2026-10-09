@@ -44,6 +44,7 @@ class RobotsResult:
     crawl_delay: float | None = None
     # True if citation bots are explicitly allowed (not just via wildcard — #111)
     citation_bots_explicit: bool = False
+    sitemaps: list[str] = field(default_factory=list)
 
 
 # ─── llms.txt ────────────────────────────────────────────────────────────────
@@ -123,6 +124,7 @@ class SchemaResult:
     # Schema completeness: types found but missing required fields (gap #3)
     schema_missing_fields: dict = field(default_factory=dict)
     incomplete_schema_types: list = field(default_factory=list)
+    visible_match: bool = False
 
 
 # ─── Meta tags ───────────────────────────────────────────────────────────────
@@ -165,6 +167,7 @@ class ContentResult:
     has_heading_hierarchy: bool = False  # H2+H3 present in correct hierarchy
     has_lists_or_tables: bool = False  # <ul>/<ol>/<table> found
     has_front_loading: bool = False  # key info in the first 30%
+    images_alt_ok: bool = False
 
 
 # ─── Signals tecnici (v4.0) ──────────────────────────────────────────────────
@@ -180,6 +183,7 @@ class SignalsResult:
     rss_url: str = ""
     has_freshness: bool = False
     freshness_date: str = ""
+    freshness_valid: bool = False
 
 
 # ─── Brand & Entity (v4.3) ────────────────────────────────────────────────────
@@ -263,6 +267,7 @@ class AiDiscoveryResult:
     endpoints_found: int = 0  # total count of endpoints found (0-4)
     has_webmcp_declaration: bool = False  # /ai/summary.json declares a "webmcp" block (#535)
     webmcp_declared_tool_count: int = 0  # tool names listed in that declaration, if any
+    has_markdown: bool = False
 
 
 # ─── CDN AI Crawler Check (#225) ─────────────────────────────────────────────
@@ -983,6 +988,33 @@ class HallucinationBaitResult:
     details: list[str] = field(default_factory=list)
 
 
+# ─── Google AI readiness ─────────────────────────────────────────────────────
+
+
+@dataclass
+class ReadinessCheck:
+    """Esito di un check Google AI con fonte e livello di evidenza."""
+
+    id: str
+    status: str
+    points: int
+    max_points: int
+    evidence: str
+    source_url: str
+    evidence_level: str = "google-official"
+
+
+@dataclass
+class GoogleAiReadinessResult:
+    """Conformità ai requisiti Google per AI Overviews / AI Mode (rubric v2)."""
+
+    checked: bool = False
+    points: int = 0
+    max_points: int = 0
+    final_url: str = ""
+    checks: list[ReadinessCheck] = field(default_factory=list)
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -1048,6 +1080,10 @@ class AuditResult:
     intent_mapping: IntentMappingResult = field(default_factory=IntentMappingResult)
     # v4.10: Hallucination Bait Detection (#377)
     hallucination_bait: HallucinationBaitResult = field(default_factory=HallucinationBaitResult)
+    # v4.19: Google AI readiness + rubric versionata
+    google_ai: GoogleAiReadinessResult = field(default_factory=GoogleAiReadinessResult)
+    score_version: int = 1
+    score_max: dict[str, int] = field(default_factory=dict)
 
 
 # ─── Batch audit ─────────────────────────────────────────────────────────────
@@ -1064,6 +1100,8 @@ class BatchAuditPageResult:
     error: str | None = None
     score_breakdown: dict[str, int] = field(default_factory=dict)
     recommendations_count: int = 0
+    score_version: int = 1
+    score_max: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass
@@ -1125,6 +1163,7 @@ class AuditDiffResult:
     improved_categories: list[CategoryDelta] = field(default_factory=list)
     regressed_categories: list[CategoryDelta] = field(default_factory=list)
     unchanged_categories: list[CategoryDelta] = field(default_factory=list)
+    version_mismatch: bool = False
 
 
 # ─── Gap analysis ────────────────────────────────────────────────────────────
@@ -1300,6 +1339,7 @@ class HistoryEntry:
     recommendations_count: int = 0
     score_breakdown: dict[str, int] = field(default_factory=dict)
     delta: int | None = None
+    score_version: int = 1
 
 
 @dataclass

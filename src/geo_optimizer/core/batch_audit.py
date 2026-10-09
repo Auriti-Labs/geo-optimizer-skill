@@ -8,7 +8,7 @@ from collections import Counter
 from geo_optimizer.core.audit import run_full_audit, run_full_audit_async
 from geo_optimizer.core.llms_generator import fetch_sitemap
 from geo_optimizer.core.scoring import get_score_band
-from geo_optimizer.models.config import AUDIT_TIMEOUT_SECONDS
+from geo_optimizer.models.config import AUDIT_TIMEOUT_SECONDS, DEFAULT_SCORE_VERSION
 from geo_optimizer.models.results import AuditResult, BatchAuditPageResult, BatchAuditResult
 
 _DEFAULT_BATCH_MAX_URLS = 50
@@ -23,6 +23,7 @@ def run_batch_audit(
     project_config=None,
     max_urls: int = _DEFAULT_BATCH_MAX_URLS,
     concurrency: int = _DEFAULT_BATCH_CONCURRENCY,
+    score_version: int = DEFAULT_SCORE_VERSION,
 ) -> BatchAuditResult:
     """Esegue un audit batch sincrono partendo da una sitemap XML."""
     return asyncio.run(
@@ -32,6 +33,7 @@ def run_batch_audit(
             project_config=project_config,
             max_urls=max_urls,
             concurrency=concurrency,
+            score_version=score_version,
         )
     )
 
@@ -43,6 +45,7 @@ async def run_batch_audit_async(
     project_config=None,
     max_urls: int = _DEFAULT_BATCH_MAX_URLS,
     concurrency: int = _DEFAULT_BATCH_CONCURRENCY,
+    score_version: int = DEFAULT_SCORE_VERSION,
 ) -> BatchAuditResult:
     """Esegue audit concorrenti sugli URL contenuti in una sitemap."""
     if max_urls <= 0:
@@ -63,6 +66,7 @@ async def run_batch_audit_async(
         use_cache=use_cache,
         project_config=project_config,
         concurrency=concurrency,
+        score_version=score_version,
     )
     return _aggregate_batch_result(
         sitemap_url=sitemap_url,
@@ -93,6 +97,7 @@ async def _audit_urls(
     use_cache: bool,
     project_config,
     concurrency: int,
+    score_version: int,
 ) -> list[BatchAuditPageResult]:
     """Esegue gli audit delle pagine con un limite di concorrenza."""
     semaphore = asyncio.Semaphore(concurrency)
@@ -102,7 +107,9 @@ async def _audit_urls(
             # Fix H-2: per-URL timeout prevents a single hanging URL from blocking the batch
             try:
                 return await asyncio.wait_for(
-                    _audit_single_url(url, use_cache=use_cache, project_config=project_config),
+                    _audit_single_url(
+                        url, use_cache=use_cache, project_config=project_config, score_version=score_version
+                    ),
                     timeout=AUDIT_TIMEOUT_SECONDS,
                 )
             except asyncio.TimeoutError:
@@ -112,13 +119,23 @@ async def _audit_urls(
     return await asyncio.gather(*(_worker(url) for url in urls))
 
 
-async def _audit_single_url(url: str, *, use_cache: bool, project_config) -> BatchAuditPageResult:
+async def _audit_single_url(url: str, *, use_cache: bool, project_config, score_version: int) -> BatchAuditPageResult:
     """Esegue un audit singolo e lo converte in un risultato batch sintetico."""
     try:
         if use_cache or not _async_runtime_available():
-            result = await asyncio.to_thread(run_full_audit, url, use_cache=use_cache, project_config=project_config)
+            audit_kwargs = {"use_cache": use_cache, "project_config": project_config}
+            if score_version != DEFAULT_SCORE_VERSION:
+                audit_kwargs["score_version"] = score_version
+            result = await asyncio.to_thread(
+                run_full_audit,
+                url,
+                **audit_kwargs,
+            )
         else:
-            result = await run_full_audit_async(url, project_config=project_config)
+            audit_kwargs = {"project_config": project_config}
+            if score_version != DEFAULT_SCORE_VERSION:
+                audit_kwargs["score_version"] = score_version
+            result = await run_full_audit_async(url, **audit_kwargs)
     except Exception as exc:  # pragma: no cover - rete/eccezioni inattese
         result = AuditResult(url=url, error=f"{type(exc).__name__}: {exc}", band="critical")
     return _summarize_audit_result(result)
@@ -144,6 +161,8 @@ def _summarize_audit_result(result: AuditResult) -> BatchAuditPageResult:
         error=result.error,
         score_breakdown=dict(result.score_breakdown),
         recommendations_count=len(result.recommendations),
+        score_version=result.score_version,
+        score_max=dict(result.score_max),
     )
 
 

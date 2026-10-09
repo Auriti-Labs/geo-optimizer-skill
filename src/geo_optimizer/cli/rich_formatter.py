@@ -1,23 +1,24 @@
 """
-Rich formatter for premium CLI output — design v2.
+Rich formatter — default output of ``geo audit`` in a terminal (design v3).
 
-Requires ``rich`` as an optional dependency:
-    pip install geo-optimizer-skill[rich]
-
-Design: immersive dashboard with gradient, large gauge, stacked bar
-for category breakdown, detailed cards with micro-bar, and motivational footer.
-Automatic fallback via :func:`is_rich_available`.
+Compact dashboard: score, eight aligned category rows, extra checks and top
+fixes, readable without scrolling. ``--verbose`` appends the per-category cards.
+:func:`is_rich_available` stays for environments that strip rich.
 """
 
 from __future__ import annotations
 
 import io
 import os
-from urllib.parse import urlparse
+import shutil
 
+from geo_optimizer.cli.scoring_helpers import (
+    ai_discovery_score as _ai_discovery_score,
+)
 from geo_optimizer.cli.scoring_helpers import (
     brand_entity_score as _brand_entity_score,
 )
+from geo_optimizer.cli.scoring_helpers import category_max, category_score
 from geo_optimizer.cli.scoring_helpers import (
     content_score as _content_score,
 )
@@ -40,7 +41,6 @@ from geo_optimizer.models.results import AuditResult
 
 try:
     from rich import box
-    from rich.align import Align
     from rich.console import Console
     from rich.panel import Panel
     from rich.table import Table
@@ -76,17 +76,6 @@ _COLORS = {
     "brand_3": "#8b5cf6",  # viola brand
 }
 
-# Icons per category (more expressive than simple check/cross)
-_CATEGORY_ICONS = {
-    "robots": "🤖",
-    "llms": "📄",
-    "schema": "🔗",
-    "meta": "🏷️",
-    "content": "📝",
-    "signals": "📡",
-    "ai_discovery": "🔍",
-}
-
 # Score bands with descriptions and icons
 _BAND_CONFIG = {
     "excellent": {"icon": "🏆", "label": "EXCELLENT", "desc": "AI-ready — fully optimized"},
@@ -113,122 +102,6 @@ def _score_color(score: int, max_score: int = 100) -> str:
     return _COLORS["critical"]
 
 
-def _pct_color(pct: float) -> str:
-    """Color for a percentage value (0.0 - 1.0)."""
-    if pct >= 0.85:
-        return _COLORS["excellent"]
-    if pct >= 0.60:
-        return _COLORS["good"]
-    if pct >= 0.30:
-        return _COLORS["foundation"]
-    return _COLORS["critical"]
-
-
-# ── Large ASCII Art for the score ────────────────────────────────────────────
-
-# 5-row tall digits — thin and modern style
-_DIGITS = {
-    "0": ["╭━╮", "┃ ┃", "┃ ┃", "┃ ┃", "╰━╯"],
-    "1": [" ╻ ", "╺┃ ", " ┃ ", " ┃ ", "╺┻╸"],
-    "2": ["╭━╮", "╰━┃", "╭━╯", "┃  ", "╰━━"],
-    "3": ["╭━╮", "╰━┃", " ━┃", "╭━┃", "╰━╯"],
-    "4": ["╻ ╻", "┃ ┃", "╰━┃", "  ┃", "  ╹"],
-    "5": ["╭━━", "┃  ", "╰━╮", "╭━┃", "╰━╯"],
-    "6": ["╭━╮", "┃  ", "┣━╮", "┃ ┃", "╰━╯"],
-    "7": ["━━╮", "  ┃", " ╻╯", " ┃ ", " ╹ "],
-    "8": ["╭━╮", "┃ ┃", "┣━┫", "┃ ┃", "╰━╯"],
-    "9": ["╭━╮", "┃ ┃", "╰━┃", "  ┃", "╰━╯"],
-}
-
-
-def _render_big_number(number: int, color: str) -> list[Text]:
-    """Render a large number in ASCII art (5 rows)."""
-    digits = str(number)
-    lines = []
-    for row in range(5):
-        line = Text()
-        for i, d in enumerate(digits):
-            if i > 0:
-                line.append(" ", style="default")
-            line.append(_DIGITS[d][row], style=f"bold {color}")
-        lines.append(line)
-    return lines
-
-
-# ── Horizontal stacked bar (category breakdown) ───────────────────────────────
-
-
-def _render_stacked_bar(categories: list[tuple[str, int, int]], width: int = 68) -> Text:
-    """Colored stacked bar showing the contribution of each category.
-
-    Each segment is proportional to the score obtained relative to the total.
-    """
-    total_score = sum(score for _, score, _ in categories)
-    bar = Text()
-
-    # Colors per segment
-    segment_colors = [
-        _COLORS["brand_1"],  # robots - blue
-        _COLORS["brand_2"],  # llms - cyan
-        _COLORS["accent"],  # schema - purple
-        _COLORS["excellent"],  # meta - green
-        _COLORS["foundation"],  # content - amber
-        _COLORS["good"],  # signals - light cyan
-        _COLORS["brand_3"],  # ai_discovery - viola chiaro
-    ]
-
-    # Calculate the width of each segment
-    if total_score == 0:
-        bar.append("━" * width, style=f"dim {_COLORS['dim']}")
-        return bar
-
-    segments = []
-    remaining_width = width
-    for i, (_, score, _) in enumerate(categories):
-        if i == len(categories) - 1:
-            seg_width = remaining_width
-        else:
-            seg_width = max(1, round(score / total_score * width)) if score > 0 else 0
-            remaining_width -= seg_width
-        segments.append((seg_width, segment_colors[i % len(segment_colors)]))
-
-    for seg_width, color in segments:
-        if seg_width > 0:
-            bar.append("━" * seg_width, style=f"bold {color}")
-
-    # Fill the remainder up to 100 points
-    filled_width = sum(sw for sw, _ in segments)
-    empty_width = width - filled_width
-    if empty_width > 0:
-        bar.append("╌" * empty_width, style=f"{_COLORS['dim']}")
-
-    return bar
-
-
-def _render_legend(categories: list[tuple[str, int, int]]) -> Text:
-    """Legenda compatta per la barra stacked."""
-    segment_colors = [
-        _COLORS["brand_1"],
-        _COLORS["brand_2"],
-        _COLORS["accent"],
-        _COLORS["excellent"],
-        _COLORS["foundation"],
-        _COLORS["good"],
-        _COLORS["brand_3"],
-    ]
-
-    legend = Text()
-    for i, (name, score, max_score) in enumerate(categories):
-        if i > 0:
-            legend.append("  ", style="default")
-        color = segment_colors[i % len(segment_colors)]
-        legend.append("━━", style=f"bold {color}")
-        legend.append(f" {name} ", style="dim")
-        legend.append(f"{score}", style=f"bold {color}")
-        legend.append(f"/{max_score}", style="dim")
-    return legend
-
-
 # ── Micro progress bar ────────────────────────────────────────────────────────
 
 
@@ -244,17 +117,6 @@ def _micro_bar(score: int, max_score: int, width: int = 20) -> Text:
     bar.append("░" * empty, style=f"{_COLORS['dim']}")
     bar.append(f" {int(pct * 100)}%", style=f"bold {color}")
     return bar
-
-
-# ── Header branding ──────────────────────────────────────────────────────────
-
-# Minimal but impactful logo
-_LOGO_LINES = [
-    ("  ╔══╗  ╔══╗  ╔══╗  ", _COLORS["brand_1"]),
-    ("  ║ ═╣  ║╔═╝  ║  ║  ", _COLORS["brand_2"]),
-    ("  ║ ╔╣  ║╚═╗  ║  ║  ", _COLORS["accent"]),
-    ("  ╚══╝  ╚══╝  ╚══╝  ", _COLORS["brand_1"]),
-]
 
 
 # ── Builder card for each check ───────────────────────────────────────────────
@@ -359,9 +221,9 @@ def _build_llms_card(result: AuditResult, score: int, max_score: int) -> Panel:
 
         # Word count
         wc = Text()
-        wc.append(f"  ~{result.llms.word_count:,} parole", style=_COLORS["dim"])
+        wc.append(f"  ~{result.llms.word_count:,} words", style=_COLORS["dim"])
         if result.llms.sections_count:
-            wc.append(f"  •  {result.llms.sections_count} sezioni", style=_COLORS["dim"])
+            wc.append(f"  •  {result.llms.sections_count} sections", style=_COLORS["dim"])
         content_parts.append(wc)
 
     color = _score_color(score, max_score)
@@ -514,7 +376,7 @@ def _build_content_card(result: AuditResult, score: int, max_score: int) -> Pane
     # Main metrics
     metrics = Text("  ")
     metrics.append(f"{result.content.word_count:,}", style=f"bold {_COLORS['brand_2']}")
-    metrics.append(" parole", style=_COLORS["dim"])
+    metrics.append(" words", style=_COLORS["dim"])
     metrics.append("  •  ", style=_COLORS["dim"])
     metrics.append(f"{result.content.heading_count}", style=f"bold {_COLORS['brand_2']}")
     metrics.append(" headings", style=_COLORS["dim"])
@@ -617,11 +479,8 @@ def _build_ai_discovery_card(result: AuditResult) -> Panel | None:
 
     content_parts = []
 
-    # AI Discovery score
-    from geo_optimizer.core.scoring import _score_ai_discovery
-
-    score = _score_ai_discovery(ai)
-    max_score = 6
+    score = _ai_discovery_score(result)
+    max_score = category_max(result, "ai_discovery")
 
     bar = _micro_bar(score, max_score)
     content_parts.append(bar)
@@ -802,7 +661,7 @@ def _build_js_card(result: AuditResult) -> Panel | None:
 
     metrics = Text()
     metrics.append(f"  {js.raw_word_count:,}", style=f"bold {_COLORS['brand_2']}")
-    metrics.append(" parole in HTML", style=_COLORS["dim"])
+    metrics.append(" words in raw HTML", style=_COLORS["dim"])
     metrics.append(f"  •  {js.raw_heading_count}", style=f"bold {_COLORS['brand_2']}")
     metrics.append(" headings", style=_COLORS["dim"])
     content_parts.append(metrics)
@@ -1014,223 +873,243 @@ def _build_negative_signals_card(result: AuditResult) -> Panel | None:
 # ── Main formatter ────────────────────────────────────────────────────────────
 
 
-def format_audit_rich(result: AuditResult) -> str:
-    """Format AuditResult as an immersive dashboard.
+def _bar(score: int, max_score: int, width: int) -> Text:
+    """Barra piena/vuota colorata in base alla percentuale."""
+    filled = round(score / max_score * width) if max_score > 0 else 0
+    bar = Text("█" * filled, style=_score_color(score, max_score))
+    bar.append("░" * (width - filled), style=_COLORS["dim"])
+    return bar
 
-    Layout:
-    1. Header branding with gradient logo
-    2. Info panel with URL and HTTP status
-    3. Large score gauge with ASCII art number
-    4. Stacked category breakdown bar
-    5. Detailed check cards (7 categories)
-    6. Optional cards (CDN, JS Rendering)
-    7. Prioritized recommendations
-    8. Motivational footer
 
-    Returns string with ANSI codes for colored terminal output.
+def _missing(pairs: list[tuple[str, bool]]) -> str:
+    """'missing a, b' per i check falliti, stringa vuota se tutto ok."""
+    names = [name for name, ok in pairs if not ok]
+    return f"missing {', '.join(names)}" if names else ""
+
+
+def _category_rows(result: AuditResult) -> list[tuple[str, int, int, str]]:
+    """(label, score, max, dettaglio breve) per le categorie del punteggio."""
+    r, ll, sc, m, c = result.robots, result.llms, result.schema, result.meta, result.content
+    sig, ai, be = result.signals, result.ai_discovery, result.brand_entity
+
+    robots = "robots.txt not found"
+    if r.found:
+        robots = f"{len(r.bots_allowed)} AI bots allowed"
+        if r.bots_blocked:
+            robots += f" · {len(r.bots_blocked)} blocked"
+    llms = "llms.txt not found"
+    if ll.blocked_by_cdn:
+        llms = "blocked by CDN/WAF"
+    elif ll.found:
+        llms = f"~{ll.word_count:,} words · {ll.sections_count} sections"
+    schema = f"{len(sc.found_types)} types" if sc.any_schema_found else "no JSON-LD found"
+    meta = _missing(
+        [
+            ("title", m.has_title),
+            ("description", m.has_description),
+            ("canonical", m.has_canonical),
+            ("og:image", m.has_og_image),
+        ]
+    )
+    signals = _missing([("lang", sig.has_lang), ("RSS", sig.has_rss), ("freshness", sig.has_freshness)])
+
+    llms_label = "llms.txt"
+    if result.score_version >= 2:
+        llms_label += " (Other AI agents · not used by Google Search)"
+    rows = [
+        ("Robots.txt", _robots_score(result), category_max(result, "robots"), robots),
+        (llms_label, _llms_score(result), category_max(result, "llms"), llms),
+        ("Schema JSON-LD", _schema_score(result), category_max(result, "schema"), schema),
+        ("Meta tags", _meta_score(result), category_max(result, "meta"), meta),
+        (
+            "Content",
+            _content_score(result),
+            category_max(result, "content"),
+            f"{c.word_count:,} words · {c.heading_count} headings",
+        ),
+        ("Signals", _signals_score(result), category_max(result, "signals"), signals),
+        (
+            "AI discovery",
+            _ai_discovery_score(result),
+            category_max(result, "ai_discovery"),
+            f"{ai.endpoints_found}/4 endpoints" if ai else "",
+        ),
+        (
+            "Brand & entity",
+            _brand_entity_score(result),
+            category_max(result, "brand_entity"),
+            f"{be.kg_pillar_count}/4 Knowledge Graph pillars",
+        ),
+    ]
+    if "google_ai" in result.score_max:
+        rows.insert(
+            0,
+            (
+                "Google AI Search",
+                category_score(result, "google_ai"),
+                category_max(result, "google_ai"),
+                f"{sum(check.status == 'pass' for check in result.google_ai.checks)}/{len(result.google_ai.checks)} checks passed",
+            ),
+        )
+    return rows
+
+
+def _extra_checks(result: AuditResult) -> Text | None:
+    """Una riga con i check informativi eseguiti (CDN, JS, injection, trust, decay)."""
+    ok, bad, warn = _COLORS["excellent"], _COLORS["critical"], _COLORS["foundation"]
+    items: list[tuple[str, str, str]] = []
+    if result.cdn_check.checked:
+        blocked = result.cdn_check.any_blocked
+        items.append(("CDN", "blocked" if blocked else "✓", bad if blocked else ok))
+    if result.js_rendering.checked:
+        js = result.js_rendering.js_dependent
+        items.append(("JS", "required" if js else "✓", bad if js else ok))
+    if result.prompt_injection.checked:
+        sev = result.prompt_injection.severity
+        items.append(("Injection", "✓" if sev == "clean" else sev, ok if sev == "clean" else bad))
+    if result.trust_stack.checked:
+        grade = result.trust_stack.grade
+        items.append(("Trust", grade, ok if grade in ("A", "B") else warn))
+    if result.content_decay.checked:
+        risk = result.content_decay.decay_risk
+        items.append(("Decay", risk.upper(), ok if risk == "low" else warn))
+    if not items:
+        return None
+    line = Text()
+    for i, (name, value, color) in enumerate(items):
+        if i:
+            line.append("   ")
+        line.append(f"{name} ", style=_COLORS["muted"])
+        line.append(value, style=f"bold {color}")
+    return line
+
+
+def _detail_cards(result: AuditResult, rows: list[tuple[str, int, int, str]]) -> list[Panel]:
+    """Le card per categoria esistenti, mostrate solo con --verbose."""
+    del rows
+    cards = [
+        _build_robots_card(result, _robots_score(result), category_max(result, "robots")),
+        _build_llms_card(result, _llms_score(result), category_max(result, "llms")),
+        _build_schema_card(result, _schema_score(result), category_max(result, "schema")),
+        _build_meta_card(result, _meta_score(result), category_max(result, "meta")),
+        _build_content_card(result, _content_score(result), category_max(result, "content")),
+        _build_signals_card(result, _signals_score(result), category_max(result, "signals")),
+        _build_ai_discovery_card(result),
+        _build_brand_entity_card(
+            result,
+            _brand_entity_score(result),
+            category_max(result, "brand_entity"),
+        ),
+        _build_cdn_card(result),
+        _build_js_card(result),
+        _build_webmcp_card(result),
+        _build_negative_signals_card(result),
+    ]
+    return [card for card in cards if card is not None]
+
+
+def format_audit_rich(result: AuditResult, verbose: bool = False, width: int | None = None) -> str:
+    """Formatta AuditResult come dashboard compatta (stringa ANSI).
+
+    Layout: header · punteggio + banda · 8 righe categoria · check extra ·
+    top 5 fix · footer. ``verbose`` aggiunge le card dettagliate.
     """
     from geo_optimizer import __version__
 
-    _no_color = "NO_COLOR" in os.environ
+    if width is None:
+        width = min(shutil.get_terminal_size(fallback=(100, 24)).columns, 100)
     buf = io.StringIO()
-    console = Console(file=buf, width=80, force_terminal=True, no_color=_no_color)
+    console = Console(
+        file=buf, width=width, force_terminal=True, no_color=bool(os.getenv("NO_COLOR"))
+    )  # no-color.org: set e non vuota
+    # testo secondario in "muted": "dim" (#475569) è sotto AA su sfondo scuro
+    dim, brand, warn = _COLORS["muted"], _COLORS["brand_1"], _COLORS["foundation"]
 
-    # ── 1. Header branding ───────────────────────────────────────
+    # Header: prodotto · URL a sinistra, metadati HTTP a destra
+    meta = f"HTTP {result.http_status} · {result.page_size / 1024:,.0f} KB"
+    if result.audit_duration_ms is not None:
+        meta += f" · {result.audit_duration_ms / 1000:.1f}s"
+    header = Table.grid(expand=True)
+    header.add_column()
+    header.add_column(justify="right")
+    left = Text(" GEO Optimizer ", style=f"bold {brand}")
+    left.append(f"{__version__} · ", style=dim)
+    left.append(result.url, style="bold")
+    header.add_row(left, Text(meta, style=dim))
     console.print()
-    for line_text, color in _LOGO_LINES:
-        console.print(Align.center(Text(line_text, style=f"bold {color}")))
-    console.print(Align.center(Text("O P T I M I Z E R", style=f"bold {_COLORS['dim']}")))
+    console.print(header)
     console.print()
 
-    # ── 2. Info panel ────────────────────────────────────────────
-    urlparse(result.url).hostname or result.url
-    info = Text()
-    info.append("  🌐  ", style="default")
-    info.append(result.url, style=f"bold {_COLORS['brand_2']} underline")
-    info.append("\n  ⚡  ", style="default")
-    info.append(f"HTTP {result.http_status}", style="bold")
-    info.append(f"  •  {result.page_size:,} bytes", style=_COLORS["dim"])
+    if result.error:
+        console.print(Text(f" ✗ Audit failed: {result.error}", style=f"bold {_COLORS['critical']}"))
+        console.print(Text("   The site could not be analyzed: the scores below are empty, not a real 0.", style=dim))
+        console.print()
 
-    console.print(
-        Panel(
-            info,
-            box=box.ROUNDED,
-            border_style=_COLORS["brand_1"],
-            subtitle=f"[{_COLORS['dim']}]v{__version__}[/]",
-            subtitle_align="right",
-            padding=(0, 1),
-        )
-    )
-
-    # ── 3. Score gauge gigante ───────────────────────────────────
-    main_color = _band_color(result.band)
+    # Punteggio e banda
+    band_color = _band_color(result.band)
     band_cfg = _BAND_CONFIG.get(result.band, _BAND_CONFIG["critical"])
-
+    score_line = Text("   ")
+    score_line.append(str(result.score), style=f"bold {band_color}")
+    score_line.append(" /100   ", style=dim)
+    score_line.append(band_cfg["label"], style=f"bold {band_color}")
+    score_line.append(f"  {band_cfg['desc']}", style=dim)
+    console.print(score_line)
+    console.print(Text("   ").append_text(_bar(result.score, 100, min(40, width - 6))))
     console.print()
 
-    # Large ASCII art number
-    big_lines = _render_big_number(result.score, main_color)
-    for line in big_lines:
-        # Add " / 100" next to the center row
-        console.print(Align.center(line))
+    # Le 8 categorie, allineate in colonne
+    rows = _category_rows(result)
+    grid = Table.grid(padding=(0, 2))
+    grid.add_column(style="bold", min_width=16, no_wrap=True)
+    grid.add_column(no_wrap=True)
+    grid.add_column(justify="right", no_wrap=True)
+    grid.add_column(style=dim, overflow="ellipsis", no_wrap=True)
+    bar_width = 16 if width >= 80 else 8
+    for label, score, max_score, detail in rows:
+        score_txt = Text(str(score), style=f"bold {_score_color(score, max_score)}")
+        score_txt.append(f"/{max_score}", style=dim)
+        grid.add_row(f" {label}", _bar(score, max_score, bar_width), score_txt, detail)
+    console.print(grid)
 
-    # Score subtitle
-    score_sub = Text()
-    score_sub.append("/ 100", style=f"bold {_COLORS['dim']}")
-    console.print(Align.center(score_sub))
-    console.print()
-
-    # Main score bar (gradient)
-    main_width = 60
-    main_filled = int(result.score * main_width / 100)
-    main_empty = main_width - main_filled
-    main_bar = Text()
-    main_bar.append("█" * main_filled, style=f"bold {main_color}")
-    main_bar.append("░" * main_empty, style=_COLORS["dim"])
-    console.print(Align.center(main_bar))
-
-    # Band label with icon and description
-    band_text = Text()
-    band_text.append(f"{band_cfg['icon']}  ", style="default")
-    band_text.append(band_cfg["label"], style=f"bold {main_color}")
-    band_text.append(f"  —  {band_cfg['desc']}", style=_COLORS["dim"])
-    console.print(Align.center(band_text))
-    console.print()
-
-    # ── 4. Breakdown stacked bar ─────────────────────────────────
-    r_score = _robots_score(result)
-    l_score = _llms_score(result)
-    s_score = _schema_score(result)
-    m_score = _meta_score(result)
-    c_score = _content_score(result)
-    sig_score = _signals_score(result)
-    be_score = _brand_entity_score(result)
-    from geo_optimizer.core.scoring import _score_ai_discovery
-
-    ai_score = _score_ai_discovery(result.ai_discovery) if result.ai_discovery else 0
-
-    categories = [
-        ("Robots", r_score, 18),
-        ("llms.txt", l_score, 18),
-        ("Schema", s_score, 16),
-        ("Meta", m_score, 14),
-        ("Content", c_score, 12),
-        ("Signals", sig_score, 6),
-        ("AI Disc.", ai_score, 6),
-        ("Brand", be_score, 10),
-    ]
-
-    stacked = _render_stacked_bar(categories, width=68)
-    legend = _render_legend(categories)
-
-    breakdown_content = Table(show_header=False, box=None, expand=True, padding=0)
-    breakdown_content.add_column(ratio=1)
-    breakdown_content.add_row(Align.center(stacked))
-    breakdown_content.add_row(Text())
-    breakdown_content.add_row(Align.center(legend))
-
-    console.print(
-        Panel(
-            breakdown_content,
-            title="[bold]📊 Score Breakdown[/]",
-            title_align="left",
-            border_style=_COLORS["brand_1"],
-            box=box.ROUNDED,
-            padding=(1, 2),
-        )
-    )
-
-    # ── 5. Detailed check cards ──────────────────────────────────
-    console.print()
-    console.print(_build_robots_card(result, r_score, 18))
-    console.print(_build_llms_card(result, l_score, 18))
-    console.print(_build_schema_card(result, s_score, 16))
-    console.print(_build_meta_card(result, m_score, 14))
-    console.print(_build_content_card(result, c_score, 12))
-    console.print(_build_signals_card(result, sig_score, 6))
-    console.print(_build_ai_discovery_card(result))
-    console.print(_build_brand_entity_card(result, be_score, 10))
-
-    # ── 6. Optional cards ────────────────────────────────────────
-    cdn_card = _build_cdn_card(result)
-    if cdn_card:
-        console.print(cdn_card)
-
-    js_card = _build_js_card(result)
-    if js_card:
-        console.print(js_card)
-
-    webmcp_card = _build_webmcp_card(result)
-    if webmcp_card:
-        console.print(webmcp_card)
-
-    neg_card = _build_negative_signals_card(result)
-    if neg_card:
-        console.print(neg_card)
-
-    # ── 7. Recommendations ─────────────────────────────────────────
-    if result.recommendations:
-        rec_parts = []
-        for i, rec in enumerate(result.recommendations, 1):
-            rec_line = Text()
-            rec_line.append(f"  {i}. ", style=f"bold {_COLORS['foundation']}")
-            rec_line.append(rec, style="default")
-            rec_parts.append(rec_line)
-
-        rec_table = Table(show_header=False, box=None, expand=True, padding=0)
-        rec_table.add_column(ratio=1)
-        for part in rec_parts:
-            rec_table.add_row(part)
-
+    extra = _extra_checks(result)
+    if extra:
         console.print()
-        console.print(
-            Panel(
-                rec_table,
-                title="[bold]💡 Recommendations[/]",
-                title_align="left",
-                border_style=_COLORS["foundation"],
-                box=box.ROUNDED,
-                padding=(1, 2),
-            )
-        )
+        console.print(Text(" Extra checks     ", style="bold").append_text(extra))
 
-    # ── 8. Footer ────────────────────────────────────────────────
+    # Top fix nell'ordine prodotto dal core, senza punti stimati
+    recs = result.recommendations
+    if recs:
+        console.print()
+        console.print(Text(" Top fixes", style=f"bold {warn}"))
+        fixes = Table.grid(padding=(0, 2))
+        fixes.add_column(justify="right", style=f"bold {warn}", no_wrap=True)
+        fixes.add_column(overflow="fold")
+        for i, rec in enumerate(recs if verbose else recs[:5], 1):
+            fixes.add_row(f"  {i}", rec)
+        console.print(fixes)
+        if not verbose and len(recs) > 5:
+            console.print(Text(f"      +{len(recs) - 5} more with --verbose", style=dim))
+
+    if verbose:
+        console.print()
+        for card in _detail_cards(result, rows):
+            console.print(card)
+
+    # Footer: comandi successivi + funnel verso la piattaforma
     console.print()
-    footer = Text()
-    footer.append("  GEO Optimizer", style=f"bold {_COLORS['brand_1']}")
-    footer.append(f"  v{__version__}", style=_COLORS["dim"])
-    footer.append("  •  ", style=_COLORS["dim"])
-    footer.append("github.com/Auriti-Labs/geo-optimizer-skill", style=f"{_COLORS['dim']} underline")
-    console.print(Align.center(footer))
-
-    # Motivational message based on band
-    console.print()
-    motiv_messages = {
-        "excellent": "Your site is ready for AI engines. Keep it up! 🚀",
-        "good": "Great work! A few tweaks to reach excellence.",
-        "foundation": "The foundations are there. Follow the recommendations to scale.",
-        "critical": "Start from the recommendations — every point counts.",
-    }
-    motiv = motiv_messages.get(result.band, "")
-    if motiv:
-        console.print(Align.center(Text(motiv, style=f"italic {_COLORS['dim']}")))
-
-    # CLI→platform funnel: the CLI is one-shot, continuity lives in the platform
-    console.print()
-    funnel = Text()
-    funnel.append("Free plan: 1 monitored domain + weekly drift email → ", style=_COLORS["dim"])
-    funnel.append("geoready.dev", style=f"bold {_COLORS['brand_1']} underline")
-    console.print(Align.center(funnel))
-
-    # Badge growth loop: only suggest embedding a score worth showing off (gap #501)
+    hints = Text(" ")
+    if not verbose:
+        hints.append("geo audit --verbose", style=f"bold {brand}")
+        hints.append(" for every check · ", style=dim)
+    hints.append("geo fix", style=f"bold {brand}")
+    hints.append(" to generate the missing files", style=dim)
+    console.print(hints)
+    funnel = Text(" Free plan: 1 monitored domain + weekly drift email → ", style=dim)
+    funnel.append("geoready.dev", style=f"{brand} underline")
+    console.print(funnel)
     if result.band in ("excellent", "good"):
-        console.print()
-        badge = Text()
-        badge.append(
-            f"🏅 {result.score}/100 is embed-worthy — add a live badge to your README → ", style=_COLORS["dim"]
-        )
-        badge.append("geoready.dev/badge", style=f"bold {_COLORS['brand_1']} underline")
-        console.print(Align.center(badge))
-
+        badge = Text(f" {result.score}/100 is embed-worthy — add a live badge to your README → ", style=dim)
+        badge.append("geoready.dev/badge", style=f"{brand} underline")
+        console.print(badge)
     console.print()
     return buf.getvalue()

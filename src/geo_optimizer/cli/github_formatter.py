@@ -8,8 +8,12 @@ native GitHub Actions integration. Used with ``geo audit --format github``.
 from __future__ import annotations
 
 from geo_optimizer.cli.scoring_helpers import (
+    ai_discovery_score as _ai_discovery_score,
+)
+from geo_optimizer.cli.scoring_helpers import (
     brand_entity_score as _brand_entity_score,
 )
+from geo_optimizer.cli.scoring_helpers import category_max, category_score
 from geo_optimizer.cli.scoring_helpers import (
     content_score as _content_score,
 )
@@ -28,15 +32,8 @@ from geo_optimizer.cli.scoring_helpers import (
 from geo_optimizer.cli.scoring_helpers import (
     signals_score as _signals_score,
 )
-from geo_optimizer.models.config import SCORE_BANDS, SCORING
+from geo_optimizer.models.config import SCORE_BANDS
 from geo_optimizer.models.results import AuditResult
-
-# Max scores computed dynamically from SCORING (fix #325)
-_MAX_SCHEMA = sum(v for k, v in SCORING.items() if k.startswith("schema_"))
-_MAX_CONTENT = sum(v for k, v in SCORING.items() if k.startswith("content_"))
-_MAX_SIGNALS = sum(v for k, v in SCORING.items() if k.startswith("signals_"))
-_MAX_AI_DISC = sum(v for k, v in SCORING.items() if k.startswith("ai_discovery_"))
-_MAX_BRAND = sum(v for k, v in SCORING.items() if k.startswith("brand_"))
 
 
 def format_audit_github(result: AuditResult) -> str:
@@ -65,26 +62,54 @@ def format_audit_github(result: AuditResult) -> str:
         lines.append(f"::error::GEO Score: {result.score}/100 ({band_label}) — {result.url}")
 
     # Individual checks (fix #325, #341: max dinamici + 3 categorie mancanti)
+    llms_label = "llms.txt"
+    if result.score_version >= 2:
+        llms_label += " (Other AI agents · not used by Google Search)"
     checks = [
-        ("Robots.txt", _robots_score(result), 18, result.robots.citation_bots_ok),
-        ("llms.txt", _llms_score(result), 18, result.llms.found and result.llms.has_h1),
-        ("Schema JSON-LD", _schema_score(result), _MAX_SCHEMA, result.schema.has_website),
-        ("Meta Tags", _meta_score(result), 14, result.meta.has_title and result.meta.has_description),
-        ("Content Quality", _content_score(result), _MAX_CONTENT, result.content.has_h1),
-        ("Signals", _signals_score(result), _MAX_SIGNALS, bool(result.signals and result.signals.has_lang)),
+        ("Robots.txt", _robots_score(result), category_max(result, "robots"), result.robots.citation_bots_ok),
+        (
+            llms_label,
+            _llms_score(result),
+            category_max(result, "llms"),
+            result.llms.found and result.llms.has_h1,
+        ),
+        ("Schema JSON-LD", _schema_score(result), category_max(result, "schema"), result.schema.has_website),
+        (
+            "Meta Tags",
+            _meta_score(result),
+            category_max(result, "meta"),
+            result.meta.has_title and result.meta.has_description,
+        ),
+        ("Content Quality", _content_score(result), category_max(result, "content"), result.content.has_h1),
+        (
+            "Signals",
+            _signals_score(result),
+            category_max(result, "signals"),
+            bool(result.signals and result.signals.has_lang),
+        ),
         (
             "AI Discovery",
-            result.score_breakdown.get("ai_discovery", 0),
-            _MAX_AI_DISC,
+            _ai_discovery_score(result),
+            category_max(result, "ai_discovery"),
             bool(result.ai_discovery and result.ai_discovery.has_well_known_ai),
         ),
         (
             "Brand & Entity",
             _brand_entity_score(result),
-            _MAX_BRAND,
+            category_max(result, "brand_entity"),
             bool(result.brand_entity and result.brand_entity.brand_name_consistent),
         ),
     ]
+    if "google_ai" in result.score_max:
+        checks.insert(
+            0,
+            (
+                "Google AI Search",
+                category_score(result, "google_ai"),
+                category_max(result, "google_ai"),
+                not any(check.status == "fail" for check in result.google_ai.checks),
+            ),
+        )
 
     for name, score, max_score, passed in checks:
         if not passed:

@@ -130,6 +130,31 @@ def test_fetch_url_async_url_privato_restituisce_errore():
     assert "Unsafe URL" in err
 
 
+def test_fetch_url_async_passa_headers_a_ogni_hop_di_redirect():
+    redirect = _mock_response(301, headers={"location": "/next"})
+    success = _mock_response(200, b"ok")
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[redirect, success])
+
+    response, error = asyncio.run(
+        fetch_url_async("https://example.com/start", client=client, headers={"Accept": "text/markdown"})
+    )
+
+    assert error is None
+    assert response is success
+    assert client.get.await_args_list[0].kwargs["headers"] == {"Accept": "text/markdown"}
+    assert client.get.await_args_list[1].kwargs["headers"] == {"Accept": "text/markdown"}
+
+
+def test_fetch_url_async_url_non_sicuro_senza_client_non_esegue_richieste():
+    with patch("httpx.AsyncClient") as client_cls:
+        response, error = asyncio.run(fetch_url_async("http://127.0.0.1/"))
+
+    assert response is None
+    assert "Unsafe URL" in error
+    client_cls.assert_not_called()
+
+
 # ─── Test: redirect verso IP privato (SSRF su redirect) ──────────────────────
 
 

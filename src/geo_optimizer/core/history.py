@@ -109,6 +109,15 @@ class HistoryStore:
                 ON audit_history (domain, recorded_at DESC)
                 """
             )
+            # Migrazione additiva: gli snapshot pre-rubric v2 restano versione 1
+            columns = {row["name"] for row in conn.execute("PRAGMA table_info(audit_history)")}
+            if "score_version" not in columns:
+                try:
+                    conn.execute("ALTER TABLE audit_history ADD COLUMN score_version INTEGER NOT NULL DEFAULT 1")
+                except sqlite3.OperationalError as exc:
+                    # Un altro processo ha migrato nel frattempo: la colonna c'è, va bene così
+                    if "duplicate column" not in str(exc).lower():
+                        raise
 
     def prune_old_entries(self, retention_days: int = DEFAULT_HISTORY_RETENTION_DAYS) -> int:
         """Rimuove gli snapshot più vecchi della retention configurata."""
@@ -168,8 +177,9 @@ class HistoryStore:
                     content_score,
                     signals_score,
                     ai_discovery_score,
-                    brand_entity_score
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    brand_entity_score,
+                    score_version
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     canonical_url,
@@ -187,12 +197,16 @@ class HistoryStore:
                     breakdown["signals"],
                     breakdown["ai_discovery"],
                     breakdown["brand_entity"],
+                    int(result.score_version),
                 ),
             )
 
         self.prune_old_entries(retention_days=retention_days)
 
-        delta = None if previous is None else int(result.score) - previous.score
+        comparable = previous is not None and previous.score_version == result.score_version
+        delta: int | None = None
+        if comparable and previous is not None:
+            delta = int(result.score) - previous.score
         return HistoryEntry(
             url=canonical_url,
             timestamp=result.timestamp,
@@ -202,6 +216,7 @@ class HistoryStore:
             recommendations_count=len(result.recommendations),
             score_breakdown=breakdown,
             delta=delta,
+            score_version=int(result.score_version),
         )
 
     def build_history_result(
@@ -233,10 +248,17 @@ class HistoryStore:
         entries = [self._row_to_entry(row) for row in rows]
         for index, entry in enumerate(entries):
             previous = entries[index + 1] if index + 1 < len(entries) else None
-            entry.delta = None if previous is None else entry.score - previous.score
+            # Score di rubric diverse non sono confrontabili: nessun delta, nessuna regressione fittizia
+            same = previous is not None and previous.score_version == entry.score_version
+            if same and previous is not None:
+                entry.delta = entry.score - previous.score
+            else:
+                entry.delta = None
 
         latest = entries[0] if entries else None
         previous = entries[1] if len(entries) > 1 else None
+        if latest and previous and latest.score_version != previous.score_version:
+            previous = None
 
         return HistoryResult(
             url=canonical_url,
@@ -272,4 +294,5 @@ class HistoryStore:
             http_status=int(row["http_status"]),
             recommendations_count=int(row["recommendations_count"]),
             score_breakdown=breakdown,
+            score_version=int(row["score_version"]),
         )

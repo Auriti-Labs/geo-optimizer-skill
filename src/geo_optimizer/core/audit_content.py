@@ -4,6 +4,7 @@ import re
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
+from geo_optimizer.models.config import AI_READINESS_IMAGE_ALT_MIN_RATIO
 from geo_optimizer.models.results import ContentResult
 from geo_optimizer.utils.text import tokenize_words
 
@@ -29,6 +30,18 @@ def audit_content_quality(
     # Fix H-8: guard against None soup (defensive — called from plugins/tests)
     if soup is None:
         return result
+
+    images = soup.find_all("img")
+    result.images_alt_ok = not images or (
+        sum(
+            1
+            for image in images
+            if (image.get("alt") or "").strip()
+            or ((image.get("role") or "").strip().lower() == "presentation" and image.get("alt") == "")
+        )
+        / len(images)
+        >= AI_READINESS_IMAGE_ALT_MIN_RATIO
+    )
 
     # H1
     h1 = soup.find("h1")

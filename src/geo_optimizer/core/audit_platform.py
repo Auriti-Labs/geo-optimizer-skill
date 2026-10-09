@@ -12,6 +12,7 @@ Platform preferences based on Superlines 2026 and OtterlyAI research:
 
 from __future__ import annotations
 
+from geo_optimizer.models.config import SCORING
 from geo_optimizer.models.results import (
     AiDiscoveryResult,
     CitabilityResult,
@@ -181,15 +182,16 @@ def _score_google_ai(robots, schema, meta, content, citability, signals=None, js
     strengths: list[str] = []
     recs: list[str] = []
 
-    # Google-Extended access
-    if any(b == "Google-Extended" for b in robots.bots_allowed):
+    # Googlebot alimenta sia Search sia AI Overviews/AI Mode; Google-Extended
+    # non incide su Search né su AI Overviews (Google, Common crawlers doc)
+    if "Googlebot" not in robots.bots_blocked:
         score += 10
-        strengths.append("Google-Extended allowed")
-    else:
-        recs.append("Allow Google-Extended in robots.txt")
+        strengths.append("Googlebot allowed (feeds Search and AI Overviews)")
+    elif "Googlebot" in robots.bots_blocked:
+        recs.append("Allow Googlebot in robots.txt: it feeds both Google Search and AI Overviews")
 
     # Schema richness (Google loves structured data)
-    if schema.schema_richness_score >= 5:
+    if schema.schema_richness_score >= SCORING["schema_richness"]:
         score += 20
         strengths.append(f"Rich schema ({schema.schema_richness_score} types)")
     elif schema.any_schema_found:

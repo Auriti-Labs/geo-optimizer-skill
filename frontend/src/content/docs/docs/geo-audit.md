@@ -1,12 +1,11 @@
 ---
 title: "GEO Audit Command: Score Your Site 0–100"
-description: "Run the geo audit CLI to score any website 0-100 across 8 GEO categories and get a fix list for ChatGPT, Perplexity, Claude and Gemini citation readiness."
+description: "Run the geo audit CLI to score any website 0-100 across 9 GEO categories and get a fix list for ChatGPT, Perplexity, Claude and Gemini citation readiness."
 order: 2
 ---
-
 # GEO Audit
 
-`geo audit` scores your website from 0 to 100 across **8 GEO categories** and tells you exactly what to fix.
+`geo audit` scores your website from 0 to 100 across **9 GEO categories** and tells you exactly what to fix.
 
 ---
 
@@ -16,14 +15,15 @@ order: 2
 
 | Area | Max Points | What is audited |
 |------|-----------|-----------------|
-| **Robots.txt** | 18 | 27 AI bots across 3 tiers (training, search, user). Citation bots explicitly allowed? |
-| **llms.txt** | 18 | Present, has H1 + blockquote, sections, links, depth. Companion llms-full.txt? |
-| **Schema JSON-LD** | 16 | WebSite, Organization, FAQPage, Article. Schema richness (5+ attributes)? |
-| **Meta Tags** | 14 | Title, description, canonical, Open Graph complete? |
-| **Content** | 12 | H1, statistics, external citations, heading hierarchy, lists/tables, front-loading? |
-| **Brand & Entity** | 10 | Brand coherence, Knowledge Graph links (Wikipedia/Wikidata/LinkedIn), about page, geo signals, topic authority |
+| **Google AI readiness** | 20 | Indexing, snippets, canonical, dates, byline, links, viewport, sitemap, and manual generative-AI control check |
+| **Robots.txt** | 14 | 27 AI bots across 3 tiers (training, search, user). Citation bots explicitly allowed? |
+| **llms.txt** | 6 | Present, sections, links, and companion llms-full.txt; useful to other AI agents, ignored by Google Search |
+| **Schema JSON-LD** | 14 | WebSite, Organization, FAQPage, Article, schema richness, and visible name match |
+| **Meta Tags** | 11 | Title, description, Open Graph complete? Canonical is scored in Google AI readiness |
+| **Content** | 14 | H1, statistics, external citations, heading hierarchy, lists/tables, front-loading, image alt coverage |
+| **Brand & Entity** | 12 | Brand coherence, Knowledge Graph links (Wikipedia/Wikidata/LinkedIn), about page, geo signals, topic authority |
 | **Signals** | 6 | `<html lang>`, RSS/Atom feed, dateModified freshness? |
-| **AI Discovery** | 6 | `.well-known/ai.txt`, `/ai/summary.json`, `/ai/faq.json`, `/ai/service.json`? |
+| **AI Discovery** | 3 | `.well-known/ai.txt`, `/ai/summary.json`, and markdown negotiation? |
 
 ### Bonus checks (informational, no score impact)
 
@@ -35,6 +35,21 @@ order: 2
 | **Negative Signals** | 8 anti-citation signals: CTA overload, popups, thin content, keyword stuffing, missing author, boilerplate ratio |
 | **Prompt Injection Detection** | 8 manipulation patterns: hidden text, invisible Unicode, LLM instructions, HTML comment injection |
 | **Trust Stack Score** | 5-layer trust aggregation (Technical, Identity, Social, Academic, Consistency) — grade A-F |
+
+### Google AI readiness - max 20 pts (v2)
+
+| Check | Points | One-line check | Source |
+|-------|--------|----------------|--------|
+| `G-INDEX` | 5 | Final status 200, no noindex directives, and Googlebot is not blocked by robots.txt. | https://developers.google.com/search/docs/essentials/technical |
+| `G-SNIPPET` | 5 | No restrictive snippet directives; data-nosnippet over 50% fails and over 10% warns. | https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag |
+| `G-CANONICAL` | 3 | Exactly one absolute canonical in `<head>` matches the final URL. | https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls |
+| `G-DATES` | 2 | Visible date agrees with datePublished/dateModified and is not in the future. | https://developers.google.com/search/docs/appearance/publication-dates |
+| `G-BYLINE` | 2 | Visible author or JSON-LD author is present, ideally linked to an author page. | https://developers.google.com/search/docs/fundamentals/creating-helpful-content |
+| `G-LINKS` | 1 | Internal links use crawlable `<a href>` elements, with no `#/` routes. | https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics |
+| `G-VIEWPORT` | 1 | Meta viewport is present. | https://developers.google.com/search/docs/appearance/page-experience |
+| `G-SITEMAP` | 1 | `Sitemap:` is declared in robots.txt. | https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap |
+| `G-SD-VISIBLE` | 2 | JSON-LD `name` or `headline` appears in visible text; scored in Schema JSON-LD. | https://developers.google.com/search/docs/appearance/structured-data/sd-policies |
+| `G-GENAI-CONTROL` | 0 | Search Console generative-AI opt-out; manual check. | https://developers.google.com/search/docs/fundamentals/ai-optimization-guide |
 
 Plus a separate **Citability Score** (0-100) measuring content quality across 47 methods.
 
@@ -60,6 +75,9 @@ geo audit --sitemap https://yoursite.com/sitemap.xml --max-urls 25
 
 # Batch audit as JSON
 geo audit --sitemap https://yoursite.com/sitemap.xml --format json
+
+# Compare with the legacy v1 rubric
+geo audit --url https://yoursite.com --score-version 1
 ```
 
 ### Flags
@@ -74,6 +92,7 @@ geo audit --sitemap https://yoursite.com/sitemap.xml --format json
 | `--save-history` | No | Save the URL audit in local history (`~/.geo-optimizer/tracking.db`) |
 | `--regression` | No | Exit with code `1` if the score dropped vs the previous saved snapshot |
 | `--retention-days` | No | Retention window for local snapshots (default: `90`) |
+| `--score-version` | No | Scoring rubric version: `2` (default) or `1` (legacy) |
 
 \* Use either `--url` or `--sitemap`.
 
@@ -96,7 +115,7 @@ When using `--sitemap`, only `text` and `json` are supported.
 
 ## Output Explained
 
-Each section in the output maps to one of the 8 scoring categories:
+Each section in the output maps to one of the 9 scoring categories:
 
 ```diff
 ▸ ROBOTS.TXT
@@ -159,18 +178,19 @@ Each section in the output maps to one of the 8 scoring categories:
 
 ## GEO Score Breakdown
 
-The score is the sum of all points earned across **8 categories**, capped at 100.
+The score is the sum of all points earned across **9 categories**, capped at 100. Rubric v2 is the default; use `--score-version 1` for legacy comparisons.
 
 | Category | Max Points | How it's scored |
 |----------|-----------|-----------------|
-| Robots.txt | 18 | 5pt found + 13pt all 4 citation bots allowed (OAI-SearchBot, ClaudeBot, Claude-SearchBot, PerplexityBot). 10pt partial credit if some bots allowed |
-| llms.txt | 18 | 5pt found + 2pt H1 + 1pt blockquote + 2pt sections + 2pt links + 2pt depth (1k words) + 2pt high depth (5k) + 2pt llms-full.txt |
-| Schema JSON-LD | 16 | 2pt any valid + 3pt richness (5+ attrs) + 3pt FAQPage + 3pt Article + 3pt Organization + 2pt WebSite |
-| Meta Tags | 14 | 5pt title + 2pt description + 3pt canonical + 4pt Open Graph |
-| Content | 12 | 2pt H1 + 1pt numbers + 1pt links + 2pt word count + 2pt hierarchy + 2pt lists/tables + 2pt front-loading |
-| Brand & Entity | 10 | 3pt coherence + 3pt KG readiness + 2pt about/contact + 1pt geo identity + 1pt topic authority |
-| Signals | 6 | 3pt lang + 2pt RSS + 1pt freshness |
-| AI Discovery | 6 | 2pt ai.txt + 2pt summary.json + 1pt faq.json + 1pt service.json |
+| Google AI readiness | 20 | G-INDEX 5 + G-SNIPPET 5 + G-CANONICAL 3 + G-DATES 2 + G-BYLINE 2 + G-LINKS 1 + G-VIEWPORT 1 + G-SITEMAP 1; G-GENAI-CONTROL is manual (0pt) |
+| Robots.txt | 14 | 3pt found + 11pt all 4 citation bots allowed. 8pt partial credit if some bots allowed |
+| llms.txt | 6 | 3pt found + 1pt sections + 1pt links + 1pt llms-full.txt; ignored by Google Search |
+| Schema JSON-LD | 14 | 2pt any valid + 2pt richness + 2pt FAQPage + 2pt Article + 3pt Organization + 1pt WebSite + 2pt visible name match |
+| Meta Tags | 11 | 5pt title + 2pt description + 4pt Open Graph; canonical moved to G-CANONICAL |
+| Content | 14 | 2pt H1 + 1pt numbers + 1pt links + 1pt word count + 3pt hierarchy + 2pt lists/tables + 2pt front-loading + 2pt image alt coverage |
+| Brand & Entity | 12 | 3pt coherence + 4pt KG readiness + 3pt about/contact + 1pt geo identity + 1pt topic authority |
+| Signals | 6 | 3pt lang + 1pt RSS + 2pt freshness; valid, not future date |
+| AI Discovery | 3 | 1pt ai.txt + 1pt summary.json + 1pt markdown negotiation (`Accept: text/markdown` → `Content-Type: text/markdown`) |
 
 **Score bands:**
 
@@ -209,31 +229,31 @@ The score is the sum of all points earned across **8 categories**, capped at 100
   GEO AUDIT — https://example.com
 ╚══════════════════════════════════════════════════════════╝
 
-▸ ROBOTS.TXT ─────────────────────────── 5 / 18
+▸ ROBOTS.TXT ─────────────────────────── 5 / 14
   ✅ robots.txt found
   ❌ OAI-SearchBot   MISSING   ← critical
   ❌ ClaudeBot        MISSING   ← critical
   ❌ PerplexityBot    MISSING   ← critical
 
-▸ LLMS.TXT ───────────────────────────── 0 / 18
+▸ LLMS.TXT ───────────────────────────── 0 / 6
   ❌ Not found at https://example.com/llms.txt
 
-▸ SCHEMA JSON-LD ─────────────────────── 4 / 16
+▸ SCHEMA JSON-LD ─────────────────────── 4 / 14
   ✅ WebSite schema (3 attributes)
   ❌ FAQPage schema missing
   ❌ Article schema missing
   ❌ Organization schema missing
 
-▸ META TAGS ──────────────────────────── 10 / 14
+▸ META TAGS ──────────────────────────── 10 / 11
   ✅ Title · Meta description · Canonical
   ❌ Open Graph tags missing
 
-▸ CONTENT QUALITY ────────────────────── 5 / 12
+▸ CONTENT QUALITY ────────────────────── 5 / 14
   ✅ H1 present · 9 headings
   ❌ 1 statistic  (target: 5+)
   ❌ 0 external citations  (target: 3+)
 
-▸ BRAND & ENTITY ─────────────────────── 3 / 10
+▸ BRAND & ENTITY ─────────────────────── 3 / 12
   ✅ Brand name coherent
   ❌ No sameAs Knowledge Graph links
   ❌ No about/contact pages
@@ -242,7 +262,7 @@ The score is the sum of all points earned across **8 categories**, capped at 100
   ✅ <html lang="en">
   ❌ No RSS/Atom feed
 
-▸ AI DISCOVERY ───────────────────────── 0 / 6
+▸ AI DISCOVERY ───────────────────────── 0 / 3
   ❌ No AI discovery endpoints found
 
 ──────────────────────────────────────────────────────────
@@ -257,26 +277,26 @@ The score is the sum of all points earned across **8 categories**, capped at 100
   GEO AUDIT — https://optimized-site.com
 ╚══════════════════════════════════════════════════════════╝
 
-▸ ROBOTS.TXT ─────────────────────────── 18 / 18
+▸ ROBOTS.TXT ─────────────────────────── 14 / 14
   ✅ All 4 citation bots configured
   ✅ 27 AI bots explicitly allowed
 
-▸ LLMS.TXT ───────────────────────────── 16 / 18
+▸ LLMS.TXT ───────────────────────────── 6 / 6
   ✅ Found  (6,517 bytes · 46 links · 6 sections)
   ❌ llms-full.txt missing (−2pt)
 
-▸ SCHEMA JSON-LD ─────────────────────── 14 / 16
+▸ SCHEMA JSON-LD ─────────────────────── 14 / 14
   ✅ WebSite · Organization · Article (8 attributes)
   ❌ FAQPage schema missing (−3pt)
 
-▸ META TAGS ──────────────────────────── 14 / 14
+▸ META TAGS ──────────────────────────── 11 / 11
   ✅ Title · Meta description · Canonical · OG tags
 
-▸ CONTENT QUALITY ────────────────────── 12 / 12
+▸ CONTENT QUALITY ────────────────────── 12 / 14
   ✅ 31 headings · H2+H3 hierarchy · 15 statistics · 4 citations
   ✅ Lists/tables · Front-loading
 
-▸ BRAND & ENTITY ─────────────────────── 9 / 10
+▸ BRAND & ENTITY ─────────────────────── 9 / 12
   ✅ Brand coherent · KG links (Wikipedia, LinkedIn)
   ✅ About + Contact pages
   ❌ No geo identity signal (−1pt)
@@ -285,7 +305,7 @@ The score is the sum of all points earned across **8 categories**, capped at 100
   ✅ <html lang="en"> · RSS feed
   ❌ No dateModified freshness (−1pt)
 
-▸ AI DISCOVERY ───────────────────────── 0 / 6
+▸ AI DISCOVERY ───────────────────────── 0 / 3
   ❌ No AI discovery endpoints
 
 ──────────────────────────────────────────────────────────

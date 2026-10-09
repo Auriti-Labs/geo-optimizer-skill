@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 
 from geo_optimizer.core.audit import run_full_audit, run_full_audit_async
-from geo_optimizer.models.config import SCORING
+from geo_optimizer.models.config import CATEGORY_MAX
 from geo_optimizer.models.results import AuditDiffResult, AuditResult, CategoryDelta
 
 _CATEGORY_LABELS = {
@@ -17,17 +17,7 @@ _CATEGORY_LABELS = {
     "signals": "Signals",
     "ai_discovery": "AI Discovery",
     "brand_entity": "Brand & Entity",
-}
-
-_CATEGORY_MAX_SCORES = {
-    "robots": sum(value for key, value in SCORING.items() if key.startswith("robots_")),
-    "llms": sum(value for key, value in SCORING.items() if key.startswith("llms_")),
-    "schema": sum(value for key, value in SCORING.items() if key.startswith("schema_")),
-    "meta": sum(value for key, value in SCORING.items() if key.startswith("meta_")),
-    "content": sum(value for key, value in SCORING.items() if key.startswith("content_")),
-    "signals": sum(value for key, value in SCORING.items() if key.startswith("signals_")),
-    "ai_discovery": sum(value for key, value in SCORING.items() if key.startswith("ai_discovery_")),
-    "brand_entity": sum(value for key, value in SCORING.items() if key.startswith("brand_")),
+    "google_ai": "Google AI Search",
 }
 
 
@@ -74,8 +64,10 @@ async def run_diff_audit_async(
 def build_audit_diff(before_result: AuditResult, after_result: AuditResult) -> AuditDiffResult:
     """Costruisce il delta A/B a partire da due `AuditResult`."""
     category_deltas = _compute_category_deltas(before_result, after_result)
-    improved = [delta for delta in category_deltas if delta.delta > 0]
-    regressed = [delta for delta in category_deltas if delta.delta < 0]
+    # Rubric diverse: i delta per categoria non sono confrontabili, niente migliorate/peggiorate fittizie
+    comparable = before_result.score_version == after_result.score_version
+    improved = [delta for delta in category_deltas if comparable and delta.delta > 0]
+    regressed = [delta for delta in category_deltas if comparable and delta.delta < 0]
     unchanged = [delta for delta in category_deltas if delta.delta == 0]
 
     improved.sort(key=lambda item: item.delta, reverse=True)
@@ -97,6 +89,7 @@ def build_audit_diff(before_result: AuditResult, after_result: AuditResult) -> A
         before_recommendations_count=len(before_result.recommendations),
         after_recommendations_count=len(after_result.recommendations),
         recommendations_delta=len(after_result.recommendations) - len(before_result.recommendations),
+        version_mismatch=before_result.score_version != after_result.score_version,
         category_deltas=sorted(category_deltas, key=lambda item: abs(item.delta), reverse=True),
         improved_categories=improved,
         regressed_categories=regressed,
@@ -106,7 +99,12 @@ def build_audit_diff(before_result: AuditResult, after_result: AuditResult) -> A
 
 def _compute_category_deltas(before_result: AuditResult, after_result: AuditResult) -> list[CategoryDelta]:
     """Calcola il delta per ogni categoria GEO presente nel breakdown."""
-    categories = sorted(set(before_result.score_breakdown) | set(after_result.score_breakdown) | set(_CATEGORY_LABELS))
+    before_categories = set(before_result.score_max or CATEGORY_MAX)
+    after_categories = set(after_result.score_max or CATEGORY_MAX)
+    categories = sorted(
+        set(before_result.score_breakdown) | set(after_result.score_breakdown) | before_categories | after_categories
+    )
+    after_maxima = after_result.score_max or CATEGORY_MAX
     deltas: list[CategoryDelta] = []
     for category in categories:
         before_score = before_result.score_breakdown.get(category, 0)
@@ -118,7 +116,7 @@ def _compute_category_deltas(before_result: AuditResult, after_result: AuditResu
                 before_score=before_score,
                 after_score=after_score,
                 delta=after_score - before_score,
-                max_score=_CATEGORY_MAX_SCORES.get(category, 0),
+                max_score=after_maxima.get(category, 0),
             )
         )
     return deltas

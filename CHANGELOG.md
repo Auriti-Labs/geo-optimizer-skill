@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ---
 
+## [Unreleased]
+
+### Changed
+- Rubric v2 is now the default; all category scores change. Use `--score-version 1` for legacy comparisons.
+
+### Added
+- Added the `google_ai` category and Google readiness checks, markdown negotiation, image alt coverage, visible schema name matching, SARIF rules with Google `helpUri`, `score_version` and `score_max` in JSON, MCP `score_version`, and the offline calibration test.
+
+### Fixed
+- Google-Extended is no longer scored in the Google AI platform profile; Googlebot is.
+- Fixed the unreachable schema richness branch.
+- Brand consistency now counts each name source once and keeps hyphenated names whole.
+
+---
+
 ## [4.18.3] — 2026-09-22
 
 A CDN/WAF discovery patch. When a target's `/llms.txt` exists but its CDN/WAF

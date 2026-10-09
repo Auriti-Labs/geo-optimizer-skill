@@ -300,3 +300,17 @@ def test_fixture_file_exists():
     assert _FIXTURE_PATH.exists(), f"Fixture not found: {_FIXTURE_PATH}"
     fixture = json.loads(_FIXTURE_PATH.read_text())
     assert fixture["_contract_version"] == 1
+
+
+def test_web_api_score_breakdown_follows_result_rubric_version():
+    """Un risultato v2 espone google_ai nel breakdown e i massimi v2 in score_max."""
+    from geo_optimizer.models.config import CATEGORY_MAX_V2
+
+    result = _make_minimal_audit_result()
+    result.score_version = 2
+    result.score_max = dict(CATEGORY_MAX_V2)
+    result.score_breakdown = {"google_ai": 15, "robots": 10}
+    data = _call_audit_result_to_dict(result)
+    assert data["score_breakdown"]["google_ai"] == 15
+    assert set(data["score_breakdown"]) == set(CATEGORY_MAX_V2)
+    assert data["score_max"] == CATEGORY_MAX_V2

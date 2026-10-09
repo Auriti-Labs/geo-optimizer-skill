@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from geo_optimizer.core.audit import run_full_audit
 from geo_optimizer.core.diffing import build_audit_diff
-from geo_optimizer.models.config import SCORING
+from geo_optimizer.models.config import SCORING_BY_VERSION
 from geo_optimizer.models.results import AuditResult, GapAction, GapAnalysisResult
 
 
@@ -48,6 +48,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
     """Genera azioni concrete quando il sito debole manca segnali presenti nel forte."""
     actions: list[GapAction] = []
     weaker_url = weaker.url.rstrip("/")
+    scoring = SCORING_BY_VERSION[weaker.score_version]
 
     def add_action(category: str, title: str, rationale: str, impact_points: int, command: str = "") -> None:
         if impact_points <= 0:
@@ -69,7 +70,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "robots",
             "Create robots.txt for AI crawlers",
             "The stronger site exposes a robots.txt file while the weaker site has none.",
-            SCORING["robots_found"],
+            scoring["robots_found"],
             f"geo fix --url {weaker_url} --only robots",
         )
     if stronger.robots.citation_bots_ok and not weaker.robots.citation_bots_ok:
@@ -77,7 +78,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "robots",
             "Allow critical citation bots",
             "Citation bots are correctly configured on the stronger site and missing or blocked on the weaker site.",
-            SCORING["robots_citation_ok"],
+            scoring["robots_citation_ok"],
             f"geo fix --url {weaker_url} --only robots",
         )
 
@@ -86,7 +87,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "llms",
             "Publish llms.txt",
             "The stronger site exposes llms.txt and the weaker site does not.",
-            SCORING["llms_found"],
+            scoring["llms_found"],
             f"geo llms --base-url {weaker_url}",
         )
     if stronger.llms.has_sections and not weaker.llms.has_sections:
@@ -94,7 +95,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "llms",
             "Add H2 sections to llms.txt",
             "Sectioned llms.txt helps AI systems navigate the site structure more clearly.",
-            SCORING["llms_sections"],
+            scoring["llms_sections"],
             f"geo fix --url {weaker_url} --only llms",
         )
     if stronger.llms.has_links and not weaker.llms.has_links:
@@ -102,7 +103,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "llms",
             "Add key links to llms.txt",
             "The stronger site exposes navigable markdown links in llms.txt while the weaker site does not.",
-            SCORING["llms_links"],
+            scoring["llms_links"],
             f"geo fix --url {weaker_url} --only llms",
         )
 
@@ -111,7 +112,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "schema",
             "Add FAQPage schema",
             "The stronger site exposes FAQ structured data that the weaker site is missing.",
-            SCORING["schema_faq"],
+            scoring["schema_faq"],
             f"geo schema --type faq --url {weaker_url}",
         )
     if stronger.schema.has_organization and not weaker.schema.has_organization:
@@ -119,7 +120,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "schema",
             "Add Organization schema",
             "The stronger site has organization-level entity markup and the weaker site does not.",
-            SCORING["schema_organization"],
+            scoring["schema_organization"],
             f"geo schema --type organization --url {weaker_url}",
         )
     if stronger.schema.has_article and not weaker.schema.has_article:
@@ -127,7 +128,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "schema",
             "Add Article schema",
             "The stronger site marks content as Article/BlogPosting and the weaker site does not.",
-            SCORING["schema_article"],
+            scoring["schema_article"],
             f"geo schema --type article --url {weaker_url}",
         )
     if stronger.schema.has_website and not weaker.schema.has_website:
@@ -135,7 +136,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "schema",
             "Add WebSite schema",
             "The stronger site exposes baseline WebSite markup and the weaker site is missing it.",
-            SCORING["schema_website"],
+            scoring["schema_website"],
             f"geo schema --type website --url {weaker_url}",
         )
 
@@ -144,7 +145,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "meta",
             "Add a title tag",
             "The stronger site has a title tag and the weaker site does not.",
-            SCORING["meta_title"],
+            scoring["meta_title"],
             f"geo fix --url {weaker_url} --only meta",
         )
     if (
@@ -156,7 +157,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "meta",
             "Complete Open Graph metadata",
             "The stronger site exposes more complete OG metadata than the weaker site.",
-            SCORING["meta_og"],
+            scoring["meta_og"],
             f"geo fix --url {weaker_url} --only meta",
         )
     if stronger.meta.has_canonical and not weaker.meta.has_canonical:
@@ -164,7 +165,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "meta",
             "Add canonical URL",
             "Canonical alignment is present on the stronger site and missing on the weaker site.",
-            SCORING["meta_canonical"],
+            scoring["meta_canonical"],
             f"geo fix --url {weaker_url} --only meta",
         )
 
@@ -173,7 +174,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "ai_discovery",
             "Create /.well-known/ai.txt",
             "The stronger site exposes AI discovery entry points that the weaker site lacks.",
-            SCORING["ai_discovery_well_known"],
+            scoring["ai_discovery_well_known"],
             f"geo fix --url {weaker_url} --only ai_discovery",
         )
     if stronger.ai_discovery.has_summary and not weaker.ai_discovery.has_summary:
@@ -181,7 +182,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "ai_discovery",
             "Publish /ai/summary.json",
             "The stronger site exposes machine-readable summary metadata that the weaker site is missing.",
-            SCORING["ai_discovery_summary"],
+            scoring["ai_discovery_summary"],
             f"geo fix --url {weaker_url} --only ai_discovery",
         )
     if stronger.ai_discovery.has_faq and not weaker.ai_discovery.has_faq:
@@ -189,7 +190,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "ai_discovery",
             "Publish /ai/faq.json",
             "The stronger site exposes structured AI FAQs and the weaker site does not.",
-            SCORING["ai_discovery_faq"],
+            scoring["ai_discovery_faq"],
             f"geo fix --url {weaker_url} --only ai_discovery",
         )
 
@@ -198,14 +199,14 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "signals",
             'Add `<html lang="...">`',
             "The stronger site has an explicit language signal and the weaker site does not.",
-            SCORING["signals_lang"],
+            scoring["signals_lang"],
         )
     if stronger.signals.has_rss and not weaker.signals.has_rss:
         add_action(
             "signals",
             "Add RSS/Atom feed",
             "The stronger site exposes an RSS/Atom feed, improving machine-readable discovery.",
-            SCORING["signals_rss"],
+            scoring["signals_rss"],
         )
 
     if stronger.content.has_front_loading and not weaker.content.has_front_loading:
@@ -213,21 +214,21 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "content",
             "Front-load key answers earlier",
             "The stronger site surfaces key information earlier in the content than the weaker site.",
-            SCORING["content_front_loading"],
+            scoring["content_front_loading"],
         )
     if stronger.content.has_heading_hierarchy and not weaker.content.has_heading_hierarchy:
         add_action(
             "content",
             "Improve H2/H3 hierarchy",
             "The stronger site has clearer section hierarchy for extraction and chunking.",
-            SCORING["content_heading_hierarchy"],
+            scoring["content_heading_hierarchy"],
         )
     if stronger.content.has_links and not weaker.content.has_links:
         add_action(
             "content",
             "Add authoritative outbound citations",
             "The stronger site links to external sources while the weaker site does not.",
-            SCORING["content_links"],
+            scoring["content_links"],
         )
 
     if stronger.brand_entity.kg_pillar_count > weaker.brand_entity.kg_pillar_count:
@@ -235,7 +236,7 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             "brand_entity",
             "Expand sameAs Knowledge Graph links",
             "The stronger site connects its entity to more authoritative profiles.",
-            SCORING["brand_kg_readiness"],
+            scoring["brand_kg_readiness"],
             f"geo schema --type organization --url {weaker_url}",
         )
     if stronger.brand_entity.has_about_link and not weaker.brand_entity.has_about_link:

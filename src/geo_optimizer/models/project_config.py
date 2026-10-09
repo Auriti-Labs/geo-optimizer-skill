@@ -34,7 +34,8 @@ class AuditConfig:
     """Default configuration for the audit command."""
 
     url: str | None = None
-    format: str = "text"
+    # None = non impostato: `geo audit` sceglie rich su TTY, text altrimenti
+    format: str | None = None
     output: str | None = None
     min_score: int = 0
     cache: bool = False
@@ -133,7 +134,7 @@ def _parse_config(raw: dict) -> ProjectConfig:
         # Fix H-11: use _safe_int to prevent crash on non-numeric YAML values
         config.audit = AuditConfig(
             url=audit_raw.get("url"),
-            format=str(audit_raw.get("format", "text")),
+            format=str(audit_raw["format"]) if audit_raw.get("format") else None,
             output=audit_raw.get("output"),
             min_score=_safe_int(audit_raw.get("min_score", 0)),
             cache=bool(audit_raw.get("cache", False)),

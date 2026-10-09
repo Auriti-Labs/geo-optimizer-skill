@@ -7,7 +7,9 @@ Runs the full GEO audit on a website and displays results.
 from __future__ import annotations
 
 import logging
+import os
 import sys
+import time
 from pathlib import Path
 
 import click
@@ -23,10 +25,55 @@ from geo_optimizer.core.batch_audit import run_batch_audit
 from geo_optimizer.core.history import HistoryStore, summarize_history
 from geo_optimizer.models.config import (
     DEFAULT_HISTORY_RETENTION_DAYS,
+    DEFAULT_SCORE_VERSION,
     resolve_user_agent_override,
     set_user_agent_override,
 )
 from geo_optimizer.utils.validators import normalize_url_scheme, validate_public_url
+
+
+def _default_format(sitemap: str | None, output_file: str | None) -> str:
+    """Dashboard rich in un terminale interattivo, testo per pipe, CI, file e batch."""
+    if sitemap or output_file or os.getenv("NO_COLOR"):
+        return "text"
+    return "rich" if sys.stdout.isatty() else "text"
+
+
+def _run_with_live_progress(run):
+    """Esegue l'audit mostrando su stderr le fasi reali: spinner sulla corrente, ✓ sulle concluse."""
+    from rich.console import Console
+
+    console = Console(stderr=True)
+    current = {"step": None, "t0": 0.0}
+
+    def _finish_current():
+        if current["step"]:
+            elapsed = time.perf_counter() - current["t0"]
+            console.print(f"  [green]✓[/] {current['step']} [dim]{elapsed:.1f}s[/]")
+
+    with console.status("", spinner="dots") as status:
+
+        def on_step(step: str) -> None:
+            _finish_current()
+            current.update(step=step, t0=time.perf_counter())
+            status.update(f"[bold]{step}…[/]")
+
+        result = run(on_step)
+        if result.error:
+            console.print(f"  [red]✗[/] {current['step']}")
+        else:
+            _finish_current()
+    return result
+
+
+def _history_footer(history_result, history_entry) -> str:
+    """Righe dello storico locale, condivise da output text e rich."""
+    lines = f"\n  Snapshots stored: {history_result.total_snapshots}"
+    if history_entry and history_entry.delta is None:
+        lines += "\n  Baseline snapshot saved"
+    elif history_entry:
+        lines += f"\n  Delta vs previous snapshot: {history_entry.delta:+d}"
+    return lines
 
 
 @click.command()
@@ -39,7 +86,8 @@ from geo_optimizer.utils.validators import normalize_url_scheme, validate_public
     "output_format",
     type=click.Choice(["text", "json", "rich", "html", "pdf", "github", "sarif", "junit"]),
     default=None,
-    help="Output format: text (default), json, rich, html, pdf, github, sarif, or junit",
+    help="Output format: rich (default in a terminal), text (default for pipes, files and CI), "
+    "json, html, pdf, github, sarif, or junit",
 )
 @click.option("--output", "output_file", default=None, help="Output file path (optional)")
 @click.option("--verbose", is_flag=True, help="Show detailed check output")
@@ -49,6 +97,13 @@ from geo_optimizer.utils.validators import normalize_url_scheme, validate_public
 @click.option("--no-plugins", is_flag=True, help="Disable loading of third-party check plugins")
 @click.option("--max-urls", default=50, type=int, show_default=True, help="Maximum number of sitemap URLs to audit")
 @click.option("--concurrency", default=5, type=int, show_default=True, help="Concurrent page audits in sitemap mode")
+@click.option(
+    "--score-version",
+    type=click.Choice(["1", "2"]),
+    default=str(DEFAULT_SCORE_VERSION),
+    show_default=True,
+    help="Scoring rubric: 2 (Google AI readiness, default) or 1 (legacy, to compare with old history)",
+)
 @click.option("--save-history", is_flag=True, help="Save the audit result in local GEO history")
 @click.option("--regression", is_flag=True, help="Exit with code 1 if score regressed vs the previous saved snapshot")
 @click.option(
@@ -83,6 +138,7 @@ def audit(
     no_plugins,
     max_urls,
     concurrency,
+    score_version,
     save_history,
     regression,
     retention_days,
@@ -92,6 +148,7 @@ def audit(
 ):
     """Audit a website's GEO (Generative Engine Optimization) readiness."""
     set_user_agent_override(resolve_user_agent_override(user_agent))
+    score_version = int(score_version)
 
     # Load project configuration (if available)
     from geo_optimizer.models.project_config import load_config
@@ -103,22 +160,21 @@ def audit(
     # Apply defaults from config (CLI takes precedence)
     if url is None:
         url = project_config.audit.url
-    if output_format is None:
-        output_format = project_config.audit.format or "text"
+    # output_file prima del formato: un file da config deve restare text, non ANSI
     if output_file is None:
         output_file = project_config.audit.output
+    if output_format is None:
+        output_format = project_config.audit.format or _default_format(sitemap, output_file)
     if not cache:
         cache = project_config.audit.cache
 
     # Fix #121/#144: verbose from config/CLI sets the logging level
     if not verbose:
         verbose = project_config.audit.verbose
-    if verbose:
-        # --verbose: show DEBUG logs for detailed diagnostics
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        # Without --verbose: suppress logs below WARNING (fix #144)
-        logging.basicConfig(level=logging.WARNING)
+    # Root sempre a WARNING (#144): con --verbose httpx/httpcore/urllib3 inondavano il terminale.
+    # --verbose alza a DEBUG solo i log del progetto; NOTSET lo riporta al root negli altri casi.
+    logging.basicConfig(level=logging.WARNING)
+    logging.getLogger("geo_optimizer").setLevel(logging.DEBUG if verbose else logging.NOTSET)
 
     # Fix #145: --threshold takes precedence over min_score from config (YAML as fallback)
     if threshold is not None:
@@ -173,20 +229,12 @@ def audit(
                 project_config=project_config,
                 max_urls=max_urls,
                 concurrency=concurrency,
+                score_version=score_version,
             )
             if output_format != "json":
                 click.echo("✅ Batch analysis complete.\n", err=True)
         else:
             import asyncio
-
-            _use_spinner = output_format == "rich"
-            if _use_spinner:
-                try:
-                    from rich.console import Console as _RichConsole
-
-                    _use_spinner = True
-                except ImportError:
-                    _use_spinner = False
 
             _use_async = False
             if not cache:
@@ -199,24 +247,22 @@ def audit(
                 except ImportError:
                     pass
 
-            if _use_spinner:
-                _stderr = _RichConsole(stderr=True)
-                with _stderr.status("[bold bright_blue]  Analyzing...[/]", spinner="dots"):
-                    if _use_async:
-                        result = asyncio.run(run_full_audit_async(url, project_config=project_config))
-                    else:
-                        result = run_full_audit(url, use_cache=cache, project_config=project_config)
-            else:
-                if output_format != "json":
-                    click.echo("⏳ Starting GEO analysis...", err=True)
-                    click.echo("⏳ Checking robots.txt and AI bot access...", err=True)
-                    click.echo("⏳ Analyzing llms.txt...", err=True)
+            def _run(on_step=None):
+                audit_kwargs = {"project_config": project_config, "on_step": on_step}
+                if score_version != DEFAULT_SCORE_VERSION:
+                    audit_kwargs["score_version"] = score_version
                 if _use_async:
-                    result = asyncio.run(run_full_audit_async(url, project_config=project_config))
-                else:
-                    result = run_full_audit(url, use_cache=cache, project_config=project_config)
-                if output_format != "json":
-                    click.echo("⏳ Analyzing JSON-LD schema, meta tags and content...", err=True)
+                    return asyncio.run(run_full_audit_async(url, **audit_kwargs))
+                return run_full_audit(url, use_cache=cache, **audit_kwargs)
+
+            if output_format == "rich" and sys.stderr.isatty():
+                result = _run_with_live_progress(_run)
+            elif output_format == "json":
+                result = _run()
+            else:
+                # Solo le fasi reali notificate dal core, niente righe pre-stampate
+                result = _run(on_step=lambda step: click.echo(f"⏳ {step}...", err=True))
+                if not result.error:
                     click.echo("✅ Analysis complete.\n", err=True)
     except SystemExit:
         raise
@@ -263,9 +309,11 @@ def audit(
         from geo_optimizer.cli.rich_formatter import format_audit_rich, is_rich_available
 
         if is_rich_available():
-            output = format_audit_rich(result)
+            output = format_audit_rich(result, verbose=verbose)
+            if history_result:
+                output += " History" + _history_footer(history_result, history_entry) + "\n"
         else:
-            click.echo("⚠️  rich not installed. Use: pip install geo-optimizer-skill[rich]", err=True)
+            click.echo("⚠️  rich not installed. Use: pip install --upgrade geo-optimizer-skill", err=True)
             output = format_audit_text(result)
     elif output_format == "html":
         from geo_optimizer.cli.html_formatter import format_audit_html
@@ -315,11 +363,7 @@ def audit(
                 "  HISTORY\n"
                 "============================================================\n"
             )
-            output += f"\n  Snapshots stored: {history_result.total_snapshots}"
-            if history_entry and history_entry.delta is None:
-                output += "\n  Baseline snapshot saved"
-            elif history_entry:
-                output += f"\n  Delta vs previous snapshot: {history_entry.delta:+d}"
+            output += _history_footer(history_result, history_entry)
 
     if output_file:
         with open(output_file, "w", encoding="utf-8") as f:

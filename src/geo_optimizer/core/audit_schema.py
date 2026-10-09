@@ -4,6 +4,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from geo_optimizer.models.config import (
+    AI_READINESS_SCHEMA_NAME_MIN_LEN,
     ARTICLE_TYPES,
     ORGANIZATION_TYPES,
     SCHEMA_ORG_REQUIRED,
@@ -110,8 +111,23 @@ def audit_schema(soup: BeautifulSoup | None, url: str) -> SchemaResult:
             result.schema_richness_score = 2
         elif avg >= SCHEMA_RICHNESS_LOW:
             result.schema_richness_score = 1
+
         else:
             result.schema_richness_score = 0
+
+    visible_root = soup.body or soup
+    visible_text = " ".join(
+        str(text)
+        for text in visible_root.find_all(string=True)
+        if text.parent and text.parent.name not in {"script", "style", "noscript", "template", "title"}
+    ).casefold()
+    result.visible_match = any(
+        isinstance(schema.get(field), str)
+        and len(schema[field].strip()) >= AI_READINESS_SCHEMA_NAME_MIN_LEN
+        and schema[field].strip().casefold() in visible_text
+        for schema in result.raw_schemas
+        for field in ("name", "headline")
+    )
 
     # Schema completeness (gap #3): check required fields per SCHEMA_ORG_REQUIRED
     for schema_obj in result.raw_schemas:

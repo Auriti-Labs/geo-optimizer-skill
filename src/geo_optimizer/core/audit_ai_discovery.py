@@ -19,6 +19,29 @@ from geo_optimizer.models.config import (
 )
 from geo_optimizer.models.results import AiDiscoveryResult
 from geo_optimizer.utils.http import fetch_url
+from geo_optimizer.utils.http_async import fetch_url_async
+
+
+def _markdown_content_type(response) -> bool:
+    """Verifica che la risposta dichiari un media type Markdown."""
+    content_type = next((value for key, value in dict(response.headers).items() if key.lower() == "content-type"), "")
+    return response.status_code == 200 and content_type.lower().startswith("text/markdown")
+
+
+def check_markdown_negotiation(url: str) -> bool:
+    """Verifica la negoziazione Markdown con il fetch HTTP sicuro."""
+    response, error = fetch_url(url, headers={"Accept": "text/markdown"})
+    if error or response is None:
+        return False
+    return _markdown_content_type(response)
+
+
+async def check_markdown_negotiation_async(client, url: str) -> bool:
+    """Verifica asincrona della negoziazione Markdown con il fetch HTTP sicuro."""
+    response, error = await fetch_url_async(url, client=client, headers={"Accept": "text/markdown"})
+    if error or response is None:
+        return False
+    return _markdown_content_type(response)
 
 
 def audit_ai_discovery(base_url: str) -> AiDiscoveryResult:
@@ -37,6 +60,8 @@ def audit_ai_discovery(base_url: str) -> AiDiscoveryResult:
         AiDiscoveryResult with check results.
     """
     result = AiDiscoveryResult()
+
+    result.has_markdown = check_markdown_negotiation(base_url)
 
     # Check /.well-known/ai.txt
     ai_txt_url = urljoin(base_url, "/.well-known/ai.txt")

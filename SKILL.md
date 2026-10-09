@@ -6,7 +6,7 @@
 
 ### Step 1 — Audit the site
 
-Run `geo audit` first. It scores the site 0–100 across 8 categories and generates a prioritized action list.
+Run `geo audit` first. It scores the site 0–100 across 9 categories and generates a prioritized action list.
 
 ```bash
 geo audit --url https://yoursite.com
@@ -80,18 +80,36 @@ Creates robots.txt entries, llms.txt, JSON-LD schema, meta tags, and AI discover
 
 ## Scoring
 
-8 categories, 100 points total:
+9 categories, 100 points total in rubric v2:
 
-| Category | What it measures |
-|----------|-----------------|
-| `robots` | AI bot access via robots.txt |
-| `llms` | llms.txt presence, structure, depth |
-| `schema` | JSON-LD types, richness, sameAs |
-| `meta` | title, description, canonical, Open Graph |
-| `content` | H1, word count, numbers, links, structure |
-| `signals` | lang attribute, RSS feed, freshness |
-| `ai_discovery` | .well-known/ai.txt, /ai/summary.json, /ai/faq.json |
-| `brand_entity` | Name consistency, Knowledge Graph, about/contact |
+| Category | What it measures | Points (v2) |
+|----------|------------------|-------------|
+| `google_ai` | Google AI readiness checks | 20 |
+| `robots` | Robots.txt availability and citation-bot access | 14 |
+| `schema` | JSON-LD validity, richness, types, and visible-name match | 14 |
+| `content` | Headings, evidence, links, structure, and image alt coverage | 14 |
+| `brand_entity` | Brand coherence, Knowledge Graph, about/contact, identity, authority | 12 |
+| `meta` | Title, description, and Open Graph | 11 |
+| `llms` | llms.txt presence, sections, links, and llms-full.txt | 6 |
+| `signals` | Language, RSS, and freshness | 6 |
+| `ai_discovery` | ai.txt, summary.json, and markdown negotiation | 3 |
+
+### Google AI readiness checks
+
+Each check includes its Google source URL in audit JSON and recommendations:
+
+- `G-INDEX` (5): final status 200; no meta robots, googlebot, or X-Robots-Tag noindex; Googlebot is not blocked by robots.txt. Source: https://developers.google.com/search/docs/essentials/technical
+- `G-SNIPPET` (5): no nosnippet, max-snippet:0, or max-snippet below 50; max-image-preview:none warns; data-nosnippet over 50% fails and over 10% warns. Source: https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag
+- `G-CANONICAL` (3): exactly one absolute canonical in `<head>`, matching the final URL. Source: https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls
+- `G-DATES` (2): visible date agrees with datePublished/dateModified and no date is in the future. Source: https://developers.google.com/search/docs/appearance/publication-dates
+- `G-BYLINE` (2): visible author or JSON-LD author, ideally linked to an author page. Source: https://developers.google.com/search/docs/fundamentals/creating-helpful-content
+- `G-LINKS` (1): internal links use crawlable `<a href>` elements and no `#/` routes. Source: https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics
+- `G-VIEWPORT` (1): a meta viewport is present. Source: https://developers.google.com/search/docs/appearance/page-experience
+- `G-SITEMAP` (1): a Sitemap directive is declared in robots.txt. Source: https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
+- `G-SD-VISIBLE` (2 in `schema`): JSON-LD `name` or `headline` appears in visible text. Source: https://developers.google.com/search/docs/appearance/structured-data/sd-policies
+- `G-GENAI-CONTROL` (0, manual): check Search Console generative-AI opt-out. Source: https://developers.google.com/search/docs/fundamentals/ai-optimization-guide
+
+`llms.txt` is useful to other AI agents but is ignored by Google Search. The score is versioned: JSON exposes `score_version` and per-category `score_max`; use `geo audit --score-version 1` for legacy v1 comparisons. History deltas and regressions compare snapshots only when their `score_version` matches.
 
 ## CLI Commands
 

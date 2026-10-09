@@ -48,6 +48,7 @@ async def fetch_url_async(
     client=None,
     timeout: int = 10,
     max_size: int = MAX_RESPONSE_SIZE,
+    headers: dict[str, str] | None = None,
 ) -> tuple[object | None, str | None]:
     """Async fetch of a URL with httpx.
 
@@ -101,7 +102,7 @@ async def fetch_url_async(
         # Manual redirect with anti-SSRF revalidation on each hop
         current_url = url
         for _ in range(_MAX_REDIRECTS):
-            r = await client.get(current_url)
+            r = await client.get(current_url, headers=headers)
 
             # Non-redirect response: verify size and return
             if r.status_code not in (301, 302, 303, 307, 308):

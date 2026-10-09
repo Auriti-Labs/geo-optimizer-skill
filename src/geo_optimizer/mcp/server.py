@@ -65,15 +65,18 @@ def _normalize_url(url: str) -> str:
 
 
 @mcp.tool()
-def geo_audit(url: str) -> str:
+def geo_audit(url: str, score_version: int = 2) -> str:
     """Run a complete GEO audit on a website.
 
-    Analyzes 5 areas: robots.txt (AI bot access), llms.txt (AI index),
-    JSON-LD schema, SEO meta tags and content quality.
+    Uses rubric v2 by default (Google AI readiness) and supports rubric v1
+    for legacy comparisons. Rubric v2 analyzes Google AI Search readiness,
+    robots.txt, JSON-LD schema, content, brand and entity signals, SEO meta
+    tags, llms.txt, technical signals, and AI discovery endpoints.
     Returns score 0-100 with details and recommendations.
 
     Args:
         url: URL of the site to audit (e.g. https://example.com)
+        score_version: Scoring rubric version: 2 (default) or 1 (legacy).
     """
     from geo_optimizer.utils.validators import validate_public_url
 
@@ -83,11 +86,15 @@ def geo_audit(url: str) -> str:
     safe, reason = validate_public_url(url)
     if not safe:
         return json.dumps({"error": f"Unsafe URL: {reason}", "url": url})
+    from geo_optimizer.models.config import CATEGORY_MAX_BY_VERSION
+
+    if isinstance(score_version, bool) or score_version not in CATEGORY_MAX_BY_VERSION:
+        return json.dumps({"error": "score_version must be 1 or 2", "url": url})
 
     try:
         from geo_optimizer.core.audit import run_full_audit
 
-        result = run_full_audit(url)
+        result = run_full_audit(url, score_version=score_version)
         return _to_json(result)
     except Exception as e:
         # Fix #314: do not expose str(e) to the client — log internally

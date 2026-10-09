@@ -73,6 +73,14 @@ MAX_TOTAL_URLS: int = 10_000
 # Performance budget: warn if a single-page audit exceeds this threshold (#290)
 AUDIT_TIMEOUT_SECONDS: int = 10
 
+# Fasi reali di run_full_audit / run_full_audit_async, notificate via on_step (progresso CLI)
+AUDIT_STEPS: tuple[str, ...] = (
+    "Fetching page, robots.txt, llms.txt and AI files",
+    "Analyzing schema, meta tags and content",
+    "Checking CDN access for AI bots",
+    "Running trust, brand and extra checks",
+)
+
 GEO_OPTIMIZER_HOME = Path.home() / ".geo-optimizer"
 TRACKING_DB_PATH = GEO_OPTIMIZER_HOME / "tracking.db"
 SNAPSHOTS_DB_PATH = GEO_OPTIMIZER_HOME / "snapshots.db"
@@ -617,6 +625,101 @@ CATEGORY_MAX = {
     "ai_discovery": 6,
 }
 
+# Rubric v2 (v4.19) — riallineata alla documentazione Google AI. v1 resta sopra, intatta,
+# per lo storico e per --score-version 1. Stesse chiavi di v1 dove il segnale è lo stesso.
+SCORING_V2 = {
+    "robots_found": 3,
+    "robots_citation_ok": 11,
+    # llms.txt: ignorato da Google Search, utile ad altri agenti → 6 punti
+    "llms_found": 3,
+    "llms_h1": 0,
+    "llms_blockquote": 0,
+    "llms_sections": 1,
+    "llms_links": 1,
+    "llms_depth": 0,
+    "llms_depth_high": 0,
+    "llms_full": 1,
+    "schema_any_valid": 2,
+    "schema_richness": 2,
+    "schema_faq": 2,
+    "schema_article": 2,
+    "schema_organization": 3,
+    "schema_website": 1,
+    "schema_sameas": 0,
+    "schema_visible_match": 2,
+    "meta_title": 5,
+    "meta_description": 2,
+    "meta_canonical": 0,
+    "meta_og": 4,
+    "content_h1": 2,
+    "content_numbers": 1,
+    "content_links": 1,
+    "content_word_count": 1,
+    "content_heading_hierarchy": 3,
+    "content_lists_or_tables": 2,
+    "content_front_loading": 2,
+    "content_images_alt": 2,
+    "signals_lang": 3,
+    "signals_rss": 1,
+    "signals_freshness": 2,
+    "ai_discovery_well_known": 1,
+    "ai_discovery_summary": 1,
+    "ai_discovery_faq": 0,
+    "ai_discovery_service": 0,
+    "ai_discovery_markdown": 1,
+    "brand_entity_coherence": 3,
+    "brand_kg_readiness": 4,
+    "brand_about_contact": 3,
+    "brand_geo_identity": 1,
+    "brand_topic_authority": 1,
+}
+ROBOTS_PARTIAL_SCORE_V2 = 8
+CATEGORY_MAX_V2 = {
+    "google_ai": 20,
+    "robots": 14,
+    "schema": 14,
+    "content": 14,
+    "brand_entity": 12,
+    "meta": 11,
+    "llms": 6,
+    "signals": 6,
+    "ai_discovery": 3,
+}
+SCORING_BY_VERSION = {1: SCORING, 2: SCORING_V2}
+CATEGORY_MAX_BY_VERSION = {1: CATEGORY_MAX, 2: CATEGORY_MAX_V2}
+ROBOTS_PARTIAL_BY_VERSION = {1: ROBOTS_PARTIAL_SCORE, 2: ROBOTS_PARTIAL_SCORE_V2}
+DEFAULT_SCORE_VERSION = 2
+
+# ─── Google AI readiness (rubric v2) ─────────────────────────────────────────
+# Fonti ufficiali per ogni check G-*: mostrate in report, SARIF helpUri e skill.
+GOOGLE_DOC_URLS = {
+    "G-INDEX": "https://developers.google.com/search/docs/essentials/technical",
+    "G-SNIPPET": "https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag",
+    "G-CANONICAL": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls",
+    "G-DATES": "https://developers.google.com/search/docs/appearance/publication-dates",
+    "G-BYLINE": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+    "G-LINKS": "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics",
+    "G-VIEWPORT": "https://developers.google.com/search/docs/appearance/page-experience",
+    "G-SITEMAP": "https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap",
+    "G-SD-VISIBLE": "https://developers.google.com/search/docs/appearance/structured-data/sd-policies",
+    "G-GENAI-CONTROL": "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide",
+}
+# Punti per check nella categoria google_ai (somma 20). G-SD-VISIBLE pesa in schema.
+GOOGLE_AI_POINTS = {
+    "G-INDEX": 5,
+    "G-SNIPPET": 5,
+    "G-CANONICAL": 3,
+    "G-DATES": 2,
+    "G-BYLINE": 2,
+    "G-LINKS": 1,
+    "G-VIEWPORT": 1,
+    "G-SITEMAP": 1,
+    "G-GENAI-CONTROL": 0,
+}
+GOOGLE_AI_SNIPPET_MIN = 50  # max-snippet sotto questa soglia = estratto inutilizzabile
+DATA_NOSNIPPET_FAIL_RATIO = 0.5
+DATA_NOSNIPPET_WARN_RATIO = 0.1
+
 # Schema richness thresholds — graduated scoring (#394)
 SCHEMA_RICHNESS_HIGH = 5  # avg >= 5 attrs → full points (3pt)
 SCHEMA_RICHNESS_MED = 4  # avg >= 4 attrs → 2pt
@@ -855,6 +958,11 @@ AI_DISCOVERY_FAQ_ANSWER_MIN_LEN: int = 20
 
 # Minimum length for service.json name field
 AI_DISCOVERY_SERVICE_NAME_MIN_LEN: int = 3
+
+# Google AI readiness rubric v2 thresholds
+AI_READINESS_IMAGE_ALT_MIN_RATIO: float = 0.9
+AI_READINESS_SCHEMA_NAME_MIN_LEN: int = 3
+AI_READINESS_FUTURE_TOLERANCE_DAYS: int = 1
 
 # ─── Score bands ─────────────────────────────────────────────────────────────
 

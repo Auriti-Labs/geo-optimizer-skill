@@ -68,3 +68,6 @@ graphify-out/
 
 # OpenCode's local MCP config — personal tooling preference, not a project convention.
 /opencode.json
+
+# Fixture di taratura rubric: HTML di terzi, solo locale
+tests/fixtures/calibration/

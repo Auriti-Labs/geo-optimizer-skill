@@ -16,6 +16,8 @@ Consumers must handle `schema_version` being absent (pre-v1 responses) by treati
 | `url` | `string` | Audited URL |
 | `timestamp` | `string` | ISO 8601 UTC |
 | `score` | `int` | 0–100 |
+| `score_version` | `int` | Scoring rubric version; `2` by default, `1` for legacy audits |
+| `score_max` | `object` | Per-category maxima for the selected score version |
 | `band` | `string` | `critical` \| `foundation` \| `good` \| `excellent` |
 | `score_breakdown` | `object` | Per-category scores (see below) |
 | `recommendations` | `array` | Ordered improvement suggestions |
@@ -30,22 +32,26 @@ Consumers must handle `schema_version` being absent (pre-v1 responses) by treati
 | `signals` | `object` | `SignalsResult` serialized |
 | `ai_discovery` | `object` | `AiDiscoveryResult` serialized |
 | `brand_entity` | `object` | `BrandEntityResult` serialized |
+| `google_ai` | `object` | Google AI readiness result with G-* checks |
 | `checks` | `object` | Flat + nested alias map (see below) |
 
 ## `score_breakdown` keys
 
-Always present with 8 categories (value `0` if audit not run):
+Always present with 9 categories in v2 (value `0` if audit not run):
 
 | Key | Max score |
 |-----|-----------|
-| `robots` | 18 |
-| `llms` | 18 |
-| `schema` | 16 |
-| `meta` | 14 |
-| `content` | 12 |
+| `google_ai` | 20 |
+| `robots` | 14 |
+| `schema` | 14 |
+| `content` | 14 |
+| `brand_entity` | 12 |
+| `meta` | 11 |
+| `llms` | 6 |
 | `signals` | 6 |
-| `ai_discovery` | 6 |
-| `brand_entity` | 10 |
+| `ai_discovery` | 3 |
+
+The `google_ai` object contains `points`, `max_points`, and `checks`. Each check has `id`, `status` (`pass`, `warn`, `fail`, or `manual`), `points`, `max_points`, `evidence`, `source_url`, and `evidence_level`.
 
 ## `checks` structure
 

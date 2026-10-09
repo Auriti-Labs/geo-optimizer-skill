@@ -46,6 +46,7 @@ from geo_optimizer.core.telemetry import (
     geo_badge_generated,
     geo_score_improved,
 )
+from geo_optimizer.models.config import CATEGORY_MAX
 from geo_optimizer.models.results import SitemapUrl
 
 logger = logging.getLogger(__name__)
@@ -1538,9 +1539,10 @@ def _audit_result_to_dict(result) -> dict:
     # JSON contract version — consumers must handle missing (default 0 = pre-v1)
     base["schema_version"] = 1
 
-    # Garantisce le 8 categorie sempre presenti nel score_breakdown (valore 0 se audit non eseguito)
-    _BREAKDOWN_KEYS = ("robots", "llms", "schema", "meta", "content", "signals", "ai_discovery", "brand_entity")
-    base["score_breakdown"] = {k: base.get("score_breakdown", {}).get(k, 0) for k in _BREAKDOWN_KEYS}
+    # Categorie della rubrica del risultato sempre presenti (0 se non eseguite); fallback v1 per risultati legacy
+    breakdown_keys = result.score_max or CATEGORY_MAX
+    base["score_breakdown"] = {k: base.get("score_breakdown", {}).get(k, 0) for k in breakdown_keys}
+    base["score_max"] = dict(breakdown_keys)
 
     # Add the "checks" mapping (structure expected by the frontend and platform)
     # Keys under checks must match gate_service.CATEGORY_KEY_MAP and analytics_dashboard
@@ -2106,10 +2108,10 @@ async def ai_faq():
             {
                 "question": "How is the score calculated?",
                 "answer": (
-                    "Across 8 categories: robots.txt (18pt),"
-                    " llms.txt (18pt), schema (16pt), meta (14pt),"
-                    " content (12pt), signals (6pt), AI discovery (6pt),"
-                    " brand & entity (10pt)."
+                    "Across 9 rubric v2 categories: Google AI readiness (20pt),"
+                    " robots.txt (14pt), schema (14pt), content (14pt),"
+                    " brand & entity (12pt), meta (11pt), llms.txt (6pt),"
+                    " signals (6pt), and AI discovery (3pt)."
                 ),
             },
             {"question": "Is it free?", "answer": "Yes, MIT License. Install: pip install geo-optimizer-skill"},

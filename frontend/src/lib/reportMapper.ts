@@ -1,5 +1,6 @@
 import type { AuditReport, CategoryScore, Recommendation, TechnicalSignal } from './mockData';
 
+// Massimi v1: fallback per risposte legacy senza score_max
 const MAX_SCORES: Record<string, number> = {
   robots: 18,
   llms: 18,
@@ -12,6 +13,7 @@ const MAX_SCORES: Record<string, number> = {
 };
 
 const CATEGORY_NAMES: Record<string, string> = {
+  google_ai: 'Google AI Search',
   robots: 'Robots.txt',
   llms: 'llms.txt',
   schema: 'Schema JSON-LD',
@@ -48,19 +50,10 @@ export function mapBackendToFrontend(data: any): AuditReport {
   const scoreBreakdown = data.score_breakdown || {};
   const negativePenalty = scoreBreakdown.negative_penalty || 0;
 
-  // Costruisci le 8 categorie dal backend
-  const categories: CategoryScore[] = [
-    'robots',
-    'llms',
-    'schema',
-    'meta',
-    'content',
-    'signals',
-    'ai_discovery',
-    'brand_entity',
-  ].map((key) => {
+  // Categorie e massimi dalla rubrica del risultato (score_max); fallback v1 per risposte legacy
+  const scoreMax: Record<string, number> = data.score_max || MAX_SCORES;
+  const categories: CategoryScore[] = Object.entries(scoreMax).map(([key, max]) => {
     const rawScore = scoreBreakdown[key] ?? 0;
-    const max = MAX_SCORES[key] ?? 0;
     // Applica la penalità solo al totale, non per categoria individuale
     const score = Math.max(0, rawScore);
 
@@ -168,6 +161,12 @@ function _buildSignalsForCategory(key: string, data: any): string[] {
       else out.push('Brand name inconsistent');
       if (!b.has_about_link) out.push('Missing about page');
       if (!b.has_contact_info) out.push('No contact info');
+      break;
+    }
+    case 'google_ai': {
+      for (const c of data.google_ai?.checks || []) {
+        if (c.status !== 'pass') out.push(`${c.id}: ${c.status}`);
+      }
       break;
     }
   }

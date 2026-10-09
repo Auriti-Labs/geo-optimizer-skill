@@ -100,12 +100,15 @@ def audit_brand_entity(
 
     # H1
     h1 = soup.find("h1")
+    h1_name = ""
     if h1 and h1.get_text(strip=True):
         h1_text = _cut_at_first_separator(h1.get_text(strip=True))
         if h1_text:
+            h1_name = h1_text
             names.append(h1_text)
 
     # Title tag
+    title_name = ""
     if meta_result.title_text:
         title_name = _cut_at_first_separator(meta_result.title_text)
         if title_name:
@@ -113,6 +116,7 @@ def audit_brand_entity(
 
     # og:title
     og_title = soup.find("meta", property="og:title")
+    og_name = ""
     if og_title and og_title.get("content", ""):
         og_name = _cut_at_first_separator(og_title["content"])
         if og_name:
@@ -129,19 +133,23 @@ def audit_brand_entity(
     _PRIMARY_SCHEMA_TYPES = {"WebSite", "WebApplication", "SoftwareApplication"}
     primary_schema_names: list[str] = []
     org_schema_names: list[str] = []
+    schema_names: list[str] = []
     for raw_schema in schema_result.raw_schemas:
         schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
-            if not s.get("name"):
+            name = s.get("name")
+            if not isinstance(name, str) or not name.strip():
                 continue
             s_type = s.get("@type", "")
             s_types = s_type if isinstance(s_type, list) else [s_type]
             if any(t in _PRIMARY_SCHEMA_TYPES for t in s_types):
-                names.append(s["name"])
-                primary_schema_names.append(s["name"])
+                names.append(name)
+                primary_schema_names.append(name)
+                schema_names.append(name)
             elif "Organization" in s_types:
-                names.append(s["name"])
-                org_schema_names.append(s["name"])
+                names.append(name)
+                org_schema_names.append(name)
+                schema_names.append(name)
 
     result.names_found = names[:10]
 
@@ -163,10 +171,19 @@ def audit_brand_entity(
         else:
             result.primary_name = names[0]
 
-    # Consistency: at least 2 names, most-frequent one appears 2+ times after legal suffix removal (#397)
-    if len(names) >= 2:
-        lower_names = [_normalize_brand_name(n) for n in names]
-        freq = Counter(lower_names)
+    # Consistency: one source counts once; title and og:title are both the head source.
+    source_names = []
+    head_names = {_normalize_brand_name(n) for n in (title_name, og_name) if n}
+    if head_names:
+        source_names.append(head_names)
+    if h1_name:
+        source_names.append({_normalize_brand_name(h1_name)})
+    normalized_schema_names = {_normalize_brand_name(n) for n in schema_names}
+    if normalized_schema_names:
+        source_names.append(normalized_schema_names)
+
+    if len(source_names) >= 2:
+        freq = Counter(name for source in source_names for name in source)
         most_common_name, most_common_count = freq.most_common(1)[0]
         if most_common_count >= 2:
             result.brand_name_consistent = True

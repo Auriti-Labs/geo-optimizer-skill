@@ -1662,7 +1662,8 @@ class TestRunFullAudit:
     """Tests for run_full_audit()."""
 
     @patch("geo_optimizer.core.audit.fetch_url")
-    def test_full_audit_success(self, mock_fetch):
+    @patch("geo_optimizer.core.audit.check_markdown_negotiation", return_value=True)
+    def test_full_audit_success(self, mock_markdown, mock_fetch):
         html = """<html><head>
         <title>My Site</title>
         <meta name="description" content="Description here">
@@ -1698,6 +1699,7 @@ class TestRunFullAudit:
         assert result.score > 0
         assert result.http_status == 200
         assert result.page_size > 0
+        assert result.ai_discovery.has_markdown is True
 
     @patch("geo_optimizer.core.audit.fetch_url")
     def test_full_audit_unreachable(self, mock_fetch):

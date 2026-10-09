@@ -75,7 +75,7 @@ class TestAuditAiDiscovery:
             "https://example.com/ai/faq.json": (_mock_response(200, faq), None),
             "https://example.com/ai/service.json": (_mock_response(200, service), None),
         }
-        mock_fetch.side_effect = lambda url: responses.get(url, (None, "not found"))
+        mock_fetch.side_effect = lambda url, **kwargs: responses.get(url, (None, "not found"))
 
         result = audit_ai_discovery("https://example.com")
 
@@ -112,7 +112,7 @@ class TestAuditAiDiscovery:
             "https://example.com/ai/faq.json": (_mock_response(404), None),
             "https://example.com/ai/service.json": (_mock_response(404), None),
         }
-        mock_fetch.side_effect = lambda url: responses.get(url, (None, "not found"))
+        mock_fetch.side_effect = lambda url, **kwargs: responses.get(url, (None, "not found"))
 
         result = audit_ai_discovery("https://example.com")
 
@@ -131,7 +131,7 @@ class TestAuditAiDiscovery:
             "https://example.com/ai/faq.json": (_mock_response(404), None),
             "https://example.com/ai/service.json": (_mock_response(404), None),
         }
-        mock_fetch.side_effect = lambda url: responses.get(url, (None, "not found"))
+        mock_fetch.side_effect = lambda url, **kwargs: responses.get(url, (None, "not found"))
 
         result = audit_ai_discovery("https://example.com")
 
@@ -163,7 +163,7 @@ class TestAuditAiDiscovery:
             "https://example.com/ai/faq.json": (_mock_response(200, faq_data), None),
             "https://example.com/ai/service.json": (_mock_response(404), None),
         }
-        mock_fetch.side_effect = lambda url: responses.get(url, (None, "not found"))
+        mock_fetch.side_effect = lambda url, **kwargs: responses.get(url, (None, "not found"))
 
         result = audit_ai_discovery("https://example.com")
 
@@ -179,7 +179,7 @@ class TestAuditAiDiscovery:
             "https://example.com/ai/faq.json": (_mock_response(200, "<html>404</html>"), None),
             "https://example.com/ai/service.json": (_mock_response(200, "broken"), None),
         }
-        mock_fetch.side_effect = lambda url: responses.get(url, (None, "not found"))
+        mock_fetch.side_effect = lambda url, **kwargs: responses.get(url, (None, "not found"))
 
         result = audit_ai_discovery("https://example.com")
 
@@ -419,7 +419,7 @@ class TestSummaryJsonValidation:
             "https://example.com/ai/faq.json": (MagicMock(status_code=404), None),
             "https://example.com/ai/service.json": (MagicMock(status_code=404), None),
         }
-        return lambda url: responses.get(url, (None, "not found"))
+        return lambda url, **kwargs: responses.get(url, (None, "not found"))
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_summary_valido_con_lunghezze_minime(self, mock_fetch):
@@ -499,7 +499,7 @@ class TestFaqJsonValidation:
             "https://example.com/ai/faq.json": (MagicMock(status_code=200, text=faq_text), None),
             "https://example.com/ai/service.json": (MagicMock(status_code=404), None),
         }
-        return lambda url: responses.get(url, (None, "not found"))
+        return lambda url, **kwargs: responses.get(url, (None, "not found"))
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_faq_valido_lista_con_question_e_answer(self, mock_fetch):
@@ -648,7 +648,7 @@ class TestServiceJsonValidation:
             "https://example.com/ai/faq.json": (MagicMock(status_code=404), None),
             "https://example.com/ai/service.json": (MagicMock(status_code=200, text=service_text), None),
         }
-        return lambda url: responses.get(url, (None, "not found"))
+        return lambda url, **kwargs: responses.get(url, (None, "not found"))
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_service_valido_con_name_e_capabilities(self, mock_fetch):

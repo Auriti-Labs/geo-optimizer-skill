@@ -2293,9 +2293,8 @@ def detect_multi_platform(soup) -> MethodScore:
 
 # ─── Entity Disambiguation (+8%) — Batch A v3.16.0 ───────────────────────────
 
-# Separators that split a title into "page name" and "brand" parts. "·" is included
-# because it is a common bullet separator in page titles.
-_TITLE_SEPARATOR_RE = re.compile(r"\s*[|\-–—·]\s*")
+# Trattino solo se spaziato: "Coca-Cola" è un nome, "Acme - Home" è un separatore
+_TITLE_SEPARATOR_RE = re.compile(r"\s+-\s+|\s*[|–—·]\s*")
 
 
 def _split_title_segments(raw: str) -> list[str]:

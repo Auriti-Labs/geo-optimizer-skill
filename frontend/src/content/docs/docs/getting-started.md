@@ -79,32 +79,35 @@ That's it. The script fetches your homepage, `robots.txt`, and checks for `/llms
 
 The audit output is divided into **8 scored categories** plus bonus checks and a final score.
 
-The 8 categories are: **Robots.txt** (18pt), **llms.txt** (18pt), **Schema JSON-LD** (16pt), **Meta Tags** (14pt), **Content Quality** (12pt), **Brand & Entity** (10pt), **Signals** (6pt), **AI Discovery** (6pt).
+The v2 categories are: **Google AI readiness** (20pt), **Robots.txt** (14pt), **Schema JSON-LD** (14pt), **Content** (14pt), **Brand & Entity** (12pt), **Meta Tags** (11pt), **llms.txt** (6pt), **Signals** (6pt), **AI Discovery** (3pt).
 
 Each section shows what passed and what's missing:
 
 ```
-▸ ROBOTS.TXT ─────────────────────────── 5 / 18
+▸ GOOGLE AI READINESS ────────────────── 0 / 20
+  ❌ Google AI readiness checks need attention
+
+▸ ROBOTS.TXT ─────────────────────────── 5 / 14
   ✅ robots.txt found
   ❌ OAI-SearchBot   MISSING   ← critical
   ❌ ClaudeBot        MISSING   ← critical
 
-▸ LLMS.TXT ───────────────────────────── 0 / 18
+▸ LLMS.TXT ───────────────────────────── 0 / 6
   ❌ Not found at https://yoursite.com/llms.txt
 
-▸ SCHEMA JSON-LD ─────────────────────── 4 / 16
+▸ SCHEMA JSON-LD ─────────────────────── 4 / 14
   ✅ WebSite schema
   ❌ FAQPage schema missing
   ❌ Organization schema missing
 
-▸ META TAGS ──────────────────────────── 14 / 14
+▸ META TAGS ──────────────────────────── 11 / 11
   ✅ Title · Meta description · Canonical · OG tags
 
-▸ CONTENT QUALITY ────────────────────── 5 / 12
+▸ CONTENT QUALITY ────────────────────── 5 / 14
   ✅ 12 headings · H2+H3 hierarchy
   ❌ 1 statistic (target: 5+) · 0 external citations
 
-▸ BRAND & ENTITY ─────────────────────── 3 / 10
+▸ BRAND & ENTITY ─────────────────────── 3 / 12
   ✅ Brand name coherent
   ❌ No sameAs Knowledge Graph links
 
@@ -112,7 +115,7 @@ Each section shows what passed and what's missing:
   ✅ <html lang="en">
   ❌ No RSS/Atom feed
 
-▸ AI DISCOVERY ───────────────────────── 0 / 6
+▸ AI DISCOVERY ───────────────────────── 0 / 3
   ❌ No AI discovery endpoints
 
 ──────────────────────────────────────────────────────────
@@ -131,7 +134,7 @@ Follow this priority order — each step has the highest ROI before moving to th
 1. **robots.txt** — Add all 27 AI bots. Takes 5 minutes. Affects whether bots can crawl you at all. → [AI Bots Reference](ai-bots-reference.md)
 2. **llms.txt** — Generate it from your sitemap. Takes 2 minutes. → [Generating llms.txt](llms-txt.md)
 3. **Schema** — Add WebSite, Organization, FAQPage, Article. → [Schema Injector](schema-injector.md)
-4. **Brand & Entity** — Add sameAs KG links, about/contact pages. → [Scoring Rubric](scoring-rubric.md#8-brand--entity-signals--max-10-pts-new-in-v3182)
+4. **Brand & Entity** — Add Knowledge Graph links, about/contact pages, and consistent entity signals. → [Scoring Rubric](scoring-rubric.md)
 5. **AI Discovery** — Generate ai.txt and /ai/*.json endpoints. Use `geo fix` to auto-generate.
 6. **Content** — Add statistics, external citations, expert quotes. → [47 GEO Methods](geo-methods.md)
 
