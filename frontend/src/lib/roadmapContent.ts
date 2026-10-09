@@ -301,6 +301,7 @@ export const releaseCadence = [
   { version: 'v4.18.0', name: 'Quorum', status: 'available' as RoadmapStatus },
   { version: 'v4.18.1', name: 'Quorum (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.18.2', name: 'Quorum (patch)', status: 'available' as RoadmapStatus },
+  { version: 'v4.19.0', name: 'Google AI readiness / rubric v2', status: 'available' as RoadmapStatus },
   { version: 'v4.18.3', name: 'CDN/WAF patch', status: 'available' as RoadmapStatus },
   { version: 'v5.0.0', name: 'Black Archive', status: 'exploring' as RoadmapStatus },
 ];
