@@ -73,6 +73,8 @@ Priority:
 Always run audit before recommending optimizations.
 GEO Score: 0–35 = critical | 36–67 = foundation | 68–85 = good | 86–100 = excellent
 
+Rubric v2 maxima: `google_ai` 20 | `robots` 14 | `schema` 14 | `content` 14 | `brand_entity` 12 | `meta` 11 | `llms` 6 | `signals` 6 | `ai_discovery` 3. JSON has `score_version` and `score_max`; use `--score-version 1` for legacy.
+
 Run: `geo audit --url https://yoursite.com`
 
 ## Quick Reference

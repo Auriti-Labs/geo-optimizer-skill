@@ -33,7 +33,7 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 The practice has several names — **Answer Engine Optimization (AEO)**, **Generative Engine Optimization (GEO)**, **AI SEO**, **LLM SEO** — and they describe the same problem: an answer engine gives one synthesized response and cites a handful of sources. Ranking on Google does not make you one of them. Being reachable, parseable, and quotable does.
 
-**16 CLI commands** · **8 scoring categories** · **27 AI crawlers checked** · **47 content checks** · **12 MCP tools** · **8 output formats** · **2,000+ tests**
+**16 CLI commands** · **9 scoring categories** · **27 AI crawlers checked** · **47 content checks** · **12 MCP tools** · **8 output formats** · **2,000+ tests**
 
 ### What a real audit looks like
 
@@ -172,16 +172,17 @@ Two honest caveats, both built into the tool:
 
 | Area | Points | What GEO Optimizer looks for |
 |------|--------|------------------------------|
-| **Robots.txt** | /18 | 27 AI bots across 3 tiers (training, search, user). Citation bots explicitly allowed? |
-| **llms.txt** | /18 | Present, has H1 + blockquote, sections, links, depth. Companion llms-full.txt? |
-| **Schema JSON-LD** | /16 | WebSite, Organization, FAQPage, Article. Schema richness (5+ attributes)? |
-| **Meta Tags** | /14 | Title, description, canonical, Open Graph complete? |
-| **Content** | /12 | H1, statistics, external citations, heading hierarchy, lists/tables, front-loading? |
-| **Brand & Entity** | /10 | Brand name coherence, Knowledge Graph links (Wikipedia/Wikidata/LinkedIn/Crunchbase), about page, topic authority |
-| **Signals** | /6 | `<html lang>`, RSS/Atom feed, dateModified freshness? |
-| **AI Discovery** | /6 | `.well-known/ai.txt`, `/ai/summary.json`, `/ai/faq.json`, `/ai/service.json`? |
+| **Google AI readiness** | /20 | Indexing, snippets, canonical, dates, byline, links, viewport, sitemap, and manual generative-AI control |
+| **Robots.txt** | /14 | Googlebot and citation-bot access; found 3 + citation bots allowed 11 |
+| **Schema JSON-LD** | /14 | Validity, richness, FAQ, Article, Organization, WebSite, and visible name match |
+| **Content** | /14 | H1, statistics, links, word count, heading hierarchy, lists/tables, front-loading, image alt coverage |
+| **Brand & Entity** | /12 | Brand coherence, Knowledge Graph, about/contact, geo identity, topic authority |
+| **Meta Tags** | /11 | Title, description, and Open Graph; canonical is scored by G-CANONICAL |
+| **llms.txt** | /6 | Found, sections, links, and llms-full.txt; useful to other AI agents, ignored by Google Search |
+| **Signals** | /6 | `<html lang>`, RSS/Atom feed, valid freshness |
+| **AI Discovery** | /3 | `ai.txt`, `summary.json`, and markdown negotiation |
 
-**Score bands:** 86–100 Excellent · 68–85 Good · 36–67 Foundation · 0–35 Critical. Every weight is in [`models/config.py`](src/geo_optimizer/models/config.py) — read the rules and disagree with them. Full rubric: [SCORING_RUBRIC.md](SCORING_RUBRIC.md).
+**Score bands:** 86–100 Excellent · 68–85 Good · 36–67 Foundation · 0–35 Critical. Rubric v2 is the default; use `geo audit --score-version 1` for legacy v1 comparisons. Every weight is in [`models/config.py`](src/geo_optimizer/models/config.py). Full rubric: [docs/scoring-rubric.md](docs/scoring-rubric.md).
 
 <details>
 <summary><b>Beyond the score: 10 more checks</b></summary>
@@ -329,7 +330,7 @@ The full reasoning behind each signal and weight is written up in the book below
 **AI Search Engineering — A Technical Guide to Generative Engine Optimization (GEO), AI Citations, and Agent-Ready Websites**
 Juan Camilo Auriti · 992 pages · English · 10 September 2026 · ISBN 979-8172934568
 
-**The book explains the reasoning; this engine runs it.** The scoring weights, the eight signal categories, and the evidence classification described in print are the ones implemented in this repository. If you have ever wondered *why* robots.txt is worth 18 points and Signals only 6, the answer is in the book.
+**The book explains the reasoning; this engine runs it.** The scoring weights, the eight signal categories, and the evidence classification described in print are rubric v1, still implemented in this repository and available with `--score-version 1`. Rubric v2, the default, adds a Google AI readiness category built on Google's own documentation.
 
 It treats GEO as an engineering discipline rather than a collection of tricks, organized around the path a page travels before it can be cited. Each stage maps to something you can run here:
 

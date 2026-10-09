@@ -711,18 +711,23 @@ def test_ai_faq_json_punteggi_coerenti_con_config(client):
 
     risposta = score_faq["answer"]
 
-    # Verifica categorie e punteggi corretti (da config.SCORING)
-    assert "8 categories" in risposta, f"Deve citare 8 categorie, trovato: {risposta}"
-    assert "schema (16pt)" in risposta, f"Schema deve essere 16pt, trovato: {risposta}"
-    assert "content (12pt)" in risposta, f"Content deve essere 12pt, trovato: {risposta}"
-    assert "signals (6pt)" in risposta, f"Signals deve essere 6pt, trovato: {risposta}"
-    assert "brand" in risposta.lower(), f"Deve includere la categoria brand, trovato: {risposta}"
+    # Categorie e massimi devono coincidere con la rubric di default (CATEGORY_MAX_V2)
+    from geo_optimizer.models.config import CATEGORY_MAX_V2
 
-    # Verifica che i vecchi valori errati non siano presenti
-    assert "7 categories" not in risposta, f"Non deve citare 7 categorie: {risposta}"
-    assert "schema (22pt)" not in risposta, f"schema=22pt è il valore errato: {risposta}"
-    assert "content (14pt)" not in risposta, f"content=14pt è il valore errato: {risposta}"
-    assert "signals (8pt)" not in risposta, f"signals=8pt è il valore errato: {risposta}"
+    assert f"{len(CATEGORY_MAX_V2)} rubric v2 categories" in risposta, risposta
+    labels = {
+        "google_ai": "Google AI readiness",
+        "robots": "robots.txt",
+        "schema": "schema",
+        "content": "content",
+        "brand_entity": "brand & entity",
+        "meta": "meta",
+        "llms": "llms.txt",
+        "signals": "signals",
+        "ai_discovery": "AI discovery",
+    }
+    for key, max_points in CATEGORY_MAX_V2.items():
+        assert f"{labels[key]} ({max_points}pt)" in risposta, f"{key} deve valere {max_points}pt: {risposta}"
 
 
 def test_ai_summary_json_restituisce_struttura_valida(client):

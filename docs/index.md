@@ -24,7 +24,7 @@ This documentation covers every tool and concept in the toolkit. → [README](..
 | [Using SKILL.md as AI Context](ai-context.md) | Use the toolkit with Claude, ChatGPT, Gemini, Cursor, Windsurf |
 | [47 GEO Methods](geo-methods.md) | Research-backed content optimization methods (KDD 2024 + ICLR 2026) |
 | [AI Bots Reference](ai-bots-reference.md) | Complete list of 27 AI crawlers and `robots.txt` configuration |
-| [Scoring Rubric](scoring-rubric.md) | How the GEO Score (0–100) is computed across 8 categories |
+| [Scoring Rubric](scoring-rubric.md) | How the GEO Score (0–100) is computed across 9 rubric v2 categories |
 | [geo fix Command](geo-fix.md) | Automatic fix generation — robots.txt, llms.txt, schema, meta |
 | [MCP Server](mcp-server.md) | Use GEO Optimizer as an MCP server in Claude Code, Cursor, etc. |
 | [Skill System](skill-system.md) | Internal skill catalog, contracts, and validation rules for maintainers |

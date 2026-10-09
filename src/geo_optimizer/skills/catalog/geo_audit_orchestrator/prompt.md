@@ -11,10 +11,11 @@ Own the first-pass GEO assessment workflow. Run the authoritative audit surface 
 ## Execution Protocol
 
 1. Normalize the URL and use the deterministic audit surface before any speculative reasoning.
-2. Preserve the full audit evidence, including score, band, score breakdown, recommendations, and any plugin-derived extra checks.
-3. Interpret the result using the documented score bands and category weights, not informal heuristics.
-4. Produce a prioritized issue list ordered by leverage: crawlability and discovery foundations first, then schema and metadata, then content and trust layers.
-5. End by naming the next focused skill only if the audit evidence clearly warrants it.
+2. Preserve the full audit evidence, including score, band, `score_version`, `score_max`, score breakdown, recommendations, and any plugin-derived extra checks.
+3. For rubric v2, read `google_ai.checks` first. Cite each check's `source_url` in the corresponding recommendation, including these checks: `G-INDEX`, `G-SNIPPET`, `G-CANONICAL`, `G-DATES`, `G-BYLINE`, `G-LINKS`, `G-VIEWPORT`, `G-SITEMAP`, `G-SD-VISIBLE`, and `G-GENAI-CONTROL`.
+4. Interpret the result using the documented score bands and category weights, not informal heuristics. Use `geo audit --score-version 1` only for legacy comparisons.
+5. Produce a prioritized issue list ordered by leverage: Google AI readiness and crawlability first, then schema and metadata, then content and trust layers.
+6. End by naming the next focused skill only if the audit evidence clearly warrants it.
 
 ## Output Contract
 

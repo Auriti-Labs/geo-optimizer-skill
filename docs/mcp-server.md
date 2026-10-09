@@ -76,14 +76,32 @@ Run a complete GEO audit on a website. Analyzes 7 areas: robots.txt, llms.txt, J
   "url": "https://example.com",
   "score": 72,
   "band": "good",
-  "score_breakdown": {
-    "robots": 18,
+  "score_version": 2,
+  "score_max": {
+    "google_ai": 20,
+    "robots": 14,
+    "schema": 14,
+    "content": 14,
+    "brand_entity": 12,
+    "meta": 11,
     "llms": 6,
-    "schema": 16,
-    "meta": 14,
+    "signals": 6,
+    "ai_discovery": 3
+  },
+  "score_breakdown": {
+    "google_ai": 0,
+    "robots": 14,
+    "llms": 6,
+    "schema": 14,
+    "meta": 11,
     "content": 10,
     "signals": 5,
     "ai_discovery": 3
+  },
+  "google_ai": {
+    "points": 0,
+    "max_points": 20,
+    "checks": []
   },
   "recommendations": [
     "Add llms-full.txt for comprehensive AI indexing",
