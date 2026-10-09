@@ -8,6 +8,7 @@ già scaricati da audit.py e ritorna ReadinessCheck con fonte ed evidenza.
 from __future__ import annotations
 
 import re
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit
 
 from geo_optimizer.models.config import (
@@ -17,7 +18,7 @@ from geo_optimizer.models.config import (
     GOOGLE_AI_SNIPPET_MIN,
     GOOGLE_DOC_URLS,
 )
-from geo_optimizer.models.results import ReadinessCheck
+from geo_optimizer.models.results import GoogleAiReadinessResult, ReadinessCheck
 
 _HEADER_UA_PREFIX_RE = re.compile(r"^\s*([a-z0-9_-]+)\s*:\s*(.*)$", re.IGNORECASE)
 _KNOWN_DIRECTIVES = (
@@ -134,3 +135,96 @@ def check_canonical(soup, final_url: str, directives: set[str]) -> ReadinessChec
     if _norm(href) != _norm(final_url):
         return _check("G-CANONICAL", "warn", f"Canonical points elsewhere: {href}")
     return _check("G-CANONICAL", "pass", "One absolute canonical matching the final URL")
+
+
+def _parse_date(value) -> datetime | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        d = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
+
+
+def check_dates(soup, schemas: list[dict], now: datetime) -> ReadinessCheck:
+    dates = [_parse_date(s.get(k)) for s in schemas if isinstance(s, dict) for k in ("datePublished", "dateModified")]
+    valid = [d for d in dates if d]
+    if any(d > now + timedelta(days=1) for d in valid):
+        return _check("G-DATES", "fail", "Future datePublished/dateModified: Google may ignore the page dates")
+    visible = soup.find("time", attrs={"datetime": True}) or soup.find(
+        "meta", attrs={"property": re.compile(r"^article:(published|modified)_time$")}
+    )
+    if valid and visible:
+        return _check("G-DATES", "pass", "Visible date consistent with structured data")
+    if valid:
+        return _check("G-DATES", "warn", "Date only in structured data: show it on the page too")
+    return _check("G-DATES", "warn", "No valid publication or update date found", "heuristic")
+
+
+def check_byline(soup, schemas: list[dict]) -> ReadinessCheck:
+    for s in schemas:
+        authors = s.get("author") if isinstance(s, dict) else None
+        for a in authors if isinstance(authors, list) else [authors]:
+            name = a.get("name") if isinstance(a, dict) else a
+            if isinstance(name, str) and name.strip():
+                return _check("G-BYLINE", "pass", "Author declared in structured data")
+    if soup.select_one('[rel~="author"], [itemprop="author"], .author, meta[name="author"]'):
+        return _check("G-BYLINE", "pass", "Visible author byline")
+    return _check("G-BYLINE", "warn", "No author found: Google asks 'who created the content'", "heuristic")
+
+
+def check_links(soup) -> ReadinessCheck:
+    hrefs = [a["href"].strip() for a in soup.find_all("a", href=True)]
+    bad = [h for h in hrefs if h.startswith("#/") or h.lower().startswith("javascript:")]
+    if not hrefs or len(bad) * 2 > len(hrefs):
+        return _check("G-LINKS", "fail", "Links are not crawlable <a href> elements (JS routes or none)")
+    return _check("G-LINKS", "pass", f"{len(hrefs) - len(bad)} crawlable <a href> links")
+
+
+def check_viewport(soup) -> ReadinessCheck:
+    if soup.find("meta", attrs={"name": re.compile(r"^viewport$", re.IGNORECASE)}):
+        return _check("G-VIEWPORT", "pass", "meta viewport present")
+    return _check("G-VIEWPORT", "fail", "No meta viewport: page is not mobile-friendly")
+
+
+def check_sitemap(robots) -> ReadinessCheck:
+    # Solo dichiarazione in robots.txt, nessun fetch della sitemap.
+    if robots.sitemaps:
+        return _check("G-SITEMAP", "pass", f"Sitemap declared: {robots.sitemaps[0]}")
+    if robots.found:
+        return _check("G-SITEMAP", "warn", "robots.txt has no Sitemap: directive")
+    return _check("G-SITEMAP", "fail", "No robots.txt, no declared sitemap")
+
+
+def run_google_ai_checks(
+    soup,
+    *,
+    final_url: str,
+    http_status: int,
+    headers: dict,
+    robots,
+    schemas: list[dict],
+    now: datetime | None = None,
+) -> GoogleAiReadinessResult:
+    """Esegue tutti i check G-* e somma i punti della categoria google_ai."""
+    now = now or datetime.now(timezone.utc)
+    directives = parse_robots_directives(soup, headers or {})
+    checks = [
+        check_index(http_status, directives, robots),
+        check_snippet(soup, directives),
+        check_canonical(soup, final_url, directives),
+        check_dates(soup, schemas, now),
+        check_byline(soup, schemas),
+        check_links(soup),
+        check_viewport(soup),
+        check_sitemap(robots),
+        _check("G-GENAI-CONTROL", "manual", "Check Search Console > Settings > Search generative AI control"),
+    ]
+    return GoogleAiReadinessResult(
+        checked=True,
+        points=sum(c.points for c in checks),
+        max_points=sum(c.max_points for c in checks),
+        final_url=final_url,
+        checks=checks,
+    )
