@@ -625,6 +625,36 @@ CATEGORY_MAX = {
     "ai_discovery": 6,
 }
 
+# ─── Google AI readiness (rubric v2) ─────────────────────────────────────────
+# Fonti ufficiali per ogni check G-*: mostrate in report, SARIF helpUri e skill.
+GOOGLE_DOC_URLS = {
+    "G-INDEX": "https://developers.google.com/search/docs/essentials/technical",
+    "G-SNIPPET": "https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag",
+    "G-CANONICAL": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls",
+    "G-DATES": "https://developers.google.com/search/docs/appearance/publication-dates",
+    "G-BYLINE": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+    "G-LINKS": "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics",
+    "G-VIEWPORT": "https://developers.google.com/search/docs/appearance/page-experience",
+    "G-SITEMAP": "https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap",
+    "G-SD-VISIBLE": "https://developers.google.com/search/docs/appearance/structured-data/sd-policies",
+    "G-GENAI-CONTROL": "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide",
+}
+# Punti per check nella categoria google_ai (somma 20). G-SD-VISIBLE pesa in schema.
+GOOGLE_AI_POINTS = {
+    "G-INDEX": 5,
+    "G-SNIPPET": 5,
+    "G-CANONICAL": 3,
+    "G-DATES": 2,
+    "G-BYLINE": 2,
+    "G-LINKS": 1,
+    "G-VIEWPORT": 1,
+    "G-SITEMAP": 1,
+    "G-GENAI-CONTROL": 0,
+}
+GOOGLE_AI_SNIPPET_MIN = 50  # max-snippet sotto questa soglia = estratto inutilizzabile
+DATA_NOSNIPPET_FAIL_RATIO = 0.5
+DATA_NOSNIPPET_WARN_RATIO = 0.1
+
 # Schema richness thresholds — graduated scoring (#394)
 SCHEMA_RICHNESS_HIGH = 5  # avg >= 5 attrs → full points (3pt)
 SCHEMA_RICHNESS_MED = 4  # avg >= 4 attrs → 2pt

@@ -77,6 +77,7 @@ def audit_robots_txt(base_url: str, bots: dict | None = None) -> RobotsResult:
     # gap #8: extract crawl_delay from wildcard agent (applies to all bots by default)
     if "*" in agent_rules and agent_rules["*"].crawl_delay is not None:
         result.crawl_delay = agent_rules["*"].crawl_delay
+    result.sitemaps = _sitemaps(content)
 
     return result
 
@@ -126,5 +127,17 @@ def _audit_robots_from_response(r, bots: dict | None = None) -> RobotsResult:
     # gap #8: extract crawl_delay from wildcard agent
     if "*" in agent_rules and agent_rules["*"].crawl_delay is not None:
         result.crawl_delay = agent_rules["*"].crawl_delay
+    result.sitemaps = _sitemaps(content)
 
     return result
+
+
+def _sitemaps(content: str) -> list[str]:
+    """Estrae gli URL assoluti delle direttive Sitemap: (case-insensitive)."""
+    out = []
+    for line in content.splitlines():
+        key, _, value = line.partition(":")
+        value = value.split("#", 1)[0].strip()
+        if key.strip().lower() == "sitemap" and value.lower().startswith(("http://", "https://")):
+            out.append(value)
+    return out

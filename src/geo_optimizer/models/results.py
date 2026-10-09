@@ -44,6 +44,7 @@ class RobotsResult:
     crawl_delay: float | None = None
     # True if citation bots are explicitly allowed (not just via wildcard — #111)
     citation_bots_explicit: bool = False
+    sitemaps: list[str] = field(default_factory=list)
 
 
 # ─── llms.txt ────────────────────────────────────────────────────────────────
@@ -983,6 +984,33 @@ class HallucinationBaitResult:
     details: list[str] = field(default_factory=list)
 
 
+# ─── Google AI readiness ─────────────────────────────────────────────────────
+
+
+@dataclass
+class ReadinessCheck:
+    """Esito di un check Google AI con fonte e livello di evidenza."""
+
+    id: str
+    status: str
+    points: int
+    max_points: int
+    evidence: str
+    source_url: str
+    evidence_level: str = "google-official"
+
+
+@dataclass
+class GoogleAiReadinessResult:
+    """Conformità ai requisiti Google per AI Overviews / AI Mode (rubric v2)."""
+
+    checked: bool = False
+    points: int = 0
+    max_points: int = 0
+    final_url: str = ""
+    checks: list[ReadinessCheck] = field(default_factory=list)
+
+
 # ─── Full audit ──────────────────────────────────────────────────────────────
 
 
@@ -1048,6 +1076,10 @@ class AuditResult:
     intent_mapping: IntentMappingResult = field(default_factory=IntentMappingResult)
     # v4.10: Hallucination Bait Detection (#377)
     hallucination_bait: HallucinationBaitResult = field(default_factory=HallucinationBaitResult)
+    # v4.19: Google AI readiness + rubric versionata
+    google_ai: GoogleAiReadinessResult = field(default_factory=GoogleAiReadinessResult)
+    score_version: int = 1
+    score_max: dict[str, int] = field(default_factory=dict)
 
 
 # ─── Batch audit ─────────────────────────────────────────────────────────────
