@@ -611,6 +611,12 @@ def format_audit_text(result: AuditResult) -> str:
     lines.append("")
     lines.append("  💡 One-shot audit. The free plan at https://geoready.dev tracks 1 domain")
     lines.append("     with a weekly drift email — plus score history and AI citation tracking.")
+    # Per-run web-report link: the user's own URL, pre-filled in the free web
+    # audit page. Printed text only — the CLI never opens a browser and never
+    # makes a network call for this (no phone-home: the README FAQ promises it).
+    lines.append("")
+    lines.append("  → Web report for this URL (free, no account):")
+    lines.append(f"     https://geoready.dev/report/audit?url={quote(result.url, safe=':/?&=')}")
 
     # Badge growth loop: only suggest embedding a score worth showing off (gap #501)
     if result.band in ("excellent", "good"):
