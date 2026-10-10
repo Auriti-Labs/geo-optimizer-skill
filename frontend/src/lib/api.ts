@@ -34,6 +34,7 @@ export interface FetchAuditResult {
   error: string | null;
   claim_token: string | null;
   expires_at: string | null;
+  repeat_count: number | null;
 }
 
 /**
@@ -58,18 +59,25 @@ export async function fetchAuditReport(url: string): Promise<FetchAuditResult> {
       } catch {
         // ignore JSON parse error on error response
       }
-      return { report: null, error: detail, claim_token: null, expires_at: null };
+      return { report: null, error: detail, claim_token: null, expires_at: null, repeat_count: null };
     }
 
     const data = await res.json();
     const report = mapBackendToFrontend(data);
-    return { report, error: null, claim_token: data.claim_token ?? null, expires_at: data.expires_at ?? null };
+    return {
+      report,
+      error: null,
+      claim_token: data.claim_token ?? null,
+      expires_at: data.expires_at ?? null,
+      repeat_count: typeof data.repeat_count === 'number' ? data.repeat_count : null,
+    };
   } catch (e: any) {
     return {
       report: null,
       error: e.message || 'Network error. Is the backend running?',
       claim_token: null,
       expires_at: null,
+      repeat_count: null,
     };
   }
 }

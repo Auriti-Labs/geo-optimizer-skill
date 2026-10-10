@@ -1870,3 +1870,18 @@ class TestFormatters:
         output = format_audit_text(result)
         assert "geoready.dev" in output
         assert "One-shot audit" in output
+
+    def test_format_audit_text_includes_per_run_web_report_link(self):
+        """Text report prints the per-run web-report URL for the audited site.
+
+        The link is printed text (no phone-home, no auto-open): it pre-fills
+        the free web audit with the same URL the user just audited.
+        """
+        from geo_optimizer.cli.formatters import format_audit_text
+
+        result = AuditResult(url="https://example.com", score=50, band="foundation")
+        output = format_audit_text(result)
+        assert "Web report for this URL" in output
+        # L'URL del sito resta leggibile (due punti e slash non encodati):
+        # https://geoready.dev/report/audit?url=https://example.com
+        assert "https://geoready.dev/report/audit?url=https://example.com" in output

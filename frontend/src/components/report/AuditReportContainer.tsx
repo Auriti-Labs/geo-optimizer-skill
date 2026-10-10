@@ -151,7 +151,7 @@ interface AuditReportContainerProps {
 type State =
   | { status: 'loading' }
   | { status: 'error'; message: string }
-  | { status: 'ready'; report: AuditReport; claim_token: string | null; expires_at: string | null };
+  | { status: 'ready'; report: AuditReport; claim_token: string | null; expires_at: string | null; repeat_count: number | null };
 
 function categoryRatio(category: CategoryScore): number {
   if (category.maxScore <= 0) return 1;
@@ -208,17 +208,29 @@ function ReportNextStep({
   claimToken,
   criticalCount,
   highCount,
+  repeatCount,
 }: {
   report: AuditReport;
   claimToken: string | null;
   criticalCount: number;
   highCount: number;
+  repeatCount: number | null;
 }) {
   const weakest = findWeakestCategory(report.categories);
   const action = weakest ? categoryAction[weakest.slug] : null;
   const plan = recommendedPlanFor(weakest);
   const recs = topRecommendations(report.recommendations);
   const openIssues = criticalCount + highCount;
+  // Recurring-need CTA per i re-auditor (growth: 665 URL ri-auditate a mano).
+  // repeatCount è reale, contato server-side dagli anonymous_reports.
+  const isRepeat = repeatCount !== null && repeatCount >= 1;
+  const repeatHeadline = (() => {
+    const host = report.url.replace(/^https?:\/\//, '').split('/')[0];
+    const ordinal = repeatCount === 1 ? 'Second audit' : repeatCount === 2 ? 'Third audit' : `${repeatCount + 1}th audit`;
+    return `${ordinal} of ${host}?`;
+  })();
+  const repeatReason =
+    'You are re-checking this site by hand. The free plan runs the same audit weekly, emails you when the score moves, and keeps the full history — so the checking happens without you.';
 
   return (
     <section className="overflow-hidden rounded-[4px] border border-pass/50 bg-pass-wash/60">
@@ -235,11 +247,13 @@ function ReportNextStep({
       <div className="flex flex-col gap-5 p-5 md:p-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="max-w-3xl">
           <h2 className="font-head text-xl font-extrabold tracking-[-0.02em] leading-tight text-ink md:text-2xl">
-            {plan.headline}
+            {isRepeat ? repeatHeadline : plan.headline}
           </h2>
 
           <p className="mt-3 text-sm leading-relaxed text-ink-soft md:text-base">
-            {weakest && action ? (
+            {isRepeat ? (
+              repeatReason
+            ) : weakest && action ? (
               <>
                 The weakest area is <strong className="font-semibold text-ink">{weakest.name}</strong>
                 {' '}at <strong className="font-semibold text-ink">{weakest.score}/{weakest.maxScore}</strong>.
@@ -288,7 +302,9 @@ function ReportNextStep({
           </a>
           <p className="max-w-xs text-xs leading-relaxed text-ink-mute">
             {claimToken
-              ? 'Signup carries this report into the app so the first paid action is claiming the audited domain.'
+              ? isRepeat
+                ? 'This report carries over at signup, and weekly monitoring starts on this exact domain.'
+                : 'Signup carries this report into the app so the first paid action is claiming the audited domain.'
               : 'After signup, the app opens on the first-domain monitoring step.'}
           </p>
         </div>
@@ -300,7 +316,7 @@ function ReportNextStep({
 export default function AuditReportContainer({ reportId }: AuditReportContainerProps) {
   const [state, setState] = useState<State>(() =>
     reportId === 'demo'
-      ? { status: 'ready', report: mockAuditReport, claim_token: null, expires_at: null }
+      ? { status: 'ready', report: mockAuditReport, claim_token: null, expires_at: null, repeat_count: null }
       : { status: 'loading' }
   );
 
@@ -334,7 +350,13 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
       if (result.error) {
         setState({ status: 'error', message: result.error });
       } else if (result.report) {
-        setState({ status: 'ready', report: result.report, claim_token: result.claim_token, expires_at: result.expires_at });
+        setState({
+          status: 'ready',
+          report: result.report,
+          claim_token: result.claim_token,
+          expires_at: result.expires_at,
+          repeat_count: result.repeat_count,
+        });
         trackAuditCompleted({
           score: result.report.geoScore,
           score_band: result.report.grade ?? 'unknown',
@@ -444,6 +466,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
         claimToken={state.claim_token}
         criticalCount={criticalCount}
         highCount={highCount}
+        repeatCount={state.repeat_count}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
