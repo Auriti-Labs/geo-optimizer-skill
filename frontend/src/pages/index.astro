@@ -133,14 +133,58 @@ const faqSchema = {
   }))
 };
 
+// WebPage della homepage, emesso come blocco JSON-LD SEPARATO e non dentro il @graph
+// globale di Layout.astro, per due motivi verificati sul motore di audit:
+//  1. il check di freschezza (`signals`) legge `dateModified` solo al primo livello di
+//     ogni blocco JSON-LD, quindi una data annidata in @graph non verrebbe vista;
+//  2. il @graph di Layout è emesso su ogni pagina, e una data di aggiornamento valida
+//     per la sola homepage non deve finire su tutte le altre.
+//
+// `dateModified` è la data della lettura del benchmark mostrata in pagina (la stessa di
+// <time datetime> più sotto): è l'ultimo dato che cambia davvero su questa pagina, e non
+// la data della build, che cambierebbe a ogni deploy anche senza modifiche di contenuto.
+// `datePublished` è omesso apposta: la data di lancio reale non è nel repository e non
+// va inventata.
+//
+// `author` riporta il nome oltre all'@id: un riferimento nudo `{"@id": ...}` non ha
+// `name`, e il check di byline accetta solo un autore dichiarato con il nome.
+// Titolo unico della pagina: lo usano sia <title>/og:title (via Shell) sia il `name` del
+// WebPage. Con due stringhe scritte a mano basta una modifica a una sola per farle divergere.
+//
+// Il brand sta PRIMA del separatore. Il check di coerenza del nome (brand_entity) taglia
+// title e og:title al primo separatore e confronta ciò che sta a sinistra con H1 e schema. Con
+// il brand in coda, a sinistra restava la descrizione ("AI Visibility Audit & Citation
+// Monitoring"), che non coincide con nessun'altra fonte, e il nome risultava incoerente
+// anche se GeoReady compariva ovunque.
+const PAGE_TITLE = "GeoReady | AI Visibility Audit & Citation Monitoring";
+
+const pageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://geoready.dev/#webpage",
+  "url": "https://geoready.dev/",
+  "name": PAGE_TITLE,
+  "inLanguage": "en",
+  "isPartOf": { "@id": "https://geoready.dev/#website" },
+  "about": { "@id": "https://geoready.dev/#webapp" },
+  "publisher": { "@id": "https://geoready.dev/#organization" },
+  "author": {
+    "@type": "Person",
+    "@id": "https://geoready.dev/#founder",
+    "name": "Juan Camilo Auriti"
+  },
+  "dateModified": BENCHMARK.asOfIso
+};
+
 // Percentuali per le barre del pannello di run: dati reali del benchmark.
 const avgPct = Math.max(0, Math.min(100, Number(BENCHMARK.average) || 0));
 const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
 ---
 
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
 <Shell
-  title="AI Visibility Audit & Citation Monitoring — GeoReady"
+  title={PAGE_TITLE}
   description="Free AI visibility audit plus paid GEO monitoring. Check if ChatGPT, Perplexity, Claude, and Gemini can reach and cite your site, then track changes."
   canonical="https://geoready.dev/"
 >
@@ -227,7 +271,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
           </div>
           <div class="border-t border-rail px-5 py-3">
             <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
-              GET /api/public/benchmark · as of {BENCHMARK.asOf} · <a href="/state-of-geo/" class="underline underline-offset-2 hover:text-ink">live benchmark</a>
+              GET /api/public/benchmark · as of <time datetime={BENCHMARK.asOfIso}>{BENCHMARK.asOf}</time> · <a href="/state-of-geo/" class="underline underline-offset-2 hover:text-ink">live benchmark</a>
             </p>
           </div>
         </aside>
