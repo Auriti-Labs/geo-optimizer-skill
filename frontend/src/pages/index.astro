@@ -150,7 +150,13 @@ const faqSchema = {
 // `name`, e il check di byline accetta solo un autore dichiarato con il nome.
 // Titolo unico della pagina: lo usano sia <title>/og:title (via Shell) sia il `name` del
 // WebPage. Con due stringhe scritte a mano basta una modifica a una sola per farle divergere.
-const PAGE_TITLE = "AI Visibility Audit & Citation Monitoring — GeoReady";
+//
+// Il brand sta PRIMA del separatore. Il check di coerenza del nome (brand_entity) taglia
+// title e og:title al primo " — " e confronta ciò che sta a sinistra con H1 e schema. Con
+// il brand in coda, a sinistra restava la descrizione ("AI Visibility Audit & Citation
+// Monitoring"), che non coincide con nessun'altra fonte, e il nome risultava incoerente
+// anche se GeoReady compariva ovunque.
+const PAGE_TITLE = "GeoReady — AI Visibility Audit & Citation Monitoring";
 
 const pageSchema = {
   "@context": "https://schema.org",
