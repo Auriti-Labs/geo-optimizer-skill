@@ -19,19 +19,19 @@ export const roadmapPhases: RoadmapPhase[] = [
   {
     id: 'current',
     label: 'Current Foundation',
-    subtitle: 'What exists today in v4.18.x',
+    subtitle: 'What exists today in v4.19.x',
     statusColor: 'border-accent-success',
     items: [
       {
         id: 'cli-audit',
         title: 'CLI audit',
-        description: 'Complete `geo audit` command with 8-category scoring and 4 output formats.',
+        description: 'Complete `geo audit` command with 9-category scoring and 4 output formats.',
         status: 'available',
       },
       {
         id: 'scoring-8cat',
-        title: '8-category scoring',
-        description: 'Robots.txt, llms.txt, Schema, Meta, Content, Signals, AI Discovery, Brand & Entity.',
+        title: '9-category scoring (rubric v2)',
+        description: 'Robots.txt, llms.txt, Schema, Meta, Content, Signals, AI Discovery, Brand & Entity, and Google AI readiness. Rubric v2 is the default since v4.19.0.',
         status: 'available',
       },
       {
@@ -129,7 +129,7 @@ export const roadmapPhases: RoadmapPhase[] = [
       {
         id: 'static-pages',
         title: 'Strategic static pages',
-        description: 'Research, Roadmap, Manifesto, guides, and comparison pages — live.',
+        description: 'Research, Roadmap, Manifesto, guides, and comparison pages, all live.',
         status: 'available',
       },
       {
@@ -265,7 +265,7 @@ export const roadmapPhases: RoadmapPhase[] = [
       {
         id: 'scoring-recalibration',
         title: 'Scoring recalibration',
-        description: 'Periodic re-weighting of the 8 categories based on new research.',
+        description: 'Periodic re-weighting of the 9 categories based on new research.',
         status: 'exploring',
       },
       {
@@ -301,7 +301,7 @@ export const releaseCadence = [
   { version: 'v4.18.0', name: 'Quorum', status: 'available' as RoadmapStatus },
   { version: 'v4.18.1', name: 'Quorum (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.18.2', name: 'Quorum (patch)', status: 'available' as RoadmapStatus },
-  { version: 'v4.19.0', name: 'Google AI readiness / rubric v2', status: 'available' as RoadmapStatus },
   { version: 'v4.18.3', name: 'CDN/WAF patch', status: 'available' as RoadmapStatus },
+  { version: 'v4.19.0', name: 'Google AI readiness / rubric v2', status: 'available' as RoadmapStatus },
   { version: 'v5.0.0', name: 'Black Archive', status: 'exploring' as RoadmapStatus },
 ];
