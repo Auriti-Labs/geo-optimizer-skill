@@ -13,13 +13,13 @@ head:
 
 Research-backed content optimization techniques for AI citation visibility.
 
-> **Methods 1–9 from Princeton KDD 2024. Methods 10–11 from AutoGEO ICLR 2026 & Stanford 2025. Methods 12–42 from SE Ranking, OtterlyAI, Growth Marshal, and LLM-perspective analysis. Methods 43–47: RAG Readiness checks (v4.1.0).
+> Methods 1-9 from Princeton KDD 2024. Methods 10-11 from AutoGEO ICLR 2026 & Stanford 2025. Methods 12-42 from SE Ranking, OtterlyAI, Growth Marshal, and LLM-perspective analysis. Methods 43-47: RAG Readiness checks (v4.1.0).
 
 ---
 
 ## Background
 
-**Paper:** "GEO: Generative Engine Optimization" — Aggarwal et al., KDD 2024  
+**Paper:** "GEO: Generative Engine Optimization" by Aggarwal et al., KDD 2024  
 **Link:** [arxiv.org/abs/2311.09735](https://arxiv.org/abs/2311.09735)  
 **Dataset:** [generative-engines.com/GEO](https://generative-engines.com/GEO/)  
 **Methodology:** 10,000 real queries across diverse domains on Perplexity.ai; GPT-4 simulated responses
@@ -30,13 +30,13 @@ The study measured three signals: word count overlap (how much of your content a
 
 ---
 
-## Method 1 — Cite Sources
+## Method 1: Cite Sources
 
-**Measured impact: +30–115% AI visibility**
+**Measured impact: +30-115% AI visibility**
 
 Link to authoritative external sources inline in your content. This is the single highest-impact method in the study. AI engines use citations as a trust signal: if your page already cites authoritative sources, it looks more credible and is more likely to be cited itself.
 
-**Apply when:** Making any factual claim — statistics, cause-effect statements, comparisons, medical or financial advice.
+**Apply when:** Making any factual claim: statistics, cause-effect statements, comparisons, medical or financial advice.
 
 ```diff
 - Fixed-rate mortgages are safer during periods of inflation.
@@ -49,11 +49,11 @@ Prefer linking to: academic papers, government domains (`.gov`, `.edu`), industr
 
 ---
 
-## Method 2 — Statistics
+## Method 2: Statistics
 
 **Measured impact: +40% average AI visibility**
 
-Replace vague claims with specific, verifiable numerical data. AI engines prefer content with concrete facts — numbers, percentages, dates, study results — because they are easy to extract and verify.
+Replace vague claims with specific, verifiable numerical data. AI engines prefer content with concrete facts (numbers, percentages, dates, study results) because they are easy to extract and verify.
 
 **Apply when:** Describing frequency, scale, comparison, cost, or performance of anything.
 
@@ -68,13 +68,13 @@ Always specify the source and year. Avoid statistics older than 3 years unless t
 
 ---
 
-## Method 3 — Quotation Addition
+## Method 3: Quotation Addition
 
-**Measured impact: +30–40% AI visibility**
+**Measured impact: +30-40% AI visibility**
 
 Include direct quotes from domain experts, researchers, or official documents. Quotation marks signal attribution and verifiability, which AI engines interpret as a quality signal.
 
-**Apply when:** Covering YMYL (Your Money, Your Life) topics — finance, health, legal. Also effective for history and science.
+**Apply when:** Covering YMYL (Your Money, Your Life) topics: finance, health, legal. Also effective for history and science.
 
 ```diff
 - A fixed rate is a good choice when market rates are low.
@@ -88,9 +88,9 @@ Format: `"Quote" — Name, Role, Organization, Year`
 
 ---
 
-## Method 4 — Authoritative Tone
+## Method 4: Authoritative Tone
 
-**Measured impact: +6–12% average AI visibility**
+**Measured impact: +6-12% average AI visibility**
 
 Write with an expert voice. Eliminate vague hedging language and replace it with precise, structured explanations. Use the format: definition → how it works → practical implications.
 
@@ -109,13 +109,13 @@ Eliminate: "often", "generally", "might", "could be", "in some cases". Replace w
 
 ---
 
-## Method 5 — Fluency Optimization
+## Method 5: Fluency Optimization
 
-**Measured impact: +15–30% AI visibility**
+**Measured impact: +15-30% AI visibility**
 
 Improve text flow and readability. LLMs extract information more reliably from well-structured, grammatically correct prose. Choppy or error-prone text is harder to parse and cite.
 
-**Apply when:** Revising any existing page — this is a universal improvement.
+**Apply when:** Revising any existing page. This is a universal improvement.
 
 ```diff
 - The mortgage calculation, which is done by the bank, depends on the rate.
@@ -126,13 +126,13 @@ Improve text flow and readability. LLMs extract information more reliably from w
 + — meaning payments can increase or decrease over time.
 ```
 
-Target: sentences of 15–25 words. Use logical connectives: "therefore", "however", "consequently", "in particular". Each paragraph should have a clear topic sentence.
+Target: sentences of 15-25 words. Use logical connectives: "therefore", "however", "consequently", "in particular". Each paragraph should have a clear topic sentence.
 
 ---
 
-## Method 6 — Easy-to-Understand
+## Method 6: Easy-to-Understand
 
-**Measured impact: +8–15% AI visibility**
+**Measured impact: +8-15% AI visibility**
 
 Simplify without losing precision. AI engines can more reliably extract and paraphrase content that is clearly explained. Add brief in-context definitions for technical terms.
 
@@ -150,13 +150,13 @@ Two-level structure: plain explanation first, technical details second. Add a gl
 
 ---
 
-## Method 7 — Unique Words
+## Method 7: Unique Words
 
-**Measured impact: +5–8% AI visibility**
+**Measured impact: +5-8% AI visibility**
 
 Vary vocabulary. Avoid repeating the same term in consecutive sentences; use contextually appropriate synonyms. A varied vocabulary signals content quality to language models.
 
-**Apply when:** Reviewing finished content for over-repetition. Lower priority than methods 1–6.
+**Apply when:** Reviewing finished content for over-repetition. Lower priority than methods 1-6.
 
 ```diff
 - The calculator calculates your mortgage calculation automatically.
@@ -165,13 +165,13 @@ Vary vocabulary. Avoid repeating the same term in consecutive sentences; use con
 + You can model different repayment scenarios and compare outcomes.
 ```
 
-Note: this method has lower impact than the others — prioritize it last.
+Note: this method has lower impact than the others, so prioritize it last.
 
 ---
 
-## Method 8 — Technical Terms
+## Method 8: Technical Terms
 
-**Measured impact: +5–10% for specialized queries**
+**Measured impact: +5-10% for specialized queries**
 
 Use correct, industry-standard terminology. Relevant for expert users searching with technical vocabulary. Works best in combination with Authoritative and Cite Sources.
 
@@ -188,11 +188,11 @@ Include official acronyms with their full form on first use: `APR (Annual Percen
 
 ---
 
-## Method 9 — Keyword Stuffing ⚠️
+## Method 9: Keyword Stuffing ⚠️
 
 **Measured impact: Neutral or NEGATIVE**
 
-The Princeton study tested keyword density manipulation — forcefully repeating target keywords throughout the content. The result: no significant improvement in AI visibility, and in some cases a net negative effect by degrading fluency scores.
+The Princeton study tested keyword density manipulation, forcefully repeating target keywords throughout the content. The result: no significant improvement in AI visibility, and in some cases a net negative effect by degrading fluency scores.
 
 This is a carryover from traditional SEO. **Do not apply it for GEO.**
 
@@ -200,11 +200,11 @@ Instead: use Fluency Optimization + Cite Sources + Statistics.
 
 ---
 
-## Method 10 — Answer-First Structure
+## Method 10: Answer-First Structure
 
 **Measured impact: +25% AI visibility** (AutoGEO, ICLR 2026)
 
-Place the key conclusion or answer in the first 150 characters after every H2 heading. AI engines extract content from the opening of each section to build answers — if your conclusion is buried in the third paragraph, it may never be surfaced.
+Place the key conclusion or answer in the first 150 characters after every H2 heading. AI engines extract content from the opening of each section to build answers, so a conclusion buried in the third paragraph may never be surfaced.
 
 **Apply when:** Writing any informational or how-to content. Especially effective for query-driven pages (FAQ, guides, tutorials).
 
@@ -225,11 +225,11 @@ Structure: **Answer → Context → Detail**. The first sentence after each H2 s
 
 ---
 
-## Method 11 — Passage Density
+## Method 11: Passage Density
 
 **Measured impact: +23% AI visibility** (Stanford, 2025)
 
-Write paragraphs of 50–150 words, each containing at least one concrete data point (number, date, measurement, percentage). AI retrieval systems chunk content into passages — dense, self-contained paragraphs are more likely to be selected and cited than long, sprawling blocks of text.
+Write paragraphs of 50-150 words, each containing at least one concrete data point (number, date, measurement, percentage). AI retrieval systems chunk content into passages, and dense, self-contained paragraphs are more likely to be selected and cited than long, sprawling blocks of text.
 
 **Apply when:** Reviewing any page with paragraphs over 200 words or paragraphs that lack specific data.
 
@@ -254,24 +254,24 @@ Each paragraph should pass the "citation test": could an AI engine quote this pa
 
 ## Implementation Strategy
 
-### Phase 1 — Quick Wins (Days 1–3)
+### Phase 1: Quick Wins (Days 1-3)
 
 Focus on the two highest-ROI methods first.
 
-1. **Statistics** — Go through your top 5 pages. Find every vague claim ("many users", "significant improvement") and replace it with a specific number. Add the source and year.
-2. **Cite Sources** — Add 2–3 inline links to authoritative sources per page. Use `According to [Source](URL), ...` format.
-3. **Fluency** — Paste each page through Grammarly or LanguageTool. Fix errors and break up sentences over 40 words.
+1. **Statistics**: Go through your top 5 pages. Find every vague claim ("many users", "significant improvement") and replace it with a specific number. Add the source and year.
+2. **Cite Sources**: Add 2-3 inline links to authoritative sources per page. Use `According to [Source](URL), ...` format.
+3. **Fluency**: Paste each page through Grammarly or LanguageTool. Fix errors and break up sentences over 40 words.
 
-### Phase 2 — Structural Optimization (Days 4–10)
+### Phase 2: Structural Optimization (Days 4-10)
 
-4. **Quotation Addition** — Find 1–2 quotable experts per topic. Add direct quotes with attribution.
-5. **Authoritative Tone** — Rewrite introductions and summaries using the definition → explanation → implication structure.
-6. **Technical Terms** — Audit your use of acronyms and jargon. Add full forms on first use.
+4. **Quotation Addition**: Find 1-2 quotable experts per topic. Add direct quotes with attribution.
+5. **Authoritative Tone**: Rewrite introductions and summaries using the definition → explanation → implication structure.
+6. **Technical Terms**: Audit your use of acronyms and jargon. Add full forms on first use.
 
-### Phase 3 — Fine Tuning (Ongoing)
+### Phase 3: Fine Tuning (Ongoing)
 
-7. **Easy-to-Understand** — Add inline definitions for technical terms. Build a glossary page.
-8. **Unique Words** — Final pass to remove repeated words and vary vocabulary.
+7. **Easy-to-Understand**: Add inline definitions for technical terms. Build a glossary page.
+8. **Unique Words**: Final pass to remove repeated words and vary vocabulary.
 
 ---
 
@@ -299,4 +299,4 @@ Focus on the two highest-ROI methods first.
 
 - Paper: [https://arxiv.org/abs/2311.09735](https://arxiv.org/abs/2311.09735)
 - GEO-bench dataset: [https://generative-engines.com/GEO/](https://generative-engines.com/GEO/)
-- KDD 2024 Conference: August 25–29, 2024, Barcelona
+- KDD 2024 Conference: August 25-29, 2024, Barcelona

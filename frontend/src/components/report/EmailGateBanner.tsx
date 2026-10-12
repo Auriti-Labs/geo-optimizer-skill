@@ -86,7 +86,7 @@ export default function EmailGateBanner({ score, categories, claimToken }: Email
       </div>
 
       <p className="mb-3 text-sm leading-snug text-ink-soft">
-        Optional — the full report is already on this page. Enter your email and we'll
+        Optional: the full report is already on this page. Enter your email and we'll
         send you a copy of the complete 8-category breakdown to keep or share.
       </p>
 

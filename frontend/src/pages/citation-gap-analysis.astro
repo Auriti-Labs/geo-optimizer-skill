@@ -28,7 +28,7 @@ const faqs = [
   },
   {
     q: "Is Studio's competitor comparison the same as a citation comparison?",
-    a: "No. Studio's competitor comparison measures GEO score — structural readiness across 8 categories — not who was actually cited for a given prompt. Use the free citation checker (Step 1) or manual sampling (Step 2) to answer the citation question.",
+    a: "No. Studio's competitor comparison measures GEO score (structural readiness across 8 categories), not who was cited for a given prompt. Use the free citation checker (Step 1) or manual sampling (Step 2) to answer the citation question.",
   },
   {
     q: 'How do I know if a domain cited instead of me is a real competitor?',
@@ -36,15 +36,15 @@ const faqs = [
   },
   {
     q: 'Can I track my citation gap automatically over time?',
-    a: "Automated, scheduled tracking exists for Perplexity on Studio (5 checks/day) and for a tracked set of prompts via Studio's share-of-voice view. There's no automated tracking for ChatGPT specifically — see the ChatGPT citation tracking page for the manual-paste alternative.",
+    a: "Automated, scheduled tracking exists for Perplexity on Studio (5 checks/day) and for a tracked set of prompts via Studio's share-of-voice view. There's no automated tracking for ChatGPT specifically. See the ChatGPT citation tracking page for the manual-paste alternative.",
   },
   {
     q: 'Is any part of this free?',
-    a: 'Yes — Steps 1 through 3 (the citation check, the manual sampling, and the GEO-score comparison) are all free, with no account required. Only recurring automated tracking (Step 4) is a paid feature.',
+    a: 'Yes. Steps 1 through 3 (the citation check, the manual sampling, and the GEO-score comparison) are all free, with no account required. Only recurring automated tracking (Step 4) is a paid feature.',
   },
   {
     q: "Why does a competitor get cited and I don't, if my product is just as good?",
-    a: 'Usually because of structural readiness, not product quality — a schema gap, blocked AI-crawler access, thin factual content, or an unclear brand entity on your side, and stronger versions of those same signals on theirs. See "Why citation gaps happen" above, and run a GEO-score comparison (Step 3) to see which category is actually behind it.',
+    a: 'Usually because of structural readiness: a schema gap, blocked AI-crawler access, thin factual content, or an unclear brand entity on your side, and stronger versions of those same signals on theirs. See "Why citation gaps happen" above, and run a GEO-score comparison (Step 3) to see which category is behind it.',
   },
   {
     q: 'Should I run this before or after fixing my GEO score?',
@@ -63,11 +63,11 @@ const faqs = [
 
       <p class="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
         <strong>A citation gap is a query where an AI engine cites someone else instead of you.</strong> Finding yours is
-        not a single push-button report — it's a short workflow: check who's cited instead of you, sample the pattern
+        a short workflow, not a single push-button report: check who's cited instead of you, sample the pattern
         manually across engines, diagnose why with a GEO-score comparison, and decide whether the gap is worth tracking
-        over time. This page walks through all four steps with the free and paid tools that actually do each one — and is
-        equally clear about the one thing none of them do: there is no single "citation gap analysis" feature that runs
-        this whole workflow for you automatically.
+        over time. This page walks through all four steps with the free and paid tools that do each one. No tool
+        covers the whole sequence: there is no single "citation gap analysis" feature that runs this workflow for you
+        automatically.
       </p>
 
       <p class="mt-4 font-mono text-xs text-ink-mute">
@@ -76,15 +76,15 @@ const faqs = [
     </header>
 
     <section class="mb-12 md:mb-16">
-      <h2>What "citation gap" actually means</h2>
+      <h2>What "citation gap" means</h2>
       <p class="mt-4">
-        When an AI engine answers a question in your category, it cites a handful of sources — sometimes you, often not.
-        A citation gap analysis is the practice of finding those queries, seeing who got cited instead, and deciding what
+        When an AI engine answers a question in your category, it cites a handful of sources. Sometimes you are one of
+        them, often you are not. A citation gap analysis is the practice of finding those queries, seeing who got cited instead, and deciding what
         to do about it.
       </p>
       <p class="mt-4">
         Not every domain cited instead of you is a competitor worth chasing. AI answers frequently cite Wikipedia,
-        YouTube, G2, or industry directories alongside — or instead of — company sites. The free
+        YouTube, G2, or industry directories alongside or instead of company sites. The free
         <a href="/tools/ai-citation-checker/">AI Citation Checker</a> already separates true competitor domains from
         these reference platforms in its results, so the first step below tells you who's actually in your commercial gap
         and who's just a reference source every brand in the category gets cited alongside.
@@ -94,82 +94,82 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>Why citation gaps happen</h2>
       <p class="mt-4">
-        A citation gap usually isn't about your product being worse than the source that got cited instead. It's more
-        often structural: AI engines cite sources they can retrieve, parse, and quote cleanly — valid schema, AI-crawler
-        access in <code>robots.txt</code>, dense factual content, and a clear brand entity. A page that reads fine to a
+        A citation gap usually traces back to page structure. AI engines cite sources they can retrieve, parse, and
+        quote cleanly: valid schema, AI-crawler access in <code>robots.txt</code>, dense factual content, and a clear
+        brand entity. A page that reads fine to a
         human but is thin on structured data or blocked to AI bots in one overlooked directory will lose citations to a
-        page that's weaker on substance but stronger on those specific signals. This is exactly why Step 3 below compares
-        GEO-score readiness rather than guessing: a low score in one category — schema depth, factual density, AI-crawler
-        permissions — is frequently the actual reason a named competitor gets cited and you don't. See
-        <a href="/methodology/">the 8 scoring categories</a> for the full breakdown of what's actually being measured.
+        page that's weaker on substance but stronger on those specific signals. This is why Step 3 below compares
+        GEO-score readiness instead of guessing. A low score in one category (schema depth, factual density, AI-crawler
+        permissions) is frequently the reason a named competitor gets cited and you don't. See
+        <a href="/methodology/">the 8 scoring categories</a> for the full breakdown of what is measured.
       </p>
     </section>
 
     <section class="mb-12 md:mb-16">
       <h2>The workflow: 4 steps you can run today</h2>
 
-      <h3 class="mt-6">Step 1 — Run a free citation check</h3>
+      <h3 class="mt-6">Step 1: Run a free citation check</h3>
       <p class="mt-3">
         Start with the free <a href="/tools/ai-citation-checker/">AI Citation Checker</a>:
         <a href="/tools/ai-citation-checker/">run a citation check</a> against the questions your buyers actually ask,
-        and read the "cited instead of you" list in the results. This is real, live, and free today — no account needed.
+        and read the "cited instead of you" list in the results. This is live and free today, with no account needed.
         The check queries Perplexity Sonar specifically, because Sonar returns the exact source URLs behind its answer,
         which is what makes a citation gap verifiable in the first place. It does not query ChatGPT directly; ChatGPT and
-        other parametric models don't expose sources the same way, which is exactly why this checker uses the one engine
+        other parametric models don't expose sources the same way, which is why this checker uses the one engine
         that does.
       </p>
       <p class="mt-3 italic">
-        Illustrative example — not a customer case, no measured figures. Say the results show a competitor's comparison
+        Illustrative example (not a customer case, no measured figures). Say the results show a competitor's comparison
         page cited for three of the five prompts you sampled, and a G2 listing cited for the other two. The G2 citation
-        isn't a gap worth chasing — it's a reference platform every brand in the category gets cited alongside,
+        is not a gap worth chasing: it is a reference platform that every brand in the category gets cited alongside,
         competitor included. The competitor's comparison page is the real gap: one source, worth investigating in Step 3.
       </p>
 
-      <h3 class="mt-6">Step 2 — Sample the same prompts manually, across engines</h3>
+      <h3 class="mt-6">Step 2: Sample the same prompts manually, across engines</h3>
       <p class="mt-3">
         A single automated check is a snapshot from one engine. Before you act on it, sample the same handful of prompts
-        by hand in ChatGPT, Perplexity, and whatever else your buyers use — a fresh session each time, no personalization.
+        by hand in ChatGPT, Perplexity, and whatever else your buyers use. Use a fresh session each time, without personalization.
         This is the manual method described in
         <a href="/guides/ai-citations-check/">how to tell if ChatGPT and Perplexity are citing your brand</a>: open a
         clean session and ask the questions a buyer would ask. It's slower than the automated check, but it's the only
-        way to see, first-hand, whether a gap on Perplexity is also a gap on ChatGPT — since nothing automated can confirm
+        way to see, first-hand, whether a gap on Perplexity is also a gap on ChatGPT, since nothing automated can confirm
         that for you yet (more on why in
         <a href="/chatgpt-citation-tracker/">ChatGPT citation tracking: what actually works</a>).
       </p>
 
-      <h3 class="mt-6">Step 3 — Compare GEO-score readiness, not citations</h3>
+      <h3 class="mt-6">Step 3: Compare GEO-score readiness, not citations</h3>
       <p class="mt-3">
-        Once you know <em>who's</em> cited instead of you, the next question is <em>why</em>. That's a structural
-        question, not a citation question, and GeoReady answers it with a GEO score, not a citation count.
+        Once you know <em>who's</em> cited instead of you, the next question is <em>why</em>. That is a structural
+        question, and GeoReady answers it with a GEO score rather than a citation count.
       </p>
       <blockquote class="mt-4 max-w-2xl border-l-2 border-pass-deep pl-4">
         <p class="text-sm italic leading-relaxed text-ink-soft">
-          <strong>The GEO score measures readiness — not citations.</strong>
+          <strong>The GEO score measures readiness, not citations.</strong>
           <a href="/compare/">Compare two sites' scores</a> or
           <a href="/analyze-competitors/">benchmark several domains at once</a> and you'll see an 8-category readiness
           comparison: crawlability, schema, factual density, entity clarity, and the rest. A higher score means fewer
-          blockers and stronger citable signals, which correlates with being cited — it is not a report of who was
-          actually cited for a given prompt. To confirm that, go back to Step 1 or Step 2. Studio's "competitor
-          comparison" line item runs this same GEO-score comparison, not a citation-based one — don't expect it to name
-          which prompts a competitor is winning; that's a different tool.
+          blockers and stronger citable signals, which correlates with being cited. It is not a report of who was
+          cited for a given prompt. To confirm that, go back to Step 1 or Step 2. Studio's "competitor
+          comparison" line item runs this same GEO-score comparison, not a citation-based one. Do not expect it to name
+          which prompts a competitor is winning; that is a different tool.
         </p>
       </blockquote>
 
-      <h3 class="mt-6">Step 4 — Decide whether the gap is worth tracking</h3>
+      <h3 class="mt-6">Step 4: Decide whether the gap is worth tracking</h3>
       <p class="mt-3">
-        A one-time gap is a data point. A recurring one is a trend worth watching — but only Studio and up have anything
-        that watches automatically, and it's worth being precise about what that is:
+        A one-time gap is a data point. A recurring one is a trend worth watching, but only Studio and up have anything
+        that watches automatically. Here is what that covers:
       </p>
       <ul class="mt-3 space-y-3">
-        <li><strong>Automated, scheduled tracking exists for Perplexity only</strong> — Studio's AI citation tracking runs
+        <li><strong>Automated, scheduled tracking exists for Perplexity only.</strong> Studio's AI citation tracking runs
           5 automated checks per day against Perplexity. It is not a general "AI citation tracker" across every engine.</li>
-        <li><strong>Share-of-voice over a tracked prompt set</strong> — Studio and up can also show, across a set of
+        <li><strong>Share-of-voice over a tracked prompt set.</strong> Studio and up can also show, across a set of
           saved AI answer snapshots, whether a named competitor is mentioned more often than you. This is a trend across
-          the prompts you've chosen to track, not a continuous scan of "every prompt where you lose to competitor X" — no
+          the prompts you've chosen to track, not a continuous scan of "every prompt where you lose to competitor X". No
           such all-prompts dashboard exists.</li>
       </ul>
       <p class="mt-3">
-        If ChatGPT specifically is the gap you care about, automated tracking isn't available for it on any plan — see
+        If ChatGPT specifically is the gap you care about, automated tracking isn't available for it on any plan. See
         <a href="/chatgpt-citation-tracker/">ChatGPT citation tracking: what actually works</a> for what Agency's
         manual-paste snapshot tracking does instead. See <a href="/pricing/">pricing</a> for exact plan details.
       </p>
@@ -179,12 +179,12 @@ const faqs = [
       <h2>What this workflow is not</h2>
       <ul class="mt-4 space-y-3">
         <li><strong>Not one feature.</strong> GeoReady doesn't have a single "citation gap analysis" product or report
-          that runs Steps 1–4 for you automatically. It's four real capabilities, used in sequence.</li>
+          that runs Steps 1-4 for you automatically. It's four real capabilities, used in sequence.</li>
         <li><strong>Not a citation-based competitor dashboard.</strong> Studio's competitor comparison is GEO-score
           based. If a page tells you it shows "who's cited vs. your competitor" as a live dashboard, that page is
           describing something GeoReady doesn't build.</li>
         <li><strong>Not an all-prompts scan.</strong> Tracking (Step 4) works over prompts you've explicitly added to a
-          tracked set — it does not continuously discover every query where a named competitor beats you.</li>
+          tracked set. It does not continuously discover every query where a named competitor beats you.</li>
       </ul>
     </section>
 
@@ -211,7 +211,7 @@ const faqs = [
               <th scope="row" class="px-4 py-3 text-left font-text font-semibold text-ink">Structured ChatGPT (and Google) snapshot history</th>
               <td class="whitespace-nowrap px-4 py-3 leading-relaxed text-ink-soft">Agency ($89/mo)</td>
               <td class="px-4 py-3 leading-relaxed text-ink-soft">
-                Manual-paste answer snapshots with citation-quality scoring — see the
+                Manual-paste answer snapshots with citation-quality scoring. See the
                 <a href="/chatgpt-citation-tracker/">ChatGPT citation tracking page</a>
               </td>
             </tr>
@@ -229,7 +229,7 @@ const faqs = [
         A citation gap is not the same measurement as a ranking gap. Your page can rank well on Google and still never
         get cited in an AI answer, because the two questions are different: does Google rank this page, versus does an AI
         assistant retrieve and cite it. That's also why this workflow doesn't route through traditional rank-tracking
-        tools at any step — none of the four steps above measure position in a list of ten blue links, and none of them
+        tools at any step. None of the four steps above measures position in a list of ten blue links, and none of them
         should. If a "citation gap" report you're evaluating elsewhere is really just a rank-tracking export with AI
         branding, it's answering a different question than the one this page walks through.
       </p>
@@ -250,9 +250,9 @@ const faqs = [
     <section class="rounded-[4px] border border-rail bg-white p-6">
       <h2 class="font-head text-lg font-extrabold tracking-[-0.02em] text-ink">Start finding your gaps</h2>
       <p class="mt-2 text-sm leading-relaxed text-ink-soft">
-        Run the free citation check first — no account, no card. If the structural diagnosis matters more right now, run
-        the free GEO audit instead. Either way, nothing past this point requires a credit card or a sales conversation —
-        the paid tiers only come into play once you've decided a gap is worth tracking (Step 4).
+        Run the free citation check first. It needs no account and no card. If the structural diagnosis matters more right now, run
+        the free GEO audit instead. Either way, nothing past this point requires a credit card or a sales conversation.
+        The paid tiers only come into play once you've decided a gap is worth tracking (Step 4).
       </p>
       <div class="mt-4 flex flex-wrap gap-3">
         <a

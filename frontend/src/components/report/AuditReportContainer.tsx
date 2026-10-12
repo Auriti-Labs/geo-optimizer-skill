@@ -230,7 +230,7 @@ function ReportNextStep({
     return `${ordinal} of ${host}?`;
   })();
   const repeatReason =
-    'You are re-checking this site by hand. The free plan runs the same audit weekly, emails you when the score moves, and keeps the full history — so the checking happens without you.';
+    'You are re-checking this site by hand. The free plan runs the same audit weekly, emails you when the score moves, and keeps the full history, so the checking happens without you.';
 
   return (
     <section className="overflow-hidden rounded-[4px] border border-pass/50 bg-pass-wash/60">

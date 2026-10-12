@@ -3,7 +3,7 @@ import Shell from '../components/Shell.astro';
 
 const title = 'ChatGPT Citation Tracking: What Actually Works | GeoReady';
 const description =
-  "Honest breakdown of ChatGPT citation tracking: what's automated (Perplexity/Studio), manual (Agency), and what no tool does yet.";
+  "Breakdown of ChatGPT citation tracking: what's automated (Perplexity/Studio), manual (Agency), and what no tool does yet.";
 const canonical = 'https://geoready.dev/chatgpt-citation-tracker/';
 const datePublished = '2026-09-16';
 const dateModified = '2026-09-16';
@@ -18,11 +18,11 @@ const faqs = [
   },
   {
     q: 'So what does "ChatGPT citation tracking" mean on GeoReady, then?',
-    a: "On Agency, it means pasting a ChatGPT answer into a tracked query and getting citation-quality scoring plus history over time — the same scoring an automated Perplexity check gets, applied to an answer you captured yourself. It's real and it's useful; it's just manual, not automated.",
+    a: "On Agency, it means pasting a ChatGPT answer into a tracked query and getting citation-quality scoring plus history over time. It is the same scoring an automated Perplexity check gets, applied to an answer you captured yourself. The capture is manual, not automated.",
   },
   {
     q: "Is Studio's automated citation tracking about ChatGPT?",
-    a: "No. Studio's automated tracking is Perplexity-only. Studio has no ChatGPT capability at all — that starts on Agency, and only as manual-paste.",
+    a: "No. Studio's automated tracking is Perplexity-only. Studio has no ChatGPT capability at all. That starts on Agency, and only as manual-paste.",
   },
   {
     q: "What does Agency add that Studio doesn't have?",
@@ -30,19 +30,19 @@ const faqs = [
   },
   {
     q: 'Is manual-paste tracking less valid than automated tracking?',
-    a: 'The scoring is identical either way — the same logic scores brand mentions, citation quality, and cited domains whether the answer arrived automatically or was pasted in. The only difference is who captures the answer: an automated client for Perplexity, or you for ChatGPT and Google.',
+    a: 'The scoring is identical either way: the same logic scores brand mentions, citation quality, and cited domains whether the answer arrived automatically or was pasted in. The only difference is who captures the answer: an automated client for Perplexity, or you for ChatGPT and Google.',
   },
   {
     q: 'How is this different from the free AI Citation Checker?',
-    a: 'The checker is a one-time, single-engine (Perplexity) snapshot with no history. This page is about keeping a history over time — automatically for Perplexity (Studio) or through structured manual snapshots for ChatGPT and Google (Agency).',
+    a: 'The checker is a one-time, single-engine (Perplexity) snapshot with no history. This page is about keeping a history over time: automatically for Perplexity (Studio) or through structured manual snapshots for ChatGPT and Google (Agency).',
   },
   {
     q: 'Will an automated ChatGPT tracker ship on GeoReady eventually?',
-    a: "No date is set, and we're not promising one here. If that changes, it will show up as a new automated provider next to Perplexity — the same way Perplexity itself does today — not as a retroactive claim on this page.",
+    a: "No date is set, and we're not promising one here. If that changes, it will show up as a new automated provider next to Perplexity, the same way Perplexity does today, and not as a retroactive claim on this page.",
   },
   {
     q: 'Does tracking citations improve them?',
-    a: "No — tracking tells you where you stand and whether that's changing; it doesn't fix anything by itself. The signals that actually improve citation odds (schema, crawlable AI-bot access, factual density, entity clarity) are what the free GEO audit checks. Track after you've fixed the basics, not instead of fixing them.",
+    a: "No. Tracking tells you where you stand and whether that's changing; it doesn't fix anything by itself. The signals that improve citation odds (schema, crawlable AI-bot access, factual density, entity clarity) are what the free GEO audit checks. Track after you've fixed the basics, not instead of fixing them.",
   },
 ];
 ---
@@ -63,19 +63,19 @@ const faqs = [
       </div>
 
       <p class="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
-        <strong>Does GeoReady query ChatGPT automatically to track citations? No — and as far as
+        <strong>Does GeoReady query ChatGPT automatically to track citations? No. As far as
         we can verify, nothing on the market does, because ChatGPT doesn't expose its sources the
-        way an answer engine like Perplexity does.</strong> That's not a limitation we're hiding.
-        It's the reason "ChatGPT citation tracking" needs a more specific answer than "yes" or
-        "no" — and this page gives you that answer, tier by tier, instead of a vague promise.
+        way an answer engine like Perplexity does.</strong> We state that limit up front.
+        It is why "ChatGPT citation tracking" needs a more specific answer than "yes" or
+        "no", and this page gives that answer tier by tier.
       </p>
 
       <p class="mt-4 text-base leading-relaxed text-ink-soft">
         If you've searched this term expecting a dashboard that pings ChatGPT every hour and
         emails you when something changes, that product doesn't exist here, and we haven't found
-        it anywhere else either. What exists is more useful than it sounds once you know what it
-        actually is: one automated engine that isn't ChatGPT, and one real way to track ChatGPT
-        that isn't automated. Both are described below, with which plan each one is actually on.
+        it anywhere else either. What exists is one automated engine that isn't ChatGPT, and one
+        way to track ChatGPT that isn't automated. Both are described below, with the plan each
+        one is on.
       </p>
     </header>
 
@@ -83,77 +83,76 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>Why automated ChatGPT tracking doesn't exist yet</h2>
       <p class="mt-4">
-        Perplexity's Sonar model is built around live web search — it returns the exact source
+        Perplexity's Sonar model is built around live web search. It returns the exact source
         URLs behind its answer as part of the response, which is what makes an automated client
-        possible: query it, parse the sources, score them, done. ChatGPT's parametric answers
+        possible: query it, parse the sources, score them. ChatGPT's parametric answers
         don't expose sources the same way, so there's no equivalent structured output to parse
-        automatically. That's a technical constraint on the input side, not a corner GeoReady cut
-        on the product side — it's why the product's own engineering notes describe Perplexity as
+        automatically. That is a technical constraint on the input side, and it is why the
+        product's own engineering notes describe Perplexity as
         "the first (and only) real client" rather than "the first of several." Until an AI engine
-        exposes ChatGPT citations the way Perplexity exposes its own, the honest options are
+        exposes ChatGPT citations the way Perplexity exposes its own, the available options are
         correlation (use Perplexity as a proxy, since citable signals overlap across engines) or
-        manual capture (paste the answer yourself, get it scored). GeoReady ships both — described
-        next — rather than shipping a dashboard that implies the first option without saying so.
+        manual capture (paste the answer yourself, get it scored). GeoReady ships both, described
+        next. It does not ship a dashboard that implies the first option without saying so.
       </p>
     </section>
 
     {/* Who needs this */}
     <section class="mb-12 md:mb-16">
-      <h2>Who actually needs this</h2>
+      <h2>Who needs this</h2>
       <p class="mt-4">
-        If you're checking your own site once, the free checker (Perplexity-backed) is enough —
-        you don't need a tracking tier at all. This page is for two situations: an agency or
+        If you're checking your own site once, the free checker (Perplexity-backed) is enough.
+        You don't need a tracking tier at all. This page is for two situations: an agency or
         consultant who needs to show a client a defensible, dated history of what ChatGPT said
         about their brand over months, not just today; or a team that's already fixed its
         GEO-readiness basics and wants to confirm the fix actually moved ChatGPT's answers, not
-        just Perplexity's. In both cases, the "tracking" part is doing real work — it's the manual
-        capture that needs planning for, since nothing automates it.
+        just Perplexity's. In both cases the manual capture is the part that needs planning,
+        since nothing automates it.
       </p>
     </section>
 
     {/* Three tiers, honest framing */}
     <section class="mb-12 md:mb-16">
-      <h2>What "ChatGPT citation tracking" can honestly mean today</h2>
+      <h2>What "ChatGPT citation tracking" can mean today</h2>
       <p class="mt-4">
         Three different things get called "ChatGPT citation tracking." Only one of them is
         automated, and it isn't the one that mentions ChatGPT.
       </p>
 
-      <h3 class="mt-8">Free — a correlated proxy, not a ChatGPT query</h3>
+      <h3 class="mt-8">Free: a correlated proxy, not a ChatGPT query</h3>
       <p class="mt-2">
         The free <a href="/tools/ai-citation-checker/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">AI Citation Checker</a> queries
         Perplexity Sonar, not ChatGPT. Perplexity is the engine GeoReady checks automatically
-        because Sonar returns the exact source URLs behind its answer — verifiable in a way
+        because Sonar returns the exact source URLs behind its answer, verifiable in a way
         ChatGPT's parametric answers aren't. Citation patterns correlate across engines: content
         that gets cited by Perplexity is building the same signals (structured data, factual
         density, crawlable access) that make ChatGPT more likely to reference it too. Correlated
-        is not the same as measured — if you need to know what ChatGPT specifically said, you have
+        is not the same as measured. If you need to know what ChatGPT specifically said, you have
         to check ChatGPT specifically, which the free checker does not do.
       </p>
 
-      <h3 class="mt-6">Studio — real automated tracking, but it's Perplexity, not ChatGPT</h3>
+      <h3 class="mt-6">Studio: automated tracking, but it's Perplexity, not ChatGPT</h3>
       <p class="mt-2">
-        Studio's "AI citation tracking" is real, automated, and scheduled — 5 checks per day. It
-        is also, exactly and only, Perplexity. <strong>Studio has zero ChatGPT capability.</strong> If
+        Studio's "AI citation tracking" is automated and scheduled, with 5 checks per day. It
+        covers Perplexity and nothing else. <strong>Studio has zero ChatGPT capability.</strong> If
         a page anywhere implies Studio tracks ChatGPT automatically, that page is wrong; the
         product doesn't do that today.
       </p>
 
-      <h3 class="mt-6">Agency — real ChatGPT tracking, but it's manual-paste, not automated</h3>
+      <h3 class="mt-6">Agency: ChatGPT tracking, but it's manual-paste, not automated</h3>
       <p class="mt-2">
-        This is the one that's actually about ChatGPT. On Agency, you paste a ChatGPT answer into
+        This is the tier that covers ChatGPT. On Agency, you paste a ChatGPT answer into
         a tracked query, and GeoReady scores brand mention and citation quality, parses which
-        domains got cited in the text, and keeps that as history over time — the same
+        domains got cited in the text, and keeps that as history over time. It is the same
         deterministic scoring an automated Perplexity snapshot gets, applied to the answer you
-        pasted in. It's real, it's shippable, and it's the honest meaning of "ChatGPT citation
-        tracking" on GeoReady today: <strong>structured, scored, historical — and manual to
-        capture.</strong>
+        pasted in. On GeoReady today, "ChatGPT citation tracking" means exactly this:
+        structured, scored, historical, and manual to capture.
       </p>
       <p class="mt-4 text-sm italic text-ink-mute">
-        Illustrative example — not a customer case, no measured figures. Say you ask ChatGPT the
+        Illustrative example (not a customer case, no measured figures). Say you ask ChatGPT the
         same buyer-style question once a week and paste the answer into a tracked query each time.
         Week 1: mentioned, not cited. Week 4: cited alongside two competitors. Week 8: cited alone.
-        Nothing about the capture step changed — you're still pasting the answer in — but the
+        The capture step is unchanged, since you're still pasting the answer in, but the
         history now shows a trend a single snapshot never could. That trend line, not the capture
         method, is what makes this worth paying for.
       </p>
@@ -161,27 +160,27 @@ const faqs = [
 
     {/* What drives citations */}
     <section class="mb-12 md:mb-16">
-      <h2>What actually drives ChatGPT citations</h2>
+      <h2>What drives ChatGPT citations</h2>
       <p class="mt-4">
         Tracking tells you <em>whether</em> you're cited. It doesn't make you more citable on its
-        own. The signals that do — schema depth, AI-crawler access in <code>robots.txt</code>,
-        factual density, a clear brand entity — are the same ones GeoReady's
+        own. The signals that do (schema depth, AI-crawler access in <code>robots.txt</code>,
+        factual density, a clear brand entity) are the same ones GeoReady's
         <a href="/ai-seo-audit/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">free GEO audit</a> scores,
         and they're the same category of signal every AI engine's retrieval rewards, ChatGPT
         included, even though GeoReady can't measure ChatGPT's citation behavior directly. In
-        practice, that means the fastest way to close a ChatGPT citation gap is rarely "track
-        harder" — it's fixing the readiness signal the audit already flags, then checking back
+        practice, the fastest way to close a ChatGPT citation gap is rarely "track
+        harder". It is fixing the readiness signal the audit already flags, then checking back
         later to see if the pasted answers changed.
       </p>
     </section>
 
     {/* The route */}
     <section class="mb-12 md:mb-16">
-      <h2>The route: what to actually do</h2>
+      <h2>The route: what to do</h2>
       <ol class="mt-4 list-decimal space-y-3 pl-5">
-        <li><strong>Track Perplexity automatically</strong> on Studio — the one AI engine GeoReady can check on a schedule without you doing anything. Treat it as your automated proxy signal for AI citation behavior generally, not as ChatGPT data.</li>
+        <li><strong>Track Perplexity automatically</strong> on Studio. It is the one AI engine GeoReady can check on a schedule without you doing anything. Treat it as your automated proxy signal for AI citation behavior generally, not as ChatGPT data.</li>
         <li><strong>Paste ChatGPT (and Google) answers into tracked queries</strong> on Agency, when ChatGPT specifically is what a client or your own reporting needs. You do the capture; GeoReady does the scoring and keeps the history.</li>
-        <li><strong>Fix the readiness signals that drive citations in the first place</strong> — schema, crawlable AI-bot access, factual density, entity clarity — with the <a href="/ai-seo-audit/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">free GEO audit</a>. Every engine's citation behavior, ChatGPT included, correlates with these signals more than with which tracking tier you're on.</li>
+        <li><strong>Fix the readiness signals that drive citations in the first place</strong> (schema, crawlable AI-bot access, factual density, entity clarity) with the <a href="/ai-seo-audit/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">free GEO audit</a>. Every engine's citation behavior, ChatGPT included, correlates with these signals more than with which tracking tier you're on.</li>
       </ol>
     </section>
 
@@ -190,7 +189,7 @@ const faqs = [
       <h2>One-time check vs. ongoing tracking</h2>
       <p class="mt-4">
         If you just want to know, right now, who's cited instead of you for a handful of prompts,
-        use the free <a href="/tools/ai-citation-checker/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">AI Citation Checker</a> —
+        use the free <a href="/tools/ai-citation-checker/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">AI Citation Checker</a>:
         <a href="/tools/ai-citation-checker/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">run a one-time citation check</a> and
         read the results in under a minute. This page is about the different job: keeping a
         <em>history</em> of citations over time, either automatically (Perplexity, Studio) or as
@@ -225,7 +224,7 @@ const faqs = [
       <h2>Get the honest route running</h2>
       <p class="mt-4">
         Start with the free citation check to see where you stand today. When ChatGPT-specific
-        history and scoring matter, that's Agency — and if you haven't run the free audit yet,
+        history and scoring matter, that's Agency. If you haven't run the free audit yet,
         that's the cheaper first move for most sites.
       </p>
       <div class="mt-6 flex flex-wrap gap-3">

@@ -215,8 +215,8 @@ The score is the sum of all points earned across **9 categories**, capped at 100
 | Open Graph tags missing | Add `og:title`, `og:description`, `og:image` to `<head>` | — |
 | No KG sameAs links | Add `sameAs` to Organization schema (Wikipedia, LinkedIn, etc.) | [Scoring Rubric](scoring-rubric.md#8-brand--entity-signals--max-10-pts-new-in-v3182) |
 | AI Discovery endpoints missing | Use `geo fix` to generate `.well-known/ai.txt` and `/ai/*.json` | — |
-| Low statistics count | Add specific numbers, %, dates to page content | [GEO Methods](geo-methods.md#method-2--statistics) |
-| 0 external citations | Link to authoritative sources (papers, .gov, .edu) | [GEO Methods](geo-methods.md#method-1--cite-sources) |
+| Low statistics count | Add specific numbers, %, dates to page content | [GEO Methods](geo-methods.md#method-2-statistics) |
+| 0 external citations | Link to authoritative sources (papers, .gov, .edu) | [GEO Methods](geo-methods.md#method-1-cite-sources) |
 
 ---
 

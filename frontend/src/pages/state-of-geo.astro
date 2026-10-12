@@ -5,7 +5,7 @@ import NewsletterSignup from '../components/NewsletterSignup';
 import ArticleVisual from '../components/ArticleVisual.astro';
 import { marketingVisuals } from '../lib/marketingVisuals';
 
-const title = 'State of GEO — AI Search Readiness Benchmark | GeoReady';
+const title = 'State of GEO: AI Search Readiness Benchmark | GeoReady';
 const description =
   'GeoReady’s live AI search readiness benchmark, with a full report every month: average GEO score, llms.txt and schema adoption, and the biggest gaps.';
 const canonical = 'https://geoready.dev/state-of-geo/';
@@ -23,12 +23,12 @@ const faqs = [
   {
     question: 'What is a good GEO score?',
     answer:
-      'On the open-source GEO rubric, 86–100 is excellent, 68–85 is good, 36–67 is foundation, and 0–35 is critical. A good score means a site has cleared the basics — AI crawler access, structured data, and an llms.txt — and is legible to AI answer engines. The live average above is the baseline to beat across audited sites.',
+      'On the open-source GEO rubric, 86-100 is excellent, 68-85 is good, 36-67 is foundation, and 0-35 is critical. A good score means a site has cleared the basics (AI crawler access, structured data, and an llms.txt) and is legible to AI answer engines. The live average above is the baseline to beat across audited sites.',
   },
   {
     question: 'How is AI search readiness measured?',
     answer:
-      'AI search readiness is measured across eight categories: robots.txt and AI crawler access, llms.txt, schema JSON-LD, meta tags, content quality, technical signals, AI discovery files, and brand and entity clarity. Each category contributes to a single 0–100 GEO score using the same open-source engine for every audited site, so results are comparable.',
+      'AI search readiness is measured across eight categories: robots.txt and AI crawler access, llms.txt, schema JSON-LD, meta tags, content quality, technical signals, AI discovery files, and brand and entity clarity. Each category contributes to a single 0-100 GEO score using the same open-source engine for every audited site, so results are comparable.',
   },
   {
     question: 'Why does llms.txt matter?',
@@ -38,7 +38,7 @@ const faqs = [
   {
     question: 'Is this benchmark representative of the whole web?',
     answer:
-      'No. This is a benchmark of sites audited by GeoReady, not a survey of the whole web. The audited sample skews toward teams already curious about AI visibility, so it is best read as a directional signal among sites that opted to measure readiness — not a universal statistic about every website that exists.',
+      'No. This is a benchmark of sites audited by GeoReady, not a survey of the whole web. The audited sample skews toward teams already curious about AI visibility, so it is best read as a directional signal among sites that opted to measure readiness. It is not a universal statistic about every website that exists.',
   },
   {
     question: 'How can I improve my site’s AI visibility?',
@@ -70,8 +70,8 @@ const heroVisual = marketingVisuals.commandCenterV2;
             A live benchmark from <strong class="text-ink">sites audited by GeoReady</strong>,
             showing how prepared websites are for AI search, citations,
             <code class="text-sm font-mono">llms.txt</code>, and structured data.
-            Every site is scored with the same open-source 100-point rubric —
-            this is an audited sample, not a survey of the whole web.
+            Every site is scored with the same open-source 100-point rubric.
+            This is an audited sample, not a survey of the whole web.
           </p>
 
           <div class="mt-7 flex flex-col flex-wrap gap-3 sm:flex-row">
@@ -135,9 +135,9 @@ const heroVisual = marketingVisuals.commandCenterV2;
           <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">GET /api/public/benchmark · live</p>
         </div>
         <p class="mt-4">
-          Across sites audited by GeoReady, the basics of AI search readiness — AI
+          Across sites audited by GeoReady, the basics of AI search readiness (AI
           crawler access, an <code class="text-sm font-mono">llms.txt</code>, and
-          structured data — are still missing more often than not. The live numbers
+          structured data) are still missing more often than not. The live numbers
           below show the current average and median GEO score and adoption rates,
           updated as new audits run and counting the most recent audit per domain.
         </p>
@@ -207,18 +207,17 @@ const heroVisual = marketingVisuals.commandCenterV2;
       <section>
         <h2>What this means</h2>
         <p class="mt-4">
-          The numbers point to one conclusion: among sites that bothered to measure,
-          most are still leaving easy AI visibility points on the table. The gaps are
-          rarely about content quality — they are about machine legibility. AI answer
-          engines cannot cite what they cannot reach, parse, or trust, and the
-          cheapest wins sit in exactly those three layers.
+          Among sites that bothered to measure, most are still leaving easy AI
+          visibility points on the table. The gaps are mostly in machine legibility,
+          not in content quality. AI answer engines cannot cite what they cannot
+          reach, parse, or trust, and the cheapest wins sit in those three layers.
         </p>
         <p class="mt-4">
           Two signals do much of the work. An <a href="/guides/what-is-llms-txt/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">llms.txt</a>
           file orients AI tools toward your important pages, and valid
           <code class="text-sm font-mono">JSON-LD</code> schema lets a model
           disambiguate your brand and lift clean answers. Across audited sites both
-          are still underused — and both are among the cheapest, fastest fixes: a
+          are still underused, and both are among the cheapest, fastest fixes: a
           weekend of work, not a quarter.
         </p>
         <p class="mt-4">
@@ -227,8 +226,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
           <code class="text-sm font-mono">llms.txt</code> are trivial to publish yet
           rarely present, so a site that ships them moves ahead of much of the
           audited sample with very little effort. For marketing, SEO, and dev teams,
-          the practical takeaway is that AI search readiness is mostly hygiene you
-          can act on this week — not a mysterious algorithm to chase.
+          AI search readiness is mostly hygiene you can act on this week.
         </p>
       </section>
 
@@ -248,13 +246,13 @@ const heroVisual = marketingVisuals.commandCenterV2;
           <code class="text-sm font-mono">Organization</code> and
           <code class="text-sm font-mono">WebSite</code> JSON-LD, lead key pages with
           a direct answer, expose product and pricing facts in machine-readable form,
-          and re-audit over time. None of it requires guessing at a model’s internals
-          — it is the machine-readable groundwork that lets AI engines find, parse,
+          and re-audit over time. None of it requires guessing at a model’s internals.
+          It is the machine-readable groundwork that lets AI engines find, parse,
           and trust a page. Work top to bottom:
         </p>
         <ol class="mt-5 space-y-3 list-decimal pl-5">
           <li>
-            <strong class="text-ink">Allow AI crawlers intentionally</strong> — audit your
+            <strong class="text-ink">Allow AI crawlers intentionally.</strong> Audit your
             <code class="text-sm font-mono">robots.txt</code> so you are not silently
             blocking <code class="text-sm font-mono">GPTBot</code>,
             <code class="text-sm font-mono">ClaudeBot</code>, or
@@ -266,24 +264,24 @@ const heroVisual = marketingVisuals.commandCenterV2;
             <a href="/tools/llms-txt-generator/" data-cta="state_geo_checklist_generate_llms" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">llms.txt generator</a>.
           </li>
           <li>
-            <strong class="text-ink">Add structured data</strong> — valid
+            <strong class="text-ink">Add structured data.</strong> Use valid
             <code class="text-sm font-mono">Organization</code>,
             <code class="text-sm font-mono">WebSite</code>, and where it genuinely fits
             <code class="text-sm font-mono">FAQPage</code> or
             <code class="text-sm font-mono">Article</code> JSON-LD, with consistent brand naming.
           </li>
           <li>
-            <strong class="text-ink">Improve answer-first content blocks</strong> — open key pages
+            <strong class="text-ink">Improve answer-first content blocks.</strong> Open key pages
             with a direct, self-contained answer a model can lift cleanly, before the
             marketing context.
           </li>
           <li>
-            <strong class="text-ink">Expose product and pricing info in machine-readable form</strong>
-            — make the facts an AI needs to describe you available in plain HTML and
+            <strong class="text-ink">Expose product and pricing info in machine-readable form.</strong>
+            Make the facts an AI needs to describe you available in plain HTML and
             schema, not buried in images or scripts.
           </li>
           <li>
-            <strong class="text-ink">Run recurring audits</strong> — AI behavior shifts as models
+            <strong class="text-ink">Run recurring audits.</strong> AI behavior shifts as models
             update, so a one-time snapshot tells you where you are while monitoring
             tells you whether your changes worked.
           </li>
@@ -324,38 +322,38 @@ const heroVisual = marketingVisuals.commandCenterV2;
           open-source GEO Optimizer engine. The numbers are aggregated and
           anonymized: the public dataset is intentionally summarized, and the full
           internal analytics are not published. It is a directional signal across an
-          audited sample — not a claim about the entire web.
+          audited sample, not a claim about the entire web.
         </p>
         <ul class="mt-4 space-y-2 list-disc pl-5">
-          <li><strong class="text-ink">Audited sites only</strong> — a benchmark of sites audited by GeoReady, not a sample of the whole web.</li>
-          <li><strong class="text-ink">One row per domain</strong> — the most recent audit per domain, so re-audits don’t inflate the cohort.</li>
-          <li><strong class="text-ink">Scheduled monitoring excluded</strong> — only user-initiated audits (web, CLI, API, tools) count.</li>
-          <li><strong class="text-ink">Aggregated &amp; anonymized</strong> — domains are stored as salted hashes; this page and its public endpoint expose aggregates only.</li>
-          <li><strong class="text-ink">Same rubric for everyone</strong> — the open-source engine’s 100-point score across 8 categories (robots, llms.txt, schema, meta, content, brand &amp; entity, signals, AI discovery).</li>
-          <li><strong class="text-ink">Public data is summarized on purpose</strong> — per-category breakdowns and exact distributions stay internal; the public figures are headline aggregates.</li>
+          <li><strong class="text-ink">Audited sites only.</strong> This is a benchmark of sites audited by GeoReady, not a sample of the whole web.</li>
+          <li><strong class="text-ink">One row per domain.</strong> Only the most recent audit per domain counts, so re-audits don’t inflate the cohort.</li>
+          <li><strong class="text-ink">Scheduled monitoring excluded.</strong> Only user-initiated audits (web, CLI, API, tools) count.</li>
+          <li><strong class="text-ink">Aggregated &amp; anonymized.</strong> Domains are stored as salted hashes; this page and its public endpoint expose aggregates only.</li>
+          <li><strong class="text-ink">Same rubric for everyone.</strong> The open-source engine’s 100-point score across 8 categories (robots, llms.txt, schema, meta, content, brand &amp; entity, signals, AI discovery).</li>
+          <li><strong class="text-ink">Public data is summarized on purpose.</strong> Per-category breakdowns and exact distributions stay internal; the public figures are headline aggregates.</li>
         </ul>
         <p class="mt-4 text-sm">
           The signals behind every category are documented in our
           <a href="/guides/generative-engine-optimization/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">GEO guide</a>
           and <a href="/research/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">research foundation</a>.
-          The dataset grows with every audit — run one and you are (anonymously) in it.
+          The dataset grows with every audit: run one and you are (anonymously) in it.
         </p>
       </section>
 
       {/* ── September 2026 report link ──────────────────────────────────── */}
       <section class="overflow-hidden rounded-[4px] border border-rail bg-white">
         <div class="border-b border-rail px-6 py-2.5">
-          <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">September 2026 — Full report published</p>
+          <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">September 2026: Full report published</p>
         </div>
         <div class="px-6 py-5">
           <h2>State of GEO: September 2026</h2>
           <p class="mt-2 text-sm text-ink-soft">
-            704 unique domains. Average score 56.2/100 — flat (−0.2) while the sample grew from 282 to 704.
+            704 unique domains. Average score 56.2/100, flat (−0.2), while the sample grew from 282 to 704.
             Scored across four engine versions, so month-over-month deltas are indicative. AI-crawler blocking
             fell back to 8.8%, and AI Discovery is the lowest category for the fourth month running.
           </p>
           <p class="mt-2 text-xs text-ink-mute">
-            The September 2026 snapshot covers 704 domains audited 1–30 September; the live counter above
+            The September 2026 snapshot covers 704 domains audited 1-30 September; the live counter above
             includes sites audited since, so the two numbers will differ.
           </p>
           <a
@@ -381,7 +379,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
           </li>
           <li class="px-6 py-4">
             <a href="/state-of-geo/july-2026/" data-cta="state_geo_live_july2026_report" class="font-medium text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">State of GEO: July 2026</a>
-            <span class="mt-1 block text-ink-mute">360 domains · avg 54.1/100 · schema +5.5pp, llms.txt −4.1pp — the first month-over-month comparison.</span>
+            <span class="mt-1 block text-ink-mute">360 domains · avg 54.1/100 · schema +5.5pp, llms.txt −4.1pp. This is the first month-over-month comparison.</span>
           </li>
           <li class="px-6 py-4">
             <a href="/state-of-geo/june-2026/" data-cta="state_geo_live_june2026_report" class="font-medium text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">State of GEO: June 2026</a>

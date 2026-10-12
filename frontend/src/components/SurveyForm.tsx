@@ -22,7 +22,7 @@ const MAIN_PROBLEM_OPTIONS = [
 const WTP_OPTIONS = [
   { value: 'yes-now', label: 'Yes, I would pay today if the tool existed' },
   { value: 'yes-trial', label: 'Yes, but I need to try it first' },
-  { value: 'maybe', label: "Maybe — depends on what's included" },
+  { value: 'maybe', label: "Maybe, depends on what's included" },
   { value: 'no', label: 'No, the free tier is enough for me' },
 ];
 
@@ -98,7 +98,7 @@ export default function SurveyForm() {
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <p className="text-base font-semibold text-ink">Thanks — feedback received.</p>
+        <p className="text-base font-semibold text-ink">Thanks, feedback received.</p>
         <p className="mt-2 text-sm text-ink-soft">
           Your answers directly shape what we build first.
         </p>

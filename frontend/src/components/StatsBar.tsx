@@ -72,7 +72,7 @@ export default function StatsBar({ initial, initialIsLive = false, variant = 'de
               live · GET /api/stats
             </>
           ) : (
-            'snapshot — counters could not be refreshed'
+            'snapshot, counters could not be refreshed'
           )}
         </p>
       </div>
@@ -108,7 +108,7 @@ export default function StatsBar({ initial, initialIsLive = false, variant = 'de
         </div>
       </div>
       {!live && (
-        <p className="mt-2 text-xs text-text-muted font-mono">Snapshot — counters could not be refreshed</p>
+        <p className="mt-2 text-xs text-text-muted font-mono">Snapshot: counters could not be refreshed</p>
       )}
     </div>
   );

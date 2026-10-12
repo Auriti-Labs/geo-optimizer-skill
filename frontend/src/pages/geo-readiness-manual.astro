@@ -2,18 +2,18 @@
 import Shell from '../components/Shell.astro';
 
 const chapters = [
-  { num: '0', title: 'The Selection Layer — Why AI Search Became a Filter' },
-  { num: '1', title: 'Foreword — Why This Guide Exists' },
+  { num: '0', title: 'The Selection Layer: Why AI Search Became a Filter' },
+  { num: '1', title: 'Foreword: Why This Guide Exists' },
   { num: '2', title: 'How AI Answer Engines Work' },
   { num: '3', title: 'The AI Crawler Ecosystem' },
-  { num: '4', title: 'Access — The Zero Layer' },
-  { num: '5', title: 'Orientation — llms.txt and Beyond' },
-  { num: '6', title: 'Understanding — Schema Markup Deep Dive' },
-  { num: '7', title: 'Quotability — How to Write for Citation' },
-  { num: '8', title: 'Entity Authority — Beyond the Page' },
+  { num: '4', title: 'Access: The Zero Layer' },
+  { num: '5', title: 'Orientation: llms.txt and Beyond' },
+  { num: '6', title: 'Understanding: Schema Markup Deep Dive' },
+  { num: '7', title: 'Quotability: How to Write for Citation' },
+  { num: '8', title: 'Entity Authority: Beyond the Page' },
   { num: '9', title: 'AI Citation Measurement' },
   { num: '10', title: 'GEO for Specific Verticals' },
-  { num: '11', title: 'Security — Prompt Injection and AI Crawler Defense' },
+  { num: '11', title: 'Security: Prompt Injection and AI Crawler Defense' },
   { num: '12', title: 'The GEO Tech Stack' },
   { num: '13', title: 'The Future of GEO' },
   { num: '14', title: 'Conclusion' },
@@ -38,28 +38,28 @@ const stats = [
 ];
 
 const whoFor = [
-  { icon: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', title: 'SEO practitioners', desc: 'Who need to extend their skill set to cover AI answer engines — not replace their SEO knowledge, but add a new layer on top.' },
+  { icon: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', title: 'SEO practitioners', desc: 'Who need to add AI answer engines to their skill set, on top of their existing SEO knowledge.' },
   { icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3', title: 'SaaS and B2B teams', desc: 'Whose buyers ask ChatGPT "what\'s the best tool for X" before visiting any vendor website. If you\'re not in that answer, you\'re not in the consideration set.' },
-  { icon: 'M14.7 6.3a1 1 0 0 0 0 1.4l1 1a1 1 0 0 0 1.4 0l3.7-3.7a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0z', title: 'Developers and tech leads', desc: 'Responsible for the infrastructure that makes content accessible to AI crawlers. robots.txt, rendering, schema, server responses — the technical foundation.' },
-  { icon: 'M3 3v18h18', title: 'Marketing leaders', desc: 'Who need to decide where to invest between classic SEO and GEO in 2026 — with honest evidence about what works and what doesn\'t.' },
+  { icon: 'M14.7 6.3a1 1 0 0 0 0 1.4l1 1a1 1 0 0 0 1.4 0l3.7-3.7a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0z', title: 'Developers and tech leads', desc: 'Responsible for the infrastructure that makes content accessible to AI crawlers: robots.txt, rendering, schema, and server responses.' },
+  { icon: 'M3 3v18h18', title: 'Marketing leaders', desc: 'Who need to decide where to invest between classic SEO and GEO in 2026, with evidence about what works and what doesn\'t.' },
 ];
 
 const whatInside = [
-  { title: 'The 4-layer GEO model', desc: 'Access, Orientation, Understanding, Quotability — applied in order. Fix access before schema. Fix schema before content. The order matters.' },
-  { title: '11 AI crawlers documented', desc: 'GPTBot, OAI-SearchBot, PerplexityBot, ClaudeBot, Claude-SearchBot, Googlebot, Google-Extended, Applebot, CCBot, Bytespider, Diffbot — with user-agent tokens, robots.txt directives, and GEO implications.' },
-  { title: '12 schema types with templates', desc: 'Article, FAQPage, HowTo, Organization, Person, Product, VideoObject, ImageObject, BreadcrumbList, WebSite, DefinedTerm, Dataset — with copy-paste JSON-LD templates and @graph examples.' },
+  { title: 'The 4-layer GEO model', desc: 'Access, Orientation, Understanding, and Quotability, applied in order. Fix access before schema. Fix schema before content.' },
+  { title: '11 AI crawlers documented', desc: 'GPTBot, OAI-SearchBot, PerplexityBot, ClaudeBot, Claude-SearchBot, Googlebot, Google-Extended, Applebot, CCBot, Bytespider, Diffbot. Each has user-agent tokens, robots.txt directives, and GEO implications.' },
+  { title: '12 schema types with templates', desc: 'Article, FAQPage, HowTo, Organization, Person, Product, VideoObject, ImageObject, BreadcrumbList, WebSite, DefinedTerm, Dataset. Includes copy-paste JSON-LD templates and @graph examples.' },
   { title: 'Passage extraction mechanics', desc: 'How vector embeddings select passages, why BLUF (Bottom Line Up Front) beats narrative, and 5 anti-patterns that make your content invisible to retrieval.' },
-  { title: 'Entity authority strategy', desc: 'Pillar-cluster architecture, sameAs cross-platform identity, entity resolution pipeline, independent mentions — why 5 connected pages beat 1 perfect page.' },
-  { title: 'Citation measurement workflow', desc: 'Manual prompt testing protocol, GA4 attribution, server log analysis, GEO metrics (citation presence, rate, share, accuracy, drift) — weekly, monthly, quarterly cadence.' },
+  { title: 'Entity authority strategy', desc: 'Pillar-cluster architecture, sameAs cross-platform identity, entity resolution pipeline, independent mentions, and why 5 connected pages beat 1 perfect page.' },
+  { title: 'Citation measurement workflow', desc: 'Manual prompt testing protocol, GA4 attribution, server log analysis, GEO metrics (citation presence, rate, share, accuracy, drift), on a weekly, monthly, and quarterly cadence.' },
   { title: 'Prompt injection defense', desc: '8 attack vectors against AI crawlers, CSP configuration, monitoring scripts, and a response plan for when your citations disappear.' },
-  { title: 'Vertical-specific guidance', desc: 'SaaS/B2B, e-commerce, editorial, WordPress, and headless CMS — with platform-specific implementation patterns and pitfalls.' },
+  { title: 'Vertical-specific guidance', desc: 'SaaS/B2B, e-commerce, editorial, WordPress, and headless CMS, with platform-specific implementation patterns and pitfalls.' },
 ];
 
 const faqs = [
-  { q: 'Is this a marketing ebook?', a: 'No. It\'s a 160-page technical manual with code examples, JSON-LD templates, server log commands, robots.txt configurations, and audit checklists. It\'s written for practitioners, not for list-building.' },
-  { q: 'Does it replace the free guides on geoready.dev?', a: 'No. The guides cover specific topics. The manual is the comprehensive reference that connects them — including material not on the site: the AI engine pipeline, passage extraction mechanics, prompt injection defense, and the GEO maturity model.' },
+  { q: 'Is this a marketing ebook?', a: 'No. It\'s a 160-page technical manual with code examples, JSON-LD templates, server log commands, robots.txt configurations, and audit checklists. It\'s written for practitioners.' },
+  { q: 'Does it replace the free guides on geoready.dev?', a: 'No. The guides cover specific topics. The manual is the comprehensive reference that connects them, including material not on the site: the AI engine pipeline, passage extraction mechanics, prompt injection defense, and the GEO maturity model.' },
   { q: 'Is the content based on real data?', a: 'Yes. The manual draws from 1000+ site audits, the GeoReady benchmark dashboard, public State of GEO reports, official crawler documentation, and reasonable inference from how RAG systems work mechanically. Every claim is labeled by evidence level.' },
-  { q: 'What format is the PDF?', a: 'A4 format, 160 pages, with a cover page, table of contents, diagrams, code blocks, tables, and appendices. It\'s a readable document, not a slide deck or a series of blog posts stitched together.' },
+  { q: 'What format is the PDF?', a: 'A4 format, 160 pages, with a cover page, table of contents, diagrams, code blocks, tables, and appendices.' },
   { q: 'Why do you need my email?', a: 'We use your email to send a signed download link for the full PDF. The link is valid for 24 hours. GEO research updates are optional: check the consent box if you want them, leave it unchecked if you only want this one download email.' },
   { q: 'Can I share it with my team?', a: 'Yes. Once you download the PDF, share it internally. If you want to share it publicly (blog post, social media, newsletter), link back to this page so others can get their own copy.' },
 ];
@@ -75,7 +75,7 @@ const faqSchema = {
 };
 ---
 
-<Shell title="GEO Readiness Manual — Free PDF for AI Search" description="Free 160-page GEO manual PDF, built from 1000+ site audits. Practical steps to get cited by ChatGPT, Perplexity and AI Overviews. Free download, no account." canonical="https://geoready.dev/geo-readiness-manual/">
+<Shell title="GEO Readiness Manual | Free PDF for AI Search" description="Free 160-page GEO manual PDF, built from 1000+ site audits. Practical steps to get cited by ChatGPT, Perplexity and AI Overviews. Free download, no account." canonical="https://geoready.dev/geo-readiness-manual/">
 
   {/* ============ HERO — paper ground, real cover in a white rail panel ============
       data-hero-bleed resta: ctaTracking.ts lo usa per attribuire il download
@@ -96,7 +96,7 @@ const faqSchema = {
           </div>
 
           <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft md:text-xl">
-            ChatGPT, Perplexity, and Google AI Overviews choose 3–7 sources before a user ever sees a link. This manual is the technical reference for being one of them — built from audit data across 1000+ sites, not theory.
+            ChatGPT, Perplexity, and Google AI Overviews choose 3-7 sources before a user ever sees a link. This manual is the technical reference for being one of them, built from audit data across 1000+ sites.
           </p>
 
           <div class="mt-9 grid max-w-lg grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-4">
@@ -111,7 +111,7 @@ const faqSchema = {
           <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-ink-mute">
             <span>By <span class="font-medium text-ink">Juan Camilo Auriti</span></span>
             <span class="h-1 w-1 rounded-full bg-ink-mute"></span>
-            <span>Version 1.1 — July 2026</span>
+            <span>Version 1.1, July 2026</span>
             <span class="h-1 w-1 rounded-full bg-ink-mute"></span>
             <span class="text-pass-deep">Free, no account required</span>
           </div>
@@ -120,7 +120,7 @@ const faqSchema = {
           <div class="mt-7 max-w-lg rounded-[4px] border border-rail bg-white p-4">
             <p class="text-sm leading-relaxed text-ink-soft">
               <span class="font-semibold text-ink">Not sure yet?</span>
-              Read a free 3-chapter preview — Chapter 0 (The Selection Layer), Chapter 4 (Access), and Chapter 7 (Quotability). No email required.
+              Read a free 3-chapter preview: Chapter 0 (The Selection Layer), Chapter 4 (Access), and Chapter 7 (Quotability). No email required.
             </p>
             <a href="/geo-readiness-manual-preview.pdf" class="mt-3 inline-flex items-center gap-2 rounded-[4px] border border-rail bg-white px-4 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash">
               Download free preview (PDF, 27 pages)
@@ -179,7 +179,7 @@ const faqSchema = {
               src="/assets/manual/cover-500.webp"
               srcset="/assets/manual/cover-500.webp 500w, /assets/manual/cover-1400.webp 1400w"
               sizes="(min-width: 640px) 280px, 240px"
-              alt="Cover of The GEO Readiness Manual — a 160-page technical guide to AI search visibility, by Juan Camilo Auriti, GeoReady, 2026 Edition"
+              alt="Cover of The GEO Readiness Manual: a 160-page technical guide to AI search visibility, by Juan Camilo Auriti, GeoReady, 2026 Edition"
               width="1400"
               height="1981"
               loading="eager"
@@ -200,7 +200,7 @@ const faqSchema = {
         <div class="max-w-md">
           <h2 class="font-head text-lg font-extrabold tracking-[-0.02em] text-ink">Get the PDF in your inbox</h2>
           <p class="mt-1 text-sm leading-relaxed text-ink-soft">
-            Enter your email. We'll send a download link valid for 24 hours — no account, no credit card.
+            Enter your email. We'll send a download link valid for 24 hours. No account, no credit card.
           </p>
         </div>
         <div id="manual-download-form-desktop" class="manual-download-form max-w-lg flex-1" data-api-base={import.meta.env.PUBLIC_API_BASE || '/api'}>
@@ -261,20 +261,17 @@ const faqSchema = {
     {/* The problem */}
     <section class="mb-20 max-w-4xl">
       <h2 class="mb-6 font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
-        AI search doesn't rank you. It selects you.
+        AI search selects its sources before the user sees anything.
       </h2>
       <div class="space-y-5 text-lg leading-relaxed text-ink-soft">
         <p>
-          Traditional search returns ten links and asks the user to choose. AI answer engines choose first — synthesizing a single answer from 3-7 sources — then show the user the result. If your site isn't one of those sources, you're not on page two. You're absent from the answer entirely.
+          Traditional search returns ten links and asks the user to choose. AI answer engines choose first: they synthesize a single answer from 3-7 sources, then show the user the result. If your site isn't one of those sources, it is absent from the answer.
         </p>
         <p>
           The user reads one answer. They may never see the sources that weren't selected.
         </p>
         <p>
-          This is not a traffic problem. It's a selection problem. And the rules of selection are different from the rules of ranking. Keywords don't work the same way. Backlinks don't work the same way. Meta descriptions don't work the same way. The infrastructure that got you to page one on Google may be invisible to ChatGPT.
-        </p>
-        <p class="font-medium text-ink">
-          This manual is the technical guide to being selected.
+          The problem is selection, and its rules differ from the rules of ranking. Keywords, backlinks, and meta descriptions do not work the same way. The infrastructure that got you to page one on Google may be invisible to ChatGPT.
         </p>
       </div>
     </section>
@@ -285,7 +282,7 @@ const faqSchema = {
         The four-layer model
       </h2>
       <p class="mb-8 max-w-3xl text-base leading-relaxed text-ink-soft">
-        Everything in the manual reduces to four layers, applied in order — plus entity authority as a multiplier. Fix access before orientation. Fix orientation before schema. Fix schema before quotability. Build entity authority alongside all of them. Measure at the end, not the beginning.
+        Everything in the manual reduces to four layers, applied in order, plus entity authority as a multiplier. Fix access before orientation. Fix orientation before schema. Fix schema before quotability. Build entity authority alongside all of them. Measure last.
       </p>
 
       <ol class="max-w-3xl divide-y divide-rail overflow-hidden rounded-[4px] border border-rail bg-white">
@@ -307,7 +304,7 @@ const faqSchema = {
         Inside the manual
       </h2>
       <p class="mb-8 max-w-2xl text-base leading-relaxed text-ink-soft">
-        Two real spreads — server log commands for verifying AI crawler access, and the site-speed factors that shrink your crawl budget.
+        Two real spreads: server log commands for verifying AI crawler access, and the site-speed factors that shrink your crawl budget.
       </p>
       <div class="grid max-w-3xl gap-6 sm:grid-cols-2">
         <figure class="overflow-hidden rounded-[4px] border border-rail bg-white">
@@ -320,7 +317,7 @@ const faqSchema = {
             decoding="async"
             class="h-auto w-full"
           />
-          <figcaption class="border-t border-rail px-4 py-3 font-mono text-[11px] text-ink-mute">Page 25 — verifying AI crawler access via server logs</figcaption>
+          <figcaption class="border-t border-rail px-4 py-3 font-mono text-[11px] text-ink-mute">Page 25: verifying AI crawler access via server logs</figcaption>
         </figure>
         <figure class="overflow-hidden rounded-[4px] border border-rail bg-white">
           <img
@@ -332,7 +329,7 @@ const faqSchema = {
             decoding="async"
             class="h-auto w-full"
           />
-          <figcaption class="border-t border-rail px-4 py-3 font-mono text-[11px] text-ink-mute">Page 45 — TTFB targets and crawl budget</figcaption>
+          <figcaption class="border-t border-rail px-4 py-3 font-mono text-[11px] text-ink-mute">Page 45: TTFB targets and crawl budget</figcaption>
         </figure>
       </div>
     </section>
@@ -467,7 +464,7 @@ const faqSchema = {
         {/* Preview — no email gate */}
         <div class="mx-auto mt-6 max-w-md rounded-[4px] border border-rail bg-paper px-6 py-4">
           <p class="mb-3 text-sm leading-relaxed text-ink-soft">
-            Prefer to read first? Download a free 3-chapter preview — no email required.
+            Prefer to read first? Download a free 3-chapter preview. No email required.
           </p>
           <a href="/geo-readiness-manual-preview.pdf" class="inline-flex items-center gap-2 rounded-[4px] border border-rail bg-white px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash">
             Get the free preview (PDF, 27 pages)

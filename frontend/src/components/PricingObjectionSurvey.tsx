@@ -42,7 +42,7 @@ export default function PricingObjectionSurvey() {
   if (submitted) {
     return (
       <div className="rounded-[4px] border border-rail bg-white p-6 text-center">
-        <p className="text-sm font-semibold text-ink">Thanks — that helps.</p>
+        <p className="text-sm font-semibold text-ink">Thanks, that helps.</p>
         <p className="mt-1 text-sm text-ink-soft">
           Your answer directly shapes what we improve on this page.
         </p>
@@ -99,7 +99,7 @@ export default function PricingObjectionSurvey() {
       )}
 
       <p className="mt-3 text-[11px] text-ink-mute">
-        Anonymous — used only to improve this page. No email required.
+        Anonymous, used only to improve this page. No email required.
       </p>
     </div>
   );

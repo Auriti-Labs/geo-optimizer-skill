@@ -83,12 +83,12 @@ export default function BenchmarkComparison({ score, grade }: BenchmarkCompariso
           ) : isAboveAvg ? (
             <>
               You're <strong className="font-semibold text-pass-deep">above average</strong> (+{(score - avgScore).toFixed(1)} points),
-              but still in the {gradeLabels[grade]} band — <strong className="font-semibold text-ink">{band.share}%</strong> of sites are here.
+              but still in the {gradeLabels[grade]} band. <strong className="font-semibold text-ink">{band.share}%</strong> of sites are here.
             </>
           ) : (
             <>
               You're <strong className="font-semibold text-warn">below average</strong> ({(score - avgScore).toFixed(1)} points).
-              <strong className="font-semibold text-ink"> {band.share}%</strong> of sites are in the {gradeLabels[grade]} band — most can be reached by AI but cannot be cited with confidence.
+              <strong className="font-semibold text-ink"> {band.share}%</strong> of sites are in the {gradeLabels[grade]} band. Most can be reached by AI but cannot be cited with confidence.
             </>
           )}
         </p>

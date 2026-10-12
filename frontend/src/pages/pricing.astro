@@ -18,7 +18,7 @@ const selfServePlans = [
     cadence: 'run: on demand · 5/day',
     features: [
       '5 audits per day',
-      'GEO score 0–100',
+      'GEO score 0-100',
       'Full 8-category GEO report',
       'Actionable recommendations',
       'CLI (MIT, unlimited)',
@@ -39,7 +39,7 @@ const selfServePlans = [
     cadence: 'schedule: weekly · 1 domain',
     features: [
       'Unlimited audits',
-      '1 domain — weekly monitoring',
+      '1 domain, weekly monitoring',
       '30-audit score history',
       'Regression alerts (when your score moves by 5 points or more)',
       'PDF export',
@@ -61,13 +61,13 @@ const selfServePlans = [
     cadence: 'schedule: daily · 15 domains',
     features: [
       'Everything in Pro',
-      'AI citation tracking — 5 automated checks/day (Perplexity)',
-      '15 domains — daily monitoring',
+      'AI citation tracking: 5 automated checks/day (Perplexity)',
+      '15 domains, daily monitoring',
       '12-month score history',
       'Unbranded PDF export (removes GeoReady footer and badge)',
       'Custom-logo white-label: roadmap',
       'Competitor comparison',
-      'Batch audit — 50 URLs',
+      'Batch audit: 50 URLs',
       'Priority support',
     ],
   },
@@ -87,7 +87,7 @@ const scalePlans = [
     cadence: 'schedule: daily · 50 domains',
     features: [
       'Everything in Studio',
-      '50 domains — daily monitoring',
+      '50 domains, daily monitoring',
       '24-month score history',
       'Team workspace (owner / editor / viewer)',
       'Unlimited batch audits',
@@ -204,7 +204,7 @@ const trustAssurances = [
 
 // '✓' renders as a drawn SVG check; '—' stays typographic.
 const comparisonRows: [string, string, string, string, string][] = [
-  ['GEO score (0–100)',      '✓',       '✓',        '✓',        '✓'],
+  ['GEO score (0-100)',      '✓',       '✓',        '✓',        '✓'],
   ['Full 8-category report', '✓',       '✓',        '✓',        '✓'],
   ['Audits per day',         '5',       '∞',        '∞',        '∞'],
   ['Domain monitoring',      '—',       '1 / week', '15 / day', '50 / day'],
@@ -232,11 +232,11 @@ const faqs = [
   },
   {
     q: 'What does Pro add that Free does not?',
-    a: 'Pro adds continuity, not more report. The free audit is a one-shot snapshot with all 8 categories. Pro monitors your domain weekly, tracks score history over time, and sends alerts when your GEO score drops. It also includes PDF export and API access.',
+    a: 'Pro adds continuity over time. The free audit is a one-shot snapshot with all 8 categories. Pro monitors your domain weekly, tracks score history over time, and sends alerts when your GEO score drops. It also includes PDF export and API access.',
   },
   {
     q: 'Are paid plans available right now?',
-    a: 'Yes. Pick a plan, create an account, and pay — your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe.',
+    a: 'Yes. Pick a plan, create an account, and pay. Your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe.',
   },
   {
     q: 'What happens after I choose a paid plan?',
@@ -252,7 +252,7 @@ const faqs = [
   },
   {
     q: 'Is there a free trial for paid plans?',
-    a: 'There is no time-limited trial. The Free plan is the permanent baseline — it returns real audit results without commitment. Paid plans add monitoring and team features on top.',
+    a: 'There is no time-limited trial. The Free plan is the permanent baseline and returns real audit results without commitment. Paid plans add monitoring and team features on top.',
   },
   {
     q: 'Can I cancel at any time?',
@@ -269,7 +269,7 @@ const heroCadenceRows = [
 ---
 
 <Shell
-  title="GeoReady Pricing — Free AI Audit & Monitoring"
+  title="GeoReady Pricing | Free AI Audit & Monitoring"
   description="The full 8-category GEO audit is free, no account. Pro adds weekly monitoring, score history, and alerts. Studio and Agency add multi-site daily monitoring."
   canonical="https://geoready.dev/pricing/"
 >
@@ -282,7 +282,7 @@ const heroCadenceRows = [
             Free GEO audit, forever. Pay only when you need monitoring.
           </h1>
           <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft">
-            Run a full GEO score on any URL with no account and no card — every time you want.
+            Run a full GEO score on any URL with no account and no card, as often as you want.
             Paid plans add what a one-shot audit can't: weekly monitoring, score history, regression
             alerts, exports, and team workflows.
           </p>
@@ -388,7 +388,7 @@ const heroCadenceRows = [
       <h2 id="plans-heading" class="sr-only">Plans</h2>
 
       <p class="mb-6 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
-        Founding price for early members — locked for life while your subscription stays active.
+        Founding price for early members, locked for life while your subscription stays active.
       </p>
 
       {/* Self-serve row */}
@@ -520,8 +520,8 @@ const heroCadenceRows = [
             <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">checkout: Stripe</p>
           </div>
           <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">
-            The next screen is not a vague "contact sales" handoff. Self-serve plans activate through
-            Stripe, then the app guides you to claim the report or add the first monitored domain.
+            Self-serve plans activate through Stripe. The app then guides you to claim the report
+            or add the first monitored domain, with no sales contact step.
           </p>
 
           <ol class="mt-6 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2">
@@ -569,7 +569,7 @@ const heroCadenceRows = [
           Which GeoReady plan should you choose?
         </h2>
         <p class="mt-3 text-sm leading-relaxed text-ink-soft">
-          Pick the plan by the job after the audit, not by feature count. A one-time
+          Pick the plan by the job you need done after the audit. A one-time
           diagnosis stays free. Ongoing monitoring starts with Pro. AI citation
           tracking and client workflows start with Studio.
         </p>
@@ -633,7 +633,7 @@ const heroCadenceRows = [
   <section class="border-t border-rail bg-white" aria-labelledby="free-vs-pro-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <h2 id="free-vs-pro-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
-        Free vs Pro — what changes
+        Free vs Pro: what changes
       </h2>
       <p class="mb-8 mt-2 max-w-2xl text-sm text-ink-soft">
         The free audit is a single-URL, point-in-time snapshot. Pro turns it into an ongoing signal.
@@ -646,7 +646,7 @@ const heroCadenceRows = [
           </div>
           <ul class="space-y-3 p-5 text-sm text-ink-soft">
             {[
-              'Full GEO score (0–100) for any public URL',
+              'Full GEO score (0-100) for any public URL',
               'All 8 category breakdowns, no email required',
               'Actionable recommendations',
               'Up to 5 audits per day, no account needed',
@@ -669,9 +669,9 @@ const heroCadenceRows = [
           {/* Diff notation: '+' marks what Pro adds on top of the Free baseline. */}
           <ul class="space-y-3 p-5 text-sm text-ink-soft">
             {[
-              'Weekly monitoring — score tracked automatically',
-              'Score history — 30 audits, see trends over time',
-              'Regression alerts — notified when your score moves by 5 points or more',
+              'Weekly monitoring: score tracked automatically',
+              'Score history: 30 audits, see trends over time',
+              'Regression alerts: notified when your score moves by 5 points or more',
               'PDF export + API access (Bearer token)',
             ].map((f) => (
               <li class="flex items-start gap-2.5">
@@ -695,7 +695,7 @@ const heroCadenceRows = [
         <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">captured: 2026-07-15 · app.geoready.dev</p>
       </div>
       <p class="mb-8 mt-2 max-w-2xl text-sm text-ink-soft">
-        Real screenshots from the live platform — the same dashboard, monitoring and alerts you get on
+        Real screenshots from the live platform: the same dashboard, monitoring and alerts you get on
         every paid plan. No mockups.
       </p>
       <div class="grid gap-6">
@@ -710,7 +710,7 @@ const heroCadenceRows = [
             class="h-auto w-full"
           />
           <figcaption class="border-t border-rail px-5 py-3 text-xs text-ink-mute">
-            Dashboard — current score, trend across saved audits, and the next fixes in one place.
+            Dashboard: current score, trend across saved audits, and the next fixes in one place.
           </figcaption>
         </figure>
         <div class="grid gap-6 md:grid-cols-2">
@@ -725,7 +725,7 @@ const heroCadenceRows = [
               class="h-auto w-full"
             />
             <figcaption class="border-t border-rail px-5 py-3 text-xs text-ink-mute">
-              Domain monitoring — audits re-run automatically, score history per domain.
+              Domain monitoring: audits re-run automatically, score history per domain.
             </figcaption>
           </figure>
           <figure class="overflow-hidden rounded-[4px] border border-rail bg-white">
@@ -739,7 +739,7 @@ const heroCadenceRows = [
               class="h-auto w-full"
             />
             <figcaption class="border-t border-rail px-5 py-3 text-xs text-ink-mute">
-              Regression alerts — score drops ≥5 pts, llms.txt changes and bot blocking trigger a notification.
+              Regression alerts: score drops ≥5 pts, llms.txt changes and bot blocking trigger a notification.
             </figcaption>
           </figure>
         </div>
@@ -754,7 +754,7 @@ const heroCadenceRows = [
         Why not a traditional SEO tool?
       </h2>
       <p class="mb-8 mt-2 max-w-2xl text-sm text-ink-soft">
-        SEO tools measure ranking signals. GeoReady measures citation signals — a different question entirely.
+        SEO tools measure ranking signals. GeoReady measures citation signals, which is a different question.
       </p>
       <div class="grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
         <div class="bg-paper p-5">
@@ -768,34 +768,33 @@ const heroCadenceRows = [
           <p class="mb-2 text-sm font-semibold text-ink">Different signal set</p>
           <p class="text-sm leading-relaxed text-ink-soft">
             GEO audits llms.txt, ai.txt, JSON-LD depth, factual density, brand entity coherence,
-            and AI-crawler permissions — signals that SEO tools don't surface.
+            and AI-crawler permissions. SEO tools don't surface these signals.
           </p>
         </div>
         <div class="bg-paper p-5">
           <p class="mb-2 text-sm font-semibold text-ink">Research-backed scoring</p>
           <p class="text-sm leading-relaxed text-ink-soft">
             Scoring weights are grounded in <a href="/research/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">Princeton KDD 2024 and AutoGEO ICLR 2026</a> research
-            on what actually influences AI search retrieval.
+            on what influences AI search retrieval.
           </p>
         </div>
         <div class="bg-paper p-5">
           <p class="mb-2 text-sm font-semibold text-ink">Open source and auditable</p>
           <p class="text-sm leading-relaxed text-ink-soft">
             Every scoring rule is readable in the <a href="https://github.com/Auriti-Labs/geo-optimizer-skill" target="_blank" rel="noopener" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">public repository</a>.
-            No black box — you can audit the auditor.
           </p>
         </div>
         <div class="bg-paper p-5">
           <p class="mb-2 text-sm font-semibold text-ink">Forward-looking signals</p>
           <p class="text-sm leading-relaxed text-ink-soft">
             llms.txt and ai.txt are emerging standards. GEO tracks adoption curves and updates scoring
-            weights as the AI search landscape evolves.
+            weights as AI search changes.
           </p>
         </div>
         <div class="bg-paper p-5">
-          <p class="mb-2 text-sm font-semibold text-ink">Complements, doesn't replace</p>
+          <p class="mb-2 text-sm font-semibold text-ink">Works alongside SEO tools</p>
           <p class="text-sm leading-relaxed text-ink-soft">
-            Use GeoReady alongside your existing SEO tooling. A strong GEO score makes a well-ranked
+            Use GeoReady with your existing SEO tooling. A strong GEO score makes a well-ranked
             page more likely to be cited by AI assistants.
           </p>
         </div>
@@ -1029,12 +1028,12 @@ const heroCadenceRows = [
           {
             "@type": "Question",
             "name": "What does Pro add that Free does not?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Pro adds continuity, not more report. The free audit is a one-shot snapshot with all 8 categories. Pro monitors your domain weekly, tracks score history over time, and sends alerts when your GEO score drops. It also includes PDF export and API access." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Pro adds continuity over time. The free audit is a one-shot snapshot with all 8 categories. Pro monitors your domain weekly, tracks score history over time, and sends alerts when your GEO score drops. It also includes PDF export and API access." }
           },
           {
             "@type": "Question",
             "name": "Are paid plans available right now?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pick a plan, create an account, and pay — your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pick a plan, create an account, and pay. Your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe." }
           },
           {
             "@type": "Question",
@@ -1054,7 +1053,7 @@ const heroCadenceRows = [
           {
             "@type": "Question",
             "name": "Is there a free trial for paid plans?",
-            "acceptedAnswer": { "@type": "Answer", "text": "There is no time-limited trial. The Free plan is the permanent baseline — it returns real audit results without commitment. Paid plans add monitoring and team features on top." }
+            "acceptedAnswer": { "@type": "Answer", "text": "There is no time-limited trial. The Free plan is the permanent baseline and returns real audit results without commitment. Paid plans add monitoring and team features on top." }
           },
           {
             "@type": "Question",

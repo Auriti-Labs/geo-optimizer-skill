@@ -60,7 +60,7 @@ const projectChecks = [
   },
   {
     title: 'Documented in print',
-    desc: 'The methodology behind this tool is written up in full in AI Search Engineering — 992 pages on GEO, AI citations, and agent-ready websites.',
+    desc: 'The methodology behind this tool is written up in full in AI Search Engineering, 992 pages on GEO, AI citations, and agent-ready websites.',
     source: 'ISBN 979-8172934568',
     link: { label: 'About the book', href: '/book/' },
   },
@@ -69,14 +69,14 @@ const projectChecks = [
 const actions = [
   {
     label: 'Run a free check',
-    desc: 'Enter any public URL above — no account required.',
+    desc: 'Enter any public URL above. No account required.',
     href: '#audit-form',
     badge: 'Available now',
     badgeTone: 'pass',
   },
   {
     label: 'Use the open-source CLI',
-    desc: 'pip install geo-optimizer-skill — scoring, access simulation, crawler log analysis. MIT licensed.',
+    desc: 'pip install geo-optimizer-skill: scoring, access simulation, crawler log analysis. MIT licensed.',
     href: 'https://github.com/Auriti-Labs/geo-optimizer-skill',
     badge: 'Free forever',
     badgeTone: 'pass',
@@ -141,7 +141,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 <Shell
   title="AI Visibility Audit & Citation Monitoring — GeoReady"
-  description="Free AI visibility audit plus paid GEO monitoring. Check if ChatGPT, Perplexity, Claude, and Gemini can reach and cite your site — then track changes."
+  description="Free AI visibility audit plus paid GEO monitoring. Check if ChatGPT, Perplexity, Claude, and Gemini can reach and cite your site, then track changes."
   canonical="https://geoready.dev/"
 >
   {/* Hero — the trigger console and the eight-gate rail */}
@@ -151,13 +151,13 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
         <div>
           <p class="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-pass-deep">AI Visibility Audit · Citation Monitoring</p>
           <h1 class="font-head text-[2.6rem] font-extrabold leading-[1.02] tracking-[-0.03em] md:text-6xl">
-            Audit your AI visibility — then monitor it over&nbsp;time.
+            Audit your AI visibility, then monitor it over&nbsp;time.
           </h1>
           <p class="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
             Buyers ask ChatGPT, Perplexity, Claude, and Gemini before they click a search result.
             GeoReady is a Generative Engine Optimization (GEO) platform that verifies your URL can be
-            reached, understood, and cited by those answer engines, gives you a 0–100 score and
-            prioritized fixes across 8 signal categories — then re-checks
+            reached, understood, and cited by those answer engines, gives you a 0-100 score and
+            prioritized fixes across 8 signal categories, then re-checks
             weekly, so you see whether your visibility improves or regresses over time.
           </p>
 
@@ -169,7 +169,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
             <span class="font-mono text-[11px] uppercase tracking-[0.12em]">POST /api/audit</span>
           </p>
           <p class="mt-4 border-t border-rail/60 pt-3 text-[13px] leading-relaxed text-ink-soft">
-            A single audit is a photograph — a point in time. Monitoring is the video sequence:
+            A single audit is a photograph of one point in time. Monitoring is the video sequence:
             it re-runs the same scoring on a schedule and tells you when your visibility moves.
             <a
               href="/pricing/"
@@ -324,8 +324,8 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
             <span class="mr-2 font-mono text-[12px] font-medium tabular-nums text-ink-mute align-middle">2</span>Get a GEO score
           </h3>
           <p class="mt-2 max-w-3xl leading-relaxed text-ink-soft">
-            The scan evaluates eight signal categories and returns a 0–100 score with a
-            per-category breakdown. These are the published weights — the same numbers the
+            The scan evaluates eight signal categories and returns a 0-100 score with a
+            per-category breakdown. These are the published weights, the same numbers the
             open-source engine uses, so any score can be recomputed by hand:
           </p>
           <div class="mt-4 overflow-x-auto rounded-[4px] border border-rail bg-white">
@@ -354,7 +354,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
             </table>
           </div>
           <p class="mt-3 font-mono text-[12px] tabular-nums text-ink-mute">
-            Bands: 86–100 excellent · 68–85 good · 36–67 foundation · 0–35 critical.
+            Bands: 86-100 excellent · 68-85 good · 36-67 foundation · 0-35 critical.
           </p>
         </div>
         <div class="max-w-3xl">
@@ -389,7 +389,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
           </blockquote>
           <figcaption class="mt-4 font-mono text-[12px] leading-relaxed text-well-mute">
             GeoReady benchmark, {BENCHMARK.sampleLabel}, as of {BENCHMARK.asOf}.
-            Latest audit per domain, aggregates only — the sample is self-selected, so read it
+            Latest audit per domain, aggregates only. The sample is self-selected, so read it
             as a baseline among sites that chose to measure.
             <a href="/state-of-geo/" class="underline underline-offset-2 hover:text-well-ink">See the live benchmark</a>.
           </figcaption>
@@ -480,7 +480,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
         answers one question: what does your site look like to AI crawlers
         <em class="font-medium not-italic text-ink">right now</em>. It cannot tell you whether that
         changes with your edits. Monitoring runs the same open-source scoring engine on a schedule,
-        keeps the score history, and flags the days your visibility moves — up or down. It measures your
+        keeps the score history, and flags the days your visibility moves, up or down. It measures your
         site. It does not promise a ranking.
       </p>
 
@@ -524,7 +524,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
             For consultants running a portfolio of sites and client-ready reports.
           </p>
           <div class="mt-3 border-l-2 border-pass bg-pass-wash/40 px-3 py-2 text-sm text-ink">
-            AI citation tracking — <span class="font-semibold">5 automated Perplexity checks per day</span>.
+            AI citation tracking: <span class="font-semibold">5 automated Perplexity checks per day</span>.
           </div>
           <a
             href="/pricing/"
@@ -563,7 +563,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
 
       <p class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-mute">
         <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-pass-deep">Free stays free</span>
-        <span>— the audit, the CLI, and 5 runs a day never expire or paywall.</span>
+        <span>The audit, the CLI, and 5 runs a day never expire or paywall.</span>
         <a
           href="/pricing/"
           data-cta="home_free_note_pricing"
@@ -602,7 +602,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
     <div class="mx-auto max-w-7xl px-6 py-16 md:py-20">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] md:text-3xl">
-          Auditable by design — every number below is public
+          Auditable by design: every number below is public
         </h2>
         <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
           GET / api / public / benchmark · GET /api/stats
@@ -611,7 +611,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
 
       <dl class="mt-8 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
         <div class="flex flex-col gap-1 bg-white p-5">
-          <dt class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">GitHub stars — MIT open source</dt>
+          <dt class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">GitHub stars (MIT open source)</dt>
           <dd class="font-head text-2xl font-extrabold tabular-nums text-ink">
             {PUBLIC_STATS.github_stars}
             <span class="ml-1 font-mono text-xs font-medium text-ink-mute">★</span>
@@ -640,7 +640,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
           </dd>
           <p class="text-sm leading-relaxed text-ink-soft">
             Run the same audit on <code class="font-mono text-ink">geoready.dev</code> and check it.
-            Free, no account — it takes about a minute.
+            Free, no account, about a minute.
             <a href="#audit-form" data-cta="home_proof_self_audit" class="font-medium text-pass-deep underline decoration-pass/40 underline-offset-4 hover:decoration-pass-deep">Check a URL</a>
           </p>
         </div>
@@ -667,11 +667,11 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
         <h2 class="max-w-3xl font-head text-3xl font-extrabold tracking-[-0.02em] md:text-5xl">
           AI search is already deciding which sites get cited.
         </h2>
-        <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-pass-wash/80">Verdict · your site: pending — check it free, no account</p>
+        <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-pass-wash/80">Verdict · your site: pending. Check it free, no account</p>
       </div>
       <p class="mt-5 max-w-2xl leading-relaxed text-pass-wash">
-        The signals are documented, the research is published, and the audit is free —
-        it takes about a minute, no account. If you already have your score, that's where
+        The signals are documented, the research is published, and the audit is free.
+        It takes about a minute, no account. If you already have your score, that's where
         monitoring starts: a single report is a photograph; a trend is what you can act on.
       </p>
       <div class="mt-8 flex flex-wrap items-center gap-3">
