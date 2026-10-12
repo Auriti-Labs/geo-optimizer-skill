@@ -148,12 +148,16 @@ const faqSchema = {
 //
 // `author` riporta il nome oltre all'@id: un riferimento nudo `{"@id": ...}` non ha
 // `name`, e il check di byline accetta solo un autore dichiarato con il nome.
+// Titolo unico della pagina: lo usano sia <title>/og:title (via Shell) sia il `name` del
+// WebPage. Con due stringhe scritte a mano basta una modifica a una sola per farle divergere.
+const PAGE_TITLE = "AI Visibility Audit & Citation Monitoring — GeoReady";
+
 const pageSchema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "@id": "https://geoready.dev/#webpage",
   "url": "https://geoready.dev/",
-  "name": "AI Visibility Audit & Citation Monitoring — GeoReady",
+  "name": PAGE_TITLE,
   "inLanguage": "en",
   "isPartOf": { "@id": "https://geoready.dev/#website" },
   "about": { "@id": "https://geoready.dev/#webapp" },
@@ -174,7 +178,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 <script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
 <Shell
-  title="AI Visibility Audit & Citation Monitoring — GeoReady"
+  title={PAGE_TITLE}
   description="Free AI visibility audit plus paid GEO monitoring. Check if ChatGPT, Perplexity, Claude, and Gemini can reach and cite your site — then track changes."
   canonical="https://geoready.dev/"
 >
