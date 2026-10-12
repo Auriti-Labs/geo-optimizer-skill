@@ -31,6 +31,12 @@ export interface BenchmarkFacts {
   sampleLabel: string;
   /** Data leggibile della lettura, es. "4 September 2026". */
   asOf: string;
+  /**
+   * Stessa data di `asOf` in formato ISO 8601 (YYYY-MM-DD, UTC), per `<time datetime>`
+   * e per `dateModified` nel JSON-LD: chi legge la pagina e chi la parsa vedono la
+   * stessa data, derivata dalla stessa fonte.
+   */
+  asOfIso: string;
   /** false = si stanno mostrando i valori di FALLBACK. */
   isLive: boolean;
 }
@@ -44,6 +50,7 @@ const FALLBACK: BenchmarkFacts = {
   schemaAdoption: '75%',
   sampleLabel: '900+ audited sites',
   asOf: '4 September 2026',
+  asOfIso: '2026-09-04',
   isLive: false,
 };
 
@@ -62,6 +69,13 @@ const asReadableDate = (iso: unknown): string | null => {
   });
 };
 
+/** Data ISO (YYYY-MM-DD, UTC) di un timestamp ISO 8601, o null se non interpretabile. */
+const asIsoDate = (iso: unknown): string | null => {
+  if (typeof iso !== 'string') return null;
+  const parsed = new Date(iso);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
+};
+
 export async function getBenchmark(): Promise<BenchmarkFacts> {
   try {
     const res = await fetch(ENDPOINT, { signal: AbortSignal.timeout(TIMEOUT_MS) });
@@ -74,18 +88,19 @@ export async function getBenchmark(): Promise<BenchmarkFacts> {
     const schemaAdoption = asPercent(data?.adoption?.schema_jsonld);
     const sampleLabel = typeof data?.sample_size_label === 'string' ? data.sample_size_label : null;
     const asOf = asReadableDate(data?.updated_at);
+    const asOfIso = asIsoDate(data?.updated_at);
 
     // Tutto o niente: mescolare valori live e di fallback produrrebbe un passaggio
     // internamente incoerente (media di oggi con campione di tre settimane fa), che è
     // peggio di uno coerente e vecchio di un giorno.
-    if (!average || !median || !llmsTxtAdoption || !schemaAdoption || !sampleLabel || !asOf) {
+    if (!average || !median || !llmsTxtAdoption || !schemaAdoption || !sampleLabel || !asOf || !asOfIso) {
       throw new Error('risposta priva di uno dei campi richiesti');
     }
 
     console.log(
       `[benchmark] ${sampleLabel} · media ${average} · mediana ${median} · llms.txt ${llmsTxtAdoption} · schema ${schemaAdoption} (as of ${asOf})`
     );
-    return { average, median, llmsTxtAdoption, schemaAdoption, sampleLabel, asOf, isLive: true };
+    return { average, median, llmsTxtAdoption, schemaAdoption, sampleLabel, asOf, asOfIso, isLive: true };
   } catch (err) {
     console.warn(
       `[benchmark] ATTENZIONE: ${ENDPOINT} non utilizzabile (${(err as Error).message}) — uso i valori di fallback del ${FALLBACK.asOf}.`
