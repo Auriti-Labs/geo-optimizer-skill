@@ -112,7 +112,16 @@ geo schema --type article --name "What is GEO?" --url https://yoursite.com/blog/
 
 # BreadcrumbList
 geo schema --type breadcrumb --url https://yoursite.com/finance/mortgage
+
+# HowTo, Review, Product (templates, see the note below)
+geo schema --type howto --name "How to add llms.txt" --url https://yoursite.com/guide
+geo schema --type review --name "Product name" --url https://yoursite.com/review
+geo schema --type product --name "Product name" --url https://yoursite.com/product
 ```
+
+The `howto`, `review` and `product` types print a template. Fields that the command cannot know, such as
+`{{image_url}}`, `{{price}}`, `{{rating_value}}` or the HowTo steps, stay as `{{placeholders}}` and the
+command lists them in a warning. Fill them in before publishing the markup.
 
 ---
 

@@ -59,7 +59,7 @@ geo llms \
 
 ## Checking for drift
 
-llms.txt is generated once and then trusted by AI agents as a map of the site — nothing checks
+llms.txt is generated once and then trusted by AI agents as a map of the site, and nothing checks
 whether that map is still accurate as pages get renamed or removed. `--check-drift` compares the
 URLs listed in llms.txt against the site's *current* sitemap (reusing the sitemap fetch `geo llms`
 already does for generation, so it costs no extra per-link HTTP request):
@@ -68,11 +68,12 @@ already does for generation, so it costs no extra per-link HTTP request):
 geo llms --base-url https://yoursite.com --check-drift
 ```
 
-- **Stale URLs** — listed in llms.txt, gone from the sitemap. These actively hurt citability: an
+- **Stale URLs**: listed in llms.txt, gone from the sitemap. These actively hurt citability: an
   agent following the link hits a 404 or redirect instead of the content it was told to expect.
-  Presence of any stale URL exits with code 1, so this is safe to run in CI.
-- **Missing URLs** — in the sitemap, not yet in llms.txt. This means llms.txt is behind, not wrong
-  — regenerate it with `geo llms --base-url ... --output ...`.
+  Presence of any stale URL exits with code 1, so this is safe to run in CI. The command also exits with code 1 when llms.txt,
+  the `--llms-file` path or the sitemap cannot be read.
+- **Missing URLs**: in the sitemap, not yet in llms.txt. This means llms.txt is behind, not wrong.
+  Regenerate it with `geo llms --base-url ... --output ...`.
 
 ---
 

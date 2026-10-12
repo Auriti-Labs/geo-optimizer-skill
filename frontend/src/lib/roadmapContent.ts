@@ -25,7 +25,7 @@ export const roadmapPhases: RoadmapPhase[] = [
       {
         id: 'cli-audit',
         title: 'CLI audit',
-        description: 'Complete `geo audit` command with 9-category scoring and 4 output formats.',
+        description: 'Complete `geo audit` command with 9-category scoring and multiple output formats.',
         status: 'available',
       },
       {

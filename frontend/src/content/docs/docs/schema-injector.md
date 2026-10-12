@@ -62,7 +62,7 @@ geo schema --type website --name "MySite" --url https://yoursite.com --astro
 |------|-------------|
 | `--file` | Path to the HTML file to analyze or inject into |
 | `--analyze` | Analyze `--file` and print what schema is present / missing |
-| `--type` | Schema type to generate: `website`, `webapp`, `faq`, `article`, `organization`, `breadcrumb` |
+| `--type` | Schema type to generate: `website`, `webapp`, `faq`, `article`, `organization`, `breadcrumb`, `howto`, `review`, `product` |
 | `--name` | Site or page name |
 | `--url` | Canonical URL |
 | `--description` | Short description |
@@ -118,7 +118,16 @@ geo schema --type article --name "What is GEO?" --url https://yoursite.com/blog/
 
 # BreadcrumbList
 geo schema --type breadcrumb --url https://yoursite.com/finance/mortgage
+
+# HowTo, Review, Product (templates, see the note below)
+geo schema --type howto --name "How to add llms.txt" --url https://yoursite.com/guide
+geo schema --type review --name "Product name" --url https://yoursite.com/review
+geo schema --type product --name "Product name" --url https://yoursite.com/product
 ```
+
+The `howto`, `review` and `product` types print a template. Fields that the command cannot know, such as
+`{{image_url}}`, `{{price}}`, `{{rating_value}}` or the HowTo steps, stay as `{{placeholders}}` and the
+command lists them in a warning. Fill them in before publishing the markup.
 
 ---
 
