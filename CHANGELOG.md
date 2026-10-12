@@ -7,6 +7,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Documentation
+- Documented `geo llms --check-drift` and `--llms-file` in `docs/llms-txt.md`.
+- Added the `howto`, `review` and `product` types to the `geo schema --type` table in `docs/schema-injector.md`.
+- Pinned the GitHub Action examples in `docs/ci-cd.md` to v4.19.0.
+- Updated the roadmap (`docs/ROADMAP.md` and the public roadmap page): release order, rubric v2 wording (9 categories), remaining planned items.
+
 ---
 
 ## [4.19.0] — 2026-10-09

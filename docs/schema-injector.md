@@ -56,7 +56,7 @@ geo schema --type website --name "MySite" --url https://yoursite.com --astro
 |------|-------------|
 | `--file` | Path to the HTML file to analyze or inject into |
 | `--analyze` | Analyze `--file` and print what schema is present / missing |
-| `--type` | Schema type to generate: `website`, `webapp`, `faq`, `article`, `organization`, `breadcrumb` |
+| `--type` | Schema type to generate: `website`, `webapp`, `faq`, `article`, `organization`, `breadcrumb`, `howto`, `review`, `product` |
 | `--name` | Site or page name |
 | `--url` | Canonical URL |
 | `--description` | Short description |
