@@ -72,7 +72,7 @@ export default function StatsBar({ initial, initialIsLive = false, variant = 'de
               live · GET /api/stats
             </>
           ) : (
-            'snapshot, counters could not be refreshed'
+            'snapshot: counters could not be refreshed'
           )}
         </p>
       </div>

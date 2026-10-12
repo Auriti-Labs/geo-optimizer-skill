@@ -34,7 +34,7 @@ order: 2
 | **WebMCP Readiness** | Chrome WebMCP support: `registerTool()`, `toolname` attributes, `potentialAction` schema |
 | **Negative Signals** | 8 anti-citation signals: CTA overload, popups, thin content, keyword stuffing, missing author, boilerplate ratio |
 | **Prompt Injection Detection** | 8 manipulation patterns: hidden text, invisible Unicode, LLM instructions, HTML comment injection |
-| **Trust Stack Score** | 5-layer trust aggregation (Technical, Identity, Social, Academic, Consistency) — grade A-F |
+| **Trust Stack Score** | 5-layer trust aggregation (Technical, Identity, Social, Academic, Consistency), grade A-F |
 
 ### Google AI readiness - max 20 pts (v2)
 
@@ -198,7 +198,7 @@ The score is the sum of all points earned across **9 categories**, capped at 100
 |-------|-------|---------|
 | 86-100 | Excellent | Fully optimized for AI citation engines |
 | 68-85 | Good | Well-optimized, minor gaps remain |
-| 36-67 | Foundation | Partially visible — key signals missing |
+| 36-67 | Foundation | Partially visible, key signals missing |
 | 0-35 | Critical | AI engines cannot reliably discover or cite you |
 
 ---
