@@ -23,7 +23,12 @@ from geo_optimizer.core.audit import (
     group_recommendations_by_category,
     run_full_audit,
 )
-from geo_optimizer.models.config import CATEGORY_MAX, CATEGORY_MAX_V2, RECOMMENDATION_OTHER_CATEGORY
+from geo_optimizer.models.config import (
+    CATEGORY_MAX,
+    CATEGORY_MAX_V2,
+    RECOMMENDATION_BLOCKERS_CATEGORY,
+    RECOMMENDATION_OTHER_CATEGORY,
+)
 from geo_optimizer.models.results import AuditResult
 from tests import recommendation_scenarios as sc
 
@@ -31,6 +36,7 @@ _GOLDEN = json.loads((Path(__file__).parent / "fixtures" / "recommendations_gold
 _GOLDEN_SCENARIOS = _GOLDEN["scenarios"]
 
 OTHER = RECOMMENDATION_OTHER_CATEGORY
+BLOCKERS = RECOMMENDATION_BLOCKERS_CATEGORY
 
 
 # ─── Shared invariants ───────────────────────────────────────────────────────
@@ -55,9 +61,9 @@ def _assert_contract(
             f"order of {category!r} differs from recommendations"
         )
 
-    # Keys: only categories of the active rubric, plus "other"
+    # Keys: only categories of the active rubric, plus the two non-scored keys
     if score_max is not None:
-        assert set(by_category) <= set(score_max) | {OTHER}
+        assert set(by_category) <= set(score_max) | {BLOCKERS, OTHER}
 
 
 # ─── Builder level ───────────────────────────────────────────────────────────
@@ -115,10 +121,11 @@ def test_worst_case_mapping_per_recommendation() -> None:
     # Critical bucket: categorised by the producing detector, not by bucket
     assert _category_of(pairs, "X-Robots-Tag: noindex") == "meta"
     assert _category_of(pairs, "noai directive") == "meta"
-    assert _category_of(pairs, "LLM prompt instructions") == OTHER
-    assert _category_of(pairs, "Prompt injection in HTML comments") == OTHER
-    assert _category_of(pairs, "Hidden text detected") == OTHER
-    assert _category_of(pairs, "user-generated content (comments, reviews)") == OTHER
+    # Crawler blockers: critical prompt injection and the critical UGC injection risk
+    assert _category_of(pairs, "LLM prompt instructions") == BLOCKERS
+    assert _category_of(pairs, "Prompt injection in HTML comments") == BLOCKERS
+    assert _category_of(pairs, "Hidden text detected") == BLOCKERS
+    assert _category_of(pairs, "Injection pattern found on a page that also exposes") == BLOCKERS
 
     # Scored categories
     assert _category_of(pairs, "[G-INDEX]") == "google_ai"
@@ -149,13 +156,14 @@ def test_worst_case_mapping_per_recommendation() -> None:
 
 
 def test_ugc_advisory_is_other_and_stays_before_content_items() -> None:
-    """The advisory used to live in the content list; its position must not move."""
+    """The non-critical advisory is not a blocker; it used to live in the content list and must not move."""
     kwargs = sc.ugc_advisory_inputs()
     pairs = build_categorized_recommendations(**kwargs)
     texts = [text for _, text in pairs]
     ugc = next(i for i, text in enumerate(texts) if "exposes user-generated content" in text)
     numbers = next(i for i, text in enumerate(texts) if "numerical data" in text)
     assert pairs[ugc][0] == OTHER
+    assert not any(category == BLOCKERS for category, _ in pairs)  # no critical injection in this scenario
     assert pairs[numbers][0] == "content"
     assert ugc < numbers
 
@@ -208,17 +216,40 @@ def test_all_failing_site_robots_meta_signals_land_in_their_keys() -> None:
 def test_v1_rubric_has_no_google_ai_key() -> None:
     result = sc.run_all_failing_sync(1)
     assert "google_ai" not in result.recommendations_by_category
-    assert set(result.recommendations_by_category) <= set(CATEGORY_MAX) | {OTHER}
+    assert set(result.recommendations_by_category) <= set(CATEGORY_MAX) | {BLOCKERS, OTHER}
+
+
+def test_blocked_site_real_path_puts_every_crawler_blocker_under_blockers() -> None:
+    """CDN block + JS-only page + prompt injection through the real orchestration."""
+    result = sc.run_blocked_site_sync(2)
+    by_category = result.recommendations_by_category
+
+    assert result.recommendations == _GOLDEN_SCENARIOS["full_sync_blocked_site_v2"]
+    _assert_contract(result.recommendations, by_category, CATEGORY_MAX_V2)
+
+    blockers = by_category[BLOCKERS]
+    assert len(blockers) == 5
+    assert any("LLM prompt instructions" in text for text in blockers)
+    assert any("Prompt injection in HTML comments" in text for text in blockers)
+    assert any("Hidden text detected" in text for text in blockers)
+    assert any("blocks AI crawlers" in text for text in blockers)
+    assert any("requires JavaScript" in text for text in blockers)
+    # Critical items first (builder), then the two warnings appended by _build_audit_result
+    assert "blocks AI crawlers" in blockers[3] and "requires JavaScript" in blockers[4]
+    # "other" keeps only the informational WebMCP items
+    assert by_category[OTHER]
+    assert all("potentialAction" in t or "forms" in t or "WebMCP" in t for t in by_category[OTHER])
 
 
 @pytest.mark.parametrize("score_version", [1, 2])
-def test_cdn_and_js_warnings_are_other(score_version: int) -> None:
-    """The CDN/WAF and JS-rendering warnings are appended after the builder and belong to no scored category."""
+def test_cdn_and_js_warnings_are_blockers(score_version: int) -> None:
+    """The CDN/WAF and JS-rendering warnings are appended after the builder and file under blockers."""
     result = sc.build_result_with_cdn_and_js(score_version)
-    assert result.recommendations_by_category[OTHER] == [
+    assert result.recommendations_by_category[BLOCKERS] == [
         text for text in result.recommendations if "blocks AI crawlers" in text or "requires JavaScript" in text
     ]
-    assert len(result.recommendations_by_category[OTHER]) == 2
+    assert len(result.recommendations_by_category[BLOCKERS]) == 2
+    assert OTHER not in result.recommendations_by_category
     assert result.recommendations == _GOLDEN_SCENARIOS[f"build_result_cdn_js_v{score_version}"]
     _assert_contract(
         result.recommendations,

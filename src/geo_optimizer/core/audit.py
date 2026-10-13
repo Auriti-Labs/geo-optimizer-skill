@@ -56,6 +56,7 @@ from geo_optimizer.models.config import (  # noqa: F401 (VALUABLE_SCHEMAS re-exp
     CONTENT_MIN_WORDS,
     DEFAULT_SCORE_VERSION,
     KEYWORD_STUFFING_THRESHOLD,
+    RECOMMENDATION_BLOCKERS_CATEGORY,
     RECOMMENDATION_OTHER_CATEGORY,
     ROBOTS_KEY_BOTS_DISPLAY,
     SCORE_BANDS,
@@ -116,12 +117,15 @@ def build_categorized_recommendations(
 
     ``category`` is the ``score_breakdown`` key of the category that produced the
     recommendation (``robots``, ``llms``, ``schema``, ``meta``, ``content``, ``brand_entity``,
-    ``signals``, ``ai_discovery``, ``google_ai``), or ``RECOMMENDATION_OTHER_CATEGORY`` for
+    ``signals``, ``ai_discovery``, ``google_ai``), or one of two non-scored keys for
     recommendations with no scored category:
 
     - ``meta``: the two critical page-level blocks (X-Robots-Tag noindex, ``noai``), because
       ``MetaResult`` detects them and rubric v1 scores the noindex penalty under meta;
-    - ``other``: prompt injection (critical bucket), the UGC injection surface, negative
+    - ``blockers`` (``RECOMMENDATION_BLOCKERS_CATEGORY``): the critical prompt-injection items
+      and the critical UGC injection risk produced here; ``_build_audit_result`` adds the CDN/WAF
+      block and the JavaScript-rendering warning to the same key;
+    - ``other`` (``RECOMMENDATION_OTHER_CATEGORY``): the non-critical UGC advisory, negative
       signals, WebMCP and multimodal readiness.
 
     Priority buckets are returned in critical, high, medium, and low order.
@@ -134,9 +138,9 @@ def build_categorized_recommendations(
     Without it, the static category order of each bucket is kept.
     """
     # Critical bucket is not reordered, so it is kept as two ordered segments: meta-owned blocks first,
-    # then the unscored ones (same relative order as the pre-categorisation implementation).
+    # then the crawler blockers (same relative order as the pre-categorisation implementation).
     _c_meta: list[str] = []
-    _c_other: list[str] = []
+    _c_blockers: list[str] = []
     _h_robots: list[str] = []
     _h_google_ai: list[str] = []
     _h_llms: list[str] = []
@@ -177,14 +181,14 @@ def build_categorized_recommendations(
     # v4.4: Prompt Injection — critical manipulation patterns
     if prompt_injection is not None and prompt_injection.checked and prompt_injection.severity != "clean":
         if prompt_injection.llm_instruction_found:
-            _c_other.append(
+            _c_blockers.append(
                 "⚠️ CRITICAL: LLM prompt instructions detected in page content — "
                 "this is a manipulation pattern that AI engines actively penalize"
             )
         if prompt_injection.html_comment_injection_found:
-            _c_other.append("⚠️ Prompt injection in HTML comments detected — AI crawlers read comments, remove them")
+            _c_blockers.append("⚠️ Prompt injection in HTML comments detected — AI crawlers read comments, remove them")
         if prompt_injection.hidden_text_found:
-            _c_other.append(
+            _c_blockers.append(
                 "Hidden text detected (display:none/visibility:hidden with content) — "
                 "AI crawlers can read it and may penalize this cloaking pattern"
             )
@@ -193,7 +197,7 @@ def build_categorized_recommendations(
     if prompt_injection is not None and prompt_injection.checked and prompt_injection.ugc_surface_found:
         _surfaces = ", ".join(prompt_injection.ugc_surface_samples[:3])
         if prompt_injection.ugc_injection_risk:
-            _c_other.append(
+            _c_blockers.append(
                 f"Injection pattern found on a page that also exposes user-generated content ({_surfaces}) — "
                 "the payload may be a third-party comment/review, not your own markup. Moderate the UGC area, "
                 'mark links inside it rel="ugc", and consider excluding unmoderated UGC from AI crawlers.'
@@ -402,7 +406,7 @@ def build_categorized_recommendations(
     other = RECOMMENDATION_OTHER_CATEGORY
     critical_segs: list[tuple[str | None, str, list[str]]] = [
         (None, "meta", _c_meta),
-        (None, other, _c_other),
+        (None, RECOMMENDATION_BLOCKERS_CATEGORY, _c_blockers),
     ]
     high_segs: list[tuple[str | None, str, list[str]]] = [
         ("google_ai", "google_ai", _h_google_ai),
@@ -769,7 +773,7 @@ def _build_audit_result(
         cdn_name = effective_cdn.cdn_detected or "CDN/WAF"
         categorized.append(
             (
-                RECOMMENDATION_OTHER_CATEGORY,
+                RECOMMENDATION_BLOCKERS_CATEGORY,
                 f"⚠️ {cdn_name.upper()} blocks AI crawlers: {', '.join(blocked_bots)}. "
                 f"Configure your CDN to allow AI bot User-Agents ({ROBOTS_KEY_BOTS_DISPLAY}).",
             )
@@ -778,7 +782,7 @@ def _build_audit_result(
     if effective_js.checked and effective_js.js_dependent:
         categorized.append(
             (
-                RECOMMENDATION_OTHER_CATEGORY,
+                RECOMMENDATION_BLOCKERS_CATEGORY,
                 f"⚠️ Content requires JavaScript to render ({effective_js.raw_word_count} words in raw HTML). "
                 "AI crawlers don't execute JS. Implement SSR, SSG, or pre-rendering.",
             )

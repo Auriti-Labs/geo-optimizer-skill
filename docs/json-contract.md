@@ -73,7 +73,7 @@ Additive field under the same `schema_version` (`1`). It carries the strings of 
 
 Rules:
 
-1. Keys are the `score_breakdown` keys of the result's rubric (`score_max` lists them: nine in rubric v2, eight without `google_ai` in v1), plus `other`. Only keys with at least one recommendation are present.
+1. Keys are the `score_breakdown` keys of the result's rubric (`score_max` lists them: nine in rubric v2, eight without `google_ai` in v1), plus two non-scored keys, `blockers` and `other`. Only keys with at least one recommendation are present.
 2. Every string of `recommendations` appears in exactly one list. Taken together as a multiset, the lists equal `recommendations`.
 3. Inside each list the order is the order of `recommendations`. The flat list itself is unchanged.
 4. A critical or high-priority recommendation is filed under the category that produced it, not under a priority bucket.
@@ -92,9 +92,10 @@ Mapping:
 | `brand_entity` | Brand name consistency, `sameAs` links, about link, contact info |
 | `signals` | `lang` attribute, RSS/Atom feed |
 | `ai_discovery` | `/.well-known/ai.txt`, `/ai/summary.json`, `/ai/faq.json`, `/ai/service.json` |
-| `other` | Everything without a scored category: prompt injection (critical), the user-generated-content injection surface, negative signals, WebMCP, multimodal, the CDN/WAF block and JavaScript-rendering warnings |
+| `blockers` | Not scored. Issues that keep AI crawlers from reading or trusting the page: the CDN/WAF "blocks AI crawlers" warning, the "Content requires JavaScript to render" warning, the critical prompt-injection items (LLM instructions, HTML comment injection, hidden text) and the critical variant of the user-generated-content injection surface |
+| `other` | Not scored. The non-critical user-generated-content advisory, negative signals, WebMCP, multimodal, and the message of an error result |
 
-Error results (`error` is set: unreachable site or HTTP status other than 200/203) have a single recommendation and `recommendations_by_category` is `{"other": [<that recommendation>]}`, because no category was audited.
+Error results from `geo audit` and the web API (`error` is set because the site was unreachable or answered with an HTTP status other than 200/203) have a single recommendation, and `recommendations_by_category` is `{"other": [<that recommendation>]}`, because no category was audited. Results that `core/batch_audit.py` builds for a per-URL timeout or an unexpected exception have both `recommendations` and `recommendations_by_category` empty.
 
 ## `checks` structure
 

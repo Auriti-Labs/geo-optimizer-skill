@@ -685,10 +685,14 @@ CATEGORY_MAX_V2 = {
     "signals": 6,
     "ai_discovery": 3,
 }
-# Key of ``AuditResult.recommendations_by_category`` that collects the recommendations
-# not owned by a scored category: negative signals, prompt injection / UGC surface,
-# WebMCP, multimodal, the CDN/WAF and JS-rendering warnings, and the error-path
-# messages of an audit that could not analyse the page.
+# Non-scored keys of ``AuditResult.recommendations_by_category`` (besides the scored categories).
+# "blockers": issues that stop AI crawlers from reading or trusting the page and that are not
+# part of a scored category: the CDN/WAF block, content that needs JavaScript to render, the
+# critical prompt-injection patterns and the critical UGC injection risk.
+RECOMMENDATION_BLOCKERS_CATEGORY = "blockers"
+# "other": everything else without a scored category: the non-critical UGC advisory, negative
+# signals, WebMCP, multimodal, and the error-path messages of an audit that could not analyse
+# the page.
 RECOMMENDATION_OTHER_CATEGORY = "other"
 
 SCORING_BY_VERSION = {1: SCORING, 2: SCORING_V2}
