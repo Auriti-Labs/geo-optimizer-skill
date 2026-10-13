@@ -10,6 +10,7 @@
     "prebuild": "node scripts/verify-scheduled-articles.mjs",
     "build": "astro build && node scripts/generate-og-images.mjs",
     "preview": "astro preview",
+    "test": "node --experimental-strip-types --test \"tests/**/*.test.ts\"",
     "astro": "astro",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "generate:llms": "node scripts/generate-llms.mjs",

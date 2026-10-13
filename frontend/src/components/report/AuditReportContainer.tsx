@@ -406,10 +406,11 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
   const report = state.report;
 
   const isDemo = reportId === 'demo';
-  // All categories are visible on screen: the free report is complete, matching
-  // the public API and the pricing promise ("no email required"). Email capture
-  // below is optional (send-me-a-copy), not a gate.
-  const lockedSlugs: string[] = [];
+  // The free report is meant to be complete ("no email required"); email capture
+  // below is optional (send-me-a-copy), not a gate. If the backend still sends a
+  // gated payload, its locked categories are shown as locked instead of being
+  // rendered as failed checks from missing data.
+  const lockedSlugs: string[] = report.categories.filter((c) => c.locked).map((c) => c.slug);
   const lockedSet = new Set(lockedSlugs);
 
   const criticalCount = report.recommendations.filter((r) => r.priority === 'critical').length;
@@ -456,7 +457,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
         </div>
         <div className="bg-white p-4">
           <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Citability</div>
-          <div className="mt-1 font-mono text-lg font-semibold tabular-nums text-ink-soft">{report.citabilityScore}</div>
+          <div className="mt-1 font-mono text-lg font-semibold tabular-nums text-ink-soft">{report.citabilityScore ?? '—'}</div>
           <div className="mt-0.5 font-mono text-[10px] text-ink-mute">/ 100</div>
         </div>
       </div>
@@ -477,7 +478,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
               <div className="flex items-center justify-between text-xs">
                 <span className="text-ink-mute">Citability Score</span>
                 <span className="font-mono font-semibold tabular-nums text-ink-soft">
-                  {report.citabilityScore}/100
+                  {report.citabilityScore === null ? '—' : `${report.citabilityScore}/100`}
                 </span>
               </div>
             </div>

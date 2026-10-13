@@ -35,7 +35,7 @@ function CompactCompetitorCard({ report, index }: { report: AuditReport; index: 
       <div className="space-y-2 text-sm">
         <div className="flex items-center justify-between">
           <span className="text-ink-mute">Citability</span>
-          <span className="font-mono font-semibold tabular-nums text-ink">{report.citabilityScore}/100</span>
+          <span className="font-mono font-semibold tabular-nums text-ink">{report.citabilityScore === null ? '—' : `${report.citabilityScore}/100`}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-ink-mute">Grade</span>

@@ -5,6 +5,8 @@ export interface CategoryScore {
   maxScore: number;
   grade: 'excellent' | 'good' | 'foundation' | 'critical';
   signals: string[];
+  /** True se il backend ha bloccato i dettagli di questa categoria (report gated). */
+  locked?: boolean;
 }
 
 export interface Recommendation {
@@ -27,7 +29,8 @@ export interface AuditReport {
   id: string;
   url: string;
   geoScore: number;
-  citabilityScore: number;
+  /** null quando il backend non ha incluso la citabilità. */
+  citabilityScore: number | null;
   grade: 'excellent' | 'good' | 'foundation' | 'critical';
   timestamp: string;
   version: string;

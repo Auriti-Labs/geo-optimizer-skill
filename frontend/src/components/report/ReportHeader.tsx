@@ -3,7 +3,7 @@ import React from 'react';
 interface ReportHeaderProps {
   url: string;
   geoScore: number;
-  citabilityScore: number;
+  citabilityScore: number | null;
   grade: 'excellent' | 'good' | 'foundation' | 'critical';
   timestamp: string;
   version: string;
@@ -87,7 +87,7 @@ export default function ReportHeader({
 
           <div className="text-center min-w-[72px]">
             <div className="font-head text-2xl md:text-3xl font-extrabold tabular-nums text-ink-soft">
-              {citabilityScore}
+              {citabilityScore ?? '—'}
             </div>
             <div className="mt-0.5 font-mono text-[10px] text-ink-mute">/ 100 Citability</div>
           </div>

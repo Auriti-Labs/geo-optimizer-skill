@@ -10,34 +10,20 @@ const gradeConfig = {
   critical: { text: 'text-fail', chip: 'bg-fail-wash text-fail', bar: 'bg-fail', dot: 'bg-fail', label: 'Critical' },
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
-  llms: 'llms.txt',
-  schema: 'Schema JSON-LD',
-  content: 'Content Quality',
-  ai_discovery: 'AI Discovery',
-  brand_entity: 'Brand & Entity',
-};
-
-const CATEGORY_MAX_SCORES: Record<string, number> = {
-  llms: 18,
-  schema: 16,
-  content: 12,
-  ai_discovery: 6,
-  brand_entity: 10,
-};
-
 interface LockedCardProps {
-  slug: string;
+  category: CategoryScore;
 }
 
-function LockedCard({ slug }: LockedCardProps) {
+// Nome e massimo arrivano dalla categoria mappata: con la rubrica v2 i massimi
+// fissati qui (v1) mostravano valori sbagliati, per esempio "/ 10" per Brand.
+function LockedCard({ category }: LockedCardProps) {
   return (
     <div className="relative overflow-hidden bg-white p-4">
       {/* Blurred content background — hides the locked data, not decoration */}
       <div className="blur-[3px] pointer-events-none select-none" aria-hidden="true">
         <div className="mb-2 flex items-center justify-between gap-2">
           <span className="truncate text-xs font-medium text-ink-soft">
-            {CATEGORY_LABELS[slug] ?? slug}
+            {category.name}
           </span>
           <span className="shrink-0 rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">
             —
@@ -45,7 +31,7 @@ function LockedCard({ slug }: LockedCardProps) {
         </div>
         <div className="mb-2.5 flex items-baseline gap-1.5">
           <span className="font-mono text-xl font-bold tabular-nums text-ink-mute">??</span>
-          <span className="font-mono text-xs tabular-nums text-ink-mute">/ {CATEGORY_MAX_SCORES[slug] ?? '?'}</span>
+          <span className="font-mono text-xs tabular-nums text-ink-mute">/ {category.maxScore}</span>
         </div>
         <div className="h-1 overflow-hidden rounded-[2px] bg-paper">
           <div className="h-full w-1/3 rounded-[2px] bg-ink-mute/30" />
@@ -85,7 +71,7 @@ export default function CategoryBreakdown({ categories, lockedSlugs = [] }: Cate
     <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-4">
       {categories.map((cat, i) => {
         if (lockedSet.has(cat.slug)) {
-          return <LockedCard key={cat.slug} slug={cat.slug} />;
+          return <LockedCard key={cat.slug} category={cat} />;
         }
 
         const config = gradeConfig[cat.grade];
