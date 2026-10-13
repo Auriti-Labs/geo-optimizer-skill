@@ -984,7 +984,7 @@ def detect_image_alt_quality(soup) -> MethodScore:
 def _compute_freshness_level(days_old: float) -> str:
     """Map content age in days to a freshness level string (#401).
 
-    Levels (AutoGEO (arXiv:2510.11438, preprint)):
+    Levels (AutoGEO, arXiv:2510.11438 preprint):
     - very_fresh: < 3 months (FRESHNESS_VERY_FRESH_DAYS)
     - fresh:      3-6 months (FRESHNESS_FRESH_DAYS)
     - aging:      6-12 months (FRESHNESS_AGING_DAYS)
