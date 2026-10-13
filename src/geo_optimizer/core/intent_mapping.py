@@ -4,7 +4,7 @@ Analizza il contenuto di una pagina per determinare quali intenti di ricerca AI
 serve e quanto e' pronta a essere citata per ciascuno.
 
 Zero fetch HTTP — lavora su dati gia disponibili.
-Basato su: Princeton KDD 2024, AutoGEO ICLR 2026, Google Search Intent taxonomy.
+Basato su: Princeton KDD 2024, AutoGEO (arXiv:2510.11438, preprint), Google Search Intent taxonomy.
 """
 
 from __future__ import annotations

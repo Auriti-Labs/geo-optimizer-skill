@@ -55,8 +55,8 @@ body:
       label: Research reference (optional)
       description: |
         Does this relate to a published paper or spec?
-        E.g., Princeton KDD 2024, AutoGEO ICLR 2026, llmstxt.org, geo-checklist.dev
-      placeholder: "Based on AutoGEO (Wu et al., ICLR 2026) which found that..."
+        E.g., Princeton KDD 2024, AutoGEO (arXiv:2510.11438, preprint), llmstxt.org, geo-checklist.dev
+      placeholder: "Based on AutoGEO (Wu et al., arXiv:2510.11438) which found that..."
 
   - type: dropdown
     id: willing-to-implement

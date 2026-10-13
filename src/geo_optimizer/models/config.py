@@ -751,7 +751,7 @@ JS_EMPTY_ROOT_WORDS: int = 200  # empty root + low word count → JS-dependent
 JS_CRITICAL_WORDS: int = 50  # critically low content threshold
 
 # Content freshness thresholds in days (#401)
-# AutoGEO ICLR 2026: tech content < 3 months strongly preferred by AI search engines
+# AutoGEO (arXiv:2510.11438, preprint): tech content < 3 months strongly preferred by AI search engines
 FRESHNESS_VERY_FRESH_DAYS = 90  # < 3 months → very_fresh
 FRESHNESS_FRESH_DAYS = 180  # 3-6 months → fresh
 FRESHNESS_AGING_DAYS = 365  # 6-12 months → aging (> 12 months = stale)

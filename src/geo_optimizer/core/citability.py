@@ -650,7 +650,7 @@ def detect_keyword_stuffing(soup, clean_text: str | None = None) -> MethodScore:
     )
 
 
-# ─── 10. Answer-First Structure (+25%) — AutoGEO ICLR 2026 ───────────────────
+# ─── 10. Answer-First Structure (+25%) — AutoGEO (arXiv:2510.11438, preprint) ───────────────────
 
 
 # Pattern for concrete facts: numbers, percentages, assertive statements
@@ -667,7 +667,7 @@ _FACT_RE = re.compile(
 def detect_answer_first(soup) -> MethodScore:
     """Detect answer-first structure: H2 followed by paragraph with concrete fact.
 
-    AutoGEO (ICLR 2026) identifies AnswerFirst as one of the most effective
+    AutoGEO (arXiv:2510.11438, preprint) identifies AnswerFirst as one of the most effective
     strategies for AI citation. For each H2, checks if the first paragraph
     contains a concrete fact (number, assertive statement) in the first 150 chars.
     """
@@ -984,7 +984,7 @@ def detect_image_alt_quality(soup) -> MethodScore:
 def _compute_freshness_level(days_old: float) -> str:
     """Map content age in days to a freshness level string (#401).
 
-    Levels (AutoGEO ICLR 2026):
+    Levels (AutoGEO (arXiv:2510.11438, preprint)):
     - very_fresh: < 3 months (FRESHNESS_VERY_FRESH_DAYS)
     - fresh:      3-6 months (FRESHNESS_FRESH_DAYS)
     - aging:      6-12 months (FRESHNESS_AGING_DAYS)

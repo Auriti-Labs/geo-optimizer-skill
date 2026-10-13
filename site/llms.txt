@@ -1,6 +1,6 @@
 # GEO Optimizer
 
-> Open-source toolkit to audit, fix, and optimize websites for AI search engine visibility. Based on Princeton KDD 2024 and AutoGEO ICLR 2026 research. Scores websites 0-100 across 8 categories with 47 citability methods.
+> Open-source toolkit to audit, fix, and optimize websites for AI search engine visibility. Based on Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint) research. Scores websites 0-100 across 8 categories with 47 citability methods.
 
 The main documentation is available at: [GEO Optimizer Docs](https://geoready.dev/docs/)
 

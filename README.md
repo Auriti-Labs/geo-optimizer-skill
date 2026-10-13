@@ -347,7 +347,7 @@ export default defineConfig({
 | Paper | Venue | What it found |
 |-------|-------|---------------|
 | [GEO: Generative Engine Optimization](https://arxiv.org/abs/2311.09735) | **KDD 2024** | 9 methods, evaluated on GEO-bench (10,000 queries). The best (citing sources, adding quotations, adding statistics) raised source visibility by up to 40%. Gains were largest for lower-ranked sources. |
-| [AutoGEO](https://arxiv.org/abs/2510.11438) | **ICLR 2026** | Rules extracted automatically from engine preferences, up to +50.99% over the strongest KDD baseline. |
+| [AutoGEO](https://arxiv.org/abs/2510.11438) | arXiv preprint (2025) | Rules extracted automatically from engine preferences, up to +50.99% over the strongest KDD baseline. |
 | [C-SEO Bench](https://arxiv.org/abs/2506.11097) | **NeurIPS D&B 2025** | Most content-rewriting tricks do not work. Ranking the source matters more than rewriting it. |
 
 That finding is consistent with how the tool is weighted: GEO Optimizer puts most of its weight on whether crawlers can reach and parse a page (robots.txt, `llms.txt`, schema, meta) and treats content rewriting as the smaller lever. It measures readiness signals; it cannot guarantee that any engine will cite you, and it says so.
@@ -432,7 +432,7 @@ Nothing in practice — they are two names for the same discipline. AEO (Answer 
 Traditional SEO tools optimize for Google rankings and backlinks. GEO Optimizer measures AI *citation readiness* — whether answer engines can crawl, parse, and quote your content — using signals (llms.txt, AI-bot access, schema richness, citability, topical authority) that classic SEO tools don't score. Standard technical SEO checks (meta tags, canonical URLs, Open Graph) are audited alongside them.
 
 **What research is GEO Optimizer based on?**
-Three peer-reviewed papers — *GEO: Generative Engine Optimization* (KDD 2024), *AutoGEO* (ICLR 2026), and *C-SEO Bench* (NeurIPS Datasets & Benchmarks 2025) — plus industry studies for the remaining content checks. Every check lists its source in [docs/geo-methods.md](docs/geo-methods.md).
+Two peer-reviewed papers, *GEO: Generative Engine Optimization* (KDD 2024) and *C-SEO Bench* (NeurIPS Datasets & Benchmarks 2025), the *AutoGEO* preprint (arXiv 2025), plus industry studies for the remaining content checks. Every check lists its source in [docs/geo-methods.md](docs/geo-methods.md).
 
 **Is there a book on Generative Engine Optimization?**
 Yes. *AI Search Engineering: A Technical Guide to Generative Engine Optimization (GEO), AI Citations, and Agent-Ready Websites* is a 992-page book by Juan Camilo Auriti, the author of GEO Optimizer, published 10 September 2026 (ISBN 979-8172934568). The scoring model it describes is the one implemented in this engine. See [the book](#the-book-behind-the-engine-ai-search-engineering).

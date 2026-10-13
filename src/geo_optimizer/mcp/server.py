@@ -210,7 +210,7 @@ def geo_citability(url: str) -> str:
     """Analyze content citability using 47 methods (Princeton GEO + AutoGEO + content analysis).
 
     Evaluates page content with 47 methods from Princeton KDD 2024,
-    AutoGEO ICLR 2026, SE Ranking 2025, and Growth Marshal 2026.
+    AutoGEO (arXiv:2510.11438, preprint), SE Ranking 2025, and Growth Marshal 2026.
 
     Returns score 0-100 with per-method detail and suggestions.
 
@@ -635,7 +635,7 @@ def get_citability_methods() -> str:
             "total_methods": len(methods),
             "total_max_score": total_max,
             "note": "Score capped at 100",
-            "source": "Princeton KDD 2024 + AutoGEO ICLR 2026 + SE Ranking 2025 + Growth Marshal 2026",
+            "source": "Princeton KDD 2024 + AutoGEO (arXiv:2510.11438, preprint) + SE Ranking 2025 + Growth Marshal 2026",
         },
         indent=2,
     )
