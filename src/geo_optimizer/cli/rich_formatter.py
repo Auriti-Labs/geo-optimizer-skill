@@ -915,7 +915,8 @@ def _category_rows(result: AuditResult) -> list[tuple[str, int, int, str]]:
 
     llms_label = "llms.txt"
     if result.score_version >= 2:
-        llms_label += " (Other AI agents · not used by Google Search)"
+        # etichetta corta: in una colonna no_wrap quella lunga dei formatter testuali tronca i punteggi
+        llms_label += " (not used by Google)"
     rows = [
         ("Robots.txt", _robots_score(result), category_max(result, "robots"), robots),
         (llms_label, _llms_score(result), category_max(result, "llms"), llms),
@@ -1061,10 +1062,10 @@ def format_audit_rich(result: AuditResult, verbose: bool = False, width: int | N
     rows = _category_rows(result)
     grid = Table.grid(padding=(0, 2))
     grid.add_column(style="bold", min_width=16, no_wrap=True)
-    grid.add_column(no_wrap=True)
-    grid.add_column(justify="right", no_wrap=True)
-    grid.add_column(style=dim, overflow="ellipsis", no_wrap=True)
     bar_width = 16 if width >= 80 else 8
+    grid.add_column(no_wrap=True, min_width=bar_width)
+    grid.add_column(justify="right", no_wrap=True, min_width=5)
+    grid.add_column(style=dim, overflow="ellipsis", no_wrap=True)
     for label, score, max_score, detail in rows:
         score_txt = Text(str(score), style=f"bold {_score_color(score, max_score)}")
         score_txt.append(f"/{max_score}", style=dim)

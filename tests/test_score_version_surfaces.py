@@ -5,10 +5,9 @@ from __future__ import annotations
 import json
 import re
 import xml.etree.ElementTree as ET
-
-import pytest
 from unittest.mock import patch
 
+import pytest
 from click.testing import CliRunner
 
 from geo_optimizer.cli.ci_formatter import format_audit_junit, format_audit_sarif
@@ -141,6 +140,16 @@ def test_rich_uses_result_maxima_for_v1_and_v2() -> None:
 
     assert "6/6" in v2_output
     assert "0/18" in old_output
+
+
+@pytest.mark.parametrize("width", [80, 100])
+def test_rich_v2_category_scores_are_not_truncated(width: int) -> None:
+    ansi = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+    result = _v2()
+    output = ansi.sub("", format_audit_rich(result, width=width))
+
+    for key, max_score in result.score_max.items():
+        assert f"{result.score_breakdown[key]}/{max_score}" in output, key
 
 
 def test_diff_uses_after_result_maxima_and_reports_version_mismatch() -> None:
