@@ -1543,6 +1543,10 @@ def _audit_result_to_dict(result) -> dict:
     breakdown_keys = result.score_max or CATEGORY_MAX
     base["score_breakdown"] = {k: base.get("score_breakdown", {}).get(k, 0) for k in breakdown_keys}
     base["score_max"] = dict(breakdown_keys)
+    # score_breakdown elenca solo le categorie della rubrica (contratto JSON): la
+    # penalità per segnali negativi restava invisibile e la somma delle categorie
+    # non tornava con score. Chiave top-level opzionale, valore <= 0.
+    base["score_penalty"] = (result.score_breakdown or {}).get("negative_penalty", 0)
 
     # Add the "checks" mapping (structure expected by the frontend and platform)
     # Keys under checks must match gate_service.CATEGORY_KEY_MAP and analytics_dashboard

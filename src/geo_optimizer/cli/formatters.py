@@ -66,6 +66,8 @@ def format_audit_json(result: AuditResult) -> str:
         "error": result.error,
         "score_version": result.score_version,
         "score_max": {cat: category_max(result, cat) for cat in categories(result)},
+        # Penalità per segnali negativi (<= 0): score = somma delle categorie + score_penalty
+        "score_penalty": (result.score_breakdown or {}).get("negative_penalty", 0),
         "google_ai": asdict(result.google_ai),
         "checks": {
             "robots_txt": {

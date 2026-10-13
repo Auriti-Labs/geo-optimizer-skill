@@ -314,3 +314,36 @@ def test_web_api_score_breakdown_follows_result_rubric_version():
     assert data["score_breakdown"]["google_ai"] == 15
     assert set(data["score_breakdown"]) == set(CATEGORY_MAX_V2)
     assert data["score_max"] == CATEGORY_MAX_V2
+
+
+def test_web_api_exposes_score_penalty_outside_breakdown():
+    """La penalità è una chiave top-level: score_breakdown resta di sole categorie."""
+    result = _make_minimal_audit_result()
+    result.score_breakdown = {"robots": 14, "meta": 11, "negative_penalty": -3}
+    result.score = 22
+
+    data = _call_audit_result_to_dict(result)
+
+    assert data["score_penalty"] == -3
+    assert "negative_penalty" not in data["score_breakdown"]
+    assert sum(data["score_breakdown"].values()) + data["score_penalty"] == data["score"]
+
+
+def test_web_api_score_penalty_defaults_to_zero():
+    result = _make_minimal_audit_result()
+    result.score_breakdown = {"robots": 14}
+
+    data = _call_audit_result_to_dict(result)
+
+    assert data["score_penalty"] == 0
+
+
+def test_cli_json_exposes_score_penalty():
+    from geo_optimizer.cli.formatters import format_audit_json
+
+    result = _make_minimal_audit_result()
+    result.score_breakdown = {"robots": 14, "negative_penalty": -5}
+
+    data = json.loads(format_audit_json(result))
+
+    assert data["score_penalty"] == -5
