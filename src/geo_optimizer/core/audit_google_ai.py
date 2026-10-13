@@ -163,9 +163,14 @@ def check_dates(soup, schemas: list[dict], now: datetime) -> ReadinessCheck:
 
 
 def check_byline(soup, schemas: list[dict]) -> ReadinessCheck:
+    # Yoast/RankMath dichiarano l'autore come riferimento ({"@id": ".../#/schema/person/x"})
+    # a un nodo Person altrove nel @graph: senza risolverlo l'autore risultava assente.
+    nodes_by_id = {s["@id"]: s for s in schemas if isinstance(s, dict) and isinstance(s.get("@id"), str)}
     for s in schemas:
         authors = s.get("author") if isinstance(s, dict) else None
         for a in authors if isinstance(authors, list) else [authors]:
+            if isinstance(a, dict) and "name" not in a and isinstance(a.get("@id"), str):
+                a = nodes_by_id.get(a["@id"], a)
             name = a.get("name") if isinstance(a, dict) else a
             if isinstance(name, str) and name.strip():
                 return _check("G-BYLINE", "pass", "Author declared in structured data")

@@ -111,7 +111,6 @@ def test_on_step_order_async():
     with (
         patch("geo_optimizer.utils.http_async.fetch_urls_async", AsyncMock(side_effect=_fetch)),
         patch("geo_optimizer.core.audit.check_markdown_negotiation_async", AsyncMock(return_value=True)),
-        patch("geo_optimizer.core.audit.asyncio.to_thread", AsyncMock(return_value=Mock(checked=False))),
         patch("geo_optimizer.core.audit.audit_cdn_ai_crawler") as cdn,
     ):
         cdn.return_value.checked = False
