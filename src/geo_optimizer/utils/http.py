@@ -420,6 +420,8 @@ def _fetch_with_manual_redirects(
         # Legacy test mocks set r.content = b"..." as a plain attribute. Never read
         # .content on a real Response: it is a property that downloads the whole body
         # into RAM before any size check, bypassing _stream_response and max_size.
+        # Mocks built with spec=requests.Response pass isinstance and are streamed:
+        # give them iter_content (or _content bytes), not .content.
         if not isinstance(r, requests.Response):
             mock_content = getattr(r, "content", None)
             if isinstance(mock_content, bytes):
@@ -427,8 +429,15 @@ def _fetch_with_manual_redirects(
                     return None, f"Response too large: {len(mock_content)} bytes (max: {max_size})"
                 return r, None
 
-        # Real streaming for live responses (no pre-loaded _content)
-        content, err = _stream_response(r, max_size)
+        # Real streaming for live responses (no pre-loaded _content).
+        # Body errors (truncated chunked body, corrupt gzip, read timeout) surface
+        # here, after the request has returned: report them instead of raising.
+        try:
+            content, err = _stream_response(r, max_size)
+        except requests.exceptions.RequestException as e:
+            r.close()
+            _logger.warning("Error while reading response body from %s: %s", current_url, e)
+            return None, "Error while reading response body"
         if err:
             r.close()
             return None, err

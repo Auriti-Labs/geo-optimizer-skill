@@ -15,6 +15,7 @@ from __future__ import annotations
 import io
 from unittest.mock import Mock, patch
 
+import pytest
 import requests
 from urllib3.response import HTTPResponse
 
@@ -212,3 +213,63 @@ class TestRedirectResolution:
         validated = self._run_redirect("https://example.com/docs/x", "/login")
 
         assert validated[-1] == "https://example.com/login"
+
+
+class TestBodyReadErrors:
+    def test_fetch_url_error_while_streaming_returns_error_instead_of_raising(self):
+        response = _real_streaming_response(b"")
+        response.iter_content = Mock(side_effect=requests.exceptions.ChunkedEncodingError("truncated"))
+        response.close = Mock()
+
+        with (
+            patch("geo_optimizer.utils.validators.resolve_and_validate_url", side_effect=_resolve_ok),
+            patch.object(http_mod, "_execute_request", return_value=response),
+        ):
+            result, error = fetch_url("https://example.com/")
+
+        assert result is None
+        assert error == "Error while reading response body"
+        response.close.assert_called_once()
+
+
+class TestRedirectValidationWithRealValidator:
+    """I target dei redirect passano dal validatore reale, non da un mock permissivo."""
+
+    @pytest.mark.parametrize(
+        "location",
+        [
+            "javascript:alert(1)",
+            "file:///etc/passwd",
+            "//127.0.0.1/admin",
+            "//169.254.169.254/latest/meta-data/",
+            "http://10.0.0.1/",
+            "//user@127.0.0.1/",
+        ],
+    )
+    def test_redirect_to_unsafe_target_is_refused(self, location):
+        from geo_optimizer.utils.validators import resolve_and_validate_url as real_resolve
+
+        def _resolve(url):
+            # solo l'URL iniziale e' simulato: i target del redirect usano il validatore reale
+            if url == "https://example.com/start":
+                return True, None, _PUBLIC_IP
+            return real_resolve(url)
+
+        redirect = Mock(status_code=302, headers={"Location": location})
+        with (
+            patch("geo_optimizer.utils.validators.resolve_and_validate_url", side_effect=_resolve),
+            patch.object(http_mod, "_execute_request", return_value=redirect) as execute,
+        ):
+            result, error = fetch_url("https://example.com/start")
+
+        assert result is None
+        assert error.startswith("Redirect to unsafe URL")
+        assert execute.call_count == 1  # il target non viene mai richiesto
+
+    def test_redirect_to_invalid_idna_host_returns_error(self):
+        from geo_optimizer.utils.validators import resolve_and_validate_url
+
+        ok, error, ips = resolve_and_validate_url("https://a..com/")
+
+        assert ok is False
+        assert ips == []
