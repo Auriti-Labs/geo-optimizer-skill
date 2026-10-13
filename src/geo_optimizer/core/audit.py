@@ -56,6 +56,7 @@ from geo_optimizer.models.config import (  # noqa: F401 (VALUABLE_SCHEMAS re-exp
     CONTENT_MIN_WORDS,
     DEFAULT_SCORE_VERSION,
     KEYWORD_STUFFING_THRESHOLD,
+    RECOMMENDATION_OTHER_CATEGORY,
     ROBOTS_KEY_BOTS_DISPLAY,
     SCORE_BANDS,
     SCORING,
@@ -84,8 +85,12 @@ from geo_optimizer.models.results import (
 from geo_optimizer.utils.http import fetch_url
 from geo_optimizer.utils.validators import normalize_url_scheme
 
+# Shared by build_recommendations / build_categorized_recommendations: one (category, text) pair per
+# recommendation, in final output order.
+CategorizedRecommendation = tuple[str, str]
 
-def build_recommendations(
+
+def build_categorized_recommendations(
     base_url: str,
     robots: RobotsResult,
     llms: LlmsTxtResult,
@@ -102,8 +107,22 @@ def build_recommendations(
     multimodal: MultimodalResult | None = None,
     google_ai: GoogleAiReadinessResult | None = None,
     category_max: dict | None = None,
-) -> list[str]:
-    """Build a prioritized list of recommendations sorted by score impact (gap #5).
+) -> list[CategorizedRecommendation]:
+    """Build the prioritized recommendations as ``(category, text)`` pairs (gap #5).
+
+    This is the single source of truth: ``build_recommendations`` returns the texts of this
+    list and ``group_recommendations_by_category`` groups it, so the flat list and the
+    per-category view can never diverge.
+
+    ``category`` is the ``score_breakdown`` key of the category that produced the
+    recommendation (``robots``, ``llms``, ``schema``, ``meta``, ``content``, ``brand_entity``,
+    ``signals``, ``ai_discovery``, ``google_ai``), or ``RECOMMENDATION_OTHER_CATEGORY`` for
+    recommendations with no scored category:
+
+    - ``meta``: the two critical page-level blocks (X-Robots-Tag noindex, ``noai``), because
+      ``MetaResult`` detects them and rubric v1 scores the noindex penalty under meta;
+    - ``other``: prompt injection (critical bucket), the UGC injection surface, negative
+      signals, WebMCP and multimodal readiness.
 
     Priority buckets are returned in critical, high, medium, and low order.
     Category maxima come from the selected score version and include
@@ -112,9 +131,12 @@ def build_recommendations(
     When ``score_breakdown`` (from ``compute_score_breakdown``) is provided,
     categories inside each bucket are reordered by recoverable points
     (category max minus points earned), so the highest-impact fixes come first.
-    Without it, the static category order above is kept.
+    Without it, the static category order of each bucket is kept.
     """
-    _critical: list[str] = []
+    # Critical bucket is not reordered, so it is kept as two ordered segments: meta-owned blocks first,
+    # then the unscored ones (same relative order as the pre-categorisation implementation).
+    _c_meta: list[str] = []
+    _c_other: list[str] = []
     _h_robots: list[str] = []
     _h_google_ai: list[str] = []
     _h_llms: list[str] = []
@@ -127,6 +149,7 @@ def build_recommendations(
     _m_negative: list[str] = []
     _l_signals: list[str] = []
     _l_content: list[str] = []
+    _l_ugc: list[str] = []  # UGC advisory: sorted with content, but not a content-scored recommendation
     _l_ai: list[str] = []
     _l_schema: list[str] = []
     _l_webmcp: list[str] = []
@@ -140,13 +163,13 @@ def build_recommendations(
     # ── CRITICAL — blocking signals ─────────────────────────────────────────
     # gap #2: X-Robots-Tag: noindex via HTTP header
     if getattr(meta, "x_robots_noindex", False):
-        _critical.append(
+        _c_meta.append(
             f"CRITICAL: X-Robots-Tag: {meta.x_robots_tag} detected in HTTP response headers — "
             "AI crawlers will skip this page entirely. Remove the header or set it to 'all'."
         )
     # gap #7: noai in meta robots
     if getattr(meta, "has_noai", False):
-        _critical.append(
+        _c_meta.append(
             f"noai directive detected in meta robots ({meta.noai_value}) — "
             "some AI search engines respect this and may refuse to cite your content. "
             "Remove 'noai' to maximize AI citability."
@@ -154,14 +177,14 @@ def build_recommendations(
     # v4.4: Prompt Injection — critical manipulation patterns
     if prompt_injection is not None and prompt_injection.checked and prompt_injection.severity != "clean":
         if prompt_injection.llm_instruction_found:
-            _critical.append(
+            _c_other.append(
                 "⚠️ CRITICAL: LLM prompt instructions detected in page content — "
                 "this is a manipulation pattern that AI engines actively penalize"
             )
         if prompt_injection.html_comment_injection_found:
-            _critical.append("⚠️ Prompt injection in HTML comments detected — AI crawlers read comments, remove them")
+            _c_other.append("⚠️ Prompt injection in HTML comments detected — AI crawlers read comments, remove them")
         if prompt_injection.hidden_text_found:
-            _critical.append(
+            _c_other.append(
                 "Hidden text detected (display:none/visibility:hidden with content) — "
                 "AI crawlers can read it and may penalize this cloaking pattern"
             )
@@ -170,13 +193,13 @@ def build_recommendations(
     if prompt_injection is not None and prompt_injection.checked and prompt_injection.ugc_surface_found:
         _surfaces = ", ".join(prompt_injection.ugc_surface_samples[:3])
         if prompt_injection.ugc_injection_risk:
-            _critical.append(
+            _c_other.append(
                 f"Injection pattern found on a page that also exposes user-generated content ({_surfaces}) — "
                 "the payload may be a third-party comment/review, not your own markup. Moderate the UGC area, "
                 'mark links inside it rel="ugc", and consider excluding unmoderated UGC from AI crawlers.'
             )
         else:
-            _l_content.append(
+            _l_ugc.append(
                 f"This page exposes user-generated content ({_surfaces}). It is an injection surface — a third "
                 'party can place text there that AI crawlers read. Keep it moderated and mark its links rel="ugc".'
             )
@@ -372,28 +395,39 @@ def build_recommendations(
                 "add one to make it citable by AI engines"
             )
 
-    # gap #5: order categories inside each bucket by recoverable points
-    high_segs: list[tuple[str | None, list[str]]] = [
-        ("google_ai", _h_google_ai),
-        ("robots", _h_robots),
-        ("llms", _h_llms),
-        ("meta", _h_meta),
+    # gap #5: order categories inside each bucket by recoverable points.
+    # Each segment is (sort key, output category, recommendations). The sort key drives the
+    # recoverable-points ordering (None = never reordered, "negative_penalty" = penalty
+    # magnitude); the output category is what ends up in ``recommendations_by_category``.
+    other = RECOMMENDATION_OTHER_CATEGORY
+    critical_segs: list[tuple[str | None, str, list[str]]] = [
+        (None, "meta", _c_meta),
+        (None, other, _c_other),
     ]
-    medium_segs: list[tuple[str | None, list[str]]] = [
-        ("llms", _m_llms),
-        ("meta", _m_meta),
-        ("brand_entity", _m_brand),
-        ("schema", _m_schema),
-        ("content", _m_content),
-        ("negative_penalty", _m_negative),
+    high_segs: list[tuple[str | None, str, list[str]]] = [
+        ("google_ai", "google_ai", _h_google_ai),
+        ("robots", "robots", _h_robots),
+        ("llms", "llms", _h_llms),
+        ("meta", "meta", _h_meta),
     ]
-    low_segs: list[tuple[str | None, list[str]]] = [
-        ("signals", _l_signals),
-        ("content", _l_content),
-        ("ai_discovery", _l_ai),
-        ("schema", _l_schema),
-        (None, _l_webmcp),
-        (None, _l_multimodal),
+    medium_segs: list[tuple[str | None, str, list[str]]] = [
+        ("llms", "llms", _m_llms),
+        ("meta", "meta", _m_meta),
+        ("brand_entity", "brand_entity", _m_brand),
+        ("schema", "schema", _m_schema),
+        ("content", "content", _m_content),
+        ("negative_penalty", other, _m_negative),
+    ]
+    low_segs: list[tuple[str | None, str, list[str]]] = [
+        ("signals", "signals", _l_signals),
+        # The UGC advisory shares the content sort key (it stays right before the content items)
+        # but is not a content-scored recommendation.
+        ("content", other, _l_ugc),
+        ("content", "content", _l_content),
+        ("ai_discovery", "ai_discovery", _l_ai),
+        ("schema", "schema", _l_schema),
+        (None, other, _l_webmcp),
+        (None, other, _l_multimodal),
     ]
 
     def _recoverable(category: str | None) -> int:
@@ -405,13 +439,74 @@ def build_recommendations(
         effective_category_max = category_max if category_max is not None else CATEGORY_MAX
         return effective_category_max.get(category, 0) - max(0, score_breakdown.get(category, 0))
 
-    def _flatten(segs: list[tuple[str | None, list[str]]]) -> list[str]:
-        if score_breakdown is not None:
+    def _flatten(
+        segs: list[tuple[str | None, str, list[str]]], reorder: bool = True
+    ) -> list[CategorizedRecommendation]:
+        if reorder and score_breakdown is not None:
             # sorted() is stable: ties keep the static category order
             segs = sorted(segs, key=lambda seg: _recoverable(seg[0]), reverse=True)
-        return [rec for _, seg in segs for rec in seg]
+        return [(category, rec) for _, category, seg in segs for rec in seg]
 
-    return _critical + _flatten(high_segs) + _flatten(medium_segs) + _flatten(low_segs)
+    return _flatten(critical_segs, reorder=False) + _flatten(high_segs) + _flatten(medium_segs) + _flatten(low_segs)
+
+
+def group_recommendations_by_category(items: list[CategorizedRecommendation]) -> dict[str, list[str]]:
+    """Group ``(category, text)`` pairs into ``{category: [text, ...]}``.
+
+    Lists are filled in input order, so within each category the recommendations keep the
+    relative order they have in the flat list. Categories without recommendations are absent.
+    """
+    grouped: dict[str, list[str]] = {}
+    for category, text in items:
+        grouped.setdefault(category, []).append(text)
+    return grouped
+
+
+def build_recommendations(
+    base_url: str,
+    robots: RobotsResult,
+    llms: LlmsTxtResult,
+    schema: SchemaResult,
+    meta: MetaResult,
+    content: ContentResult,
+    ai_discovery: AiDiscoveryResult | None = None,
+    signals: SignalsResult | None = None,
+    brand_entity: BrandEntityResult | None = None,
+    webmcp: WebMcpResult | None = None,
+    negative_signals: NegativeSignalsResult | None = None,
+    prompt_injection: PromptInjectionResult | None = None,
+    score_breakdown: dict[str, int] | None = None,
+    multimodal: MultimodalResult | None = None,
+    google_ai: GoogleAiReadinessResult | None = None,
+    category_max: dict | None = None,
+) -> list[str]:
+    """Build the flat, prioritized list of recommendation texts (backward compatible API).
+
+    Same arguments and same output as before ``recommendations_by_category`` existed. The
+    category of each text is available through ``build_categorized_recommendations``; see
+    that function for the ordering rules.
+    """
+    return [
+        text
+        for _, text in build_categorized_recommendations(
+            base_url=base_url,
+            robots=robots,
+            llms=llms,
+            schema=schema,
+            meta=meta,
+            content=content,
+            ai_discovery=ai_discovery,
+            signals=signals,
+            brand_entity=brand_entity,
+            webmcp=webmcp,
+            negative_signals=negative_signals,
+            prompt_injection=prompt_injection,
+            score_breakdown=score_breakdown,
+            multimodal=multimodal,
+            google_ai=google_ai,
+            category_max=category_max,
+        )
+    ]
 
 
 def _build_audit_result(
@@ -620,7 +715,7 @@ def _build_audit_result(
     band = get_score_band(score)
 
     # Recommendations
-    recommendations = build_recommendations(
+    categorized = build_categorized_recommendations(
         base_url,
         robots,
         llms,
@@ -672,16 +767,26 @@ def _build_audit_result(
     if effective_cdn.checked and effective_cdn.any_blocked:
         blocked_bots = [b["bot"] for b in effective_cdn.bot_results if b["blocked"] or b["challenge_detected"]]
         cdn_name = effective_cdn.cdn_detected or "CDN/WAF"
-        recommendations.append(
-            f"⚠️ {cdn_name.upper()} blocks AI crawlers: {', '.join(blocked_bots)}. "
-            f"Configure your CDN to allow AI bot User-Agents ({ROBOTS_KEY_BOTS_DISPLAY})."
+        categorized.append(
+            (
+                RECOMMENDATION_OTHER_CATEGORY,
+                f"⚠️ {cdn_name.upper()} blocks AI crawlers: {', '.join(blocked_bots)}. "
+                f"Configure your CDN to allow AI bot User-Agents ({ROBOTS_KEY_BOTS_DISPLAY}).",
+            )
         )
 
     if effective_js.checked and effective_js.js_dependent:
-        recommendations.append(
-            f"⚠️ Content requires JavaScript to render ({effective_js.raw_word_count} words in raw HTML). "
-            "AI crawlers don't execute JS. Implement SSR, SSG, or pre-rendering."
+        categorized.append(
+            (
+                RECOMMENDATION_OTHER_CATEGORY,
+                f"⚠️ Content requires JavaScript to render ({effective_js.raw_word_count} words in raw HTML). "
+                "AI crawlers don't execute JS. Implement SSR, SSG, or pre-rendering.",
+            )
         )
+
+    # The flat list and the per-category view are both derived from the same pairs
+    recommendations = [text for _, text in categorized]
+    recommendations_by_category = group_recommendations_by_category(categorized)
 
     result = AuditResult(
         url=base_url,
@@ -694,6 +799,7 @@ def _build_audit_result(
         content=content,
         citability=citability,
         recommendations=recommendations,
+        recommendations_by_category=recommendations_by_category,
         http_status=http_status,
         page_size=page_size,
         extra_checks=plugin_results,
@@ -739,6 +845,17 @@ def _build_audit_result(
         )
 
     return result
+
+
+def _set_error_recommendations(result: AuditResult, recommendations: list[str]) -> None:
+    """Set the recommendations of an audit that could not analyse the page.
+
+    No category was audited, so none owns the message: it is filed under
+    ``RECOMMENDATION_OTHER_CATEGORY`` to keep ``recommendations_by_category`` consistent
+    with ``recommendations`` (same strings, one group).
+    """
+    result.recommendations = recommendations
+    result.recommendations_by_category = {RECOMMENDATION_OTHER_CATEGORY: list(recommendations)}
 
 
 def _notify(on_step: Callable[[str], None] | None, step: str) -> None:
@@ -809,7 +926,7 @@ def run_full_audit(
             score_version=score_version,
             score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
         )
-        result.recommendations = [f"Unable to reach {base_url}: {err or 'connection failed'}"]
+        _set_error_recommendations(result, [f"Unable to reach {base_url}: {err or 'connection failed'}"])
         result.audit_duration_ms = int((time.perf_counter() - _t0) * 1000)
         return result
 
@@ -822,9 +939,9 @@ def run_full_audit(
             score_version=score_version,
             score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
         )
-        result.recommendations = [
-            f"Site returned HTTP {r.status_code}. Check for Cloudflare/WAF blocks or server errors."
-        ]
+        _set_error_recommendations(
+            result, [f"Site returned HTTP {r.status_code}. Check for Cloudflare/WAF blocks or server errors."]
+        )
         result.audit_duration_ms = int((time.perf_counter() - _t0) * 1000)
         return result
 
@@ -1055,7 +1172,7 @@ async def run_full_audit_async(
             score_version=score_version,
             score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
         )
-        result.recommendations = [f"Unable to reach {base_url}: {err_home}"]
+        _set_error_recommendations(result, [f"Unable to reach {base_url}: {err_home}"])
         result.audit_duration_ms = int((time.perf_counter() - _t0) * 1000)
         return result
 
@@ -1068,9 +1185,9 @@ async def run_full_audit_async(
             score_version=score_version,
             score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
         )
-        result.recommendations = [
-            f"Site returned HTTP {r_home.status_code}. Check for Cloudflare/WAF blocks or server errors."
-        ]
+        _set_error_recommendations(
+            result, [f"Site returned HTTP {r_home.status_code}. Check for Cloudflare/WAF blocks or server errors."]
+        )
         result.audit_duration_ms = int((time.perf_counter() - _t0) * 1000)
         return result
 

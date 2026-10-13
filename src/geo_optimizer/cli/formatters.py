@@ -124,6 +124,8 @@ def format_audit_json(result: AuditResult) -> str:
         },
         "score_breakdown": result.score_breakdown,
         "recommendations": result.recommendations,
+        # Additive (same schema): the same strings grouped by the category that produced them
+        "recommendations_by_category": result.recommendations_by_category,
     }
     if "google_ai" in result.score_max:
         data["checks"]["google_ai"] = {

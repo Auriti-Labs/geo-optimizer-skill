@@ -1539,6 +1539,12 @@ def _audit_result_to_dict(result) -> dict:
     # JSON contract version — consumers must handle missing (default 0 = pre-v1)
     base["schema_version"] = 1
 
+    # Additive field: recommendations grouped by producing category (+ "other"). Same strings as
+    # base["recommendations"]; an empty dict means the category is unknown (legacy cached result).
+    base["recommendations_by_category"] = {
+        category: list(items) for category, items in result.recommendations_by_category.items()
+    }
+
     # Categorie della rubrica del risultato sempre presenti (0 se non eseguite); fallback v1 per risultati legacy
     breakdown_keys = result.score_max or CATEGORY_MAX
     base["score_breakdown"] = {k: base.get("score_breakdown", {}).get(k, 0) for k in breakdown_keys}
@@ -1735,6 +1741,7 @@ def _dict_to_audit_result(data: dict):
             has_front_loading=c.get("has_front_loading", False),
         ),
         recommendations=data.get("recommendations", []),
+        recommendations_by_category=data.get("recommendations_by_category", {}),
         http_status=data.get("http_status", 0),
         page_size=data.get("page_size", 0),
         score_breakdown=data.get("score_breakdown", {}),

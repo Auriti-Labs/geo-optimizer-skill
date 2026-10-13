@@ -685,6 +685,12 @@ CATEGORY_MAX_V2 = {
     "signals": 6,
     "ai_discovery": 3,
 }
+# Key of ``AuditResult.recommendations_by_category`` that collects the recommendations
+# not owned by a scored category: negative signals, prompt injection / UGC surface,
+# WebMCP, multimodal, the CDN/WAF and JS-rendering warnings, and the error-path
+# messages of an audit that could not analyse the page.
+RECOMMENDATION_OTHER_CATEGORY = "other"
+
 SCORING_BY_VERSION = {1: SCORING, 2: SCORING_V2}
 CATEGORY_MAX_BY_VERSION = {1: CATEGORY_MAX, 2: CATEGORY_MAX_V2}
 ROBOTS_PARTIAL_BY_VERSION = {1: ROBOTS_PARTIAL_SCORE, 2: ROBOTS_PARTIAL_SCORE_V2}

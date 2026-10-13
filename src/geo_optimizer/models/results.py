@@ -1084,6 +1084,13 @@ class AuditResult:
     google_ai: GoogleAiReadinessResult = field(default_factory=GoogleAiReadinessResult)
     score_version: int = 1
     score_max: dict[str, int] = field(default_factory=dict)
+    # Same strings as ``recommendations``, grouped by the category that produced them.
+    # Keys are the ``score_breakdown`` categories of the active rubric plus "other"
+    # (RECOMMENDATION_OTHER_CATEGORY); only non-empty groups are present. Each string of
+    # ``recommendations`` appears in exactly one group, in the same relative order.
+    # Empty dict = category unknown (results built by older code or restored from a
+    # cache written before this field existed).
+    recommendations_by_category: dict[str, list[str]] = field(default_factory=dict)
 
 
 # ─── Batch audit ─────────────────────────────────────────────────────────────

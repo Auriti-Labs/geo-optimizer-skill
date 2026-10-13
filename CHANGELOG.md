@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- Added `AuditResult.recommendations_by_category`, also emitted by `geo audit --format json` and the web API (`schema_version` stays `1`, additive field). It groups the strings of `recommendations` by the `score_breakdown` category that produced them (`robots`, `meta`, `signals`, ...), plus `other` for recommendations with no scored category (prompt injection, UGC surface, negative signals, WebMCP, multimodal, CDN/WAF and JS-rendering warnings). `recommendations` is unchanged. Error results (unreachable site, HTTP error) carry `{"other": [...]}`. New core helpers `build_categorized_recommendations()` and `group_recommendations_by_category()`; `build_recommendations()` keeps its signature and output. See `docs/json-contract.md`.
+
 ### Documentation
 - Documented `geo llms --check-drift` and `--llms-file` in `docs/llms-txt.md`.
 - Added the `howto`, `review` and `product` types to the `geo schema --type` table in `docs/schema-injector.md`.
