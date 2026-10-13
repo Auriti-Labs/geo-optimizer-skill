@@ -25,7 +25,7 @@ Consumers must handle `schema_version` being absent (pre-v1 responses) by treati
 | `score_max` | `object` | Per-category maxima for the selected score version |
 | `band` | `string` | `critical` \| `foundation` \| `good` \| `excellent` |
 | `score_breakdown` | `object` | Per-category scores (see below) |
-| `score_penalty` | `int` | Negative-signal penalty, `0` or below; `score` equals the sum of `score_breakdown` plus `score_penalty`, clamped to 0–100. Optional: absent → treat as `0` |
+| `score_penalty` | `int` | Web API only. Negative-signal penalty, `0` or below: `score` equals the sum of `score_breakdown` plus `score_penalty`, clamped to 0–100 (so a page whose categories sum to 0 still scores 0). Optional: absent → treat as `0`. The CLI JSON keeps the penalty inside its `score_breakdown` as `negative_penalty` |
 | `recommendations` | `array` | Ordered improvement suggestions |
 | `http_status` | `int \| null` | HTTP status of the audited URL |
 | `page_size` | `int` | Response body size in bytes |

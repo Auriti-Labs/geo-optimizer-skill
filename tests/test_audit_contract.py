@@ -338,12 +338,27 @@ def test_web_api_score_penalty_defaults_to_zero():
     assert data["score_penalty"] == 0
 
 
-def test_cli_json_exposes_score_penalty():
+def test_cli_json_breakdown_keeps_negative_penalty():
+    """Il JSON della CLI riporta gia' la penalita' dentro score_breakdown: niente chiave duplicata."""
     from geo_optimizer.cli.formatters import format_audit_json
 
     result = _make_minimal_audit_result()
     result.score_breakdown = {"robots": 14, "negative_penalty": -5}
+    result.score = 9
 
     data = json.loads(format_audit_json(result))
 
-    assert data["score_penalty"] == -5
+    assert data["score_breakdown"]["negative_penalty"] == -5
+    assert "score_penalty" not in data
+
+
+def test_web_api_score_penalty_with_clamp_at_zero():
+    """Categorie a 0 e penalita' -1: score resta 0 (clamp documentato nel contratto)."""
+    result = _make_minimal_audit_result()
+    result.score_breakdown = {"robots": 0, "negative_penalty": -1}
+    result.score = 0
+
+    data = _call_audit_result_to_dict(result)
+
+    assert data["score_penalty"] == -1
+    assert max(0, min(100, sum(data["score_breakdown"].values()) + data["score_penalty"])) == data["score"]
