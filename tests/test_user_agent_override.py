@@ -85,7 +85,11 @@ class TestCliUserAgentFlag:
         from geo_optimizer.cli.audit_cmd import audit
 
         runner = CliRunner()
-        with patch("geo_optimizer.cli.audit_cmd.run_full_audit") as mock_audit:
+        # httpx assente: forza il percorso sync, l'unico mockato qui (niente audit reale)
+        with (
+            patch.dict("sys.modules", {"httpx": None}),
+            patch("geo_optimizer.cli.audit_cmd.run_full_audit") as mock_audit,
+        ):
             mock_audit.return_value = {"score": 0, "band": "critical", "checks": {}}
             runner.invoke(audit, ["--url", "https://example.com", "--user-agent", "AuditBot/1.0"])
         assert config_mod.get_headers()["User-Agent"] == "AuditBot/1.0"
@@ -131,7 +135,11 @@ class TestCliUserAgentFlag:
         from geo_optimizer.cli.audit_cmd import audit
 
         runner = CliRunner()
-        with patch("geo_optimizer.cli.audit_cmd.run_full_audit") as mock_audit:
+        # httpx assente: forza il percorso sync, l'unico mockato qui (niente audit reale)
+        with (
+            patch.dict("sys.modules", {"httpx": None}),
+            patch("geo_optimizer.cli.audit_cmd.run_full_audit") as mock_audit,
+        ):
             mock_audit.return_value = {"score": 0, "band": "critical", "checks": {}}
             runner.invoke(audit, ["--url", "https://example.com"])
         assert config_mod.get_headers() == config_mod.HEADERS
