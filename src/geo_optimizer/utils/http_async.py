@@ -104,59 +104,74 @@ def _get_pinned_backend_cls() -> type:
     return _pinned_backend_cls
 
 
-def _env_proxy_configured() -> bool:
-    """True se l'ambiente definisce un proxy HTTP(S) (HTTP_PROXY, HTTPS_PROXY, ALL_PROXY)."""
-    from urllib.request import getproxies
+def _install_pinned_backend(transport) -> bool:
+    """Installa il backend con DNS pinning su un transport httpx a connessione diretta.
 
-    proxies = getproxies()
-    return any(proxies.get(scheme) for scheme in ("http", "https", "all"))
+    Si modifica solo un ``httpcore.AsyncConnectionPool`` esatto: i pool dei proxy
+    (``AsyncHTTPProxy`` ne e' una sottoclasse, ``AsyncSOCKSProxy`` no) aprono la
+    connessione verso il proxy, che non ha un pin e verrebbe rifiutato.
+
+    Args:
+        transport: Transport httpx (``client._transport`` o un valore di ``client._mounts``).
+
+    Returns:
+        True se il backend e' stato installato.
+
+    Raises:
+        RuntimeError: Se un pool diretto non espone il network backend atteso.
+    """
+    import httpcore
+
+    pool = getattr(transport, "_pool", None)
+    if type(pool) is not httpcore.AsyncConnectionPool:
+        return False
+    inner_backend = getattr(pool, "_network_backend", None)
+    if inner_backend is None:
+        raise RuntimeError("httpx transport layout changed: cannot install the DNS-pinning network backend")
+    if not isinstance(inner_backend, _get_pinned_backend_cls()):
+        pool._network_backend = _get_pinned_backend_cls()(inner_backend)  # noqa: SLF001
+    return True
 
 
 def _create_pinned_client(timeout: float):
     """Crea un httpx.AsyncClient le cui connessioni dirette usano il DNS pinning.
 
-    httpx non espone un parametro per il network backend: lo si sostituisce nel
-    pool di httpcore del transport. Se la struttura interna cambia in una
-    versione futura, la funzione solleva un errore invece di creare un client
-    senza pinning.
+    Il client nasce con le impostazioni di default di httpx, quindi rispetta
+    HTTP(S)_PROXY, ALL_PROXY e NO_PROXY come prima. Poi il backend con pinning
+    viene installato su ogni pool che si connette direttamente all'host: il
+    transport principale e i mount senza proxy. Una richiesta che httpx manda
+    direttamente (NO_PROXY, o uno schema senza proxy, es. http:// con il solo
+    HTTPS_PROXY) resta quindi legata all'IP validato. Le richieste via proxy no:
+    li' il DNS lo risolve il proxy, come per requests nel percorso sincrono.
 
-    Con un proxy configurato nell'ambiente il client resta quello di default di
-    httpx, che usa il proxy come prima: e' il proxy a risolvere il DNS, quindi
-    il pinning lato client non e' applicabile (stesso comportamento di requests
-    nel percorso sincrono). Un transport esplicito farebbe ignorare a httpx le
-    variabili HTTP(S)_PROXY.
+    httpx non espone un parametro per il network backend: lo si sostituisce nel
+    pool di httpcore. Se la struttura interna cambia in una versione futura, la
+    funzione solleva un errore invece di creare un client senza pinning.
 
     Args:
         timeout: Timeout in secondi per connessione e lettura.
 
     Returns:
-        httpx.AsyncClient con redirect manuali e pinning attivo.
+        httpx.AsyncClient con redirect manuali e pinning sulle connessioni dirette.
 
     Raises:
-        RuntimeError: Se il transport di httpx non ha la struttura attesa.
+        RuntimeError: Se il transport principale non ha la struttura attesa.
     """
     import httpx
 
-    if _env_proxy_configured():
-        return httpx.AsyncClient(
-            headers=get_headers(),
-            follow_redirects=False,  # Manual redirect with SSRF revalidation (fix #179)
-            timeout=httpx.Timeout(timeout),
-        )
-
-    transport = httpx.AsyncHTTPTransport()
-    pool = getattr(transport, "_pool", None)
-    inner_backend = getattr(pool, "_network_backend", None)
-    if inner_backend is None:
-        raise RuntimeError("httpx transport layout changed: cannot install the DNS-pinning network backend")
-    pool._network_backend = _get_pinned_backend_cls()(inner_backend)  # noqa: SLF001
-
-    return httpx.AsyncClient(
+    client = httpx.AsyncClient(
         headers=get_headers(),
         follow_redirects=False,  # Manual redirect with SSRF revalidation (fix #179)
         timeout=httpx.Timeout(timeout),
-        transport=transport,
     )
+    # Nessuna connessione e' ancora aperta: se l'installazione fallisce il client
+    # viene semplicemente scartato.
+    if not _install_pinned_backend(client._transport):  # noqa: SLF001
+        raise RuntimeError("httpx default transport is not a direct connection pool: cannot pin DNS")
+    for mounted in client._mounts.values():  # noqa: SLF001
+        if mounted is not None:
+            _install_pinned_backend(mounted)
+    return client
 
 
 def _pin_host(url: str, ips: list[str] | None) -> None:
@@ -316,7 +331,14 @@ async def fetch_urls_async(
     """
     results = {}
 
-    async with _create_pinned_client(timeout) as client:
+    try:
+        client = _create_pinned_client(timeout)
+    except RuntimeError as e:
+        # Fail closed ma senza far cadere l'audit: ogni URL riporta l'errore
+        _logger.error("Cannot create a DNS-pinned HTTP client: %s", e)
+        return dict.fromkeys(urls, (None, "HTTP client unavailable (DNS pinning)"))
+
+    async with client:
         tasks = {url: fetch_url_async(url, client=client, timeout=timeout, max_size=max_size) for url in urls}
 
         gathered = await asyncio.gather(*tasks.values(), return_exceptions=True)

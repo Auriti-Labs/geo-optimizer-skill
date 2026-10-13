@@ -413,7 +413,7 @@ def test_pin_ripristinato_dopo_la_chiamata():
 
 
 def test_create_pinned_client_installa_il_backend(monkeypatch):
-    for var in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"):
+    for var in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "all_proxy"):
         monkeypatch.delenv(var, raising=False)
 
     async def _run():
@@ -429,17 +429,84 @@ def test_create_pinned_client_installa_il_backend(monkeypatch):
     assert isinstance(backend, http_async._get_pinned_backend_cls())
 
 
+_PROXY_VARS = (
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "ALL_PROXY",
+    "NO_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "all_proxy",
+    "no_proxy",
+)
+
+
+def _clear_proxy_env(monkeypatch):
+    for var in _PROXY_VARS:
+        monkeypatch.delenv(var, raising=False)
+
+
 def test_create_pinned_client_con_proxy_mantiene_il_proxy(monkeypatch):
-    """Con HTTPS_PROXY nell'ambiente il client resta quello di default e usa il proxy."""
+    """Con HTTPS_PROXY il mount https:// passa dal proxy e il pool del proxy non viene toccato."""
+    _clear_proxy_env(monkeypatch)
     monkeypatch.setenv("HTTPS_PROXY", "http://proxy.internal:3128")
 
     async def _run():
         client = http_async._create_pinned_client(5)
         try:
-            return client._mounts
+            proxied = [t for t in client._mounts.values() if t is not None]
+            return client._transport._pool, [t._pool for t in proxied]
         finally:
             await client.aclose()
 
-    mounts = asyncio.run(_run())
+    direct_pool, proxy_pools = asyncio.run(_run())
 
-    assert any(transport is not None for transport in mounts.values())
+    pinned_cls = http_async._get_pinned_backend_cls()
+    assert isinstance(direct_pool._network_backend, pinned_cls)
+    assert proxy_pools and all(isinstance(p, httpcore.AsyncHTTPProxy) for p in proxy_pools)
+    assert not any(isinstance(p._network_backend, pinned_cls) for p in proxy_pools)
+
+
+def test_richiesta_diretta_con_proxy_configurato_resta_pinnata(monkeypatch):
+    """Solo HTTPS_PROXY: un URL http:// va diretto e deve connettersi all'IP validato."""
+    _clear_proxy_env(monkeypatch)
+    monkeypatch.setenv("HTTPS_PROXY", "http://proxy.internal:3128")
+    inner = _RecordingBackend(list(_OK_RESPONSE))
+
+    async def _run():
+        client = http_async._create_pinned_client(5)
+        client._transport._pool._network_backend._inner = inner  # backend simulato sotto il pin
+        async with client:
+            return await fetch_url_async("http://rebind.example/", client=client)
+
+    resp, err = asyncio.run(_run())
+
+    assert err is None
+    assert inner.connected_to == [(_PUBLIC_IP, 80)]
+
+
+def test_no_proxy_wildcard_mantiene_il_pinning(monkeypatch):
+    _clear_proxy_env(monkeypatch)
+    monkeypatch.setenv("HTTPS_PROXY", "http://proxy.internal:3128")
+    monkeypatch.setenv("NO_PROXY", "*")
+
+    async def _run():
+        client = http_async._create_pinned_client(5)
+        try:
+            return client._transport._pool._network_backend, list(client._mounts.values())
+        finally:
+            await client.aclose()
+
+    backend, mounts = asyncio.run(_run())
+
+    assert isinstance(backend, http_async._get_pinned_backend_cls())
+    assert all(t is None for t in mounts)  # nessun proxy: tutto passa dal transport pinnato
+
+
+def test_fetch_urls_async_client_non_creabile_restituisce_errori(monkeypatch):
+    """Se il pinning non si puo' installare l'audit non cade: ogni URL riporta l'errore."""
+    with patch.object(http_async, "_create_pinned_client", side_effect=RuntimeError("layout changed")):
+        results = asyncio.run(fetch_urls_async(["https://example.com/a", "https://example.com/b"]))
+
+    assert set(results) == {"https://example.com/a", "https://example.com/b"}
+    assert all(resp is None and "DNS pinning" in err for resp, err in results.values())
