@@ -51,9 +51,10 @@ function computeGrade(score: number, max: number): CategoryScore['grade'] {
 /** True se la stringa di versione semver è >= min (le versioni non leggibili valgono false). */
 function isVersionAtLeast(version: unknown, min: [number, number, number]): boolean {
   if (typeof version !== 'string') return false;
-  const match = version.match(/^(\d+)\.(\d+)\.(\d+)/);
+  // Accetta "4.19.0", "v4.19.0", " 4.19" e suffissi pre-release ("4.19.0rc1")
+  const match = version.match(/^\s*v?(\d+)\.(\d+)(?:\.(\d+))?/);
   if (!match) return false;
-  const parts = match.slice(1, 4).map(Number);
+  const parts = [match[1], match[2], match[3] ?? '0'].map(Number);
   for (let i = 0; i < 3; i++) {
     if (parts[i] !== min[i]) return parts[i] > min[i];
   }
@@ -312,7 +313,8 @@ function _buildTechnicalSignals(data: any): TechnicalSignal[] {
     });
   }
 
-  if (typeof data.http_status === 'number') {
+  // 0 è il default dell'engine per "status non rilevato": non è uno status da mostrare
+  if (typeof data.http_status === 'number' && data.http_status > 0) {
     out.push({
       id: 'ts-6',
       name: 'HTTPS',

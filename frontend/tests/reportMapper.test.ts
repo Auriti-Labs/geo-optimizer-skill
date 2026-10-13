@@ -167,5 +167,17 @@ test('resolveScoreMax: precedence of the version hints', () => {
   assert.equal(resolveScoreMax({ version: '4.20.1' }).google_ai, 20);
   // confronto numerico, non tra stringhe: "4.9.0" < "4.19.0"
   assert.equal(resolveScoreMax({ version: '4.9.0' }).robots, 18);
+  assert.equal(resolveScoreMax({ version: 'v4.19.0' }).google_ai, 20);
+  assert.equal(resolveScoreMax({ version: '4.19' }).google_ai, 20);
+  assert.equal(resolveScoreMax({ version: '4.18' }).robots, 18);
   assert.equal(resolveScoreMax({}).robots, 18);
+});
+
+test('http_status 0 means unknown and produces no technical signal', () => {
+  const payload = fullV2Payload();
+  payload.http_status = 0;
+
+  const ids = mapBackendToFrontend(payload).technicalSignals.map((s) => s.id);
+
+  assert.ok(!ids.includes('ts-6'));
 });

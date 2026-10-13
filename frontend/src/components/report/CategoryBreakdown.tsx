@@ -70,7 +70,8 @@ export default function CategoryBreakdown({ categories, lockedSlugs = [] }: Cate
   return (
     <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-4">
       {categories.map((cat, i) => {
-        if (lockedSet.has(cat.slug)) {
+        // Il flag della categoria vale anche dove il chiamante non passa lockedSlugs (pagine di confronto)
+        if (cat.locked || lockedSet.has(cat.slug)) {
           return <LockedCard key={cat.slug} category={cat} />;
         }
 

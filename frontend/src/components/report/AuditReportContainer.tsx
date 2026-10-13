@@ -159,8 +159,10 @@ function categoryRatio(category: CategoryScore): number {
 }
 
 function findWeakestCategory(categories: CategoryScore[]): CategoryScore | null {
-  if (categories.length === 0) return null;
-  return [...categories].sort((a, b) => categoryRatio(a) - categoryRatio(b))[0];
+  // Una categoria bloccata non va citata: la sua scheda mostra "??"
+  const visible = categories.filter((c) => !c.locked);
+  if (visible.length === 0) return null;
+  return [...visible].sort((a, b) => categoryRatio(a) - categoryRatio(b))[0];
 }
 
 function topRecommendations(recommendations: Recommendation[]): Recommendation[] {
