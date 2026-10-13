@@ -419,6 +419,7 @@ class TestAuditCommand:
         assert "content" in data["checks"]
         assert "recommendations" in data
 
+    @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_json_check_scores(self, mock_audit, runner, sample_audit_result):
         """JSON output includes per-check scores and max values."""
@@ -431,6 +432,7 @@ class TestAuditCommand:
             assert "passed" in check_data, f"Missing 'passed' in {check_name}"
             assert "details" in check_data, f"Missing 'details' in {check_name}"
 
+    @patch.dict("sys.modules", {"httpx": None})
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_file_output(self, mock_audit, runner, sample_audit_result):
         """geo audit --output FILE writes the report to a file."""
