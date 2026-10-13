@@ -39,6 +39,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev,web]"
 
+      # test_mcp.py si salta senza mcp: installarlo qui fa girare davvero i test del server.
+      # mcp 1.x non esiste per Python 3.9.
+      - name: Install MCP extra
+        if: matrix.python-version != '3.9'
+        run: pip install -e ".[mcp]"
+
       - name: Run tests
         run: |
           pytest tests/ -v --tb=short --cov=geo_optimizer --cov-report=term-missing
