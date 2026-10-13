@@ -17,6 +17,7 @@ from geo_optimizer.models.config import (
     MIXED_SIGNALS_WORD_THRESHOLD,
 )
 from geo_optimizer.models.results import ContentResult, MetaResult, NegativeSignalsResult, SchemaResult
+from geo_optimizer.utils.jsonld import schema_types as jsonld_types
 
 
 def audit_negative_signals(
@@ -195,10 +196,7 @@ def audit_negative_signals(
     for raw_schema in schema_result.raw_schemas:
         schemas_to_check = _flatten_graph(raw_schema) if isinstance(raw_schema, dict) else []
         for s in schemas_to_check:
-            s_type = s.get("@type", "")
-            if isinstance(s_type, list):
-                s_type = s_type[0] if s_type else ""
-            if s_type == "Person":
+            if "Person" in jsonld_types(s.get("@type")):
                 result.has_author_signal = True
                 break
             # nested author

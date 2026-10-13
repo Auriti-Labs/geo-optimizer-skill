@@ -17,6 +17,7 @@ from geo_optimizer.core.schema_validator import validate_jsonld
 from geo_optimizer.models.config import SCHEMA_TEMPLATES
 from geo_optimizer.models.results import SchemaAnalysis
 from geo_optimizer.utils.jsonld import iter_jsonld_objects
+from geo_optimizer.utils.jsonld import schema_types as jsonld_types
 
 logger = logging.getLogger(__name__)
 
@@ -212,9 +213,7 @@ def analyze_html_file(file_path: str) -> SchemaAnalysis:
     # walkers the same trick. Shared with citability.py and audit_schema.py via
     # utils/jsonld.py so a future edge case is fixed once, not per call site.
     for idx, item in enumerate(iter_jsonld_objects(soup, on_parse_error=_log_parse_error)):
-        schema_type = item.get("@type", "Unknown")
-        if isinstance(schema_type, list):
-            schema_type = schema_type[0] if schema_type else "Unknown"
+        schema_type = next(iter(jsonld_types(item.get("@type"))), "Unknown")
         found_schemas.append({"type": schema_type, "data": item, "index": idx})
 
     found_types = [s["type"] for s in found_schemas]
@@ -290,13 +289,8 @@ def inject_schema_into_html(
         return False, f"Invalid path: {path_err}"
 
     if validate:
-        schema_type_field = schema_dict.get("@type")
-        if isinstance(schema_type_field, list):
-            schema_type = schema_type_field[0].lower() if schema_type_field else None
-        elif isinstance(schema_type_field, str):
-            schema_type = schema_type_field.lower()
-        else:
-            schema_type = None
+        declared = jsonld_types(schema_dict.get("@type"))
+        schema_type = declared[0].lower() if declared else None
 
         is_valid, error_msg = validate_jsonld(schema_dict, schema_type, strict=False)
         if not is_valid:

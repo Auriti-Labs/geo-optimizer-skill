@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 
 from geo_optimizer.models.config import KNOWN_FORM_EMBED_HOSTS
 from geo_optimizer.models.results import AiDiscoveryResult, SchemaResult, WebMcpResult
+from geo_optimizer.utils.jsonld import schema_types
 
 if TYPE_CHECKING:
     from bs4 import BeautifulSoup
@@ -27,22 +28,17 @@ def _extract_actions(schema_obj, action_types: set) -> None:
     if isinstance(schema_obj, dict):
         # Support @graph (Yoast SEO, RankMath)
         if "@graph" in schema_obj:
-            for item in schema_obj["@graph"]:
+            graph = schema_obj["@graph"]
+            for item in graph if isinstance(graph, list) else [graph]:
                 _extract_actions(item, action_types)
             return
 
         potential = schema_obj.get("potentialAction")
-        if potential:
-            if isinstance(potential, dict):
-                action_type = potential.get("@type", "")
-                if action_type:
-                    action_types.add(action_type)
-            elif isinstance(potential, list):
-                for action in potential:
-                    if isinstance(action, dict):
-                        action_type = action.get("@type", "")
-                        if action_type:
-                            action_types.add(action_type)
+        actions = potential if isinstance(potential, list) else [potential]
+        for action in actions:
+            if isinstance(action, dict):
+                # @type puo' essere una lista: aggiungere la lista a un set sollevava TypeError
+                action_types.update(schema_types(action.get("@type")))
     elif isinstance(schema_obj, list):
         for item in schema_obj:
             _extract_actions(item, action_types)

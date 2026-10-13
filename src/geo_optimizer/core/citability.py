@@ -26,7 +26,8 @@ from geo_optimizer.models.config import (
     TTR_WINDOW_SIZE,
 )
 from geo_optimizer.models.results import CitabilityResult, MethodScore
-from geo_optimizer.utils.jsonld import iter_jsonld_objects
+from geo_optimizer.utils.jsonld import first_object, iter_jsonld_objects, string_list
+from geo_optimizer.utils.jsonld import schema_types as jsonld_types
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -1485,9 +1486,7 @@ def detect_comparison_content(soup, clean_text: str | None = None) -> MethodScor
 def _extract_article_author(soup) -> dict | None:
     """Return the `author` value of the first Article-type JSON-LD schema found, if any."""
     for item in iter_jsonld_objects(soup):
-        item_type = item.get("@type")
-        types = item_type if isinstance(item_type, list) else [item_type]
-        if any(t in ARTICLE_TYPES for t in types):
+        if any(t in ARTICLE_TYPES for t in jsonld_types(item.get("@type"))):
             author = item.get("author")
             if isinstance(author, list):
                 author = author[0] if author else None
@@ -2052,22 +2051,20 @@ def detect_shopping_readiness(soup) -> MethodScore:
 
     score = 0
     # Verify price + availability in the offer
-    offers = product_schema.get("offers") or product_schema.get("offer", {})
-    if isinstance(offers, list):
-        offers = offers[0] if offers else {}
+    offers = first_object(product_schema.get("offers") or product_schema.get("offer"))
     has_price = bool(offers.get("price") or offers.get("lowPrice"))
     has_availability = bool(offers.get("availability"))
 
     if has_price and has_availability:
         score += 1
 
-    # AggregateRating
-    has_rating = bool(product_schema.get("aggregateRating"))
+    # AggregateRating (solo se e' un oggetto: una stringa come "4.5" non e' un rating strutturato)
+    rating_data = first_object(product_schema.get("aggregateRating"))
+    has_rating = bool(rating_data)
     if has_rating:
         score += 1
 
     # Review count
-    rating_data = product_schema.get("aggregateRating", {})
     has_review_count = bool(rating_data.get("reviewCount") or rating_data.get("ratingCount"))
     if has_review_count:
         score += 1
@@ -2124,9 +2121,7 @@ def detect_chatgpt_shopping(soup) -> MethodScore:
     has_image = bool(product_schema.get("image"))
     has_brand = bool(product_schema.get("brand"))
 
-    offers = product_schema.get("offers") or product_schema.get("offer", {})
-    if isinstance(offers, list):
-        offers = offers[0] if offers else {}
+    offers = first_object(product_schema.get("offers") or product_schema.get("offer"))
     has_price = bool(offers.get("price") or offers.get("lowPrice"))
     has_availability = bool(offers.get("availability"))
 
@@ -2257,12 +2252,7 @@ def detect_multi_platform(soup) -> MethodScore:
 
     # Extract sameAs from all JSON-LD schemas
     for item in _iter_jsonld_objects(soup):
-        same_as = item.get("sameAs", [])
-        if isinstance(same_as, str):
-            same_as = [same_as]
-        for url in same_as:
-            if not isinstance(url, str):
-                continue
+        for url in string_list(item.get("sameAs")):
             parsed = urlparse(url)
             domain = parsed.netloc.lower().removeprefix("www.")
             for plat_domain, plat_name in _PLATFORM_DOMAINS.items():
@@ -3331,10 +3321,7 @@ def detect_entity_resolution(soup) -> MethodScore:
         desc = item.get("description")
         if entity_type and name:
             has_schema_entity = True
-            if isinstance(entity_type, list):
-                entity_types_found.extend(entity_type)
-            else:
-                entity_types_found.append(str(entity_type))
+            entity_types_found.extend(jsonld_types(entity_type))
             if desc:
                 score += 1  # well-described entity
         # sameAs check (same item may have both @type and sameAs)

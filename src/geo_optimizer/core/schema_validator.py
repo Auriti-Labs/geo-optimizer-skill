@@ -56,6 +56,8 @@ def validate_jsonld(
 
     if not primary_type:
         return False, "@type is empty"
+    if not isinstance(primary_type, str):
+        return False, f"@type must be a string, got {type(primary_type).__name__}"
 
     if schema_type:
         schema_type_normalized = schema_type.lower()
