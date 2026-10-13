@@ -17,6 +17,7 @@ from geo_optimizer.models.config import (
     GOOGLE_AI_POINTS,
     GOOGLE_AI_SNIPPET_MIN,
     GOOGLE_DOC_URLS,
+    ORGANIZATION_TYPES,
 )
 from geo_optimizer.models.results import GoogleAiReadinessResult, ReadinessCheck
 
@@ -162,10 +163,24 @@ def check_dates(soup, schemas: list[dict], now: datetime) -> ReadinessCheck:
     return _check("G-DATES", "warn", "No valid publication or update date found", "heuristic")
 
 
+def _string_types(value) -> list[str]:
+    """Valori stringa di un ``@type`` (stringa o lista); ignora gli altri tipi."""
+    items = value if isinstance(value, list) else [value]
+    return [item for item in items if isinstance(item, str)]
+
+
 def check_byline(soup, schemas: list[dict]) -> ReadinessCheck:
     # Yoast/RankMath dichiarano l'autore come riferimento ({"@id": ".../#/schema/person/x"})
     # a un nodo Person altrove nel @graph: senza risolverlo l'autore risultava assente.
-    nodes_by_id = {s["@id"]: s for s in schemas if isinstance(s, dict) and isinstance(s.get("@id"), str)}
+    # Si accetta solo un nodo Person o Organization (anche sottotipi): Google chiede chi ha
+    # creato il contenuto, e un @id verso WebSite, ImageObject o l'articolo stesso non lo dice.
+    nodes_by_id = {
+        s["@id"]: s
+        for s in schemas
+        if isinstance(s, dict)
+        and isinstance(s.get("@id"), str)
+        and any(t == "Person" or t in ORGANIZATION_TYPES for t in _string_types(s.get("@type")))
+    }
     for s in schemas:
         authors = s.get("author") if isinstance(s, dict) else None
         for a in authors if isinstance(authors, list) else [authors]:

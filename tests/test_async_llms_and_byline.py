@@ -88,3 +88,35 @@ def test_byline_inline_author_name_unchanged():
     check = check_byline(BeautifulSoup(_HTML, "html.parser"), _schemas(jsonld))
 
     assert check.status == "pass"
+
+
+@pytest.mark.parametrize("target_type", ["WebSite", "ImageObject", "Article"])
+def test_byline_id_reference_to_non_author_node_warns(target_type):
+    """Un @id verso WebSite, ImageObject o l'articolo stesso non dichiara un autore."""
+    node_id = "https://example.com/#node"
+    jsonld = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {"@type": "Article", "@id": "https://example.com/post/#article", "author": {"@id": node_id}},
+            {"@type": target_type, "@id": node_id, "name": "Something"},
+        ],
+    }
+
+    check = check_byline(BeautifulSoup(_HTML, "html.parser"), _schemas(jsonld))
+
+    assert check.status == "warn"
+
+
+def test_byline_id_reference_to_organization_passes():
+    org_id = "https://example.com/#organization"
+    jsonld = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {"@type": "Article", "author": [{"@id": org_id}]},
+            {"@type": "NewsMediaOrganization", "@id": org_id, "name": "Acme News"},
+        ],
+    }
+
+    check = check_byline(BeautifulSoup(_HTML, "html.parser"), _schemas(jsonld))
+
+    assert check.status == "pass"
