@@ -2399,6 +2399,11 @@ async def analyze_logs(request: Request):
             detail="Missing or invalid authentication token.",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    # Unico POST senza rate limit: accetta upload fino a 10 MB e li analizza in un
+    # thread, quindi senza limite un singolo client poteva saturare CPU e disco.
+    # Il controllo avviene prima di leggere il body.
+    if not await _check_rate_limit(_get_client_ip(request)):
+        raise HTTPException(status_code=429, detail="Too many requests. Try again soon.")
 
     try:
         form = await request.form()

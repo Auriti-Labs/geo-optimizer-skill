@@ -97,3 +97,22 @@ def test_upload_requires_auth_when_token_set(monkeypatch):
     assert resp.status_code == 401
 
     monkeypatch.delenv("GEO_API_TOKEN", raising=False)
+
+
+def test_upload_rate_limited_returns_429_before_reading_body():
+    """Oltre il rate limit l'endpoint risponde 429 senza analizzare il file."""
+    # Un test precedente ricarica il modulo con GEO_API_TOKEN: qui l'accesso e' pubblico
+    with (
+        patch("geo_optimizer.web.app._API_TOKEN", None),
+        patch("geo_optimizer.web.app._check_rate_limit", return_value=False) as limiter,
+        patch("geo_optimizer.core.log_analyzer.analyze_log_file") as analyze,
+    ):
+        client = TestClient(app, raise_server_exceptions=False)
+        resp = client.post(
+            "/api/logs/analyze",
+            files={"file": ("access.log", io.BytesIO(_SAMPLE_LOG), "text/plain")},
+        )
+
+    assert resp.status_code == 429
+    limiter.assert_awaited_once()
+    analyze.assert_not_called()
