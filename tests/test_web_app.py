@@ -547,6 +547,8 @@ def test_report_id_valido_con_report_in_cache_ritorna_html(client):
 
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
+    # robots.txt blocca la scansione, non l'indicizzazione di un URL linkato altrove
+    assert response.headers["x-robots-tag"] == "noindex, nofollow"
 
 
 # ─── Test: _verify_bearer_token ───────────────────────────────────────────────

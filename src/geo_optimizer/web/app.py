@@ -1137,7 +1137,8 @@ async def report(report_id: str):
     from geo_optimizer.cli.html_formatter import format_audit_html
 
     result = _dict_to_audit_result(data)
-    return HTMLResponse(content=format_audit_html(result))
+    # I report riguardano domini di terzi: mai in indice, anche se linkati altrove
+    return HTMLResponse(content=format_audit_html(result), headers={"X-Robots-Tag": "noindex, nofollow"})
 
 
 @app.get("/api/audit/pdf")
