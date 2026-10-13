@@ -11,6 +11,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - `geo audit --format rich` no longer truncates the category scores at 80 and 100 columns: the rubric v2 llms.txt label is shorter in the terminal dashboard and the bar and score columns keep a minimum width.
 
 ### Documentation
+- Replaced the README hero GIF with a current rubric v2 terminal dashboard (`assets/tui-audit.svg`) and regenerated `assets/fix.svg`.
 - Documented `geo llms --check-drift` and `--llms-file` in `docs/llms-txt.md`.
 - Added the `howto`, `review` and `product` types to the `geo schema --type` table in `docs/schema-injector.md`.
 - Pinned the GitHub Action examples in `docs/ci-cd.md` to v4.19.0.

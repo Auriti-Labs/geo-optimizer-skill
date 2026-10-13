@@ -21,7 +21,7 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 *No install, no account, no API key. Runs in seconds.*
 
-<img src="assets/demo.gif" alt="geo audit demo — AI visibility score 0-100 with prioritized fixes in one command" width="800"/>
+<img src="assets/tui-audit.svg" alt="geo audit terminal dashboard on geoready.dev: 94/100 Excellent, nine rubric v2 categories with per-category scores, extra checks and top fixes" width="800"/>
 
 [Quick Start](#quick-start) · [Free web audit, no account](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=nav) · [Docs](https://geoready.dev/docs/) · [The book](#the-book-behind-the-engine-ai-search-engineering) · [Changelog](CHANGELOG.md)
 
@@ -85,7 +85,7 @@ Across 1,400+ sites audited through [GeoReady](https://geoready.dev/state-of-geo
 
 `geo fix` turns the audit into files: robots.txt rules for all 27 AI bots, `llms.txt`, JSON-LD schema, AI discovery endpoints, and meta tags. It previews by default and writes only with `--apply`. The score after fixes is the tool's own estimate, not a measured result.
 
-<img src="assets/fix.svg" alt="geo fix on example.com — 9 fixes generated, estimated score 8/100 to 70/100" width="800"/>
+<img src="assets/fix.svg" alt="geo fix on example.com: 9 fixes planned, estimated score 22/100 to 64/100" width="800"/>
 
 Prefer no terminal? Run the same audit free at [geoready.dev](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=proof-table) — no account needed.
 
