@@ -28,6 +28,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Connection errors are retried at most 4 times instead of up to 16, and a server's `Retry-After` is capped at 10 s (#576).
 - Relative and protocol-relative redirect locations (`page.html`, `../x`, `//host/x`) are resolved correctly (#576).
 - Body read errors (truncated or corrupt responses) are reported as fetch errors instead of raising (#576).
+- The web report no longer shows invented failures or rubric v1 maxima on partial or gated API payloads ("Content 14/12", "No llms.txt found", "Citability 0/100"): missing data is not shown as a failed check, maxima follow the payload's rubric version, locked categories render as locked, and a missing citability score shows a dash (#578).
 
 ### Documentation
 - `SKILL.md`: corrected crawler semantics (Google-Extended does not control AI Overviews; search-tier vs training bots), research claims and CLI flags (#572).
