@@ -14,7 +14,7 @@ import asyncio
 from typing import Any
 from unittest.mock import AsyncMock, Mock, patch
 
-from geo_optimizer.core.audit import _build_audit_result, run_full_audit, run_full_audit_async
+from geo_optimizer.core.audit import _build_audit_result, audit_cdn_ai_crawler, run_full_audit, run_full_audit_async
 from geo_optimizer.models.config import CATEGORY_MAX, CATEGORY_MAX_V2
 from geo_optimizer.models.results import (
     AiDiscoveryResult,
@@ -245,10 +245,20 @@ def run_all_failing_sync(score_version: int) -> AuditResult:
 def run_all_failing_async(score_version: int) -> AuditResult:
     """``run_full_audit_async`` against the same bare homepage."""
     responses = {BASE_URL: (_bare_home_response(), None)}
+
+    async def _to_thread(func: Any, *args: Any, **kwargs: Any) -> Any:
+        # Only the CDN probe is stubbed; every other offloaded call (e.g. the
+        # llms.txt parsing/CDN retry, run off the event loop since #581) runs
+        # for real against the mocked, all-missing companion files.
+        if func is audit_cdn_ai_crawler:
+            return CdnAiCrawlerResult()
+        return func(*args, **kwargs)
+
     with (
         patch("geo_optimizer.utils.http_async.fetch_urls_async", new=AsyncMock(return_value=responses)),
         patch("geo_optimizer.core.audit.check_markdown_negotiation_async", new=AsyncMock(return_value=False)),
-        patch("geo_optimizer.core.audit.asyncio.to_thread", new=AsyncMock(return_value=CdnAiCrawlerResult())),
+        patch("geo_optimizer.core.audit.fetch_url", return_value=(None, "Not found")),
+        patch("geo_optimizer.core.audit.asyncio.to_thread", new=_to_thread),
     ):
         return asyncio.run(run_full_audit_async(BASE_URL, score_version=score_version))
 
