@@ -15,7 +15,7 @@ export const aiFaqs = [
   },
   {
     q: 'Is the free audit really free?',
-    a: 'Yes. The web audit requires no account, no credit card, and no signup. You get a full GEO score and three category breakdowns immediately. The CLI is MIT-licensed and free to use without limits.',
+    a: 'Yes. The web audit requires no account, no credit card, and no signup. You get a full GEO score and the complete nine-category breakdown immediately. The CLI is MIT-licensed and free to use without limits.',
   },
   {
     q: 'What does the free plan include for monitoring?',
