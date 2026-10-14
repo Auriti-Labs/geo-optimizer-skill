@@ -35,7 +35,7 @@ function CompactCompetitorCard({ report, index }: { report: AuditReport; index: 
       <div className="space-y-2 text-sm">
         <div className="flex items-center justify-between">
           <span className="text-ink-mute">Citability</span>
-          <span className="font-mono font-semibold tabular-nums text-ink">{report.citabilityScore}/100</span>
+          <span className="font-mono font-semibold tabular-nums text-ink">{report.citabilityScore === null ? '—' : `${report.citabilityScore}/100`}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-ink-mute">Grade</span>
@@ -43,7 +43,7 @@ function CompactCompetitorCard({ report, index }: { report: AuditReport; index: 
         </div>
         <div className="flex items-center justify-between">
           <span className="text-ink-mute">Categories active</span>
-          <span className="font-mono font-semibold tabular-nums text-ink">{report.categories.filter((c) => c.score > 0).length}/{report.categories.length}</span>
+          <span className="font-mono font-semibold tabular-nums text-ink">{report.categories.filter((c) => c.score > 0 && !c.locked).length}/{report.categories.length}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-ink-mute">Recommendations</span>

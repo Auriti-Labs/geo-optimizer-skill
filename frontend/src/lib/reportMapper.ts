@@ -1,7 +1,8 @@
 import type { AuditReport, CategoryScore, Recommendation, TechnicalSignal } from './mockData';
 
-// Massimi v1: fallback per risposte legacy senza score_max
-const MAX_SCORES: Record<string, number> = {
+// Massimi per categoria, allineati a CATEGORY_MAX / CATEGORY_MAX_V2 in models/config.py.
+// Servono solo quando la risposta non include score_max.
+const MAX_SCORES_V1: Record<string, number> = {
   robots: 18,
   llms: 18,
   schema: 16,
@@ -11,6 +12,21 @@ const MAX_SCORES: Record<string, number> = {
   ai_discovery: 6,
   brand_entity: 10,
 };
+
+const MAX_SCORES_V2: Record<string, number> = {
+  google_ai: 20,
+  robots: 14,
+  schema: 14,
+  content: 14,
+  brand_entity: 12,
+  meta: 11,
+  llms: 6,
+  signals: 6,
+  ai_discovery: 3,
+};
+
+// Prima versione dell'engine con la rubrica v2 come default (CHANGELOG 4.19.0)
+const FIRST_V2_ENGINE: [number, number, number] = [4, 19, 0];
 
 const CATEGORY_NAMES: Record<string, string> = {
   google_ai: 'Google AI Search',
@@ -32,6 +48,48 @@ function computeGrade(score: number, max: number): CategoryScore['grade'] {
   return 'critical';
 }
 
+/** True se la stringa di versione semver è >= min (le versioni non leggibili valgono false). */
+function isVersionAtLeast(version: unknown, min: [number, number, number]): boolean {
+  if (typeof version !== 'string') return false;
+  // Accetta "4.19.0", "v4.19.0", " 4.19" e suffissi pre-release ("4.19.0rc1")
+  const match = version.match(/^\s*v?(\d+)\.(\d+)(?:\.(\d+))?/);
+  if (!match) return false;
+  const parts = [match[1], match[2], match[3] ?? '0'].map(Number);
+  for (let i = 0; i < 3; i++) {
+    if (parts[i] !== min[i]) return parts[i] > min[i];
+  }
+  return true;
+}
+
+/**
+ * Massimi delle categorie per questa risposta.
+ *
+ * Ordine: score_max del backend, poi score_version, poi gli indizi di una
+ * risposta v2 a cui il backend ha tolto i campi di versione (per esempio il
+ * payload gated del SaaS): la categoria google_ai nel breakdown o una versione
+ * dell'engine >= 4.19.0. Solo in assenza di tutto si usano i massimi v1.
+ * Applicare i massimi v1 a punteggi v2 produceva valori come "Content 14/12".
+ */
+export function resolveScoreMax(data: any): Record<string, number> {
+  if (data.score_max && typeof data.score_max === 'object') return data.score_max;
+  if (data.score_version === 1) return MAX_SCORES_V1;
+  if (typeof data.score_version === 'number' && data.score_version >= 2) return MAX_SCORES_V2;
+  if ('google_ai' in (data.score_breakdown || {})) return MAX_SCORES_V2;
+  if (isVersionAtLeast(data.version, FIRST_V2_ENGINE)) return MAX_SCORES_V2;
+  return MAX_SCORES_V1;
+}
+
+/** Slug delle categorie che il backend dichiara bloccate (payload gated). */
+function lockedCategoriesOf(data: any): Set<string> {
+  return new Set(Array.isArray(data.locked_categories) ? data.locked_categories : []);
+}
+
+/** Oggetto di dettaglio di una categoria, se il backend lo ha incluso. */
+function detailOf(data: any, key: string): Record<string, any> | null {
+  const detail = data[key];
+  return detail && typeof detail === 'object' ? detail : null;
+}
+
 function extractReportId(reportUrl: string | undefined): string {
   if (!reportUrl) return 'unknown';
   const parts = reportUrl.split('/');
@@ -50,12 +108,20 @@ export function mapBackendToFrontend(data: any): AuditReport {
   const scoreBreakdown = data.score_breakdown || {};
   const negativePenalty = scoreBreakdown.negative_penalty || 0;
 
-  // Categorie e massimi dalla rubrica del risultato (score_max); fallback v1 per risposte legacy
-  const scoreMax: Record<string, number> = data.score_max || MAX_SCORES;
-  const categories: CategoryScore[] = Object.entries(scoreMax).map(([key, max]) => {
+  const scoreMax = resolveScoreMax(data);
+  const locked = lockedCategoriesOf(data);
+  // Con score_max del backend si mostrano tutte le sue categorie. Con massimi
+  // dedotti si mostrano solo quelle presenti nel breakdown: una categoria che
+  // il backend ha omesso (es. google_ai nel payload gated) non è un 0/20.
+  const hasBackendMax = Boolean(data.score_max && typeof data.score_max === 'object');
+  const entries = Object.entries(scoreMax).filter(
+    ([key]) => hasBackendMax || Object.keys(scoreBreakdown).length === 0 || key in scoreBreakdown,
+  );
+  const categories: CategoryScore[] = entries.map(([key, max]) => {
     const rawScore = scoreBreakdown[key] ?? 0;
     // Applica la penalità solo al totale, non per categoria individuale
     const score = Math.max(0, rawScore);
+    const isLocked = locked.has(key);
 
     return {
       name: CATEGORY_NAMES[key] || key,
@@ -63,7 +129,9 @@ export function mapBackendToFrontend(data: any): AuditReport {
       score,
       maxScore: max,
       grade: computeGrade(score, max),
-      signals: _buildSignalsForCategory(key, data),
+      // Una categoria bloccata non ha dettagli: nessun segnale, mai controlli "falliti" inventati
+      signals: isLocked ? [] : _buildSignalsForCategory(key, data),
+      locked: isLocked,
     };
   });
 
@@ -87,7 +155,8 @@ export function mapBackendToFrontend(data: any): AuditReport {
     id: extractReportId(data.report_url),
     url: data.url || '',
     geoScore: data.score ?? 0,
-    citabilityScore: data.citability?.total_score ?? 0,
+    // null quando il backend non include la citabilità: la UI mostra "—", non 0/100
+    citabilityScore: typeof data.citability?.total_score === 'number' ? data.citability.total_score : null,
     grade: data.band || 'critical',
     timestamp: data.timestamp || new Date().toISOString(),
     version: data.version || __ENGINE_VERSION__,
@@ -97,9 +166,15 @@ export function mapBackendToFrontend(data: any): AuditReport {
   };
 }
 
-/** Estrae segnali leggibili per ogni categoria dai dati grezzi. */
+/**
+ * Estrae segnali leggibili per ogni categoria dai dati grezzi.
+ *
+ * Senza l'oggetto di dettaglio (categoria bloccata o campo omesso dal backend)
+ * non c'è nulla da dire: un oggetto mancante non è un controllo fallito.
+ */
 function _buildSignalsForCategory(key: string, data: any): string[] {
   const out: string[] = [];
+  if (!detailOf(data, key)) return out;
   switch (key) {
     case 'robots': {
       const r = data.robots || {};
@@ -173,71 +248,91 @@ function _buildSignalsForCategory(key: string, data: any): string[] {
   return out;
 }
 
-/** Costruisce i segnali tecnici dai dati grezzi del backend. */
+/**
+ * Costruisce i segnali tecnici dai dati grezzi del backend.
+ *
+ * Ogni segnale compare solo se il backend ha incluso i dati da cui dipende
+ * e la categoria non è bloccata: altrimenti l'assenza del dato veniva letta
+ * come un errore (per esempio "Missing JSON-LD schema" su un report gated).
+ */
 function _buildTechnicalSignals(data: any): TechnicalSignal[] {
   const out: TechnicalSignal[] = [];
-  const meta = data.meta || {};
-  const signals = data.signals || {};
-  const robots = data.robots || {};
+  const locked = lockedCategoriesOf(data);
+  const available = (key: string) => !locked.has(key) && detailOf(data, key) !== null;
+  const meta = detailOf(data, 'meta') || {};
+  const signals = detailOf(data, 'signals') || {};
+  const robots = detailOf(data, 'robots') || {};
+  const schema = detailOf(data, 'schema') || {};
 
-  out.push({
-    id: 'ts-1',
-    name: 'X-Robots-Tag',
-    status: meta.x_robots_noindex ? 'fail' : 'pass',
-    description: meta.x_robots_tag || 'No restrictive X-Robots-Tag detected',
-  });
+  if (available('meta')) {
+    out.push({
+      id: 'ts-1',
+      name: 'X-Robots-Tag',
+      status: meta.x_robots_noindex ? 'fail' : 'pass',
+      description: meta.x_robots_tag || 'No restrictive X-Robots-Tag detected',
+    });
 
-  out.push({
-    id: 'ts-2',
-    name: 'noai / noimageai',
-    status: meta.has_noai ? 'fail' : 'pass',
-    description: meta.has_noai
-      ? `Exclusion directive found: ${meta.noai_value}`
-      : 'No AI exclusion meta directives found',
-  });
+    out.push({
+      id: 'ts-2',
+      name: 'noai / noimageai',
+      status: meta.has_noai ? 'fail' : 'pass',
+      description: meta.has_noai
+        ? `Exclusion directive found: ${meta.noai_value}`
+        : 'No AI exclusion meta directives found',
+    });
+  }
 
-  out.push({
-    id: 'ts-3',
-    name: 'Crawl-delay',
-    status: robots.crawl_delay == null ? 'warn' : 'pass',
-    description: robots.crawl_delay == null
-      ? 'Crawl-delay not configured in robots.txt'
-      : `Crawl-delay set to ${robots.crawl_delay}s`,
-  });
+  if (available('robots')) {
+    out.push({
+      id: 'ts-3',
+      name: 'Crawl-delay',
+      status: robots.crawl_delay == null ? 'warn' : 'pass',
+      description: robots.crawl_delay == null
+        ? 'Crawl-delay not configured in robots.txt'
+        : `Crawl-delay set to ${robots.crawl_delay}s`,
+    });
+  }
 
-  out.push({
-    id: 'ts-4',
-    name: 'Schema completeness',
-    status: (data.schema || {}).any_schema_found ? 'pass' : 'fail',
-    description: (data.schema || {}).any_schema_found
-      ? 'JSON-LD schema found'
-      : 'Missing JSON-LD schema',
-  });
+  if (available('schema')) {
+    out.push({
+      id: 'ts-4',
+      name: 'Schema completeness',
+      status: schema.any_schema_found ? 'pass' : 'fail',
+      description: schema.any_schema_found ? 'JSON-LD schema found' : 'Missing JSON-LD schema',
+    });
+  }
 
-  out.push({
-    id: 'ts-5',
-    name: 'Canonical URL',
-    status: meta.has_canonical ? 'pass' : 'warn',
-    description: meta.has_canonical
-      ? 'Canonical tag present'
-      : 'Canonical tag missing',
-  });
+  if (available('meta')) {
+    out.push({
+      id: 'ts-5',
+      name: 'Canonical URL',
+      status: meta.has_canonical ? 'pass' : 'warn',
+      description: meta.has_canonical
+        ? 'Canonical tag present'
+        : 'Canonical tag missing',
+    });
+  }
 
-  out.push({
-    id: 'ts-6',
-    name: 'HTTPS',
-    status: (data.http_status || 0) === 200 ? 'pass' : 'warn',
-    description: `HTTP status ${data.http_status || 'unknown'}`,
-  });
+  // 0 è il default dell'engine per "status non rilevato": non è uno status da mostrare
+  if (typeof data.http_status === 'number' && data.http_status > 0) {
+    out.push({
+      id: 'ts-6',
+      name: 'HTTPS',
+      status: data.http_status === 200 ? 'pass' : 'warn',
+      description: `HTTP status ${data.http_status}`,
+    });
+  }
 
-  out.push({
-    id: 'ts-7',
-    name: 'Language attribute',
-    status: signals.has_lang ? 'pass' : 'warn',
-    description: signals.has_lang
-      ? `Lang set to ${signals.lang_value || 'en'}`
-      : 'Missing html lang attribute',
-  });
+  if (available('signals')) {
+    out.push({
+      id: 'ts-7',
+      name: 'Language attribute',
+      status: signals.has_lang ? 'pass' : 'warn',
+      description: signals.has_lang
+        ? `Lang set to ${signals.lang_value || 'en'}`
+        : 'Missing html lang attribute',
+    });
+  }
 
   return out;
 }
