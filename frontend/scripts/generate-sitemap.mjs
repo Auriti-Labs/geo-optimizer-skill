@@ -159,6 +159,7 @@ const META_BY_PATH = {
   '/manifesto/': { changefreq: 'monthly', priority: '0.7' },
   '/privacy/': { changefreq: 'monthly', priority: '0.5' },
   '/cookie-policy/': { changefreq: 'monthly', priority: '0.5' },
+  '/terms/': { changefreq: 'monthly', priority: '0.5' },
 };
 const DEFAULT_META = { changefreq: 'monthly', priority: '0.6' };
 
