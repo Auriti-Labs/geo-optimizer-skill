@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.19.2] — 2026-10-14
+
 ### Added
 - Added `AuditResult.recommendations_by_category`, also emitted by `geo audit --format json` and the web API (`schema_version` stays `1`, additive field). It groups the strings of `recommendations` by the `score_breakdown` category that produced them (`robots`, `meta`, `signals`, ...), plus two non-scored keys: `blockers` (CDN/WAF block, content that needs JavaScript, critical prompt injection, critical UGC injection risk) and `other` (non-critical UGC advisory, negative signals, WebMCP, multimodal). `recommendations` is unchanged. Unreachable-site and HTTP-error results carry a single recommendation under `{"other": [...]}`; batch timeout/exception results (`core/batch_audit.py`) have both fields empty. New core helpers `build_categorized_recommendations()` and `group_recommendations_by_category()`; `build_recommendations()` keeps its signature and output. See `docs/json-contract.md`.
 
