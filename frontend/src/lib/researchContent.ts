@@ -107,7 +107,7 @@ export const researchSources: ResearchSource[] = [
     linkLabel: 'Read paper',
   },
   {
-    id: 'autogeo-iclr-2026',
+    id: 'autogeo-2025',
     type: 'paper',
     title: 'What Generative Search Engines Like and How to Optimize Web Content Cooperatively (AutoGEO)',
     venue: 'arXiv preprint',

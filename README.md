@@ -347,7 +347,7 @@ export default defineConfig({
 | Paper | Venue | What it found |
 |-------|-------|---------------|
 | [GEO: Generative Engine Optimization](https://arxiv.org/abs/2311.09735) | **KDD 2024** | 9 methods, evaluated on GEO-bench (10,000 queries). The best (citing sources, adding quotations, adding statistics) raised source visibility by up to 40%. Gains were largest for lower-ranked sources. |
-| [AutoGEO](https://arxiv.org/abs/2510.11438) | arXiv preprint (2025) | Rules extracted automatically from engine preferences, up to +50.99% over the strongest KDD baseline. |
+| [AutoGEO](https://arxiv.org/abs/2510.11438) | arXiv preprint (2025) | Rules extracted automatically from engine preferences: on average about 36% over the strongest KDD method (about 21% for the smaller AutoGEO-Mini). |
 | [C-SEO Bench](https://arxiv.org/abs/2506.11097) | **NeurIPS D&B 2025** | Most content-rewriting tricks do not work. Ranking the source matters more than rewriting it. |
 
 That finding is consistent with how the tool is weighted: GEO Optimizer puts most of its weight on whether crawlers can reach and parse a page (robots.txt, `llms.txt`, schema, meta) and treats content rewriting as the smaller lever. It measures readiness signals; it cannot guarantee that any engine will cite you, and it says so.
