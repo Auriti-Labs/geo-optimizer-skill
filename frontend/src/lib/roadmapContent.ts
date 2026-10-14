@@ -97,7 +97,7 @@ export const roadmapPhases: RoadmapPhase[] = [
       {
         id: 'output-formats',
         title: 'Output formats',
-        description: 'JSON, HTML, SARIF, JUnit XML, and GitHub Annotations for CI integration.',
+        description: 'JSON, HTML, SARIF, JUnit XML, and GitHub Annotations for CI integration. JSON output also groups recommendations by scored category (plus blockers and other) since v4.19.2.',
         status: 'available',
       },
       {
@@ -116,6 +116,12 @@ export const roadmapPhases: RoadmapPhase[] = [
         id: 'citation-check',
         title: 'AI Citation Check',
         description: '`geo citations` asks real answer engines (Perplexity, OpenAI, Anthropic, Gemini, DeepSeek, MiniMax) customer-style questions and reports brand mentions / domain citations, with `--runs N` sampling for a 95% confidence interval, plus an optional Google SERP + AI Overview source via serpbase.dev.',
+        status: 'available',
+      },
+      {
+        id: 'wordpress-plugin',
+        title: 'GeoReady WordPress plugin (v0.1.1)',
+        description: 'Open-source plugin that generates llms.txt, /.well-known/ai.txt, and /ai/summary.json from published content (sitemap detection for WordPress core, Yoast SEO, Rank Math, SEOPress, and All in One SEO) and runs a one-click AI readiness audit of the home page. Available on GitHub (Auriti-Labs/wordpress-geoready); not yet listed on WordPress.org.',
         status: 'available',
       },
     ],
@@ -174,6 +180,12 @@ export const roadmapPhases: RoadmapPhase[] = [
         description: 'WCAG 2.1 AA pass, keyboard navigation, screen-reader optimization.',
         status: 'in-progress',
       },
+      {
+        id: 'wordpress-platform-audit',
+        title: 'WordPress plugin: audit on the GeoReady platform',
+        description: 'The plugin audit is moving to the GeoReady platform. A setting, off by default, lets site owners opt in to contributing anonymised results (salted domain hash and scores) to the benchmark dataset. WordPress results are used internally for now.',
+        status: 'in-progress',
+      },
     ],
   },
   {
@@ -213,10 +225,10 @@ export const roadmapPhases: RoadmapPhase[] = [
         status: 'planned',
       },
       {
-        id: 'wordpress-plugin',
-        title: 'WordPress plugin',
-        description: 'Admin dashboard widget and automated GEO checks for WordPress sites.',
-        status: 'exploring',
+        id: 'wordpress-plugin-roadmap',
+        title: 'WordPress plugin: next releases',
+        description: 'WordPress.org submission, headless WordPress support via the REST API, caching, JSON-LD schema output, and a Gutenberg editor panel. Scope and timing are not fixed.',
+        status: 'planned',
       },
       {
         id: 'alerts',
@@ -267,6 +279,12 @@ export const roadmapPhases: RoadmapPhase[] = [
         title: 'Scoring recalibration',
         description: 'Periodic re-weighting of the 9 categories based on new research.',
         status: 'exploring',
+      },
+      {
+        id: 'wordpress-dashboard-widget',
+        title: 'WordPress dashboard widget',
+        description: 'An admin dashboard widget in the WordPress plugin. Not built yet and planned after the items above.',
+        status: 'planned',
       },
       {
         id: 'team-workspace',

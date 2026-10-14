@@ -47,9 +47,13 @@ The **Static** codename groups four MVPs covering retrieval-surface visibility. 
 | **MVP A: Crawler Evidence & Access Simulation** | AI Crawler Activity Analytics (`/api/logs/analyze`, `geo logs`) and Agent Access Audit (`geo access`, browser-vs-bot simulation) | Shipped in v4.11.0 |
 | **MVP B: Semantic Drift Monitoring** | Cross-snapshot drift detection over content and citation-readiness signals | Shipped: `geo drift` (CLI, one-shot) + continuous regression alerts in the GeoReady platform |
 | **MVP C: AI Perception Snapshot** | Deterministic simulated-perception extraction from page signals | Shipped: `geo perception` (CLI, one-shot, deterministic) |
-| **MVP D: WordPress Connector** | First-party connector for WordPress sites and headless setups | Planned |
+| **MVP D: WordPress Connector** | First-party connector for WordPress sites and headless setups | In progress: open-source plugin v0.1.1 on GitHub (not yet on WordPress.org) |
 
-MVP D scope and exact target release will be confirmed as adoption signal and validation feedback come in.
+The [GeoReady WordPress plugin](https://github.com/Auriti-Labs/wordpress-geoready) (v0.1.1) generates `llms.txt`, `/.well-known/ai.txt`, and `/ai/summary.json` from published content, with sitemap detection for WordPress core, Yoast SEO, Rank Math, SEOPress, and All in One SEO, and runs a one-click AI readiness audit of the home page. It is not yet listed on WordPress.org.
+
+In progress: moving the audit to the GeoReady platform, with an opt-in setting (off by default) to contribute anonymised results (salted domain hash and scores) to the benchmark dataset. WordPress results are internal-only for now.
+
+Planned for the plugin: WordPress.org submission, headless WordPress support via the REST API, caching, JSON-LD schema output, and a Gutenberg editor panel. A dashboard widget is planned for later and is not built. Scope and exact target releases are not fixed.
 
 ## Release Philosophy
 
@@ -66,7 +70,7 @@ This means some windows may be quiet. That silence is intentional.
 
 The v4.10 to v4.19 cycle is shipped. Two items remain on the calendar:
 
-- **MVP D, WordPress Connector:** a first-party connector for WordPress sites and headless setups. Scope and target release are not fixed yet.
+- **MVP D, WordPress Connector:** the open-source plugin (v0.1.1) exists on GitHub; platform-side audit and benchmark opt-in are in progress, and WordPress.org submission and headless support are planned. Target releases are not fixed yet.
 - **v5.0.0, Black Archive:** the next-generation audit framework, planned for May 2027.
 
 Rubric v2 (v4.19.0) is the default scoring model.
