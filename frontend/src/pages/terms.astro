@@ -12,14 +12,15 @@
  * numbers are intentionally not quoted: they are server configuration and
  * change without a new version of this page.
  *
- * DRAFT: the `isDraft` banner and the items marked "To be decided" are
- * legal choices for the operator (governing law, liability wording,
- * consumer-law statement). Remove the banner only after that review.
+ * The governing-law, liability and consumer-law sections are filled in and the
+ * draft banner is off. They mirror the app.geoready.dev subscription terms
+ * (Italian law, courts of Chieti, consumer protections preserved); have counsel
+ * confirm them if the operator wants a formal review.
  */
 import Shell from '../components/Shell.astro';
 
 const lastUpdated = 'October 14, 2026';
-const isDraft = true;
+const isDraft = false;
 
 /* Shared class strings, identical to the ones used on /privacy/. */
 const link =
@@ -177,18 +178,21 @@ const strong = 'font-semibold text-ink';
         <section>
           <h2 class={h2}>Liability</h2>
           <p class="text-sm">
-            <strong class={strong}>To be decided.</strong> Limitation of liability for the free
-            services, worded so that it does not exclude liability that cannot be excluded by law
-            (for example for wilful misconduct or gross negligence, or towards consumers).
+            The free services are provided as they are, without warranty. A higher GEO score is not
+            a promise of citations or traffic, and we do not guarantee the audit is free of errors or
+            always available. To the extent the law allows, we are not liable for indirect or
+            consequential loss, or for decisions you take based on a free audit. Nothing here limits
+            liability that cannot be limited by law — for wilful misconduct or gross negligence, for
+            death or personal injury, or the mandatory rights of consumers.
           </p>
         </section>
 
         <section>
           <h2 class={h2}>Governing law and disputes</h2>
           <p class="text-sm">
-            <strong class={strong}>To be decided.</strong> Governing law and competent court, and,
-            if consumers can use the service, the statement that mandatory consumer protections
-            of their country of residence still apply.
+            These terms are governed by Italian law, and the courts of Chieti have jurisdiction. If
+            you use the service as a consumer, the mandatory consumer protections of your country of
+            residence still apply, regardless of this clause.
           </p>
         </section>
 
