@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.19.1] — 2026-10-14
+
 ### Security
 - The async HTTP path (used by `geo audit` when httpx is installed and by batch/sitemap audits) now connects to the IP validated by the anti-SSRF check instead of resolving the hostname again, closing a DNS-rebinding window; SNI and certificate checks still use the hostname. With an HTTP(S) proxy configured, requests sent through the proxy are resolved by the proxy, as on the sync path (#577).
 - Response size limits are enforced while the body streams, on both the sync and async paths: a live response was previously read in full before the `max_size` check, and redirect bodies are no longer read at all (#576, #577).
