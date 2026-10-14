@@ -8,7 +8,7 @@ from collections import Counter
 from geo_optimizer.core.audit import run_full_audit, run_full_audit_async
 from geo_optimizer.core.llms_generator import fetch_sitemap
 from geo_optimizer.core.scoring import get_score_band
-from geo_optimizer.models.config import AUDIT_TIMEOUT_SECONDS, DEFAULT_SCORE_VERSION
+from geo_optimizer.models.config import BATCH_URL_TIMEOUT_SECONDS, DEFAULT_SCORE_VERSION
 from geo_optimizer.models.results import AuditResult, BatchAuditPageResult, BatchAuditResult
 
 _DEFAULT_BATCH_MAX_URLS = 50
@@ -110,10 +110,10 @@ async def _audit_urls(
                     _audit_single_url(
                         url, use_cache=use_cache, project_config=project_config, score_version=score_version
                     ),
-                    timeout=AUDIT_TIMEOUT_SECONDS,
+                    timeout=BATCH_URL_TIMEOUT_SECONDS,
                 )
             except asyncio.TimeoutError:
-                result = AuditResult(url=url, error=f"Timeout ({AUDIT_TIMEOUT_SECONDS}s)", band="critical")
+                result = AuditResult(url=url, error=f"Timeout ({BATCH_URL_TIMEOUT_SECONDS}s)", band="critical")
                 return _summarize_audit_result(result)
 
     return await asyncio.gather(*(_worker(url) for url in urls))

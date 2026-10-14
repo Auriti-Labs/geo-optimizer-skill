@@ -10,7 +10,7 @@
     },
     {
       "question": "What are the 47 GEO methods?",
-      "answer": "GEO Optimizer measures content citability using 47 methods based on Princeton KDD 2024, AutoGEO ICLR 2026, and SE Ranking 2025 research. Top methods by impact: Quotation Addition +41%, Statistics +33%, Fluency +29%, Cite Sources +27%, Answer-First +25%, Passage Density +23%. v4.1.0 added 5 RAG readiness checks: Answer Capsule Detection, Token Efficiency, Entity Resolution, Knowledge Graph Density, and Retrieval Trigger Patterns."
+      "answer": "GEO Optimizer measures content citability using 47 methods based on Princeton KDD 2024, AutoGEO (arXiv:2510.11438, preprint), and SE Ranking 2025 research. Top methods by impact: Quotation Addition +41%, Statistics +33%, Fluency +29%, Cite Sources +27%, Answer-First +25%, Passage Density +23%. v4.1.0 added 5 RAG readiness checks: Answer Capsule Detection, Token Efficiency, Entity Resolution, Knowledge Graph Density, and Retrieval Trigger Patterns."
     },
     {
       "question": "How do I use GEO Optimizer with Claude or Cursor?",

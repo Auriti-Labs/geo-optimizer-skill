@@ -16,16 +16,24 @@ from geo_optimizer.models.config import (
     ORGANIZATION_TYPES,
 )
 from geo_optimizer.models.results import BrandEntityResult, ContentResult, MetaResult, SchemaResult
+from geo_optimizer.utils.jsonld import schema_types as jsonld_types
 
 if TYPE_CHECKING:
     from bs4 import BeautifulSoup
 
 
 def _flatten_graph(raw_schema: dict) -> list[dict]:
-    """Extract schemas from @graph if present, otherwise return as single-item list (#412)."""
+    """Extract schemas from @graph if present, otherwise return as single-item list (#412).
+
+    Only dict nodes are returned: a ``@graph`` that is null, a scalar or a list
+    with non-object members made the callers' ``.get()`` calls raise.
+    """
     if "@graph" in raw_schema:
-        return list(raw_schema["@graph"])
-    return [raw_schema]
+        graph = raw_schema["@graph"]
+        nodes = graph if isinstance(graph, list) else [graph]
+    else:
+        nodes = [raw_schema]
+    return [node for node in nodes if isinstance(node, dict)]
 
 
 # Title separators, e.g. "Brand — Tagline" / "Brand – Tagline" / "Brand | Blog".
@@ -140,13 +148,15 @@ def audit_brand_entity(
             name = s.get("name")
             if not isinstance(name, str) or not name.strip():
                 continue
-            s_type = s.get("@type", "")
-            s_types = s_type if isinstance(s_type, list) else [s_type]
+            s_types = jsonld_types(s.get("@type"))
             if any(t in _PRIMARY_SCHEMA_TYPES for t in s_types):
                 names.append(name)
                 primary_schema_names.append(name)
                 schema_names.append(name)
-            elif "Organization" in s_types:
+            # Any Organization subtype (LocalBusiness, Restaurant, ...), not only the
+            # literal "Organization": a LocalBusiness name never reached the brand-name
+            # consistency check, so small-business sites lost those points (#392 class).
+            elif any(t in ORGANIZATION_TYPES for t in s_types):
                 names.append(name)
                 org_schema_names.append(name)
                 schema_names.append(name)
@@ -192,12 +202,7 @@ def audit_brand_entity(
     if meta_result.description_text:
         meta_desc_lower = meta_result.description_text.lower()[:100]
         for raw_schema in schema_result.raw_schemas:
-            schemas_to_check = []
-            if "@graph" in raw_schema:
-                schemas_to_check.extend(raw_schema["@graph"])
-            else:
-                schemas_to_check.append(raw_schema)
-            for s in schemas_to_check:
+            for s in _flatten_graph(raw_schema):
                 schema_desc = s.get("description", "")
                 if schema_desc and isinstance(schema_desc, str):
                     schema_desc_lower = schema_desc.lower()[:100]
@@ -242,14 +247,13 @@ def audit_brand_entity(
     for raw_schema in schema_result.raw_schemas:
         schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
-            s_type = s.get("@type", "")
-            if isinstance(s_type, list):
-                s_type = s_type[0] if s_type else ""
-            if s_type in ORGANIZATION_TYPES and (
+            # All declared types, not only the first: ["Thing", "LocalBusiness"] is valid JSON-LD
+            s_types = jsonld_types(s.get("@type"))
+            if any(t in ORGANIZATION_TYPES for t in s_types) and (
                 s.get("address") or s.get("telephone") or s.get("email") or s.get("contactPoint")
             ):
                 result.has_contact_info = True
-            elif s_type == "Person" and (s.get("jobTitle") or s.get("hasCredential") or s.get("alumniOf")):
+            elif "Person" in s_types and (s.get("jobTitle") or s.get("hasCredential") or s.get("alumniOf")):
                 result.has_contact_info = True
 
     # ── 4. Geographic Identity ───────────────────────────────────
@@ -262,10 +266,8 @@ def audit_brand_entity(
     for raw_schema in schema_result.raw_schemas:
         schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
-            s_type = s.get("@type", "")
-            if isinstance(s_type, list):
-                s_type = s_type[0] if s_type else ""
-            if s_type == "LocalBusiness" or s.get("areaServed") or (s_type == "Organization" and s.get("address")):
+            s_types = jsonld_types(s.get("@type"))
+            if "LocalBusiness" in s_types or s.get("areaServed") or ("Organization" in s_types and s.get("address")):
                 result.has_geo_schema = True
                 break
 
@@ -274,10 +276,7 @@ def audit_brand_entity(
     for raw_schema in schema_result.raw_schemas:
         schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
-            s_type = s.get("@type", "")
-            if isinstance(s_type, list):
-                s_type = s_type[0] if s_type else ""
-            if s_type == "FAQPage":
+            if "FAQPage" in jsonld_types(s.get("@type")):
                 main_entity = s.get("mainEntity", [])
                 if isinstance(main_entity, list):
                     result.faq_depth += len(main_entity)

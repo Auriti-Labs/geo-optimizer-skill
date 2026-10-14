@@ -138,7 +138,9 @@ def resolve_and_validate_url(url: str) -> tuple[bool, str | None, list[str]]:
     # Resolve DNS and verify that every resolved IP is public
     try:
         infos = socket.getaddrinfo(hostname, None)
-    except socket.gaierror:
+    except (socket.gaierror, UnicodeError):
+        # UnicodeError: hostname non codificabile in IDNA (es. "a..com" o un'etichetta
+        # oltre 63 caratteri), raggiungibile anche da un redirect "Location: //a..com/".
         # DNS unresolvable → reject to prevent TOCTOU (#427):
         # if the domain becomes resolvable to a private IP after validation,
         # an unpinned session would allow SSRF

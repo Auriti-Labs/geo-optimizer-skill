@@ -172,7 +172,7 @@ Also ensure your `sameAs` links are in place — they now feed `brand_kg_readine
 }
 ```
 
-See [Schema Injector](schema-injector.md) and [FAQPage best practices](schema-injector.md#faqpage-best-practices).
+See [Schema Injector](/docs/schema-injector/) and [FAQPage best practices](/docs/schema-injector/#faqpage-best-practices).
 
 ---
 

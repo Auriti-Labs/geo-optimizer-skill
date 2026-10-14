@@ -107,14 +107,14 @@ export const researchSources: ResearchSource[] = [
     linkLabel: 'Read paper',
   },
   {
-    id: 'autogeo-iclr-2026',
+    id: 'autogeo-2025',
     type: 'paper',
     title: 'What Generative Search Engines Like and How to Optimize Web Content Cooperatively (AutoGEO)',
-    venue: 'ICLR 2026',
-    year: '2026',
+    venue: 'arXiv preprint',
+    year: '2025',
     authors: 'Carnegie Mellon University',
     finding:
-      'Learns generative-engine preferences automatically and rewrites content to match them, reporting up to +50.99% visibility over baseline while preserving answer utility. Cooperative, semantically explicit content earns a 35–60% higher citation rate than adversarial or terse equivalents.',
+      'Learns generative-engine preferences automatically and rewrites content to match them, reporting an average improvement of about 36% over the strongest Princeton method (about 21% for the smaller AutoGEO-Mini) while preserving answer utility. Cooperative, semantically explicit content earns a 35–60% higher citation rate than adversarial or terse equivalents.',
     howWeUseIt:
       'Validates the "cooperative, explicit, machine-readable" direction of the fixer layer (llms.txt, schema, meta, AI discovery generation) over adversarial rewriting, and the choice to generate structure rather than manipulate phrasing.',
     link: 'https://arxiv.org/abs/2510.11438',

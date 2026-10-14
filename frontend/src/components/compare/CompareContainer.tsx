@@ -47,7 +47,11 @@ function CompactReport({ report }: { report: AuditReport }) {
           <ScoreGauge score={report.geoScore} label="GEO Score" />
         </div>
         <div className="flex flex-col items-center rounded-[4px] border border-rail bg-paper p-4">
-          <ScoreGauge score={report.citabilityScore} label="Citability" />
+          {report.citabilityScore === null ? (
+            <div className="font-mono text-sm text-ink-mute">Citability not available</div>
+          ) : (
+            <ScoreGauge score={report.citabilityScore} label="Citability" />
+          )}
         </div>
       </div>
 

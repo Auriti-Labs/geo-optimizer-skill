@@ -66,4 +66,3 @@ Disallow: /badge
 Allow: /
 
 Sitemap: https://geoready.dev/sitemap.xml
-Feed: https://geoready.dev/feed.xml

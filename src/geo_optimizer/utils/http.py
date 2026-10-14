@@ -20,7 +20,7 @@ import logging
 import socket
 import threading
 import time
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -48,6 +48,25 @@ _MAX_RETRIES: int = 3
 _BACKOFF_BASE: int = 2
 _RETRYABLE_STATUS_CODES: list[int] = [408, 429, 500, 502, 503, 504]
 
+# Tetto al Retry-After rispettato da urllib3: senza limite un server poteva
+# chiedere attese di ore (es. Retry-After: 21600) e bloccare l'audit.
+_MAX_RETRY_AFTER_SECONDS: float = 10.0
+
+
+class _CappedRetry(Retry):
+    """Retry di urllib3 che rispetta Retry-After ma con un'attesa massima.
+
+    urllib3 ricrea l'oggetto a ogni tentativo con ``type(self)(...)``,
+    quindi il tetto resta valido per tutta la sequenza di retry.
+    """
+
+    def get_retry_after(self, response):
+        """Restituisce il Retry-After del server limitato a _MAX_RETRY_AFTER_SECONDS."""
+        retry_after = super().get_retry_after(response)
+        if retry_after is None:
+            return None
+        return min(retry_after, _MAX_RETRY_AFTER_SECONDS)
+
 
 def create_session_with_retry(
     total_retries=3,
@@ -55,6 +74,7 @@ def create_session_with_retry(
     status_forcelist=None,
     allowed_methods=None,
     pinned_ips: list[str] | None = None,
+    connection_retries: int | None = None,
 ):
     """
     Create requests session with exponential backoff retry strategy.
@@ -66,6 +86,9 @@ def create_session_with_retry(
         allowed_methods: HTTP methods to retry (default: ["GET", "HEAD"])
         pinned_ips: List of pre-validated IPs to force the connection to.
                     If provided, uses _PinnedIPAdapter to prevent DNS rebinding.
+        connection_retries: If set, caps urllib3 retries on connection and read
+                    errors (status retries are unaffected). fetch_url passes 0
+                    because @with_retry already retries those errors.
 
     Returns:
         requests.Session: Configured session with retry adapter
@@ -78,12 +101,17 @@ def create_session_with_retry(
     session = requests.Session()
     session.headers.update(get_headers())
 
-    retry_strategy = Retry(
+    retry_kwargs = {}
+    if connection_retries is not None:
+        retry_kwargs = {"connect": connection_retries, "read": connection_retries}
+
+    retry_strategy = _CappedRetry(
         total=total_retries,
         backoff_factor=backoff_factor,
         status_forcelist=status_forcelist,
         allowed_methods=allowed_methods,
         raise_on_status=False,
+        **retry_kwargs,
     )
 
     # If pinned IPs were provided, use the adapter with DNS pinning
@@ -221,6 +249,24 @@ def _stream_response(response: requests.Response, max_size: int) -> tuple[bytes 
     return b"".join(chunks), None
 
 
+def _guess_encoding(response: requests.Response, content: bytes) -> str:
+    """Sceglie l'encoding di un body senza charset affidabile.
+
+    Args:
+        response: Risposta il cui body e' gia' stato letto.
+        content: Body in bytes.
+
+    Returns:
+        "utf-8" se il body e' UTF-8 valido, altrimenti l'encoding rilevato
+        da requests (``apparent_encoding``) o "utf-8" come ultima scelta.
+    """
+    try:
+        content.decode("utf-8")
+        return "utf-8"
+    except UnicodeDecodeError:
+        return response.apparent_encoding or "utf-8"
+
+
 def fetch_url(
     url: str, timeout: int = 10, max_size: int = MAX_RESPONSE_SIZE, headers: dict | None = None
 ) -> tuple[requests.Response | None, str | None]:
@@ -284,11 +330,15 @@ def _fetch_with_manual_redirects(
     redirect_count = 0
 
     # Reuse the same session until the pinned IPs change (fix #122)
+    # connection_retries=0: timeout ed errori di connessione li ripete solo
+    # @with_retry su _execute_request. Con entrambi i livelli attivi un host
+    # irraggiungibile costava 4 x 4 = 16 tentativi (~167 s).
     session = create_session_with_retry(
         total_retries=3,
         backoff_factor=1.0,
-        status_forcelist=[408, 429, 500, 502, 503, 504],
+        status_forcelist=_RETRYABLE_STATUS_CODES,
         pinned_ips=current_ips if current_ips else None,
+        connection_retries=0,
     )
     # Apply per-request header overrides (e.g. browser-like UA) on top of defaults
     if headers:
@@ -331,13 +381,10 @@ def _fetch_with_manual_redirects(
             if not location:
                 return None, "Redirect without Location header"
 
-            # Resolve relative URL against the current URL
-            if location.startswith("/"):
-                parsed = urlparse(current_url)
-                location = f"{parsed.scheme}://{parsed.netloc}{location}"
-            elif not location.startswith(("http://", "https://")):
-                parsed = urlparse(current_url)
-                location = f"{parsed.scheme}://{parsed.netloc}/{location}"
+            # urljoin segue RFC 3986: gestisce "//host/x" (stesso schema, altro host)
+            # e i percorsi relativi alla directory corrente ("pagina", "../x"),
+            # che la concatenazione manuale risolveva in modo errato.
+            location = urljoin(current_url, location)
 
             # Revalidate the redirect target (anti-SSRF redirect)
             ok, err, next_ips = resolve_and_validate_url(location)
@@ -354,6 +401,7 @@ def _fetch_with_manual_redirects(
                     backoff_factor=1.0,
                     status_forcelist=_RETRYABLE_STATUS_CODES,
                     pinned_ips=current_ips if current_ips else None,
+                    connection_retries=0,
                 )
                 # Re-apply per-request header overrides on the new session
                 if headers:
@@ -361,9 +409,7 @@ def _fetch_with_manual_redirects(
             continue
 
         # Final response: download body via streaming or from already-present buffer.
-        # Legacy tests set r.content = b"..." as a Mock attribute.
-        # Real requests use r._content internally (bytes or False).
-        # We distinguish the two cases with isinstance to avoid errors with Mock.
+        # Real requests use r._content internally (bytes, or False while streaming).
         raw_content = getattr(r, "_content", False)  # noqa: SLF001
         if isinstance(raw_content, bytes):
             # _content already in bytes (real response or mock with explicit _content)
@@ -371,15 +417,27 @@ def _fetch_with_manual_redirects(
                 return None, f"Response too large: {len(raw_content)} bytes (max: {max_size})"
             return r, None
 
-        # Try with r.content (attribute set in legacy mocks: content=b"...")
-        mock_content = getattr(r, "content", None)
-        if isinstance(mock_content, bytes):
-            if len(mock_content) > max_size:
-                return None, f"Response too large: {len(mock_content)} bytes (max: {max_size})"
-            return r, None
+        # Legacy test mocks set r.content = b"..." as a plain attribute. Never read
+        # .content on a real Response: it is a property that downloads the whole body
+        # into RAM before any size check, bypassing _stream_response and max_size.
+        # Mocks built with spec=requests.Response pass isinstance and are streamed:
+        # give them iter_content (or _content bytes), not .content.
+        if not isinstance(r, requests.Response):
+            mock_content = getattr(r, "content", None)
+            if isinstance(mock_content, bytes):
+                if len(mock_content) > max_size:
+                    return None, f"Response too large: {len(mock_content)} bytes (max: {max_size})"
+                return r, None
 
-        # Real streaming for live responses (no pre-loaded _content)
-        content, err = _stream_response(r, max_size)
+        # Real streaming for live responses (no pre-loaded _content).
+        # Body errors (truncated chunked body, corrupt gzip, read timeout) surface
+        # here, after the request has returned: report them instead of raising.
+        try:
+            content, err = _stream_response(r, max_size)
+        except requests.exceptions.RequestException as e:
+            r.close()
+            _logger.warning("Error while reading response body from %s: %s", current_url, e)
+            return None, "Error while reading response body"
         if err:
             r.close()
             return None, err
@@ -388,10 +446,12 @@ def _fetch_with_manual_redirects(
         r._content = content  # noqa: SLF001
         r._content_consumed = True  # noqa: SLF001
 
-        # Fix #338: set explicit encoding to avoid UnicodeDecodeError on r.text
-        # If the server declares an incorrect or absent charset, use apparent_encoding as fallback
+        # Fix #338: set explicit encoding to avoid UnicodeDecodeError on r.text.
+        # Without a charset requests assumes ISO-8859-1 for text/*: try UTF-8 first,
+        # which is cheap, and run charset detection only when the body is not UTF-8
+        # (apparent_encoding scans the whole body and is slow on large pages).
         if not r.encoding or r.encoding == "ISO-8859-1":
-            r.encoding = r.apparent_encoding or "utf-8"
+            r.encoding = _guess_encoding(r, content)
 
         return r, None
 

@@ -4,7 +4,7 @@ Analisi narrativa competitiva: usa LLM per estrarre come i competitor vengono
 descritti dagli LLM (adjectives, frames, positioning). confronta il positioning
 con il proprio e identifica gap di narrative.
 
-Base: Princeton KDD 2024, AutoGEO ICLR 2026 - citability and content quality.
+Base: Princeton KDD 2024, AutoGEO (arXiv:2510.11438, preprint) - citability and content quality.
 """
 
 from __future__ import annotations

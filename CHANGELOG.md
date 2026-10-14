@@ -10,7 +10,36 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Added
 - Added `AuditResult.recommendations_by_category`, also emitted by `geo audit --format json` and the web API (`schema_version` stays `1`, additive field). It groups the strings of `recommendations` by the `score_breakdown` category that produced them (`robots`, `meta`, `signals`, ...), plus two non-scored keys: `blockers` (CDN/WAF block, content that needs JavaScript, critical prompt injection, critical UGC injection risk) and `other` (non-critical UGC advisory, negative signals, WebMCP, multimodal). `recommendations` is unchanged. Unreachable-site and HTTP-error results carry a single recommendation under `{"other": [...]}`; batch timeout/exception results (`core/batch_audit.py`) have both fields empty. New core helpers `build_categorized_recommendations()` and `group_recommendations_by_category()`; `build_recommendations()` keeps its signature and output. See `docs/json-contract.md`.
 
+## [4.19.1] — 2026-10-14
+
+### Security
+- The async HTTP path (used by `geo audit` when httpx is installed and by batch/sitemap audits) now connects to the IP validated by the anti-SSRF check instead of resolving the hostname again, closing a DNS-rebinding window; SNI and certificate checks still use the hostname. With an HTTP(S) proxy configured, requests sent through the proxy are resolved by the proxy, as on the sync path (#577).
+- Response size limits are enforced while the body streams, on both the sync and async paths: a live response was previously read in full before the `max_size` check, and redirect bodies are no longer read at all (#576, #577).
+- `POST /api/logs/analyze` is now rate-limited like the other POST endpoints (#580).
+- Server-rendered reports at `/report/{id}` send `X-Robots-Tag: noindex, nofollow` (#571).
+
+### Changed
+- Brand & Entity: a schema name now counts for brand-name consistency for every Organization subtype (`LocalBusiness`, `Restaurant`, `Store`, ...), not only for the literal `Organization`, and checks that read only the first `@type` of a list now consider every declared type. Sites using these shapes can score higher, and `brand_entity.primary_name` can change to the schema name (#579).
+- G-BYLINE now resolves an author declared as an `@id` reference (Yoast, RankMath) to a `Person` or `Organization` node, so those pages pass instead of reporting "No author found" (#581).
+- The web API JSON has a new optional top-level `score_penalty` (negative-signal penalty, `0` or below); `score_breakdown` still lists only rubric categories (#580).
+- `mcp` is pinned below 2.0, since mcp 2.x removed the FastMCP API the server uses; on Python 3.9, which mcp 1.x does not support, the `[mcp]` and `[all]` extras now install without it (#575).
+
+### Fixed
+- `geo audit --format rich` no longer truncates the category scores at 80 and 100 columns: the rubric v2 llms.txt label is shorter in the terminal dashboard and the bar and score columns keep a minimum width.
+- A malformed JSON-LD field (non-string `@type`, `offers` or `aggregateRating` as a string, `sameAs` as a number or object, a null `@graph`, ...) no longer makes the whole audit fail (#579).
+- The sync audit now detects a CDN-blocked `llms.txt` (403/406) and retries it, as the async path already did; the same site could differ by up to 18 points between the two paths (#569).
+- Batch and sitemap audits no longer time out healthy pages: the per-URL deadline is 60 s instead of the 10 s performance budget (#556, #570).
+- The llms.txt CDN retry no longer blocks the event loop in async and batch audits (#581).
+- Connection errors are retried at most 4 times instead of up to 16, and a server's `Retry-After` is capped at 10 s (#576).
+- Relative and protocol-relative redirect locations (`page.html`, `../x`, `//host/x`) are resolved correctly (#576).
+- Body read errors (truncated or corrupt responses) are reported as fetch errors instead of raising (#576).
+- The web report no longer shows invented failures or rubric v1 maxima on partial or gated API payloads ("Content 14/12", "No llms.txt found", "Citability 0/100"): missing data is not shown as a failed check, maxima follow the payload's rubric version, locked categories render as locked, and a missing citability score shows a dash (#578).
+
 ### Documentation
+- `SKILL.md`: corrected crawler semantics (Google-Extended does not control AI Overviews; search-tier vs training bots), research claims and CLI flags (#572).
+- Site and docs: applied the 2026-10-08 SEO audit and cite AutoGEO as an arXiv preprint (arXiv:2510.11438) instead of ICLR 2026 (#573).
+- `docs/json-contract.md` documents `score_penalty`; the MCP docs state that the server requires Python 3.10+ (#575, #580).
+- Replaced the README hero GIF with a current rubric v2 terminal dashboard (`assets/tui-audit.svg`) and regenerated `assets/fix.svg`.
 - Documented `geo llms --check-drift` and `--llms-file` in `docs/llms-txt.md`.
 - Added the `howto`, `review` and `product` types to the `geo schema --type` table in `docs/schema-injector.md`.
 - Pinned the GitHub Action examples in `docs/ci-cd.md` to v4.19.0.

@@ -1209,8 +1209,11 @@ async def run_full_audit_async(
     # Sub-audit robots.txt (uses pre-fetched response with extra_bots)
     robots = _audit_robots_from_response(r_robots, bots=effective_bots)
 
-    # Sub-audit llms.txt (uses pre-fetched response)
-    llms = _audit_llms_from_response(r_llms, r_full=r_llms_full, url=llms_url)
+    # Sub-audit llms.txt (uses pre-fetched response). On a CDN/WAF 403/406 it
+    # retries with a browser-like UA through the synchronous fetch_url: run it in
+    # a thread so the retry does not block the event loop (batch audits run many
+    # of these concurrently, and a blocked loop also stops the per-URL timeout).
+    llms = await asyncio.to_thread(_audit_llms_from_response, r_llms, r_full=r_llms_full, url=llms_url)
 
     # Sub-audits that work on the DOM (no additional fetch required)
     schema = audit_schema(soup, base_url)

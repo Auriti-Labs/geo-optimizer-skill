@@ -21,7 +21,7 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 *No install, no account, no API key. Runs in seconds.*
 
-<img src="assets/demo.gif" alt="geo audit demo — AI visibility score 0-100 with prioritized fixes in one command" width="800"/>
+<img src="assets/tui-audit.svg" alt="geo audit terminal dashboard on geoready.dev: 94/100 Excellent, nine rubric v2 categories with per-category scores, extra checks and top fixes" width="800"/>
 
 [Quick Start](#quick-start) · [Free web audit, no account](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=nav) · [Docs](https://geoready.dev/docs/) · [The book](#the-book-behind-the-engine-ai-search-engineering) · [Changelog](CHANGELOG.md)
 
@@ -85,7 +85,7 @@ Across 1,400+ sites audited through [GeoReady](https://geoready.dev/state-of-geo
 
 `geo fix` turns the audit into files: robots.txt rules for all 27 AI bots, `llms.txt`, JSON-LD schema, AI discovery endpoints, and meta tags. It previews by default and writes only with `--apply`. The score after fixes is the tool's own estimate, not a measured result.
 
-<img src="assets/fix.svg" alt="geo fix on example.com — 9 fixes generated, estimated score 8/100 to 70/100" width="800"/>
+<img src="assets/fix.svg" alt="geo fix on example.com: 9 fixes planned, estimated score 22/100 to 64/100" width="800"/>
 
 Prefer no terminal? Run the same audit free at [geoready.dev](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=proof-table) — no account needed.
 
@@ -265,7 +265,7 @@ Treat AI visibility like test coverage. The GitHub Action scores your site, fail
 
 ```yaml
 # .github/workflows/geo.yml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.19.0
+- uses: Auriti-Labs/geo-optimizer-skill@v4.19.1
   with:
     url: https://yoursite.com
     min-score: 70        # fail the build below 70
@@ -347,7 +347,7 @@ export default defineConfig({
 | Paper | Venue | What it found |
 |-------|-------|---------------|
 | [GEO: Generative Engine Optimization](https://arxiv.org/abs/2311.09735) | **KDD 2024** | 9 methods, evaluated on GEO-bench (10,000 queries). The best (citing sources, adding quotations, adding statistics) raised source visibility by up to 40%. Gains were largest for lower-ranked sources. |
-| [AutoGEO](https://arxiv.org/abs/2510.11438) | **ICLR 2026** | Rules extracted automatically from engine preferences, up to +50.99% over the strongest KDD baseline. |
+| [AutoGEO](https://arxiv.org/abs/2510.11438) | arXiv preprint (2025) | Rules extracted automatically from engine preferences: on average about 36% over the strongest KDD method (about 21% for the smaller AutoGEO-Mini). |
 | [C-SEO Bench](https://arxiv.org/abs/2506.11097) | **NeurIPS D&B 2025** | Most content-rewriting tricks do not work. Ranking the source matters more than rewriting it. |
 
 That finding is consistent with how the tool is weighted: GEO Optimizer puts most of its weight on whether crawlers can reach and parse a page (robots.txt, `llms.txt`, schema, meta) and treats content rewriting as the smaller lever. It measures readiness signals; it cannot guarantee that any engine will cite you, and it says so.
@@ -432,7 +432,7 @@ Nothing in practice — they are two names for the same discipline. AEO (Answer 
 Traditional SEO tools optimize for Google rankings and backlinks. GEO Optimizer measures AI *citation readiness* — whether answer engines can crawl, parse, and quote your content — using signals (llms.txt, AI-bot access, schema richness, citability, topical authority) that classic SEO tools don't score. Standard technical SEO checks (meta tags, canonical URLs, Open Graph) are audited alongside them.
 
 **What research is GEO Optimizer based on?**
-Three peer-reviewed papers — *GEO: Generative Engine Optimization* (KDD 2024), *AutoGEO* (ICLR 2026), and *C-SEO Bench* (NeurIPS Datasets & Benchmarks 2025) — plus industry studies for the remaining content checks. Every check lists its source in [docs/geo-methods.md](docs/geo-methods.md).
+Two peer-reviewed papers, *GEO: Generative Engine Optimization* (KDD 2024) and *C-SEO Bench* (NeurIPS Datasets & Benchmarks 2025), the *AutoGEO* preprint (arXiv 2025), plus industry studies for the remaining content checks. Every check lists its source in [docs/geo-methods.md](docs/geo-methods.md).
 
 **Is there a book on Generative Engine Optimization?**
 Yes. *AI Search Engineering: A Technical Guide to Generative Engine Optimization (GEO), AI Citations, and Agent-Ready Websites* is a 992-page book by Juan Camilo Auriti, the author of GEO Optimizer, published 10 September 2026 (ISBN 979-8172934568). The scoring model it describes is the one implemented in this engine. See [the book](#the-book-behind-the-engine-ai-search-engineering).
@@ -441,7 +441,7 @@ Yes. *AI Search Engineering: A Technical Guide to Generative Engine Optimization
 
 ## Roadmap
 
-Focused release waves, not noisy patches: 85 releases since February 2026, currently **v4.19.0**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
+Focused release waves, not noisy patches: 87 releases since February 2026, currently **v4.19.1**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ---
 

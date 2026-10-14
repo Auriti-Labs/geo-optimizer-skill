@@ -92,3 +92,56 @@ def iter_jsonld_objects(
                 queue = children + queue
                 continue
             yield item
+
+
+# ─── Lettura difensiva dei campi schema.org ──────────────────────────────────
+# Il JSON-LD arriva da pagine di terzi: lo stesso campo puo' essere stringa,
+# lista o oggetto (schema.org lo consente) oppure semplicemente sbagliato
+# (numero, null, booleano). Un campo malformato in un solo schema faceva
+# sollevare AttributeError/TypeError e fallire l'intero audit (errore 500 sul web).
+
+
+def schema_types(value: object) -> list[str]:
+    """Normalizza un valore ``@type`` in una lista di stringhe.
+
+    Args:
+        value: Il valore di ``@type`` (stringa, lista o altro).
+
+    Returns:
+        Le sole stringhe non vuote, nell'ordine originale. ``[]`` per valori
+        di altro tipo (numero, null, oggetto).
+    """
+    items = value if isinstance(value, list) else [value]
+    return [item for item in items if isinstance(item, str) and item]
+
+
+def first_object(value: object) -> dict:
+    """Restituisce il primo oggetto di un campo che puo' essere oggetto o lista.
+
+    Usato per campi come ``offers`` o ``aggregateRating``: schema.org accetta
+    un singolo oggetto o una lista di oggetti.
+
+    Args:
+        value: Il valore del campo.
+
+    Returns:
+        Il dict stesso, il primo dict della lista, oppure ``{}``.
+    """
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, list):
+        return next((item for item in value if isinstance(item, dict)), {})
+    return {}
+
+
+def string_list(value: object) -> list[str]:
+    """Normalizza un campo stringa-o-lista (es. ``sameAs``) in una lista di stringhe.
+
+    Args:
+        value: Il valore del campo.
+
+    Returns:
+        Le sole stringhe non vuote; ``[]`` per valori di altro tipo.
+    """
+    items = value if isinstance(value, list) else [value]
+    return [item for item in items if isinstance(item, str) and item.strip()]

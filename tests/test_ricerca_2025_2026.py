@@ -121,7 +121,7 @@ class TestSchemaRichness:
 
 
 # ============================================================================
-# TEST: Answer-First Structure (AutoGEO ICLR 2026)
+# TEST: Answer-First Structure (AutoGEO, arXiv:2510.11438 preprint)
 # ============================================================================
 
 

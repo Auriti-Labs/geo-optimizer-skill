@@ -207,16 +207,16 @@ The score is the sum of all points earned across **9 categories**, capped at 100
 
 | Problem | Fix | Docs |
 |---------|-----|------|
-| AI bot MISSING in robots.txt | Add the bot's `User-agent` block with `Allow: /` | [AI Bots Reference](ai-bots-reference.md) |
-| llms.txt not found | Generate with `geo llms`, place at site root | [Generating llms.txt](llms-txt.md) |
-| FAQPage schema missing | Generate with `geo schema --type faq` | [Schema Injector](schema-injector.md) |
-| Organization schema missing | Generate with `geo schema --type organization` | [Schema Injector](schema-injector.md) |
+| AI bot MISSING in robots.txt | Add the bot's `User-agent` block with `Allow: /` | [AI Bots Reference](/docs/ai-bots-reference/) |
+| llms.txt not found | Generate with `geo llms`, place at site root | [Generating llms.txt](/docs/llms-txt/) |
+| FAQPage schema missing | Generate with `geo schema --type faq` | [Schema Injector](/docs/schema-injector/) |
+| Organization schema missing | Generate with `geo schema --type organization` | [Schema Injector](/docs/schema-injector/) |
 | Meta description missing | Add `<meta name="description" content="...">` to `<head>` | — |
 | Open Graph tags missing | Add `og:title`, `og:description`, `og:image` to `<head>` | — |
-| No KG sameAs links | Add `sameAs` to Organization schema (Wikipedia, LinkedIn, etc.) | [Scoring Rubric](scoring-rubric.md#8-brand--entity-signals--max-10-pts-new-in-v3182) |
+| No KG sameAs links | Add `sameAs` to Organization schema (Wikipedia, LinkedIn, etc.) | [Scoring Rubric](/docs/scoring-rubric/#8-brand--entity-signals--max-10-pts-v1-legacy-new-in-v3182) |
 | AI Discovery endpoints missing | Use `geo fix` to generate `.well-known/ai.txt` and `/ai/*.json` | — |
-| Low statistics count | Add specific numbers, %, dates to page content | [GEO Methods](geo-methods.md#method-2-statistics) |
-| 0 external citations | Link to authoritative sources (papers, .gov, .edu) | [GEO Methods](geo-methods.md#method-1-cite-sources) |
+| Low statistics count | Add specific numbers, %, dates to page content | [GEO Methods](/docs/geo-methods/#method-2-statistics) |
+| 0 external citations | Link to authoritative sources (papers, .gov, .edu) | [GEO Methods](/docs/geo-methods/#method-1-cite-sources) |
 
 ---
 

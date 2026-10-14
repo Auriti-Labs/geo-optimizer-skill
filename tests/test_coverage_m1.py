@@ -23,7 +23,7 @@ import os
 import tempfile
 import time
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 from urllib.parse import urlparse
 
 import pytest
@@ -1000,21 +1000,18 @@ class TestHttpAsync:
     )
     def test_fetch_url_async_successo(self):
         """fetch_url_async() ritorna (response, None) in caso di successo."""
+        import httpx
+
         from geo_optimizer.utils.http_async import fetch_url_async
 
-        mock_response = MagicMock()
-        mock_response.headers = {}
-        mock_response.content = b"<html>test</html>"
-
-        mock_client = AsyncMock()
-        mock_client.get = AsyncMock(return_value=mock_response)
-
         async def run():
-            return await fetch_url_async("https://example.com", client=mock_client)
+            transport = httpx.MockTransport(lambda request: httpx.Response(200, content=b"<html>test</html>"))
+            async with httpx.AsyncClient(transport=transport) as client:
+                return await fetch_url_async("https://example.com", client=client)
 
         response, error = asyncio.run(run())
         assert error is None
-        assert response is mock_response
+        assert response.content == b"<html>test</html>"
 
     @pytest.mark.skipif(
         not __import__("importlib").util.find_spec("httpx"),
@@ -1026,11 +1023,12 @@ class TestHttpAsync:
 
         from geo_optimizer.utils.http_async import fetch_url_async
 
-        mock_client = AsyncMock()
-        mock_client.get = AsyncMock(side_effect=httpx.TimeoutException("Timeout", request=MagicMock()))
+        def handler(request):
+            raise httpx.ReadTimeout("Timeout", request=request)
 
         async def run():
-            return await fetch_url_async("https://example.com", client=mock_client)
+            async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+                return await fetch_url_async("https://example.com", client=client)
 
         response, error = asyncio.run(run())
         assert response is None
@@ -1046,15 +1044,15 @@ class TestHttpAsync:
 
         from geo_optimizer.utils.http_async import fetch_url_async
 
-        mock_client = AsyncMock()
-        mock_client.get = AsyncMock(side_effect=httpx.ConnectError("Connection failed", request=MagicMock()))
+        def handler(request):
+            raise httpx.ConnectError("Connection failed", request=request)
 
         async def run():
-            return await fetch_url_async("https://example.com", client=mock_client)
+            async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+                return await fetch_url_async("https://example.com", client=client)
 
         response, error = asyncio.run(run())
         assert response is None
-        assert error is not None
         assert "Connection failed" in error
 
     @pytest.mark.skipif(
@@ -1063,17 +1061,16 @@ class TestHttpAsync:
     )
     def test_fetch_url_async_risposta_troppo_grande_content_length(self):
         """fetch_url_async() ritorna errore se Content-Length supera max_size."""
+        import httpx
+
         from geo_optimizer.utils.http_async import fetch_url_async
 
-        mock_response = MagicMock()
-        mock_response.headers = {"content-length": "999999999"}
-        mock_response.content = b"dati"
-
-        mock_client = AsyncMock()
-        mock_client.get = AsyncMock(return_value=mock_response)
+        def handler(request):
+            return httpx.Response(200, headers={"content-length": "999999999"}, content=b"dati")
 
         async def run():
-            return await fetch_url_async("https://example.com", client=mock_client, max_size=1000)
+            async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+                return await fetch_url_async("https://example.com", client=client, max_size=1000)
 
         response, error = asyncio.run(run())
         assert response is None
@@ -1085,17 +1082,14 @@ class TestHttpAsync:
     )
     def test_fetch_url_async_risposta_troppo_grande_content_effettivo(self):
         """fetch_url_async() ritorna errore se il contenuto effettivo supera max_size."""
+        import httpx
+
         from geo_optimizer.utils.http_async import fetch_url_async
 
-        mock_response = MagicMock()
-        mock_response.headers = {}
-        mock_response.content = b"x" * 10000
-
-        mock_client = AsyncMock()
-        mock_client.get = AsyncMock(return_value=mock_response)
-
         async def run():
-            return await fetch_url_async("https://example.com", client=mock_client, max_size=1000)
+            transport = httpx.MockTransport(lambda request: httpx.Response(200, content=b"x" * 10000))
+            async with httpx.AsyncClient(transport=transport) as client:
+                return await fetch_url_async("https://example.com", client=client, max_size=1000)
 
         response, error = asyncio.run(run())
         assert response is None
@@ -1106,27 +1100,26 @@ class TestHttpAsync:
         reason="httpx non installato",
     )
     def test_fetch_urls_async_parallelo(self):
-        """fetch_urls_async() ritorna un dict con tutti gli URL come chiavi."""
+        """fetch_urls_async() ritorna un dict con tutti gli URL e le rispettive risposte."""
+        import httpx
 
+        from geo_optimizer.utils import http_async
         from geo_optimizer.utils.http_async import fetch_urls_async
 
         urls = ["https://example.com/a", "https://example.com/b"]
 
-        mock_response = MagicMock()
-        mock_response.headers = {}
-        mock_response.content = b"<html>test</html>"
+        def handler(request):
+            return httpx.Response(200, content=request.url.path.encode())
 
-        mock_client = AsyncMock()
-        mock_client.get = AsyncMock(return_value=mock_response)
-        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
-        mock_client.__aexit__ = AsyncMock(return_value=None)
+        def _client(timeout):
+            return httpx.AsyncClient(transport=httpx.MockTransport(handler))
 
-        async def run():
-            with patch("httpx.AsyncClient", return_value=mock_client):
-                return await fetch_urls_async(urls)
+        with patch.object(http_async, "_create_pinned_client", side_effect=_client):
+            results = asyncio.run(fetch_urls_async(urls))
 
-        results = asyncio.run(run())
         assert set(results.keys()) == set(urls)
+        assert results["https://example.com/a"][0].content == b"/a"
+        assert results["https://example.com/b"][0].content == b"/b"
 
 
 # ============================================================================

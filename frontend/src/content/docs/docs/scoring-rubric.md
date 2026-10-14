@@ -5,7 +5,7 @@ order: 6
 ---
 # GEO Scoring Rubric
 
-How the GEO Score (0–100) is computed. Based on the Princeton KDD 2024 research on Generative Engine Optimization, extended with AutoGEO ICLR 2026 and geo-checklist.dev signals.
+How the GEO Score (0–100) is computed. Based on the Princeton KDD 2024 research on Generative Engine Optimization, extended with AutoGEO (arXiv:2510.11438, preprint) and geo-checklist.dev signals.
 
 ---
 

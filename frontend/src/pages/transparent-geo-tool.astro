@@ -47,7 +47,7 @@ const VERIFIABLE = [
   {
     claim: 'The research behind the content checks is cited by DOI',
     detail:
-      'The citability layer implements findings from Princeton’s GEO paper (KDD 2024, arXiv:2311.09735) and AutoGEO (ICLR 2026, arXiv:2510.11438). Both are linked, so you can check whether we read them correctly.',
+      'The citability layer implements findings from Princeton’s GEO paper (KDD 2024, arXiv:2311.09735) and AutoGEO (arXiv:2510.11438, preprint). Both are linked, so you can check whether we read them correctly.',
     check: 'Follow the arXiv links and compare against our checks.',
   },
 ] as const;
@@ -274,7 +274,7 @@ geo audit --url https://your-site.com</code></pre>
       },
       {
         "@type": "CreativeWork",
-        "name": "AutoGEO (ICLR 2026)",
+        "name": "AutoGEO (arXiv:2510.11438, preprint)",
         "url": "https://arxiv.org/abs/2510.11438"
       }
     ]

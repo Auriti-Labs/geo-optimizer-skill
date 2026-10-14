@@ -19,7 +19,7 @@ This documentation covers every tool and concept in the toolkit. → [README](..
 | [Generating llms.txt](llms-txt.md) | Auto-generate `/llms.txt` from your sitemap for AI crawlers |
 | [Schema Injector](schema-injector.md) | Generate and inject JSON-LD structured data into your pages |
 | [Using SKILL.md as AI Context](ai-context.md) | Use the toolkit with Claude, ChatGPT, Gemini, Cursor, Windsurf |
-| [47 GEO Methods](geo-methods.md) | Research-backed content optimization methods (KDD 2024 + ICLR 2026) |
+| [47 GEO Methods](geo-methods.md) | Research-backed content optimization methods (KDD 2024 + AutoGEO preprint) |
 | [AI Bots Reference](ai-bots-reference.md) | Complete list of 27 AI crawlers and `robots.txt` configuration |
 | [Scoring Rubric](scoring-rubric.md) | How the GEO Score (0–100) is computed across 9 rubric v2 categories |
 | [geo fix Command](geo-fix.md) | Automatic fix generation — robots.txt, llms.txt, schema, meta |

@@ -260,7 +260,7 @@ Output:
 ✅ FAQPage schema injected into index.html (before </head>)
 ```
 
-If the file has no `</head>` tag, injection fails gracefully with an error. See [Troubleshooting](troubleshooting.md#9-inject-failed-no-head-tag) for the fix.
+If the file has no `</head>` tag, injection fails gracefully with an error. See [Troubleshooting](/docs/troubleshooting/#9-inject-failed-no-head-tag) for the fix.
 
 ---
 

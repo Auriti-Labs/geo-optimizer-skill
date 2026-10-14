@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geo-optimizer-skill"
-version = "4.19.0"
+version = "4.19.1"
 description = "Generative Engine Optimization toolkit — make websites visible to AI search engines"
 readme = "README.md"
 license = {text = "MIT"}
@@ -56,7 +56,9 @@ pdf = [
     "weasyprint>=60.0",
 ]
 mcp = [
-    "mcp>=1.0.0",
+    # <2: il server usa mcp.server.fastmcp, rimosso in mcp 2.x (rinominato MCPServer).
+    # mcp 1.x richiede Python 3.10+: il marker evita che [mcp] e [all] falliscano su 3.9.
+    "mcp>=1.0.0,<2; python_version >= '3.10'",
 ]
 embedding = [
     "sentence-transformers>=2.2.0,<7.0",

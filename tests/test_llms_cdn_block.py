@@ -207,3 +207,45 @@ class TestGenerateLlmsFixBlocked:
         assert fix.content  # contenuto non vuoto, non un artefatto vuoto
         # la descrizione include la nota CDN per avvisare che il blocco può nascondere un file reale
         assert "CDN" in fix.description
+
+
+def _real_resp(status: int, text: str = ""):
+    """Vera requests.Response: a differenza di MagicMock è falsy sui 4xx (__bool__ == ok)."""
+    import requests
+
+    r = requests.Response()
+    r.status_code = status
+    r._content = text.encode("utf-8")
+    r.encoding = "utf-8"
+    r.headers["Content-Type"] = "text/plain"
+    return r
+
+
+class TestFalsyRequestsResponse:
+    """Regressione: `if not r` scartava il 403 di requests prima del ramo CDN/WAF."""
+
+    @patch("geo_optimizer.core.audit_llms.fetch_url")
+    def test_audit_llms_txt_real_403_is_flagged_and_retried(self, mock_fetch):
+        mock_fetch.side_effect = [
+            (_real_resp(403), None),
+            (_real_resp(200, LLMS_FULL_SPEC), None),
+            (_real_resp(200, "full"), None),
+        ]
+
+        result = audit_llms_txt("https://example.com")
+
+        assert result.blocked_by_cdn is True
+        assert result.found is True
+        assert result.has_full is True
+
+    @patch("geo_optimizer.core.audit_llms.fetch_url")
+    def test_from_response_real_403_recovers_file_and_full(self, mock_fetch):
+        mock_fetch.return_value = (_real_resp(200, LLMS_FULL_SPEC), None)
+
+        result = _audit_llms_from_response(
+            _real_resp(403), r_full=_real_resp(200, "full"), url="https://example.com/llms.txt"
+        )
+
+        assert result.blocked_by_cdn is True
+        assert result.found is True
+        assert result.has_full is True

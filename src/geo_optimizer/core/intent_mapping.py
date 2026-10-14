@@ -4,7 +4,7 @@ Analizza il contenuto di una pagina per determinare quali intenti di ricerca AI
 serve e quanto e' pronta a essere citata per ciascuno.
 
 Zero fetch HTTP — lavora su dati gia disponibili.
-Basato su: Princeton KDD 2024, AutoGEO ICLR 2026, Google Search Intent taxonomy.
+Basato su: Princeton KDD 2024, AutoGEO (arXiv:2510.11438, preprint), Google Search Intent taxonomy.
 """
 
 from __future__ import annotations
@@ -13,6 +13,7 @@ import re
 from typing import Any
 
 from geo_optimizer.models.results import ContentResult, IntentMappingResult, MetaResult, SchemaResult
+from geo_optimizer.utils.jsonld import schema_types as jsonld_types
 
 # ─── Pattern di intenti ──────────────────────────────────────────────────────
 
@@ -148,18 +149,13 @@ def _check_schema_for_intent(category: str, schema_result: SchemaResult) -> tupl
     for raw in schema_result.raw_schemas:
         if not isinstance(raw, dict):
             continue
-        schemas = []
-        if "@graph" in raw:
-            schemas.extend(raw["@graph"])
-        else:
-            schemas.append(raw)
+        graph = raw.get("@graph", raw)
+        schemas = graph if isinstance(graph, list) else [graph]
 
         for s in schemas:
-            s_type = s.get("@type", "")
-            if isinstance(s_type, list):
-                s_type = s_type[0] if s_type else ""
-            if s_type and s_type in required:
-                matched.append(s_type)
+            if not isinstance(s, dict):
+                continue
+            matched.extend(t for t in jsonld_types(s.get("@type")) if t in required)
 
     return bool(matched), list(set(matched))
 

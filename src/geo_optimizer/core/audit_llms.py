@@ -146,7 +146,10 @@ def audit_llms_txt(base_url: str) -> LlmsTxtResult:
     r, err = fetch_url(llms_url)
     result = LlmsTxtResult()
 
-    if err or not r:
+    # `r is None`, not `not r`: requests.Response.__bool__ is `ok`, so a 403/406
+    # is falsy and would skip the CDN/WAF branch below (httpx responses are always
+    # truthy, so only the sync path was affected).
+    if err or r is None:
         return result
 
     # A 403/406 means the CDN/WAF refused our User-Agent: llms.txt may well
@@ -190,7 +193,8 @@ def _audit_llms_from_response(r, r_full=None, url: str | None = None) -> LlmsTxt
     """
     result = LlmsTxtResult()
 
-    if not r:
+    # `r is None`, not `not r`: a requests 403/406 is falsy (see audit_llms_txt)
+    if r is None:
         return result
 
     # A 403/406 response means the CDN/WAF refused the auditor's User-Agent:
@@ -206,6 +210,8 @@ def _audit_llms_from_response(r, r_full=None, url: str | None = None) -> LlmsTxt
             if result.found:
                 # recovered via browser-like retry: still note the CDN block
                 result.blocked_by_cdn = True
+                if r_full is not None and r_full.status_code == 200 and r_full.text.strip():
+                    result.has_full = True
         return result
 
     if r.status_code != 200:

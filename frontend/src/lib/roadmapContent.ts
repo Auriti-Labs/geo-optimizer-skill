@@ -37,7 +37,7 @@ export const roadmapPhases: RoadmapPhase[] = [
       {
         id: 'citability-score',
         title: 'Citability score',
-        description: '47-method citability analysis derived from Princeton KDD 2024 and AutoGEO ICLR 2026.',
+        description: '47-method citability analysis derived from Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint).',
         status: 'available',
       },
       {
@@ -303,5 +303,6 @@ export const releaseCadence = [
   { version: 'v4.18.2', name: 'Quorum (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.18.3', name: 'CDN/WAF patch', status: 'available' as RoadmapStatus },
   { version: 'v4.19.0', name: 'Google AI readiness / rubric v2', status: 'available' as RoadmapStatus },
+  { version: 'v4.19.1', name: 'Google AI readiness (patch)', status: 'available' as RoadmapStatus },
   { version: 'v5.0.0', name: 'Black Archive', status: 'exploring' as RoadmapStatus },
 ];

@@ -1,6 +1,6 @@
 # GeoReady
 
-> AI visibility audit and monitoring platform built on the open-source GEO Optimizer engine. Score 0-100 based on 8 scoring categories derived from peer-reviewed research (Princeton KDD 2024, AutoGEO ICLR 2026).
+> AI visibility audit and monitoring platform built on the open-source GEO Optimizer engine. Score 0-100 based on 8 scoring categories derived from published research (Princeton KDD 2024; AutoGEO, arXiv:2510.11438 preprint).
 
 GeoReady helps developers, SEOs, and content teams measure and improve how discoverable, readable, and citable their websites are to AI answer engines such as ChatGPT, Perplexity, Claude, and Gemini.
 
@@ -105,7 +105,7 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 - [AI Overviews Trend Tracking](https://geoready.dev/ai-overviews-trend-tracking/): A repeatable workflow for tracking AI Overviews trends over time — query sets, logging schema, cadence, and how to read real shifts vs. noise.
 - [Compare](https://geoready.dev/compare/): Side-by-side comparison of two URLs.
 - [Analyze Competitors](https://geoready.dev/analyze-competitors/): Multi-URL competitor analysis.
-- [Research](https://geoready.dev/research/): Peer-reviewed research foundation.
+- [Research](https://geoready.dev/research/): Published research foundation.
 - [Methodology](https://geoready.dev/methodology/): Transparent scoring weights, score bands, signal categories, and research-backed assumptions behind the GEO score.
 - [State of GEO](https://geoready.dev/state-of-geo/): Live AI search readiness benchmark across sites audited by GeoReady — average and median GEO score, llms.txt and schema adoption, and the biggest readiness gap. Aggregated and anonymized; an audited sample, not a survey of the whole web.
 - [State of GEO: September 2026](https://geoready.dev/state-of-geo/september-2026/): Monthly benchmark report — 704 domains audited, average GEO score 56.2/100 (flat, −0.2 points), 28.8% reach "Good" or above, llms.txt adoption 57.4% (a measured floor), AI-crawler blocking down to 8.8%; scored on four engine versions, so month-over-month deltas are indicative.
@@ -193,7 +193,7 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 ## Research sources
 
 - GEO: Generative Engine Optimization — KDD 2024 (https://arxiv.org/abs/2311.09701)
-- AutoGEO: Automatic Generative Engine Optimization — ICLR 2026 (https://openreview.net/forum?id=K8EinVWtUB)
+- AutoGEO: What Generative Search Engines Like and How to Optimize Web Content Cooperatively — arXiv preprint, 2025 (https://arxiv.org/abs/2510.11438)
 - AI Citations Report 2026 — industry analysis
 - C-SEO Bench — internal benchmark for conversational SEO evaluation
 - Schema Markup & AI Citations — product analysis on JSON-LD citation correlation

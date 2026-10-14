@@ -39,6 +39,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev,web]"
 
+      # test_mcp.py si salta senza mcp: installarlo qui fa girare davvero i test del server.
+      # mcp 1.x non esiste per Python 3.9.
+      - name: Install MCP extra
+        if: matrix.python-version != '3.9'
+        run: pip install -e ".[mcp]"
+
       - name: Run tests
         run: |
           pytest tests/ -v --tb=short --cov=geo_optimizer --cov-report=term-missing
@@ -81,3 +87,21 @@ jobs:
           python -m pip install --upgrade pip  # clears PYSEC-2026-196 (runner pip, not a runtime dep)
           pip install .
           pip-audit --ignore-vuln CVE-2026-4539 --ignore-vuln CVE-2026-3219 --ignore-vuln CVE-2026-6357  # pygments / pip: runner-level packages, not runtime deps
+
+  frontend-unit:
+    name: Frontend unit tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      # Test del mapper del report: TypeScript eseguito da Node, nessuna dipendenza npm
+      - name: Run frontend unit tests
+        working-directory: frontend
+        run: npm test

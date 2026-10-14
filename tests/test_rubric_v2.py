@@ -158,10 +158,8 @@ def test_default_v2_success_path_sync_and_async():
     with (
         patch("geo_optimizer.utils.http_async.fetch_urls_async", new=AsyncMock(return_value=async_responses)),
         patch("geo_optimizer.core.audit.check_markdown_negotiation_async", new=AsyncMock(return_value=False)),
-        patch(
-            "geo_optimizer.core.audit.asyncio.to_thread",
-            new=AsyncMock(return_value=CdnAiCrawlerResult()),
-        ),
+        # mock mirato: to_thread esegue anche altro lavoro (parsing llms.txt)
+        patch("geo_optimizer.core.audit.audit_cdn_ai_crawler", return_value=CdnAiCrawlerResult()),
     ):
         async_result = asyncio.run(run_full_audit_async("https://example.com"))
 
@@ -301,7 +299,7 @@ def test_v1_real_audit_has_no_google_ai_in_any_output():
             new=AsyncMock(return_value={"https://example.com": (response, None)}),
         ),
         patch("geo_optimizer.core.audit.check_markdown_negotiation_async", new=AsyncMock(return_value=False)),
-        patch("geo_optimizer.core.audit.asyncio.to_thread", new=AsyncMock(return_value=CdnAiCrawlerResult())),
+        patch("geo_optimizer.core.audit.audit_cdn_ai_crawler", return_value=CdnAiCrawlerResult()),
     ):
         async_result = asyncio.run(run_full_audit_async("https://example.com", score_version=1))
     assert async_result.google_ai.checked is False

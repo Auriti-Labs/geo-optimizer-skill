@@ -124,7 +124,7 @@ const GEO_OPTIMIZER_FEATURES = [
   ['CI/CD', 'Ships a GitHub Action that runs a full audit in a pipeline and can fail a build below a minimum score.'],
   ['Answer-engine querying', 'The geo citations command asks real answer engines whether your brand is mentioned and your domain is cited (bring your own API key).'],
   ['Hosted citation monitoring', 'The GeoReady hosted layer tracks citations over time: Studio+ runs 5 automated Perplexity checks a day with manual ChatGPT/Google capture on Agency. One-off checks are free; saving history and monitoring are paid.'],
-  ['Research basis', 'Methods grounded in Princeton KDD 2024 and AutoGEO ICLR 2026.'],
+  ['Research basis', 'Methods grounded in Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint).'],
 ] as const;
 
 // FAQ condivise tra markup visibile e JSON-LD (single source of truth).
@@ -462,8 +462,8 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
         "Research-backed" is easy to assert and harder to demonstrate. The standard to
         hold a tool to is whether it names the work it relies on. GEO Optimizer's 47
         citability methods trace to two papers you can read: the Princeton GEO study
-        (KDD 2024), which tested optimization methods at scale, and AutoGEO (ICLR 2026),
-        which reports a +50.99% improvement over the Princeton baseline. The same body of
+        (KDD 2024), which tested optimization methods at scale, and AutoGEO (arXiv:2510.11438, preprint),
+        which reports an average improvement of about 36% over the Princeton baseline. The same body of
         work documents citation-lift signals such as +41% from adding quotations and +33%
         from adding statistics.
       </p>

@@ -26,7 +26,7 @@ const SCORE_BANDS = [
 ] as const;
 
 // Segnali di citability con il lift verificato dalla ricerca.
-// Fonti: Princeton KDD 2024 (arXiv:2311.09735), AutoGEO ICLR 2026 (arXiv:2510.11438),
+// Fonti: Princeton KDD 2024 (arXiv:2311.09735), AutoGEO (arXiv:2510.11438, preprint),
 // GEO survey 2026 (arXiv:2607.14035), C-SEO Bench (arXiv:2506.11097).
 const CITABILITY_SIGNALS = [
   ['Quotations', '+41%', 'Direct quotes from named sources give an engine a self-contained, attributable passage it can lift verbatim.'],
@@ -59,7 +59,7 @@ const faqs = [
   {
     question: 'Where does the citability layer come from?',
     answer:
-      'It is a set of 47 content checks derived from published research. The headline signals — direct quotations and concrete statistics — carry measured citation lift in the Princeton KDD 2024 study (arXiv:2311.09735), and AutoGEO (ICLR 2026, arXiv:2510.11438) reports a +50.99% improvement over that baseline. The checks turn those findings into auditable rules.',
+      'It is a set of 47 content checks derived from published research. The headline signals — direct quotations and concrete statistics — carry measured citation lift in the Princeton KDD 2024 study (arXiv:2311.09735), and AutoGEO (arXiv:2510.11438, preprint) reports an average improvement of about 36% over that baseline. The checks turn those findings into auditable rules.',
   },
   {
     question: 'Can I change the weights for my own use?',
@@ -281,7 +281,7 @@ const faqs = [
         <a href="https://arxiv.org/abs/2311.09735" rel="noopener" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">Princeton’s KDD 2024 paper</a>
         {' '}(arXiv:2311.09735), the first systematic study of which on-page changes move AI
         citations. <a href="https://arxiv.org/abs/2510.11438" rel="noopener" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">AutoGEO</a>
-        {' '}(ICLR 2026, arXiv:2510.11438) builds on it and reports a +50.99% improvement over the
+        {' '}(arXiv:2510.11438, preprint) builds on it and reports an average improvement of about 36% over the
         Princeton baseline by optimizing content automatically. The full list of sources behind
         every signal is on the <a href="/research/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">research page</a>.
       </p>
@@ -447,7 +447,7 @@ const faqs = [
       },
       {
         "@type": "CreativeWork",
-        "name": "AutoGEO (ICLR 2026)",
+        "name": "AutoGEO (arXiv:2510.11438, preprint)",
         "url": "https://arxiv.org/abs/2510.11438"
       },
       {

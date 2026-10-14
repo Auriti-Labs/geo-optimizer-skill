@@ -325,22 +325,22 @@ class TestSitemapUrlValidation:
             result = discover_sitemap("https://example.com")
             assert result == "https://example.com/sitemap.xml"
 
-    @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_sitemap_dominio_esterno_rifiutato(self, mock_create):
+    @patch("geo_optimizer.core.llms_generator.fetch_url")
+    def test_sitemap_dominio_esterno_rifiutato(self, mock_fetch):
         """URL sitemap di un dominio diverso viene ignorato."""
         from geo_optimizer.core.llms_generator import discover_sitemap
 
-        mock_session = MagicMock()
         robots_resp = Mock(
             text="Sitemap: https://evil.com/malicious-sitemap.xml",
             status_code=200,
         )
-        # Se il sitemap esterno viene rifiutato, deve cadere ai common paths
-        head_resp = Mock(status_code=404)
-        mock_session.get.return_value = robots_resp
-        mock_session.head.return_value = head_resp
-        mock_create.return_value = mock_session
+        # Se il sitemap esterno viene rifiutato, deve cadere ai common paths (tutti 404)
+        mock_fetch.side_effect = lambda url, **_: (
+            robots_resp if url.endswith("/robots.txt") else Mock(status_code=404),
+            None,
+        )
 
         result = discover_sitemap("https://example.com")
-        # Non deve restituire il sitemap maligno
-        assert result != "https://evil.com/malicious-sitemap.xml"
+        # Non deve restituire né scaricare il sitemap maligno
+        assert result is None
+        assert all("evil.com" not in c.args[0] for c in mock_fetch.call_args_list)
