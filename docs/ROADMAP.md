@@ -51,7 +51,7 @@ The **Static** codename groups four MVPs covering retrieval-surface visibility. 
 
 The [GeoReady WordPress plugin](https://github.com/Auriti-Labs/wordpress-geoready) (v0.1.1) generates `llms.txt`, `/.well-known/ai.txt`, and `/ai/summary.json` from published content, with sitemap detection for WordPress core, Yoast SEO, Rank Math, SEOPress, and All in One SEO, and runs a one-click AI readiness audit of the home page. It is not yet listed on WordPress.org.
 
-In progress: moving the audit to the GeoReady platform, with an opt-in setting (off by default) to contribute anonymised results (salted domain hash and scores) to the benchmark dataset. WordPress results are internal-only for now.
+In progress: moving the audit to the GeoReady platform, with an opt-in setting (off by default) to contribute pseudonymised results (salted domain hash and scores) to the benchmark dataset. WordPress results are internal-only for now.
 
 Planned for the plugin: WordPress.org submission, headless WordPress support via the REST API, caching, JSON-LD schema output, and a Gutenberg editor panel. A dashboard widget is planned for later and is not built. Scope and exact target releases are not fixed.
 

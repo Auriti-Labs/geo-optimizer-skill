@@ -120,7 +120,7 @@ export const roadmapPhases: RoadmapPhase[] = [
       },
       {
         id: 'wordpress-plugin',
-        title: 'GeoReady WordPress plugin (v0.1.1)',
+        title: 'GeoReady WordPress plugin',
         description: 'Open-source plugin that generates llms.txt, /.well-known/ai.txt, and /ai/summary.json from published content (sitemap detection for WordPress core, Yoast SEO, Rank Math, SEOPress, and All in One SEO) and runs a one-click AI readiness audit of the home page. Available on GitHub (Auriti-Labs/wordpress-geoready); not yet listed on WordPress.org.',
         status: 'available',
       },
@@ -183,7 +183,7 @@ export const roadmapPhases: RoadmapPhase[] = [
       {
         id: 'wordpress-platform-audit',
         title: 'WordPress plugin: audit on the GeoReady platform',
-        description: 'The plugin audit is moving to the GeoReady platform. A setting, off by default, lets site owners opt in to contributing anonymised results (salted domain hash and scores) to the benchmark dataset. WordPress results are used internally for now.',
+        description: 'The plugin audit is moving to the GeoReady platform. A setting, off by default, lets site owners opt in to contributing pseudonymised results (salted domain hash and scores) to the benchmark dataset. WordPress results are used internally for now.',
         status: 'in-progress',
       },
     ],
