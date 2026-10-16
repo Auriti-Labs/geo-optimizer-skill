@@ -479,6 +479,6 @@ GEO Optimizer is built and maintained by [Juan Camilo Auriti](https://www.linked
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?style=for-the-badge&logo=GitHub-Sponsors&logoColor=white)](https://github.com/sponsors/auriti)
 [![Free hosted audit](https://img.shields.io/badge/Free_hosted_audit-geoready.dev-0D9488?style=for-the-badge)](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=footer)
 
-**MIT License**
+**MIT License** · [Name and logo policy](TRADEMARKS.md)
 
 </div>
