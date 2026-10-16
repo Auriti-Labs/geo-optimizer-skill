@@ -8,7 +8,7 @@
 - **Open-source engine**: GEO Optimizer
 - **Website**: https://geoready.dev
 - **Application**: https://app.geoready.dev
-- **Maintainer**: Auriti Labs (https://github.com/Auriti-Labs)
+- **Maintainer**: Juan Camilo Auriti (https://github.com/Auriti-Labs)
 - **Engine repository**: https://github.com/Auriti-Labs/geo-optimizer-skill
 - **Engine package**: https://pypi.org/project/geo-optimizer-skill/
 - **Engine documentation**: https://geoready.dev/docs/
@@ -17,7 +17,7 @@
 
 ## What GeoReady does
 
-GeoReady scores websites across 9 signal categories to measure how discoverable, readable, and citable they are to AI search engines such as ChatGPT, Perplexity, Claude, and Gemini. The scoring engine is GEO Optimizer, the MIT-licensed open-source toolkit maintained by Auriti Labs. Rubric v2 (nine categories) is the default since engine 4.19.0; the earlier eight-category v1 rubric is still available with `--score-version 1`. Weights: https://geoready.dev/methodology/
+GeoReady scores websites across 9 signal categories to measure how discoverable, readable, and citable they are to AI search engines such as ChatGPT, Perplexity, Claude, and Gemini. The scoring engine is GEO Optimizer, the MIT-licensed open-source toolkit maintained by Juan Camilo Auriti. Rubric v2 (nine categories) is the default since engine 4.19.0; the earlier eight-category v1 rubric is still available with `--score-version 1`. Weights: https://geoready.dev/methodology/
 
 The 9 scoring categories (max 100 points):
 

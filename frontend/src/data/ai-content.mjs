@@ -46,7 +46,7 @@ export const aiFaqs = [
 /** Service/offer descriptor. Mirrors the public pricing tiers. */
 export const aiService = {
   type: 'AI visibility audit, monitoring, and citation tracking',
-  provider: 'Auriti Labs',
+  provider: 'GeoReady (Juan Camilo Auriti)',
   features: [
     'GEO score 0-100 across nine categories (rubric v2)',
     'Free one-shot web audit, no account required',
