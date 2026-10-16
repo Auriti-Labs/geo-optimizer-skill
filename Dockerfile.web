@@ -72,6 +72,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 ENV PORT=8000 \
     GEO_STATIC_DIR=/home/geo/static
 EXPOSE 8000
+# Reports "unhealthy" in `docker ps` when /health stops answering. Informational only:
+# Docker does not restart on it. Works whether uvicorn binds 0.0.0.0 or 127.0.0.1.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+  CMD python -c "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/health' % os.environ.get('PORT', '8000'), timeout=4)"
 
 # Avvia il server FastAPI — usa $PORT da variabile d'ambiente
 # per compatibilità con Render, Railway e altri PaaS che iniettano la porta
