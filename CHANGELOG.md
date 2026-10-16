@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Fixed
+- The keyword stuffing check now counts words in any alphabet. It matched only Latin letters, so on Cyrillic, Greek and other non-Latin pages the word total shrank to the few Latin words and a normal brand term could be flagged as stuffing.
+
 ## [4.19.2] — 2026-10-14
 
 ### Added
