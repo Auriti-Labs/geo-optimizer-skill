@@ -176,7 +176,8 @@ def audit_negative_signals(
         "non",
         "i",
     }
-    words = re.findall(r"\b[a-zA-ZÀ-ÿ]{4,}\b", text.lower())
+    # Any Unicode letter (not just Latin), so non-Latin pages are not measured on a shrunken denominator
+    words = re.findall(r"\b[^\W\d_]{4,}\b", text.lower())
     if len(words) > 50:
         freq = Counter(w for w in words if w not in stop_words)
         total = len(words)

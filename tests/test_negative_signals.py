@@ -70,6 +70,18 @@ class TestNegativeSignals:
         assert result.has_keyword_stuffing is True
         assert result.stuffed_word == "optimization"
 
+    def test_keyword_stuffing_counts_non_latin_words(self):
+        """Cyrillic words count in the denominator: 12 uses among ~650 words is not stuffing."""
+        from itertools import product
+
+        cyrillic = ["".join(c) for c in product("абвгде", repeat=4)][:600]
+        latin = ["product"] * 12 + [f"{a}{b}ing" for a, b in product("abcdefg", "hijklmn")][:43]
+        text = " ".join(cyrillic + latin)
+        html = f"<html><body><main><h1>Test</h1><p>{text}</p></main></body></html>"
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_negative_signals(soup, html, _content(word_count=655), _meta(), SchemaResult())
+        assert result.has_keyword_stuffing is False
+
     def test_author_from_schema(self):
         """Person schema → has_author_signal."""
         html = "<html><body><main><p>Content</p></main></body></html>"
