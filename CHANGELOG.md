@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.19.3] — 2026-10-16
+
 ### Changed
 - The web audit (`/api/audit` and the PDF route) now says on a 504 that the site took more than 60 seconds and that the CLI (`geo audit --url <url>`) has no such cap. Only the `detail` text changes; the status code and the 60 s limit are unchanged.
 
