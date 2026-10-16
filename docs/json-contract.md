@@ -25,7 +25,7 @@ Consumers must handle `schema_version` being absent (pre-v1 responses) by treati
 | `recommendations_by_category` | `object` | Same strings as `recommendations`, grouped by category (additive, see below) |
 | `http_status` | `int \| null` | HTTP status of the audited URL |
 | `page_size` | `int` | Response body size in bytes |
-| `error` | `string \| null` | Error message if audit failed |
+| `error` | `string \| null` | Error message if audit failed. When it is set, the site was not read (unreachable, or an HTTP status other than 200/203 such as a 403 from a WAF): `score` is `0` and `band` is `critical` by default, and neither says anything about the site. Check `error` before using `score` or `band` |
 | `robots` | `object` | `RobotsResult` serialized |
 | `llms` | `object` | `LlmsTxtResult` serialized |
 | `schema` | `object` | `SchemaResult` serialized |
