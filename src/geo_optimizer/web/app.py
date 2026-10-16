@@ -823,6 +823,12 @@ async def audit_post(request: Request, body: AuditRequest):
 _LLMS_MIN_PER_SECTION = 1
 _LLMS_MAX_PER_SECTION = 20
 # Timeout complessivo per discovery + fetch sitemap + generazione (secondi)
+# Shown on a 504: the web audit is capped at 60 s, the CLI is not.
+_AUDIT_TIMEOUT_DETAIL = (
+    "Audit timeout: the site took more than 60 seconds to respond. "
+    "Slow sites can still be audited with the CLI: geo audit --url <url>"
+)
+
 _LLMS_GENERATE_TIMEOUT = 30
 
 
@@ -1203,10 +1209,7 @@ async def audit_pdf(
             await _set_cached(url, data)
             result = audit_result
         except asyncio.TimeoutError as exc:
-            raise HTTPException(
-                status_code=504,
-                detail="Audit timeout: site takes too long to respond.",
-            ) from exc
+            raise HTTPException(status_code=504, detail=_AUDIT_TIMEOUT_DETAIL) from exc
         except Exception as e:
             logger.error("PDF audit error for %s: %s", url, e)
             raise HTTPException(
@@ -1450,10 +1453,7 @@ async def _run_audit(url: str) -> JSONResponse:
         )
     except asyncio.TimeoutError as exc:
         logger.warning("Audit timeout (60s) for URL: %s", url)
-        raise HTTPException(
-            status_code=504,
-            detail="Audit timeout: site takes too long to respond.",
-        ) from exc
+        raise HTTPException(status_code=504, detail=_AUDIT_TIMEOUT_DETAIL) from exc
     except Exception as e:
         logger.error("Audit error for %s: %s", url, e)
         raise HTTPException(

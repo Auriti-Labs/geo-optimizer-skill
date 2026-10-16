@@ -458,6 +458,20 @@ def test_badge_happy_path_restituisce_svg(client):
     assert b"<svg" in response.content
 
 
+def test_api_audit_timeout_points_to_the_cli(client):
+    """POST /api/audit that times out answers 504 and says the CLI has no 60 s cap."""
+    import asyncio
+
+    with (
+        patch("geo_optimizer.utils.validators.validate_public_url", return_value=(True, "")),
+        patch("geo_optimizer.core.audit.run_full_audit", side_effect=asyncio.TimeoutError()),
+    ):
+        response = client.post("/api/audit", json={"url": "https://timeout-example.test"})
+
+    assert response.status_code == 504
+    assert "geo audit --url" in response.json()["detail"]
+
+
 def test_badge_audit_timeout_restituisce_badge_errore(client):
     """GET /badge con audit in timeout restituisce badge SVG di errore."""
     import asyncio
