@@ -10,7 +10,7 @@ One command scores any website 0–100 on whether **ChatGPT, Perplexity, Gemini,
 
 [![PyPI](https://img.shields.io/pypi/v/geo-optimizer-skill?style=flat-square&color=3b82f6)](https://pypi.org/project/geo-optimizer-skill/)
 [![Downloads/month](https://static.pepy.tech/badge/geo-optimizer-skill/month)](https://pepy.tech/project/geo-optimizer-skill)
-[![GitHub Stars](https://img.shields.io/github/stars/auriti-labs/geo-optimizer-skill?style=flat-square&color=facc15&logo=github&label=stars)](https://github.com/auriti-labs/geo-optimizer-skill/stargazers)
+[![GitHub Stars](https://badgen.net/github/stars/auriti-labs/geo-optimizer-skill?icon=github&color=yellow&label=stars)](https://github.com/auriti-labs/geo-optimizer-skill/stargazers)
 [![CI](https://github.com/auriti-labs/geo-optimizer-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/auriti-labs/geo-optimizer-skill/actions)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE)
@@ -475,7 +475,7 @@ pytest tests/ -v   # 2,000+ tests, HTTP mocked
 
 GEO Optimizer is built and maintained by [Juan Camilo Auriti](https://www.linkedin.com/in/juancamiloauriti/) ([@JuanAuriti](https://x.com/JuanAuriti)) under [Auriti Labs](https://github.com/auriti-labs). If it saved you time, a ⭐ helps other people find it, and [GitHub Sponsors](https://github.com/sponsors/auriti) funds new research-backed checks.
 
-[![Star on GitHub](https://img.shields.io/github/stars/auriti-labs/geo-optimizer-skill?style=for-the-badge&color=facc15&logo=github&label=Star)](https://github.com/auriti-labs/geo-optimizer-skill/stargazers)
+[![Star on GitHub](https://img.shields.io/badge/Star_on_GitHub-%E2%98%85-facc15?style=for-the-badge&logo=github&logoColor=black)](https://github.com/auriti-labs/geo-optimizer-skill/stargazers)
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?style=for-the-badge&logo=GitHub-Sponsors&logoColor=white)](https://github.com/sponsors/auriti)
 [![Free hosted audit](https://img.shields.io/badge/Free_hosted_audit-geoready.dev-0D9488?style=for-the-badge)](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=footer)
 
