@@ -1,6 +1,7 @@
 ---
 import Shell from '../components/Shell.astro';
 import PricingObjectionSurvey from '../components/PricingObjectionSurvey';
+import FoundingSeatsStatus from '../components/FoundingSeatsStatus';
 
 const selfServePlans = [
   {
@@ -806,10 +807,10 @@ const heroCadenceRows = [
           </p>
         </div>
         <div class="bg-paper p-5">
-          <p class="mb-2 text-sm font-semibold text-ink">Research-backed scoring</p>
+          <p class="mb-2 text-sm font-semibold text-ink">Published sources</p>
           <p class="text-sm leading-relaxed text-ink-soft">
-            Scoring weights are grounded in <a href="/research/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint)</a> research
-            on what influences AI search retrieval.
+            9 of the 47 citability checks are taken from the methods tested in the <a href="/research/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">Princeton KDD 2024 GEO paper</a>.
+            The weights are a considered starting point, published so you can disagree with a specific number.
           </p>
         </div>
         <div class="bg-paper p-5">
@@ -977,7 +978,7 @@ const heroCadenceRows = [
         </a>
       </div>
       <p class="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-pass-wash/80">
-        Founding price: open
+        <FoundingSeatsStatus client:load />
       </p>
     </div>
   </section>
