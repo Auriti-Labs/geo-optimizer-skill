@@ -49,7 +49,7 @@ const COMPARISON_AXES = [
 const GEO_OPTIMIZER_FEATURES = [
   ['License', 'MIT, open-source. Scoring weights are public and readable in the repository.'],
   ['Distribution', 'Python package on PyPI (geo-optimizer-skill), plus a CLI, a Python library, and an MCP server.'],
-  ['Audit', 'Scores a site 0–100 across nine categories using 47 research-backed citability methods.'],
+  ['Audit', 'Scores a site 0–100 across nine categories using 47 citability checks, 9 of them taken from the KDD 2024 GEO paper.'],
   ['Answer-engine querying', 'The geo citations command asks real answer engines (e.g. Perplexity) whether your brand is mentioned and your domain is cited — bring your own API key.'],
   ['CI/CD', 'A GitHub Action runs a full audit in a pipeline and can fail a build below a minimum score.'],
   ['Interfaces', '15 CLI commands, a Python API, an MCP server, and an Astro integration.'],
@@ -65,7 +65,7 @@ const faqs = [
   },
   {
     q: 'Is there an open-source alternative to Otterly AI?',
-    a: 'Yes. GEO Optimizer is an open-source, self-hostable alternative for auditing AI search visibility and checking whether answer engines cite your site. It is MIT-licensed and free to run, with a published, research-backed scoring methodology (47 methods across nine categories).',
+    a: 'Yes. GEO Optimizer is an open-source, self-hostable alternative for auditing AI search visibility and checking whether answer engines cite your site. It is MIT-licensed and free to run, with a published scoring methodology (nine categories, 47 citability checks).',
   },
   {
     q: 'What is the difference between GEO Optimizer and proprietary GEO SaaS tools?',

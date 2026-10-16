@@ -47,7 +47,7 @@ export const manifestoSections: ManifestoSection[] = [
       },
       {
         title: 'Scientific foundation over marketing claims',
-        description: 'Every signal derives from published peer-reviewed research, not marketing intuition.',
+        description: 'Signals are drawn from published research and documented analysis; the weights are a starting point you can read and challenge.',
       },
       {
         title: 'Universality over platform bias',

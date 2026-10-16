@@ -11,7 +11,7 @@ head:
 
 # The 47 GEO Methods
 
-Research-backed content optimization techniques for AI citation visibility.
+Content optimization techniques from published research on AI citation visibility.
 
 > Methods 1-9 from Princeton KDD 2024. Methods 10-11 from AutoGEO (arXiv:2510.11438, preprint) & Stanford 2025. Methods 12-42 from SE Ranking, OtterlyAI, Growth Marshal, and LLM-perspective analysis. Methods 43-47: RAG Readiness checks (v4.1.0).
 
