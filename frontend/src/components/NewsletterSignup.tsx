@@ -48,7 +48,7 @@ export default function NewsletterSignup({
         <svg aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-pass-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12" />
         </svg>
-        <span>You're on the list. The next monthly issue will land in your inbox.</span>
+        <span>Check your inbox and confirm your subscription. Nothing is sent until you click the link.</span>
       </div>
     );
   }
