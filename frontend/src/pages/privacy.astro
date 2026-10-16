@@ -1,7 +1,7 @@
 ---
 import Shell from '../components/Shell.astro';
 
-const lastUpdated = 'August 5, 2026';
+const lastUpdated = 'October 16, 2026';
 ---
 
 <Shell
@@ -77,7 +77,9 @@ const lastUpdated = 'August 5, 2026';
                 containing a <strong class="font-semibold text-ink">keyed hash of the domain</strong>
                 (not reversible to the domain by a third party), the top-level domain, the score
                 and the date. Published figures are aggregate only: no individual domain or score
-                is identifiable in them.
+                is identifiable in them. While your account exists, the audited domain is also
+                kept in plaintext in our internal records, for internal analysis only; it is
+                removed from those records when you delete your account.
               </p>
               <p class="mt-2 text-xs text-ink-mute">
                 Legal basis: legitimate interest in measuring and publishing aggregate research
@@ -259,6 +261,13 @@ const lastUpdated = 'August 5, 2026';
                   </td>
                   <td class="px-3 py-2">Serves the directory badge image in the footer</td>
                   <td class="px-3 py-2">Outside the EU</td>
+                </tr>
+                <tr class="align-top">
+                  <td class="px-3 py-2">
+                    <a href="https://www.perplexity.ai/hub/legal/privacy-policy" target="_blank" rel="noopener noreferrer" class="text-pass-deep underline decoration-rail underline-offset-2 transition-colors hover:decoration-pass-deep">Perplexity AI</a>
+                  </td>
+                  <td class="px-3 py-2">Answers for the citation checks and AI answer snapshots of paid plans: it receives the brand, domain, topic and query text you set, and never your email or account identifiers</td>
+                  <td class="px-3 py-2">United States</td>
                 </tr>
                 <tr class="align-top">
                   <td class="px-3 py-2">Hosting provider</td>
