@@ -10,6 +10,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Changed
 - The web audit (`/api/audit` and the PDF route) now says on a 504 that the site took more than 60 seconds and that the CLI (`geo audit --url <url>`) has no such cap. Only the `detail` text changes; the status code and the 60 s limit are unchanged.
 
+### Documentation
+- `docs/json-contract.md`: state that when `error` is set, `score` and `band` are defaults and do not describe the site.
+
 ### Fixed
 - The keyword stuffing check now counts words in any alphabet. It matched only Latin letters, so on Cyrillic, Greek and other non-Latin pages the word total shrank to the few Latin words and a normal brand term could be flagged as stuffing.
 
