@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- `geo audit --url <url> --max-pages N`: find the site's sitemap and audit up to N of its pages, reporting the average score (the existing `--sitemap` batch path, without needing the sitemap URL). Optional: the default single-page score does not change. Text or JSON output only; exits 1 when no sitemap is found.
+
 ### Changed
 - The web audit (`/api/audit` and the PDF route) now says on a 504 that the site took more than 60 seconds and that the CLI (`geo audit --url <url>`) has no such cap. Only the `detail` text changes; the status code and the 60 s limit are unchanged.
 

@@ -23,6 +23,7 @@ from geo_optimizer.cli.formatters import (
 from geo_optimizer.core.audit import run_full_audit
 from geo_optimizer.core.batch_audit import run_batch_audit
 from geo_optimizer.core.history import HistoryStore, summarize_history
+from geo_optimizer.core.llms_generator import discover_sitemap
 from geo_optimizer.models.config import (
     DEFAULT_HISTORY_RETENTION_DAYS,
     DEFAULT_SCORE_VERSION,
@@ -32,7 +33,7 @@ from geo_optimizer.models.config import (
 from geo_optimizer.utils.validators import normalize_url_scheme, validate_public_url
 
 
-def _default_format(sitemap: str | None, output_file: str | None) -> str:
+def _default_format(sitemap: str | int | None, output_file: str | None) -> str:
     """Dashboard rich in un terminale interattivo, testo per pipe, CI, file e batch."""
     if sitemap or output_file or os.getenv("NO_COLOR"):
         return "text"
@@ -96,6 +97,13 @@ def _history_footer(history_result, history_entry) -> str:
 @click.option("--config", "config_file", default=None, help="Path to .geo-optimizer.yml config file")
 @click.option("--no-plugins", is_flag=True, help="Disable loading of third-party check plugins")
 @click.option("--max-urls", default=50, type=int, show_default=True, help="Maximum number of sitemap URLs to audit")
+@click.option(
+    "--max-pages",
+    default=None,
+    type=click.IntRange(2, 500),
+    help="With --url: find the site's sitemap and audit up to N of its pages, reporting the average "
+    "(same as --sitemap, without needing the sitemap URL). Text or JSON output only.",
+)
 @click.option("--concurrency", default=5, type=int, show_default=True, help="Concurrent page audits in sitemap mode")
 @click.option(
     "--score-version",
@@ -137,6 +145,7 @@ def audit(
     config_file,
     no_plugins,
     max_urls,
+    max_pages,
     concurrency,
     score_version,
     save_history,
@@ -164,7 +173,7 @@ def audit(
     if output_file is None:
         output_file = project_config.audit.output
     if output_format is None:
-        output_format = project_config.audit.format or _default_format(sitemap, output_file)
+        output_format = project_config.audit.format or _default_format(sitemap or max_pages, output_file)
     if not cache:
         cache = project_config.audit.cache
 
@@ -186,6 +195,15 @@ def audit(
         raise click.UsageError("Missing '--url' or '--sitemap' option. Specify via CLI or in .geo-optimizer.yml")
     if url and sitemap:
         raise click.UsageError("Use either '--url' or '--sitemap', not both")
+    if max_pages and not url:
+        raise click.UsageError("'--max-pages' needs '--url' (with '--sitemap' use '--max-urls')")
+    if max_pages:
+        # Reuse the batch path: find the sitemap from the site, then audit N of its pages.
+        sitemap = discover_sitemap(normalize_url_scheme(url))
+        if not sitemap:
+            click.echo(f"\n❌ No sitemap found for {url}; '--max-pages' needs one.", err=True)
+            sys.exit(1)
+        url, max_urls = None, max_pages
     if sitemap and (save_history or regression):
         raise click.UsageError("'--save-history' and '--regression' are supported only with '--url'")
 

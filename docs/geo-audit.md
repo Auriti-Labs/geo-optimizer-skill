@@ -83,6 +83,7 @@ geo audit --url https://yoursite.com --score-version 1
 | `--sitemap` | Yes* | XML sitemap URL to audit multiple pages in one run |
 | `--format` | No | Output format: `text` (default), `json`, `rich`, `html`, `sarif`, `junit`, `github` |
 | `--max-urls` | No | Maximum number of sitemap URLs to audit in batch mode (default: `50`) |
+| `--max-pages` | No | With `--url`: find the site's sitemap and audit up to N of its pages (2-500), reporting the average. Same as `--sitemap` without needing the sitemap URL; text or JSON output only. Fails with exit 1 if no sitemap is found. A home-only score can differ from the page average by several points (observed 2026-10-16 on 14 sites: mean gap 8.9, median 5.9) |
 | `--concurrency` | No | Concurrent page audits in batch mode (default: `5`) |
 | `--save-history` | No | Save the URL audit in local history (`~/.geo-optimizer/tracking.db`) |
 | `--regression` | No | Exit with code `1` if the score dropped vs the previous saved snapshot |
