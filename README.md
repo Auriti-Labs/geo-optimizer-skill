@@ -412,6 +412,9 @@ AEO is the practice of structuring a website so AI answer engines — ChatGPT, P
 **How do I check if ChatGPT or Perplexity cites my website?**
 Run `geo citations --brand "Your Brand" --domain yoursite.com` with a Perplexity or OpenAI API key. It asks the engine customer-style questions and reports whether your brand is mentioned, whether your domain is cited as a source, and which competitors are cited instead. Perplexity returns real source URLs; OpenAI and Anthropic reveal what the model knows about your brand. No account needed for the [free web version](https://geoready.dev/tools/ai-citation-checker/?utm_source=github&utm_medium=readme&utm_campaign=faq).
 
+**How do I improve my site's GEO score?**
+Run `geo audit --url https://yoursite.com` and read the priority list, then `geo fix --url https://yoursite.com` to preview the robots.txt rules, `llms.txt`, JSON-LD schema and meta tags it would write (`--apply` writes them), and audit again. Start where the audit shows the most missing points: among the audited sites, the largest readiness gap is AI discovery files, and the median score is 59/100 (17 October 2026). To see your own list without installing anything, [run the free web audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=faq-start), or read the [free 160-page GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/?utm_source=github&utm_medium=readme&utm_campaign=faq-start).
+
 **Does GEO Optimizer guarantee that AI engines will cite my site?**
 No. It measures the signals that make a site reachable, parseable, and quotable, and it tells you which ones are missing. Whether an engine cites you also depends on the question, the competition, and the engine itself — and answers change from run to run, which is why `geo citations` has `--runs`.
 
