@@ -7,6 +7,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.19.5] — 2026-10-18
+
+### Fixed
+- Web API: the web audit now stops at 55 s instead of 60 s. nginx cuts the proxy at 60 s, so the engine's own graceful answer (the JSON 504 that points to the CLI, or the "Error" badge for `/badge`) always lost the race and users got nginx's HTML 504 or a broken badge image. The 504 text no longer says "more than 60 seconds".
+
 ## [4.19.4] — 2026-10-17
 
 ### Fixed
