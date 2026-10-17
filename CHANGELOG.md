@@ -10,6 +10,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Added
 - `geo audit --url <url> --max-pages N`: find the site's sitemap and audit up to N of its pages, reporting the average score (the existing `--sitemap` batch path, without needing the sitemap URL). Optional: the default single-page score does not change. Text or JSON output only; exits 1 when no sitemap is found.
 
+### Security
+- Website dependencies: `npm audit fix` on `frontend/package-lock.json` (lockfile only). The production audit goes from 40 findings to 29 and the 38 open Dependabot alerts shrink accordingly. The rest sit behind a major `@astrojs/starlight` upgrade. All are build-time tools of a static site, not code served to visitors.
+
 ### Documentation
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.
 - `TRADEMARKS.md`: a draft name and logo policy for forks and derived products (the MIT licence covers the code, not the names). Linked from the README.
