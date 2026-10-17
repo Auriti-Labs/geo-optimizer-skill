@@ -53,7 +53,7 @@ export default defineConfig({
     }),
     starlight({
       title: 'GeoReady Docs',
-      favicon: 'src/assets/geoready-logo.svg',
+      favicon: '/favicon.svg',
       logo: {
         src: './src/assets/geoready-logo.svg',
         replacesTitle: false,
