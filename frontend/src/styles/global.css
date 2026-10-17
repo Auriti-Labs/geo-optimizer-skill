@@ -58,12 +58,13 @@
   --color-ink-soft: #3D453F;
   --color-ink-mute: #5C665F;
   --color-rail: #D9DED6;
-  --color-pass: #0B8076;
+  --color-pass: #0A7970;
   --color-pass-deep: #0F766E;
   --color-pass-wash: #E4F3F0;
-  --color-fail: #C93A2E;
+  --color-pass-light: #0D978C;  /* pass for small text on the dark well: 4.6:1, the brand pass is 3.9:1 there */
+  --color-fail: #C5392D;
   --color-fail-wash: #FAEDEA;
-  --color-warn: #9C6A06;
+  --color-warn: #926306;
   --color-warn-wash: #F7F0DF;
   --color-well: #10140F;
   --color-well-ink: #DCE5DC;

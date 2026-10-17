@@ -16,6 +16,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Fixed (web timeouts)
 - The web audit now stops at 55 s instead of 60 s. nginx cuts the proxy at 60 s, so the engine's own graceful answer (the JSON 504 that points to the CLI, or the "Error" badge for `/badge`) always lost the race and users got nginx's HTML 504 or a broken badge image. The 504 text no longer says "more than 60 seconds".
 
+### Fixed (site contrast)
+- Colour tokens nudged to reach 4.5:1 for small text, as approved: `pass` `#0B8076` to `#0A7970`, `warn` `#9C6A06` to `#926306`, `fail` `#C93A2E` to `#C5392D`. A new `pass-light` (`#0D978C`) is used for the `exit 0` terminal labels on the dark well (3.9:1 before, 4.6:1 now), and the light text on the teal call-to-action panels is solid `pass-wash` instead of 70-90% opacity (3.2-4.2:1 before, 4.8:1 now). A colour scan of all 140 built pages (animations off) drops from 229 to 191 findings; the rest are the docs theme (fixed separately), the dimmed empty categories of the demo report and the `queued` grey on the roadmap.
+
 ### Documentation
 - `research/calibration-2026-10/`: the pre-registered analysis plan, an anonymised results table and the analysis output of the October 2026 calibration study (does the GEO score predict whether Perplexity cites a page; no effect detected).
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.
