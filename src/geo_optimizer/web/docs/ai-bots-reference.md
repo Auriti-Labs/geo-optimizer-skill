@@ -273,5 +273,5 @@ For managed hosting without log access, check **Google Search Console → Settin
 
 - OpenAI bot docs: [openai.com/gptbot](https://openai.com/gptbot)
 - Anthropic bot docs: [anthropic.com/legal/aup](https://www.anthropic.com/legal/aup)
-- Perplexity bot docs: [docs.perplexity.ai/guides/perplexity-bot](https://docs.perplexity.ai/guides/perplexity-bot)
+- Perplexity bot docs: [docs.perplexity.ai/docs/resources/perplexity-crawlers](https://docs.perplexity.ai/docs/resources/perplexity-crawlers)
 - Google crawlers: [developers.google.com/search/docs/crawling-indexing/google-common-crawlers](https://developers.google.com/search/docs/crawling-indexing/google-common-crawlers)

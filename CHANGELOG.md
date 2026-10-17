@@ -10,6 +10,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Added
 - `geo audit --url <url> --max-pages N`: find the site's sitemap and audit up to N of its pages, reporting the average score (the existing `--sitemap` batch path, without needing the sitemap URL). Optional: the default single-page score does not change. Text or JSON output only; exits 1 when no sitemap is found.
 
+### Fixed (site)
+- The automatic `sitemap-index.xml` no longer lists the pages that carry `noindex` (the mock report, the report shell and the visual lab). `robots.txt` points to the hand-built `/sitemap.xml`, which was already clean.
+- Docs pages had two `<h1>` (the front matter title and a second heading repeated at the top of the body). The body heading is gone from 21 pages and the docs home hero uses a level-2 heading, so every docs page has exactly one `<h1>`.
+- `docs/ai-bots-reference`: the Perplexity crawler link returned 404; it now points to `docs.perplexity.ai/docs/resources/perplexity-crawlers`.
+
 ### Documentation
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.
 - `TRADEMARKS.md`: a draft name and logo policy for forks and derived products (the MIT licence covers the code, not the names). Linked from the README.
