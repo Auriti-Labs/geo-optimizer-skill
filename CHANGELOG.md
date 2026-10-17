@@ -10,6 +10,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Added
 - `geo audit --url <url> --max-pages N`: find the site's sitemap and audit up to N of its pages, reporting the average score (the existing `--sitemap` batch path, without needing the sitemap URL). Optional: the default single-page score does not change. Text or JSON output only; exits 1 when no sitemap is found.
 
+### Fixed
+- Keyword-stuffing checks (`audit_negative` and the `keyword_stuffing` citability method) no longer flag a page's own brand name or the function words of its language (#607). Function-word lists now cover English, Italian, German, French, Spanish, Portuguese and Dutch, picked from `<html lang>` (every list when the attribute is missing); a declared language without a list skips the check. The brand comes from `og:site_name`, JSON-LD `Organization`/`WebSite`/`Brand` names, and a short `<title>` or `<h1>` prefix or suffix. The citability method also needs at least 5 uses of a word, and its word pattern now keeps `ü`, `ß` and other non-ASCII letters whole. Thresholds and weights are unchanged.
+
 ### Documentation
 - `research/calibration-2026-10/`: the pre-registered analysis plan, an anonymised results table and the analysis output of the October 2026 calibration study (does the GEO score predict whether Perplexity cites a page; no effect detected).
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.

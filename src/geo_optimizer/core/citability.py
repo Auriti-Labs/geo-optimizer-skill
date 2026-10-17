@@ -21,6 +21,7 @@ from geo_optimizer.models.config import (
     FRESHNESS_FRESH_DAYS,
     FRESHNESS_VERY_FRESH_DAYS,
     FRONT_LOADING_DENSITY_THRESHOLD,
+    KEYWORD_STUFFING_MIN_COUNT,
     KEYWORD_STUFFING_THRESHOLD,
     TTR_THRESHOLD,
     TTR_WINDOW_SIZE,
@@ -28,6 +29,7 @@ from geo_optimizer.models.config import (
 from geo_optimizer.models.results import CitabilityResult, MethodScore
 from geo_optimizer.utils.jsonld import first_object, iter_jsonld_objects, string_list
 from geo_optimizer.utils.jsonld import schema_types as jsonld_types
+from geo_optimizer.utils.stopwords import ALL_STOP_WORDS, brand_words, page_language, stop_words_for
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -105,59 +107,6 @@ _TECH_PATTERNS = [
     r"`[^`]+`",
 ]
 _TECH_RE = re.compile("|".join(_TECH_PATTERNS))
-
-# Stop words for TTR (basic English)
-_STOP_WORDS = {
-    "the",
-    "a",
-    "an",
-    "and",
-    "or",
-    "but",
-    "in",
-    "on",
-    "at",
-    "to",
-    "for",
-    "of",
-    "with",
-    "by",
-    "from",
-    "is",
-    "are",
-    "was",
-    "were",
-    "be",
-    "been",
-    "have",
-    "has",
-    "had",
-    "do",
-    "does",
-    "did",
-    "will",
-    "would",
-    "could",
-    "should",
-    "may",
-    "might",
-    "shall",
-    "this",
-    "that",
-    "these",
-    "those",
-    "it",
-    "its",
-    "not",
-    "no",
-    "can",
-    "so",
-    "if",
-    "then",
-    "than",
-    "also",
-}
-
 
 # ─── Helper function ─────────────────────────────────────────────────────────
 
@@ -540,7 +489,8 @@ def detect_easy_to_understand(soup) -> MethodScore:
 def detect_unique_words(soup, clean_text: str | None = None) -> MethodScore:
     """Calculate Type-Token Ratio to estimate vocabulary richness."""
     body_text = (clean_text or _get_clean_text(soup)).lower()
-    words = [w for w in re.findall(r"\b[a-zA-Zà-ú]{4,}\b", body_text) if w not in _STOP_WORDS]
+    stop_words = stop_words_for(page_language(soup)) or ALL_STOP_WORDS
+    words = [w for w in re.findall(r"\b[^\W\d_]{4,}\b", body_text) if w not in stop_words]
 
     if len(words) < 50:
         return MethodScore(name="unique_words", label="Unique Words", max_score=3, impact="+7%")
@@ -578,9 +528,11 @@ def detect_unique_words(soup, clean_text: str | None = None) -> MethodScore:
 def detect_keyword_stuffing(soup, clean_text: str | None = None) -> MethodScore:
     """Detect keyword stuffing that penalizes AI visibility."""
     body_text = (clean_text or _get_clean_text(soup)).lower()
-    words = re.findall(r"\b[a-zA-Zà-ú]{3,}\b", body_text)
+    words = re.findall(r"\b[^\W\d_]{3,}\b", body_text)
+    # Own brand and function words are not keywords (#607); an unlisted declared language skips the check
+    stop_words = stop_words_for(page_language(soup))
 
-    if len(words) < 50:
+    if stop_words is None or len(words) < 50:
         # Text too short for meaningful analysis
         return MethodScore(
             name="keyword_stuffing", label="No Keyword Stuffing", score=6, max_score=6, impact="-9%", detected=False
@@ -591,7 +543,12 @@ def detect_keyword_stuffing(soup, clean_text: str | None = None) -> MethodScore:
     threshold = KEYWORD_STUFFING_THRESHOLD
 
     # Words with abnormal frequency (above threshold)
-    suspicious = {w: c for w, c in word_freq.most_common(20) if c / total > threshold and w not in _STOP_WORDS}
+    stop_words = stop_words | brand_words(soup)
+    suspicious = {
+        w: c
+        for w, c in word_freq.most_common(20)
+        if c / total > threshold and c >= KEYWORD_STUFFING_MIN_COUNT and w not in stop_words
+    }
 
     stuffing_count = len(suspicious)
 
@@ -610,7 +567,7 @@ def detect_keyword_stuffing(soup, clean_text: str | None = None) -> MethodScore:
         front_suspicious = {
             w: c
             for w, c in front_freq.most_common(10)
-            if c / front_total > FRONT_LOADING_DENSITY_THRESHOLD and w not in _STOP_WORDS
+            if c / front_total > FRONT_LOADING_DENSITY_THRESHOLD and w not in stop_words
         }
         if len(front_suspicious) >= 2:
             front_loading_warning = True
