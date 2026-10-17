@@ -4,8 +4,6 @@ description: "Install GEO Optimizer, the open-source Python CLI that audits and 
 order: 1
 ---
 
-# Getting Started
-
 Get the toolkit installed and run your first GEO audit in under 5 minutes.
 
 ---

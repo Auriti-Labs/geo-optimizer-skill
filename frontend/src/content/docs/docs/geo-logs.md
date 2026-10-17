@@ -4,8 +4,6 @@ description: "Analyze server access logs for AI crawler traffic with geo logs. D
 order: 14
 ---
 
-# geo logs
-
 Analyze server access logs for AI crawler activity.
 
 ## Usage

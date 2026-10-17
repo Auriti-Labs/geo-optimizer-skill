@@ -3,7 +3,6 @@ title: "Web API JSON Contract (schema_version 1)"
 description: "Stable JSON contract for the POST/GET /api/audit endpoints. Schema fields, versioning via schema_version, and example response for integration."
 order: 16
 ---
-# JSON Contract v1 — GEO Optimizer Web API
 
 ## Overview
 

@@ -4,8 +4,6 @@ description: "Configure API keys and regional endpoints for geo citations. Suppo
 order: 17
 ---
 
-# LLM Providers for `geo citations`
-
 `geo citations` asks a real AI answer engine the questions your customers ask, then checks
 whether your brand is mentioned and your domain is cited as a source. It needs an API key for
 whichever provider you want to query. This page covers provider-specific setup that doesn't fit

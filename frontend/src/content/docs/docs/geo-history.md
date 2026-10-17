@@ -4,8 +4,6 @@ description: "View the saved GEO score trend for any URL from your local trackin
 order: 11
 ---
 
-# GEO History
-
 `geo history` shows the saved GEO score trend for a URL from the local tracking database.
 
 ---

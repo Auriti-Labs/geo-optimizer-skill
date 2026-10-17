@@ -4,8 +4,6 @@ description: "Detect cross-page terminology inconsistencies across a sitemap wit
 order: 15
 ---
 
-# geo coherence
-
 Cross-page semantic coherence analysis. Detects terminology inconsistencies across site pages.
 
 ## Usage
