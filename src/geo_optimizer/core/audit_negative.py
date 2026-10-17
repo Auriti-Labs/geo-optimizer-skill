@@ -13,11 +13,13 @@ from collections import Counter
 from geo_optimizer.models.config import (
     BOILERPLATE_RATIO_THRESHOLD,
     CONTENT_MIN_WORDS,
+    KEYWORD_STUFFING_MIN_COUNT,
     KEYWORD_STUFFING_THRESHOLD,
     MIXED_SIGNALS_WORD_THRESHOLD,
 )
 from geo_optimizer.models.results import ContentResult, MetaResult, NegativeSignalsResult, SchemaResult
 from geo_optimizer.utils.jsonld import schema_types as jsonld_types
+from geo_optimizer.utils.stopwords import brand_words, page_language, stop_words_for
 
 
 def audit_negative_signals(
@@ -119,72 +121,19 @@ def audit_negative_signals(
     # Runs on `text` (from text_soup), so SSR'd CSS-in-JS <style> blocks and
     # inline scripts cannot inflate token frequency (#537). Note: the word
     # regex below is Latin-only, so CJK pages get no stuffing detection yet.
-    # Calculate word frequency (excluding stop words and short words)
-    stop_words = {
-        "the",
-        "a",
-        "an",
-        "is",
-        "are",
-        "was",
-        "were",
-        "be",
-        "been",
-        "and",
-        "or",
-        "but",
-        "in",
-        "on",
-        "at",
-        "to",
-        "for",
-        "of",
-        "with",
-        "it",
-        "this",
-        "that",
-        "not",
-        "no",
-        "as",
-        "by",
-        "from",
-        "il",
-        "la",
-        "le",
-        "lo",
-        "gli",
-        "un",
-        "una",
-        "di",
-        "da",
-        "del",
-        "che",
-        "per",
-        "con",
-        "su",
-        "al",
-        "dei",
-        "nel",
-        "è",
-        "sono",
-        "ha",
-        "hanno",
-        "più",
-        "anche",
-        "come",
-        "se",
-        "non",
-        "i",
-    }
+    # Function words of the page language and the page's own brand are not keywords (#607).
+    # A declared language without a list skips the check rather than counting its function words.
+    stop_words = stop_words_for(page_language(soup))
     # Any Unicode letter (not just Latin), so non-Latin pages are not measured on a shrunken denominator
     words = re.findall(r"\b[^\W\d_]{4,}\b", text.lower())
-    if len(words) > 50:
-        freq = Counter(w for w in words if w not in stop_words)
+    if stop_words is not None and len(words) > 50:
+        excluded = stop_words | brand_words(soup)
+        freq = Counter(w for w in words if w not in excluded)
         total = len(words)
         for word, count in freq.most_common(3):
             density = count / total
             # Single-word density above threshold (SEMrush 2025: > 2.5%) = stuffing
-            if density > KEYWORD_STUFFING_THRESHOLD and count >= 5:
+            if density > KEYWORD_STUFFING_THRESHOLD and count >= KEYWORD_STUFFING_MIN_COUNT:
                 result.has_keyword_stuffing = True
                 result.stuffed_word = word
                 result.stuffed_density = round(density * 100, 1)
