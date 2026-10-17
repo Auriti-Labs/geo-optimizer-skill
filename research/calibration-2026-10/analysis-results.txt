@@ -1,0 +1,30 @@
+pages 341 | base rate: A domain 0.422, B domain 0.446, A page 0.299, B page 0.320, either 0.475
+score: mean 65.5 sd 11.1 | A/B agreement 0.918
+cited share by stratum (A): {1: 0.47, 2: 0.59, 3: 0.52, 4: 0.57, 5: 0.37, 6: 0.49, 7: 0.36, 8: 0.2, 9: 0.48, 10: 0.19}
+
+== PRIMARY: domain cited (template A) ~ score/10 + log rank + log words
+primary: OR per 10 unit(s) = 0.963 (95% CI 0.783 to 1.184), p = 0.7172, n = 341
+bootstrap (n=2000 fits): OR per 10 points 0.959, 95% interval 0.759 to 1.205
+partial Spearman (score, domain cited A | log rank): 0.027, p = 0.6150
+
+== SECONDARY outcomes
+domain cited B: OR per 10 unit(s) = 0.966 (95% CI 0.785 to 1.189), p = 0.7439, n = 341
+exact page A: OR per 10 unit(s) = 1.057 (95% CI 0.836 to 1.335), p = 0.6434, n = 341
+exact page B: OR per 10 unit(s) = 1.048 (95% CI 0.831 to 1.322), p = 0.6933, n = 341
+domain cited A or B: OR per 10 unit(s) = 0.972 (95% CI 0.792 to 1.193), p = 0.7832, n = 341
+
+== SECONDARY: nine categories (one at a time, domain cited A, same controls), Holm correction
+cat_ai_discovery: skipped (no variation)
+cat_robots         OR per 1 SD = 0.866 (95% CI 0.694 to 1.082), p = 0.2055, Holm p = 1.0000
+cat_llms           OR per 1 SD = 1.084 (95% CI 0.867 to 1.353), p = 0.4798, Holm p = 1.0000
+cat_schema         OR per 1 SD = 1.008 (95% CI 0.804 to 1.263), p = 0.9463, Holm p = 1.0000
+cat_meta           OR per 1 SD = 1.049 (95% CI 0.837 to 1.314), p = 0.6805, Holm p = 1.0000
+cat_content        OR per 1 SD = 0.972 (95% CI 0.762 to 1.240), p = 0.8212, Holm p = 1.0000
+cat_signals        OR per 1 SD = 0.902 (95% CI 0.718 to 1.133), p = 0.3739, Holm p = 1.0000
+cat_brand_entity   OR per 1 SD = 1.150 (95% CI 0.919 to 1.439), p = 0.2227, Holm p = 1.0000
+cat_google_ai      OR per 1 SD = 0.835 (95% CI 0.663 to 1.050), p = 0.1220, Holm p = 0.9764
+
+== SENSITIVITY: excluding pages on sites that block at least one AI bot in robots.txt
+primary, not blocked: OR per 10 unit(s) = 1.041 (95% CI 0.830 to 1.305), p = 0.7288, n = 253
+
+== DESCRIPTIVE: mean score of cited vs not cited (A): 65.5 (n=144) vs 65.5 (n=197)
