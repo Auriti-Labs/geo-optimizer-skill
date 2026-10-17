@@ -4,8 +4,6 @@ description: "Generate an /llms.txt file automatically from your XML sitemap. Fu
 order: 4
 ---
 
-# Generating llms.txt
-
 `geo llms` auto-generates an `/llms.txt` file from your sitemap so AI crawlers can understand your site's structure.
 
 ---

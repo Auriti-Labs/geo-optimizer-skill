@@ -4,8 +4,6 @@ description: "Add AI-visibility audits to your CI/CD pipeline. GitHub Actions wo
 order: 21
 ---
 
-# CI/CD Integration
-
 Run GEO audits automatically in your CI/CD pipeline. Catch regressions before they hit production.
 
 ## Quick Start (GitHub Actions)

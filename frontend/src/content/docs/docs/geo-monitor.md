@@ -4,8 +4,6 @@ description: "The geo monitor command measures a domain's AI-discoverability rea
 order: 12
 ---
 
-# GEO Monitor
-
 `geo monitor` is the passive AI-visibility checker for a domain.
 
 It does **not** query LLM APIs and does **not** verify direct brand mentions in model answers. Instead, it measures whether the domain is structurally ready to be discovered, fetched, and cited by AI systems.

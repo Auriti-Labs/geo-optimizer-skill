@@ -3,7 +3,6 @@ title: "GEO Audit Command: Score Your Site 0–100"
 description: "Run the geo audit CLI to score any website 0-100 across 9 GEO categories and get a fix list for ChatGPT, Perplexity, Claude and Gemini citation readiness."
 order: 2
 ---
-# GEO Audit
 
 `geo audit` scores your website from 0 to 100 across **9 GEO categories** and tells you exactly what to fix.
 

@@ -4,8 +4,6 @@ description: "Platform-specific AI context files for ChatGPT, Claude, Gemini and
 order: 19
 ---
 
-# AI Context Files — Platform Guide
-
 GEO Optimizer provides platform-specific context files in the `ai-context/` folder. Each file is optimized for its platform's format and character limits.
 
 > **TL;DR:** See `SKILL.md` for the quick-reference table. This doc has step-by-step setup for each platform.

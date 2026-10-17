@@ -4,8 +4,6 @@ description: "The geo fix command audits a URL and generates robots.txt, llms.tx
 order: 3
 ---
 
-# geo fix Command
-
 `geo fix` audits a URL and generates all missing files in one shot: robots.txt patches, llms.txt, JSON-LD schemas, meta tag recommendations, AI discovery templates, and deterministic content rewrite guidance.
 
 ---

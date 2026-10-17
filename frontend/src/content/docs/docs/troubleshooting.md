@@ -4,8 +4,6 @@ description: "Fix installation and runtime issues: geo command not found, Python
 order: 20
 ---
 
-# Troubleshooting
-
 Solutions to common installation and runtime problems.
 
 ---

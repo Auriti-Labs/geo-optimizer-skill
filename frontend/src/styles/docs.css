@@ -7,7 +7,7 @@
 /* Light theme (default) */
 :root,
 html[data-theme="light"] {
-  --sl-color-white: #f4f5f2;           /* paper */
+  --sl-color-white: #0d110e;           /* ink: in Starlight the "white" token is the strongest text colour, not the paper */
   --sl-color-gray-6: #eff1ec;
   --sl-color-gray-5: #d9ded6;          /* rail */
   --sl-color-gray-4: #b9c2b8;
@@ -167,6 +167,8 @@ html[data-theme="dark"] .hero {
   color: #ffffff !important;
 }
 .btn-primary:hover { background: var(--sl-color-accent-high); }
+/* Dark accent is a light teal: white text on it is 1.9:1. */
+html[data-theme="dark"] .btn-primary { color: #0b1411 !important; }
 .btn-ghost {
   color: var(--sl-color-text) !important;
   border-color: var(--sl-color-hairline);
@@ -212,8 +214,7 @@ html[data-theme="dark"] .doc-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.4)
   margin: 0 !important;
   font-size: 0.875rem;
   line-height: 1.55;
-  color: var(--sl-color-text);
-  opacity: 0.82;
+  color: var(--sl-color-gray-2);
 }
 .doc-card code {
   font-size: 0.8em;

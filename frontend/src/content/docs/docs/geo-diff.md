@@ -4,8 +4,6 @@ description: "Compare two URLs with geo diff: what improved, what regressed and 
 order: 9
 ---
 
-# GEO Diff
-
 `geo diff` confronta due URL con un audit GEO A/B e mostra cosa è migliorato, cosa è peggiorato e di quanto.
 
 ---

@@ -12,6 +12,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Fixed
 - Web API: a URL carrying stray brackets (a badge snippet pasted with its Markdown tail, `https://site.com)](https://...`) made `/badge` and six other URL endpoints return HTTP 500 (`ValueError: Invalid IPv6 URL`). They now return 400 with the usual invalid-URL message.
 - Docs site: the Starlight favicon pointed to `src/assets/geoready-logo.svg`, which Starlight turns into the URL `/src/assets/geoready-logo.svg` (404 on every docs page). It now uses `/favicon.svg` from `public/`.
+- Site: the automatic `sitemap-index.xml` no longer lists the pages that carry `noindex` (the mock report, the report shell and the visual lab). `robots.txt` points to the hand-built `/sitemap.xml`, which was already clean.
+- Docs: every docs page now has exactly one `<h1>` (21 pages repeated the title as a body heading and the docs home hero used a third); the Perplexity crawler link in `ai-bots-reference` no longer returns 404.
+- Docs theme, light: Starlight's `--sl-color-white` token was the paper colour but is the strongest text colour in Starlight, so page titles, the sidebar group labels and the Note callout text were near-white on white (1.09:1). The token is now ink. The doc card paragraphs lost an `opacity` that pushed their code spans under 4.5:1, and the dark-theme "Get Started" button text is dark (it was white on light teal, 1.9:1).
 
 ### Security
 - Website dependencies: `npm audit fix` on `frontend/package-lock.json` (lockfile only). The production audit goes from 40 findings to 29; the rest sit behind a major `@astrojs/starlight` upgrade and are build-time tools of a static site.
