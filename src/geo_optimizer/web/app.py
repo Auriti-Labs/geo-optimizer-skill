@@ -823,9 +823,15 @@ async def audit_post(request: Request, body: AuditRequest):
 _LLMS_MIN_PER_SECTION = 1
 _LLMS_MAX_PER_SECTION = 20
 # Timeout complessivo per discovery + fetch sitemap + generazione (secondi)
-# Shown on a 504: the web audit is capped at 60 s, the CLI is not.
+# nginx cuts the proxy at 60 s (its default proxy_read_timeout). The web audit has to
+# give up a few seconds earlier: with the same 60 s, nginx always won the race and
+# answered with its own HTML 504 (a broken image for /badge) before the friendly
+# error below, or the "Error" badge, could be sent.
+_AUDIT_TIMEOUT_S = 55.0
+
+# Shown on a 504: the web audit is capped (see _AUDIT_TIMEOUT_S), the CLI is not.
 _AUDIT_TIMEOUT_DETAIL = (
-    "Audit timeout: the site took more than 60 seconds to respond. "
+    "Audit timeout: the site took too long to respond (the web audit stops after about a minute). "
     "Slow sites can still be audited with the CLI: geo audit --url <url>"
 )
 
@@ -1203,7 +1209,7 @@ async def audit_pdf(
 
             audit_result = await asyncio.wait_for(
                 asyncio.to_thread(run_full_audit, url),
-                timeout=60.0,
+                timeout=_AUDIT_TIMEOUT_S,
             )
             data = _audit_result_to_dict(audit_result)
             await _set_cached(url, data)
@@ -1272,10 +1278,10 @@ async def badge(
             from geo_optimizer.core.audit import run_full_audit
 
             # Run in separate thread to avoid blocking the event loop
-            # Timeout 60s to avoid blocking the event loop (fix #82)
+            # Bounded wait to avoid blocking the event loop (fix #82)
             result = await asyncio.wait_for(
                 asyncio.to_thread(run_full_audit, url),
-                timeout=60.0,
+                timeout=_AUDIT_TIMEOUT_S,
             )
             data = _audit_result_to_dict(result)
             await _set_cached(url, data)
@@ -1283,7 +1289,7 @@ async def badge(
             band = data["band"]
         except asyncio.TimeoutError:
             # Timeout: show badge with "Error" text (fix #152)
-            logger.warning("Badge audit timeout (60s) per URL: %s", url)
+            logger.warning("Badge audit timeout (%.0fs) per URL: %s", _AUDIT_TIMEOUT_S, url)
             from geo_optimizer.web.badge import generate_badge_svg
 
             svg = generate_badge_svg(0, "critical", label=label, error=True)
@@ -1368,7 +1374,7 @@ async def badge_endpoint(
 
             result = await asyncio.wait_for(
                 asyncio.to_thread(run_full_audit, url),
-                timeout=60.0,
+                timeout=_AUDIT_TIMEOUT_S,
             )
             data = _audit_result_to_dict(result)
             await _set_cached(url, data)
@@ -1452,13 +1458,13 @@ async def _run_audit(url: str) -> JSONResponse:
     try:
         from geo_optimizer.core.audit import run_full_audit
 
-        # Run in separate thread with 60s timeout to avoid blocking the event loop (fix #82)
+        # Run in a separate thread with a bounded wait to avoid blocking the event loop (fix #82)
         result = await asyncio.wait_for(
             asyncio.to_thread(run_full_audit, url),
-            timeout=60.0,
+            timeout=_AUDIT_TIMEOUT_S,
         )
     except asyncio.TimeoutError as exc:
-        logger.warning("Audit timeout (60s) for URL: %s", url)
+        logger.warning("Audit timeout (%.0fs) for URL: %s", _AUDIT_TIMEOUT_S, url)
         raise HTTPException(status_code=504, detail=_AUDIT_TIMEOUT_DETAIL) from exc
     except Exception as e:
         logger.error("Audit error for %s: %s", url, e)

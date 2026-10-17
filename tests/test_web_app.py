@@ -516,6 +516,17 @@ def test_badge_url_con_coda_markdown_ritorna_400(client):
     assert response.status_code == 400
 
 
+def test_audit_timeout_is_below_the_proxy_timeout():
+    """The web audit must give up before nginx's 60 s proxy_read_timeout.
+
+    At exactly 60 s nginx always answered first with its HTML 504, so the friendly
+    JSON error and the "Error" badge never reached the client.
+    """
+    from geo_optimizer.web.app import _AUDIT_TIMEOUT_S
+
+    assert _AUDIT_TIMEOUT_S < 60
+
+
 def test_badge_senza_url_ritorna_422(client):
     """GET /badge senza parametro url ritorna 422."""
     response = client.get("/badge")
