@@ -6,6 +6,17 @@ when the README numbers are refreshed:
 
     python scripts/render_benchmark_chart.py            # writes assets/benchmark.svg
     python scripts/render_benchmark_chart.py --print    # prints the numbers only
+
+The band split is not part of the public endpoint. `assets/benchmark-bands.svg` is rendered from
+band counts passed on the command line, taken from one aggregate query on the benchmark table
+(latest audit per domain, scheduled re-audits excluded, the same definition as the endpoint):
+
+    select band, count(*) from (
+      select distinct on (domain_hash) band from benchmark_audit_events
+      where source <> 'monitoring' and score is not null
+      order by domain_hash, recorded_at desc) t group by band;
+
+    python scripts/render_benchmark_chart.py --bands critical=235,foundation=1092,good=534,excellent=35 --date "17 October 2026"
 """
 
 from __future__ import annotations
@@ -84,7 +95,46 @@ aria-labelledby="t d">
 """
 
 
+def render_bands(counts: dict[str, int], day: str) -> str:
+    """Horizontal bars of the sites per score band: count and share only, never a domain."""
+    total = sum(counts.values())
+    rows = "".join(
+        f'<text x="{X0}" y="{y}" font-size="14" fill="{INK}">{label} <tspan fill="{MUTED}">{lo}\u2013{hi}</tspan></text>'
+        f'<text x="{X0 + WIDTH}" y="{y}" text-anchor="end" font-size="14" font-weight="700" fill="{INK}">'
+        f'{100 * counts[label.lower()] / total:.1f}% <tspan font-weight="400" fill="{MUTED}">'
+        f"\u00b7 {counts[label.lower()]:,} sites</tspan></text>"
+        f'<rect x="{X0}" y="{y + 8}" width="{WIDTH}" height="16" rx="3" fill="#E4E7E6"/>'
+        f'<rect x="{X0}" y="{y + 8}" width="{WIDTH * counts[label.lower()] / total:.1f}" height="16" rx="3" fill="{fill}" '
+        f'stroke="#9aa5a2" stroke-width="0.5"/>'
+        for (label, lo, hi, fill), y in zip(BANDS, (92, 142, 192, 242), strict=True)
+    )
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 364" width="800" height="364" \
+font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" role="img" aria-labelledby="t d">
+<title id="t">How {total:,} audited sites split across the GEO score bands</title>
+<desc id="d">{"; ".join(f"{k} {v / total * 100:.1f}% ({v})" for k, v in counts.items())}. Latest audit per domain on {day}; scores from engine 4.13 to 4.19, rubric v1 up to 4.18 and rubric v2 from 4.19; self-selected sample.</desc>
+<rect width="800" height="364" rx="10" fill="#F6F5F1" stroke="#D9D7CF"/>
+<text x="{X0}" y="38" font-size="20" font-weight="700" fill="{INK}">How {total:,} audited sites split across the score bands</text>
+<text x="{X0}" y="60" font-size="13" fill="{MUTED}">Share of sites per band, one latest audit per domain</text>
+{rows}
+<text x="{X0}" y="294" font-size="12" fill="{MUTED}">Source: GeoReady benchmark, {day}. Scheduled re-audits excluded.</text>
+<text x="{X0}" y="311" font-size="12" fill="{MUTED}">Engine 4.13 to 4.19 (rubric v1 up to 4.18, v2 from 4.19).</text>
+<text x="{X0}" y="328" font-size="12" fill="{MUTED}">Self-selected sample: directional, not a census of the web.</text>
+<text x="{X0}" y="350" font-size="13" font-weight="700" fill="{TEAL}">Check which band your site is in: geoready.dev</text>
+</svg>
+"""
+
+
+def parse_flag(name: str) -> str | None:
+    return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else None
+
+
 if __name__ == "__main__":
+    if bands := parse_flag("--bands"):
+        counts = {k: int(v) for k, v in (pair.split("=") for pair in bands.split(","))}
+        out = OUT.with_name("benchmark-bands.svg")
+        out.write_text(render_bands(counts, parse_flag("--date") or "today"), encoding="utf-8")
+        print(f"wrote {out}")
+        sys.exit(0)
     benchmark = fetch()
     if "--print" in sys.argv:
         print(json.dumps(benchmark, indent=2))

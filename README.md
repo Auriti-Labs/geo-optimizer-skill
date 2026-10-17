@@ -87,9 +87,11 @@ Two runs of `geo audit`, September 2026. `example.com` has no robots.txt, no `ll
 </td></tr>
 </table>
 
-Across 1,800+ sites audited through [GeoReady](https://geoready.dev/state-of-geo/?utm_source=github&utm_medium=readme&utm_campaign=benchmark) (latest audit per domain, as of 17 October 2026), the median score is **59/100**, 58% publish an `llms.txt` and 76% ship JSON-LD structured data. Most sites land in the Foundation band (36–67). The sample is self-selected (people who chose to audit their site), so treat it as directional, not a census of the web.
+Across 1,800+ sites audited through [GeoReady](https://geoready.dev/state-of-geo/?utm_source=github&utm_medium=readme&utm_campaign=benchmark) (latest audit per domain, as of 17 October 2026), the median score is **59/100**, 58% publish an `llms.txt` and 76% ship JSON-LD structured data. 58% of them land in the Foundation band (36–67), 28% in Good, 12% in Critical and 2% in Excellent. Scores mix rubric v1 (engine 4.13 to 4.18) and v2 (4.19). The sample is self-selected (people who chose to audit their site), so treat it as directional, not a census of the web.
 
 <img src="assets/benchmark.svg" alt="Chart of 1,800+ audited sites: median GEO score 59 out of 100, average 56.5, 58% publish an llms.txt file, 76% ship JSON-LD structured data. Self-selected sample, 17 October 2026." width="800"/>
+
+<img src="assets/benchmark-bands.svg" alt="Chart of how 1,896 audited sites split across the GEO score bands: Foundation 57.6%, Good 28.2%, Critical 12.4%, Excellent 1.8%. Latest audit per domain, 17 October 2026; self-selected sample." width="800"/>
 
 **Where does your site land?** [Run the free audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=benchmark-chart) and compare your score with the median, or run `geo audit` above.
 
