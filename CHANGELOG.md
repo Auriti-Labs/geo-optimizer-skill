@@ -10,6 +10,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Added
 - `geo audit --url <url> --max-pages N`: find the site's sitemap and audit up to N of its pages, reporting the average score (the existing `--sitemap` batch path, without needing the sitemap URL). Optional: the default single-page score does not change. Text or JSON output only; exits 1 when no sitemap is found.
 
+### Fixed (docs theme)
+- Docs, light theme: Starlight's `--sl-color-white` token was set to the paper colour, but in Starlight it is the strongest text colour. Page titles, the sidebar group labels ("Getting started", "CLI commands", ...) and the Note callout text were drawn in near-white on white (contrast 1.09:1 on the labels). The token is now the ink colour.
+- Docs home: the doc card paragraphs used `opacity: 0.82`, which dropped the `geo audit` code spans below 4.5:1, and in the dark theme the "Get Started" button was white on light teal (1.9:1). Both fixed; axe (WCAG A/AA) now reports no violations on five docs pages in either theme.
+
 ### Documentation
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.
 - `TRADEMARKS.md`: a draft name and logo policy for forks and derived products (the MIT licence covers the code, not the names). Linked from the README.
