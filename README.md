@@ -21,6 +21,10 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 *No install, no account, no API key. Runs in seconds.*
 
+**No terminal?** Paste your URL into the browser version instead. Same engine, free, no account:
+
+[![Run the free web audit](https://img.shields.io/badge/Run_the_free_web_audit-geoready.dev-0D9488?style=for-the-badge)](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=hero)
+
 <img src="assets/tui-audit.svg" alt="geo audit terminal dashboard on geoready.dev: 94/100 Excellent, nine rubric v2 categories with per-category scores, extra checks and top fixes" width="800"/>
 
 [Quick Start](#quick-start) · [Free web audit, no account](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=nav) · [Docs](https://geoready.dev/docs/) · [The book](#the-book-behind-the-engine-ai-search-engineering) · [Changelog](CHANGELOG.md)
@@ -79,7 +83,11 @@ Two runs of `geo audit`, September 2026. `example.com` has no robots.txt, no `ll
 </td></tr>
 </table>
 
-Across 1,400+ sites audited through [GeoReady](https://geoready.dev/state-of-geo/?utm_source=github&utm_medium=readme&utm_campaign=benchmark), the median score is **57/100** and 58% publish an `llms.txt`. The sample is self-selected (people who chose to audit their site), so treat it as directional, not a census of the web.
+Across 1,800+ sites audited through [GeoReady](https://geoready.dev/state-of-geo/?utm_source=github&utm_medium=readme&utm_campaign=benchmark) (latest audit per domain, as of 17 October 2026), the median score is **59/100**, 58% publish an `llms.txt` and 76% ship JSON-LD structured data. Most sites land in the Foundation band (36–67). The sample is self-selected (people who chose to audit their site), so treat it as directional, not a census of the web.
+
+<img src="assets/benchmark.svg" alt="Chart of 1,800+ audited sites: median GEO score 59 out of 100, average 56.5, 58% publish an llms.txt file, 76% ship JSON-LD structured data. Self-selected sample, 17 October 2026." width="800"/>
+
+**Where does your site land?** [Run the free audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=benchmark-chart) and compare your score with the median, or run `geo audit` above.
 
 ### Then it writes the fixes
 
@@ -420,7 +428,7 @@ Yes. The MIT license permits commercial use, modification, and redistribution wi
 No. The CLI fetches only the URL you audit and any AI provider you configure with your own API key (`geo citations`). There is no telemetry, no phone-home, and no account requirement — the audit runs entirely on your machine.
 
 **How long does an audit take?**
-A single-URL audit runs in a few seconds. A sitemap batch depends on size and the `--max-urls` cap (default 25). The full test suite of 2,000+ tests runs in CI on every push across Python 3.9–3.13.
+A single-URL audit runs in a few seconds. A sitemap batch depends on size and the `--max-urls` cap (default 25). The full test suite of 2,000+ tests runs in CI on every push across Python 3.10–3.14.
 
 **Can I use it in CI/CD?**
 Yes. The GitHub Action fails the build below a score threshold and can emit SARIF findings for the GitHub Security tab. Any CI that runs Python works (GitLab, Jenkins, CircleCI), and `geo drift --fail-on warning` catches regressions between deploys.

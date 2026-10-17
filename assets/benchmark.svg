@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 352" width="800" height="352" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" role="img" aria-labelledby="t d">
+<title id="t">Where 1800+ audited sites stand on AI readiness</title>
+<desc id="d">Median score 59 out of 100, average 56.5. 58% publish an llms.txt file and 76% ship JSON-LD structured data. Latest audit per domain on 17 October 2026; self-selected sample.</desc>
+<rect width="800" height="352" rx="10" fill="#F6F5F1" stroke="#D9D7CF"/>
+<text x="40" y="38" font-size="20" font-weight="700" fill="#17201f">Where 1800+ audited sites stand on AI readiness</text>
+<text x="40" y="60" font-size="13" fill="#4a5654">GEO score, 0–100, one latest audit per domain</text>
+<rect x="40.0" y="92" width="259.2" height="40" fill="#F4C7C3"/><text x="169.6" y="108" text-anchor="middle" font-size="13" fill="#17201f">Critical</text><text x="169.6" y="124" text-anchor="middle" font-size="12" fill="#4a5654">0–35</text><rect x="299.2" y="92" width="230.4" height="40" fill="#F7E1A8"/><text x="414.4" y="108" text-anchor="middle" font-size="13" fill="#17201f">Foundation</text><text x="414.4" y="124" text-anchor="middle" font-size="12" fill="#4a5654">36–67</text><rect x="529.6" y="92" width="129.6" height="40" fill="#BFE6E1"/><text x="594.4" y="108" text-anchor="middle" font-size="13" fill="#17201f">Good</text><text x="594.4" y="124" text-anchor="middle" font-size="12" fill="#4a5654">68–85</text><rect x="659.2" y="92" width="100.8" height="40" fill="#7CCFC5"/><text x="709.6" y="108" text-anchor="middle" font-size="13" fill="#17201f">Excellent</text><text x="709.6" y="124" text-anchor="middle" font-size="12" fill="#4a5654">86–100</text>
+<path d="M464.8 90 l-6 -9 h12 z" fill="#17201f"/>
+<text x="464.8" y="76" text-anchor="middle" font-size="13" font-weight="700" fill="#17201f">median 59</text>
+<path d="M446.8 134 l-6 9 h12 z" fill="#4a5654"/>
+<text x="446.8" y="158" text-anchor="middle" font-size="13" fill="#4a5654">average 56.5</text>
+<text x="40" y="196" font-size="14" fill="#17201f">Publish an llms.txt file</text><rect x="40" y="204" width="720" height="16" rx="3" fill="#E4E7E6"/><rect x="40" y="204" width="418.3" height="16" rx="3" fill="#0B8076"/><text x="760" y="196" text-anchor="end" font-size="14" font-weight="700" fill="#17201f">58%</text><text x="40" y="246" font-size="14" fill="#17201f">Ship JSON-LD structured data</text><rect x="40" y="254" width="720" height="16" rx="3" fill="#E4E7E6"/><rect x="40" y="254" width="545.0" height="16" rx="3" fill="#0B8076"/><text x="760" y="246" text-anchor="end" font-size="14" font-weight="700" fill="#17201f">76%</text>
+<text x="40" y="298" font-size="12" fill="#4a5654">Source: GeoReady public benchmark, 17 October 2026. Scheduled re-audits excluded.</text>
+<text x="40" y="316" font-size="12" fill="#4a5654">Self-selected sample: directional, not a census of the web.</text>
+<text x="40" y="338" font-size="13" font-weight="700" fill="#0B8076">Check where your site lands: geoready.dev</text>
+</svg>
