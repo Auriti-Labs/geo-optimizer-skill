@@ -25,6 +25,10 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 [![Run the free web audit](https://img.shields.io/badge/Run_the_free_web_audit-geoready.dev-0D9488?style=for-the-badge)](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=hero)
 
+[![The free web audit on geoready.dev: paste a URL, get a 0–100 GEO score, nine category results and the free fixes. Live run on geoready.dev, 17 October 2026: 94/100, Excellent.](assets/web-audit.gif)](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=hero-gif)
+
+*The browser audit on geoready.dev: paste a URL, read the score, the nine category results and the free fixes. Live run on geoready.dev itself, 17 October 2026.*
+
 <img src="assets/tui-audit.svg" alt="geo audit terminal dashboard on geoready.dev: 94/100 Excellent, nine rubric v2 categories with per-category scores, extra checks and top fixes" width="800"/>
 
 [Quick Start](#quick-start) · [Free web audit, no account](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=nav) · [Docs](https://geoready.dev/docs/) · [The book](#the-book-behind-the-engine-ai-search-engineering) · [Changelog](CHANGELOG.md)

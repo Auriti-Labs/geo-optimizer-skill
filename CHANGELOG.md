@@ -23,6 +23,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Python 3.9 is no longer supported (end of life since October 2025): `requires-python` is now `>=3.10`, CI and the publish workflow no longer run 3.9. On Python 3.9, pip keeps installing 4.19.3. The `mcp` extra no longer needs a version marker.
 
 ### Documentation
+- README: a short GIF of the browser audit (`assets/web-audit.gif`, a live run on geoready.dev) under the web-audit button.
 - README: a "No terminal?" web-audit button under the install command, the benchmark figures refreshed (1,800+ sites, median 59, 58% `llms.txt`, 76% JSON-LD) with a dated chart (`assets/benchmark.svg`, rendered by `scripts/render_benchmark_chart.py` from the public aggregate endpoint) and a call to action under it, and the FAQ now says Python 3.10–3.14.
 - `research/calibration-2026-10/`: the pre-registered analysis plan, an anonymised results table and the analysis output of the October 2026 calibration study (does the GEO score predict whether Perplexity cites a page; no effect detected).
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.
