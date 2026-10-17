@@ -1409,8 +1409,14 @@ def _normalize_url(raw: str) -> tuple[str | None, str]:
     url = normalize_url_scheme(url)
 
     # Must have a hostname with at least one dot (real domain)
-    parsed = urlparse(url)
-    if not parsed.hostname or "." not in parsed.hostname:
+    # urlparse raises ValueError on stray brackets ("Invalid IPv6 URL"), e.g. a
+    # badge snippet pasted with its Markdown tail: https://site.com)](https://...
+    try:
+        parsed = urlparse(url)
+        hostname = parsed.hostname
+    except ValueError:
+        return None, "Invalid URL: a valid domain is required (e.g. https://example.com)"
+    if not hostname or "." not in hostname:
         return None, "Invalid URL: a valid domain is required (e.g. https://example.com)"
 
     return url, ""
