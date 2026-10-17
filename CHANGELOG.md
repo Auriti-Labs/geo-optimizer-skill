@@ -10,14 +10,30 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Added
 - `geo audit --url <url> --max-pages N`: find the site's sitemap and audit up to N of its pages, reporting the average score (the existing `--sitemap` batch path, without needing the sitemap URL). Optional: the default single-page score does not change. Text or JSON output only; exits 1 when no sitemap is found.
 
-### Fixed
-- Keyword-stuffing checks (`audit_negative` and the `keyword_stuffing` citability method) no longer flag a page's own brand name or the function words of its language (#607). Function-word lists now cover English, Italian, German, French, Spanish, Portuguese and Dutch, picked from `<html lang>` (every list when the attribute is missing); a declared language without a list skips the check. The brand comes from `og:site_name`, JSON-LD `Organization`/`WebSite`/`Brand` names, and a short `<title>` or `<h1>` prefix or suffix. The citability method also needs at least 5 uses of a word, and its word pattern now keeps `ü`, `ß` and other non-ASCII letters whole. Thresholds and weights are unchanged.
+### Security
+- Website dependencies: the frontend lockfile is refreshed on top of 4.19.4 and `overrides` raise `js-yaml` 3.x, `fflate`, `smol-toml`, `uuid` and `postcss-selector-parser` (#623). `npm audit` goes from 29 findings to 14; the rest are `braces` and `sprintf-js` (no patched release, build-time Sanity CLI tooling) and their parents.
 
 ### Documentation
 - `research/calibration-2026-10/`: the pre-registered analysis plan, an anonymised results table and the analysis output of the October 2026 calibration study (does the GEO score predict whether Perplexity cites a page; no effect detected).
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.
 - `TRADEMARKS.md`: a draft name and logo policy for forks and derived products (the MIT licence covers the code, not the names). Linked from the README.
 - README: the GitHub stars badges no longer use the shields.io `github/stars` endpoint, which was returning "Unable to select next GitHub token from pool". The count badge at the top now comes from badgen.net; the call-to-action at the bottom is a static shields.io badge without a number.
+
+## [4.19.4] — 2026-10-17
+
+### Fixed
+- Web API: a URL carrying stray brackets (a badge snippet pasted with its Markdown tail, `https://site.com)](https://...`) made `/badge` and six other URL endpoints return HTTP 500 (`ValueError: Invalid IPv6 URL`). They now return 400 with the usual invalid-URL message.
+- Docs site: the Starlight favicon pointed to `src/assets/geoready-logo.svg`, which Starlight turns into the URL `/src/assets/geoready-logo.svg` (404 on every docs page). It now uses `/favicon.svg` from `public/`.
+- Site: the automatic `sitemap-index.xml` no longer lists the pages that carry `noindex` (the mock report, the report shell and the visual lab). `robots.txt` points to the hand-built `/sitemap.xml`, which was already clean.
+- Docs: every docs page now has exactly one `<h1>` (21 pages repeated the title as a body heading and the docs home hero used a third); the Perplexity crawler link in `ai-bots-reference` no longer returns 404.
+- Docs theme, light: Starlight's `--sl-color-white` token was the paper colour but is the strongest text colour in Starlight, so page titles, the sidebar group labels and the Note callout text were near-white on white (1.09:1). The token is now ink. The doc card paragraphs lost an `opacity` that pushed their code spans under 4.5:1, and the dark-theme "Get Started" button text is dark (it was white on light teal, 1.9:1).
+- Keyword-stuffing checks (`audit_negative` and the `keyword_stuffing` citability method) no longer flag a page's own brand name or the function words of its language (#607). Function-word lists now cover English, Italian, German, French, Spanish, Portuguese and Dutch, picked from `<html lang>` (every list when the attribute is missing); a declared language without a list skips the check. The brand comes from `og:site_name`, JSON-LD `Organization`/`WebSite`/`Brand` names, and a short `<title>` or `<h1>` prefix or suffix. The citability method also needs at least 5 uses of a word, and its word pattern now keeps `ü`, `ß` and other non-ASCII letters whole. Thresholds and weights are unchanged.
+
+### Security
+- Website dependencies: `npm audit fix` on `frontend/package-lock.json` (lockfile only). The production audit goes from 40 findings to 29; the rest sit behind a major `@astrojs/starlight` upgrade and are build-time tools of a static site.
+
+### Changed
+- CI also tests Python 3.10 (declared but never tested) and 3.14, and the package now carries the 3.14 classifier. No runtime change.
 
 ## [4.19.3] — 2026-10-16
 

@@ -4,8 +4,6 @@ description: "Add JSON-LD structured data with the geo schema command: supported
 order: 5
 ---
 
-# Schema Injector
-
 `geo schema` generates and injects JSON-LD structured data into HTML pages. It supports multiple schema types, framework-specific output, and in-place file injection.
 
 ---

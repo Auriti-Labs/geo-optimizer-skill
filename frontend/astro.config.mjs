@@ -8,6 +8,7 @@ import { loadEnv } from 'vite';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import sanity from '@sanity/astro';
+import sitemap from '@astrojs/sitemap';
 import starlight from '@astrojs/starlight';
 
 import geoReady from '../integrations/astro-geoready/index.mjs';
@@ -39,6 +40,12 @@ export default defineConfig({
   trailingSlash: 'always',
   integrations: [
     react(),
+    // robots.txt points to the hand-built /sitemap.xml. This second, automatic
+    // sitemap-index.xml is still published, so it must not list pages that
+    // carry noindex: the mock report, the report shell and the visual lab.
+    sitemap({
+      filter: (page) => !/\/(report\/(?!demo\/)|visual-lab\/)/.test(page),
+    }),
     sanity({
       projectId: PUBLIC_SANITY_PROJECT_ID ?? 'uvzrnk4t',
       dataset: PUBLIC_SANITY_DATASET ?? 'production',
@@ -53,7 +60,7 @@ export default defineConfig({
     }),
     starlight({
       title: 'GeoReady Docs',
-      favicon: 'src/assets/geoready-logo.svg',
+      favicon: '/favicon.svg',
       logo: {
         src: './src/assets/geoready-logo.svg',
         replacesTitle: false,

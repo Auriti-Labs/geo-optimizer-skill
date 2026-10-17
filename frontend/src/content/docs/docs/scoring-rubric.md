@@ -3,7 +3,6 @@ title: "GEO Score Rubric & Weights (v4.19.0)"
 description: "Exact GEO score weights: 9 categories, score bands and how each check contributes out of 100. Reference for the geo audit scoring in config.py."
 order: 6
 ---
-# GEO Scoring Rubric
 
 How the GEO Score (0–100) is computed. Based on the Princeton KDD 2024 research on Generative Engine Optimization, extended with AutoGEO (arXiv:2510.11438, preprint) and geo-checklist.dev signals.
 

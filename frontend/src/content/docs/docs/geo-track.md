@@ -4,8 +4,6 @@ description: "Run recurring, tracked AI-visibility audits with geo track and kee
 order: 10
 ---
 
-# GEO Track
-
 `geo track` is the monitoring-oriented CLI surface for recurring GEO audits with local history.
 
 ---

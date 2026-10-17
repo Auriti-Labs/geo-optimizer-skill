@@ -4,8 +4,6 @@ description: "Run GEO Optimizer as a Model Context Protocol server so Claude Cod
 order: 18
 ---
 
-# MCP Server
-
 GEO Optimizer exposes its core functionality as an [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server, making all tools available inside AI coding assistants like Claude Code, Cursor, and Windsurf.
 
 ---
