@@ -47,5 +47,14 @@
     "react-dom": "19.3.0",
     "satori": "^0.33.4",
     "tailwindcss": "^4.3.0"
+  },
+  "overrides": {
+    "@vercel/frameworks": {
+      "js-yaml": "3.15.2",
+      "smol-toml": "^1.9.1"
+    },
+    "satori": {
+      "fflate": "0.7.5"
+    }
   }
 }
