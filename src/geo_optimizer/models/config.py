@@ -856,6 +856,7 @@ UGC_ID_CLASS_RE = r"(?:^|[-_ ])(?:comment-?list|comments?-?(?:section|area|wrapp
 # Keyword stuffing threshold: single-word density above which it is considered spam
 # SEMrush 2025 research: > 2.5% is a manipulation signal for AI engines
 KEYWORD_STUFFING_THRESHOLD = 0.025
+KEYWORD_STUFFING_MIN_COUNT = 5  # a word used fewer times is never stuffing, whatever the density
 
 # URL patterns for "about" pages (fix #391)
 ABOUT_LINK_PATTERNS = [
