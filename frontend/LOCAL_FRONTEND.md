@@ -9,7 +9,7 @@
 ## Prerequisiti
 
 - Node.js 20+ (via volta/nvm)
-- Python 3.9+ con geo-optimizer-skill installato
+- Python 3.10+ con geo-optimizer-skill installato
 
 ## Avvio locale
 

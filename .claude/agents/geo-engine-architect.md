@@ -68,7 +68,7 @@ GEO Optimizer must remain:
 - If scoring changes, explain score impact and update tests.
 - If new CLI output is added, update text/json/rich formatters consistently.
 - `from __future__ import annotations` must be present in every `.py` file in `src/`.
-- Python 3.9 minimum compatibility required.
+- Python 3.10 minimum compatibility required.
 
 ## Testing requirements
 

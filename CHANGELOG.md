@@ -19,6 +19,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Fixed (site contrast)
 - Colour tokens nudged to reach 4.5:1 for small text, as approved: `pass` `#0B8076` to `#0A7970`, `warn` `#9C6A06` to `#926306`, `fail` `#C93A2E` to `#C5392D`. A new `pass-light` (`#0D978C`) is used for the `exit 0` terminal labels on the dark well (3.9:1 before, 4.6:1 now), and the light text on the teal call-to-action panels is solid `pass-wash` instead of 70-90% opacity (3.2-4.2:1 before, 4.8:1 now). A colour scan of all 140 built pages (animations off) drops from 229 to 191 findings; the rest are the docs theme (fixed separately), the dimmed empty categories of the demo report and the `queued` grey on the roadmap.
 
+### Changed
+- Python 3.9 is no longer supported (end of life since October 2025): `requires-python` is now `>=3.10`, CI and the publish workflow no longer run 3.9. On Python 3.9, pip keeps installing 4.19.3. The `mcp` extra no longer needs a version marker.
+
 ### Documentation
 - `research/calibration-2026-10/`: the pre-registered analysis plan, an anonymised results table and the analysis output of the October 2026 calibration study (does the GEO score predict whether Perplexity cites a page; no effect detected).
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.

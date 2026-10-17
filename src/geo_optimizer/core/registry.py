@@ -15,7 +15,6 @@ The check must implement the ``AuditCheck`` Protocol.
 from __future__ import annotations
 
 import logging
-import sys
 import threading
 from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
@@ -135,18 +134,7 @@ class CheckRegistry:
 
             from importlib.metadata import entry_points
 
-            if sys.version_info >= (3, 10):
-                eps = entry_points(group="geo_optimizer.checks")
-            else:
-                # Python 3.9: entry_points() may return dict or SelectableGroups
-                all_eps = entry_points()
-                if isinstance(all_eps, dict):
-                    eps = all_eps.get("geo_optimizer.checks", [])
-                elif hasattr(all_eps, "select"):
-                    eps = all_eps.select(group="geo_optimizer.checks")
-                else:
-                    # Fallback: filter the list manually
-                    eps = [ep for ep in all_eps if ep.group == "geo_optimizer.checks"]
+            eps = entry_points(group="geo_optimizer.checks")
 
             for ep in eps:
                 try:

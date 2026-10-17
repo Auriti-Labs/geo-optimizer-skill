@@ -8,7 +8,7 @@ version = "4.19.4"
 description = "Generative Engine Optimization toolkit — make websites visible to AI search engines"
 readme = "README.md"
 license = {text = "MIT"}
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     {name = "Juan Camilo Auriti", email = "juancamilo.auriti@gmail.com"},
 ]
@@ -18,7 +18,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -58,8 +57,7 @@ pdf = [
 ]
 mcp = [
     # <2: il server usa mcp.server.fastmcp, rimosso in mcp 2.x (rinominato MCPServer).
-    # mcp 1.x richiede Python 3.10+: il marker evita che [mcp] e [all] falliscano su 3.9.
-    "mcp>=1.0.0,<2; python_version >= '3.10'",
+    "mcp>=1.0.0,<2",
 ]
 embedding = [
     "sentence-transformers>=2.2.0,<7.0",
@@ -127,7 +125,7 @@ exclude_lines = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]

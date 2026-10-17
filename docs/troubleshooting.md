@@ -294,4 +294,4 @@ pip install geo-optimizer-skill
 geo audit --url https://yoursite.com
 ```
 
-WSL2 gives you a full Linux environment. Python 3.9+ is included by default in Ubuntu 22.04+.
+WSL2 gives you a full Linux environment. Python 3.10+ is included by default in Ubuntu 22.04+.

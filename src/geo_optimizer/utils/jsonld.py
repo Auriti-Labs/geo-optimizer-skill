@@ -15,7 +15,8 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from geo_optimizer.models.config import SCHEMA_JSONLD_MAX_BYTES
 

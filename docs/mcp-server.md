@@ -12,7 +12,7 @@ Install with the `mcp` extra:
 pip install geo-optimizer-skill[mcp]
 ```
 
-This installs the `geo-mcp` entry point alongside the `mcp` Python SDK (1.x). The MCP server requires Python 3.10 or later; on Python 3.9 the extra installs nothing.
+This installs the `geo-mcp` entry point alongside the `mcp` Python SDK (1.x).
 
 ---
 

@@ -11,7 +11,7 @@ from __future__ import annotations
 import logging
 import re
 from collections import defaultdict
-from typing import Callable
+from collections.abc import Callable
 from urllib.parse import urljoin, urlparse
 
 import requests

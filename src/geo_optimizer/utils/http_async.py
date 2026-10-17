@@ -343,7 +343,7 @@ async def fetch_urls_async(
 
         gathered = await asyncio.gather(*tasks.values(), return_exceptions=True)
 
-        for url, result in zip(tasks.keys(), gathered):
+        for url, result in zip(tasks.keys(), gathered, strict=True):
             if isinstance(result, Exception):
                 results[url] = (None, str(result))
             else:

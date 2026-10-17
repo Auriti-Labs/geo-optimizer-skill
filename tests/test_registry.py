@@ -119,10 +119,8 @@ def test_get_nome_inesistente_ritorna_none():
 def test_load_entry_points_nessun_plugin(monkeypatch):
     """load_entry_points() con nessun plugin installato ritorna 0."""
     # Mock entry_points per simulare assenza di plugin
-    with patch("geo_optimizer.core.registry.sys") as mock_sys:
-        mock_sys.version_info = (3, 10, 0)
-        with patch("importlib.metadata.entry_points", return_value=[]):
-            count = CheckRegistry.load_entry_points()
+    with patch("importlib.metadata.entry_points", return_value=[]):
+        count = CheckRegistry.load_entry_points()
     assert count == 0
 
 
@@ -142,13 +140,8 @@ def test_load_entry_points_con_plugin_valido():
     mock_ep = MagicMock()
     mock_ep.load.return_value = _MockCheck
 
-    # Patch sys.version_info per il branch Python >= 3.10
-    import sys  # noqa: F401
-
-    with patch("geo_optimizer.core.registry.sys") as mock_sys:
-        mock_sys.version_info = (3, 10, 0)
-        with patch("importlib.metadata.entry_points", return_value=[mock_ep]):
-            count = CheckRegistry.load_entry_points()
+    with patch("importlib.metadata.entry_points", return_value=[mock_ep]):
+        count = CheckRegistry.load_entry_points()
 
     assert count == 1
     assert "mock_check" in CheckRegistry.names()
@@ -162,10 +155,8 @@ def test_load_entry_points_plugin_fallito_non_blocca():
     mock_ep_fail = MagicMock()
     mock_ep_fail.load.side_effect = ImportError("modulo non trovato")
 
-    with patch("geo_optimizer.core.registry.sys") as mock_sys:
-        mock_sys.version_info = (3, 10, 0)
-        with patch("importlib.metadata.entry_points", return_value=[mock_ep_fail, mock_ep_ok]):
-            count = CheckRegistry.load_entry_points()
+    with patch("importlib.metadata.entry_points", return_value=[mock_ep_fail, mock_ep_ok]):
+        count = CheckRegistry.load_entry_points()
 
     # Solo il plugin valido deve essere stato caricato
     assert count == 1

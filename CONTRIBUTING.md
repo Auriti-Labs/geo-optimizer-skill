@@ -113,7 +113,7 @@ test(audit): add unit tests for robots.txt parser
 - **Line length:** 120 characters max
 - **Imports:** Standard library → third-party → local, sorted by ruff
 - **Docstrings:** Required for all public functions
-- **Type hints:** Encouraged but not mandatory (Python 3.9+ syntax)
+- **Type hints:** Encouraged but not mandatory (Python 3.10+ syntax)
 
 ```bash
 # Check lint

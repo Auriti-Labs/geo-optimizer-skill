@@ -4,7 +4,7 @@
 
 | Livello | Tecnologia | Versione minima |
 |---------|------------|-----------------|
-| Language | Python | 3.9+ (produzione), 3.10.12 (WSL) |
+| Language | Python | 3.10+ (produzione), 3.10.12 (WSL) |
 | CLI | Click | 8.0+ |
 | HTTP | Requests / HTTPX | 2.28+ / 0.27+ |
 | HTML parsing | BeautifulSoup4 | 4.12+ |

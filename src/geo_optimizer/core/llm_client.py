@@ -22,7 +22,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass, field
-from typing import TypedDict, Union
+from typing import TypedDict
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ class LLMContentPart(TypedDict, total=False):
     source: dict[str, object]
 
 
-LLMPrompt = Union[str, list[LLMContentPart]]
+LLMPrompt = str | list[LLMContentPart]
 
 
 @dataclass

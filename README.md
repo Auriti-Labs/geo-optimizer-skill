@@ -12,7 +12,7 @@ One command scores any website 0–100 on whether **ChatGPT, Perplexity, Gemini,
 [![Downloads/month](https://static.pepy.tech/badge/geo-optimizer-skill/month)](https://pepy.tech/project/geo-optimizer-skill)
 [![GitHub Stars](https://badgen.net/github/stars/auriti-labs/geo-optimizer-skill?icon=github&color=yellow&label=stars)](https://github.com/auriti-labs/geo-optimizer-skill/stargazers)
 [![CI](https://github.com/auriti-labs/geo-optimizer-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/auriti-labs/geo-optimizer-skill/actions)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE)
 
 ```bash

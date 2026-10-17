@@ -8,7 +8,7 @@ Get the toolkit installed and run your first GEO audit in under 5 minutes.
 
 | Requirement | Version | Notes |
 |-------------|---------|-------|
-| Python | 3.9+ | [python.org](https://python.org) |
+| Python | 3.10+ | [python.org](https://python.org) |
 | git | any | [git-scm.com](https://git-scm.com) |
 | Website | — | Must be publicly accessible via HTTPS |
 

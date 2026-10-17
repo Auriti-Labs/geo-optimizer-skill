@@ -7,7 +7,7 @@ GEO Optimizer is an open-source Python toolkit for Generative Engine Optimizatio
 Current project shape:
 - Python package with CLI commands, core audit/fix logic, FastAPI web demo, and MCP server support
 - MIT licensed
-- Python 3.9+ compatibility is required
+- Python 3.10+ compatibility is required
 
 Primary user-facing surfaces:
 - `geo audit`
@@ -48,7 +48,7 @@ These are hard constraints:
 3. Keep constants centralized.
    Do not hardcode scoring weights, AI bot lists, or schema defaults outside `models/config.py`.
 
-4. Preserve Python 3.9 compatibility.
+4. Preserve Python 3.10 compatibility.
    Every Python file under `src/` must include:
    ```python
    from __future__ import annotations
@@ -166,7 +166,7 @@ Code style:
 Tooling:
 - Ruff is the formatter/linter baseline
 - line length: 120
-- target: py39
+- target: py310
 
 Useful commands:
 
