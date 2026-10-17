@@ -7,6 +7,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.19.4] — 2026-10-17
+
+### Fixed
+- Web API: a URL carrying stray brackets (a badge snippet pasted with its Markdown tail, `https://site.com)](https://...`) made `/badge` and six other URL endpoints return HTTP 500 (`ValueError: Invalid IPv6 URL`). They now return 400 with the usual invalid-URL message.
+- Docs site: the Starlight favicon pointed to `src/assets/geoready-logo.svg`, which Starlight turns into the URL `/src/assets/geoready-logo.svg` (404 on every docs page). It now uses `/favicon.svg` from `public/`.
+
+### Security
+- Website dependencies: `npm audit fix` on `frontend/package-lock.json` (lockfile only). The production audit goes from 40 findings to 29; the rest sit behind a major `@astrojs/starlight` upgrade and are build-time tools of a static site.
+
+### Changed
+- CI also tests Python 3.10 (declared but never tested) and 3.14, and the package now carries the 3.14 classifier. No runtime change.
+
 ## [4.19.3] — 2026-10-16
 
 ### Changed
