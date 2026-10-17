@@ -6,7 +6,7 @@ Draft published with the note on geoready.dev. These files let a reader check th
 
 - `PREREGISTRATION.md`: the analysis plan, written before the full run. Its SHA-256 is `441fcbb422964fdf2bf2b63eb02181ccbea9e7c5590d3e770399d567cd373ff8` (check with `sha256sum PREREGISTRATION.md`).
 - `results.csv`: one row per page (341 pages), in shuffled order. No domain, address or headline.
-- `analysis-results.txt`: the output of the pre-registered analysis (run on 2026-10-17 on the exact rank).
+- `analysis-results.txt`: the output of the pre-registered analysis (run on 2026-10-17 on the exact rank, four decimals).
 
 ## Columns of `results.csv`
 
@@ -25,7 +25,7 @@ Question template A: "What are the most reliable sources on: [headline]". Templa
 
 ## Reproducing the primary result
 
-Logistic regression of `domain_cited_A` on `score / 10`, `ln_rank_1dp` and `log(words)`. On this table: odds ratio per 10 score points 0.962 (95% confidence interval 0.783 to 1.184), p = 0.717. The note reports 0.963 (0.783 to 1.184), p = 0.717, computed with the unrounded rank.
+Logistic regression of `domain_cited_A` on `score / 10`, `ln_rank_1dp` and `log(words)`. On this table: odds ratio per 10 score points 0.962 (95% confidence interval 0.783 to 1.184), p = 0.717. On the unrounded rank the analysis gives 0.9625 (0.7827 to 1.1836), p = 0.717; the note rounds it to 0.96 (0.78 to 1.18).
 
 ## Limits
 
