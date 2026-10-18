@@ -45,6 +45,69 @@ const EVALUATION_CRITERIA = [
   ],
 ] as const;
 
+// Strumenti nominati — solo fatti già registrati, con fonte e data, nelle pagine
+// "alternative" collegate (controllate il 16-21 settembre 2026). Nessuna classifica,
+// nessun punteggio: se una cella non è nella pagina collegata, rimanda alla pagina.
+const NAMED_TOOLS_CHECKED = '16–21 September 2026';
+const NAMED_TOOLS = [
+  {
+    name: 'Profound',
+    href: '/profound-alternative/',
+    free: 'No ongoing free tier (one-time, signup-gated report)',
+    entry: 'Starter $99/mo billed yearly: ChatGPT only, 50 prompts',
+    weights: 'Not published on the pages checked',
+  },
+  {
+    name: 'RankScale',
+    href: '/rankscale-alternative/',
+    free: 'None published on its pricing pages',
+    entry: 'Pro $99/mo: 1,200 credits',
+    weights: '7 core metrics described; exact weighted formula not published',
+  },
+  {
+    name: 'Goodie',
+    href: '/goodie-alternative/',
+    free: 'Essentials tier, credits-based; core monitoring on paid plans',
+    entry: 'Pro $99/mo',
+    weights: 'Metric types described; see the comparison page',
+  },
+  {
+    name: 'Veesie',
+    href: '/veesie-alternative/',
+    free: '7-day trial, 10 queries, no card',
+    entry: 'Starter €24/mo: 1 site, 20 prompts, 3 engines',
+    weights: '"GEO Score" formula named, exact weights not published',
+  },
+  {
+    name: 'AEO Vision',
+    href: '/aeovision-alternative/',
+    free: 'No free paid plan; free tools such as an llms.txt generator',
+    entry: 'Lite $9/mo: 30 prompts on ChatGPT, 1 brand',
+    weights: 'Factors described, exact weights not published',
+  },
+  {
+    name: 'Otterly',
+    href: '/otterly-alternative/',
+    free: '7-day trial, no card',
+    entry: 'See the comparison page',
+    weights: 'See the comparison page',
+  },
+  {
+    name: 'Semrush AI Visibility Toolkit',
+    href: '/semrush-ai-visibility-toolkit-alternative/',
+    free: 'Free plan includes some AI Visibility features; scope not disclosed',
+    entry: 'See the comparison page',
+    weights: 'See the comparison page',
+  },
+  {
+    name: 'GeoReady (this site)',
+    href: '/methodology/',
+    free: '$0, 5 audits/day, full nine-category report, no account, no card',
+    entry: 'Pro $19/mo: 1 domain, weekly monitoring',
+    weights: 'Nine categories and weights published, MIT-licensed',
+  },
+] as const;
+
 // Categorie di tool sul mercato — descritte senza inventare nomi o feature di vendor.
 const TOOL_CATEGORIES = [
   [
@@ -330,12 +393,12 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
       </p>
     </section>
 
-    {/* Category comparison matrix — category-level only, no vendor claims */}
+    {/* Category comparison matrix — category level; named tools follow in the next section */}
     <section class="mb-12 md:mb-16">
       <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">GEO tools compared, by category</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         This matrix compares the categories, not individual products, so it stays
-        true as vendors come and go. Use it to decide which kind of tool fits your
+        true as vendors come and go; named tools follow below. Use it to decide which kind of tool fits your
         question, then verify any specific product against the criteria above before
         you buy. "Varies" means the answer depends on the vendor and is worth
         checking yourself.
@@ -371,6 +434,39 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
         are different questions. The pattern that holds across all of them: the tool
         whose methodology you can read is the one you can trust the result from.
       </p>
+    </section>
+
+    {/* Named tools — facts as recorded on each comparison page, dated, not ranked */}
+    <section class="mb-12 md:mb-16">
+      <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">Named tools, as recorded on our comparison pages</h2>
+      <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
+        Each row repeats facts from the linked comparison page, which cites the vendor's
+        own pages and was checked between {NAMED_TOOLS_CHECKED}. The table is not a
+        ranking and prices change, so confirm on the vendor's site before you buy. We
+        build GeoReady, so read its row with that in mind.
+      </p>
+      <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+        <table class="w-full min-w-[760px] text-left text-sm">
+          <thead class="bg-paper">
+            <tr class="border-b border-rail">
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Tool</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Free option</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Entry paid tier</th>
+              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Scoring weights</th>
+            </tr>
+          </thead>
+          <tbody>
+            {NAMED_TOOLS.map((row) => (
+              <tr class="border-b border-rail/60 align-top last:border-0">
+                <th scope="row" class="px-4 py-3 font-semibold text-ink"><a href={row.href} class="underline decoration-rail underline-offset-4 hover:decoration-ink">{row.name}</a></th>
+                <td class="px-4 py-3 leading-relaxed text-ink-soft">{row.free}</td>
+                <td class="px-4 py-3 leading-relaxed text-ink-soft">{row.entry}</td>
+                <td class="px-4 py-3 leading-relaxed text-ink-soft">{row.weights}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <ArticleVisual
