@@ -8,11 +8,13 @@
  * update it here, once, when the endpoint moves.
  */
 export const BENCHMARK = {
-  measuredOn: '21 September 2026',
-  sampleLabel: '1200+ audited sites',
-  average: '55.1',
-  median: '57',
+  // Figures as published in the engine README on 17 October 2026 (latest audit per
+  // domain, self-selected sample). Keep README, this file and the monthly editions in step.
+  measuredOn: '17 October 2026',
+  sampleLabel: '1,800+ audited sites',
+  average: '56.5',
+  median: '59',
   llmsTxtAdoption: '58%',
-  schemaAdoption: '75%',
+  schemaAdoption: '76%',
   biggestGap: 'AI discovery files',
 } as const;
