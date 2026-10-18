@@ -13,12 +13,12 @@ const faqs = [
   {
     question: 'How many competitors should I analyze at once?',
     answer:
-      'Three to five direct rivals is usually enough to reveal a pattern. Pick the domains that already appear when you ask an AI engine "what is the best tool for X". More than that and the gaps blur together; fewer and you cannot tell a category-wide blocker from a single weak site.',
+      'Three to five direct rivals keeps the report readable and is enough to tell a category-wide blocker from a single weak site. That is a working rule, not a measured threshold. Pick the domains that already appear when you ask an AI engine "what is the best tool for X".',
   },
   {
     question: 'Does a higher GEO Score mean a competitor is cited more often?',
     answer:
-      'The GEO Score measures readiness — the technical and content signals AI retrieval rewards — not live citation counts. A higher score means a domain has fewer blockers and stronger citable signals, which correlates with being cited. To confirm who is actually cited for a given question, pair the analysis with a citation check.',
+      'The GEO Score measures readiness — the technical and content signals AI retrieval rewards — not live citation counts. A higher score means a domain has fewer blockers and stronger citable signals. This tool does not show that a higher score leads to more citations. To see who is actually cited for a given question, pair the analysis with a citation check.',
   },
   {
     question: 'When should I use head-to-head compare instead of multi-competitor analysis?',
@@ -59,8 +59,8 @@ const howToSteps = [
 ---
 
 <Shell
-  title="AI Competitor Benchmark: Analyze Multiple Websites"
-  description="Run a batch GEO audit on your site plus several competitors. Benchmark AI readiness, citability and technical signals to see where you stand against the field."
+  title="Competitor AI Visibility Analysis: Benchmark 3-5 Sites"
+  description="Run one GEO audit on your site and 3-5 competitors. See scores across nine categories and which gaps to fix first. Free, with a fair-use limit."
   canonical="https://geoready.dev/analyze-competitors/"
 >
   <div class="mx-auto max-w-7xl bg-paper px-4 py-10 text-ink sm:px-6 md:py-16">
@@ -70,7 +70,7 @@ const howToSteps = [
         <div>
           <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
             <h1 class="max-w-3xl font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
-              Benchmark multiple competitors' AI readiness in a single run.
+              Competitor AI visibility analysis: benchmark your site against 3-5 rivals in one run.
             </h1>
             <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">GeoReady · Competitors</p>
           </div>
@@ -92,7 +92,7 @@ const howToSteps = [
             ))}
           </div>
 
-          <p class="mt-8 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Last updated: May 2026</p>
+          <p class="mt-8 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Last updated: October 2026</p>
         </div>
 
         <div class="flex items-center">
@@ -182,7 +182,10 @@ const howToSteps = [
       </section>
 
       <section>
-        <h2>A worked example: one SaaS against three rivals</h2>
+        <h2>A worked example (hypothetical): one SaaS against three rivals</h2>
+        <p class="mt-4 text-sm text-ink-mute">
+          An illustrative scenario, not data from real sites.
+        </p>
         <p class="mt-4">
           A project-management SaaS keeps seeing one of its competitors cited
           when prospects ask an AI engine "what's the best tool for remote
@@ -270,13 +273,13 @@ const howToSteps = [
     "@graph": [
       {
         "@type": "WebPage",
-        "name": "Competitor AI Visibility Analysis — GeoReady",
+        "name": "Competitor AI Visibility Analysis: Benchmark 3-5 Sites",
         "description": "Analyze competitor AI visibility with GeoReady. Compare multiple websites across GEO scores, citability, technical readiness, and AI search signals.",
         "url": "https://geoready.dev/analyze-competitors/",
         "author": { "@id": "https://geoready.dev/#organization" },
         "publisher": { "@id": "https://geoready.dev/#organization" },
         "datePublished": "2026-05-12",
-        "dateModified": "2026-10-14",
+        "dateModified": "2026-10-18",
         "mainEntity": {
           "@type": "WebApplication",
           "@id": "https://geoready.dev/analyze-competitors/#tool",
