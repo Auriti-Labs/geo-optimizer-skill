@@ -13,9 +13,6 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Security
 - Website dependencies: the frontend lockfile is refreshed on top of 4.19.4 and `overrides` raise `js-yaml` 3.x, `fflate`, `smol-toml`, `uuid` and `postcss-selector-parser` (#623). `npm audit` goes from 29 findings to 14; the rest are `braces` and `sprintf-js` (no patched release, build-time Sanity CLI tooling) and their parents.
 
-### Fixed (web timeouts)
-- The web audit now stops at 55 s instead of 60 s. nginx cuts the proxy at 60 s, so the engine's own graceful answer (the JSON 504 that points to the CLI, or the "Error" badge for `/badge`) always lost the race and users got nginx's HTML 504 or a broken badge image. The 504 text no longer says "more than 60 seconds".
-
 ### Fixed (site consistency)
 - The four `*-alternative` comparison pages said the free audit covers 8 categories; it is nine since 4.19.0.
 - `/state-of-geo/` renders a dated benchmark snapshot in the HTML (it loaded numbers only through client script) and no longer says llms.txt and schema are "missing more often than not" while the cohort shows 58% and 76%. One snapshot (`lib/benchmarkSnapshot.ts`, matching the README figures of 17 October 2026) now feeds `/state-of-geo/`, `/best-geo-tools/` and `/veesie-alternative/`.
@@ -39,6 +36,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.
 - `TRADEMARKS.md`: a draft name and logo policy for forks and derived products (the MIT licence covers the code, not the names). Linked from the README.
 - README: the GitHub stars badges no longer use the shields.io `github/stars` endpoint, which was returning "Unable to select next GitHub token from pool". The count badge at the top now comes from badgen.net; the call-to-action at the bottom is a static shields.io badge without a number.
+
+## [4.19.5] — 2026-10-18
+
+### Fixed
+- Web API: the web audit now stops at 55 s instead of 60 s. nginx cuts the proxy at 60 s, so the engine's own graceful answer (the JSON 504 that points to the CLI, or the "Error" badge for `/badge`) always lost the race and users got nginx's HTML 504 or a broken badge image. The 504 text no longer says "more than 60 seconds".
 
 ## [4.19.4] — 2026-10-17
 
