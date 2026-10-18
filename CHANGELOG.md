@@ -22,6 +22,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - `/best-geo-tools/` shows a single modified date and drops the legacy v1 weights figure.
 - `/analyze-competitors/`: title, H1 and schema name match the queries the page answers, the worked example is labelled hypothetical and two unsourced claims are reworded.
 - `/research/`: the Jaccard and 57.8% figures of arXiv 2604.07585 are stated as the paper states them (day-to-day similarity of cited sources; ChatGPT runs with no citations; Swiss-German verticals), and two internal analyses without method or sample no longer quote a number.
+- Snippet tests started 2026-10-18 (one change per page, 28-day window): `/chatgpt-visibility-checker/` title and meta now say what it measures (it does not query ChatGPT) with an FAQ on how to check whether ChatGPT cites you; `/research/` meta names the sources and the 47 citability checks.
 
 ### Fixed (site contrast)
 - Colour tokens nudged to reach 4.5:1 for small text, as approved: `pass` `#0B8076` to `#0A7970`, `warn` `#9C6A06` to `#926306`, `fail` `#C93A2E` to `#C5392D`. A new `pass-light` (`#0D978C`) is used for the `exit 0` terminal labels on the dark well (3.9:1 before, 4.6:1 now), and the light text on the teal call-to-action panels is solid `pass-wash` instead of 70-90% opacity (3.2-4.2:1 before, 4.8:1 now). A colour scan of all 140 built pages (animations off) drops from 229 to 191 findings; the rest are the docs theme (fixed separately), the dimmed empty categories of the demo report and the `queued` grey on the roadmap.
