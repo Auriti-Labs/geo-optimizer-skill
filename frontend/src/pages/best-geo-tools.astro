@@ -1,29 +1,16 @@
 ---
 import Shell from '../components/Shell.astro';
 import ArticleVisual from '../components/ArticleVisual.astro';
+import { BENCHMARK } from '../lib/benchmarkSnapshot';
 
 const title = 'Best GEO Tools 2026: Compare AI Visibility Software';
 const description =
   'Compare GEO and AI visibility tools by audit depth, monitoring, llms.txt support, schema, workflows, and pricing fit. Includes GEO Optimizer.';
 const canonical = 'https://geoready.dev/best-geo-tools/';
 const datePublished = '2026-06-16';
-const dateModified = '2026-10-14';
+const dateModified = '2026-10-18';
+const dateModifiedLabel = 'October 18, 2026';
 
-// Aggregati della coorte GeoReady, letti da GET /api/public/benchmark.
-// Sono hardcoded di proposito: la build Docker gira prima che l'app sia in piedi,
-// quindi un fetch nel frontmatter fallirebbe, e i numeri caricati via JS (come fa
-// state-of-geo.astro) non entrano nell'HTML che un crawler AI legge senza eseguire
-// script. Il prezzo è che invecchiano: `measuredOn` rende la stagionatura visibile
-// al lettore invece di lasciarla implicita. Riallineare all'endpoint quando cambia.
-const BENCHMARK = {
-  measuredOn: '21 September 2026',
-  sampleLabel: '1200+ audited sites',
-  average: '55.1',
-  median: '57',
-  llmsTxtAdoption: '58%',
-  schemaAdoption: '75%',
-  biggestGap: 'AI discovery files',
-} as const;
 
 // Criteri di valutazione di un GEO tool — riusati nella tabella visibile.
 // Ogni criterio è una domanda concreta che un reviewer tecnico può verificare.
@@ -193,7 +180,7 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
       </p>
 
       <p class="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
-        Published June 16, 2026 · Last updated June 17, 2026 · 8 min read
+        Published June 16, 2026 · Last updated {dateModifiedLabel} · 8 min read
       </p>
     </header>
 
@@ -318,12 +305,6 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
       </p>
     </section>
 
-    <ArticleVisual
-      src="/images/article-visuals/N1HeroScoringWeights.png"
-      alt="Diagram of the legacy v1 GEO scoring weights (eight categories) that turn an audit score into a checklist."
-      caption="Legacy v1 weights shown. The current default, rubric v2, has nine categories; see the methodology page for the current weights."
-      height={452}
-    />
 
     {/* Tool categories */}
     <section class="mb-12 md:mb-16">
