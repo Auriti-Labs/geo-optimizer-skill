@@ -4,13 +4,14 @@ import VisualStage from '../components/VisualStage.astro';
 import NewsletterSignup from '../components/NewsletterSignup';
 import ArticleVisual from '../components/ArticleVisual.astro';
 import { marketingVisuals } from '../lib/marketingVisuals';
+import { BENCHMARK } from '../lib/benchmarkSnapshot';
 
 const title = 'State of GEO: AI Search Readiness Benchmark | GeoReady';
 const description =
   'GeoReady’s live AI search readiness benchmark, with a full report every month: average GEO score, llms.txt and schema adoption, and the biggest gaps.';
 const canonical = 'https://geoready.dev/state-of-geo/';
 const datePublished = '2026-06-11';
-const dateModified = '2026-10-01';
+const dateModified = '2026-10-18';
 
 // FAQ condivise tra il corpo della pagina (visibili) e lo schema FAQPage in fondo.
 // Risposte answer-first, claim-safe: mai "the web", sempre "audited sites".
@@ -33,7 +34,7 @@ const faqs = [
   {
     question: 'Why does llms.txt matter?',
     answer:
-      'An llms.txt file at your domain root gives AI tools a structured, human-readable map of your most important pages. It is an orientation file, not a confirmed ranking factor, but it is one of the clearest signals that a site has thought about AI discovery. Across audited sites, llms.txt adoption is still low, which makes it an easy early advantage.',
+      `An llms.txt file at your domain root gives AI tools a structured, human-readable map of your most important pages. It is an orientation file, not a confirmed ranking factor, but it is one of the clearest signals that a site has thought about AI discovery. As of ${BENCHMARK.measuredOn}, ${BENCHMARK.llmsTxtAdoption} of audited sites publish one, so having it is no longer a differentiator on its own; what the file lists still matters.`,
   },
   {
     question: 'Is this benchmark representative of the whole web?',
@@ -135,17 +136,32 @@ const heroVisual = marketingVisuals.commandCenterV2;
           <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">GET /api/public/benchmark · live</p>
         </div>
         <p class="mt-4">
-          Across sites audited by GeoReady, the basics of AI search readiness (AI
-          crawler access, an <code class="text-sm font-mono">llms.txt</code>, and
-          structured data) are still missing more often than not. The live numbers
-          below show the current average and median GEO score and adoption rates,
-          updated as new audits run and counting the most recent audit per domain.
+          Across sites audited by GeoReady, structured data and an
+          <code class="text-sm font-mono">llms.txt</code> are now present on most sites
+          (as of {BENCHMARK.measuredOn}: JSON-LD schema {BENCHMARK.schemaAdoption},
+          llms.txt {BENCHMARK.llmsTxtAdoption}), while {BENCHMARK.biggestGap}
+          remain the biggest gap. The snapshot below is written into the page; the live
+          numbers that replace it update as new audits run and count the most recent
+          audit per domain.
         </p>
 
-        {/* Loading state */}
-        <div id="bench-loading" class="mt-6 rounded-[4px] border border-rail bg-white px-5 py-8 text-center text-sm text-ink-mute">
-          Loading live benchmark data…
+        {/* Static snapshot: readable without JavaScript and by AI crawlers.
+            Hidden by the client script once live numbers arrive. */}
+        <div id="bench-static" class="mt-6 rounded-[4px] border border-rail bg-white px-5 py-5">
+          <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
+            Snapshot · {BENCHMARK.measuredOn} · {BENCHMARK.sampleLabel} · aggregated &amp; anonymized
+          </p>
+          <dl class="mt-3 grid gap-4 sm:grid-cols-4">
+            <div><dt class="text-xs text-ink-mute">Average GEO score</dt><dd class="font-head text-2xl font-extrabold tabular-nums text-ink">{BENCHMARK.average}<span class="text-sm font-normal text-ink-mute"> / 100</span></dd></div>
+            <div><dt class="text-xs text-ink-mute">Median score</dt><dd class="font-head text-2xl font-extrabold tabular-nums text-ink">{BENCHMARK.median}</dd></div>
+            <div><dt class="text-xs text-ink-mute">Publish an llms.txt</dt><dd class="font-head text-2xl font-extrabold tabular-nums text-ink">{BENCHMARK.llmsTxtAdoption}</dd></div>
+            <div><dt class="text-xs text-ink-mute">Valid JSON-LD schema</dt><dd class="font-head text-2xl font-extrabold tabular-nums text-ink">{BENCHMARK.schemaAdoption}</dd></div>
+          </dl>
+          <p class="mt-3 text-xs text-ink-mute">A sample of sites whose owners chose to run an audit, not a survey of the web.</p>
         </div>
+
+        {/* Loading state */}
+        <div id="bench-loading" class="hidden"></div>
 
         {/* Error / fallback state — still informative, no fabricated numbers */}
         <div id="bench-error" class="mt-6 hidden rounded-[4px] border border-rail bg-white px-5 py-6 text-sm text-ink-soft">
@@ -625,6 +641,7 @@ const heroVisual = marketingVisuals.commandCenterV2;
         if (barsRendered === 0) hide('b-adoption-section');
 
         hide('bench-loading');
+        hide('bench-static');
         show('bench');
       } catch {
         hide('bench-loading');

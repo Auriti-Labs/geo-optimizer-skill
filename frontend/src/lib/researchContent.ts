@@ -87,7 +87,7 @@ export const researchSources: ResearchSource[] = [
     year: '2026',
     authors: 'Schulte, Bleeker, Kaufmann',
     finding:
-      'AI-search visibility is a distribution, not a single value. Across four engines over 45 days, Jaccard similarity between runs sits at 0.34–0.42, and 57.8% of ChatGPT repetitions did not trigger a web search at all. A one-shot check is an unreliable estimate.',
+      'AI-search visibility is a distribution, not a single value. Across four engines (ChatGPT, Gemini, Google AI Mode, Perplexity) over a 45–46 day window, the day-to-day Jaccard similarity of cited sources averaged 0.34–0.42, and 57.8% of ChatGPT runs returned no citations. A one-shot check is an unreliable estimate. The data come from Swiss-German verticals, so the authors caution against generalising.',
     howWeUseIt:
       'Directly shapes the State of GEO benchmark (aggregate distributions, medians and percentiles rather than point claims) and the monitoring product, which runs scheduled repeat checks and tracks score history.',
     link: 'https://arxiv.org/abs/2604.07585',
@@ -183,7 +183,7 @@ export const researchSources: ResearchSource[] = [
     venue: 'GEO Optimizer analysis',
     year: '2026',
     finding:
-      'Across audited sites, valid JSON-LD (Organization, WebSite, Article) correlates with a ~28-point higher average GEO score than sites with none — consistent with structural signals mattering more than copy tactics in the published benchmarks.',
+      'In GeoReady’s audited sample, sites with valid JSON-LD (Organization, WebSite, Article) score higher on the GEO rubric on average than sites with none. That is an association inside a self-selected sample, and the score includes the schema category itself, so it does not show that structured data causes citations. The size of the gap is not published here.',
     howWeUseIt:
       'Drives the Schema JSON-LD scoring category (max 14 points in rubric v2, 16 in v1) and the structured-data fixer that generates complete @context + @type + sameAs blocks.',
     link: 'https://geoready.dev/state-of-geo/',
@@ -209,7 +209,7 @@ export const researchSources: ResearchSource[] = [
     venue: 'GEO Optimizer analysis',
     year: '2026',
     finding:
-      'On-page and technical factors that influence whether an AI system selects a source: crawlability, passage-level structure, entity resolution, and freshness — the same levers the factorial and audit studies identify as reproducible.',
+      'The on-page and technical factors the audit checks because they decide whether an AI system can fetch, parse and quote a page: crawlability, passage-level structure, entity signals, and freshness. Whether each one changes which sources an engine cites is not established; the audit measures readiness, not citation outcomes.',
     howWeUseIt:
       'Mapped into the scoring categories and the technical-signal checks (X-Robots-Tag, noai directives, crawl-delay, canonical, HTTPS).',
     linkLabel: 'Internal analysis',

@@ -1,5 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
+import { BENCHMARK } from '../lib/benchmarkSnapshot';
 
 const title = 'Veesie Alternative: Global GEO Monitoring | GeoReady';
 const description =
@@ -19,7 +20,7 @@ const COMPARISON_ROWS = [
   ['Built for', 'Benelux market (Dutch/French/English), ClickForest, Belgium', 'Global, English, Juan Camilo Auriti'],
   ['Entry paid tier', 'Starter €24/mo: 1 site, 20 prompts, 3 engines', 'Pro $19/mo: 1 domain weekly monitoring, 30-audit history'],
   ['Free option', '7-day trial, 10 queries, no card, excludes Claude/Gemini', '$0 forever, 5 audits/day, full nine-category report, no account, no card'],
-  ['AI engines', 'Up to 5: ChatGPT, Perplexity, Google AI Overviews (Starter); +Claude, Gemini (Plus+). No Copilot, no AI Mode', 'Free audit covers 8 GEO signal categories site-wide; paid AI citation tracking = 5 automated Perplexity checks/day (Studio+), plus ChatGPT/Google via manual paste (Agency+)'],
+  ['AI engines', 'Up to 5: ChatGPT, Perplexity, Google AI Overviews (Starter); +Claude, Gemini (Plus+). No Copilot, no AI Mode', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = 5 automated Perplexity checks/day (Studio+), plus ChatGPT/Google via manual paste (Agency+)'],
   ['Monitoring cadence', 'Weekly, every paid tier', 'Weekly (Pro) → Daily (Studio, Agency) → Hourly (Enterprise*)'],
   ['Sites per tier', '1 (Starter, Plus) · 2 (Pro) · uncapped, not stated (Agency)', '1 (Pro) · 15 (Studio) · 50 (Agency) · unlimited (Enterprise)'],
   ['Top self-serve tier', 'Agency €370/mo', 'Agency $89/mo'],
@@ -27,7 +28,7 @@ const COMPARISON_ROWS = [
   ['Open-source option', 'None found', 'CLI (geo-optimizer-skill), MIT-licensed, self-hostable, unlimited via pip'],
   ['Data residency', 'EU-only: Frankfurt database, Cloudflare Europe processing', 'Not stated as a residency guarantee on pricing.md. No claim made'],
   ['GA4 integration', 'Pro (€82/mo) and Agency', 'Not offered as a named integration on pricing.md. No claim made'],
-  ['Public benchmark', 'Sector-level, Benelux-only, 26 brands / 5 sectors', 'State of GEO: global, 1200+ audited sites, average score 55.1/100, measured 21 September 2026 (not sector-segmented)'],
+  ['Public benchmark', 'Sector-level, Benelux-only, 26 brands / 5 sectors', `State of GEO: global, ${BENCHMARK.sampleLabel}, average score ${BENCHMARK.average}/100, measured ${BENCHMARK.measuredOn} (not sector-segmented)`],
   ['Integrations', 'GA4 (Pro+), CSV export (Pro+), shareable report links (all plans); no API/Slack/Zapier found', 'API access, Bearer token (Pro+); no GA4/Slack/Zapier integration stated on pricing.md'],
 ] as const;
 
