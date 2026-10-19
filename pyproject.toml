@@ -57,7 +57,7 @@ pdf = [
 ]
 mcp = [
     # <2: il server usa mcp.server.fastmcp, rimosso in mcp 2.x (rinominato MCPServer).
-    "mcp>=1.0.0,<2",
+    "mcp>=1.0.0,<3",
 ]
 embedding = [
     "sentence-transformers>=2.2.0,<7.0",
