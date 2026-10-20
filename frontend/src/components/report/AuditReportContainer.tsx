@@ -21,7 +21,7 @@ const ALL_LOCKED_SLUGS = ['llms', 'schema', 'content', 'ai_discovery', 'brand_en
 type RecommendedPlan = {
   id: 'pro' | 'studio';
   name: 'Pro' | 'Studio';
-  price: '$19' | '$49';
+  price: '€19' | '€49';
   cta: string;
   headline: string;
   reason: string;
@@ -32,7 +32,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
   robots: {
     id: 'pro',
     name: 'Pro',
-    price: '$19',
+    price: '€19',
     cta: 'Start Pro monitoring',
     headline: 'Start with Pro to keep technical GEO signals from regressing.',
     reason: 'This looks like a technical visibility problem. Pro is the right first upgrade when you need weekly checks, score history, PDF export, and regression alerts for one domain.',
@@ -41,7 +41,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
   llms: {
     id: 'pro',
     name: 'Pro',
-    price: '$19',
+    price: '€19',
     cta: 'Start Pro monitoring',
     headline: 'Start with Pro to monitor llms.txt and crawl-readiness over time.',
     reason: 'llms.txt and crawler-discovery issues are usually fixed quickly, then monitored. Pro keeps the domain on a weekly audit loop and warns when the setup changes.',
@@ -50,7 +50,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
   schema: {
     id: 'pro',
     name: 'Pro',
-    price: '$19',
+    price: '€19',
     cta: 'Start Pro monitoring',
     headline: 'Start with Pro to validate schema fixes every week.',
     reason: 'Schema regressions are easy to introduce during CMS, template, or release changes. Pro gives one-domain monitoring, history, and alerts after the first fix.',
@@ -59,7 +59,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
   meta: {
     id: 'pro',
     name: 'Pro',
-    price: '$19',
+    price: '€19',
     cta: 'Start Pro monitoring',
     headline: 'Start with Pro to keep metadata and canonical signals stable.',
     reason: 'Metadata issues affect both classic SEO and AI answer extraction. Pro is enough when the main job is catching technical drift on one domain.',
@@ -68,7 +68,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
   signals: {
     id: 'pro',
     name: 'Pro',
-    price: '$19',
+    price: '€19',
     cta: 'Start Pro monitoring',
     headline: 'Start with Pro to catch freshness and technical signal drift.',
     reason: 'Freshness and technical signal changes are monitoring problems. Pro keeps a score history and alerts you when a working setup degrades.',
@@ -77,7 +77,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
   content: {
     id: 'studio',
     name: 'Studio',
-    price: '$49',
+    price: '€49',
     cta: 'Start Studio tracking',
     headline: 'Use Studio when the gap is citation quality, not just crawlability.',
     reason: 'Content gaps need more than a weekly technical score. Studio adds AI citation tracking, competitor comparison, and client-ready exports so you can see whether answer engines actually mention and cite you.',
@@ -86,7 +86,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
   ai_discovery: {
     id: 'studio',
     name: 'Studio',
-    price: '$49',
+    price: '€49',
     cta: 'Start Studio tracking',
     headline: 'Use Studio to track whether AI engines discover and cite the site.',
     reason: 'Discovery issues sit between technical access and answer-engine presence. Studio is the better fit when you need citation checks and competitor context, not only monitoring.',
@@ -95,7 +95,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
   brand_entity: {
     id: 'studio',
     name: 'Studio',
-    price: '$49',
+    price: '€49',
     cta: 'Start Studio tracking',
     headline: 'Use Studio when entity authority is the blocker.',
     reason: 'Brand and entity gaps show up in whether answer engines mention you against competitors. Studio adds citation tracking and comparison workflows for that job.',
@@ -336,7 +336,7 @@ function ReportNextStep({
               data-plan-name={plan.name}
               data-plan-period="monthly"
               data-plan-price={plan.price}
-              data-plan-currency="USD"
+              data-plan-currency="EUR"
               data-cta-location="audit_report_next_step"
               className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-pass-deep bg-white px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-pass-deep transition-colors hover:bg-pass-wash"
             >
