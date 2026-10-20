@@ -611,8 +611,8 @@ def format_audit_text(result: AuditResult) -> str:
 
     # CLI→platform funnel: the CLI is one-shot, continuity lives in the platform
     lines.append("")
-    lines.append("  💡 One-shot audit. The free plan at https://geoready.dev tracks 1 domain")
-    lines.append("     with a weekly drift email — plus score history and AI citation tracking.")
+    lines.append("  💡 One-shot audit. The free plan at https://geoready.dev saves your reports and runs")
+    lines.append("     one real AI answer check a week; weekly score monitoring starts on Pro.")
     # Per-run web-report link: the user's own URL, pre-filled in the free web
     # audit page. Printed text only — the CLI never opens a browser and never
     # makes a network call for this (no phone-home: the README FAQ promises it).
