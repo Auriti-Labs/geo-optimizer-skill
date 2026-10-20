@@ -28,7 +28,7 @@ const selfServePlans = [
   {
     id: 'pro',
     name: 'Pro',
-    price: '$19',
+    price: '€19',
     period: '/month',
     status: 'Founding price',
     statusStyle: 'bg-pass-wash text-pass-deep',
@@ -47,38 +47,13 @@ const selfServePlans = [
       'API access (Bearer token)',
     ],
   },
-  {
-    id: 'studio',
-    name: 'Studio',
-    price: '$49',
-    period: '/month',
-    status: 'Founding price',
-    statusStyle: 'bg-pass-wash text-pass-deep',
-    description: 'AI citation tracking, multi-site daily monitoring, unbranded PDF exports, and competitor comparison. For consultants and agencies managing a portfolio.',
-    cta: 'Start with Studio',
-    ctaHref: 'https://app.geoready.dev/signup?plan=studio&intent=citations&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=studio_card',
-    ctaStyle: 'border border-rail bg-white text-ink hover:bg-pass-wash',
-    recommended: false,
-    cadence: 'schedule: daily · 15 domains',
-    features: [
-      'Everything in Pro',
-      'AI citation tracking: 5 automated checks/day (Perplexity)',
-      '15 domains, daily monitoring',
-      '12-month score history',
-      'Unbranded PDF export (removes GeoReady footer and badge)',
-      'Custom-logo white-label: roadmap',
-      'Competitor comparison',
-      'Batch audit: 50 URLs',
-      'Priority support',
-    ],
-  },
 ];
 
 const scalePlans = [
   {
     id: 'agency',
     name: 'Agency',
-    price: '$89',
+    price: '€89',
     period: '/month',
     status: 'Founding price',
     statusStyle: 'bg-pass-wash text-pass-deep',
@@ -87,8 +62,11 @@ const scalePlans = [
     ctaHref: 'https://app.geoready.dev/signup?plan=agency&intent=portfolio&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=agency_card',
     cadence: 'schedule: daily · 50 domains',
     features: [
-      'Everything in Studio',
+      'Everything in Pro',
       '50 domains, daily monitoring',
+      'AI citation tracking: 5 automated checks/day (Perplexity)',
+      'Unbranded PDF export (removes GeoReady footer and badge)',
+      'Competitor comparison',
       '24-month score history',
       'Team workspace (owner / editor / viewer)',
       'Unlimited batch audits',
@@ -144,19 +122,7 @@ const planChoiceRows = [
     tracking: 'pricing_choice_pro_monitoring',
     planId: 'pro',
     planName: 'Pro',
-    price: '$19',
-    period: 'monthly',
-  },
-  {
-    intent: 'I need AI citation tracking or client-ready reports.',
-    plan: 'Studio',
-    reason: 'Choose Studio when AI citations, competitor comparison, unbranded exports, or several monitored domains matter.',
-    href: 'https://app.geoready.dev/signup?plan=studio&intent=citations&onboarding=first_domain&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid&utm_content=studio_choice',
-    cta: 'Start Studio',
-    tracking: 'pricing_choice_studio_citations',
-    planId: 'studio',
-    planName: 'Studio',
-    price: '$49',
+    price: '€19',
     period: 'monthly',
   },
   {
@@ -168,7 +134,7 @@ const planChoiceRows = [
     tracking: 'pricing_choice_agency_portfolio',
     planId: 'agency',
     planName: 'Agency',
-    price: '$89',
+    price: '€89',
     period: 'monthly',
   },
 ] as const;
@@ -192,7 +158,7 @@ const afterCheckoutSteps = [
   {
     step: '04',
     title: 'Monitoring starts from there',
-    desc: 'Pro runs weekly for one domain. Studio and Agency move to daily multi-site monitoring with longer history and client workflows.',
+    desc: 'Pro runs weekly for one domain. Agency moves to daily multi-site monitoring with longer history and client workflows.',
   },
 ] as const;
 
@@ -204,22 +170,22 @@ const trustAssurances = [
 ] as const;
 
 // '✓' renders as a drawn SVG check; '—' stays typographic.
-const comparisonRows: [string, string, string, string, string][] = [
-  ['GEO score (0-100)',      '✓',       '✓',        '✓',        '✓'],
-  ['Full 9-category report', '✓',       '✓',        '✓',        '✓'],
-  ['Audits per day',         '5',       '∞',        '∞',        '∞'],
-  ['Domain monitoring',      '—',       '1 / week', '15 / day', '50 / day'],
-  ['Score history',          '—',       '30 audits','12 months','24 months'],
-  ['Regression alerts',      '—',       '✓',        '✓',        '✓'],
-  ['PDF export',             '—',       '✓',        '✓',        '✓'],
-  ['Unbranded PDF export',   '—',       '—',        '✓',        '✓'],
-  ['Custom-logo white-label','—',       '—',        'roadmap',  'roadmap'],
-  ['Competitor comparison',  '—',       '—',        '✓',        '✓'],
-  ['Bulk audit',             '—',       '—',        '50 URLs',  '∞'],
-  ['Team workspace',         '—',       '—',        '—',        '✓'],
-  ['AI search snapshots',    '—',       '—',        '5 runs/day', '✓'],
-  ['API access',             '—',       '✓',        '✓',        '✓'],
-  ['CLI (MIT)',               '✓',       '✓',        '✓',        '✓'],
+const comparisonRows: [string, string, string, string][] = [
+  ['GEO score (0-100)', '✓', '✓', '✓'],
+  ['Full 9-category report', '✓', '✓', '✓'],
+  ['Audits per day', '5', '∞', '∞'],
+  ['Domain monitoring', '—', '15 / day', '50 / day'],
+  ['Score history', '—', '12 months', '24 months'],
+  ['Regression alerts', '—', '✓', '✓'],
+  ['PDF export', '—', '✓', '✓'],
+  ['Unbranded PDF export', '—', '✓', '✓'],
+  ['Custom-logo white-label', '—', 'roadmap', 'roadmap'],
+  ['Competitor comparison', '—', '✓', '✓'],
+  ['Bulk audit', '—', '50 URLs', '∞'],
+  ['Team workspace', '—', '—', '✓'],
+  ['AI search snapshots', '—', '5 runs/day', '✓'],
+  ['API access', '—', '✓', '✓'],
+  ['CLI (MIT)', '✓', '✓', '✓'],
 ];
 
 // CLI vs Pro. Every row below was checked against the CLI source and docs:
@@ -298,14 +264,13 @@ const faqs = [
 const heroCadenceRows = [
   { plan: 'Free', value: 'run: on demand', detail: '5 audits/day' },
   { plan: 'Pro', value: 'schedule: weekly', detail: '1 domain' },
-  { plan: 'Studio', value: 'schedule: daily', detail: '15 domains' },
   { plan: 'Agency', value: 'schedule: daily', detail: '50 domains' },
 ] as const;
 ---
 
 <Shell
   title="GeoReady Pricing | Free AI Audit & Monitoring"
-  description="The full 9-category GEO audit is free, no account. Pro adds weekly monitoring, score history, and alerts. Studio and Agency add multi-site daily monitoring."
+  description="The full 9-category GEO audit is free, no account. Pro adds weekly monitoring, score history, and alerts. Agency adds multi-site daily monitoring."
   canonical="https://geoready.dev/pricing/"
 >
   {/* Hero */}
@@ -338,18 +303,14 @@ const heroCadenceRows = [
             </span>
           </div>
 
-          <div class="mt-8 grid gap-3 sm:grid-cols-3">
+          <div class="mt-8 grid gap-3 sm:grid-cols-2">
             <div class="border-l border-rail pl-4">
               <p class="text-sm font-semibold text-ink">Free</p>
               <p class="mt-1 text-sm text-ink-soft">Single-URL audit, no account.</p>
             </div>
             <div class="border-l border-rail pl-4">
               <p class="text-sm font-semibold text-ink">Pro</p>
-              <p class="mt-1 text-sm text-ink-soft">$19/month founding price.</p>
-            </div>
-            <div class="border-l border-rail pl-4">
-              <p class="text-sm font-semibold text-ink">Studio</p>
-              <p class="mt-1 text-sm text-ink-soft">Multi-site monitoring and exports.</p>
+              <p class="mt-1 text-sm text-ink-soft">€19/month founding price.</p>
             </div>
           </div>
 
@@ -381,11 +342,10 @@ const heroCadenceRows = [
         </aside>
       </div>
 
-      <div class="mt-12 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail md:grid-cols-4">
+      <div class="mt-12 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail md:grid-cols-3">
         {[
           ['Free', 'Audit once, learn what to fix.'],
           ['Pro', 'Track one domain weekly.'],
-          ['Studio', 'Run a portfolio daily.'],
           ['Agency', 'Add team and bulk workflows.'],
         ].map(([label, text]) => (
           <div class="bg-white p-5">
@@ -469,7 +429,7 @@ const heroCadenceRows = [
                 data-plan-name={plan.name}
                 data-plan-price={plan.price}
                 data-plan-period={plan.period}
-                data-plan-currency="USD"
+                data-plan-currency="EUR"
                 data-cta-location="pricing_page"
                 class={`block rounded-[4px] px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] transition-colors ${plan.ctaStyle}`}
               >
@@ -529,7 +489,7 @@ const heroCadenceRows = [
                   data-plan-name={plan.name}
                   data-plan-price={plan.price}
                   data-plan-period={plan.period}
-                  data-plan-currency="USD"
+                  data-plan-currency="EUR"
                   data-cta-location="pricing_page"
                   class="block rounded-[4px] border border-rail bg-white px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
                 >
@@ -606,7 +566,7 @@ const heroCadenceRows = [
         <p class="mt-3 text-sm leading-relaxed text-ink-soft">
           Pick the plan by the job you need done after the audit, not by feature count. A one-time
           diagnosis stays free. Ongoing monitoring starts with Pro. AI citation
-          tracking and client workflows start with Studio.
+          tracking and client workflows start with Agency.
         </p>
       </div>
 
@@ -640,7 +600,7 @@ const heroCadenceRows = [
                       data-plan-name={row.planName}
                       data-plan-price={row.price}
                       data-plan-period={row.period}
-                      data-plan-currency="USD"
+                      data-plan-currency="EUR"
                       data-cta-location={row.tracking}
                       class="inline-flex whitespace-nowrap rounded-[4px] border border-rail bg-white px-3 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-pass-wash"
                     >
@@ -854,7 +814,6 @@ const heroCadenceRows = [
               <th class="w-[40%] border-b border-rail px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Feature</th>
               <th class="border-b border-rail px-3 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Free</th>
               <th class="border-b border-rail bg-pass-wash/60 px-3 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep">Pro</th>
-              <th class="border-b border-rail px-3 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Studio</th>
               <th class="border-b border-rail px-3 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Agency</th>
             </tr>
           </thead>
@@ -968,9 +927,9 @@ const heroCadenceRows = [
           href="https://app.geoready.dev/signup?plan=pro"
           data-plan-id="pro"
           data-plan-name="Pro"
-          data-plan-price="$19"
+          data-plan-price="€19"
           data-plan-period="/month"
-          data-plan-currency="USD"
+          data-plan-currency="EUR"
           data-cta-location="pricing_footer"
           class="inline-block rounded-[4px] bg-white px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-pass-deep transition-colors hover:bg-pass-wash"
         >
@@ -1012,7 +971,7 @@ const heroCadenceRows = [
       {
         "@type": "WebPage",
         "name": "GeoReady Pricing",
-        "description": "GeoReady pricing: free audit with no account required, Pro monitoring, Studio multi-site, Agency workspace.",
+        "description": "GeoReady pricing: free audit with no account required, Pro monitoring, Agency multi-site and workspace.",
         "url": "https://geoready.dev/pricing/",
         "isPartOf": { "@id": "https://geoready.dev/#website" }
       },
@@ -1027,7 +986,7 @@ const heroCadenceRows = [
               "@type": "Offer",
               "name": "Free",
               "price": "0",
-              "priceCurrency": "USD",
+              "priceCurrency": "EUR",
               "description": "Single-URL GEO audit, no account required, full 9-category report.",
               "availability": "https://schema.org/InStock",
               "url": "https://geoready.dev"
@@ -1040,11 +999,11 @@ const heroCadenceRows = [
               "@type": "Offer",
               "name": "Pro",
               "price": "19",
-              "priceCurrency": "USD",
+              "priceCurrency": "EUR",
               "priceSpecification": {
                 "@type": "UnitPriceSpecification",
                 "price": "19",
-                "priceCurrency": "USD",
+                "priceCurrency": "EUR",
                 "unitCode": "MON"
               },
               "description": "Weekly monitoring for 1 domain, score history, regression alerts, PDF export, API access.",
@@ -1057,32 +1016,13 @@ const heroCadenceRows = [
             "position": 3,
             "item": {
               "@type": "Offer",
-              "name": "Studio",
-              "price": "49",
-              "priceCurrency": "USD",
-              "priceSpecification": {
-                "@type": "UnitPriceSpecification",
-                "price": "49",
-                "priceCurrency": "USD",
-                "unitCode": "MON"
-              },
-              "description": "15 domains, daily monitoring, unbranded PDF export, competitor comparison, 12-month history.",
-              "availability": "https://schema.org/InStock",
-              "url": "https://app.geoready.dev/signup?plan=studio"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 4,
-            "item": {
-              "@type": "Offer",
               "name": "Agency",
               "price": "89",
-              "priceCurrency": "USD",
+              "priceCurrency": "EUR",
               "priceSpecification": {
                 "@type": "UnitPriceSpecification",
                 "price": "89",
-                "priceCurrency": "USD",
+                "priceCurrency": "EUR",
                 "unitCode": "MON"
               },
               "description": "50 domains, daily monitoring, team workspace, unlimited bulk audits, AI answer snapshots (Perplexity automated).",
