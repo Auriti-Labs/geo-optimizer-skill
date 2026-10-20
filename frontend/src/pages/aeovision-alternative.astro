@@ -16,12 +16,12 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 // Nessun punteggio inventato: solo ciò che ciascun vendor pubblica.
 const COMPARISON_ROWS = [
   ['Built for', 'AI Search Visibility Platform, Toronto CA — founded 2025, 500+ brands claimed (aeovision.ai, accessed 2026-09-19)', 'Open-source GEO audit engine + hosted monitoring — global, Juan Camilo Auriti'],
-  ['Entry paid tier', 'Lite $9/mo — 30 prompts on ChatGPT, checked every 3 days, 1 brand (aeovision.ai/plans, accessed 2026-09-19)', 'Pro $19/mo — 1 domain weekly monitoring, 30-audit history, API access'],
-  ['Free option', 'No free paid plan. Free tools only (llms.txt generator, WebMCP snippet, AI bot detector, page readiness) plus a free Citation Insights embeddable widget (aeovision.ai/plans, /tools, /citation-insights, accessed 2026-09-19)', '$0 forever, 5 audits/day, full nine-category report, no account, no card'],
+  ['Entry paid tier', 'Lite $9/mo — 30 prompts on ChatGPT, checked every 3 days, 1 brand (aeovision.ai/plans, accessed 2026-09-19)', 'Pro €19/mo — 1 domain weekly monitoring, 30-audit history, API access'],
+  ['Free option', 'No free paid plan. Free tools only (llms.txt generator, WebMCP snippet, AI bot detector, page readiness) plus a free Citation Insights embeddable widget (aeovision.ai/plans, /tools, /citation-insights, accessed 2026-09-19)', '€0 forever, 5 audits/day, full nine-category report, no account, no card'],
   ['AI engines', 'Up to 6: ChatGPT, Perplexity, Gemini, Claude, Google AI Mode, Google AI Overviews. Lite = ChatGPT only; Solo/Growth = 5; Enterprise = all. No Copilot/Grok/DeepSeek/Meta AI (aeovision.ai/plans, accessed 2026-09-19)', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = 5 automated Perplexity checks/day (Studio+), plus ChatGPT/Google via manual paste (Agency+)'],
   ['Monitoring cadence', 'Lite every 3 days (30 prompts); Solo 70 daily; Growth 300 daily per brand; Agency daily visibility checks (aeovision.ai/plans, /agency-pricing, accessed 2026-09-19)', 'Weekly (Pro) to Daily (Studio, Agency) to Hourly (Enterprise)'],
   ['Brands per tier', '1 (Lite, Solo), 3 (Growth), unlimited (Enterprise); agency = unlimited clients (aeovision.ai/plans, accessed 2026-09-19)', '1 (Pro), 15 (Studio), 50 (Agency), unlimited (Enterprise)'],
-  ['Top team tier', 'Growth $299/mo (individual), Agency Pro $799/mo annual (aeovision.ai/plans, /agency-pricing, accessed 2026-09-19)', 'Agency $89/mo'],
+  ['Top team tier', 'Growth $299/mo (individual), Agency Pro $799/mo annual (aeovision.ai/plans, /agency-pricing, accessed 2026-09-19)', 'Agency €89/mo'],
   ['Scoring transparency', 'Visibility score described by factors (mention frequency, citations, sentiment, competitive positioning) but exact weights not published (aeovision.ai/plans, accessed 2026-09-19)', 'Full nine-category rubric and weights published; scoring repo publicly auditable'],
   ['Open-source option', 'None found — no GitHub repository referenced; dev/docs pages 404 (accessed 2026-09-19)', 'CLI (geo-optimizer-skill), MIT-licensed, self-hostable, unlimited via pip'],
   ['API', 'Custom API access only on Enterprise; no public API documentation page found (aeovision.ai/enterprise, accessed 2026-09-19)', 'API access, Bearer token (Pro+)'],
@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: 'Does AEO Vision have a free plan?',
-    a: 'No free paid tier. The pricing page lists paid plans starting at $9/month (Lite) with no free plan, and Agency plans explicitly have no free trial. What is free on aeovision.ai are separate tools: an llms.txt generator, a WebMCP snippet generator, an AI bot detector, a page agent-readiness audit, and a Citation Insights embeddable widget (aeovision.ai/plans, /tools, /citation-insights, accessed 2026-09-19). GeoReady\'s Free plan is a permanent one: $0 forever, 5 full audits a day, no account.',
+    a: 'No free paid tier. The pricing page lists paid plans starting at $9/month (Lite) with no free plan, and Agency plans explicitly have no free trial. What is free on aeovision.ai are separate tools: an llms.txt generator, a WebMCP snippet generator, an AI bot detector, a page agent-readiness audit, and a Citation Insights embeddable widget (aeovision.ai/plans, /tools, /citation-insights, accessed 2026-09-19). GeoReady\'s Free plan is a permanent one: €0 forever, 5 full audits a day, no account.',
   },
   {
     q: 'What does GeoReady do that AEO Vision does not?',
@@ -112,10 +112,10 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>When an AEO Vision alternative makes sense</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
-        <li>You want a free option that isn't a paid-only platform. AEO Vision has no free paid plan and no trial on Agency plans (aeovision.ai/plans, accessed 2026-09-19); GeoReady's Free plan is $0 forever, 5 full audits a day, no account.</li>
+        <li>You want a free option that isn't a paid-only platform. AEO Vision has no free paid plan and no trial on Agency plans (aeovision.ai/plans, accessed 2026-09-19); GeoReady's Free plan is €0 forever, 5 full audits a day, no account.</li>
         <li>You want to read the scoring logic rather than trust a named-but-undisclosed formula. AEO Vision describes its score's inputs but doesn't publish weights (aeovision.ai/plans, accessed 2026-09-19); GeoReady's{' '}<a href="/methodology/" class={PROSE_LINK}>full scoring methodology</a>{' '}— every category and the weight it carries — is public.</li>
         <li>You want an open-source, self-hostable option. AEO Vision publishes no repo or CLI (accessed 2026-09-19); GeoReady's engine is MIT-licensed and self-hostable.</li>
-        <li>You want an API on a lower tier. AEO Vision lists custom API only on Enterprise (aeovision.ai/enterprise, accessed 2026-09-19); GeoReady's Bearer-token API starts at Pro ($19/mo).</li>
+        <li>You want an API on a lower tier. AEO Vision lists custom API only on Enterprise (aeovision.ai/enterprise, accessed 2026-09-19); GeoReady's Bearer-token API starts at Pro (€19/mo).</li>
         <li>You want CI/CD enforcement. GeoReady ships a GitHub Action that can fail a build below a minimum score; AEO Vision doesn't publish a CI/CD product.</li>
       </ul>
       <p class="mt-4">

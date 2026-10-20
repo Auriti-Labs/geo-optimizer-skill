@@ -18,12 +18,12 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 // punteggio inventato: solo ciò che ciascun vendor pubblica.
 const COMPARISON_ROWS = [
   ['Built for', 'Benelux market (Dutch/French/English), ClickForest, Belgium', 'Global, English, Juan Camilo Auriti'],
-  ['Entry paid tier', 'Starter €24/mo: 1 site, 20 prompts, 3 engines', 'Pro $19/mo: 1 domain weekly monitoring, 30-audit history'],
-  ['Free option', '7-day trial, 10 queries, no card, excludes Claude/Gemini', '$0 forever, 5 audits/day, full nine-category report, no account, no card'],
+  ['Entry paid tier', 'Starter €24/mo: 1 site, 20 prompts, 3 engines', 'Pro €19/mo: 1 domain weekly monitoring, 30-audit history'],
+  ['Free option', '7-day trial, 10 queries, no card, excludes Claude/Gemini', '€0 forever, 5 audits/day, full nine-category report, no account, no card'],
   ['AI engines', 'Up to 5: ChatGPT, Perplexity, Google AI Overviews (Starter); +Claude, Gemini (Plus+). No Copilot, no AI Mode', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = 5 automated Perplexity checks/day (Studio+), plus ChatGPT/Google via manual paste (Agency+)'],
   ['Monitoring cadence', 'Weekly, every paid tier', 'Weekly (Pro) → Daily (Studio, Agency) → Hourly (Enterprise*)'],
   ['Sites per tier', '1 (Starter, Plus) · 2 (Pro) · uncapped, not stated (Agency)', '1 (Pro) · 15 (Studio) · 50 (Agency) · unlimited (Enterprise)'],
-  ['Top self-serve tier', 'Agency €370/mo', 'Agency $89/mo'],
+  ['Top self-serve tier', 'Agency €370/mo', 'Agency €89/mo'],
   ['Scoring transparency', '"GEO Score" formula named, exact weights not published', 'Full nine-category rubric and weights published; scoring repo publicly auditable'],
   ['Open-source option', 'None found', 'CLI (geo-optimizer-skill), MIT-licensed, self-hostable, unlimited via pip'],
   ['Data residency', 'EU-only: Frankfurt database, Cloudflare Europe processing', 'Not stated as a residency guarantee on pricing.md. No claim made'],
@@ -47,7 +47,7 @@ const faqs = [
   },
   {
     q: 'Is there a free way to try Veesie?',
-    a: "Yes: a 7-day trial, 10 queries across ChatGPT, Perplexity, and Google AI Overviews, no credit card required, but Claude and Gemini are excluded during the trial and it expires (veesie.com/pricing, accessed 2026-09-01). GeoReady's Free plan has no trial period: it's $0 forever, 5 full audits a day, no account required.",
+    a: "Yes: a 7-day trial, 10 queries across ChatGPT, Perplexity, and Google AI Overviews, no credit card required, but Claude and Gemini are excluded during the trial and it expires (veesie.com/pricing, accessed 2026-09-01). GeoReady's Free plan has no trial period: it's €0 forever, 5 full audits a day, no account required.",
   },
   {
     q: 'Why is Veesie priced in euros and GeoReady in dollars?',
@@ -63,7 +63,7 @@ const faqs = [
   },
   {
     q: 'Does Veesie offer an API?',
-    a: 'No. No API, Slack, Zapier, or webhook integration was found on any veesie.com page fetched as of September 2026; its integrations are GA4 and CSV export (Pro and Agency) plus shareable report links on every plan (veesie.com/pricing, accessed 2026-09-01). GeoReady’s Bearer-token REST API is included starting at Pro ($19/mo).',
+    a: 'No. No API, Slack, Zapier, or webhook integration was found on any veesie.com page fetched as of September 2026; its integrations are GA4 and CSV export (Pro and Agency) plus shareable report links on every plan (veesie.com/pricing, accessed 2026-09-01). GeoReady’s Bearer-token REST API is included starting at Pro (€19/mo).',
   },
   {
     q: "Can I switch from Veesie to GeoReady without losing my history?",
@@ -153,8 +153,8 @@ const faqs = [
           <a href="/methodology/" class={PROSE_LINK}>full scoring methodology</a>
           {' '}(every category and the weight it carries) is public.
         </li>
-        <li>You want a free option that isn't a countdown. Veesie's trial is 7 days, 10 queries, no credit card, and excludes Claude and Gemini (veesie.com/pricing, accessed 2026-09-01); GeoReady's Free plan is $0 forever, 5 full audits a day, no account, no card, no expiry.</li>
-        <li>You want programmatic access to your own data at a low price point. GeoReady's Bearer-token API is included from Pro ($19/mo); no API, Slack, Zapier, or webhook integration was found on any Veesie plan as of September 2026 (veesie.com/pricing, accessed 2026-09-01).</li>
+        <li>You want a free option that isn't a countdown. Veesie's trial is 7 days, 10 queries, no credit card, and excludes Claude and Gemini (veesie.com/pricing, accessed 2026-09-01); GeoReady's Free plan is €0 forever, 5 full audits a day, no account, no card, no expiry.</li>
+        <li>You want programmatic access to your own data at a low price point. GeoReady's Bearer-token API is included from Pro (€19/mo); no API, Slack, Zapier, or webhook integration was found on any Veesie plan as of September 2026 (veesie.com/pricing, accessed 2026-09-01).</li>
       </ul>
       <p class="mt-4">
         Each of these comes directly from Veesie's own published pricing and feature

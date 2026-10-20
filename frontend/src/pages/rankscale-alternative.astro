@@ -15,14 +15,14 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 // Nessun punteggio inventato: solo ciò che ciascun vendor pubblica.
 const COMPARISON_ROWS = [
   ['Built for', 'AI Visibility Platform — Rankscale GmbH, Vienna (founded July 2025): Mathias Ptacek (CEO), Patrick Schmid (CMO), Sascha Rehbock (CTO)', 'Open-source GEO audit engine + hosted monitoring — global, Juan Camilo Auriti'],
-  ['Entry paid tier', 'Pro $99/mo — 1,200 credits (up to 4,800 AI answers)', 'Pro $19/mo — 1 domain weekly monitoring, 30-audit history, API access'],
-  ['Free option', 'None published on pricing pages — credits-based SaaS only', '$0 forever, 5 audits/day, full nine-category report, no account, no card'],
+  ['Entry paid tier', 'Pro $99/mo — 1,200 credits (up to 4,800 AI answers)', 'Pro €19/mo — 1 domain weekly monitoring, 30-audit history, API access'],
+  ['Free option', 'None published on pricing pages — credits-based SaaS only', '€0 forever, 5 audits/day, full nine-category report, no account, no card'],
   ['AI engines', '17+ engines: ChatGPT, Perplexity, Claude, Gemini, Google AI Overviews and AI Mode, Copilot, DeepSeek, Grok, Mistral and more', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = 5 automated Perplexity checks/day (Studio+), plus ChatGPT/Google via manual paste (Agency+)'],
   ['Monitoring cadence', 'From hourly to monthly, scheduled on a credits system; full execution history', 'Weekly (Pro) to Daily (Studio, Agency) to Hourly (Enterprise)'],
   ['Scoring transparency', '"Visibility Score" 0-100 with 7 core metrics described (position, sentiment, mentions, citations, detection rate, share of voice, share of citations), but the exact weighted formula is not published', 'Full nine-category rubric and weights published; scoring repo publicly auditable'],
   ['Open-source option', 'None found — closed SaaS; REST API (Growth/Enterprise) + RankScale MCP integration', 'CLI (geo-optimizer-skill), MIT-licensed, self-hostable, unlimited via pip'],
   ['API / integrations', 'REST API authenticated on Growth ($385/mo) and Enterprise ($780/mo); MCP server for AI agents', 'API access, Bearer token (Pro+)'],
-  ['Top self-serve tier', 'Enterprise $780/mo', 'Agency $89/mo'],
+  ['Top self-serve tier', 'Enterprise $780/mo', 'Agency €89/mo'],
 ] as const;
 
 const faqs = [
@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     q: 'When should I choose RankScale over GeoReady?',
-    a: `RankScale is a strong choice if you need continuous multi-engine monitoring across 17+ engines on a credits system, or an MCP integration for AI agents. Choose GeoReady if you want a permanent no-account free audit, published scoring weights, an open-source CLI you can run and self-host, an API starting at a lower price point ($19/mo Pro), or CI/CD enforcement. The two tools answer different parts of the same question — the honest choice depends on which one you're asking.`,
+    a: `RankScale is a strong choice if you need continuous multi-engine monitoring across 17+ engines on a credits system, or an MCP integration for AI agents. Choose GeoReady if you want a permanent no-account free audit, published scoring weights, an open-source CLI you can run and self-host, an API starting at a lower price point (€19/mo Pro), or CI/CD enforcement. The two tools answer different parts of the same question — the honest choice depends on which one you're asking.`,
   },
 ] as const;
 ---
@@ -105,10 +105,10 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>When a RankScale alternative makes sense</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
-        <li>You want a free option that isn't a paid credits system. RankScale publishes no free tier on its pricing pages (rankscale.ai/pricing, accessed 2026-09-21); GeoReady's Free plan is $0 forever, 5 full audits a day, no account.</li>
+        <li>You want a free option that isn't a paid credits system. RankScale publishes no free tier on its pricing pages (rankscale.ai/pricing, accessed 2026-09-21); GeoReady's Free plan is €0 forever, 5 full audits a day, no account.</li>
         <li>You want to read the scoring logic rather than trust a described-but-unweighted formula. RankScale names its Visibility Score's seven inputs but doesn't publish the weighted formula (rankscale.ai/resources/glossary/visibility-score, accessed 2026-09-21); GeoReady's{' '}<a href="/methodology/" class={PROSE_LINK}>full scoring methodology</a>{' '}— every category and the weight it carries — is public.</li>
         <li>You want an open-source, self-hostable option. RankScale is a closed SaaS (accessed 2026-09-21); GeoReady's engine is MIT-licensed and self-hostable.</li>
-        <li>You want an API at a lower price point. RankScale gates its authenticated REST API behind Growth ($385/mo) and Enterprise (rankscale.ai/api, accessed 2026-09-21); GeoReady's Bearer-token API starts at Pro ($19/mo).</li>
+        <li>You want an API at a lower price point. RankScale gates its authenticated REST API behind Growth ($385/mo) and Enterprise (rankscale.ai/api, accessed 2026-09-21); GeoReady's Bearer-token API starts at Pro (€19/mo).</li>
         <li>You want CI/CD enforcement. GeoReady ships a GitHub Action that can fail a build below a minimum score; RankScale doesn't publish a CI/CD product.</li>
       </ul>
       <p class="mt-4">

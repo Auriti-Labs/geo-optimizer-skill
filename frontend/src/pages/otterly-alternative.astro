@@ -14,10 +14,10 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 // Confronto tier-by-tier — packet 12-otterly-alternative.md,
 // §"Otterly vs GeoReady, tier by tier". Nessun punteggio inventato.
 const TIER_ROWS = [
-  ['7-day trial', 'Free, no card', '4 base engines implied; exact trial scope not published', 'Free', '$0 forever', '5 audits/day, full nine-category report, no account, no card, no expiry'],
-  ['Lite', '$29/mo', '15 prompts, 1,000 audits/mo, 4 engines (ChatGPT, AI Overviews, Perplexity, Copilot)', 'Pro', '$19/mo', '1 domain weekly monitoring, 30-audit history, regression alerts, PDF export, API access'],
-  ['Standard', '$189/mo', '100 prompts, 5,000 audits/mo, Looker Studio, 2,000/2,000 API/MCP requests', 'Studio', '$49/mo', '15 domains daily, 12-month history, AI citation tracking (5 automated Perplexity checks/day), competitor comparison'],
-  ['Premium', '$489/mo', '400 prompts, 10,000 audits/mo, 5,000/5,000 API/MCP requests', 'Agency', '$89/mo', '50 domains daily, 24-month history, team workspace, AI answer snapshots (Perplexity automated; ChatGPT/Google manual paste)'],
+  ['7-day trial', 'Free, no card', '4 base engines implied; exact trial scope not published', 'Free', '€0 forever', '5 audits/day, full nine-category report, no account, no card, no expiry'],
+  ['Lite', '$29/mo', '15 prompts, 1,000 audits/mo, 4 engines (ChatGPT, AI Overviews, Perplexity, Copilot)', 'Pro', '€19/mo', '1 domain weekly monitoring, 30-audit history, regression alerts, PDF export, API access'],
+  ['Standard', '$189/mo', '100 prompts, 5,000 audits/mo, Looker Studio, 2,000/2,000 API/MCP requests', 'Studio', '€49/mo', '15 domains daily, 12-month history, AI citation tracking (5 automated Perplexity checks/day), competitor comparison'],
+  ['Premium', '$489/mo', '400 prompts, 10,000 audits/mo, 5,000/5,000 API/MCP requests', 'Agency', '€89/mo', '50 domains daily, 24-month history, team workspace, AI answer snapshots (Perplexity automated; ChatGPT/Google manual paste)'],
   ['Enterprise', 'Custom, from $1,000/mo', 'Customizable prompt volume', 'Enterprise', 'Talk to us', 'Unlimited domains, SLA, on-premise, hourly monitoring*'],
 ] as const;
 
@@ -27,7 +27,7 @@ const TIER_ROWS = [
 const faqs = [
   {
     q: 'Does GeoReady track all the same AI engines as Otterly?',
-    a: "Not the same way. Otterly's base plans track ChatGPT, Google AI Overviews, Perplexity, and Microsoft Copilot automatically and daily, with Claude, Gemini, and AI Mode available as paid add-ons (otterly.ai/pricing, accessed 2026-09-01). GeoReady's automated citation tracking (Studio, $49/mo) covers 5 Perplexity checks a day, with ChatGPT and Google available via manual paste at Agency. Automated coverage is narrower today.",
+    a: "Not the same way. Otterly's base plans track ChatGPT, Google AI Overviews, Perplexity, and Microsoft Copilot automatically and daily, with Claude, Gemini, and AI Mode available as paid add-ons (otterly.ai/pricing, accessed 2026-09-01). GeoReady's automated citation tracking (Studio, €49/mo) covers 5 Perplexity checks a day, with ChatGPT and Google available via manual paste at Agency. Automated coverage is narrower today.",
   },
   {
     q: "Why does Otterly's price jump from $29 to $189?",
@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: 'Does Otterly support agencies with multiple workspaces or SSO?',
-    a: "Otterly includes unlimited team members on every tier, and its pricing structure (workspaces, Enterprise-tier SSO) signals an agency and mid-market-to-enterprise orientation (otterly.ai/, accessed 2026-09-01). GeoReady's team workspace (owner/editor/viewer roles) starts at Agency, $89/mo; no SSO is stated anywhere on pricing.md.",
+    a: "Otterly includes unlimited team members on every tier, and its pricing structure (workspaces, Enterprise-tier SSO) signals an agency and mid-market-to-enterprise orientation (otterly.ai/, accessed 2026-09-01). GeoReady's team workspace (owner/editor/viewer roles) starts at Agency, €89/mo; no SSO is stated anywhere on pricing.md.",
   },
   {
     q: "Is there a cheaper way to just check whether I'm cited, without a monthly subscription?",
@@ -51,7 +51,7 @@ const faqs = [
   },
   {
     q: 'Should an agency managing several clients choose Otterly instead of GeoReady?',
-    a: `For agencies whose main job is continuous, automated, multi-client citation tracking with API and Looker Studio reporting, yes. That is Otterly's strongest use case, and GeoReady doesn't match its tracking depth today. For agencies whose main job is auditing AI-readiness across many client sites and monitoring GEO-score regressions, GeoReady's Agency plan ($89/mo, 50 domains, team workspace) is the cheaper, narrower-scope fit. For the full category breakdown, see <a href="/best-geo-tools/" class="${PROSE_LINK}">how GEO tools compare</a>.`,
+    a: `For agencies whose main job is continuous, automated, multi-client citation tracking with API and Looker Studio reporting, yes. That is Otterly's strongest use case, and GeoReady doesn't match its tracking depth today. For agencies whose main job is auditing AI-readiness across many client sites and monitoring GEO-score regressions, GeoReady's Agency plan (€89/mo, 50 domains, team workspace) is the cheaper, narrower-scope fit. For the full category breakdown, see <a href="/best-geo-tools/" class="${PROSE_LINK}">how GEO tools compare</a>.`,
   },
 ] as const;
 ---
@@ -168,9 +168,9 @@ const faqs = [
       <p class="mt-4">
         GeoReady has its own version of this caveat. The Free audit's nine-category
         score is a readiness score and does not track AI-engine citations.
-        GeoReady's actual citation tracking (Studio, $49/mo) is scoped to 5 automated
+        GeoReady's actual citation tracking (Studio, €49/mo) is scoped to 5 automated
         Perplexity checks per day, with ChatGPT and Google covered through manual
-        paste at Agency ($89/mo) rather than automated (pricing.md, checked
+        paste at Agency (€89/mo) rather than automated (pricing.md, checked
         2026-08-31). GeoReady doesn't market broader automated engine coverage than
         that.
       </p>
@@ -179,13 +179,13 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>Where GeoReady starts cheaper</h2>
       <p class="mt-4">
-        A full GEO audit (no account, no card, 5 runs a day) costs $0 forever on
+        A full GEO audit (no account, no card, 5 runs a day) costs €0 forever on
         GeoReady; Otterly has no equivalent permanent free tier, only the 7-day
-        trial. Moving to a paid plan, GeoReady Pro is $19/mo against Otterly Lite's
+        trial. Moving to a paid plan, GeoReady Pro is €19/mo against Otterly Lite's
         $29/mo. These aren't the same product at that price point: Pro is domain
         monitoring with score history and regression alerts, not prompt-based
         citation tracking. For a buyer deciding whether to spend anything at all
-        before understanding the category, GeoReady's free and $19 entry points carry
+        before understanding the category, GeoReady's free and €19 entry points carry
         materially less commitment than Otterly's trial-then-$29 path.
       </p>
     </section>
