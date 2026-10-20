@@ -17,8 +17,8 @@ const COMPARISON_ROWS = [
   ['Built for', 'AI Visibility Platform — Rankscale GmbH, Vienna (founded July 2025): Mathias Ptacek (CEO), Patrick Schmid (CMO), Sascha Rehbock (CTO)', 'Open-source GEO audit engine + hosted monitoring — global, Juan Camilo Auriti'],
   ['Entry paid tier', 'Pro $99/mo — 1,200 credits (up to 4,800 AI answers)', 'Pro €19/mo — 1 domain weekly monitoring, 30-audit history, API access'],
   ['Free option', 'None published on pricing pages — credits-based SaaS only', '€0 forever, 5 audits/day, full nine-category report, no account, no card'],
-  ['AI engines', '17+ engines: ChatGPT, Perplexity, Claude, Gemini, Google AI Overviews and AI Mode, Copilot, DeepSeek, Grok, Mistral and more', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = 5 automated Perplexity checks/day (Studio+), plus ChatGPT/Google via manual paste (Agency+)'],
-  ['Monitoring cadence', 'From hourly to monthly, scheduled on a credits system; full execution history', 'Weekly (Pro) to Daily (Studio, Agency) to Hourly (Enterprise)'],
+  ['AI engines', '17+ engines: ChatGPT, Perplexity, Claude, Gemini, Google AI Overviews and AI Mode, Copilot, DeepSeek, Grok, Mistral and more', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = automated Perplexity checks (Agency), plus ChatGPT/Google via manual paste'],
+  ['Monitoring cadence', 'From hourly to monthly, scheduled on a credits system; full execution history', 'Weekly (Pro) to Daily (Agency) to Hourly (Enterprise)'],
   ['Scoring transparency', '"Visibility Score" 0-100 with 7 core metrics described (position, sentiment, mentions, citations, detection rate, share of voice, share of citations), but the exact weighted formula is not published', 'Full nine-category rubric and weights published; scoring repo publicly auditable'],
   ['Open-source option', 'None found — closed SaaS; REST API (Growth/Enterprise) + RankScale MCP integration', 'CLI (geo-optimizer-skill), MIT-licensed, self-hostable, unlimited via pip'],
   ['API / integrations', 'REST API authenticated on Growth ($385/mo) and Enterprise ($780/mo); MCP server for AI agents', 'API access, Bearer token (Pro+)'],
@@ -32,7 +32,7 @@ const faqs = [
   },
   {
     q: 'Does RankScale track the same AI engines as GeoReady?',
-    a: 'RankScale tracks 17+ engines including ChatGPT, Perplexity, Claude, Gemini, Google AI Overviews and AI Mode, Copilot, DeepSeek, and Grok (rankscale.ai, accessed 2026-09-21). GeoReady\'s free audit scores a site across nine GEO signal categories regardless of engine, and its paid citation tracking runs automated Perplexity checks (Studio+) with manual ChatGPT/Google capture (Agency+). Neither offers a permanent free monitoring tier.',
+    a: 'RankScale tracks 17+ engines including ChatGPT, Perplexity, Claude, Gemini, Google AI Overviews and AI Mode, Copilot, DeepSeek, and Grok (rankscale.ai, accessed 2026-09-21). GeoReady\'s free audit scores a site across nine GEO signal categories regardless of engine, and its paid citation tracking runs automated Perplexity checks (Agency) with manual ChatGPT/Google capture. Neither offers a permanent free monitoring tier.',
   },
   {
     q: 'Is RankScale open source?',

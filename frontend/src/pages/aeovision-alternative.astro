@@ -18,14 +18,14 @@ const COMPARISON_ROWS = [
   ['Built for', 'AI Search Visibility Platform, Toronto CA — founded 2025, 500+ brands claimed (aeovision.ai, accessed 2026-09-19)', 'Open-source GEO audit engine + hosted monitoring — global, Juan Camilo Auriti'],
   ['Entry paid tier', 'Lite $9/mo — 30 prompts on ChatGPT, checked every 3 days, 1 brand (aeovision.ai/plans, accessed 2026-09-19)', 'Pro €19/mo — 1 domain weekly monitoring, 30-audit history, API access'],
   ['Free option', 'No free paid plan. Free tools only (llms.txt generator, WebMCP snippet, AI bot detector, page readiness) plus a free Citation Insights embeddable widget (aeovision.ai/plans, /tools, /citation-insights, accessed 2026-09-19)', '€0 forever, 5 audits/day, full nine-category report, no account, no card'],
-  ['AI engines', 'Up to 6: ChatGPT, Perplexity, Gemini, Claude, Google AI Mode, Google AI Overviews. Lite = ChatGPT only; Solo/Growth = 5; Enterprise = all. No Copilot/Grok/DeepSeek/Meta AI (aeovision.ai/plans, accessed 2026-09-19)', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = 5 automated Perplexity checks/day (Studio+), plus ChatGPT/Google via manual paste (Agency+)'],
-  ['Monitoring cadence', 'Lite every 3 days (30 prompts); Solo 70 daily; Growth 300 daily per brand; Agency daily visibility checks (aeovision.ai/plans, /agency-pricing, accessed 2026-09-19)', 'Weekly (Pro) to Daily (Studio, Agency) to Hourly (Enterprise)'],
-  ['Brands per tier', '1 (Lite, Solo), 3 (Growth), unlimited (Enterprise); agency = unlimited clients (aeovision.ai/plans, accessed 2026-09-19)', '1 (Pro), 15 (Studio), 50 (Agency), unlimited (Enterprise)'],
+  ['AI engines', 'Up to 6: ChatGPT, Perplexity, Gemini, Claude, Google AI Mode, Google AI Overviews. Lite = ChatGPT only; Solo/Growth = 5; Enterprise = all. No Copilot/Grok/DeepSeek/Meta AI (aeovision.ai/plans, accessed 2026-09-19)', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = automated Perplexity checks (Agency), plus ChatGPT/Google via manual paste'],
+  ['Monitoring cadence', 'Lite every 3 days (30 prompts); Solo 70 daily; Growth 300 daily per brand; Agency daily visibility checks (aeovision.ai/plans, /agency-pricing, accessed 2026-09-19)', 'Weekly (Pro) to Daily (Agency) to Hourly (Enterprise)'],
+  ['Brands per tier', '1 (Lite, Solo), 3 (Growth), unlimited (Enterprise); agency = unlimited clients (aeovision.ai/plans, accessed 2026-09-19)', '1 (Pro), 50 (Agency), unlimited (Enterprise)'],
   ['Top team tier', 'Growth $299/mo (individual), Agency Pro $799/mo annual (aeovision.ai/plans, /agency-pricing, accessed 2026-09-19)', 'Agency €89/mo'],
   ['Scoring transparency', 'Visibility score described by factors (mention frequency, citations, sentiment, competitive positioning) but exact weights not published (aeovision.ai/plans, accessed 2026-09-19)', 'Full nine-category rubric and weights published; scoring repo publicly auditable'],
   ['Open-source option', 'None found — no GitHub repository referenced; dev/docs pages 404 (accessed 2026-09-19)', 'CLI (geo-optimizer-skill), MIT-licensed, self-hostable, unlimited via pip'],
   ['API', 'Custom API access only on Enterprise; no public API documentation page found (aeovision.ai/enterprise, accessed 2026-09-19)', 'API access, Bearer token (Pro+)'],
-  ['Notable extras', 'Reddit Insights, Ads AI Share, Top Cited Domains, AI task management, white-label reports (Enterprise)', 'CI/CD GitHub Action, share-of-voice and source-graph intelligence (Studio+), benchmark dashboard'],
+  ['Notable extras', 'Reddit Insights, Ads AI Share, Top Cited Domains, AI task management, white-label reports (Enterprise)', 'CI/CD GitHub Action, share-of-voice and source-graph intelligence (Agency), benchmark dashboard'],
 ] as const;
 
 const faqs = [
@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: 'Which covers more AI engines?',
-    a: 'AEO Vision tracks up to 6 platforms: ChatGPT, Perplexity, Gemini, Claude, Google AI Mode, and Google AI Overviews — but Lite covers only ChatGPT, and Solo/Growth cover 5 (aeovision.ai/plans, accessed 2026-09-19). GeoReady\'s free audit scores a site across nine GEO signal categories regardless of engine, and its paid citation tracking runs automated Perplexity checks (Studio+) with manual ChatGPT/Google capture (Agency+). Neither tracks Microsoft Copilot on its published plans as of September 2026.',
+    a: 'AEO Vision tracks up to 6 platforms: ChatGPT, Perplexity, Gemini, Claude, Google AI Mode, and Google AI Overviews — but Lite covers only ChatGPT, and Solo/Growth cover 5 (aeovision.ai/plans, accessed 2026-09-19). GeoReady\'s free audit scores a site across nine GEO signal categories regardless of engine, and its paid citation tracking runs automated Perplexity checks (Agency) with manual ChatGPT/Google capture. Neither tracks Microsoft Copilot on its published plans as of September 2026.',
   },
   {
     q: 'Is there an open-source option in either product?',

@@ -3,7 +3,7 @@ import Shell from '../components/Shell.astro';
 
 const title = 'GEO Monitoring Tool — Weekly Audits & Alerts | GeoReady';
 const description =
-  'Monitor your GEO score over time: scheduled re-audits, score history, and regression alerts when a signal drops. Weekly on Pro, daily on Studio.';
+  'Monitor your GEO score over time: scheduled re-audits, score history, and regression alerts when a signal drops. Weekly on Pro, daily on Agency.';
 const canonical = 'https://geoready.dev/geo-monitoring-tool/';
 const datePublished = '2026-09-16';
 const dateModified = '2026-09-16';
@@ -14,8 +14,7 @@ const dateModified = '2026-09-16';
 const CADENCE_ROWS = [
   ['Free', '€0 forever', '— (one-shot audit only)', '—', '—', '—', '5 audits/day, full nine-category report, no account'],
   ['Pro', '€19/mo, founding price', '1 domain', 'Weekly', 'Last 30 audits', 'Score moves ≥5 points', 'Unlimited audits, PDF export, API access (Bearer token)'],
-  ['Studio', '€49/mo, founding price', '15 domains', 'Daily', '12 months', 'Score moves ≥5 points', 'Everything in Pro, AI citation tracking — 5 automated Perplexity checks/day, competitor comparison, unbranded PDF export, 50-URL batch audit'],
-  ['Agency', '€89/mo, founding price', '50 domains', 'Daily', '24 months', 'Score moves ≥5 points', 'Everything in Studio, team workspace, unlimited batch audits, AI answer snapshots (Perplexity automated; ChatGPT/Google via manual paste)'],
+  ['Agency', '€89/mo, founding price', '50 domains', 'Daily', '24 months', 'Score moves ≥5 points', 'Everything in Pro, AI citation tracking via automated Perplexity checks, competitor comparison, unbranded PDF export, 24-month history, team workspace, unlimited batch audits, AI answer snapshots (Perplexity automated; ChatGPT/Google via manual paste)'],
   ['Enterprise', 'Talk to us', 'Unlimited', 'Hourly', '—', '—', 'Everything in Agency, SLA, on-premise deployment, webhooks/Slack/CMS integrations, dedicated account manager'],
 ] as const;
 
@@ -26,7 +25,7 @@ const faqs = [
   },
   {
     q: 'How often should I re-audit?',
-    a: "It depends on how often the site changes and how much a citation-readiness regression would cost you. GeoReady's own cadences run from manual (Free, run it anytime) to weekly (Pro), daily (Studio and Agency), and hourly on Enterprise — see the cadence table above.",
+    a: "It depends on how often the site changes and how much a citation-readiness regression would cost you. GeoReady's own cadences run from manual (Free, run it anytime) to weekly (Pro), daily (Agency), and hourly on Enterprise — see the cadence table above.",
   },
   {
     q: 'What triggers an alert?',
@@ -34,7 +33,7 @@ const faqs = [
   },
   {
     q: 'Can I monitor competitors?',
-    a: 'Not as a separate "competitor monitoring" product — but Studio and Agency include competitor comparison, so you can benchmark a domain you monitor against another domain\'s score.',
+    a: 'Not as a separate "competitor monitoring" product — but Agency includes competitor comparison, so you can benchmark a domain you monitor against another domain\'s score.',
   },
   {
     q: 'Is there a free tier?',
@@ -188,7 +187,7 @@ const faqs = [
           tool doesn't conflate them.</li>
         <li><strong>What monitoring is NOT: AI Overviews tracking or share-of-voice analytics.</strong> This tool does not
           track whether a page appears in Google's AI Overviews, and it does not produce share-of-voice metrics across AI
-          answers. What it tracks is the readiness signal set — the nine-category audit — on a schedule, plus (Studio and up)
+          answers. What it tracks is the readiness signal set — the nine-category audit — on a schedule, plus (Agency and up)
           automated citation checks against Perplexity specifically.</li>
         <li><strong>No uptime or SLA promises on self-serve plans.</strong> Regression alerts monitor your GEO score, not
           your infrastructure. SLA terms exist only on the custom Enterprise plan.</li>
