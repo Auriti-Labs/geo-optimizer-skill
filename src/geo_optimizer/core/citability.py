@@ -7,10 +7,11 @@ a MethodScore. No ML dependencies — only regex, HTML tags and structural metri
 Paper: "GEO: Generative Engine Optimization" (arxiv.org/abs/2311.09735)
 
 About ``MethodScore.impact`` and the "(+N%)" banners below: they are historical labels kept
-for backward compatibility. Only a few trace to a named source (Aggarwal et al. 2023 measured
-on a simulated engine over already-retrieved sources; AutoGEO arXiv:2510.11438, a preprint;
-Stanford, Nature Communications 2025; SE Ranking 2025). The rest have no traceable source.
-None was re-measured on current engines, and they do not affect the score.
+for backward compatibility. Only a few trace to a named source (AutoGEO arXiv:2510.11438, a
+preprint; Stanford, Nature Communications 2025; SE Ranking 2025). The Princeton paper states no
+per-method percentage except the 41% in its Table 1 caption; the other Princeton-method values
+were derived here from Table 1 and are unverified. None was re-measured on current engines, and
+none affects the score.
 """
 
 from __future__ import annotations
@@ -3469,31 +3470,36 @@ def detect_retrieval_triggers(soup, clean_text: str | None = None) -> MethodScor
 
 
 # Improvement suggestions for each undetected method.
-# The percentages below come from Aggarwal et al. 2023 (arXiv:2311.09735), measured on a
-# simulated generative engine over already-retrieved sources. They have not been re-measured
-# on current engines, and 2026 preprints report that these levers may not move citation there.
-def _princeton_note(pct: int) -> str:
-    return f"(reported +{pct}% by Aggarwal et al. 2023 on a simulated engine; not re-measured on current engines)"
+# Only two suggestions keep a figure, with its source and caveat. The other Princeton-method
+# figures were derived from Table 1 and are not stated by the paper per method, so they are omitted.
+_QUOTATION_NOTE = (
+    "(Aggarwal et al. 2023 reported about +41% in position-adjusted visibility for quotation addition "
+    "on its own benchmark; not re-measured on current engines)"
+)
+_STATISTICS_NOTE = (
+    "(Aggarwal et al. 2023 reported about +33% on the word-count metric (about +31% position-adjusted) "
+    "on its own benchmark; not re-measured on current engines)"
+)
 
 
 _IMPROVEMENT_SUGGESTIONS = {
-    "quotation_addition": "Add attributed quotes in <blockquote> " + _princeton_note(41),
-    "statistics_addition": "Include quantitative data: percentages, figures, metrics " + _princeton_note(33),
-    "fluency_optimization": "Improve fluency with longer paragraphs and logical connectives " + _princeton_note(29),
-    "cite_sources": "Cite authoritative sources (.edu, .gov, Wikipedia) with external links " + _princeton_note(27),
+    "quotation_addition": "Add attributed quotes in <blockquote> " + _QUOTATION_NOTE,
+    "statistics_addition": "Include quantitative data: percentages, figures, metrics " + _STATISTICS_NOTE,
+    "fluency_optimization": "Improve fluency with longer paragraphs and logical connectives",
+    "cite_sources": "Cite authoritative sources (.edu, .gov, Wikipedia) with external links",
     "answer_first": "Start each section with a concrete fact in the first sentence",
     "passage_density": "Write self-contained paragraphs of 50-150 words with numeric data",
-    "technical_terms": "Use domain-specific technical terminology " + _princeton_note(18),
-    "authoritative_tone": "Add author bio with credentials and assertive tone " + _princeton_note(16),
+    "technical_terms": "Use domain-specific technical terminology",
+    "authoritative_tone": "Add author bio with credentials and assertive tone",
     "readability": "Target Flesch-Kincaid Grade 6-8 with 100-150 word sections",
     "citability_density": "Add 2+ citable facts (numbers, names, dates) per paragraph",
-    "easy_to_understand": "Improve readability: short sentences, hierarchical headings, FAQ " + _princeton_note(14),
+    "easy_to_understand": "Improve readability: short sentences, hierarchical headings, FAQ",
     "faq_in_content": "Add FAQ patterns in content: headings ending with '?' followed by answers",
     "content_freshness": "Add dateModified in JSON-LD and reference current year in content",
     "definition_patterns": "Start sections with definitions: 'X is...', 'X refers to...'",
     "image_alt_quality": "Write descriptive alt text (>10 chars, not generic) for all images",
     "format_mix": "Mix content formats: paragraphs + bullet lists + tables",
-    "unique_words": "Vary vocabulary: use synonyms, avoid repetitions " + _princeton_note(7),
+    "unique_words": "Vary vocabulary: use synonyms, avoid repetitions",
     "keyword_stuffing": "Reduce density of repeated keywords",
     # Quality Signals Batch 2
     "attribution_completeness": "Add inline attributions: 'according to X', 'Y (2024) found that'",

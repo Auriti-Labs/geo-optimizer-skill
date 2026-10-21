@@ -26,7 +26,10 @@ def test_impact_field_still_exposed_for_consumers():
     assert next(m for m in r.methods if m.name == "cite_sources").impact == "+27%"
 
 
-def test_suggestions_carry_a_percentage_only_with_its_context():
-    for key, text in _IMPROVEMENT_SUGGESTIONS.items():
-        if re.search(r"[+-]\d+%", text):
-            assert "Aggarwal et al. 2023" in text and "not re-measured" in text, key
+def test_only_quotation_and_statistics_keep_a_percentage_with_context():
+    with_pct = {k for k, text in _IMPROVEMENT_SUGGESTIONS.items() if re.search(r"[+-]\d+%", text)}
+    assert with_pct == {"quotation_addition", "statistics_addition"}
+    for key in with_pct:
+        text = _IMPROVEMENT_SUGGESTIONS[key]
+        assert "Aggarwal et al. 2023" in text and "not re-measured" in text, key
+        assert "simulated" not in text

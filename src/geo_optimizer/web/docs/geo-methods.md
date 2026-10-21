@@ -17,7 +17,7 @@ The paper reports relative gains in visibility metrics (word count and position-
 
 **Key finding:** The paper tested nine content-optimization methods on GEO-bench and reported visibility gains of up to about 40% in generative-engine responses.
 
-> **Read the percentages as historical.** They were measured in 2023 on a simulated engine over sources that were already retrieved, not on live engines. Two preprints published in 2026 report that the 2023 levers (quotations, statistics, cited sources) do not move citation on ten current engine families (arXiv 2609.07559), and that FAQ, schema, headings and lists show no within-site effect (arXiv 2610.15033). The score uses these checks as content hygiene, not as a prediction of citation. Methods without a named source carry an `impact` label with no traceable origin.
+> **Read the percentages as historical.** The paper states no per-method percentage except the 41% in its Table 1 caption; the others were derived from Table 1 absolute values and are unverified. They come from a 2023 pipeline (top-5 Google results fed to gpt-3.5-turbo), not from live engines. Two preprints published in 2026 report that the 2023 levers (quotations, statistics, cited sources) do not move citation on ten current engine families (arXiv 2609.07559), and that FAQ, schema, headings and lists show no within-site effect (arXiv 2610.15033). The score uses these checks as content hygiene, not as a prediction of citation. Methods without a named source carry an `impact` label with no traceable origin.
 
 ---
 
