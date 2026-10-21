@@ -103,7 +103,7 @@ This document defines the stable, public criteria used to score `geo-optimizer-s
 ## Current Status (v4.6.0)
 
 - **1189 tests** (all mocked, zero network)
-- **8 scoring categories**, 100 points total
+- **9 scoring categories** (rubric v2), 100 points total: google_ai 20, robots 14, schema 14, content 14, brand_entity 12, meta 11, llms 6, signals 6, ai_discovery 3
 - **27 AI bots** with 3-tier classification
 - **47 citability methods** from Princeton KDD 2024 + AutoGEO (arXiv:2510.11438, preprint)
 - **7 output formats** (text, json, rich, html, sarif, junit, github)
