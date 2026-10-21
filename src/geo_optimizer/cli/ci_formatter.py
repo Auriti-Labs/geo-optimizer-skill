@@ -260,9 +260,9 @@ def _content_findings(result: AuditResult) -> list[dict]:
     if not result.content.has_h1:
         findings.append({"level": "warning", "message": "H1 heading missing on homepage"})
     if not result.content.has_numbers:
-        findings.append({"level": "note", "message": "No statistics or numerical data found (+33% AI visibility)"})
+        findings.append({"level": "note", "message": "No statistics or numerical data found"})
     if not result.content.has_links:
-        findings.append({"level": "note", "message": "No external links to authoritative sources (+27% AI visibility)"})
+        findings.append({"level": "note", "message": "No external links to authoritative sources"})
     if result.content.word_count < 300:
         findings.append(
             {
