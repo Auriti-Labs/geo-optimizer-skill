@@ -14,6 +14,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Website dependencies: the frontend lockfile is refreshed on top of 4.19.4 and `overrides` raise `js-yaml` 3.x, `fflate`, `smol-toml`, `uuid` and `postcss-selector-parser` (#623). `npm audit` goes from 29 findings to 14; the rest are `braces` and `sprintf-js` (no patched release, build-time Sanity CLI tooling) and their parents.
 
 ### Fixed (site consistency)
+- The README, the `geo audit` footers and the audit report page said the free plan monitors one domain with a weekly drift email. On the platform, score monitoring now starts on Pro and the free plan is an account with the last 5 audits and one real AI answer check a week, so the wording is updated (the pricing page already said monitoring starts on Pro). Release this after the platform change is deployed.
 - The four `*-alternative` comparison pages said the free audit covers 8 categories; it is nine since 4.19.0.
 - `/state-of-geo/` renders a dated benchmark snapshot in the HTML (it loaded numbers only through client script) and no longer says llms.txt and schema are "missing more often than not" while the cohort shows 58% and 76%. One snapshot (`lib/benchmarkSnapshot.ts`, matching the README figures of 17 October 2026) now feeds `/state-of-geo/`, `/best-geo-tools/` and `/veesie-alternative/`.
 - `/best-geo-tools/` shows a single modified date and drops the legacy v1 weights figure.
