@@ -173,7 +173,7 @@ const GEO_OPTIMIZER_FEATURES = [
   ['Audit', 'Scores a site 0–100 across nine categories using 47 citability checks, 9 of them taken from the KDD 2024 GEO paper.'],
   ['CI/CD', 'Ships a GitHub Action that runs a full audit in a pipeline and can fail a build below a minimum score.'],
   ['Answer-engine querying', 'The geo citations command asks real answer engines whether your brand is mentioned and your domain is cited (bring your own API key).'],
-  ['Hosted citation monitoring', 'The GeoReady hosted layer tracks citations over time: Studio+ runs 5 automated Perplexity checks a day with manual ChatGPT/Google capture on Agency. One-off checks are free; saving history and monitoring are paid.'],
+  ['Hosted citation monitoring', 'The GeoReady hosted layer tracks citations over time: Agency runs automated Perplexity checks, with manual ChatGPT/Google capture. One-off checks are free; saving history and monitoring are paid.'],
   ['Research basis', 'Methods grounded in Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint).'],
 ] as const;
 
@@ -510,8 +510,8 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Against the criteria: the methodology is transparent because the nine scoring
         categories and their weights are published; it is open-source under MIT; it
-        does both auditing and citation monitoring — automated Perplexity checks on
-        Studio+ and manual ChatGPT/Google capture on Agency — and it runs in CI/CD
+        does both auditing and citation monitoring — automated Perplexity checks and
+        manual ChatGPT/Google capture on Agency — and it runs in CI/CD
         via a GitHub Action; and its methods are grounded in published research.
         The hosted layer is freemium — the
         {' '}

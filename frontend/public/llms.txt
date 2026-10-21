@@ -103,9 +103,9 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 - [ChatGPT Visibility Checker](https://geoready.dev/chatgpt-visibility-checker/): Readiness page explaining how to check whether a site can appear in ChatGPT-style answers, with a path from audit to source-backed citation checks.
 - [Perplexity Citation Checker](https://geoready.dev/perplexity-citation-checker/): Commercial citation page for checking whether Perplexity-style answers cite the user's own domain or cite competitors instead.
 - [Perplexity Citation Monitoring](https://geoready.dev/perplexity-citation-monitoring/): Monitor whether Perplexity-style answers cite a domain, mention the brand without citing it, or cite competitors instead.
-- [GEO Monitoring Tool](https://geoready.dev/geo-monitoring-tool/): Monitor your GEO score over time — scheduled re-audits, score history, and regression alerts when a signal drops. Weekly on Pro, daily on Studio.
+- [GEO Monitoring Tool](https://geoready.dev/geo-monitoring-tool/): Monitor your GEO score over time — scheduled re-audits, score history, and regression alerts when a signal drops. Weekly on Pro, daily on Agency.
 - [Citation Gap Analysis](https://geoready.dev/citation-gap-analysis/): See who AI engines cite instead of you, compare GEO-score readiness, and track the gap over time.
-- [ChatGPT Citation Tracker](https://geoready.dev/chatgpt-citation-tracker/): Honest breakdown of ChatGPT citation tracking — what's automated (Perplexity/Studio), manual (Agency), and what no tool does yet.
+- [ChatGPT Citation Tracker](https://geoready.dev/chatgpt-citation-tracker/): Honest breakdown of ChatGPT citation tracking — what's automated (Perplexity), manual (ChatGPT and Google on Agency), and what no tool does yet.
 - [AI Overviews Trend Tracking](https://geoready.dev/ai-overviews-trend-tracking/): A repeatable workflow for tracking AI Overviews trends over time — query sets, logging schema, cadence, and how to read real shifts vs. noise.
 - [Compare](https://geoready.dev/compare/): Side-by-side comparison of two URLs.
 - [Analyze Competitors](https://geoready.dev/analyze-competitors/): Multi-URL competitor analysis.
@@ -224,8 +224,8 @@ GeoReady (app.geoready.dev) is the commercial monitoring platform built on GEO O
 
 - **Free** — unlimited single audits, 0-100 GEO score, nine-category breakdown, actionable recommendations
 - **Pro** — continuous monitoring, weekly audits, score history, regression alerts, PDF export
-- **Studio** — team workspaces, multi-site monitoring, white-label reports
-- **Agency** — client management, bulk audits, priority support
+- **Agency** — 50 domains with daily monitoring, team workspace, unlimited batch audits, competitor comparison, AI answer snapshots (Perplexity automated; ChatGPT and Google via manual paste)
+- **Enterprise** — custom pricing, SLA, on-premise deployment (talk to us)
 
 GeoReady is built on the same scoring engine as GEO Optimizer. Every audit on geoready.dev uses the same nine-category scoring methodology, the same 47 citability methods, and the same research foundation.
 

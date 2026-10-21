@@ -58,7 +58,7 @@ export const aiService = {
   offers: [
     { plan: 'Free', price: '0', priceCurrency: 'EUR', description: '1 monitored domain, weekly drift email, 3-category partial report' },
     { plan: 'Pro', price: '19', priceCurrency: 'EUR', billingPeriod: 'month', description: '10 domains, daily checks, full report, alerts, API' },
-    { plan: 'Studio', price: '49', priceCurrency: 'EUR', billingPeriod: 'month', description: '15 domains, AI snapshots, batch audit, history' },
+    
     { plan: 'Agency', price: '89', priceCurrency: 'EUR', billingPeriod: 'month', description: '50 domains, team workspace, multi-client' },
   ],
 };
