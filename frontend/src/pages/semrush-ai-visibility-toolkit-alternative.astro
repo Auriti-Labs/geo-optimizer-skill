@@ -6,7 +6,7 @@ const description =
   "What Semrush's AI Visibility Toolkit is, what it costs, and when a dedicated €0-€19 GEO tool beats a bundled suite module. Facts dated September 2026.";
 const canonical = 'https://geoready.dev/semrush-ai-visibility-toolkit-alternative/';
 const datePublished = '2026-09-16';
-const dateModified = '2026-09-16';
+const dateModified = '2026-10-21';
 
 // Prezzi Semrush verificati su semrush.com/pricing/, accesso 2026-09-01.
 // Colonna 4 = limiti AI-visibility nominati esplicitamente su quella riga di prezzo.
@@ -15,7 +15,7 @@ const SEMRUSH_PRICING = [
   ['SEO', '$117.33/mo', '$139/mo', 'Not broken out separately from Starter on the AI-visibility limits table, so it is not verifiable whether this tier includes the AI Visibility Toolkit by name'],
   ['Starter', '$165.17/mo', '$199/mo', 'AI-ready Site Audit; 50 tracked prompts/day; 300 AI-visibility reports/day'],
   ['Pro+', '$248.17/mo', '$299/mo', '100 tracked prompts/day (report-cap and domain-count not separately disclosed)'],
-  ['Advanced', '$455.67/mo', '$549/mo', '200 tracked prompts/day (report-cap and domain-count not separately disclosed)'],
+  ['Advanced', 'Custom (request a demo)', 'Custom', 'All Pro+ features plus 40+ websites, 5,000+ keywords, API data integration and team users; no AI-visibility prompt limit shown on the pricing page (checked 2026-10-21)'],
 ] as const;
 
 // Confronto per fascia di prezzo — Semrush: semrush.com/pricing/, accesso 2026-09-01.
@@ -24,7 +24,7 @@ const PRICE_BANDS = [
   ['$0/mo', 'Free plan includes some "AI Visibility features" (scope undisclosed); capped at 10 reports/day across the entire suite', 'Free: full nine-category GEO audit, 5 audits/day, no account, no card, forever'],
   ['€19/mo (GeoReady Pro)', 'No Semrush tier at this price names AI-visibility features on the pricing page; the SEO tier ($117.33/mo annual) is the next rung up and its AI-visibility inclusion is not verifiable from the page checked', 'Pro (€19/mo): 1 domain weekly monitoring, regression alerts, PDF export, API access'],
   ['$165-248/mo (Semrush Starter/Pro+, annual)', 'AI-ready Site Audit, 50-100 tracked prompts/day, 300 AI-visibility reports/day, plus the full SEO suite (keyword research, backlinks, rank tracking) at the same price', 'Agency (€89/mo): 50 domains daily monitoring, team workspace, unlimited batch audits, AI answer snapshots. No unrelated suite tools bundled in'],
-  ['$456/mo+ (Semrush Advanced, annual)', '200 tracked prompts/day, full suite, "Additional Users" add-on from $45/mo per seat', 'GeoReady has no tier in this band. Agency (€89/mo) is the self-serve ceiling; Enterprise is custom, "talk to us"'],
+  ['Custom (Semrush Advanced, through a demo)', 'Full suite with team users and API data integration; no public price and no AI-visibility prompt limit on the pricing page (checked 2026-10-21); "Additional Users" add-on from $45/mo per seat as of 2026-09-01', 'GeoReady has no tier in this band. Agency (€89/mo) is the self-serve ceiling; Enterprise is custom, "talk to us"'],
 ] as const;
 
 // FAQ condivise tra markup visibile e JSON-LD (single source of truth).
@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: "How much does Semrush's AI-visibility feature cost on its own?",
-    a: 'There is no standalone AI-visibility-only price that we could find on semrush.com as checked. It scales with the same suite plans: SEO ($117.33/mo annual), Starter ($165.17/mo annual, the first tier to name AI-visibility limits explicitly), Pro+ ($248.17/mo annual), and Advanced ($455.67/mo annual). The AI-visibility feature therefore always comes bundled with the rest of the SEO suite at whatever tier you\'re on.',
+    a: 'There is no standalone AI-visibility-only price that we could find on semrush.com as checked. It scales with the same suite plans: SEO ($117.33/mo annual), Starter ($165.17/mo annual, the first tier to name AI-visibility limits explicitly), Pro+ ($248.17/mo annual), and Advanced (custom pricing through a demo as of 2026-10-21). The AI-visibility feature therefore always comes bundled with the rest of the SEO suite at whatever tier you\'re on.',
   },
   {
     q: "Does Semrush's AI-visibility data update daily or weekly?",
@@ -78,7 +78,9 @@ const faqs = [
 
       <p class="mt-4 text-sm leading-relaxed text-ink-mute">
         Every Semrush fact below is sourced from semrush.com directly, accessed 2026-09-01, and
-        date-stamped where prices or limits could change. GeoReady facts are from <code>pricing.md</code>,
+        date-stamped where prices or limits could change. The plan names and the Advanced tier were re-checked on
+        semrush.com/pricing on 2026-10-21 from Europe, where prices appear in euros (SEO €112.52, Starter €158.40 and
+        Pro+ €238 per month billed annually); the dollar figures on this page are from 2026-09-01 and were not re-checked. GeoReady facts are from <code>pricing.md</code>,
         fetched live 2026-08-31.
       </p>
 
@@ -215,8 +217,8 @@ const faqs = [
       <p class="mt-4">
         Someone searching "Semrush AI Visibility Toolkit alternative" is very often someone who
         does not want or need the rest of the Semrush suite (keyword research, backlink audits,
-        rank tracking) and is being asked to buy a $165-456/mo plan (billed annually; higher
-        month-to-month) to get an AI-visibility module that is a small line item inside a much
+        rank tracking) and is being asked to buy a $165-248/mo plan (Starter or Pro+, billed annually, as of 2026-09-01; higher
+        month-to-month; Advanced is custom-priced) to get an AI-visibility module that is a small line item inside a much
         larger platform.
       </p>
       <p class="mt-4">Three verifiable differentiators for GeoReady:</p>

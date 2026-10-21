@@ -7,7 +7,7 @@ const description =
   'Comparing Veesie and GeoReady for GEO monitoring? See engine coverage, EUR vs USD pricing, and free-audit differences. Sourced, dated September 2026.';
 const canonical = 'https://geoready.dev/veesie-alternative/';
 const datePublished = '2026-09-16';
-const dateModified = '2026-09-16';
+const dateModified = '2026-10-21';
 
 // Classe condivisa dei link nel corpo del testo (ricetta console, riusata da
 // best-geo-tools.astro e dalle altre pagine di comparazione).
@@ -18,12 +18,12 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 // punteggio inventato: solo ciò che ciascun vendor pubblica.
 const COMPARISON_ROWS = [
   ['Built for', 'Benelux market (Dutch/French/English), ClickForest, Belgium', 'Global, English, Juan Camilo Auriti'],
-  ['Entry paid tier', 'Starter €24/mo: 1 site, 20 prompts, 3 engines', 'Pro €19/mo: 1 domain weekly monitoring, 30-audit history'],
+  ['Entry paid tier', 'Starter €24/mo billed annually (€29/mo billed monthly), excl. VAT: 1 site, 20 prompts, 3 engines (veesie.com/pricing, checked 2026-10-21)', 'Pro €19/mo: 1 domain weekly monitoring, 30-audit history'],
   ['Free option', '7-day trial, 10 queries, no card, excludes Claude/Gemini', '€0 forever, 5 audits/day, full nine-category report, no account, no card'],
   ['AI engines', 'Up to 5: ChatGPT, Perplexity, Google AI Overviews (Starter); +Claude, Gemini (Plus+). No Copilot, no AI Mode', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = automated Perplexity checks (Agency), plus ChatGPT/Google via manual paste'],
   ['Monitoring cadence', 'Weekly, every paid tier', 'Weekly (Pro) → Daily (Agency) → Hourly (Enterprise*)'],
   ['Sites per tier', '1 (Starter, Plus) · 2 (Pro) · uncapped, not stated (Agency)', '1 (Pro) · 50 (Agency) · unlimited (Enterprise)'],
-  ['Top self-serve tier', 'Agency €370/mo', 'Agency €89/mo'],
+  ['Top self-serve tier', 'Agency €370/mo billed annually (€450/mo billed monthly), excl. VAT (veesie.com/pricing, checked 2026-10-21)', 'Agency €89/mo'],
   ['Scoring transparency', '"GEO Score" formula named, exact weights not published', 'Full nine-category rubric and weights published; scoring repo publicly auditable'],
   ['Open-source option', 'None found', 'CLI (geo-optimizer-skill), MIT-licensed, self-hostable, unlimited via pip'],
   ['Data residency', 'EU-only: Frankfurt database, Cloudflare Europe processing', 'Not stated as a residency guarantee on pricing.md. No claim made'],
@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: 'Does Veesie cover ChatGPT and Perplexity?',
-    a: 'Yes, on every plan, alongside Google AI Overviews. Claude and Gemini are added from the Plus tier (€49/mo) up. No Veesie plan tracks Microsoft Copilot or Google AI Mode as of September 2026 (veesie.com/pricing, accessed 2026-09-01).',
+    a: 'Yes, on every plan, alongside Google AI Overviews. Claude and Gemini are added from the Plus tier (€49/mo billed annually, €59/mo billed monthly) up. No Veesie plan tracks Microsoft Copilot or Google AI Mode as of September 2026 (veesie.com/pricing, accessed 2026-09-01).',
   },
   {
     q: 'Is there a free way to try Veesie?',
@@ -134,7 +134,7 @@ const faqs = [
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li><strong class="text-ink">Benelux-based teams</strong> who want product copy and support in Dutch or French as well as English.</li>
         <li><strong class="text-ink">Brands that value the regional benchmark</strong>: seeing where you sit against 26 anonymized Belgian, Dutch, and Luxembourg peers across 5 sectors is a genuinely specific trust signal Veesie built and GeoReady doesn't have (veesie.com/benchmark, accessed 2026-09-01).</li>
-        <li><strong class="text-ink">GA4-centric teams on Veesie Pro (€82/mo)</strong> who want AI-referral visibility tied directly into analytics they already use (veesie.com/pricing, accessed 2026-09-01).</li>
+        <li><strong class="text-ink">GA4-centric teams on Veesie Pro (€82/mo billed annually)</strong> who want AI-referral visibility tied directly into analytics they already use (veesie.com/pricing, accessed 2026-09-01).</li>
         <li><strong class="text-ink">Buyers with an EU-only data-residency requirement</strong>: Frankfurt hosting and Cloudflare-Europe processing is a stated design choice (veesie.com homepage, accessed 2026-09-01).</li>
       </ul>
     </section>
@@ -144,7 +144,7 @@ const faqs = [
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li>You're outside Belgium, the Netherlands, or Luxembourg and don't need Dutch/French localization.</li>
         <li>You want engine coverage Veesie doesn't sell on any plan: Microsoft Copilot and Google AI Mode aren't tracked at all, as of September 2026 (veesie.com/pricing, accessed 2026-09-01).</li>
-        <li>You manage more than two domains and don't want the jump straight from Pro (€82/mo, 2 sites) to Agency (€370/mo). Veesie's pricing page doesn't state a fixed site or prompt cap for Agency, so that tier is priced for scale, not for "a few more domains" (veesie.com/pricing, accessed 2026-09-01).</li>
+        <li>You manage more than two domains and don't want the jump straight from Pro (€82/mo billed annually, 2 sites) to Agency (€370/mo billed annually). Veesie's pricing page doesn't state a fixed site or prompt cap for Agency, so that tier is priced for scale, not for "a few more domains" (veesie.com/pricing, accessed 2026-09-01).</li>
         <li>
           You want to read the scoring logic rather than trust a named-but-undisclosed
           formula. Veesie's "GEO Score" describes its inputs (mention rate, sentiment,

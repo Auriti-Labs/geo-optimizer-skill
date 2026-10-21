@@ -3,10 +3,10 @@ import Shell from '../components/Shell.astro';
 
 const title = 'Profound Alternative (2026): Honest Comparison | GeoReady';
 const description =
-  "Profound starts at $99/mo and gates Enterprise behind sales. See where it shines, who should stay, and how GeoReady's €0-€89 plans compare. Sep 2026.";
+  "Profound lists a 7-day free trial and custom Enterprise pricing, with no public self-serve price as of October 2026. See where it shines, who should stay, and how GeoReady's €0-€89 plans compare.";
 const canonical = 'https://geoready.dev/profound-alternative/';
 const datePublished = '2026-09-16';
-const dateModified = '2026-09-16';
+const dateModified = '2026-10-21';
 
 // Classe condivisa dei link nel corpo del testo (ricetta console).
 const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep';
@@ -14,18 +14,16 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 // Pricing Profound come pubblicato — packet 11-profound-alternative.md,
 // §"Profound's pricing and packaging, as of September 2026".
 const PROFOUND_PRICING = [
-  ['Starter', '$99/mo (billed yearly, "2 months free")', 'ChatGPT only', '50', '1', 'Self-serve, no stated trial'],
-  ['Growth', '$399/mo (billed yearly, "2 months free")', '3 tracked (which 3 is not specified on the pricing page, so not verifiable)', '100', '3', 'Self-serve, free trial offered'],
-  ['Enterprise', 'Custom, "tailored packages"', 'Up to 9', 'Custom', 'Custom', 'Sales-assisted ("Get a Demo" only)'],
+    ['Trial', 'Free, 7 days', 'ChatGPT, Gemini, Google AI Overviews', '50 unique prompts, run daily for 7 days', 'Not stated', 'Self-serve ("Get Started")'],
+  ['Enterprise', 'Custom, "tailored packages"', 'Up to 9', 'Custom', 'Not stated', 'Sales-assisted ("Get a Demo" only)'],
 ] as const;
 
 // Confronto testa a testa — §"GeoReady vs. Profound, head-to-head". Nessun
 // punteggio inventato: descrittivo e sourced su entrambi i lati.
 const COMPARISON_ROWS = [
-  ['Free tier', 'None ongoing (one-time, signup-gated "AEO Report")', '€0 forever: 5 audits/day, full nine-category GEO report, no account, no card'],
-  ['Entry paid price', '$99/mo (Starter, billed yearly, 1 seat)', '€19/mo (Pro, founding price)'],
-  ['What the entry price buys', 'ChatGPT-only tracking, 50 prompts, 1 seat', '1 domain weekly monitoring, 30-audit score history, regression alerts (≥5-point move), PDF export, API access'],
-  ['Highest self-serve tier', "None. Growth is the ceiling before Enterprise's sales gate", '€89/mo (Agency): 50 domains daily, team workspace, unlimited batch audits, AI answer snapshots'],
+  ['Free tier', 'A 7-day free trial (50 prompts run daily, three engines); nothing ongoing', '€0 forever: 5 audits/day, full nine-category GEO report, no account, no card'],
+    ['Entry paid price', 'No public price: tryprofound.com/pricing lists a 7-day trial and a custom Enterprise plan (checked 2026-10-21)', '€19/mo (Pro, founding price): 1 domain weekly monitoring, 30-audit score history, regression alerts (≥5-point move), PDF export, API access'],
+  ['Highest self-serve tier', 'None listed: trial, then Enterprise through a demo', '€89/mo (Agency): 50 domains daily, team workspace, unlimited batch audits, AI answer snapshots'],
   ['Enterprise access', 'Custom pricing, demo-gated ("Get a Demo"), no public number', 'Custom pricing ("talk to us"), but every tier below it stays self-serve with published prices'],
   ['Real AI-crawler-log correlation (CDN/server logs)', 'Yes: Akamai, Cloudflare, Fastly, Vercel, and more', "No. GeoReady doesn't ingest server/CDN logs; this is a genuine Profound advantage, and GeoReady doesn't claim to match it"],
   ['Autonomous agent proposing weekly actions', 'Yes ("Aim")', 'No dedicated agent. Every audit ships with actionable recommendations, but there is no autonomous prioritization layer'],
@@ -43,7 +41,7 @@ const faqs = [
   },
   {
     q: 'Does GeoReady track the same AI engines as Profound?',
-    a: "Not at the same depth. Profound's Growth and Enterprise tiers name ChatGPT, Perplexity, Claude, Gemini, Grok, Microsoft Copilot, DeepSeek, and Google AI Overviews. GeoReady's automated citation tracking (Agency) checks Perplexity specifically, with ChatGPT and Google covered through manual paste. If you need continuous automated coverage across many engines at once today, Profound's paid tiers cover more ground.",
+    a: "Not at the same depth. Profound's Enterprise tier names up to nine answer engines: ChatGPT, Perplexity, Google AI Mode, Gemini, Microsoft Copilot, DeepSeek, Claude, Google AI Overviews and Exa Search (tryprofound.com/pricing, checked 2026-10-21). GeoReady's automated citation tracking (Agency) checks Perplexity specifically, with ChatGPT and Google covered through manual paste. If you need continuous automated coverage across many engines at once today, Profound's Enterprise tier covers more ground.",
   },
   {
     q: 'Can I get GeoReady’s top tier without a sales call?',
@@ -58,8 +56,8 @@ const faqs = [
     a: "Some teams do, for different jobs. If you're already a Profound customer, GeoReady's free audit or Pro tier can act as a fast, published-methodology check on your on-page GEO signals (llms.txt, schema depth, AI-crawler permissions) without touching your Profound seats. It doesn't replace Profound's crawler-log correlation or its agent layer.",
   },
   {
-    q: "Does Profound's per-seat pricing change the comparison for a small team?",
-    a: "Yes. Profound's Starter plan includes exactly one seat; a two-person team needing ChatGPT-only tracking would need to move to Growth ($399/mo, 3 seats) rather than add a seat to Starter, since Starter's pricing page does not list a per-seat add-on option (source: tryprofound.com/pricing, accessed 2026-09-01). GeoReady's plan prices are not per-seat at any tier; Agency's team workspace (owner/editor/viewer roles) is included in the €89/mo price as stated in pricing.md, with no additional per-seat charge disclosed there.",
+    q: "Does Profound publish per-seat pricing?",
+    a: "No. As of 2026-10-21 tryprofound.com/pricing lists a free 7-day trial and a custom Enterprise plan, and states no seat counts or per-seat prices. Earlier versions of this page described Starter and Growth plans with seat limits; those plans no longer appear there. GeoReady's plan prices are not per-seat at any tier; Agency's team workspace (owner/editor/viewer roles) is included in the €89/mo price as stated in pricing.md, with no additional per-seat charge disclosed there.",
   },
 ] as const;
 ---
@@ -79,27 +77,24 @@ const faqs = [
         The honest answer to "is there a good Profound alternative" is: it depends on
         whether you actually need what Profound is built for. Profound is a
         well-funded Answer Engine Optimization (AEO) platform that ingests real
-        AI-crawler traffic at platform scale and starts at $99/month for a single seat
-        with ChatGPT-only tracking. If that's priced or scoped past what you need
+        AI-crawler traffic at platform scale and, as of October 2026, publishes no
+        self-serve price: a 7-day trial and a custom Enterprise plan. If that's scoped past what you need
         right now, GeoReady is a self-serve, transparently-priced option that starts
-        at €0 and tops out at €89/month for self-serve plans, a different scale from Profound's mid
-        tier. GeoReady does not replace everything Profound does. This page maps where
+        at €0 and tops out at €89/month for self-serve plans. GeoReady does not replace everything Profound does. This page maps where
         each one fits, with every competitor fact sourced and dated.
       </p>
 
       <p class="mt-4 text-sm italic text-ink-mute">
-        Facts about Profound below are current as of September 2026 and were verified
-        directly from tryprofound.com; pricing and packaging can change without
+        Facts about Profound's plans and prices below were re-checked on tryprofound.com/pricing on
+        2026-10-21; the other Profound facts (customers, agent layer, integrations) are as of September 2026 and not re-checked; pricing and packaging can change without
         notice, so re-check before you buy.
       </p>
 
       <p class="mt-4 text-base leading-relaxed text-ink-soft">
-        The main gap is who each product is priced for, not feature count. Profound's cheapest self-serve plan is $99/month for one seat and one
-        engine; the tier that adds two more engines is $399/month; anything past that
-        requires a demo call with no published price. GeoReady's structure runs the
-        other way: every tier, including the one closest to Profound's Growth scope,
-        is a fixed, published number you can pay through Stripe without talking to
-        anyone.
+        The main gap is who each product is priced for, not feature count. Profound publishes no self-serve price: after a 7-day trial the
+        next step is a demo call and a custom Enterprise package. GeoReady's structure runs the
+        other way: every tier below Enterprise is a fixed, published number you can pay through
+        Stripe without talking to anyone.
       </p>
 
       <p class="mt-4 font-mono text-xs text-ink-mute">
@@ -143,10 +138,10 @@ const faqs = [
     </section>
 
     <section class="mb-12 md:mb-16">
-      <h2>Profound's pricing and packaging, as of September 2026</h2>
+      <h2>Profound's pricing and packaging, as of October 2026</h2>
       <p class="mt-4 text-sm italic text-ink-mute">
         All figures below are volatile and were verified on tryprofound.com/pricing on
-        2026-09-01.
+        2026-10-21. Earlier versions of this page listed Starter ($99/mo) and Growth ($399/mo) plans; they no longer appear there.
       </p>
       <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
         <table class="w-full text-left text-sm">
@@ -186,8 +181,8 @@ const faqs = [
       <h2>When a Profound alternative makes sense</h2>
       <p class="mt-4">A "Profound alternative" search is usually one of these situations:</p>
       <ul class="ml-5 mt-4 list-disc space-y-2">
-        <li><strong class="text-ink">You're priced out of the entry tier.</strong> $99/month buys one seat and ChatGPT-only tracking; the tier that adds two more engines is $399/month.</li>
-        <li><strong class="text-ink">You don't want a sales call to see real pricing.</strong> Profound's Enterprise tier, where multi-company tracking and full 9-engine coverage live, is demo-gated with no published number.</li>
+        <li><strong class="text-ink">You don't want a sales call to see real pricing.</strong> Profound lists a 7-day trial and a custom Enterprise plan, with no public self-serve price.</li>
+        <li><strong class="text-ink">You want to know what the top tier costs.</strong> Profound's Enterprise tier, where multi-company tracking and full 9-engine coverage live, is demo-gated with no published number.</li>
         <li><strong class="text-ink">You want a published scoring methodology</strong>, not a platform where the exact logic behind a citation or visibility score isn't public.</li>
         <li>
           <strong class="text-ink">You're a solo operator, indie SaaS, or small agency</strong>,
@@ -202,8 +197,8 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>GeoReady vs. Profound, head-to-head</h2>
       <p class="mt-4 text-sm italic text-ink-mute">
-        Descriptive, sourced comparison with no invented scores. Profound figures:
-        tryprofound.com/pricing and tryprofound.com/customers, accessed 2026-09-01.
+        Descriptive, sourced comparison with no invented scores. Profound plan and price figures:
+        tryprofound.com/pricing, checked 2026-10-21; other Profound figures: tryprofound.com and tryprofound.com/customers, accessed 2026-09-01.
         GeoReady figures: pricing.md, fetched live 2026-08-31.
       </p>
       <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
@@ -253,7 +248,7 @@ const faqs = [
         and its customer roster (MongoDB, Ramp, WHOOP, Airbyte, Statsig) reads like a
         list of funded companies with a marketing team and a procurement process, not
         a solo operator running their own audits on a Tuesday night. If that's your
-        organization, the $99-399/month range and the Enterprise sales process are
+        organization, a custom Enterprise package and a sales process are
         normal costs of doing business at that scale, and the crawler-log correlation
         and SOC2 posture are worth paying for. GeoReady is built for the buyer one step
         earlier, before that budget or that team exists.

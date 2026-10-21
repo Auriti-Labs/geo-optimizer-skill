@@ -6,7 +6,7 @@ const description =
   'Otterly alternative comparison: entry pricing, the $29-to-$189 jump, engine coverage, and where Otterly is genuinely stronger. Sourced, dated Sep 2026.';
 const canonical = 'https://geoready.dev/otterly-alternative/';
 const datePublished = '2026-09-16';
-const dateModified = '2026-09-16';
+const dateModified = '2026-10-21';
 
 // Classe condivisa dei link nel corpo del testo (ricetta console).
 const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep';
@@ -14,7 +14,7 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 // Confronto tier-by-tier — packet 12-otterly-alternative.md,
 // §"Otterly vs GeoReady, tier by tier". Nessun punteggio inventato.
 const TIER_ROWS = [
-  ['7-day trial', 'Free, no card', '4 base engines implied; exact trial scope not published', 'Free', '€0 forever', '5 audits/day, full nine-category report, no account, no card, no expiry'],
+  ['Free trial', 'Free (length not stated on the pricing page)', '4 base engines implied; exact trial scope not published', 'Free', '€0 forever', '5 audits/day, full nine-category report, no account, no card, no expiry'],
   ['Lite', '$29/mo', '15 prompts, 1,000 audits/mo, 4 engines (ChatGPT, AI Overviews, Perplexity, Copilot)', 'Pro', '€19/mo', '1 domain weekly monitoring, 30-audit history, regression alerts, PDF export, API access'],
   ['Standard', '$189/mo', '100 prompts, 5,000 audits/mo, Looker Studio, 2,000/2,000 API/MCP requests', 'No equivalent tier', '—', 'GeoReady goes from Pro (€19/mo) to Agency (€89/mo); there is no mid tier'],
   ['Premium', '$489/mo', '400 prompts, 10,000 audits/mo, 5,000/5,000 API/MCP requests', 'Agency', '€89/mo', '50 domains daily, 24-month history, team workspace, AI answer snapshots (Perplexity automated; ChatGPT/Google manual paste)'],
@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: "Is Otterly's free trial actually free?",
-    a: "Yes: 7 days, no credit card required (otterly.ai/pricing, accessed 2026-09-01). The exact feature scope during the trial (which engines, how many prompts) isn't published on the fetched pages, so treat it as narrower than the paid tiers until you've confirmed otherwise.",
+    a: "Yes. Otterly offers a free trial (otterly.ai/pricing, checked 2026-10-21); the page no longer states its length, and the 2026-09-01 check read 7 days with no credit card required. The exact feature scope during the trial (which engines, how many prompts) isn't published on the fetched pages, so treat it as narrower than the paid tiers until you've confirmed otherwise.",
   },
   {
     q: 'Is GeoReady open source, like the combined alternative page discusses?',
@@ -47,7 +47,7 @@ const faqs = [
   },
   {
     q: "Is there a cheaper way to just check whether I'm cited, without a monthly subscription?",
-    a: `On the GeoReady side, yes: the <a href="/tools/ai-citation-checker/" class="${PROSE_LINK}">AI citation checker</a> runs a free, no-account spot-check against Perplexity. Otterly doesn't publish a free, no-subscription single-check option; its only no-cost path is the 7-day trial.`,
+    a: `On the GeoReady side, yes: the <a href="/tools/ai-citation-checker/" class="${PROSE_LINK}">AI citation checker</a> runs a free, no-account spot-check against Perplexity. Otterly doesn't publish a free, no-subscription single-check option; its only no-cost path is the free trial.`,
   },
   {
     q: 'Should an agency managing several clients choose Otterly instead of GeoReady?',
@@ -127,7 +127,7 @@ const faqs = [
         <li><strong class="text-ink">Lite ($29/mo):</strong> 15 search prompts, 1,000 GEO URL audits/mo, no API/MCP allotment.</li>
         <li><strong class="text-ink">Standard ($189/mo, "Most Popular"):</strong> 100 prompts, 5,000 audits/mo, 2,000 API and 2,000 MCP requests/mo, Looker Studio connector.</li>
         <li><strong class="text-ink">Premium ($489/mo):</strong> 400 prompts, 10,000 audits/mo, 5,000/5,000 API/MCP requests.</li>
-        <li><strong class="text-ink">Enterprise (custom, "starting from $1,000/month"):</strong> customizable prompt volume.</li>
+        <li><strong class="text-ink">Enterprise (custom):</strong> starting from 1,000 search prompts, with customizable prompt tracking, SSO and a dedicated customer success manager (otterly.ai/pricing, checked 2026-10-21).</li>
       </ul>
       <p class="mt-4">
         There are two separate quotas: "search prompts" are the AI-engine
@@ -137,7 +137,7 @@ const faqs = [
         assuming a plan's headline prompt count is the whole allowance. Every tier
         includes unlimited team seats, and extra prompts cost $99 for +100/month if 15
         isn't enough (otterly.ai/pricing, accessed 2026-09-01). There's no permanent
-        free plan, only a 7-day trial (no credit card required), and the exact trial
+        free plan, only a free trial (7 days and no credit card required as of 2026-09-01; length not stated on 2026-10-21), and the exact trial
         feature scope is not published on the fetched pages. Annual billing takes roughly
         14-15% off the monthly rate at every tier.
       </p>
@@ -180,7 +180,7 @@ const faqs = [
       <h2>Where GeoReady starts cheaper</h2>
       <p class="mt-4">
         A full GEO audit (no account, no card, 5 runs a day) costs €0 forever on
-        GeoReady; Otterly has no equivalent permanent free tier, only the 7-day
+        GeoReady; Otterly has no equivalent permanent free tier, only a free
         trial. Moving to a paid plan, GeoReady Pro is €19/mo; Otterly Lite is $29/mo
         (otterly.ai/pricing, accessed 2026-09-01), so the currencies differ. These aren't the same product at that price point: Pro is domain
         monitoring with score history and regression alerts, not prompt-based
@@ -212,7 +212,7 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>Otterly vs GeoReady, tier by tier</h2>
       <p class="mt-4 text-sm italic text-ink-mute">
-        Otterly figures: otterly.ai/pricing, accessed 2026-09-01. GeoReady figures:
+        Otterly figures: otterly.ai/pricing, accessed 2026-09-01, re-checked 2026-10-21 (plans, prompt limits and request allotments unchanged; viewed from Europe the page shows €29, €189 and €489, because Otterly localises prices, so the dollar figures here are from 2026-09-01). GeoReady figures:
         pricing.md, live 2026-08-31. Figures are stated as published by each vendor;
         no scores or ratings are assigned to either.
       </p>

@@ -48,34 +48,34 @@ const EVALUATION_CRITERIA = [
 // Strumenti nominati — solo fatti già registrati, con fonte e data, nelle pagine
 // "alternative" collegate (controllate il 16-21 settembre 2026). Nessuna classifica,
 // nessun punteggio: se una cella non è nella pagina collegata, rimanda alla pagina.
-const NAMED_TOOLS_CHECKED = '16–21 September 2026';
+const NAMED_TOOLS_CHECKED = '16 September to 21 October 2026 (Profound, RankScale, Goodie and Otterly pricing re-read on 21 October)';
 const NAMED_TOOLS = [
   {
     name: 'Profound',
     href: '/profound-alternative/',
-    free: 'No ongoing free tier (one-time, signup-gated report)',
-    entry: 'Starter $99/mo billed yearly: ChatGPT only, 50 prompts',
+    free: 'A 7-day free trial; no ongoing free tier',
+    entry: 'No public self-serve price: trial, then a custom Enterprise plan',
     weights: 'Not published on the pages checked',
   },
   {
     name: 'RankScale',
     href: '/rankscale-alternative/',
-    free: 'None published on its pricing pages',
+    free: 'No ongoing free plan; a 7-day free trial of Pro',
     entry: 'Pro $99/mo: 1,200 credits',
     weights: '7 core metrics described; exact weighted formula not published',
   },
   {
     name: 'Goodie',
     href: '/goodie-alternative/',
-    free: 'Essentials tier, credits-based; core monitoring on paid plans',
-    entry: 'Pro $99/mo',
+    free: 'A 7-day free trial of Core; no ongoing free plan',
+    entry: 'Core $295/mo',
     weights: 'Metric types described; see the comparison page',
   },
   {
     name: 'Veesie',
     href: '/veesie-alternative/',
     free: '7-day trial, 10 queries, no card',
-    entry: 'Starter €24/mo: 1 site, 20 prompts, 3 engines',
+    entry: 'Starter €24/mo billed annually: 1 site, 20 prompts, 3 engines',
     weights: '"GEO Score" formula named, exact weights not published',
   },
   {
@@ -88,7 +88,7 @@ const NAMED_TOOLS = [
   {
     name: 'Otterly',
     href: '/otterly-alternative/',
-    free: '7-day trial, no card',
+    free: 'A free trial (length not stated on the pricing page)',
     entry: 'See the comparison page',
     weights: 'See the comparison page',
   },
