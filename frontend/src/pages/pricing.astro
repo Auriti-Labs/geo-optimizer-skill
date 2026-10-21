@@ -32,15 +32,15 @@ const selfServePlans = [
     period: '/month',
     status: 'Founding price',
     statusStyle: 'bg-pass-wash text-pass-deep',
-    description: 'Weekly monitoring for one domain, score history, regression alerts, PDF export, and API access. For developers and consultants managing one site.',
+    description: 'Weekly monitoring for up to 10 domains, score history, regression alerts, PDF export, and API access. For developers and consultants managing a few sites.',
     cta: 'Start with Pro',
     ctaHref: 'https://app.geoready.dev/signup?plan=pro&intent=monitoring&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=pro_card',
     ctaStyle: 'bg-pass-deep text-white hover:bg-pass',
     recommended: true,
-    cadence: 'schedule: weekly · 1 domain',
+    cadence: 'schedule: weekly · 10 domains',
     features: [
       'Unlimited audits',
-      '1 domain, weekly monitoring',
+      '10 domains, weekly monitoring',
       '30-audit score history',
       'Regression alerts by email (when your score drops by 5 points or more)',
       'PDF export',
@@ -115,7 +115,7 @@ const planChoiceRows = [
   {
     intent: 'I need to know when my site gets worse or better.',
     plan: 'Pro',
-    reason: 'Choose Pro when one domain needs weekly monitoring, score history, regression alerts, PDF export, and API access.',
+    reason: 'Choose Pro when your domains need weekly monitoring, score history, regression alerts, PDF export, and API access.',
     href: 'https://app.geoready.dev/signup?plan=pro&intent=monitoring&onboarding=first_domain&utm_source=pricing&utm_medium=plan_choice&utm_campaign=pricing_to_paid&utm_content=pro_choice',
     cta: 'Start Pro',
     tracking: 'pricing_choice_pro_monitoring',
@@ -157,7 +157,7 @@ const afterCheckoutSteps = [
   {
     step: '04',
     title: 'Monitoring starts from there',
-    desc: 'Pro runs weekly for one domain. Agency moves to daily multi-site monitoring with longer history and client workflows.',
+    desc: 'Pro runs weekly for up to 10 domains. Agency moves to daily multi-site monitoring with longer history and client workflows.',
   },
 ] as const;
 
@@ -200,7 +200,7 @@ const cliVsProRows = [
   [
     'Schedule',
     'None built in. geo track and geo monitor run once, when you call them. Recurring runs need your own cron or scheduled CI job.',
-    'Weekly for one domain, without a scheduler on your side.',
+    'Weekly for up to 10 domains, without a scheduler on your side.',
   ],
   [
     'Where history lives',
@@ -215,7 +215,7 @@ const cliVsProRows = [
 ] as const;
 
 const cliVsProAnswer =
-  'If you already run the CLI in CI, you may not need Pro. geo track and geo monitor use the same open-source audit engine, store snapshots in a local SQLite file (~/.geo-optimizer/tracking.db), and run only when you start them, so the schedule, the storage and reading the output are yours to set up. Pro is for people who would rather not operate that: the audit runs weekly for one domain, history is kept in your account, and a score drop of 5 points or more triggers an email alert.';
+  'If you already run the CLI in CI, you may not need Pro. geo track and geo monitor use the same open-source audit engine, store snapshots in a local SQLite file (~/.geo-optimizer/tracking.db), and run only when you start them, so the schedule, the storage and reading the output are yours to set up. Pro is for people who would rather not operate that: the audit runs weekly for up to 10 domains, history is kept in your account, and a score drop of 5 points or more triggers an email alert.';
 
 const faqs = [
   {
@@ -262,7 +262,7 @@ const faqs = [
 
 const heroCadenceRows = [
   { plan: 'Free', value: 'run: on demand', detail: '5 audits/day' },
-  { plan: 'Pro', value: 'schedule: weekly', detail: '1 domain' },
+  { plan: 'Pro', value: 'schedule: weekly', detail: '10 domains' },
   { plan: 'Agency', value: 'schedule: daily', detail: '50 domains' },
 ] as const;
 ---
@@ -344,7 +344,7 @@ const heroCadenceRows = [
       <div class="mt-12 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail md:grid-cols-3">
         {[
           ['Free', 'Audit once, learn what to fix.'],
-          ['Pro', 'Track one domain weekly.'],
+          ['Pro', 'Track up to 10 domains weekly.'],
           ['Agency', 'Add team and bulk workflows.'],
         ].map(([label, text]) => (
           <div class="bg-white p-5">
@@ -1005,7 +1005,7 @@ const heroCadenceRows = [
                 "priceCurrency": "EUR",
                 "unitCode": "MON"
               },
-              "description": "Weekly monitoring for 1 domain, score history, regression alerts, PDF export, API access.",
+              "description": "Weekly monitoring for up to 10 domains, score history, regression alerts, PDF export, API access.",
               "availability": "https://schema.org/InStock",
               "url": "https://app.geoready.dev/signup?plan=pro"
             }

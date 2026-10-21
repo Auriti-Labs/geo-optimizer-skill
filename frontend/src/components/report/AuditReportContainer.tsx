@@ -35,7 +35,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
     price: '€19',
     cta: 'Start Pro monitoring',
     headline: 'Start with Pro to keep technical GEO signals from regressing.',
-    reason: 'This looks like a technical visibility problem. Pro is the right first upgrade when you need weekly checks, score history, PDF export, and regression alerts for one domain.',
+    reason: 'This looks like a technical visibility problem. Pro is the right first upgrade when you need weekly checks, score history, PDF export, and regression alerts for up to 10 domains.',
     intent: 'technical_monitoring',
   },
   llms: {
@@ -62,7 +62,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
     price: '€19',
     cta: 'Start Pro monitoring',
     headline: 'Start with Pro to keep metadata and canonical signals stable.',
-    reason: 'Metadata issues affect both classic SEO and AI answer extraction. Pro is enough when the main job is catching technical drift on one domain.',
+    reason: 'Metadata issues affect both classic SEO and AI answer extraction. Pro is enough when the main job is catching technical drift on up to 10 domains.',
     intent: 'metadata_monitoring',
   },
   signals: {
