@@ -50,15 +50,15 @@ export const aiService = {
   features: [
     'GEO score 0-100 across nine categories (rubric v2)',
     'Free one-shot web audit, no account required',
-    'Free weekly monitoring for one domain with drift email',
+    'Free AI answer preview: one automated Perplexity check a week with a free account',
     'Full nine-category report and fix recommendations (Pro+)',
     'AI citation tracking via Perplexity Sonar',
     'Open-source CLI engine (geo-optimizer-skill, MIT)',
   ],
   offers: [
-    { plan: 'Free', price: '0', priceCurrency: 'EUR', description: '1 monitored domain, weekly drift email, 3-category partial report' },
-    { plan: 'Pro', price: '19', priceCurrency: 'EUR', billingPeriod: 'month', description: '10 domains, daily checks, full report, alerts, API' },
-    { plan: 'Studio', price: '49', priceCurrency: 'EUR', billingPeriod: 'month', description: '15 domains, AI snapshots, batch audit, history' },
-    { plan: 'Agency', price: '89', priceCurrency: 'EUR', billingPeriod: 'month', description: '50 domains, team workspace, multi-client' },
+    { plan: 'Free', price: '0', priceCurrency: 'USD', description: 'Full audit with no account, one automated AI answer check a week, no score monitoring' },
+    { plan: 'Pro', price: '19', priceCurrency: 'USD', billingPeriod: 'month', description: '10 domains, weekly monitoring, full report, alerts, API. Founding price, then $29/month' },
+    
+    { plan: 'Agency', price: '89', priceCurrency: 'USD', billingPeriod: 'month', description: '50 domains, daily monitoring, team workspace, client grouping. Founding price, then $199/month' },
   ],
 };

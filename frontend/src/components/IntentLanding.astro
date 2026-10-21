@@ -30,9 +30,9 @@ type PaidStep = {
   copy: string;
   proofPoints: string[];
   plan: {
-    id: 'pro' | 'studio' | 'agency';
-    name: 'Pro' | 'Studio' | 'Agency';
-    price: '$19' | '$49' | '$89';
+    id: 'pro' | 'agency';
+    name: 'Pro' | 'Agency';
+    price: '$19' | '$89';
     period: 'monthly';
     href: string;
     cta: string;
@@ -102,10 +102,10 @@ const offerCatalog = {
     },
     {
       '@type': 'Offer',
-      name: 'GeoReady Studio',
-      price: '49',
+      name: 'GeoReady Agency',
+      price: '89',
       priceCurrency: 'USD',
-      url: 'https://app.geoready.dev/signup?plan=studio',
+      url: 'https://app.geoready.dev/signup?plan=agency',
       availability: 'https://schema.org/InStock',
     },
   ],

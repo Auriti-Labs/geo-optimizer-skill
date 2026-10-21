@@ -19,9 +19,9 @@ const FREE_SLUGS = new Set(['robots', 'meta', 'signals']);
 const ALL_LOCKED_SLUGS = ['llms', 'schema', 'content', 'ai_discovery', 'brand_entity'];
 
 type RecommendedPlan = {
-  id: 'pro' | 'studio';
-  name: 'Pro' | 'Studio';
-  price: '$19' | '$49';
+  id: 'pro' | 'agency';
+  name: 'Pro' | 'Agency';
+  price: '$19' | '$89';
   cta: string;
   headline: string;
   reason: string;
@@ -35,7 +35,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
     price: '$19',
     cta: 'Start Pro monitoring',
     headline: 'Start with Pro to keep technical GEO signals from regressing.',
-    reason: 'This looks like a technical visibility problem. Pro is the right first upgrade when you need weekly checks, score history, PDF export, and regression alerts for one domain.',
+    reason: 'This looks like a technical visibility problem. Pro is the right first upgrade when you need weekly checks, score history, PDF export, and regression alerts for up to 10 domains.',
     intent: 'technical_monitoring',
   },
   llms: {
@@ -62,7 +62,7 @@ const planByCategory: Record<string, RecommendedPlan> = {
     price: '$19',
     cta: 'Start Pro monitoring',
     headline: 'Start with Pro to keep metadata and canonical signals stable.',
-    reason: 'Metadata issues affect both classic SEO and AI answer extraction. Pro is enough when the main job is catching technical drift on one domain.',
+    reason: 'Metadata issues affect both classic SEO and AI answer extraction. Pro is enough when the main job is catching technical drift on up to 10 domains.',
     intent: 'metadata_monitoring',
   },
   signals: {
@@ -75,30 +75,30 @@ const planByCategory: Record<string, RecommendedPlan> = {
     intent: 'freshness_monitoring',
   },
   content: {
-    id: 'studio',
-    name: 'Studio',
-    price: '$49',
-    cta: 'Start Studio tracking',
-    headline: 'Use Studio when the gap is citation quality, not just crawlability.',
-    reason: 'Content gaps need more than a weekly technical score. Studio adds AI citation tracking, competitor comparison, and client-ready exports so you can see whether answer engines actually mention and cite you.',
+    id: 'agency',
+    name: 'Agency',
+    price: '$89',
+    cta: 'Start Agency tracking',
+    headline: 'Use Agency when the gap is citation quality, not just crawlability.',
+    reason: 'Content gaps need more than a weekly technical score. Agency adds AI citation tracking, competitor comparison, and client-ready exports so you can see whether answer engines actually mention and cite you.',
     intent: 'citation_tracking',
   },
   ai_discovery: {
-    id: 'studio',
-    name: 'Studio',
-    price: '$49',
-    cta: 'Start Studio tracking',
-    headline: 'Use Studio to track whether AI engines discover and cite the site.',
-    reason: 'Discovery issues sit between technical access and answer-engine presence. Studio is the better fit when you need citation checks and competitor context, not only monitoring.',
+    id: 'agency',
+    name: 'Agency',
+    price: '$89',
+    cta: 'Start Agency tracking',
+    headline: 'Use Agency to track whether AI engines discover and cite the site.',
+    reason: 'Discovery issues sit between technical access and answer-engine presence. Agency is the better fit when you need citation checks and competitor context, not only monitoring.',
     intent: 'ai_discovery_tracking',
   },
   brand_entity: {
-    id: 'studio',
-    name: 'Studio',
-    price: '$49',
-    cta: 'Start Studio tracking',
-    headline: 'Use Studio when entity authority is the blocker.',
-    reason: 'Brand and entity gaps show up in whether answer engines mention you against competitors. Studio adds citation tracking and comparison workflows for that job.',
+    id: 'agency',
+    name: 'Agency',
+    price: '$89',
+    cta: 'Start Agency tracking',
+    headline: 'Use Agency when entity authority is the blocker.',
+    reason: 'Brand and entity gaps show up in whether answer engines mention you against competitors. Agency adds citation tracking and comparison workflows for that job.',
     intent: 'entity_citation_tracking',
   },
 };

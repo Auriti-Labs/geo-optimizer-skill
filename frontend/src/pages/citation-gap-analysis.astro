@@ -12,8 +12,8 @@ const dateModified = '2026-10-14';
 const PLAN_ROWS = [
   ["Who's cited instead of me?", 'Free', 'The AI Citation Checker, unlimited manual sampling, 5 checks/day'],
   ['Structural diagnosis: why is the gap there?', 'Free', 'GEO-score comparison via /compare/ and /analyze-competitors/'],
-  ['Recurring automated Perplexity tracking', 'Studio ($49/mo)', '5 automated citation checks/day, competitor comparison, GEO-score history'],
-  ['Trend across a named competitor, tracked prompt set', 'Studio ($49/mo)', 'Share-of-voice over saved AI answer snapshots'],
+  ['Recurring automated Perplexity tracking', 'Agency ($89/mo)', 'Automated Perplexity citation checks, competitor comparison, GEO-score history'],
+  ['Trend across a named competitor, tracked prompt set', 'Agency ($89/mo)', 'Share-of-voice over saved AI answer snapshots'],
   ['Structured ChatGPT (and Google) snapshot history', 'Agency ($89/mo)', 'Manual-paste answer snapshots with citation-quality scoring'],
 ] as const;
 
@@ -27,8 +27,8 @@ const faqs = [
     a: "No. There's no one product or endpoint that runs this whole workflow automatically. What exists are the four capabilities described above, used together.",
   },
   {
-    q: "Is Studio's competitor comparison the same as a citation comparison?",
-    a: "No. Studio's competitor comparison measures GEO score (structural readiness across nine categories), not who was cited for a given prompt. Use the free citation checker (Step 1) or manual sampling (Step 2) to answer the citation question.",
+    q: "Is Agency's competitor comparison the same as a citation comparison?",
+    a: "No. Agency's competitor comparison measures GEO score (structural readiness across nine categories), not who was cited for a given prompt. Use the free citation checker (Step 1) or manual sampling (Step 2) to answer the citation question.",
   },
   {
     q: 'How do I know if a domain cited instead of me is a real competitor?',
@@ -36,7 +36,7 @@ const faqs = [
   },
   {
     q: 'Can I track my citation gap automatically over time?',
-    a: "Automated, scheduled tracking exists for Perplexity on Studio (5 checks/day) and for a tracked set of prompts via Studio's share-of-voice view. There's no automated tracking for ChatGPT specifically. See the ChatGPT citation tracking page for the manual-paste alternative.",
+    a: "Automated, scheduled tracking exists for Perplexity on Agency and for a tracked set of prompts via Agency's share-of-voice view. There's no automated tracking for ChatGPT specifically. See the ChatGPT citation tracking page for the manual-paste alternative.",
   },
   {
     q: 'Is any part of this free?',
@@ -149,7 +149,7 @@ const faqs = [
           <a href="/analyze-competitors/">benchmark several domains at once</a> and you'll see a nine-category readiness
           comparison: crawlability, schema, factual density, entity clarity, and the rest. A higher score means fewer
           blockers and stronger citable signals, which correlates with being cited. It is not a report of who was
-          cited for a given prompt. To confirm that, go back to Step 1 or Step 2. Studio's "competitor
+          cited for a given prompt. To confirm that, go back to Step 1 or Step 2. Agency's "competitor
           comparison" line item runs this same GEO-score comparison, not a citation-based one. Do not expect it to name
           which prompts a competitor is winning; that is a different tool.
         </p>
@@ -157,13 +157,13 @@ const faqs = [
 
       <h3 class="mt-6">Step 4: Decide whether the gap is worth tracking</h3>
       <p class="mt-3">
-        A one-time gap is a data point. A recurring one is a trend worth watching, but only Studio and up have anything
+        A one-time gap is a data point. A recurring one is a trend worth watching, but only Agency and up have anything
         that watches automatically. Here is what that covers:
       </p>
       <ul class="mt-3 space-y-3">
-        <li><strong>Automated, scheduled tracking exists for Perplexity only.</strong> Studio's AI citation tracking runs
-          5 automated checks per day against Perplexity. It is not a general "AI citation tracker" across every engine.</li>
-        <li><strong>Share-of-voice over a tracked prompt set.</strong> Studio and up can also show, across a set of
+        <li><strong>Automated, scheduled tracking exists for Perplexity only.</strong> Agency's AI citation tracking runs
+          automated checks against Perplexity. It is not a general "AI citation tracker" across every engine.</li>
+        <li><strong>Share-of-voice over a tracked prompt set.</strong> Agency and up can also show, across a set of
           saved AI answer snapshots, whether a named competitor is mentioned more often than you. This is a trend across
           the prompts you've chosen to track, not a continuous scan of "every prompt where you lose to competitor X". No
           such all-prompts dashboard exists.</li>
@@ -180,7 +180,7 @@ const faqs = [
       <ul class="mt-4 space-y-3">
         <li><strong>Not one feature.</strong> GeoReady doesn't have a single "citation gap analysis" product or report
           that runs Steps 1-4 for you automatically. It's four real capabilities, used in sequence.</li>
-        <li><strong>Not a citation-based competitor dashboard.</strong> Studio's competitor comparison is GEO-score
+        <li><strong>Not a citation-based competitor dashboard.</strong> Agency's competitor comparison is GEO-score
           based. If a page tells you it shows "who's cited vs. your competitor" as a live dashboard, that page is
           describing something GeoReady doesn't build.</li>
         <li><strong>Not an all-prompts scan.</strong> Tracking (Step 4) works over prompts you've explicitly added to a

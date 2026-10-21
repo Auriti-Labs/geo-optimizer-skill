@@ -6,7 +6,7 @@ const description =
   'Goodie AI vs GeoReady for AI visibility monitoring: engine coverage, pricing, revenue attribution, and scoring transparency. Sourced. Audit free.';
 const canonical = 'https://geoready.dev/goodie-alternative/';
 const datePublished = '2026-09-21';
-const dateModified = '2026-09-21';
+const dateModified = '2026-10-21';
 
 // Classe condivisa dei link nel corpo del testo (pattern delle altre pagine).
 const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep';
@@ -15,13 +15,13 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 const COMPARISON_ROWS = [
   ['Built for', 'Goodie AI — "end-to-end AEO platform", operated by Rankscale GmbH (Vienna); footer states "Rankscale GmbH contributes 1% of purchases"', 'Open-source GEO audit engine + hosted monitoring — global, Juan Camilo Auriti'],
   ['Core model', 'Closed-loop Research→Monitor→Action→Measure with revenue attribution (attributed + influential AI-sourced revenue) via GA4 and CRM', 'Audit + monitoring: nine-category GEO score, weekly-to-hourly citation tracking, published methodology, open-source CLI'],
-  ['Free option', 'Essentials free tier exists (credits-based), but core monitoring/attribution sits on paid plans (Pro $99/mo, Growth $385/mo)', '$0 forever, 5 audits/day, full nine-category report, no account, no card'],
-  ['AI engines', 'Wide: ChatGPT, Gemini, Perplexity, Claude, DeepSeek, Mistral, Grok, Copilot, Google AI Overview, AI Mode, Meta AI, Amazon Alexa for Shopping, Sparky', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = 5 automated Perplexity checks/day (Studio+), plus ChatGPT/Google via manual paste (Agency+)'],
-  ['Monitoring cadence', 'Real-time tracking; scheduling hourly/daily/weekly/monthly across all major LLMs', 'Weekly (Pro) to Daily (Studio, Agency) to Hourly (Enterprise)'],
+  ['Free option', 'A 7-day free trial of Core; no ongoing free plan seen (higoodie.com/pricing, checked 2026-10-21)', '$0 forever, 5 audits/day, full nine-category report, no account, no card'],
+  ['AI engines', 'Wide: ChatGPT, Gemini, Perplexity, Claude, DeepSeek, Mistral, Grok, Copilot, Google AI Overview, AI Mode, Meta AI, Amazon Alexa for Shopping, Sparky', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = automated Perplexity checks (Agency), plus ChatGPT/Google via manual paste'],
+  ['Monitoring cadence', 'Real-time tracking; scheduling hourly/daily/weekly/monthly across all major LLMs', 'Weekly (Pro) to Daily (Agency) to Hourly (Enterprise)'],
   ['Revenue attribution', 'Yes — closed-loop AI-sourced revenue attribution via GA4 and CRM (Goodie-specific differentiator)', 'No revenue attribution — GeoReady measures visibility and citations, not revenue attribution'],
   ['Scoring transparency', 'Distinguishes deterministic (revenue, conversion) vs probabilistic (visibility score, sentiment, mention frequency, share of voice) metrics; recommends reporting probabilistic metrics as 30-60 day trends, not snapshots (higoodie.com/blog/probabilistic-vs-deterministic-aeo-metrics)', 'Full nine-category rubric and weights published; scoring repo publicly auditable'],
-  ['Open-source option', 'None — closed SaaS; REST API (Growth/Enterprise) + proprietary Goodie MCP server', 'CLI (geo-optimizer-skill), MIT-licensed, self-hostable, unlimited via pip'],
-  ['Top self-serve tier', 'Enterprise custom / ~$999/mo full-loop Pro', 'Agency $89/mo'],
+  ['Open-source option', 'None — closed SaaS; MCP server on every plan, API access on Enterprise (higoodie.com/pricing, checked 2026-10-21)', 'CLI (geo-optimizer-skill), MIT-licensed, self-hostable, unlimited via pip'],
+  ['Top self-serve tier', 'Core $295/mo with a 7-day free trial; Pro $999/mo and Enterprise through a demo (higoodie.com/pricing, checked 2026-10-21)', 'Agency $89/mo'],
 ] as const;
 
 const faqs = [
@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     q: 'Does Goodie AI track the same engines as GeoReady?',
-    a: 'Goodie tracks a very wide set — ChatGPT, Gemini, Perplexity, Claude, DeepSeek, Mistral, Grok, Copilot, Google AI Overview, AI Mode, Meta AI, Amazon Alexa for Shopping, and Sparky (higoodie.com/features/ai-visibility-monitoring, accessed 2026-09-21). GeoReady\'s free audit scores a site across nine GEO signal categories regardless of engine, and its paid citation tracking runs automated Perplexity checks (Studio+) with manual ChatGPT/Google capture (Agency+).',
+    a: 'Goodie tracks a very wide set — ChatGPT, Gemini, Perplexity, Claude, DeepSeek, Mistral, Grok, Copilot, Google AI Overview, AI Mode, Meta AI, Amazon Alexa for Shopping, and Sparky (higoodie.com/features/ai-visibility-monitoring, accessed 2026-09-21). GeoReady\'s free audit scores a site across nine GEO signal categories regardless of engine, and its paid citation tracking runs automated Perplexity checks (Agency) with manual ChatGPT/Google capture.',
   },
   {
     q: 'What does Goodie AI do that GeoReady does not?',
@@ -39,7 +39,7 @@ const faqs = [
   },
   {
     q: 'Is Goodie AI open source?',
-    a: `No — Goodie is a closed SaaS with no open-source repository or CLI. It exposes a REST API on Growth/Enterprise and a proprietary Goodie MCP server (higoodie.com/features/mcp and /pricing, accessed 2026-09-21). GeoReady's audit engine is open source under MIT (geo-optimizer-skill), self-hostable, runnable from a CLI, and available as a GitHub Action for CI/CD.`,
+    a: `No — Goodie is a closed SaaS with no open-source repository or CLI. It lists an MCP server on every plan and API access on Enterprise (higoodie.com/pricing, checked 2026-10-21; higoodie.com/features/mcp, accessed 2026-09-21). GeoReady's audit engine is open source under MIT (geo-optimizer-skill), self-hostable, runnable from a CLI, and available as a GitHub Action for CI/CD.`,
   },
   {
     q: 'When should I choose GeoReady over Goodie AI?',
@@ -86,10 +86,10 @@ const faqs = [
         from hourly to monthly (higoodie.com/features/ai-visibility-monitoring, accessed 2026-09-21). Its signature
         feature is closed-loop revenue attribution: it connects monitoring to attributed and influential AI-sourced
         revenue through Google Analytics and CRM (higoodie.com/features/ai-analytics-attribution, accessed 2026-09-21).
-        Pricing is credits-based with free Essentials, Pro $99/mo, Growth $385/mo, and Enterprise $780/mo, and a
-        separate full-loop Core $399/mo, Pro $999/mo, Enterprise custom line on the pricing page (higoodie.com/pricing,
-        accessed 2026-09-21). No open-source repository or CLI was found — it exposes a REST API and a proprietary MCP
-        server (higoodie.com/features/mcp, accessed 2026-09-21).
+        Pricing, read on 2026-10-21: Core $295/mo with a 7-day free trial (5 core models, 110 prompts),
+        Pro $999/mo (8 models, 250 prompts) and Enterprise through a demo; the page says outright that
+        there is no $99 plan (higoodie.com/pricing, checked 2026-10-21). No open-source repository or CLI was found — it lists an MCP server on every plan and API access on
+        Enterprise (higoodie.com/pricing, checked 2026-10-21).
       </p>
     </section>
 
@@ -105,10 +105,10 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>When a Goodie AI alternative makes sense</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
-        <li>You want a free option that is genuinely $0 and permanent. Goodie's Essentials free tier exists but its core monitoring and attribution sit on paid credits plans (higoodie.com/pricing, accessed 2026-09-21); GeoReady's Free plan is $0 forever, 5 full audits a day, no account, no card.</li>
+        <li>You want a free option that is genuinely $0 and permanent. Goodie's pricing page offers a 7-day free trial of Core and no ongoing free plan (higoodie.com/pricing, checked 2026-10-21); GeoReady's Free plan is $0 forever, 5 full audits a day, no account, no card.</li>
         <li>You want to read the scoring logic. Goodie helpfully distinguishes deterministic from probabilistic metrics and recommends reporting probabilistic ones as 30-60 day trends (higoodie.com/blog/probabilistic-vs-deterministic-aeo-metrics, accessed 2026-09-21); GeoReady's{' '}<a href="/methodology/" class={PROSE_LINK}>full scoring methodology</a>{' '}— every category and the weight it carries — is public.</li>
         <li>You want an open-source, self-hostable option. Goodie is a closed SaaS (accessed 2026-09-21); GeoReady's engine is MIT-licensed and self-hostable.</li>
-        <li>You want a lower cost of entry. Goodie's Pro is $99/mo (higoodie.com/pricing, accessed 2026-09-21); GeoReady's paid monitoring starts at Pro $19/mo.</li>
+        <li>You want a lower cost of entry. Goodie's cheapest plan is Core at $295/mo (higoodie.com/pricing, checked 2026-10-21; the page states it has no $99 plan); GeoReady's paid monitoring starts at Pro $19/mo. The products differ.</li>
         <li>You want CI/CD enforcement. GeoReady ships a GitHub Action that can fail a build below a minimum score; Goodie doesn't publish a CI/CD product.</li>
       </ul>
       <p class="mt-4">

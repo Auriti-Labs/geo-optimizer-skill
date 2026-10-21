@@ -261,12 +261,12 @@ export default function AICitationChecker() {
               who replaced you.
             </p>
             <a
-              href="https://app.geoready.dev/signup?plan=studio&intent=citations&utm_source=ai_citation_checker&utm_medium=tool_result&utm_campaign=tool_to_paid"
+              href="https://app.geoready.dev/signup?plan=agency&intent=citations&utm_source=ai_citation_checker&utm_medium=tool_result&utm_campaign=tool_to_paid"
               onClick={() => trackPlanSelected({
-                plan_id: 'studio',
-                plan_name: 'Studio',
+                plan_id: 'agency',
+                plan_name: 'Agency',
                 billing_period: 'monthly',
-                price: '49',
+                price: '89',
                 currency: 'USD',
                 cta_location: 'citation_checker_result_tracking',
               })}

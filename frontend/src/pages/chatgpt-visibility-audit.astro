@@ -24,17 +24,17 @@ const tableRows = [
   {
     signal: 'Brand mention eligibility',
     freeCheck: 'Reports whether the page gives clear entity signals and connected references for the brand.',
-    paidLoop: 'Use Studio when brand mentions need prompt tracking over time.',
+    paidLoop: 'Use Agency when brand mentions need prompt tracking over time.',
   },
   {
     signal: 'Own-domain citation potential',
     freeCheck: 'Flags pages that lack citable facts, answer-first sections, or extractable lists and tables.',
-    paidLoop: 'Use Studio when you need to prove whether AI engines cite your domain or third-party pages.',
+    paidLoop: 'Use Agency when you need to prove whether AI engines cite your domain or third-party pages.',
   },
   {
     signal: 'Competitor replacement risk',
     freeCheck: 'Shows which on-page gaps make competitor sources more likely to win the answer.',
-    paidLoop: 'Use Studio when competitor-cited prompts need ongoing monitoring.',
+    paidLoop: 'Use Agency when competitor-cited prompts need ongoing monitoring.',
   },
 ];
 
@@ -75,21 +75,21 @@ const faqs = [
   tableRows={tableRows}
   faqs={faqs}
   paidStep={{
-    heading: 'Use Studio when visibility must be measured by prompt.',
-    copy: 'A ChatGPT visibility audit finds the first blocker. Studio is the next step when the business question is whether the brand appears, how often it appears, and which competitor is named instead.',
+    heading: 'Use Agency when visibility must be measured by prompt.',
+    copy: 'A ChatGPT visibility audit finds the first blocker. Agency is the next step when the business question is whether the brand appears, how often it appears, and which competitor is named instead.',
     proofPoints: [
       'Track prompts by product category.',
       'Compare mentions and citations.',
       'Keep snapshots for reporting.',
     ],
     plan: {
-      id: 'studio',
-      name: 'Studio',
-      price: '$49',
+      id: 'agency',
+      name: 'Agency',
+      price: '$89',
       period: 'monthly',
-      href: 'https://app.geoready.dev/signup?plan=studio&intent=chatgpt_visibility_audit&onboarding=first_domain&utm_source=chatgpt_visibility_audit&utm_medium=paid_step&utm_campaign=long_tail_to_paid',
+      href: 'https://app.geoready.dev/signup?plan=agency&intent=chatgpt_visibility_audit&onboarding=first_domain&utm_source=chatgpt_visibility_audit&utm_medium=paid_step&utm_campaign=long_tail_to_paid',
       cta: 'Start visibility tracking',
-      ctaLocation: 'chatgpt_visibility_audit_paid_step_studio',
+      ctaLocation: 'chatgpt_visibility_audit_paid_step_agency',
       intent: 'chatgpt_visibility_audit',
     },
     secondary: {
