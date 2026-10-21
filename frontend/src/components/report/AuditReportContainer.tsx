@@ -299,8 +299,8 @@ function ReportNextStep({
             </p>
             <p className="mt-0.5 text-sm leading-relaxed text-ink-soft">
               {isRepeat
-                ? 'You are re-checking this site by hand. The free plan runs the same audit weekly for one domain, emails you when the score drifts, and keeps the last 5 audits.'
-                : 'A free account saves this report, re-runs the audit weekly for one domain and keeps the last 5 audits, so you can see whether the fixes moved the score.'}
+                ? 'You are re-checking this site by hand. A free account keeps your last 5 audits and runs one real AI answer check a week. Weekly re-audits and drift alerts start on Pro.'
+                : 'A free account saves this report, keeps your last 5 audits and runs one real AI answer check a week, so you can see how AI engines talk about the site. Weekly re-audits start on Pro.'}
             </p>
           </div>
           <a
@@ -586,7 +586,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
         <div className="mt-6 flex flex-col items-start gap-4 rounded-[4px] border border-pass/50 bg-pass-wash/60 p-5 sm:flex-row sm:items-center">
           <div className="flex-1">
             <p className="mb-0.5 text-sm font-semibold text-ink">Save this report to your dashboard</p>
-            <p className="text-xs text-ink-soft">Create a free account to track this domain over time. Report link expires in 24h.</p>
+            <p className="text-xs text-ink-soft">Create a free account to save this report and see how AI engines answer about this site. Report link expires in 24h.</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 shrink-0">
             <a

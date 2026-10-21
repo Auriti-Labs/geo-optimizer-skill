@@ -1105,7 +1105,7 @@ def format_audit_rich(result: AuditResult, verbose: bool = False, width: int | N
     hints.append("geo fix", style=f"bold {brand}")
     hints.append(" to generate the missing files", style=dim)
     console.print(hints)
-    funnel = Text(" Free plan: 1 monitored domain + weekly drift email → ", style=dim)
+    funnel = Text(" Free plan: 1 AI answer check a week · score monitoring from Pro → ", style=dim)
     funnel.append("geoready.dev", style=f"{brand} underline")
     console.print(funnel)
     if result.band in ("excellent", "good"):
