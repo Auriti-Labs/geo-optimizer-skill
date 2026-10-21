@@ -233,7 +233,8 @@ class MethodScore:
     detected: bool = False
     score: int = 0
     max_score: int = 10
-    impact: str = ""  # "+27%"
+    # Historical label such as "+27%": unverified, not measured on current engines, not used in scoring.
+    impact: str = ""
     details: dict[str, Any] = field(default_factory=dict)
 
 
