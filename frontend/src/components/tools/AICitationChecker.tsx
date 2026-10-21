@@ -267,7 +267,7 @@ export default function AICitationChecker() {
                 plan_name: 'Agency',
                 billing_period: 'monthly',
                 price: '89',
-                currency: 'EUR',
+                currency: 'USD',
                 cta_location: 'citation_checker_result_tracking',
               })}
               className="mt-3 inline-block rounded-[4px] bg-pass-deep px-5 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"

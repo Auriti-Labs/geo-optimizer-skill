@@ -32,7 +32,7 @@ type PaidStep = {
   plan: {
     id: 'pro' | 'agency';
     name: 'Pro' | 'Agency';
-    price: '€19' | '€89';
+    price: '$19' | '$89';
     period: 'monthly';
     href: string;
     cta: string;
@@ -96,7 +96,7 @@ const offerCatalog = {
       '@type': 'Offer',
       name: 'GeoReady Pro',
       price: '19',
-      priceCurrency: 'EUR',
+      priceCurrency: 'USD',
       url: 'https://app.geoready.dev/signup?plan=pro',
       availability: 'https://schema.org/InStock',
     },
@@ -104,7 +104,7 @@ const offerCatalog = {
       '@type': 'Offer',
       name: 'GeoReady Agency',
       price: '89',
-      priceCurrency: 'EUR',
+      priceCurrency: 'USD',
       url: 'https://app.geoready.dev/signup?plan=agency',
       availability: 'https://schema.org/InStock',
     },
@@ -289,7 +289,7 @@ const secondaryClass =
                   data-plan-name={paidStep.plan.name}
                   data-plan-price={paidStep.plan.price}
                   data-plan-period={paidStep.plan.period}
-                  data-plan-currency="EUR"
+                  data-plan-currency="USD"
                   data-cta-location={paidStep.plan.ctaLocation}
                   class={primaryClass}
                 >

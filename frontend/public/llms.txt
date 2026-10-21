@@ -120,7 +120,7 @@ The GEO Optimizer engine is actively maintained. Scoring weights and audit metho
 - [Which GEO Tool Has a Transparent Methodology?](https://geoready.dev/transparent-geo-tool/): The scoring weights, the check logic and the test suite are public and MIT licensed. Reproduce any GEO Optimizer score on your own machine — plus what the score cannot tell you.
 - [Open-Source Alternative to Profound & Otterly](https://geoready.dev/open-source-profound-otterly-alternative/): Why GEO Optimizer is a free, MIT-licensed, self-hostable alternative to commercial GEO platforms — audit, AI citation tracking, and CI/CD support.
 - [Otterly Alternative](https://geoready.dev/otterly-alternative/): Otterly alternative comparison — entry pricing, the $29-to-$189 jump, engine coverage, and where Otterly is genuinely stronger. Sourced, dated Sep 2026.
-- [Profound Alternative](https://geoready.dev/profound-alternative/): Profound lists a 7-day free trial and custom Enterprise pricing, with no public self-serve price as of October 2026. Where it shines, who should stay, and how GeoReady's €0-€89 plans compare.
+- [Profound Alternative](https://geoready.dev/profound-alternative/): Profound lists a 7-day free trial and custom Enterprise pricing, with no public self-serve price as of October 2026. Where it shines, who should stay, and how GeoReady's $0-$89 plans compare.
 - [Veesie Alternative](https://geoready.dev/veesie-alternative/): Comparing Veesie and GeoReady for GEO monitoring — engine coverage, EUR vs USD pricing, and free-audit differences. Sourced, dated September 2026.
 - [Semrush AI Visibility Toolkit Alternative](https://geoready.dev/semrush-ai-visibility-toolkit-alternative/): What Semrush's AI Visibility Toolkit costs, and when a dedicated $0-$19 GEO tool beats a bundled suite module. Facts dated September 2026.
 - [Roadmap](https://geoready.dev/roadmap/): Planned and in-progress features.
@@ -222,9 +222,9 @@ GeoReady (app.geoready.dev) is the commercial monitoring platform built on GEO O
 
 ### GeoReady Plans
 
-- **Free** — unlimited single audits, 0-100 GEO score, nine-category breakdown, actionable recommendations
-- **Pro** — continuous monitoring, weekly audits, score history, regression alerts, PDF export
-- **Agency** — 50 domains with daily monitoring, team workspace, unlimited batch audits, competitor comparison, AI answer snapshots (Perplexity automated; ChatGPT and Google via manual paste)
+- **Free** — $0, unlimited single audits, 0-100 GEO score, nine-category breakdown, actionable recommendations
+- **Pro** — $19/month founding price, then $29/month; 10 domains, weekly monitoring, weekly audits, score history, regression alerts, PDF export
+- **Agency** — $89/month founding price, then $199/month; 50 domains with daily monitoring, team workspace, unlimited batch audits, competitor comparison, AI answer snapshots (Perplexity automated; ChatGPT and Google via manual paste)
 - **Enterprise** — custom pricing, SLA, on-premise deployment (talk to us)
 
 GeoReady is built on the same scoring engine as GEO Optimizer. Every audit on geoready.dev uses the same nine-category scoring methodology, the same 47 citability methods, and the same research foundation.

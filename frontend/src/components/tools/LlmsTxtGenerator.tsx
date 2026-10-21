@@ -368,7 +368,7 @@ export default function LlmsTxtGenerator() {
                 plan_name: 'Pro',
                 billing_period: 'monthly',
                 price: '19',
-                currency: 'EUR',
+                currency: 'USD',
                 cta_location: 'llms_generator_result_monitoring',
               })}
               className="rounded-[4px] border border-rail bg-white px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"

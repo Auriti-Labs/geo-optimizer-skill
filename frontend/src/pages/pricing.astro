@@ -29,9 +29,9 @@ const selfServePlans = [
   {
     id: 'pro',
     name: 'Pro',
-    price: '€19',
+    price: '$19',
     period: '/month',
-    status: 'Founding price',
+    status: 'Founding price, then $29/month',
     statusStyle: 'bg-pass-wash text-pass-deep',
     description: 'Weekly monitoring for up to 10 domains, score history, regression alerts, PDF export, and API access. For developers and consultants managing a few sites.',
     cta: 'Start with Pro',
@@ -54,9 +54,9 @@ const scalePlans = [
   {
     id: 'agency',
     name: 'Agency',
-    price: '€89',
+    price: '$89',
     period: '/month',
-    status: 'Founding price',
+    status: 'Founding price, then $199/month',
     statusStyle: 'bg-pass-wash text-pass-deep',
     description: 'Team workspace, 50-domain daily portfolio monitoring, AI answer snapshots, and unlimited batch audits.',
     cta: 'Start with Agency',
@@ -122,7 +122,7 @@ const planChoiceRows = [
     tracking: 'pricing_choice_pro_monitoring',
     planId: 'pro',
     planName: 'Pro',
-    price: '€19',
+    price: '$19',
     period: 'monthly',
   },
   {
@@ -134,7 +134,7 @@ const planChoiceRows = [
     tracking: 'pricing_choice_agency_portfolio',
     planId: 'agency',
     planName: 'Agency',
-    price: '€89',
+    price: '$89',
     period: 'monthly',
   },
 ] as const;
@@ -245,7 +245,7 @@ const faqs = [
   },
   {
     q: 'What is the founding price?',
-    a: 'The current prices are a founding rate for early members. They are locked for the life of the subscription as long as it stays active. The public list price will be higher later.',
+    a: 'The current prices are a founding rate for early members. They are locked for the life of the subscription as long as it stays active. Pro is $19/month founding, then $29/month; Agency is $89/month founding, then $199/month.',
   },
   {
     q: 'Will the CLI remain open source?',
@@ -253,7 +253,7 @@ const faqs = [
   },
   {
     q: 'Is there a free trial for paid plans?',
-    a: 'There is no time-limited trial. The Free plan is the permanent baseline and returns real audit results without commitment. Paid plans add monitoring and team features on top.',
+    a: 'There is no self-serve trial. The Free plan is the permanent baseline and returns real audit results without commitment. A 14-day Agency trial is available on request: contact us at juan@geoready.dev.',
   },
   {
     q: 'Can I cancel at any time?',
@@ -299,7 +299,7 @@ const heroCadenceRows = [
               </svg>
             </a>
             <span class="text-sm text-ink-mute">
-              No time trial. No card required for Free. Cancel anytime.
+              No self-serve trial. No card required for Free. Cancel anytime.
             </span>
           </div>
 
@@ -310,7 +310,7 @@ const heroCadenceRows = [
             </div>
             <div class="border-l border-rail pl-4">
               <p class="text-sm font-semibold text-ink">Pro</p>
-              <p class="mt-1 text-sm text-ink-soft">€19/month founding price.</p>
+              <p class="mt-1 text-sm text-ink-soft">$19/month founding price, then $29/month.</p>
             </div>
           </div>
 
@@ -429,7 +429,7 @@ const heroCadenceRows = [
                 data-plan-name={plan.name}
                 data-plan-price={plan.price}
                 data-plan-period={plan.period}
-                data-plan-currency="EUR"
+                data-plan-currency="USD"
                 data-cta-location="pricing_page"
                 class={`block rounded-[4px] px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] transition-colors ${plan.ctaStyle}`}
               >
@@ -489,7 +489,7 @@ const heroCadenceRows = [
                   data-plan-name={plan.name}
                   data-plan-price={plan.price}
                   data-plan-period={plan.period}
-                  data-plan-currency="EUR"
+                  data-plan-currency="USD"
                   data-cta-location="pricing_page"
                   class="block rounded-[4px] border border-rail bg-white px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
                 >
@@ -600,7 +600,7 @@ const heroCadenceRows = [
                       data-plan-name={row.planName}
                       data-plan-price={row.price}
                       data-plan-period={row.period}
-                      data-plan-currency="EUR"
+                      data-plan-currency="USD"
                       data-cta-location={row.tracking}
                       class="inline-flex whitespace-nowrap rounded-[4px] border border-rail bg-white px-3 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-pass-wash"
                     >
@@ -927,9 +927,9 @@ const heroCadenceRows = [
           href="https://app.geoready.dev/signup?plan=pro"
           data-plan-id="pro"
           data-plan-name="Pro"
-          data-plan-price="€19"
+          data-plan-price="$19"
           data-plan-period="/month"
-          data-plan-currency="EUR"
+          data-plan-currency="USD"
           data-cta-location="pricing_footer"
           class="inline-block rounded-[4px] bg-white px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-pass-deep transition-colors hover:bg-pass-wash"
         >
@@ -986,7 +986,7 @@ const heroCadenceRows = [
               "@type": "Offer",
               "name": "Free",
               "price": "0",
-              "priceCurrency": "EUR",
+              "priceCurrency": "USD",
               "description": "Single-URL GEO audit, no account required, full 9-category report.",
               "availability": "https://schema.org/InStock",
               "url": "https://geoready.dev"
@@ -999,11 +999,11 @@ const heroCadenceRows = [
               "@type": "Offer",
               "name": "Pro",
               "price": "19",
-              "priceCurrency": "EUR",
+              "priceCurrency": "USD",
               "priceSpecification": {
                 "@type": "UnitPriceSpecification",
                 "price": "19",
-                "priceCurrency": "EUR",
+                "priceCurrency": "USD",
                 "unitCode": "MON"
               },
               "description": "Weekly monitoring for up to 10 domains, score history, regression alerts, PDF export, API access.",
@@ -1018,11 +1018,11 @@ const heroCadenceRows = [
               "@type": "Offer",
               "name": "Agency",
               "price": "89",
-              "priceCurrency": "EUR",
+              "priceCurrency": "USD",
               "priceSpecification": {
                 "@type": "UnitPriceSpecification",
                 "price": "89",
-                "priceCurrency": "EUR",
+                "priceCurrency": "USD",
                 "unitCode": "MON"
               },
               "description": "50 domains, daily monitoring, team workspace, unlimited bulk audits, AI answer snapshots (Perplexity automated).",
@@ -1068,7 +1068,7 @@ const heroCadenceRows = [
           {
             "@type": "Question",
             "name": "What is the founding price?",
-            "acceptedAnswer": { "@type": "Answer", "text": "The current prices are a founding rate for early members. They are locked for the life of the subscription as long as it stays active. The public list price will be higher later." }
+            "acceptedAnswer": { "@type": "Answer", "text": "The current prices are a founding rate for early members. They are locked for the life of the subscription as long as it stays active. Pro is $19/month founding, then $29/month; Agency is $89/month founding, then $199/month." }
           },
           {
             "@type": "Question",
@@ -1078,7 +1078,7 @@ const heroCadenceRows = [
           {
             "@type": "Question",
             "name": "Is there a free trial for paid plans?",
-            "acceptedAnswer": { "@type": "Answer", "text": "There is no time-limited trial. The Free plan is the permanent baseline and returns real audit results without commitment. Paid plans add monitoring and team features on top." }
+            "acceptedAnswer": { "@type": "Answer", "text": "There is no self-serve trial. The Free plan is the permanent baseline and returns real audit results without commitment. A 14-day Agency trial is available on request: contact us at juan@geoready.dev." }
           },
           {
             "@type": "Question",
