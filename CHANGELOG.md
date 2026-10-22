@@ -14,7 +14,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Website dependencies: the frontend lockfile is refreshed on top of 4.19.4 and `overrides` raise `js-yaml` 3.x, `fflate`, `smol-toml`, `uuid` and `postcss-selector-parser` (#623). `npm audit` goes from 29 findings to 14; the rest are `braces` and `sprintf-js` (no patched release, build-time Sanity CLI tooling) and their parents.
 
 ### Fixed (site consistency)
-- The README, the `geo audit` footers and the audit report page said the free plan monitors one domain with a weekly drift email. On the platform, score monitoring now starts on Pro and the free plan is an account with the last 5 audits and one real AI answer check a week, so the wording is updated (the pricing page already said monitoring starts on Pro). Release this after the platform change is deployed.
+- The audit report page said the free plan monitors one domain with a weekly drift email; it now matches the platform, where score monitoring starts on Pro (the README and the `geo audit` footers are fixed in 4.19.6).
 - The four `*-alternative` comparison pages said the free audit covers 8 categories; it is nine since 4.19.0.
 - `/state-of-geo/` renders a dated benchmark snapshot in the HTML (it loaded numbers only through client script) and no longer says llms.txt and schema are "missing more often than not" while the cohort shows 58% and 76%. One snapshot (`lib/benchmarkSnapshot.ts`, matching the README figures of 17 October 2026) now feeds `/state-of-geo/`, `/best-geo-tools/` and `/veesie-alternative/`.
 - `/best-geo-tools/` shows a single modified date and drops the legacy v1 weights figure.
@@ -42,6 +42,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.
 - `TRADEMARKS.md`: a draft name and logo policy for forks and derived products (the MIT licence covers the code, not the names). Linked from the README.
 - README: the GitHub stars badges no longer use the shields.io `github/stars` endpoint, which was returning "Unable to select next GitHub token from pool". The count badge at the top now comes from badgen.net; the call-to-action at the bottom is a static shields.io badge without a number.
+
+## [4.19.6] — 2026-10-22
+
+### Fixed
+- CLI and README: the `geo audit` footer (text and rich output) and the README said the free plan monitors one domain with a weekly drift email. Since 2026-10-20 the free plan saves reports and runs one real AI answer check a week, and weekly score monitoring starts on Pro; the wording now says so.
 
 ## [4.19.5] — 2026-10-18
 
