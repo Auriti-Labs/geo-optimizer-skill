@@ -1873,6 +1873,25 @@ class TestFormatters:
         assert "geoready.dev" in output
         assert "One-shot audit" in output
 
+    def test_format_audit_text_funnel_does_not_promise_free_monitoring(self):
+        """Score monitoring starts on Pro; the free plan is an AI answer check, not a monitored domain."""
+        from geo_optimizer.cli.formatters import format_audit_text
+
+        output = format_audit_text(AuditResult(url="https://example.com", score=50, band="foundation"))
+        assert "one real AI answer check a week" in output
+        assert "weekly score monitoring starts on Pro" in output
+        assert "weekly drift email" not in output
+        assert "tracks 1 domain" not in output
+
+    def test_format_audit_rich_funnel_does_not_promise_free_monitoring(self):
+        from geo_optimizer.cli.rich_formatter import format_audit_rich
+
+        output = format_audit_rich(AuditResult(url="https://example.com", score=50, band="foundation"))
+        assert "1 AI answer check a week" in output
+        assert "score monitoring from Pro" in output
+        assert "weekly drift email" not in output
+        assert "1 monitored domain" not in output
+
     def test_format_audit_text_includes_per_run_web_report_link(self):
         """Text report prints the per-run web-report URL for the audited site.
 
