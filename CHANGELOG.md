@@ -25,6 +25,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Internal links (GSC check of 22 September-19 October 2026): the homepage and `/tools/ai-citation-checker/` link once each, in running text, to `/guides/what-are-ai-citations/`, `/guides/ai-citations-check/`, `/citation-gap-analysis/` and `/rankscale-alternative/`, with the query each page ranks 8-19 for as anchor text.
 - `/rankscale-alternative/` title and meta, `/citation-gap-analysis/` title, meta and H1 match the queries they answer ("rankscale alternative", "citation gap analysis", "ai citation gap analysis").
 - `/docs/index` (404, still clicked from Google) answers 301 to `/docs/`.
+- The permanent SEO redirects (`/docs/index`, `/guides/2` to `/guides/10`, `/state-of-geo-2026`) also answer HEAD with a 301; before, only GET did and `curl -I` saw a 404.
 
 ### Fixed (site contrast)
 - Colour tokens nudged to reach 4.5:1 for small text, as approved: `pass` `#0B8076` to `#0A7970`, `warn` `#9C6A06` to `#926306`, `fail` `#C93A2E` to `#C5392D`. A new `pass-light` (`#0D978C`) is used for the `exit 0` terminal labels on the dark well (3.9:1 before, 4.6:1 now), and the light text on the teal call-to-action panels is solid `pass-wash` instead of 70-90% opacity (3.2-4.2:1 before, 4.8:1 now). A colour scan of all 140 built pages (animations off) drops from 229 to 191 findings; the rest are the docs theme (fixed separately), the dimmed empty categories of the demo report and the `queued` grey on the roadmap.
