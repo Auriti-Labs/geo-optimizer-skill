@@ -324,5 +324,8 @@ export const releaseCadence = [
   { version: 'v4.19.1', name: 'Google AI readiness (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.19.2', name: 'Recommendations by category (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.19.3', name: 'Non-Latin keyword stuffing fix (patch)', status: 'available' as RoadmapStatus },
+  { version: 'v4.19.4', name: 'Keyword stuffing false positives and URL 400 (patch)', status: 'available' as RoadmapStatus },
+  { version: 'v4.19.5', name: 'Web audit timeout margin (patch)', status: 'available' as RoadmapStatus },
+  { version: 'v4.19.6', name: 'Free plan wording fix (patch)', status: 'available' as RoadmapStatus },
   { version: 'v5.0.0', name: 'Black Archive', status: 'exploring' as RoadmapStatus },
 ];
