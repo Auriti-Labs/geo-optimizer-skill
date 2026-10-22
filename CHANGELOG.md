@@ -7,6 +7,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.19.6] — 2026-10-22
+
+### Fixed
+- CLI and README: the `geo audit` footer (text and rich output) and the README said the free plan monitors one domain with a weekly drift email. Since 2026-10-20 the free plan saves reports and runs one real AI answer check a week, and weekly score monitoring starts on Pro; the wording now says so.
+
 ## [4.19.5] — 2026-10-18
 
 ### Fixed
