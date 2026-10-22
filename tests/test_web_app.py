@@ -832,6 +832,8 @@ def test_redirect_seo_non_intercetta_altri_path(client):
         ("/guides/2/", "/guides/"),
         ("/guides/10", "/guides/"),
         ("/guides/10/", "/guides/"),
+        ("/docs/index", "/docs/"),
+        ("/docs/index/", "/docs/"),
     ],
 )
 def test_redirect_301_seo_paginazione_e_state_of_geo(client, source, target):
