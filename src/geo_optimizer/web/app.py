@@ -2494,6 +2494,8 @@ _SEO_REDIRECTS = {
     "/guides/8": "/guides/",
     "/guides/9": "/guides/",
     "/guides/10": "/guides/",
+    # Vecchio URL della home docs, ancora con click e impression in GSC.
+    "/docs/index": "/docs/",
 }
 
 
