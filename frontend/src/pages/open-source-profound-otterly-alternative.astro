@@ -6,7 +6,7 @@ const description =
   'Open-source GEO optimizer (MIT), free to self-host: audit AI-search visibility, track ChatGPT/Perplexity citations, and enforce results in CI/CD.';
 const canonical = 'https://geoready.dev/open-source-profound-otterly-alternative/';
 const datePublished = '2026-07-08';
-const dateModified = '2026-09-16';
+const dateModified = '2026-10-23';
 
 // Assi di confronto scelti per essere VERIFICABILI e incontestabili:
 // per GEO Optimizer sono fatti confermati nel repository; per i prodotti
@@ -35,7 +35,7 @@ const COMPARISON_AXES = [
   ],
   [
     'Methodology transparency',
-    'Scoring weights are public; 47 methods grounded in Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint).',
+    'Scoring weights are public; 47 content checks, 9 of them taken directly from the methods tested in the KDD 2024 GEO paper.',
     'Scores are produced by a closed methodology you cannot read or reproduce.',
   ],
   [
@@ -52,8 +52,8 @@ const GEO_OPTIMIZER_FEATURES = [
   ['Audit', 'Scores a site 0–100 across nine categories using 47 citability checks, 9 of them taken from the KDD 2024 GEO paper.'],
   ['Answer-engine querying', 'The geo citations command asks real answer engines (e.g. Perplexity) whether your brand is mentioned and your domain is cited — bring your own API key.'],
   ['CI/CD', 'A GitHub Action runs a full audit in a pipeline and can fail a build below a minimum score.'],
-  ['Interfaces', '15 CLI commands, a Python API, an MCP server, and an Astro integration.'],
-  ['Research basis', 'Methods grounded in Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint).'],
+  ['Interfaces', '16 CLI commands, a Python API, an MCP server, and an Astro integration.'],
+  ['Research basis', '9 of the 47 content checks come from the methods tested in the KDD 2024 GEO paper (arXiv:2311.09735). The scoring weights are a considered starting point, published so you can disagree with a specific number.'],
 ] as const;
 
 // FAQ condivise tra markup visibile e JSON-LD (single source of truth).
@@ -132,7 +132,7 @@ const faqs = [
       </p>
 
       <p class="mt-4 font-mono text-xs text-ink-mute">
-        Published July 8, 2026 · Last updated July 8, 2026
+        Published July 8, 2026 · Last updated October 23, 2026
       </p>
     </header>
 

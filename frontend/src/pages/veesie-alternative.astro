@@ -4,10 +4,10 @@ import { BENCHMARK } from '../lib/benchmarkSnapshot';
 
 const title = 'Veesie Alternative: Global GEO Monitoring | GeoReady';
 const description =
-  'Comparing Veesie and GeoReady for GEO monitoring? See engine coverage, EUR vs USD pricing, and free-audit differences. Sourced, dated September 2026.';
+  'Comparing Veesie and GeoReady for GEO monitoring? See engine coverage, EUR vs USD pricing, and free-audit differences. Sourced, dated October 2026.';
 const canonical = 'https://geoready.dev/veesie-alternative/';
 const datePublished = '2026-09-16';
-const dateModified = '2026-10-21';
+const dateModified = '2026-10-23';
 
 // Classe condivisa dei link nel corpo del testo (ricetta console, riusata da
 // best-geo-tools.astro e dalle altre pagine di comparazione).
@@ -17,19 +17,19 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 // 10-veesie-alternative.md, §"Veesie vs GeoReady, head-to-head"). Nessun
 // punteggio inventato: solo ciò che ciascun vendor pubblica.
 const COMPARISON_ROWS = [
-  ['Built for', 'Benelux market (Dutch/French/English), ClickForest, Belgium', 'Global, English, Juan Camilo Auriti'],
-  ['Entry paid tier', 'Starter €24/mo billed annually (€29/mo billed monthly), excl. VAT: 1 site, 20 prompts, 3 engines (veesie.com/pricing, checked 2026-10-21)', 'Pro $19/mo: 10 domains weekly monitoring, 30-audit history'],
-  ['Free option', '7-day trial, 10 queries, no card, excludes Claude/Gemini', '$0 forever, 5 audits/day, full nine-category report, no account, no card'],
-  ['AI engines', 'Up to 5: ChatGPT, Perplexity, Google AI Overviews (Starter); +Claude, Gemini (Plus+). No Copilot, no AI Mode', 'Free audit covers nine GEO signal categories site-wide; paid AI citation tracking = automated Perplexity checks (Agency), plus ChatGPT/Google via manual paste'],
-  ['Monitoring cadence', 'Weekly, every paid tier', 'Weekly (Pro) → Daily (Agency) → Hourly (Enterprise*)'],
-  ['Sites per tier', '1 (Starter, Plus) · 2 (Pro) · uncapped, not stated (Agency)', '10 (Pro) · 50 (Agency) · unlimited (Enterprise)'],
-  ['Top self-serve tier', 'Agency €370/mo billed annually (€450/mo billed monthly), excl. VAT (veesie.com/pricing, checked 2026-10-21)', 'Agency $89/mo'],
-  ['Scoring transparency', '"GEO Score" formula named, exact weights not published', 'Full nine-category rubric and weights published; scoring repo publicly auditable'],
+  ['Built for', 'Belgium and the Netherlands (Dutch, French and English prompts); a Belgian brand whose founder also runs the separate agency ClickForest (veesie.com/pricing, as of October 2026)', 'Global, English, Juan Camilo Auriti'],
+  ['Entry paid tier', 'Starter €24/mo billed annually (€29/mo billed monthly), excl. VAT: 1 site, 20 prompts, 3 engines (veesie.com/pricing, as of October 2026)', 'Pro $19/mo founding price, then $29/mo: 10 domains weekly monitoring, 30-audit history'],
+  ['Free option', '7-day trial, 15 prompts on ChatGPT, Perplexity and Google AI Overviews, no card, excludes Claude/Gemini (as of October 2026)', '$0 forever, 5 audits/day, full nine-category report, no account, no card'],
+  ['AI engines', 'Up to 5: ChatGPT, Perplexity, Google AI Overviews (Starter); +Claude, Gemini (Plus+). Copilot and AI Mode not listed (as of October 2026)', 'Free audit covers nine GEO signal categories site-wide; automated Perplexity answer checks (1 a week on a free account), AI answer snapshots on Agency with ChatGPT/Google via manual paste'],
+  ['Monitoring cadence', 'Weekly on every plan, including Agency (every two weeks or monthly also possible); extra on-demand run 1/month on Starter, 1/week from Plus', 'Weekly (Pro) → Daily (Agency) → Hourly (Enterprise*)'],
+  ['Sites per tier', '1 (Starter, Plus) · 2 (Pro) · 3, more on request (Agency)', '10 (Pro) · 50 (Agency) · unlimited (Enterprise)'],
+  ['Top tier', 'Agency €370/mo billed annually (€450/mo billed monthly), excl. VAT, arranged through contact rather than self-serve checkout (veesie.com/pricing, as of October 2026)', 'Agency $89/mo founding price, then $199/mo'],
+  ['Scoring transparency', '"GEO Score" weights published: mention rate 50, sentiment 25, source coverage 15, position in the answer 10 (veesie.com/benchmark, as of October 2026)', 'Full nine-category rubric and weights published; the scoring engine is open source and runs locally'],
   ['Open-source option', 'None found', 'CLI (geo-optimizer-skill), MIT-licensed, self-hostable, unlimited via pip'],
-  ['Data residency', 'EU-only: Frankfurt database, Cloudflare Europe processing', 'Not stated as a residency guarantee on pricing.md. No claim made'],
-  ['GA4 integration', 'Pro (€82/mo) and Agency', 'Not offered as a named integration on pricing.md. No claim made'],
-  ['Public benchmark', 'Sector-level, Benelux-only, 26 brands / 5 sectors', `State of GEO: global, ${BENCHMARK.sampleLabel}, average score ${BENCHMARK.average}/100, measured ${BENCHMARK.measuredOn} (not sector-segmented)`],
-  ['Integrations', 'GA4 (Pro+), CSV export (Pro+), shareable report links (all plans); no API/Slack/Zapier found', 'API access, Bearer token (Pro+); no GA4/Slack/Zapier integration stated on pricing.md'],
+  ['Data residency', 'Database in Frankfurt (Supabase), sensitive fields AES-256 encrypted; prompts go to the AI providers and, through DataForSEO and Inngest, partly to the US under EU standard contractual clauses (veesie.com/pricing, as of October 2026)', 'Not stated as a residency guarantee on pricing.md. No claim made'],
+  ['GA4 integration', 'Pro (€82/mo billed annually) and Agency', 'Not offered as a named integration on pricing.md. No claim made'],
+  ['Public benchmark', 'Sector-level, Belgium and the Netherlands: 26 brands in 5 sectors, measured once in June 2026', `State of GEO: global, ${BENCHMARK.sampleLabel}, average score ${BENCHMARK.average}/100, measured ${BENCHMARK.measuredOn} (not sector-segmented)`],
+  ['Integrations', 'GA4 (Pro+), CSV export (Agency), email and webhook alerts and shareable report links (all plans); no API, Slack or Zapier listed on the pricing page (as of October 2026)', 'API access, Bearer token (Pro+); no GA4/Slack/Zapier integration stated on pricing.md'],
 ] as const;
 
 // FAQ condivise tra markup visibile e schema — nessuna FAQPage per pagine
@@ -39,15 +39,15 @@ const COMPARISON_ROWS = [
 const faqs = [
   {
     q: 'Is Veesie the same company as GeoReady?',
-    a: 'No. Veesie is built and operated by ClickForest, a Benelux-based agency (veesie.com, accessed 2026-09-01). GeoReady is built by Juan Camilo Auriti on the open-source geo-optimizer-skill engine. The two products are unrelated.',
+    a: 'No. Veesie is a Belgian brand; its founder also runs the digital agency ClickForest, which Veesie describes as a separate brand (veesie.com/pricing, as of October 2026). GeoReady is built by Juan Camilo Auriti on the open-source geo-optimizer-skill engine. The two products are unrelated.',
   },
   {
     q: 'Does Veesie cover ChatGPT and Perplexity?',
-    a: 'Yes, on every plan, alongside Google AI Overviews. Claude and Gemini are added from the Plus tier (€49/mo billed annually, €59/mo billed monthly) up. No Veesie plan tracks Microsoft Copilot or Google AI Mode as of September 2026 (veesie.com/pricing, accessed 2026-09-01).',
+    a: 'Yes, on every plan, alongside Google AI Overviews. Claude and Gemini are added from the Plus tier (€49/mo billed annually, €59/mo billed monthly) up. No Veesie plan lists Microsoft Copilot or Google AI Mode as of October 2026 (veesie.com/pricing).',
   },
   {
     q: 'Is there a free way to try Veesie?',
-    a: "Yes: a 7-day trial, 10 queries across ChatGPT, Perplexity, and Google AI Overviews, no credit card required, but Claude and Gemini are excluded during the trial and it expires (veesie.com/pricing, accessed 2026-09-01). GeoReady's Free plan has no trial period: it's $0 forever, 5 full audits a day, no account required.",
+    a: "Yes: a 7-day trial with 15 prompts across ChatGPT, Perplexity, and Google AI Overviews, no credit card required, measured three times during the week. Claude and Gemini are excluded during the trial and it expires (veesie.com/pricing, as of October 2026). GeoReady's Free plan has no trial period: it's $0 forever, 5 full audits a day, no account required. A 14-day Agency trial is available on request.",
   },
   {
     q: 'Why is Veesie priced in euros and GeoReady in dollars?',
@@ -55,15 +55,15 @@ const faqs = [
   },
   {
     q: 'Should a Benelux brand switch away from Veesie?',
-    a: "Not necessarily. If the sector benchmark, native Dutch/French support, or EU-only data residency matter to your buying decision, those are genuine advantages Veesie built specifically for that market and GeoReady doesn't try to match.",
+    a: "Not necessarily. If the sector benchmark, native Dutch/French support, or a database hosted in Frankfurt matter to your buying decision, those are genuine advantages Veesie built specifically for that market and GeoReady doesn't try to match.",
   },
   {
     q: "What does GeoReady do that Veesie doesn't?",
-    a: `Publish the exact scoring weights behind its score, open-source the audit engine under MIT (self-hostable), and offer a permanent, no-account free audit rather than a time-boxed trial. See <a href="/geo-monitoring-tool/" class="${PROSE_LINK}">full monitoring cadence and plans</a> for how GeoReady's own tiers work.`,
+    a: `Open-source the audit engine under MIT (self-hostable, so you can run the scoring yourself), offer a permanent, no-account free audit rather than a time-boxed trial, and include a Bearer-token API from Pro. Both vendors publish their score weights. See <a href="/geo-monitoring-tool/" class="${PROSE_LINK}">full monitoring cadence and plans</a> for how GeoReady's own tiers work.`,
   },
   {
     q: 'Does Veesie offer an API?',
-    a: 'No. No API, Slack, Zapier, or webhook integration was found on any veesie.com page fetched as of September 2026; its integrations are GA4 and CSV export (Pro and Agency) plus shareable report links on every plan (veesie.com/pricing, accessed 2026-09-01). GeoReady’s Bearer-token REST API is included starting at Pro ($19/mo).',
+    a: 'No API, Slack, or Zapier integration is listed on veesie.com/pricing as of October 2026. Veesie does send alerts by email and webhook on every plan, and lists GA4 (Pro and Agency), CSV export (Agency) and shareable report links on every plan. GeoReady’s Bearer-token REST API is included starting at Pro ($19/mo founding price, then $29/mo).',
   },
   {
     q: "Can I switch from Veesie to GeoReady without losing my history?",
@@ -82,18 +82,18 @@ const faqs = [
       </h1>
 
       <p class="mt-4 font-mono text-xs text-ink-mute">
-        Published September 16, 2026 · Last updated September 16, 2026 · by Juan Camilo Auriti · 9 min read
+        Published September 16, 2026 · Last updated October 23, 2026 · by Juan Camilo Auriti · 9 min read
       </p>
 
       <p class="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
-        Veesie (veesie.com) is a GEO-monitoring tool built for the Benelux market by
-        the Belgian agency ClickForest, with weekly automated checks across up to five AI
+        Veesie (veesie.com) is a GEO-monitoring tool made in Belgium for Belgium and
+        the Netherlands, with weekly automated checks across up to five AI
         engines, product copy in Dutch, French, and English, and pricing in euros.
         Someone comparing the two is usually choosing between a small, region-specific
         specialist and a broader, open platform. If you're outside Belgium, the Netherlands, or
         Luxembourg, need coverage beyond five engines, or want an audit engine whose
         scoring you can actually read, this page compares the two on facts published by
-        each vendor as of September 2026, with GeoReady's own figures pulled from its
+        each vendor as of October 2026, with GeoReady's own figures pulled from its
         {' '}<a href="/pricing/" class={PROSE_LINK}>pricing page</a>.
       </p>
     </header>
@@ -101,31 +101,33 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>What Veesie is</h2>
       <p class="mt-4">
-        Veesie describes itself as "GEO-monitoring voor de Benelux", meaning GEO monitoring
-        for the Benelux region, i.e. Belgium, the Netherlands, and Luxembourg
-        (veesie.com homepage, accessed 2026-09-01). It runs weekly automated checks of
-        real search prompts against up to five AI engines depending on plan (ChatGPT,
-        Perplexity, and Google AI Overviews from the Starter tier; Claude and Gemini
-        added from Plus up), and combines the result into a "GEO Score" (0-100) built
-        from mention rate, sentiment, model coverage, and position (veesie.com homepage
-        and veesie.com/pricing, accessed 2026-09-01). Plus-tier and above adds a
-        20-check AI-Readiness Audit; Pro and Agency add GA4 integration and CSV export
-        (veesie.com/pricing, accessed 2026-09-01). The company also publishes a
-        sector-level, anonymized Benelux benchmark: 26 monitored brands across 5
-        sectors, with k-anonymity protection so no individual brand's score is exposed
-        (veesie.com/benchmark, accessed 2026-09-01). Data is hosted in the EU:
-        "Database in Frankfurt, processing via Cloudflare in Europe," described as
-        GDPR-by-design with AES-256 encryption (veesie.com homepage, accessed
-        2026-09-01). Shareable report links are included on every plan, and CSV export
-        is available from Pro up (veesie.com/pricing, accessed 2026-09-01), but no
-        API, Slack, Zapier, or webhook integration was found on any fetched veesie.com
-        page as of September 2026.
+        Veesie describes itself as "GEO-monitoring voor België en Nederland", meaning GEO
+        monitoring for Belgium and the Netherlands; prompts can be set to Belgium, the
+        Netherlands, or Luxembourg (veesie.com homepage, as of October 2026). It runs
+        weekly automated checks of real search prompts against up to five AI engines
+        depending on plan (ChatGPT, Perplexity, and Google AI Overviews from the Starter
+        tier; Claude and Gemini added from Plus up), and combines the result into a "GEO
+        Score" (0-100). Veesie publishes the weights: mention rate 50, sentiment 25,
+        source coverage 15, position in the answer 10 (veesie.com homepage and
+        veesie.com/benchmark, as of October 2026). Plus and above add a 20-check
+        AI-Readiness Audit; Pro and Agency add GA4 integration; Agency adds white-label
+        branding, bulk runs and CSV export (veesie.com/pricing, as of October 2026). The
+        company also publishes a sector-level, anonymized benchmark: 26 brands across 5
+        sectors, about 10 Dutch-language prompts per company, measured once in June 2026,
+        with a sector shown only from 5 measured companies (veesie.com/benchmark, as of
+        October 2026). Account data, prompts and answers are stored in a database in
+        Frankfurt, with sensitive fields encrypted with AES-256; to run the measurements,
+        prompts go to the AI providers and, through DataForSEO and Inngest, are partly
+        processed in the US under EU standard contractual clauses (veesie.com/pricing,
+        as of October 2026). Shareable report links and alerts by email and webhook are
+        included on every plan; no API, Slack, or Zapier integration is listed on the
+        pricing page (veesie.com/pricing, as of October 2026).
       </p>
       <p class="mt-4">
-        No Microsoft Copilot or Google AI Mode coverage was found on any Veesie plan as
-        of September 2026 (veesie.com/pricing, accessed 2026-09-01). That is narrower
-        engine coverage than some other tools in this category, though within the
-        range Veesie advertises. It doesn't market coverage it doesn't sell.
+        Microsoft Copilot and Google AI Mode are not listed on any Veesie plan as of
+        October 2026 (veesie.com/pricing). That is narrower engine coverage than some
+        other tools in this category, though within the range Veesie advertises. It
+        doesn't market coverage it doesn't sell.
       </p>
     </section>
 
@@ -133,9 +135,9 @@ const faqs = [
       <h2>Who Veesie fits well</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li><strong class="text-ink">Benelux-based teams</strong> who want product copy and support in Dutch or French as well as English.</li>
-        <li><strong class="text-ink">Brands that value the regional benchmark</strong>: seeing where you sit against 26 anonymized Belgian, Dutch, and Luxembourg peers across 5 sectors is a genuinely specific trust signal Veesie built and GeoReady doesn't have (veesie.com/benchmark, accessed 2026-09-01).</li>
-        <li><strong class="text-ink">GA4-centric teams on Veesie Pro (€82/mo billed annually)</strong> who want AI-referral visibility tied directly into analytics they already use (veesie.com/pricing, accessed 2026-09-01).</li>
-        <li><strong class="text-ink">Buyers with an EU-only data-residency requirement</strong>: Frankfurt hosting and Cloudflare-Europe processing is a stated design choice (veesie.com homepage, accessed 2026-09-01).</li>
+        <li><strong class="text-ink">Brands that value the regional benchmark</strong>: seeing sector averages for 26 Belgian and Dutch brands across 5 sectors (5 or 6 companies per sector, measured once in June 2026) is a specific regional reference Veesie built and GeoReady doesn't have (veesie.com/benchmark, as of October 2026).</li>
+        <li><strong class="text-ink">GA4-centric teams on Veesie Pro (€82/mo billed annually)</strong> who want AI-referral visibility tied directly into analytics they already use (veesie.com/pricing, as of October 2026).</li>
+        <li><strong class="text-ink">Buyers who want account data stored in the EU</strong>: Veesie's database is in Frankfurt; measurement still sends prompts to the AI providers and partly to US processors under EU standard contractual clauses, which Veesie states openly (veesie.com/pricing, as of October 2026).</li>
       </ul>
     </section>
 
@@ -143,18 +145,17 @@ const faqs = [
       <h2>When a Veesie alternative makes sense</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li>You're outside Belgium, the Netherlands, or Luxembourg and don't need Dutch/French localization.</li>
-        <li>You want engine coverage Veesie doesn't sell on any plan: Microsoft Copilot and Google AI Mode aren't tracked at all, as of September 2026 (veesie.com/pricing, accessed 2026-09-01).</li>
-        <li>You manage more than two domains and don't want the jump straight from Pro (€82/mo billed annually, 2 sites) to Agency (€370/mo billed annually). Veesie's pricing page doesn't state a fixed site or prompt cap for Agency, so that tier is priced for scale, not for "a few more domains" (veesie.com/pricing, accessed 2026-09-01).</li>
+        <li>You want engine coverage Veesie doesn't sell on any plan: Microsoft Copilot and Google AI Mode aren't listed on any plan, as of October 2026 (veesie.com/pricing).</li>
+        <li>You manage more than two domains. Veesie Pro covers 2 sites (€82/mo billed annually); Agency covers 3 sites with 50 prompts each, more on request, at €370/mo billed annually and arranged through contact rather than self-serve checkout (veesie.com/pricing, as of October 2026). GeoReady Pro monitors up to 10 domains weekly.</li>
         <li>
-          You want to read the scoring logic rather than trust a named-but-undisclosed
-          formula. Veesie's "GEO Score" describes its inputs (mention rate, sentiment,
-          model coverage, position) but doesn't publish the weights (veesie.com
-          homepage, accessed 2026-09-01); GeoReady's{' '}
+          You want to run the scoring yourself. Veesie publishes its GEO Score weights
+          (veesie.com/benchmark, as of October 2026); GeoReady publishes its{' '}
           <a href="/methodology/" class={PROSE_LINK}>full scoring methodology</a>
-          {' '}(every category and the weight it carries) is public.
+          {' '}and its audit engine is open source (MIT), so the same checks can run on
+          your own machine or in CI.
         </li>
-        <li>You want a free option that isn't a countdown. Veesie's trial is 7 days, 10 queries, no credit card, and excludes Claude and Gemini (veesie.com/pricing, accessed 2026-09-01); GeoReady's Free plan is $0 forever, 5 full audits a day, no account, no card, no expiry.</li>
-        <li>You want programmatic access to your own data at a low price point. GeoReady's Bearer-token API is included from Pro ($19/mo); no API, Slack, Zapier, or webhook integration was found on any Veesie plan as of September 2026 (veesie.com/pricing, accessed 2026-09-01).</li>
+        <li>You want a free option that isn't a countdown. Veesie's trial is 7 days, 15 prompts, no credit card, and excludes Claude and Gemini (veesie.com/pricing, as of October 2026); GeoReady's Free plan is $0 forever, 5 full audits a day, no account, no card, no expiry.</li>
+        <li>You want programmatic access to your own data at a low price point. GeoReady's Bearer-token API is included from Pro ($19/mo founding price, then $29/mo); Veesie lists webhook alerts on every plan but no API, Slack, or Zapier integration on its pricing page, as of October 2026 (veesie.com/pricing).</li>
       </ul>
       <p class="mt-4">
         Each of these comes directly from Veesie's own published pricing and feature
@@ -165,15 +166,14 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>Veesie's strengths</h2>
       <p class="mt-4">
-        Veesie is a well-built, purpose-fit tool for its market. It offers
+        Veesie is a purpose-fit tool for its market. It offers
         weekly automated tracking across five engines, a GA4 integration that ties
         AI-referral visibility directly to analytics a team already uses, and a public
         sector benchmark most competitors in this category don't bother building.
         These are working features today, not roadmap promises, and GeoReady doesn't
         currently have a direct equivalent to any of the three. A Belgian, Dutch, or
-        Luxembourg brand that wants Dutch-language support, EU-only data residency for
-        a GDPR-sensitive procurement process, and a way to see where it stands against
-        25 anonymized regional peers is choosing correctly by staying with Veesie. The
+        Luxembourg brand that wants Dutch-language support, an EU-hosted database, and
+        sector averages for its region has good reasons to stay with Veesie. The
         case for looking elsewhere rests on geography, engine ceiling, and
         openness.
       </p>
@@ -182,9 +182,10 @@ const faqs = [
     <section class="mb-12 md:mb-16">
       <h2>Veesie vs GeoReady, head-to-head</h2>
       <p class="mt-4 text-sm italic text-ink-mute">
-        Veesie figures: veesie.com/pricing and veesie.com/benchmark, accessed
-        2026-09-01, stated in the currency each vendor publishes, with no currency
-        conversion applied. GeoReady figures: pricing.md, live 2026-08-31.
+        Veesie figures: veesie.com, veesie.com/pricing and veesie.com/benchmark,
+        re-checked 2026-10-23 (as of October 2026), stated in the currency each vendor
+        publishes, with no currency conversion applied. Veesie prices exclude VAT.
+        GeoReady figures: geoready.dev/pricing, October 2026.
       </p>
       <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
         <table class="w-full text-left text-sm">
