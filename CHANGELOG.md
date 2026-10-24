@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Fixed (scoring)
+- Brand & Entity: a site typed directly as a LocalBusiness subtype (`RoofingContractor`, `Plumber`, `HVACBusiness`, `Electrician`, `GeneralContractor` and 21 more added to `ORGANIZATION_TYPES`) lost the contact-info point and the geographic-identity point, and got an "Add address, telephone or contactPoint" recommendation it had already met. The geo signal now accepts any Organization subtype with an address. Scores for such sites can rise by up to 2 points.
+
 ### Added
 - `geo audit --url <url> --max-pages N`: find the site's sitemap and audit up to N of its pages, reporting the average score (the existing `--sitemap` batch path, without needing the sitemap URL). Optional: the default single-page score does not change. Text or JSON output only; exits 1 when no sitemap is found.
 
