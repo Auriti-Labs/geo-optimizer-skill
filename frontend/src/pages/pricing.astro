@@ -174,16 +174,16 @@ const comparisonRows: [string, string, string, string][] = [
   ['GEO score (0-100)', '✓', '✓', '✓'],
   ['Full 9-category report', '✓', '✓', '✓'],
   ['Audits per day', '5', '∞', '∞'],
-  ['Domain monitoring', '—', '15 / day', '50 / day'],
-  ['Score history', '—', '12 months', '24 months'],
+  ['Domain monitoring', '—', '10, weekly', '50, daily'],
+  ['Score history', '—', '30 audits', '24 months'],
   ['Regression alerts', '—', '✓', '✓'],
   ['PDF export', '—', '✓', '✓'],
-  ['Unbranded PDF export', '—', '✓', '✓'],
-  ['Custom-logo white-label', '—', 'roadmap', 'roadmap'],
-  ['Competitor comparison', '—', '✓', '✓'],
-  ['Bulk audit', '—', '50 URLs', '∞'],
+  ['Unbranded PDF export', '—', '—', '✓'],
+  ['Custom-logo white-label', '—', '—', 'roadmap'],
+  ['Competitor comparison', '—', '—', '✓'],
+  ['Bulk audit', '—', '—', '∞'],
   ['Team workspace', '—', '—', '✓'],
-  ['AI search snapshots', '—', '5 runs/day', '✓'],
+  ['Automated AI answer checks (Perplexity)', '1 / week, with an account', '3 / day', '✓'],
   ['API access', '—', '✓', '✓'],
   ['CLI (MIT)', '✓', '✓', '✓'],
 ];
@@ -253,7 +253,7 @@ const faqs = [
   },
   {
     q: 'Is there a free trial for paid plans?',
-    a: 'There is no self-serve trial. The Free plan is the permanent baseline and returns real audit results without commitment. A 14-day Agency trial is available on request: contact us at juan@geoready.dev.',
+    a: 'There is no self-serve trial. The Free plan is the permanent baseline and returns real audit results without commitment. A 14-day Agency trial is available on request: contact us at info@geoready.dev.',
   },
   {
     q: 'Can I cancel at any time?',
@@ -299,7 +299,7 @@ const heroCadenceRows = [
               </svg>
             </a>
             <span class="text-sm text-ink-mute">
-              No self-serve trial. No card required for Free. Cancel anytime.
+              No card required for Free. 14-day Agency trial on request. Cancel anytime.
             </span>
           </div>
 
@@ -1078,7 +1078,7 @@ const heroCadenceRows = [
           {
             "@type": "Question",
             "name": "Is there a free trial for paid plans?",
-            "acceptedAnswer": { "@type": "Answer", "text": "There is no self-serve trial. The Free plan is the permanent baseline and returns real audit results without commitment. A 14-day Agency trial is available on request: contact us at juan@geoready.dev." }
+            "acceptedAnswer": { "@type": "Answer", "text": "There is no self-serve trial. The Free plan is the permanent baseline and returns real audit results without commitment. A 14-day Agency trial is available on request: contact us at info@geoready.dev." }
           },
           {
             "@type": "Question",
