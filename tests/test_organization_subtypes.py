@@ -96,3 +96,33 @@ class TestAuditBrandRecognizesOrganizationContactInfo:
         schema_result = audit_schema(soup, "https://acme-plumbing.example/")
         result = audit_brand_entity(soup, schema_result, MetaResult(), ContentResult())
         assert result.has_contact_info is False
+
+
+class TestLocalBusinessSubtypesKeepContactAndGeoSignals:
+    """A trade typed directly as its schema.org subtype must score like LocalBusiness."""
+
+    @staticmethod
+    def _brand(schema_type: str, **extra):
+        schema = {
+            **LOCAL_BUSINESS_SCHEMA,
+            "@type": schema_type,
+            "address": {"@type": "PostalAddress", "addressLocality": "Denver"},
+            **extra,
+        }
+        soup = _soup(_schema_html(schema))
+        schema_result = audit_schema(soup, "https://acme-plumbing.example/")
+        return audit_brand_entity(soup, schema_result, MetaResult(), ContentResult())
+
+    def test_trade_subtypes_have_contact_info_and_geo_schema(self):
+        for schema_type in ("RoofingContractor", "Plumber", "HVACBusiness", "Electrician", "Dentist"):
+            brand = self._brand(schema_type)
+            assert brand.has_contact_info is True, schema_type
+            assert brand.has_geo_schema is True, schema_type
+
+    def test_subtype_without_address_or_area_served_has_no_geo_schema(self):
+        schema = {**LOCAL_BUSINESS_SCHEMA, "@type": "Plumber"}
+        soup = _soup(_schema_html(schema))
+        brand = audit_brand_entity(
+            soup, audit_schema(soup, "https://acme-plumbing.example/"), MetaResult(), ContentResult()
+        )
+        assert brand.has_geo_schema is False
