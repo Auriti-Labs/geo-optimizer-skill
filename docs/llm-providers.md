@@ -28,15 +28,18 @@ geo citations --provider minimax --brand "YourBrand" --domain yoursite.com
 
 For the China endpoint, use `https://api.minimaxi.com/v1` with the `openai` format, or
 `https://api.minimaxi.com/anthropic` with the `anthropic` format. The global messages-format root
-is `https://api.minimax.io/anthropic`. `MINIMAX_THINKING` accepts `adaptive` or `disabled` for
-`MiniMax-M3`; `MiniMax-M2.7` always uses thinking.
+is `https://api.minimax.io/anthropic`. The default model is `MiniMax-M3.1-Flash`.
+`MINIMAX_THINKING` accepts `adaptive` or `disabled`; Flash normalizes either explicit
+setting to `adaptive`, while M3 preserves the selected mode. Leaving it unset preserves
+the API defaults: Flash adaptive; M3 adaptive on OpenAI and disabled on Anthropic.
+Effort is not configured by this client, so Flash uses the API default (`max`).
 
-Set `GEO_LLM_MODEL` to select either supported model:
+Set `GEO_LLM_MODEL` to select M3 or an explicit custom/legacy model ID:
 
 | Model | Context window | API input modalities | Thinking |
 |-------|----------------|----------------------|----------|
+| `MiniMax-M3.1-Flash` (default) | 1,000,000 tokens | Text, image, video | `adaptive` only |
 | `MiniMax-M3` | 1,000,000 tokens | Text, image, video | `adaptive` or `disabled` |
-| `MiniMax-M2.7` | 204,800 tokens | Text | Always on |
 
 `geo citations` currently sends text prompts only. The modalities column lists what each model's
 API accepts; `query_llm` currently types text and image content parts, so video input needs a
