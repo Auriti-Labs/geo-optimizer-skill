@@ -267,7 +267,13 @@ def audit_brand_entity(
         schemas_to_check = _flatten_graph(raw_schema)
         for s in schemas_to_check:
             s_types = jsonld_types(s.get("@type"))
-            if "LocalBusiness" in s_types or s.get("areaServed") or ("Organization" in s_types and s.get("address")):
+            # Any Organization subtype with an address counts, not only the literal
+            # "Organization": a "Plumber" with a street address is a local business.
+            if (
+                "LocalBusiness" in s_types
+                or s.get("areaServed")
+                or (any(t in ORGANIZATION_TYPES for t in s_types) and s.get("address"))
+            ):
                 result.has_geo_schema = True
                 break
 
