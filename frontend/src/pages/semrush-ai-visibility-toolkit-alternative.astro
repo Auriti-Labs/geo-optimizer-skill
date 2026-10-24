@@ -3,28 +3,28 @@ import Shell from '../components/Shell.astro';
 
 const title = 'Semrush AI Visibility Toolkit Alternative | GeoReady';
 const description =
-  "What Semrush's AI Visibility Toolkit is, what it costs, and when a dedicated $0-$19 GEO tool beats a bundled suite module. Facts dated September 2026.";
+  "What Semrush's AI Visibility Toolkit is, what it costs, and when a dedicated $0-$19 GEO tool beats a bundled suite module. Facts dated October 2026.";
 const canonical = 'https://geoready.dev/semrush-ai-visibility-toolkit-alternative/';
 const datePublished = '2026-09-16';
-const dateModified = '2026-10-21';
+const dateModified = '2026-10-23';
 
 // Prezzi Semrush verificati su semrush.com/pricing/, accesso 2026-09-01.
 // Colonna 4 = limiti AI-visibility nominati esplicitamente su quella riga di prezzo.
 const SEMRUSH_PRICING = [
   ['Free', '$0/mo', '$0/mo', '"AI Visibility features" included; exact prompt/domain scope not disclosed on the page'],
-  ['SEO', '$117.33/mo', '$139/mo', 'Not broken out separately from Starter on the AI-visibility limits table, so it is not verifiable whether this tier includes the AI Visibility Toolkit by name'],
-  ['Starter', '$165.17/mo', '$199/mo', 'AI-ready Site Audit; 50 tracked prompts/day; 300 AI-visibility reports/day'],
-  ['Pro+', '$248.17/mo', '$299/mo', '100 tracked prompts/day (report-cap and domain-count not separately disclosed)'],
-  ['Advanced', 'Custom (request a demo)', 'Custom', 'All Pro+ features plus 40+ websites, 5,000+ keywords, API data integration and team users; no AI-visibility prompt limit shown on the pricing page (checked 2026-10-21)'],
+  ['SEO', '$117.33/mo', '$139/mo', 'None: the SEO plan card marks the AI-visibility rows (track performance in AI search, monitor AI sentiment, AI visibility reports, custom prompts) as not included (checked 2026-10-23)'],
+  ['Starter', '$165.17/mo', '$199/mo', 'AI-ready Site Audit; 50 tracked prompts/day; 1 domain for AI brand performance; 300 AI-visibility reports/day (checked 2026-10-23)'],
+  ['Pro+', '$248.17/mo', '$299/mo', '100 tracked prompts/day (report-cap and domain-count not separately disclosed; checked 2026-10-23)'],
+  ['Advanced', 'Custom (request a demo)', 'Custom', 'All Pro+ features plus 40+ websites, 5,000+ keywords, API data integration and team users; unlimited prompts to track daily (checked 2026-10-23)'],
 ] as const;
 
 // Confronto per fascia di prezzo — Semrush: semrush.com/pricing/, accesso 2026-09-01.
 // GeoReady: pricing.md, fetch live 2026-08-31.
 const PRICE_BANDS = [
   ['$0/mo', 'Free plan includes some "AI Visibility features" (scope undisclosed); capped at 10 reports/day across the entire suite', 'Free: full nine-category GEO audit, 5 audits/day, no account, no card, forever'],
-  ['$19/mo (GeoReady Pro)', 'No Semrush tier at this price names AI-visibility features on the pricing page; the SEO tier ($117.33/mo annual) is the next rung up and its AI-visibility inclusion is not verifiable from the page checked', 'Pro ($19/mo): 10 domains weekly monitoring, regression alerts, PDF export, API access'],
-  ['$165-248/mo (Semrush Starter/Pro+, annual)', 'AI-ready Site Audit, 50-100 tracked prompts/day, 300 AI-visibility reports/day, plus the full SEO suite (keyword research, backlinks, rank tracking) at the same price', 'Agency ($89/mo): 50 domains daily monitoring, team workspace, unlimited batch audits, AI answer snapshots. No unrelated suite tools bundled in'],
-  ['Custom (Semrush Advanced, through a demo)', 'Full suite with team users and API data integration; no public price and no AI-visibility prompt limit on the pricing page (checked 2026-10-21); "Additional Users" add-on from $45/mo per seat as of 2026-09-01', 'GeoReady has no tier in this band. Agency ($89/mo) is the self-serve ceiling; Enterprise is custom, "talk to us"'],
+  ['$19/mo (GeoReady Pro, founding price; $29/mo later)', 'No Semrush tier at this price. The SEO tier ($117.33/mo annual as of 2026-09-01) is the next rung up, and its plan card marks the AI-visibility features as not included (checked 2026-10-23)', 'Pro ($19/mo founding price, then $29/mo): 10 domains weekly monitoring, regression alerts, PDF export, API access'],
+  ['$165-248/mo (Semrush Starter/Pro+, annual)', 'AI-ready Site Audit, 50-100 tracked prompts/day, 300 AI-visibility reports/day, plus the full SEO suite (keyword research, backlinks, rank tracking) at the same price', 'Agency ($89/mo founding price, then $199/mo): 50 domains daily monitoring, team workspace, unlimited batch audits, AI answer snapshots. No unrelated suite tools bundled in'],
+  ['Custom (Semrush Advanced, through a demo)', 'Full suite with team users and API data integration; no public price, unlimited AI prompts to track daily (checked 2026-10-23); "Additional Users" add-on from $45/mo per seat as of 2026-09-01 (shown as €43/mo from Europe on 2026-10-23)', 'GeoReady has no tier in this band. Agency ($89/mo founding price, then $199/mo) is the self-serve ceiling; Enterprise is custom, "talk to us"'],
 ] as const;
 
 // FAQ condivise tra markup visibile e JSON-LD (single source of truth).
@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: "How much does Semrush's AI-visibility feature cost on its own?",
-    a: 'There is no standalone AI-visibility-only price that we could find on semrush.com as checked. It scales with the same suite plans: SEO ($117.33/mo annual), Starter ($165.17/mo annual, the first tier to name AI-visibility limits explicitly), Pro+ ($248.17/mo annual), and Advanced (custom pricing through a demo as of 2026-10-21). The AI-visibility feature therefore always comes bundled with the rest of the SEO suite at whatever tier you\'re on.',
+    a: 'There is no standalone AI-visibility-only price that we could find on semrush.com as checked. It scales with the same suite plans: SEO ($117.33/mo annual, whose plan card marks the AI-visibility features as not included), Starter ($165.17/mo annual, the first tier that includes them), Pro+ ($248.17/mo annual), and Advanced (custom pricing through a demo, unlimited tracked prompts as of October 2026). Dollar prices are as of 2026-09-01; Semrush localises prices by country. The AI-visibility feature therefore always comes bundled with the rest of the SEO suite at whatever tier you\'re on.',
   },
   {
     q: "Does Semrush's AI-visibility data update daily or weekly?",
@@ -43,11 +43,11 @@ const faqs = [
   },
   {
     q: 'Can I get AI-visibility tracking without buying the rest of the Semrush suite?',
-    a: "Not from Semrush, based on what's published. The AI-visibility features are bundled into suite-wide plans and not sold as an isolated SKU. A dedicated tool like GeoReady is built for that gap: pay for AI visibility specifically, starting at $0 and reaching $89/mo for citation tracking, without paying for keyword research or backlink tooling you may not need.",
+    a: "Not from Semrush, based on what's published. The AI-visibility features are bundled into suite-wide plans and not sold as an isolated SKU. A dedicated tool like GeoReady is built for that gap: pay for AI visibility specifically, starting at $0 and reaching $89/mo (founding price, then $199/mo) for Agency's AI answer snapshots, without paying for keyword research or backlink tooling you may not need.",
   },
   {
     q: 'Which covers more AI engines, Semrush or GeoReady?',
-    a: "At the feature-description level, Semrush names more engines by default: ChatGPT, Perplexity, Gemini, Claude, and AI Overviews are all listed on its features page without a single-engine entry gate. GeoReady's automated citation tracking (Agency) checks Perplexity specifically, with ChatGPT and Google covered via manual paste. If broad automated engine coverage out of the box is the deciding factor, Semrush's toolkit covers more today.",
+    a: "At the feature-description level, Semrush names more engines by default: ChatGPT, Perplexity, Gemini, Claude, and AI Overviews are all listed on its features page without a single-engine entry gate. GeoReady's automated answer checks cover Perplexity only (1 a week on a free account), and on Agency ChatGPT and Google answers are added by manual paste. If broad automated engine coverage out of the box is the deciding factor, Semrush's toolkit covers more today.",
   },
 ];
 ---
@@ -78,14 +78,15 @@ const faqs = [
 
       <p class="mt-4 text-sm leading-relaxed text-ink-mute">
         Every Semrush fact below is sourced from semrush.com directly, accessed 2026-09-01, and
-        date-stamped where prices or limits could change. The plan names and the Advanced tier were re-checked on
-        semrush.com/pricing on 2026-10-21 from Europe, where prices appear in euros (SEO €112.52, Starter €158.40 and
-        Pro+ €238 per month billed annually); the dollar figures on this page are from 2026-09-01 and were not re-checked. GeoReady facts are from <code>pricing.md</code>,
-        fetched live 2026-08-31.
+        date-stamped where prices or limits could change. Plan names, AI-visibility limits and the Advanced tier were
+        re-checked on semrush.com/pricing on 2026-10-21 and 2026-10-23. Semrush localises prices by country: from Europe
+        the page shows euros (SEO €112.52, Starter €158.40 and Pro+ €238 per month billed annually; €134, €190 and €286
+        billed monthly, as of October 2026). The dollar figures on this page are from 2026-09-01 and could not be
+        re-checked from Europe. GeoReady facts are from geoready.dev/pricing, October 2026.
       </p>
 
       <p class="mt-4 font-mono text-xs text-ink-mute">
-        Published September 16, 2026 · Last updated September 16, 2026
+        Published September 16, 2026 · Last updated October 23, 2026
       </p>
     </header>
 
@@ -138,12 +139,13 @@ const faqs = [
 
     {/* Pricing table */}
     <section class="mb-12 md:mb-16">
-      <h2>What it costs, as of September 2026</h2>
+      <h2>What it costs (dollar prices as of September 2026)</h2>
       <p class="mt-4">
         All figures below are volatile and were verified on semrush.com/pricing/ on 2026-09-01.
         The page's figures appear to be USD based on the "$" symbol shown, though the page itself
         did not display an explicit currency code in the text extracted, so treat currency as not
-        independently confirmed beyond that.
+        independently confirmed beyond that. The AI-visibility limits in the last column were
+        re-checked on 2026-10-23.
       </p>
       <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
         <table class="w-full text-left text-sm">
@@ -224,8 +226,8 @@ const faqs = [
       <p class="mt-4">Three verifiable differentiators for GeoReady:</p>
       <ol class="mt-4 list-decimal space-y-3 pl-5">
         <li><strong>Purpose-built.</strong> GeoReady is a dedicated GEO/AI-visibility tool from the first screen. Semrush's AI-visibility features are one module inside a suite whose plan names and prices (SEO/Starter/Pro+/Advanced) are built around the whole platform, not around AI visibility alone.</li>
-        <li><strong>Lower cost of entry for AI visibility specifically.</strong> GeoReady Pro is $19/mo. Semrush's cheapest tier that names an AI-visibility-specific feature by row (the "AI-ready Site Audit" plus 50 tracked prompts/day, on Starter) is $165.17/mo billed annually, and that price also buys the entire rest of the SEO suite whether you want it or not.</li>
-        <li><strong>No per-seat add-on tax.</strong> Semrush charges "Additional Users Starting at $45/mo" on top of the base plan. GeoReady's tier prices (Pro $19, Agency $89) are the whole price; Agency's team workspace is included at that price with no additional per-seat line disclosed in <code>pricing.md</code>.</li>
+        <li><strong>Lower cost of entry for AI visibility specifically.</strong> GeoReady Pro is $19/mo (founding price, then $29/mo). Semrush's cheapest tier that includes AI-visibility features (the "AI-ready Site Audit" plus 50 tracked prompts/day, on Starter; the SEO plan card marks them as not included) is $165.17/mo billed annually as of 2026-09-01, and that price also buys the entire rest of the SEO suite whether you want it or not.</li>
+        <li><strong>No per-seat add-on tax.</strong> Semrush charges "Additional Users Starting at $45/mo" on top of the base plan. GeoReady's tier prices (Pro $19/mo and Agency $89/mo at the founding price; $29/mo and $199/mo later) are the whole price; Agency's team workspace is included at that price with no additional per-seat line on GeoReady's pricing page.</li>
       </ol>
     </section>
 
@@ -235,7 +237,8 @@ const faqs = [
       <p class="mt-4">
         A different lens than a feature-by-feature table: what does each price band actually buy
         you for the AI-visibility use case specifically? Semrush figures: semrush.com/pricing/,
-        accessed 2026-09-01. GeoReady figures: <code>pricing.md</code>, fetched live 2026-08-31.
+        dollar prices accessed 2026-09-01, plan limits re-checked 2026-10-23. GeoReady figures:
+        geoready.dev/pricing, October 2026.
       </p>
       <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
         <table class="w-full text-left text-sm">
@@ -278,7 +281,7 @@ const faqs = [
       <ol class="mt-4 list-decimal space-y-3 pl-5">
         <li><strong>Run the free audit first.</strong> No account, no card: a full GEO score and nine-category breakdown for any URL, to see what a dedicated audit surfaces that a bundled module might not.</li>
         <li><strong>Check the methodology before paying anything.</strong> GeoReady's scoring weights are public and auditable (see <a href="/methodology/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">how GEO scores are calculated</a>).</li>
-        <li><strong>Add citation tracking only when you need it.</strong> Agency ($89/mo) adds automated Perplexity citation checks and competitor comparison. It is a bigger step than Pro, so check it against what you need first; engine coverage is narrower than Semrush's today.</li>
+        <li><strong>Add answer snapshots only when you need them.</strong> Agency ($89/mo founding price, then $199/mo) adds AI answer snapshots (Perplexity automated; ChatGPT and Google by manual paste), citation quality scoring and competitor comparison. It is a bigger step than Pro, so check it against what you need first; engine coverage is narrower than Semrush's today.</li>
         <li><strong>Run a citation check on your own brand</strong> with <a href="/tools/ai-citation-checker/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">the AI citation checker</a> before committing to a monitoring plan, to see whether ongoing tracking is even worth it for your current visibility.</li>
         <li><strong>See the wider field.</strong> For a category-wide comparison beyond Semrush specifically, see <a href="/best-geo-tools/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">how GEO tools compare</a>.</li>
       </ol>
@@ -302,7 +305,7 @@ const faqs = [
       <h2>Start with the free audit</h2>
       <p class="mt-4">
         No account, no card, no suite required. See your GEO score, then decide if dedicated
-        AI-visibility monitoring is worth $19-89/month on top.
+        AI-visibility monitoring is worth $19-89/month on top (founding prices; $29-199/month later).
       </p>
       <div class="mt-6 flex flex-wrap gap-3">
         <a href="/ai-seo-audit/" class="inline-flex items-center justify-center rounded-[4px] bg-pass-deep px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass-deep/90">
@@ -322,11 +325,11 @@ const faqs = [
         Founder of GeoReady and author of GEO Optimizer, the MIT-licensed engine whose scoring
         weights and 47 citability methods are published in the
         <a href="https://github.com/Auriti-Labs/geo-optimizer-skill" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">public repository</a>.
-        The GeoReady figures on this page come from <code>pricing.md</code>, the product's own
+        The GeoReady figures on this page come from geoready.dev/pricing, the product's own
         live pricing page.
       </p>
       <p class="mt-3 text-sm text-ink-mute">
-        Reviewed and updated September 16, 2026 ·
+        Reviewed and updated October 23, 2026 ·
         <a href="/methodology/" class="underline underline-offset-2 hover:text-ink">Methodology</a>
       </p>
     </section>

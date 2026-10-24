@@ -8,8 +8,8 @@ const description =
   'Compare GEO and AI visibility tools by audit depth, monitoring, llms.txt support, schema, workflows, and pricing fit. Includes GEO Optimizer.';
 const canonical = 'https://geoready.dev/best-geo-tools/';
 const datePublished = '2026-06-16';
-const dateModified = '2026-10-18';
-const dateModifiedLabel = 'October 18, 2026';
+const dateModified = '2026-10-23';
+const dateModifiedLabel = 'October 23, 2026';
 
 
 // Criteri di valutazione di un GEO tool — riusati nella tabella visibile.
@@ -48,7 +48,7 @@ const EVALUATION_CRITERIA = [
 // Strumenti nominati — solo fatti già registrati, con fonte e data, nelle pagine
 // "alternative" collegate (controllate il 16-21 settembre 2026). Nessuna classifica,
 // nessun punteggio: se una cella non è nella pagina collegata, rimanda alla pagina.
-const NAMED_TOOLS_CHECKED = '16 September to 21 October 2026 (Profound, RankScale, Goodie and Otterly pricing re-read on 21 October)';
+const NAMED_TOOLS_CHECKED = '16 September to 23 October 2026 (vendor pricing pages re-read on 23 October; Semrush dollar prices are from 1 September because Semrush shows euros from Europe)';
 const NAMED_TOOLS = [
   {
     name: 'Profound',
@@ -61,22 +61,22 @@ const NAMED_TOOLS = [
     name: 'RankScale',
     href: '/rankscale-alternative/',
     free: 'No ongoing free plan; a 7-day free trial of Pro',
-    entry: 'Pro $99/mo: 1,200 credits',
+    entry: 'Essentials, yearly only ($204/year in the page\'s structured data); Pro $99/mo: 1,200 credits',
     weights: '7 core metrics described; exact weighted formula not published',
   },
   {
     name: 'Goodie',
     href: '/goodie-alternative/',
     free: 'A 7-day free trial of Core; no ongoing free plan',
-    entry: 'Core $295/mo',
+    entry: 'Core $295/mo billed annually',
     weights: 'Metric types described; see the comparison page',
   },
   {
     name: 'Veesie',
     href: '/veesie-alternative/',
-    free: '7-day trial, 10 queries, no card',
+    free: '7-day trial, 15 prompts, no card',
     entry: 'Starter €24/mo billed annually: 1 site, 20 prompts, 3 engines',
-    weights: '"GEO Score" formula named, exact weights not published',
+    weights: '"GEO Score" weights published: mention rate 50, sentiment 25, source coverage 15, position 10',
   },
   {
     name: 'AEO Vision',
@@ -103,7 +103,7 @@ const NAMED_TOOLS = [
     name: 'GeoReady (this site)',
     href: '/methodology/',
     free: '$0, 5 audits/day, full nine-category report, no account, no card',
-    entry: 'Pro $19/mo: 10 domains, weekly monitoring',
+    entry: 'Pro $19/mo founding price, then $29/mo: 10 domains, weekly monitoring',
     weights: 'Nine categories and weights published, MIT-licensed',
   },
 ] as const;
@@ -173,8 +173,8 @@ const GEO_OPTIMIZER_FEATURES = [
   ['Audit', 'Scores a site 0–100 across nine categories using 47 citability checks, 9 of them taken from the KDD 2024 GEO paper.'],
   ['CI/CD', 'Ships a GitHub Action that runs a full audit in a pipeline and can fail a build below a minimum score.'],
   ['Answer-engine querying', 'The geo citations command asks real answer engines whether your brand is mentioned and your domain is cited (bring your own API key).'],
-  ['Hosted citation monitoring', 'The GeoReady hosted layer tracks citations over time: Agency runs automated Perplexity checks, with manual ChatGPT/Google capture. One-off checks are free; saving history and monitoring are paid.'],
-  ['Research basis', 'Methods grounded in Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint).'],
+  ['Hosted citation monitoring', 'The GeoReady hosted layer tracks AI answers over time: a free account gets 1 automated Perplexity answer check a week, and Agency adds AI answer snapshots (Perplexity automated, ChatGPT/Google by manual paste). One-off checks are free; saving history and monitoring are paid.'],
+  ['Research basis', '9 of the 47 content checks come from the methods tested in the KDD 2024 GEO paper (arXiv:2311.09735). The scoring weights are a considered starting point, published so you can disagree with a specific number.'],
 ] as const;
 
 // FAQ condivise tra markup visibile e JSON-LD (single source of truth).
@@ -512,7 +512,7 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
         categories and their weights are published; it is open-source under MIT; it
         does both auditing and citation monitoring — automated Perplexity checks and
         manual ChatGPT/Google capture on Agency — and it runs in CI/CD
-        via a GitHub Action; and its methods are grounded in published research.
+        via a GitHub Action; and 9 of its 47 content checks come from the methods tested in the KDD 2024 GEO paper.
         The hosted layer is freemium — the
         {' '}
         <a href="/ai-seo-audit/" data-cta="best_geo_tools_body_ai_seo_audit" class={PROSE_LINK}>audit</a>,
