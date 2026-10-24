@@ -528,6 +528,9 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
           <div className="rounded-[4px] border border-rail bg-white p-4">
             <h3 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Export Report</h3>
             <ExportActions reportUrl={report.url} />
+            <p className="mt-3 text-xs text-ink-soft leading-relaxed">
+              Auditing a prospect&apos;s site? The PDF works as a leave-behind for your pitch.
+            </p>
           </div>
 
           <ScoreHistory url={report.url} currentScore={report.geoScore} />
