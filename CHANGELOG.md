@@ -7,9 +7,6 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
-### Fixed (scoring)
-- Brand & Entity: a site typed directly as a LocalBusiness subtype (`RoofingContractor`, `Plumber`, `HVACBusiness`, `Electrician`, `GeneralContractor` and 21 more added to `ORGANIZATION_TYPES`) lost the contact-info point and the geographic-identity point, and got an "Add address, telephone or contactPoint" recommendation it had already met. The geo signal now accepts any Organization subtype with an address. Scores for such sites can rise by up to 2 points.
-
 ### Added
 - `geo audit --url <url> --max-pages N`: find the site's sitemap and audit up to N of its pages, reporting the average score (the existing `--sitemap` batch path, without needing the sitemap URL). Optional: the default single-page score does not change. Text or JSON output only; exits 1 when no sitemap is found.
 
@@ -45,6 +42,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Roadmap (`docs/ROADMAP.md` and the public roadmap page): added the shipped v4.19.3 patch.
 - `TRADEMARKS.md`: a draft name and logo policy for forks and derived products (the MIT licence covers the code, not the names). Linked from the README.
 - README: the GitHub stars badges no longer use the shields.io `github/stars` endpoint, which was returning "Unable to select next GitHub token from pool". The count badge at the top now comes from badgen.net; the call-to-action at the bottom is a static shields.io badge without a number.
+
+## [4.19.7] — 2026-10-24
+
+### Fixed
+- Brand & Entity: a site typed directly as a LocalBusiness subtype (`RoofingContractor`, `Plumber`, `HVACBusiness`, `Electrician`, `GeneralContractor` and 21 more added to `ORGANIZATION_TYPES`) lost the contact-info point and the geographic-identity point, and got an "Add address, telephone or contactPoint" recommendation it had already met. The geo signal now accepts any Organization subtype with an address. Scores for such sites can rise by up to 2 points.
 
 ## [4.19.6] — 2026-10-22
 
