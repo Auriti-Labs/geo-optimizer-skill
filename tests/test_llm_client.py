@@ -285,12 +285,12 @@ class TestQueryMinimax:
         resp = llm_client.query_llm("test", provider="minimax", api_key="fake_key", system="system prompt")
         assert resp.text == "MiniMax response"
         assert resp.provider == "minimax"
-        assert resp.model == "MiniMax-M3"
+        assert resp.model == "MiniMax-M3.1-Flash"
         assert resp.prompt_tokens == 10
         assert resp.completion_tokens == 5
         assert captured["url"] == "https://api.minimax.io/v1/chat/completions"
         assert captured["headers"]["Authorization"] == "Bearer fake_key"
-        assert captured["json"]["model"] == "MiniMax-M3"
+        assert captured["json"]["model"] == "MiniMax-M3.1-Flash"
         assert captured["json"]["messages"][0]["role"] == "system"
         assert captured["json"]["max_completion_tokens"] == 1024
         assert captured["json"]["reasoning_split"] is True
