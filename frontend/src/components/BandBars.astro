@@ -1,0 +1,75 @@
+---
+// Score-band distribution as horizontal bars. The bars grow once when the figure scrolls into view; the
+// values are always printed as text, so nothing depends on the animation or on the colours.
+import { bandBars } from '../lib/bandBars.ts';
+
+interface Props {
+  title: string;
+  shares: ReadonlyArray<readonly [string, number]>;
+  note?: string;
+}
+
+const { title, shares, note } = Astro.props;
+const bars = bandBars(shares);
+const summary = bars.map((b) => `${b.label} ${b.pct.toFixed(1)}%`).join('; ');
+---
+
+<figure class="band-bars my-8 md:my-10 max-w-3xl rounded-[4px] border border-rail bg-white p-4 md:p-6" data-band-bars>
+  <figcaption class="mb-4 text-sm font-semibold text-ink">{title}</figcaption>
+  <ul class="space-y-2" aria-label={`${title}: ${summary}`}>
+    {bars.map((b, i) => (
+      <li class="grid grid-cols-[6.5rem_1fr_3.5rem] items-center gap-3 text-sm" style={`--i:${i}`}>
+        <span class="text-ink-mute">{b.label}</span>
+        <span class="band-track block h-5 rounded-[4px] bg-paper" aria-hidden="true">
+          <span class="band-bar block h-5" style={`--w:${b.widthPct}%;background:${b.color}`}></span>
+        </span>
+        <span class="text-right font-mono font-semibold tabular-nums text-ink">{b.pct.toFixed(1)}%</span>
+      </li>
+    ))}
+  </ul>
+  {note && <p class="mt-4 font-mono text-[11px] text-ink-mute">{note}</p>}
+</figure>
+
+<style>
+  /* Without JavaScript the bars are simply drawn at full width. */
+  .band-bar {
+    width: var(--w);
+    border-radius: 0 4px 4px 0;
+  }
+  /* With JavaScript they start empty and grow once; the script adds .is-in when the figure is visible. */
+  .band-bars.js-anim .band-bar {
+    width: 0;
+  }
+  .band-bars.js-anim.is-in .band-bar {
+    width: var(--w);
+    transition: width 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition-delay: calc(var(--i, 0) * 80ms);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .band-bars.js-anim .band-bar,
+    .band-bars.js-anim.is-in .band-bar {
+      width: var(--w);
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-band-bars]').forEach((el) => {
+    el.classList.add('js-anim');
+    if (!('IntersectionObserver' in window)) {
+      el.classList.add('is-in');
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          el.classList.add('is-in');
+          io.disconnect();
+        }
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+  });
+</script>
