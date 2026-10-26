@@ -11,6 +11,7 @@ from geo_optimizer.core.audit_cdn import audit_cdn_ai_crawler
 from geo_optimizer.core.audit_js import audit_js_rendering
 from geo_optimizer.core.audit_meta import audit_meta_tags
 from geo_optimizer.core.audit_robots import audit_robots_txt
+from geo_optimizer.models.config import HTML_WEIGHT_WARN_BYTES
 from geo_optimizer.models.results import AgentAccessResult
 from geo_optimizer.utils.http import fetch_url
 
@@ -50,10 +51,13 @@ def run_agent_access_audit(base_url: str) -> AgentAccessResult:
             else:
                 result.passing.append(f"Fast server response: {result.ttfb_ms:.0f}ms TTFB")
 
-            if result.page_weight_bytes > 200_000:
+            if result.page_weight_bytes > HTML_WEIGHT_WARN_BYTES:
+                inline_bytes = sum(len(tag.get_text().encode("utf-8")) for tag in soup(["script", "style"]))
                 result.warnings.append(
-                    f"Heavy initial HTML: {result.page_weight_bytes / 1000:.0f}KB "
-                    "(target: under 200KB — bloated HTML slows crawler parsing and may get truncated)"
+                    f"Heavy initial HTML: {result.page_weight_bytes / 1000:.0f}KB, of which "
+                    f"{inline_bytes / 1000:.0f}KB inline scripts/styles "
+                    f"(target: under {HTML_WEIGHT_WARN_BYTES // 1000}KB; moving inline payloads to "
+                    "external files usually fixes it — a crawler that stops reading early may miss content)"
                 )
             else:
                 result.passing.append(f"HTML weight OK: {result.page_weight_bytes / 1000:.0f}KB")

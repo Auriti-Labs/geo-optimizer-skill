@@ -182,6 +182,21 @@ def test_page_weight_heavy_is_warning():
     assert any("Heavy initial HTML" in w for w in result.warnings)
 
 
+def test_page_weight_warning_reports_inline_script_share():
+    heavy_html = "<html><body><p>Short copy.</p><script>" + ("x" * 240_000) + "</script></body></html>"
+    with (
+        patch(_PATCHES["fetch"], return_value=(_make_resp(text=heavy_html), None)),
+        patch(_PATCHES["robots"], return_value=_make_robots()),
+        patch(_PATCHES["cdn"], return_value=_make_cdn()),
+        patch(_PATCHES["js"], return_value=_make_js()),
+        patch(_PATCHES["meta"], return_value=_make_meta()),
+        patch(_PATCHES["discovery"], return_value=_make_discovery()),
+    ):
+        result = run_agent_access_audit("https://example.com")
+
+    assert any("of which 240KB inline scripts/styles" in w for w in result.warnings)
+
+
 def test_page_weight_light_is_passing():
     with (
         patch(_PATCHES["fetch"], return_value=(_make_resp(), None)),
