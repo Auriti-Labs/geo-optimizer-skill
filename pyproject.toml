@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "geo-optimizer-skill"
 version = "4.19.7"
-description = "Generative Engine Optimization toolkit — make websites visible to AI search engines"
+description = "GEO Optimizer, the open-source Generative Engine Optimization toolkit behind GeoReady (geoready.dev): audit whether ChatGPT, Perplexity, Claude, Gemini and Google AI Overviews can cite your site"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.10"
