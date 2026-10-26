@@ -11,6 +11,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - `geo audit --url <url> --max-pages N`: find the site's sitemap and audit up to N of its pages, reporting the average score (the existing `--sitemap` batch path, without needing the sitemap URL). Optional: the default single-page score does not change. Text or JSON output only; exits 1 when no sitemap is found.
 
 ### Changed
+- `geo access`: the heavy-HTML warning now says how much of the weight is inline `<script>`/`<style>`, so a framework page over 200KB with little copy is told where the weight comes from. The threshold moved to `HTML_WEIGHT_WARN_BYTES` in `models/config.py`; its value is unchanged. Reported by Neurounit on Habr.
+- `geo --lang` help said Italian was the default output language. Output is English; the help now says the flag is reserved for localization and goes before the command.
 - `geo audit` text output: sections 12-19 (trust stack, RAG chunk readiness, embedding proximity, content decay, platform citation profile, context window, instruction following, multimodal) now say they are diagnostics outside the 0-100 score. They never counted toward it, but the "Chunk readiness: 0/100" line next to a high total read as a contradiction. No score changes.
 
 ### Fixed
