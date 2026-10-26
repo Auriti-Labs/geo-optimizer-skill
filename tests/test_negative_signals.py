@@ -106,6 +106,14 @@ class TestNegativeSignals:
         result = audit_negative_signals(soup, html, _content(), _meta(), SchemaResult())
         assert result.boilerplate_ratio > 0.5
 
+    def test_boilerplate_nested_regions_counted_once(self):
+        """A <nav> inside a <header> is one region: the ratio stays within 0..1."""
+        menu = "menu " * 200
+        html = f"<html><body><header><nav>{menu}</nav></header><div>{'text ' * 20}</div></body></html>"
+        soup = BeautifulSoup(html, "html.parser")
+        result = audit_negative_signals(soup, html, _content(), _meta(), SchemaResult())
+        assert 0.9 < result.boilerplate_ratio <= 1.0
+
     def test_mixed_signals(self):
         """H1 promette, contenuto scarso → mixed."""
         html = "<html><body><main><h1>The Ultimate Complete Guide</h1><p>Short.</p></main></body></html>"
