@@ -898,6 +898,17 @@ ABOUT_LINK_PATTERNS = [
     "/who-we-are",
     "/storia",
     "/azienda",
+    # German, French, Spanish/Portuguese and Dutch slugs ("/sobre-nos" also
+    # matches "/sobre-nosotros" through the substring check).
+    "/ueber-uns",
+    "/uber-uns",
+    "/unternehmen",
+    "/a-propos",
+    "/qui-sommes-nous",
+    "/sobre-nos",
+    "/quienes-somos",
+    "/quem-somos",
+    "/over-ons",
     # In-page anchors — single-page sites (common for small-business marketing
     # sites) have no dedicated /about URL to link to, only a same-page section
     # like href="#about". A substring check still applies, so this also
@@ -912,6 +923,15 @@ ABOUT_LINK_PATTERNS = [
     "#who-we-are",
     "#storia",
     "#azienda",
+    "#ueber-uns",
+    "#uber-uns",
+    "#unternehmen",
+    "#a-propos",
+    "#qui-sommes-nous",
+    "#sobre-nos",
+    "#quienes-somos",
+    "#quem-somos",
+    "#over-ons",
 ]
 
 # Hostnames of third-party form-embed providers whose fields live inside a

@@ -15,6 +15,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Fixed
 - `boilerplate_ratio` (negative signals) could exceed 1.0 on pages without `<main>`/`<article>`: a `<nav>` inside a `<header>` was counted twice. Only the outermost `nav`/`header`/`footer` region counts now, and the ratio is capped at 1.0. Reported by Neurounit on Habr (tested on 4.18.2).
+- The About-link check (Brand & Entity) recognised only English and Italian slugs, so a German `/ueber-uns` or a French `/a-propos` page failed it. Added German, French, Spanish, Portuguese and Dutch slugs, with their `#` anchors. Reported by Qilano.
 - RAG chunk readiness matched definitions and anchor sentences only in English: the definition opening needed an English verb (`is`, `refers to`...) and both patterns needed an ASCII capital, so Cyrillic and Greek pages and sentences opening with `È` or `Ü` scored lower for the same structure. Definition verbs now cover English, Italian, German, French, Spanish, Portuguese, Dutch and Russian (`— это`, `является`), and capitals cover Latin-1, Greek and Cyrillic. English results are unchanged. Reported by Neurounit on Habr.
 
 ### Security
