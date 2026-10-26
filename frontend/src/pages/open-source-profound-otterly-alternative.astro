@@ -6,7 +6,7 @@ const description =
   'Open-source GEO optimizer (MIT), free to self-host: audit AI-search visibility, track ChatGPT/Perplexity citations, and enforce results in CI/CD.';
 const canonical = 'https://geoready.dev/open-source-profound-otterly-alternative/';
 const datePublished = '2026-07-08';
-const dateModified = '2026-10-23';
+const dateModified = '2026-10-26';
 
 // Assi di confronto scelti per essere VERIFICABILI e incontestabili:
 // per GEO Optimizer sono fatti confermati nel repository; per i prodotti
@@ -83,6 +83,16 @@ const faqs = [
     q: 'Is GEO Optimizer really free?',
     a: 'The open-source toolkit is free and MIT-licensed — install it from PyPI and run it with no account. There is also an optional hosted product, GeoReady, for teams that want monitoring, alerts, and a dashboard without self-hosting; the underlying audit engine is the same open-source project.',
   },
+];
+const ENGINE_VS_HOSTED: [string, string, string][] = [
+  ['Audit and 0-100 score', 'Yes, the same engine, run on demand', 'Yes, the same engine, also run on a schedule'],
+  ['Score history', 'Local, with geo history and geo drift when you run them', 'Kept for you: 30 audits on Pro, 24 months on Agency'],
+  ['Regression alerts', 'Only if you wire a CI gate or a cron yourself', 'Email alerts on drops of 5+ points, llms.txt changes and AI bot blocking'],
+  ['AI answer checks', 'geo citations queries engines with your own API keys', 'Perplexity queried automatically on tracked prompts; ChatGPT and Google answers by manual paste'],
+  ['Multiple sites and clients', 'One URL or one sitemap per run', 'Up to 50 domains on Agency, grouped by client, team workspace'],
+  ['Reports', 'JSON, HTML, PDF and other formats from the CLI', 'PDF export, shareable report links, API access'],
+  ['API keys needed', 'None for the audit; only for geo citations', 'None'],
+  ['Price', 'Free, MIT', 'Free plan, paid plans from $19/month (founding rate)'],
 ];
 ---
 
@@ -204,6 +214,36 @@ const faqs = [
               <tr class="align-top">
                 <th scope="row" class="whitespace-nowrap px-4 py-3 text-left font-text font-semibold text-ink">{name}</th>
                 <td class="px-4 py-3 leading-relaxed text-ink-soft">{detail}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {/* Engine vs hosted */}
+    <section class="mb-12 md:mb-16">
+      <h2>Open-source engine or hosted GeoReady</h2>
+      <p class="mt-4">
+        Both run the same audit engine, so the score is the same. The hosted product adds
+        the parts a CLI does not do on its own: running on a schedule, keeping history and
+        sending alerts. Plan details are on the <a href="/pricing/">pricing page</a>.
+      </p>
+      <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-paper">
+            <tr>
+              <th scope="col" class="px-4 py-3 font-semibold text-ink"></th>
+              <th scope="col" class="px-4 py-3 font-semibold text-ink">GEO Optimizer (open source)</th>
+              <th scope="col" class="px-4 py-3 font-semibold text-ink">GeoReady (hosted)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-rail">
+            {ENGINE_VS_HOSTED.map(([axis, engine, hosted]) => (
+              <tr class="align-top">
+                <th scope="row" class="whitespace-nowrap px-4 py-3 text-left font-text font-semibold text-ink">{axis}</th>
+                <td class="px-4 py-3 leading-relaxed text-ink-soft">{engine}</td>
+                <td class="px-4 py-3 leading-relaxed text-ink-soft">{hosted}</td>
               </tr>
             ))}
           </tbody>
