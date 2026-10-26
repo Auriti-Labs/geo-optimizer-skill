@@ -260,13 +260,14 @@ const faqs = [
 
             <h3 class="mt-6">1. Accessible: the crawler can reach it</h3>
             <p class="mt-3">
-              AI systems use named crawlers such as <code class="text-sm font-mono">GPTBot</code>,
-              <code class="text-sm font-mono">OAI-SearchBot</code>, <code class="text-sm font-mono">ClaudeBot</code>,
-              and <code class="text-sm font-mono">PerplexityBot</code>. Your
-              <code class="text-sm font-mono">robots.txt</code> decides which ones may
-              fetch your content. Blocking them all to keep your content out of training
-              also blocks the retrieval that makes citations possible, so the decision
-              should be deliberate, not accidental.
+              AI systems use named crawlers, and they do different jobs. Search crawlers
+              (<code class="text-sm font-mono">OAI-SearchBot</code>, <code class="text-sm font-mono">Claude-SearchBot</code>, <code class="text-sm font-mono">PerplexityBot</code>) build the
+              index that answers cite. Training crawlers (<code class="text-sm font-mono">GPTBot</code>, <code class="text-sm font-mono">ClaudeBot</code>)
+              collect content for model training, and <code class="text-sm font-mono">Google-Extended</code> is a token that
+              controls Gemini training and grounding, not Google Search or AI Overviews.
+              Vendors treat these settings as independent: you can block training and stay
+              open to AI search. Blocking every AI bot also blocks the retrieval that makes
+              citations possible, so the decision should be deliberate, not accidental.
             </p>
 
             <h3 class="mt-6">2. Parseable: the model can extract clean meaning</h3>
@@ -316,8 +317,9 @@ const faqs = [
             <ol class="mt-4 list-decimal space-y-3 pl-5">
               <li>
                 <strong>AI crawler access</strong>: confirm your <code class="text-sm font-mono">robots.txt</code>
-                does not unintentionally block <code class="text-sm font-mono">GPTBot</code>,
-                <code class="text-sm font-mono">ClaudeBot</code>, or <code class="text-sm font-mono">PerplexityBot</code>.
+                does not unintentionally block the search crawlers <code class="text-sm font-mono">OAI-SearchBot</code>,
+                <code class="text-sm font-mono">Claude-SearchBot</code> and <code class="text-sm font-mono">PerplexityBot</code>. Blocking the training
+                crawlers (<code class="text-sm font-mono">GPTBot</code>, <code class="text-sm font-mono">ClaudeBot</code>) is a separate policy choice.
               </li>
               <li>
                 <strong>Server-rendered content</strong>: your main copy appears in the
