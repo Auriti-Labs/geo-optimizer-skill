@@ -10,6 +10,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Added
 - `geo audit --url <url> --max-pages N`: find the site's sitemap and audit up to N of its pages, reporting the average score (the existing `--sitemap` batch path, without needing the sitemap URL). Optional: the default single-page score does not change. Text or JSON output only; exits 1 when no sitemap is found.
 
+### Changed
+- `geo audit` text output: sections 12-19 (trust stack, RAG chunk readiness, embedding proximity, content decay, platform citation profile, context window, instruction following, multimodal) now say they are diagnostics outside the 0-100 score. They never counted toward it, but the "Chunk readiness: 0/100" line next to a high total read as a contradiction. No score changes.
+
 ### Fixed
 - `boilerplate_ratio` (negative signals) could exceed 1.0 on pages without `<main>`/`<article>`: a `<nav>` inside a `<header>` was counted twice. Only the outermost `nav`/`header`/`footer` region counts now, and the ratio is capped at 1.0. Reported by Neurounit on Habr (tested on 4.18.2).
 - RAG chunk readiness matched definitions and anchor sentences only in English: the definition opening needed an English verb (`is`, `refers to`...) and both patterns needed an ASCII capital, so Cyrillic and Greek pages and sentences opening with `È` or `Ü` scored lower for the same structure. Definition verbs now cover English, Italian, German, French, Spanish, Portuguese, Dutch and Russian (`— это`, `является`), and capitals cover Latin-1, Greek and Cyrillic. English results are unchanged. Reported by Neurounit on Habr.

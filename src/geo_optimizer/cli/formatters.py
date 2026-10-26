@@ -461,6 +461,7 @@ def format_audit_text(result: AuditResult) -> str:
     if result.trust_stack and result.trust_stack.checked:
         lines.append("")
         lines.append(_section_header("12. TRUST STACK SCORE"))
+        lines.append(_NOT_SCORED)
         ts = result.trust_stack
         lines.append(f"  Grade: {ts.grade} ({ts.composite_score}/25) — Trust level: {ts.trust_level}")
         for layer in [ts.technical, ts.identity, ts.social, ts.academic, ts.consistency]:
@@ -473,6 +474,7 @@ def format_audit_text(result: AuditResult) -> str:
     if result.rag_chunk and result.rag_chunk.checked and result.rag_chunk.total_sections > 0:
         lines.append("")
         lines.append(_section_header("13. RAG CHUNK READINESS"))
+        lines.append(_NOT_SCORED)
         rc = result.rag_chunk
         lines.append(f"  Sections: {rc.total_sections} ({rc.sections_in_range} in 100-150 word range)")
         lines.append(f"  Avg section words: {rc.avg_section_words}")
@@ -491,6 +493,7 @@ def format_audit_text(result: AuditResult) -> str:
     if ep and ep.checked:
         lines.append("")
         lines.append(_section_header("14. EMBEDDING PROXIMITY"))
+        lines.append(_NOT_SCORED)
         if ep.skipped_reason:
             lines.append(f"  ⏭️  Skipped: {ep.skipped_reason}")
         else:
@@ -503,6 +506,7 @@ def format_audit_text(result: AuditResult) -> str:
     if cd and cd.checked and cd.signals:
         lines.append("")
         lines.append(_section_header("15. CONTENT DECAY PREDICTION"))
+        lines.append(_NOT_SCORED)
         risk_icon = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(cd.decay_risk, "⚪")
         lines.append(f"  Risk: {risk_icon} {cd.decay_risk.upper()} | Evergreen: {cd.evergreen_score}/100")
         if cd.earliest_decay_days is not None:
@@ -515,6 +519,7 @@ def format_audit_text(result: AuditResult) -> str:
     if pc and pc.checked and pc.platforms:
         lines.append("")
         lines.append(_section_header("16. PLATFORM CITATION PROFILE"))
+        lines.append(_NOT_SCORED)
         for p in pc.platforms:
             lines.append(f"  {p.platform.upper()}: {p.score}/100")
             for s in p.strengths[:3]:
@@ -527,6 +532,7 @@ def format_audit_text(result: AuditResult) -> str:
     if cw and cw.checked and cw.total_words > 0:
         lines.append("")
         lines.append(_section_header("17. CONTEXT WINDOW OPTIMIZATION"))
+        lines.append(_NOT_SCORED)
         risk_icon = {"high": "🔴", "medium": "🟡", "low": "🟢", "none": "⚪"}.get(cw.truncation_risk, "⚪")
         lines.append(f"  Tokens: ~{cw.total_tokens_estimate} ({cw.total_words} words)")
         lines.append(f"  Front-loading: {cw.front_loaded_ratio:.0%} | Filler: {cw.filler_ratio:.0%}")
@@ -539,6 +545,7 @@ def format_audit_text(result: AuditResult) -> str:
     if ir and ir.checked and ir.readiness_level != "none":
         lines.append("")
         lines.append(_section_header("18. INSTRUCTION FOLLOWING READINESS"))
+        lines.append(_NOT_SCORED)
         lines.append(
             f"  Actions: {ir.labeled_buttons} labeled, {ir.unlabeled_buttons} unlabeled ({ir.action_clarity_score}/100)"
         )
@@ -555,6 +562,7 @@ def format_audit_text(result: AuditResult) -> str:
     if mm and mm.checked and mm.readiness_level != "none":
         lines.append("")
         lines.append(_section_header("19. MULTIMODAL READINESS"))
+        lines.append(_NOT_SCORED)
         if mm.total_images:
             lines.append(
                 f"  Images: {mm.images_with_alt}/{mm.total_images} with descriptive alt "
@@ -1101,6 +1109,11 @@ def format_citation_quality_text(result: CitationQualityReport) -> str:
         lines.append(f"    {entry.context_snippet}")
 
     return "\n".join(lines)
+
+
+# Sections 12-19 are diagnostics. Readers took a high "Chunk readiness" next to
+# the total as part of it, so each one says it is outside the score.
+_NOT_SCORED = "  ℹ️  Diagnostic only: not part of the 0-100 GEO score"
 
 
 def _section_header(text: str) -> str:
