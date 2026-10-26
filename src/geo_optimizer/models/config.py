@@ -72,6 +72,10 @@ MAX_TOTAL_URLS: int = 10_000
 
 # Performance budget: warn if a single-page audit exceeds this threshold (#290)
 AUDIT_TIMEOUT_SECONDS: int = 10
+# `geo access` warns above this raw initial-HTML weight (#512). The warning
+# splits it into inline <script>/<style> and the rest, because framework pages
+# often cross it with little page copy (Neurounit, Habr).
+HTML_WEIGHT_WARN_BYTES: int = 200_000
 
 # Hard per-URL deadline in sitemap/batch mode (#556). Distinct from the budget above:
 # that one only logs a warning, this one kills an audit that is genuinely hung.
