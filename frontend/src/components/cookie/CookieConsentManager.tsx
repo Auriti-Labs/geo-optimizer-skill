@@ -6,6 +6,7 @@ import {
   saveCustomConsent,
   getConsent,
   loadAnalyticsScript,
+  loadClarityScript,
 } from '../../lib/cookieConsent';
 import CookieBanner from './CookieBanner';
 import CookiePreferencesModal from './CookiePreferencesModal';
@@ -21,6 +22,7 @@ export default function CookieConsentManager() {
     if (hasConsented()) {
       setManagerState('floating');
       loadAnalyticsScript();
+      loadClarityScript();
     } else {
       setManagerState('banner');
     }
