@@ -171,12 +171,16 @@ def audit_negative_signals(
         main_text_len = len(main_content.get_text(separator=" ", strip=True))
         result.boilerplate_ratio = round(1.0 - (main_text_len / total_text_len), 2)
     elif total_text_len > 0:
-        # No <main>/<article> — estimate from nav+footer
+        # No <main>/<article> — estimate from nav+footer. Only the outermost
+        # region counts: a <nav> inside a <header> was counted twice, which
+        # pushed the ratio above 1.0.
+        chrome = ["nav", "footer", "header"]
         nav_footer_len = 0
-        for tag in text_soup.find_all(["nav", "footer", "header"]):
-            nav_footer_len += len(tag.get_text(separator=" ", strip=True))
+        for tag in text_soup.find_all(chrome):
+            if tag.find_parent(chrome) is None:
+                nav_footer_len += len(tag.get_text(separator=" ", strip=True))
         if nav_footer_len > 0:
-            result.boilerplate_ratio = round(nav_footer_len / total_text_len, 2)
+            result.boilerplate_ratio = round(min(nav_footer_len / total_text_len, 1.0), 2)
     result.boilerplate_high = result.boilerplate_ratio > BOILERPLATE_RATIO_THRESHOLD
 
     # ── 8. Mixed signals ─────────────────────────────────────────
