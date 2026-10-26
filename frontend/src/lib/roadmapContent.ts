@@ -328,5 +328,6 @@ export const releaseCadence = [
   { version: 'v4.19.5', name: 'Web audit timeout margin (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.19.6', name: 'Free plan wording fix (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.19.7', name: 'Local business subtypes scoring fix (patch)', status: 'available' as RoadmapStatus },
+  { version: 'v4.19.8', name: 'Habr review fixes and --max-pages (patch)', status: 'available' as RoadmapStatus },
   { version: 'v5.0.0', name: 'Black Archive', status: 'exploring' as RoadmapStatus },
 ];
