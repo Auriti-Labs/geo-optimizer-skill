@@ -6,6 +6,8 @@
 
 ### The open-source **Answer Engine Optimization (AEO)** & **Generative Engine Optimization (GEO)** toolkit.
 
+**GEO Optimizer** is the open-source engine behind **[GeoReady](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=entity)**, the hosted AI visibility audit at geoready.dev. Run it here from the terminal, or in the browser on geoready.dev.
+
 One command scores any website 0–100 on whether **ChatGPT, Perplexity, Gemini, Claude, and Google AI Overviews** can crawl it, understand it, and cite it — then tells you exactly what to fix.
 
 [![PyPI](https://img.shields.io/pypi/v/geo-optimizer-skill?style=flat-square&color=3b82f6)](https://pypi.org/project/geo-optimizer-skill/)
