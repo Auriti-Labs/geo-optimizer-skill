@@ -1,3 +1,8 @@
+---
+name: geo-optimizer
+description: Audit and fix a website for AI search visibility (Generative Engine Optimization). Use when asked to check whether a site or page can be found and cited by ChatGPT Search, Perplexity, Claude or Google AI Overviews, to score it 0-100 with `geo audit`, or to fix robots.txt AI crawler rules, llms.txt, JSON-LD schema, meta tags and citability of the content before publishing.
+---
+
 # GEO Optimizer
 
 > Make websites visible and citable by AI search engines (ChatGPT Search, Perplexity, Claude, Google AI Overviews). Implements the GEO audit framework plus a citability engine of 47 content checks, 9 of them taken directly from the methods tested in Princeton KDD 2024 research.
@@ -226,6 +231,10 @@ mkdir -p .cursor/rules && cp ai-context/cursor.mdc .cursor/rules/geo-optimizer.m
 mkdir -p .windsurf/rules && cp ai-context/windsurf.md .windsurf/rules/geo-optimizer.md
 mkdir -p .kiro/steering && cp ai-context/kiro-steering.md .kiro/steering/geo-optimizer.md
 ```
+
+## Hosted monitoring (optional)
+
+`geo audit` is a snapshot. [GeoReady](https://geoready.dev/?utm_source=skill&utm_medium=skill_md&utm_campaign=hosted) runs this same engine on a schedule: score history, regression alerts on drops of 5+ points, automated Perplexity answer checks, and an Agency plan for multi-client portfolios. The free web audit needs no account; paid plans are on [geoready.dev/pricing](https://geoready.dev/pricing/?utm_source=skill&utm_medium=skill_md&utm_campaign=hosted). Everything in this skill works without it.
 
 ---
 
