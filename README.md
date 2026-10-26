@@ -182,7 +182,7 @@ Guides for most commands live in [`docs/`](docs/). Provider setup for `geo citat
 The hosted platform runs the same engine on a schedule, so the watching happens without you:
 
 - **Free plan** — audits, your last 5 reports, and one real AI answer check a week (Perplexity).
-- **Pro / Studio / Agency, from $19/mo** — weekly score monitoring, regression alerts, multi-site portfolios, client reporting. [Pricing](https://geoready.dev/pricing/?utm_source=github&utm_medium=readme&utm_campaign=bridge).
+- **Pro / Agency, from $19/mo** — weekly score monitoring, regression alerts, multi-site portfolios, client reporting. [Pricing](https://geoready.dev/pricing/?utm_source=github&utm_medium=readme&utm_campaign=bridge).
 
 [**Create a free account**](https://app.geoready.dev/signup/?utm_source=github&utm_medium=readme&utm_campaign=bridge) · [Free web audit, no account](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=bridge) · [Get the free 160-page GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/?utm_source=github&utm_medium=readme&utm_campaign=bridge)
 
@@ -191,7 +191,7 @@ Same engine everywhere: the platform adds what a local CLI cannot — server-sid
 <details>
 <summary><b>Open source vs hosted — the full comparison</b></summary>
 
-| | GEO Optimizer (this repo) | [geoready.dev](https://geoready.dev) Free | GeoReady Pro / Studio / Agency |
+| | GEO Optimizer (this repo) | [geoready.dev](https://geoready.dev) Free | GeoReady Pro / Agency |
 |---|---|---|---|
 | **Access** | MIT, runs locally | Web audit, no account | [Self-serve sign-up](https://app.geoready.dev/signup/?utm_source=github&utm_medium=readme&utm_campaign=comparison) |
 | **Best for** | Developers, CI/CD, automation | Quick checks, SEO specialists | Ongoing clients, multi-site portfolios |

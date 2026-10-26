@@ -59,6 +59,18 @@ class TestRagChunkReadiness:
         result = audit_rag_readiness(_soup(html))
         assert result.has_definition_opening is True
 
+    def test_definition_opening_detected_in_italian(self):
+        html = "<html><body><p>Il machine learning è una branca dell'intelligenza artificiale.</p></body></html>"
+        assert audit_rag_readiness(_soup(html)).has_definition_opening is True
+
+    def test_definition_opening_detected_in_russian(self):
+        html = "<html><body><p>Машинное обучение — это раздел искусственного интеллекта.</p></body></html>"
+        assert audit_rag_readiness(_soup(html)).has_definition_opening is True
+
+    def test_no_definition_opening_without_a_definition_verb(self):
+        html = "<html><body><p>Машинное обучение в нашей компании с 2015 года.</p></body></html>"
+        assert audit_rag_readiness(_soup(html)).has_definition_opening is False
+
     def test_heading_boundary_ratio(self):
         section = " ".join(["word"] * 50)
         html = f"<html><body><h2>A</h2><p>{section}</p><h2>B</h2><p>{section}</p></body></html>"
@@ -72,6 +84,20 @@ class TestRagChunkReadiness:
         html = f"<html><body><p>{sentences}.</p></body></html>"
         result = audit_rag_readiness(_soup(html))
         assert result.anchor_sentences >= 1
+
+    def test_anchor_sentences_counted_the_same_in_english_italian_and_russian(self):
+        texts = {
+            "en": "This is a self-contained factual statement number {i} about an important topic",
+            "it": "Questa è una frase autonoma e verificabile numero {i} su un argomento importante",
+            "ru": "Это самостоятельное фактическое утверждение номер {i} на важную тему статьи",
+        }
+        counts = {}
+        for lang, template in texts.items():
+            sentences = ". ".join(template.format(i=i) for i in range(6))
+            counts[lang] = audit_rag_readiness(_soup(f"<html><body><p>{sentences}.</p></body></html>")).anchor_sentences
+        assert counts["en"] >= 1
+        assert counts["it"] == counts["en"]
+        assert counts["ru"] == counts["en"]
 
     def test_score_max_100(self):
         """Score never exceeds 100."""

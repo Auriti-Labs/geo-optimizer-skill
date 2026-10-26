@@ -363,9 +363,9 @@ const heroCadenceRows = [
       <ul class="grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-4">
         {[
           ['Open source, MIT', 'Scoring weights are public and auditable on GitHub.', 'github.com/Auriti-Labs'],
-          ['Research-grounded', 'Weights follow Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint).', 'KDD 2024 · arXiv 2025'],
+          ['Research-informed', '9 of the 47 content checks come from the methods tested in Princeton KDD 2024. The weights are a published starting point.', 'KDD 2024 · arXiv:2311.09735'],
           ['27 AI bots checked', 'robots.txt access verified across 27 AI crawlers.', 'models/config.py · AI_BOTS'],
-          ['47 citability methods', 'Each audit runs 47 citation-signal checks.', 'core/citability.py'],
+          ['47 citability checks', 'A content analysis reported next to the 0-100 score. The score itself comes from 9 categories.', 'core/citability.py'],
         ].map(([label, text, source]) => (
           <li class="bg-paper p-5">
             <p class="text-sm font-semibold text-ink">{label}</p>

@@ -21,7 +21,7 @@ from geo_optimizer import __version__
     default=None,
     envvar="GEO_LANG",
     type=click.Choice(["it", "en"], case_sensitive=False),
-    help="Lingua output: it (default), en",
+    help="Reserved for CLI localization. Output is English for now; give it before the command (geo --lang it audit ...).",
 )
 def cli(lang):
     """GEO Optimizer — Make websites visible to AI search engines."""
