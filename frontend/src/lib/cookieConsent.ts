@@ -11,6 +11,9 @@ export interface ConsentState {
 
 const STORAGE_KEY = 'geo_cookie_consent';
 const GA_MEASUREMENT_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
+// Microsoft Clarity project id for geoready.dev. Public by design (it is in the
+// script URL); it identifies the project, it does not authorise anything.
+const CLARITY_PROJECT_ID = 'z3szvr3ktv';
 
 /**
  * Dispatched on the window every time the stored consent changes, and once on
@@ -56,6 +59,7 @@ export function saveConsent(consent: Omit<ConsentState, 'timestamp' | 'version'>
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(full));
   updateConsentMode(full);
+  updateClarityConsent(full);
   announceConsent(full);
 }
 
@@ -91,6 +95,7 @@ export function acceptAll(): void {
     marketing: true,
   });
   loadAnalyticsScript();
+  loadClarityScript();
 }
 
 /** Salva consenso personalizzato. */
@@ -107,6 +112,7 @@ export function saveCustomConsent(categories: {
   });
   if (categories.analytics) {
     loadAnalyticsScript();
+    loadClarityScript();
   } else {
     removeAnalyticsCookies();
   }
@@ -229,6 +235,58 @@ export function loadAnalyticsScript(): void {
     });
   `;
   document.head.appendChild(inline);
+}
+
+// ─── Microsoft Clarity ────────────────────────────────────────────────────────
+
+/**
+ * Report the visitor's choice to Clarity (Consent API v2).
+ *
+ * Key capitalisation is Microsoft's: `ad_Storage` / `analytics_Storage`, values
+ * lowercase. Partial updates are accepted, but both keys are always sent so the
+ * state never depends on what Clarity remembered. A no-op until the tag has been
+ * injected, because a visitor who has not consented never gets the tag at all.
+ * Mirrors the Google mapping: analytics gates analytics_Storage, marketing gates
+ * ad_Storage.
+ */
+export function updateClarityConsent(consent: ConsentState): void {
+  if (typeof window === 'undefined') return;
+  const w = window as any;
+  if (typeof w.clarity !== 'function') return;
+  w.clarity('consentv2', {
+    ad_Storage: consent.marketing ? 'granted' : 'denied',
+    analytics_Storage: consent.analytics ? 'granted' : 'denied',
+  });
+}
+
+/**
+ * Inject the Clarity tag, only once analytics consent is on record.
+ *
+ * Same snippet Microsoft ships, written as DOM calls because it must not exist
+ * in the page HTML: until the visitor accepts, no request goes to clarity.ms.
+ * The consent call follows immediately so Clarity learns the choice before it
+ * writes a cookie.
+ */
+export function loadClarityScript(): void {
+  if (typeof window === 'undefined') return;
+  const consent = getConsent();
+  if (!consent.analytics) return;
+  if (document.getElementById('clarity-script')) return;
+
+  const w = window as any;
+  w.clarity =
+    w.clarity ||
+    function (...args: unknown[]) {
+      (w.clarity.q = w.clarity.q || []).push(args);
+    };
+
+  const script = document.createElement('script');
+  script.id = 'clarity-script';
+  script.async = true;
+  script.src = `https://www.clarity.ms/tag/${CLARITY_PROJECT_ID}?ref=bwt`;
+  document.head.appendChild(script);
+
+  updateClarityConsent(consent);
 }
 
 /** Rimuove i cookie analytics noti. */

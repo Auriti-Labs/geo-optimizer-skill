@@ -23,7 +23,9 @@ export interface CookieEntry {
 // declared analytics as "not currently used", so a consent choice recorded
 // against it was made on inaccurate information and cannot be carried over.
 // Changing this string invalidates every stored choice and re-prompts everyone.
-export const CONSENT_VERSION = 'v2.0';
+// v3.0: Microsoft Clarity (session recordings and heatmaps) joined the analytics
+// category. A choice recorded under v2.0 covered Google Analytics only.
+export const CONSENT_VERSION = 'v3.0';
 
 export const cookieRegistry: CookieEntry[] = [
   {
@@ -81,6 +83,125 @@ export const cookieRegistry: CookieEntry[] = [
     privacyPolicyUrl: 'https://policies.google.com/privacy',
     notes: 'Set only after you accept analytics.',
   },
+  {
+    name: '_clck',
+    provider: 'Microsoft Corporation',
+    domain: 'geoready.dev',
+    category: 'analytics',
+    purpose: 'Keeps the Clarity user id and preferences, so one browser is recognised as the same user on this site.',
+    legalBasis: 'Consent (GDPR art. 6(1)(a) and ePrivacy Directive art. 5(3))',
+    duration: 'Not stated by Microsoft (cookie list read on 26 October 2026)',
+    type: 'cookie',
+    firstOrThirdParty: 'first',
+    isEssential: false,
+    isCurrentlyUsed: true,
+    service: 'Microsoft Clarity',
+    dataShared: 'Pseudonymous Clarity user id',
+    privacyPolicyUrl: 'https://privacy.microsoft.com/privacystatement',
+    notes: 'Set only after you accept analytics. Microsoft Clarity records how pages are used (clicks, scrolling, page movement) as session recordings and heatmaps.',
+  },
+  {
+    name: '_clsk',
+    provider: 'Microsoft Corporation',
+    domain: 'geoready.dev',
+    category: 'analytics',
+    purpose: 'Joins several page views into a single Clarity session recording.',
+    legalBasis: 'Consent (GDPR art. 6(1)(a) and ePrivacy Directive art. 5(3))',
+    duration: 'Not stated by Microsoft (cookie list read on 26 October 2026)',
+    type: 'cookie',
+    firstOrThirdParty: 'first',
+    isEssential: false,
+    isCurrentlyUsed: true,
+    service: 'Microsoft Clarity',
+    dataShared: 'Pseudonymous session id',
+    privacyPolicyUrl: 'https://privacy.microsoft.com/privacystatement',
+    notes: 'Set only after you accept analytics.',
+  },
+  {
+    name: 'CLID',
+    provider: 'Microsoft Corporation',
+    domain: 'clarity.ms',
+    category: 'analytics',
+    purpose: 'Identifies the first time Clarity saw this browser on any site that uses Clarity.',
+    legalBasis: 'Consent (GDPR art. 6(1)(a) and ePrivacy Directive art. 5(3))',
+    duration: 'Not stated by Microsoft (cookie list read on 26 October 2026)',
+    type: 'cookie',
+    firstOrThirdParty: 'third',
+    isEssential: false,
+    isCurrentlyUsed: true,
+    service: 'Microsoft Clarity',
+    dataShared: 'Pseudonymous browser identifier',
+    privacyPolicyUrl: 'https://privacy.microsoft.com/privacystatement',
+    notes: 'Set by clarity.ms, only after you accept analytics.',
+  },
+  {
+    name: 'ANONCHK',
+    provider: 'Microsoft Corporation',
+    domain: 'clarity.ms',
+    category: 'analytics',
+    purpose: 'Records whether MUID is transferred to an advertising cookie. Clarity does not use that cookie, so the value is always 0.',
+    legalBasis: 'Consent (GDPR art. 6(1)(a) and ePrivacy Directive art. 5(3))',
+    duration: 'Not stated by Microsoft (cookie list read on 26 October 2026)',
+    type: 'cookie',
+    firstOrThirdParty: 'third',
+    isEssential: false,
+    isCurrentlyUsed: true,
+    service: 'Microsoft Clarity',
+    dataShared: 'A fixed flag, always 0',
+    privacyPolicyUrl: 'https://privacy.microsoft.com/privacystatement',
+    notes: 'Set by clarity.ms, only after you accept analytics.',
+  },
+  {
+    name: 'MR',
+    provider: 'Microsoft Corporation',
+    domain: 'clarity.ms',
+    category: 'analytics',
+    purpose: 'Indicates whether the MUID identifier should be refreshed.',
+    legalBasis: 'Consent (GDPR art. 6(1)(a) and ePrivacy Directive art. 5(3))',
+    duration: 'Not stated by Microsoft (cookie list read on 26 October 2026)',
+    type: 'cookie',
+    firstOrThirdParty: 'third',
+    isEssential: false,
+    isCurrentlyUsed: true,
+    service: 'Microsoft Clarity',
+    dataShared: 'A refresh flag',
+    privacyPolicyUrl: 'https://privacy.microsoft.com/privacystatement',
+    notes: 'Set by clarity.ms, only after you accept analytics.',
+  },
+  {
+    name: 'MUID',
+    provider: 'Microsoft Corporation',
+    domain: 'clarity.ms',
+    category: 'marketing',
+    purpose: 'Identifies unique browsers visiting Microsoft sites, used by Microsoft for advertising, site analytics and operations.',
+    legalBasis: 'Consent (GDPR art. 6(1)(a) and ePrivacy Directive art. 5(3))',
+    duration: 'Not stated by Microsoft (cookie list read on 26 October 2026)',
+    type: 'cookie',
+    firstOrThirdParty: 'third',
+    isEssential: false,
+    isCurrentlyUsed: true,
+    service: 'Microsoft Clarity',
+    dataShared: 'Pseudonymous browser identifier',
+    privacyPolicyUrl: 'https://privacy.microsoft.com/privacystatement',
+    notes: 'Set by clarity.ms only if you accept marketing: it is tied to the advertising signal sent to Clarity.',
+  },
+  {
+    name: 'SM',
+    provider: 'Microsoft Corporation',
+    domain: 'clarity.ms',
+    category: 'marketing',
+    purpose: 'Synchronises the MUID identifier across Microsoft domains.',
+    legalBasis: 'Consent (GDPR art. 6(1)(a) and ePrivacy Directive art. 5(3))',
+    duration: 'Not stated by Microsoft (cookie list read on 26 October 2026)',
+    type: 'cookie',
+    firstOrThirdParty: 'third',
+    isEssential: false,
+    isCurrentlyUsed: true,
+    service: 'Microsoft Clarity',
+    dataShared: 'Pseudonymous browser identifier',
+    privacyPolicyUrl: 'https://privacy.microsoft.com/privacystatement',
+    notes: 'Set by clarity.ms only if you accept marketing.',
+  },
 ];
 
 export function getCookiesByCategory(category: CookieCategory): CookieEntry[] {
@@ -112,9 +233,9 @@ export function getCategoryDescription(cat: CookieCategory): string {
     preferences:
       'Remember settings and choices you make (such as layout or display options) so they persist between visits.',
     analytics:
-      'Let us measure how the site is used — which pages are read, which are ignored — through Google Analytics 4. Off unless you accept.',
+      'Let us measure how the site is used — which pages are read, which are ignored — through Google Analytics 4 and Microsoft Clarity (which records page use as anonymised session recordings and heatmaps). Off unless you accept.',
     marketing:
-      'Governs advertising signals. No marketing cookie or tracker is set on this site, and no advertising tag is loaded. What this controls is the ad-related consent sent to Google: accepting lets conversion measurement imported into Google Ads be attributed in full, declining keeps it limited.',
+      'Governs advertising signals. No advertising tag is loaded on this site. What this controls is the ad-related consent sent to Google (accepting lets conversion measurement imported into Google Ads be attributed in full, declining keeps it limited) and to Microsoft Clarity (accepting lets Microsoft set its MUID and SM identifiers).',
   };
   return descriptions[cat];
 }

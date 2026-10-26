@@ -159,11 +159,11 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # Nonce-based CSP cannot work with static files (HTML is pre-built without nonce injection).
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; "
+            "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.clarity.ms; "
             "style-src 'self' 'unsafe-inline'; "
             "font-src 'self' data:; "
             "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com "
-            "https://launchpadly.co https://cdn.sanity.io; "
+            "https://launchpadly.co https://cdn.sanity.io https://*.clarity.ms https://c.bing.com; "
             # GA4 instrada la raccolta dati su sottodomini regionali sharded
             # (region1, region2, ...) scelti per sessione — un singolo host
             # esplicito (region1.google-analytics.com) bloccava silenziosamente
@@ -172,6 +172,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com "
             "https://analytics.google.com https://*.analytics.google.com "
             "https://stats.g.doubleclick.net "
+            # Microsoft Clarity: the tag lives on www.clarity.ms, its runtime on
+            # scripts.clarity.ms and it reports to regional *.clarity.ms hosts.
+            # Loaded only after analytics consent (see cookieConsent.ts).
+            "https://*.clarity.ms https://c.bing.com "
             # Waitlist, newsletter e survey fanno fetch cross-origin verso la SaaS:
             # senza questa origine il browser blocca la richiesta prima che parta.
             "https://app.geoready.dev; "

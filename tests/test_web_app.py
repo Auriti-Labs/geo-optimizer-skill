@@ -352,6 +352,16 @@ def test_security_headers_presenti(client):
     assert "https://cdn.sanity.io" in response.headers["content-security-policy"]
 
 
+def test_csp_allows_clarity_in_script_connect_and_img(client):
+    """Microsoft Clarity (loaded after consent) must not be blocked by the CSP."""
+    csp = client.get("/health").headers["content-security-policy"]
+    directives = {d.split()[0]: d for d in csp.split("; ") if d}
+    assert "https://*.clarity.ms" in directives["script-src"]
+    assert "https://*.clarity.ms" in directives["connect-src"]
+    assert "https://c.bing.com" in directives["connect-src"]
+    assert "https://c.bing.com" in directives["img-src"]
+
+
 # ─── Test: _audit_result_to_dict ────────────────────────────────────────────
 
 
