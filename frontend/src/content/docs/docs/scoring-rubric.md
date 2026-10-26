@@ -23,6 +23,8 @@ How the GEO Score (0–100) is computed. Based on the Princeton KDD 2024 researc
 
 The total score is the sum of all points earned across **9 categories**, capped at 100.
 
+A negative-signal penalty is then subtracted: 1 point when one negative signal is found, 3 for two or three, 5 for four or more (keyword stuffing, high boilerplate ratio, missing author, mixed signals and similar; see `NEGATIVE_PENALTY_*` in `models/config.py`). So a page with every category at its maximum still scores below 100 while a negative signal is active. The result is clamped to 0-100. The penalty is reported as `negative_penalty` in the CLI JSON `score_breakdown` and as `score_penalty` in the web API.
+
 ### Rubric versions
 
 Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1` for legacy comparisons; history deltas and regressions should compare snapshots with the same score version.
