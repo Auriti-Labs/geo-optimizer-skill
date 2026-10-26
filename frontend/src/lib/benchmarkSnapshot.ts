@@ -12,6 +12,8 @@ export const BENCHMARK = {
   // domain, self-selected sample). Keep README, this file and the monthly editions in step.
   measuredOn: '17 October 2026',
   sampleLabel: '1,800+ audited sites',
+  // Dataset version, so a figure quoted elsewhere can be matched to this snapshot.
+  rubricNote: 'scores mix rubric v1 (engine 4.13-4.18) and v2 (4.19)',
   average: '56.5',
   median: '59',
   llmsTxtAdoption: '58%',
