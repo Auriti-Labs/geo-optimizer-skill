@@ -17,14 +17,33 @@ from geo_optimizer.models.results import RagChunkResult
 _OPTIMAL_MIN_WORDS = 100
 _OPTIMAL_MAX_WORDS = 150
 
+# Capital letters of the Latin, Latin-1, Greek and Cyrillic alphabets. A plain
+# [A-Z] missed every Cyrillic page and any sentence opening with "È" or "Ü".
+# shortcut: Latin Extended-A capitals (Ł, Ś, Č...) are not listed, add them when
+# Polish or Czech pages need it.
+_UPPER = "A-ZÀ-ÖØ-ÞΑ-ΩА-ЯЁ"
+
+# Definition verbs, matched as whole words, for the languages the engine already
+# has function-word lists for, plus Russian ("X — это Y", "X является Y").
+_DEFINITION_VERBS = (
+    r"is|are|refers?\s+to|means?|describes?|represents?"  # en
+    r"|è|sono|si\s+riferisce\s+a|significa|indica|descrive|rappresenta"  # it
+    r"|ist|sind|bezeichnet|bedeutet|beschreibt"  # de
+    r"|est|sont|désigne|signifie|décrit|représente"  # fr
+    r"|es|son|se\s+refiere\s+a|representa"  # es
+    r"|é|são|refere-se\s+a"  # pt
+    r"|zijn|betekent|beschrijft"  # nl
+    r"|это|является|являются|означает|описывает|представляет"  # ru
+)
+
 # Patterns that indicate a definition-style opening (e.g. "X is ...", "X refers to ...")
 _DEFINITION_RE = re.compile(
-    r"^[A-Z][^.]{5,60}\b(?:is|are|refers?\s+to|means?|describes?|represents?)\b",
+    rf"^[{_UPPER}][^.]{{5,60}}\b(?:{_DEFINITION_VERBS})\b",
     re.MULTILINE,
 )
 
 # Anchor sentence: a self-contained factual statement (ends with period, 10-40 words)
-_ANCHOR_RE = re.compile(r"(?<=[.!?]\s)[A-Z][^.!?]{30,200}[.!?]")
+_ANCHOR_RE = re.compile(rf"(?<=[.!?]\s)[{_UPPER}][^.!?]{{30,200}}[.!?]")
 
 
 def audit_rag_readiness(soup, soup_clean=None) -> RagChunkResult:
