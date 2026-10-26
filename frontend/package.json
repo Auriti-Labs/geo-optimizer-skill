@@ -62,6 +62,12 @@
     },
     "postcss-nested": {
       "postcss-selector-parser": "^7.1.6"
+    },
+    "@module-federation/dts-plugin": {
+      "undici": "7.30.1"
+    },
+    "unifont": {
+      "undici": "8.12.2"
     }
   }
 }
