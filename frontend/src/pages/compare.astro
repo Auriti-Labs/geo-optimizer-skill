@@ -66,19 +66,17 @@ const faqs = [
   description="Free head-to-head GEO audit. Enter two URLs and compare AI visibility, citability and technical signals for ChatGPT, Perplexity and Claude."
   canonical="https://geoready.dev/compare/"
 >
-  <div class="mx-auto max-w-7xl bg-paper px-4 py-10 text-ink sm:px-6 md:py-16">
+  <div class="mx-auto max-w-7xl bg-paper px-5 pt-12 pb-16 text-ink sm:px-6 md:pt-16 md:pb-20">
     {/* Static hero — visible to crawlers */}
     <header class="mb-8 md:mb-10">
       <div class="grid gap-10 lg:grid-cols-[minmax(0,0.86fr)_minmax(420px,0.82fr)] lg:items-center">
         <div>
-          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h1 class="max-w-3xl font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
-              Two websites, side by side: where AI engines make the choice.
-            </h1>
-            <p class="font-text font-medium text-[12.5px] text-ink-mute">GeoReady · Compare</p>
-          </div>
+          <div class="eyebrow">GeoReady · Compare</div>
+          <h1 class="mt-4 max-w-[18ch] text-[2.3rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3rem] xl:text-[3.4rem]">
+            Two websites, side by side: where AI engines make the choice.
+          </h1>
 
-          <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
+          <p class="mt-6 max-w-[56ch] text-[17px] leading-relaxed text-ink-soft">
             Enter two URLs below and run a free head-to-head GEO audit. See which site is more
             visible to AI answer engines like ChatGPT, Perplexity, and Claude — scored across the
             same nine signal categories, side by side.
@@ -90,18 +88,18 @@ const faqs = [
               ['Site B', 'Competing signal profile.'],
               ['Gap', 'Where one domain wins trust.'],
             ].map(([label, text]) => (
-              <div class="border-l border-rail pl-4">
-                <p class="text-sm font-semibold text-ink">{label}</p>
+              <div class="border-t border-rail pt-3">
+                <div class="eyebrow">{label}</div>
                 <p class="mt-1 text-sm leading-relaxed text-ink-soft">{text}</p>
               </div>
             ))}
           </div>
 
           <div class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <a href="#compare-form" class="inline-flex items-center gap-2 rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass">
+            <a href="#compare-form" data-cta="compare_hero_form" class="inline-flex min-h-11 items-center gap-2 rounded-[9px] bg-pass-deep px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-pass">
               Compare two sites
             </a>
-            <span class="font-text font-medium text-[12.5px] text-ink-mute">POST /api/public/audits × 2</span>
+            <span class="eyebrow">POST /api/public/audits × 2</span>
           </div>
         </div>
 
@@ -112,7 +110,7 @@ const faqs = [
     </header>
 
     {/* Static info section — visible to crawlers */}
-    <section class="mb-10 grid gap-4 rounded-[10px] border border-rail bg-white p-5 md:grid-cols-[minmax(0,0.46fr)_repeat(3,minmax(0,1fr))] md:p-6">
+    <section class="panel mb-10 grid gap-4 p-5 md:grid-cols-[minmax(0,0.46fr)_repeat(3,minmax(0,1fr))] md:p-6">
       <div>
         <h2 class="font-head text-lg font-semibold tracking-[-0.01em] text-ink">
           How comparison works
@@ -127,7 +125,7 @@ const faqs = [
         ['Readiness', 'Technical access, structure, and AI discovery.'],
       ].map(([label, text]) => (
         <div class="border-l border-rail pl-4">
-          <p class="text-base font-semibold text-ink">{label}</p>
+          <div class="eyebrow">{label}</div>
           <p class="mt-2 text-sm leading-relaxed text-ink-soft">{text}</p>
         </div>
       ))}
@@ -142,10 +140,10 @@ const faqs = [
     </div>
 
     {/* Static, crawler-visible content — answer-first */}
-    <div class="mx-auto mt-16 max-w-7xl space-y-12 md:mt-20 md:space-y-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-ink [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
+    <div class="mx-auto mt-16 max-w-7xl space-y-16 md:mt-20 md:space-y-20 [&>section>p]:max-w-[70ch] [&_h2]:text-[1.75rem] [&_h2]:font-semibold [&_h2]:text-ink [&_h2]:leading-[1.12] [&_h2]:tracking-[-0.03em] md:[&_h2]:text-[2.1rem] [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
 
       {/* When to run a comparison */}
-      <section>
+      <section data-reveal>
         <h2>When to run a head-to-head GEO comparison</h2>
         <p class="mt-4">
           Run a two-site comparison when you have one clear benchmark in mind. The
@@ -171,7 +169,7 @@ const faqs = [
       </section>
 
       {/* What the 9 categories measure */}
-      <section>
+      <section data-reveal>
         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
           <h2>What the 9 signal categories measure</h2>
           <p class="font-text font-medium text-[12.5px] text-ink-mute">models/config.py · CATEGORY_MAX_V2 · Σ = 100 pts</p>
@@ -187,13 +185,13 @@ const faqs = [
           <a href="/methodology/">methodology page</a> and the
           <a href="/docs/scoring-rubric/">scoring rubric</a> list every check.
         </p>
-        <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+        <div class="panel mt-8 overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead>
               <tr class="border-b border-rail">
-                <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Category</th>
-                <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Weight</th>
-                <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it checks</th>
+                <th scope="col" class="eyebrow px-5 py-3.5 font-medium">Category</th>
+                <th scope="col" class="eyebrow px-5 py-3.5 font-medium">Weight</th>
+                <th scope="col" class="eyebrow px-5 py-3.5 font-medium">What it checks</th>
               </tr>
             </thead>
             <tbody>
@@ -216,7 +214,7 @@ const faqs = [
       </section>
 
       {/* How to read the gap */}
-      <section>
+      <section data-reveal>
         <h2>How to read the gap between two sites</h2>
         <p class="mt-4">
           Read the gap by category, not by the headline number. Two sites can sit ten
@@ -230,7 +228,7 @@ const faqs = [
         </p>
         <div class="mt-6 grid gap-3 sm:grid-cols-2">
           {SCORE_BANDS.map(([range, label, meaning]) => (
-            <div class="rounded-[10px] border border-rail bg-white p-4">
+            <div class="panel p-5">
               <div class="flex items-baseline gap-3">
                 <span class="font-mono text-sm tabular-nums text-pass-deep">{range}</span>
                 <span class="text-base font-semibold text-ink">{label}</span>
@@ -239,7 +237,7 @@ const faqs = [
             </div>
           ))}
         </div>
-        <p class="mt-3 font-text font-medium text-[12.5px] text-ink-mute">source: models/config.py · SCORE_BANDS</p>
+        <div class="eyebrow mt-3">source: models/config.py · SCORE_BANDS</div>
         <p class="mt-4">
           Then prioritize where the difference is largest and the effort is lowest.
           A losing site in the foundation band with a strong competitor in good
@@ -251,7 +249,7 @@ const faqs = [
       </section>
 
       {/* Comparison vs multi-competitor analysis */}
-      <section>
+      <section data-reveal>
         <h2>Comparison vs multi-competitor analysis</h2>
         <p class="mt-4">
           A two-site comparison and a multi-competitor analysis answer different
@@ -274,19 +272,38 @@ const faqs = [
       </section>
 
       {/* FAQ */}
-      <section>
+      <section data-reveal>
         <h2>Comparison FAQ</h2>
-        <div class="mt-6 space-y-6">
-          {faqs.map((faq) => (
-            <div>
-              <h3>{faq.question}</h3>
-              <p class="mt-2">{faq.answer}</p>
-            </div>
-          ))}
+        <div class="panel mt-8 overflow-hidden">
+          <div class="grid gap-px bg-rail md:grid-cols-2">
+            {faqs.map((faq) => (
+              <div class="bg-white p-6">
+                <h3>{faq.question}</h3>
+                <p class="mt-2 text-sm">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>
   </div>
+
+  {/* Chiusura: la stessa banda scura della home */}
+  <section class="band-dark" aria-labelledby="compare-next-h">
+    <div class="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-16 sm:px-6 md:py-20 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-2xl">
+        <div class="eyebrow">Next step</div>
+        <h2 id="compare-next-h" class="mt-3 text-3xl font-semibold tracking-[-0.03em] md:text-[2.75rem] md:leading-[1.08]">Close the gap, then keep it closed.</h2>
+        <p class="mt-4 leading-relaxed text-ink-soft">
+          Fix the category with the largest gap first. Monitoring re-runs the same audit on a schedule, so you see when your site moves.
+        </p>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <a href="#compare-form" data-cta="compare_final_form" class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-[#2DD4BF] px-6 py-3 text-[14px] font-semibold text-[#062420] transition-colors hover:bg-[#5EEAD4]">Compare two sites</a>
+        <a href="/pricing/" data-cta="compare_final_pricing" class="inline-flex min-h-11 items-center justify-center rounded-[9px] px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_#2A3838] transition-shadow hover:shadow-[inset_0_0_0_1px_#2DD4BF]">See monitoring plans</a>
+      </div>
+    </div>
+  </section>
 
   {/* Page-specific schema */}
   <script type="application/ld+json" set:html={JSON.stringify({
