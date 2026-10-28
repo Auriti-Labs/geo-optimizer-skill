@@ -79,12 +79,10 @@ const faqs = [
   <section class="bg-paper">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-20">
       <header>
-        <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <h1 class="max-w-3xl font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
-            How GEO Optimizer scores a site — and why the weights are public.
-          </h1>
-          <p class="font-text font-medium text-[12.5px] text-ink-mute">GEO Optimizer · Methodology</p>
-        </div>
+        <div class="eyebrow">GEO Optimizer · Methodology</div>
+        <h1 class="mt-4 max-w-[24ch] text-[2.3rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3rem]">
+          How GEO Optimizer scores a site — and why the weights are public.
+        </h1>
 
         <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
           GEO Optimizer scores a site out of 100 across nine signal categories, then adds a
@@ -92,9 +90,9 @@ const faqs = [
           constants in an open-source, MIT-licensed repository, so any score can be read,
           reproduced, and challenged on the record.
         </p>
-        <p class="mt-2 font-text font-medium text-[12.5px] text-ink-mute">Last updated: October 2026</p>
+        <div class="eyebrow mt-3">Last updated: October 2026</div>
 
-        <div class="mt-8 grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-3">
+        <div class="panel mt-8 grid gap-px overflow-hidden bg-rail sm:grid-cols-3">
           {[
             ['100 points', 'Distributed across 9 signal categories.'],
             ['Open weights', 'Constants in the MIT-licensed repo.'],
@@ -119,7 +117,7 @@ const faqs = [
   </section>
 
   {/* How scoring works */}
-  <section class="border-t border-rail bg-white">
+  <section class="border-t border-rail bg-white" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">How the score is built</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
@@ -140,11 +138,11 @@ const faqs = [
   </section>
 
   {/* The 9 categories and weights */}
-  <section class="border-t border-rail bg-paper">
+  <section class="border-t border-rail bg-paper" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">The 9 categories and their exact weights</h2>
-        <p class="font-text font-medium text-[12.5px] text-ink-mute">models/config.py · CATEGORY_MAX_V2 · Σ = 100 pts</p>
+        <div class="eyebrow">models/config.py · CATEGORY_MAX_V2 · Σ = 100 pts</div>
       </div>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Every site is scored on the same nine categories, weighted to a total of 100 points.
@@ -156,13 +154,13 @@ const faqs = [
         <a href="/docs/scoring-rubric/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">scoring rubric</a>
         lists every check, and the v1 weights stay available with <code class="font-mono text-[13px]">--score-version 1</code>.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full min-w-[640px] text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Category</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Weight</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it measures</th>
+              <th scope="col" class="eyebrow px-4 py-3">Category</th>
+              <th scope="col" class="eyebrow px-4 py-3">Weight</th>
+              <th scope="col" class="eyebrow px-4 py-3">What it measures</th>
             </tr>
           </thead>
           <tbody>
@@ -193,24 +191,24 @@ const faqs = [
   </section>
 
   {/* Score bands */}
-  <section class="border-t border-rail bg-white">
+  <section class="border-t border-rail bg-white" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">How to read the score bands</h2>
-        <p class="font-text font-medium text-[12.5px] text-ink-mute">models/config.py · SCORE_BANDS</p>
+        <div class="eyebrow">models/config.py · SCORE_BANDS</div>
       </div>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         The total score falls into one of four bands. The band is a summary, not a verdict: it
         tells you roughly how much structural work remains, but the category breakdown is where
         the actual to-do list lives.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full min-w-[560px] text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Range</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Band</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it means</th>
+              <th scope="col" class="eyebrow px-4 py-3">Range</th>
+              <th scope="col" class="eyebrow px-4 py-3">Band</th>
+              <th scope="col" class="eyebrow px-4 py-3">What it means</th>
             </tr>
           </thead>
           <tbody>
@@ -240,11 +238,11 @@ const faqs = [
   </section>
 
   {/* Citability layer */}
-  <section class="border-t border-rail bg-paper">
+  <section class="border-t border-rail bg-paper" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">The citability layer: 47 content checks</h2>
-        <p class="font-text font-medium text-[12.5px] text-ink-mute">arXiv:2311.09735 · KDD 2024</p>
+        <div class="eyebrow">arXiv:2311.09735 · KDD 2024</div>
       </div>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Beyond the structural score, GEO Optimizer runs 47 content checks that estimate how
@@ -253,13 +251,13 @@ const faqs = [
         direct quotations and concrete statistics — both measured to raise citation rates in the
         Princeton study.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full min-w-[560px] text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Signal</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Citation lift</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Why it works</th>
+              <th scope="col" class="eyebrow px-4 py-3">Signal</th>
+              <th scope="col" class="eyebrow px-4 py-3">Citation lift</th>
+              <th scope="col" class="eyebrow px-4 py-3">Why it works</th>
             </tr>
           </thead>
           <tbody>
@@ -303,7 +301,7 @@ const faqs = [
   </section>
 
   {/* Why we publish the weights */}
-  <section class="border-t border-rail bg-white">
+  <section class="border-t border-rail bg-white" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <h2 id="why-we-publish-the-weights" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Why we publish the weights</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
@@ -327,8 +325,8 @@ const faqs = [
   </section>
 
   {/* Score stability, measured — first-party measured data, framed as the page's
-      one log well (One Dark Material Rule). */}
-  <section class="border-t border-rail bg-paper">
+      one log well (One Dark Material Rule: la band-dark finale è navigazione, non dati). */}
+  <section class="border-t border-rail bg-paper" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Score stability, measured</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
@@ -407,16 +405,35 @@ const faqs = [
   </section>
 
   {/* FAQ */}
-  <section class="border-t border-rail bg-white">
+  <section class="border-t border-rail bg-white" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Methodology FAQ</h2>
-      <div class="mt-8 max-w-3xl">
-        {faqs.map((faq) => (
-          <div class="border-t border-rail py-5 first:border-t-0 first:pt-0">
-            <h3 class="text-base font-semibold text-ink">{faq.question}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-ink-soft">{faq.answer}</p>
-          </div>
-        ))}
+      <div class="panel mt-8 overflow-hidden">
+        <div class="grid gap-px bg-rail md:grid-cols-2">
+          {faqs.map((faq) => (
+            <div class="bg-white p-6">
+              <h3 class="text-base font-semibold text-ink">{faq.question}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-soft">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Chiusura: dalla rubrica letta alla rubrica applicata al proprio sito */}
+  <section class="band-dark" aria-labelledby="method-next-h">
+    <div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-16 sm:px-6 md:py-20 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-xl">
+        <div class="eyebrow">Next step</div>
+        <h2 id="method-next-h" class="mt-3 text-3xl font-semibold tracking-[-0.03em] md:text-[2.5rem] md:leading-[1.08]">Run the same rubric on your site.</h2>
+        <p class="mt-4 leading-relaxed text-ink-soft">
+          The free audit applies these nine weights to any URL and shows the breakdown per category. No account, no card.
+        </p>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <a href="/#audit-form" data-cta="methodology_final_audit" class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-[#2DD4BF] px-6 py-3 text-[14px] font-semibold text-[#062420] transition-colors hover:bg-[#5EEAD4]">Run a free audit</a>
+        <a href="/docs/scoring-rubric/" data-cta="methodology_final_rubric" class="inline-flex min-h-11 items-center justify-center rounded-[9px] px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_#2A3838] transition-shadow hover:shadow-[inset_0_0_0_1px_#2DD4BF]">Read every check</a>
       </div>
     </div>
   </section>
