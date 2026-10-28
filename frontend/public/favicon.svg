@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <rect width="48" height="48" rx="4" fill="#0D9488"/>
-  <path d="M11.74 13.71 A16 16 0 1 1 11.74 34.29"
-        fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-  <path d="M8 24 C12 14 18 34 24 24 C30 14 36 34 40 24"
-        fill="none" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-opacity="0.72"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="GeoReady light symbol"><title>GeoReady light symbol</title><rect width="48" height="48" rx="10" fill="#0D9488"/><path d="M11.74 13.71 A16 16 0 1 1 11.74 34.29" fill="none" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round"/><path d="M8 24 C12 14 18 34 24 24 C30 14 36 34 40 24" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" opacity="0.88"/></svg>
