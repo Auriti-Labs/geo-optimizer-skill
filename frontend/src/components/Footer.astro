@@ -62,26 +62,33 @@ const linkAttrs = (l: FooterLink) => {
 };
 ---
 
-<div class="mt-auto border-t border-rail bg-paper">
-  <div class="mx-auto max-w-7xl px-6 py-12">
-    <div class="grid gap-10 md:grid-cols-[1.2fr_2fr_1fr]">
+<footer class="band-dark mt-auto">
+  <div class="mx-auto max-w-7xl px-6">
 
-      {/* Brand + tagline */}
+    {/* Riga comando: la stessa voce del motore che l'hero mostra in "$ geo audit" */}
+    <div class="flex flex-col gap-4 border-b border-rail py-8 sm:flex-row sm:items-center sm:justify-between">
+      <p class="font-mono text-[13px] text-ink-soft">
+        <span class="text-pass-deep">$</span> pip install geo-optimizer-skill
+        <span class="mt-1 block text-ink-mute sm:ml-2 sm:mt-0 sm:inline">v{__ENGINE_VERSION__} · MIT licence</span>
+      </p>
+      <a href="/#audit-form" data-cta="footer_run_audit" class="inline-flex items-center gap-1.5 self-start rounded-[9px] bg-pass-deep px-4 py-2 font-text text-[12.5px] font-semibold text-[#090C0C] transition-colors hover:bg-[#5EEAD4] sm:self-auto">
+        Run a free audit
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <div class="grid gap-10 py-12 md:grid-cols-[1.2fr_2fr_1fr]">
       <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2.5">
-          <img src="/brand/geoready-lockup-light.svg" width="89" height="22" alt="GeoReady" decoding="async">
-          <span class="font-mono text-[10px] text-ink-mute">v{__ENGINE_VERSION__}</span>
-        </div>
-        <p class="max-w-[220px] text-xs leading-relaxed text-ink-mute">
+        <img src="/brand/geoready-lockup-dark.svg" width="89" height="22" alt="GeoReady AI visibility audit" decoding="async">
+        <p class="max-w-[240px] text-xs leading-relaxed text-ink-mute">
           Open-source AI search visibility audit and monitoring. Built in Italy by Juan Camilo Auriti.
         </p>
       </div>
 
-      {/* Link columns */}
       <div class="grid grid-cols-2 gap-8 sm:grid-cols-3">
         {columns.map((col) => (
           <nav aria-label={`Footer – ${col.heading}`}>
-            <p class="mb-3 font-text text-[12.5px] font-semibold text-ink-mute">{col.heading}</p>
+            <p class="eyebrow mb-3">{col.heading}</p>
             <ul class="space-y-2.5">
               {col.links.map((l) => (
                 <li><a href={l.href} class="text-[13px] leading-relaxed text-ink-soft transition-colors hover:text-ink" {...linkAttrs(l)}>{l.label}</a></li>
@@ -91,10 +98,10 @@ const linkAttrs = (l: FooterLink) => {
         ))}
       </div>
 
-      {/* Book card — risalto a sé, asset premium a conversione */}
-      <div class="flex flex-col justify-between rounded-[10px] border border-rail bg-white p-5">
+      {/* Book card: asset a conversione, pannello dello stesso sistema dark */}
+      <div class="panel flex flex-col justify-between p-5">
         <div>
-          <p class="font-text font-medium text-[12px] text-pass-deep">The Book</p>
+          <p class="font-mono text-[12px] font-medium tracking-[0.02em] text-pass-deep">The Book</p>
           <p class="mt-2 font-head text-[17px] font-semibold leading-tight tracking-[-0.02em] text-ink">
             {BOOK.title}
           </p>
@@ -107,7 +114,7 @@ const linkAttrs = (l: FooterLink) => {
         <a
           href="/book/"
           data-cta="footer_book"
-          class="mt-4 inline-flex items-center justify-center gap-1.5 rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[12.5px] font-semibold text-white transition-colors hover:bg-pass"
+          class="mt-4 inline-flex items-center justify-center gap-1.5 rounded-[9px] px-4 py-2 font-text text-[12.5px] font-semibold text-ink shadow-[inset_0_0_0_1px_#2A3636] transition-shadow hover:shadow-[inset_0_0_0_1px_#2DD4BF]"
         >
           <span>Get the book</span>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -118,13 +125,13 @@ const linkAttrs = (l: FooterLink) => {
       </div>
     </div>
 
-    <div class="mt-10 flex flex-col items-center gap-5 border-t border-rail pt-6 text-center">
-      <a href="https://launchpadly.co/startup/geoready" target="_blank" rel="noopener noreferrer" data-launchpadly-badge="geoready" data-launchpadly-badge-variant="light">
-        <img src="https://launchpadly.co/embed/badges/startup/geoready.svg?variant=light" alt="Launchpadly Startup Directory" width="220" height="48" style="display:block;border:0;" />
-      </a>
-      <p class="text-xs text-ink-mute">
+    <div class="flex flex-col items-center gap-5 border-t border-rail py-6 text-center sm:flex-row sm:justify-between sm:text-left">
+      <p class="max-w-2xl text-xs text-ink-mute">
         Built in Italy by Juan Camilo Auriti. Designed for the global AI search ecosystem. Powered by Princeton KDD 2024 + AutoGEO (arXiv:2510.11438, preprint) research.
       </p>
+      <a href="https://launchpadly.co/startup/geoready" target="_blank" rel="noopener noreferrer" data-launchpadly-badge="geoready" data-launchpadly-badge-variant="dark">
+        <img src="https://launchpadly.co/embed/badges/startup/geoready.svg?variant=dark" alt="Launchpadly Startup Directory" width="220" height="48" loading="lazy" style="display:block;border:0;" />
+      </a>
     </div>
   </div>
-</div>
+</footer>

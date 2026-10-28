@@ -59,12 +59,12 @@ const navGroups: NavGroup[] = [
 const featuredLink = { label: "Pricing", href: "/pricing/" };
 ---
 
-<nav id="site-nav" class="fixed inset-x-0 top-0 z-50 border-b border-rail bg-paper" aria-label="Main navigation">
+<nav id="site-nav" class="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-paper transition-[border-color,box-shadow] duration-300" aria-label="Main navigation">
   <div class="mx-auto flex h-[59px] max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
 
     <!-- Logo -->
     <a href="/" class="flex shrink-0 items-center gap-2.5">
-      <img src="/brand/geoready-lockup-light.svg" width="113" height="28" alt="GeoReady" decoding="async">
+      <img src="/brand/geoready-lockup-light.svg" width="113" height="28" alt="GeoReady home" decoding="async">
       <span class="hidden rounded-[6px] border border-rail px-1.5 py-0.5 font-mono text-[10px] text-ink-mute sm:inline">{version}</span>
     </a>
 
@@ -85,7 +85,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
           </button>
           <div
             id={`${g.id}-menu`}
-            class="more-menu invisible absolute left-0 top-full mt-2 w-72 translate-y-1 rounded-[10px] border border-rail bg-white p-1 opacity-0 transition-all duration-200"
+            class="more-menu invisible absolute left-0 top-full mt-2 w-72 translate-y-1 rounded-[14px] bg-white p-1.5 opacity-0 shadow-[0_16px_40px_-16px_rgba(10,21,20,0.22),0_0_0_1px_var(--color-rail)] transition-all duration-200"
           >
             {g.links.map((l) => (
               <a
@@ -127,8 +127,14 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
           </svg>
         </a>
         <a
+          href="https://app.geoready.dev/login"
+          class="hidden whitespace-nowrap rounded-[6px] px-3 lg:inline-block py-1.5 text-[13px] font-medium text-ink-soft transition-colors hover:bg-pass-wash hover:text-ink"
+        >
+          Log in
+        </a>
+        <a
           href="https://app.geoready.dev/signup"
-          class="group flex items-center gap-1.5 rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[12.5px] font-semibold text-white transition-colors hover:bg-pass"
+          class="group flex items-center gap-1.5 whitespace-nowrap rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[12.5px] font-semibold text-white transition-colors hover:bg-pass"
         >
           <span>Get started</span>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true">
@@ -236,6 +242,12 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
 </div>
 
 <script>
+  // ─── Bordo allo scroll: in cima la barra si fonde con la pagina ─────────────
+  const siteNav = document.getElementById('site-nav');
+  const onScroll = () => siteNav?.toggleAttribute('data-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
   // ─── Mobile fullscreen menu ─────────────────────────────────────────────────
   const burgerBtn = document.getElementById('mobile-menu-btn');
   const mobileMenu = document.getElementById('mobile-menu');
@@ -393,6 +405,10 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
   .nav-item.nav-link-active {
     color: var(--color-ink);
     background: var(--color-pass-wash);
+  }
+  #site-nav[data-scrolled] {
+    border-bottom-color: var(--color-rail);
+    box-shadow: 0 1px 2px rgba(10, 21, 20, 0.04);
   }
   .more-menu a.nav-link-active {
     background: var(--color-pass-wash);
