@@ -31,6 +31,26 @@ const covers = [
   'Managing prompt injection, content integrity, and agent-related security risks',
 ];
 
+// FAQ: solo fatti già in pagina o in bookData.ts, nessun claim nuovo.
+const faqs = [
+  {
+    q: 'How long is AI Search Engineering, and in which formats?',
+    a: `${BOOK.numberOfPages} pages, in English, published on 10 September 2026 as a paperback (ISBN ${BOOK.isbnFormatted}) and a Kindle edition, both sold on Amazon.`,
+  },
+  {
+    q: 'Who wrote the book?',
+    a: `${BOOK.author}, who also maintains GEO Optimizer, the MIT-licensed audit engine that GeoReady runs.`,
+  },
+  {
+    q: 'Does the book describe the same scoring as the GeoReady audit?',
+    a: 'The book describes the eight-category rubric. The engine has since moved to a nine-category rubric (v2) as the default; the rubric in print is still available with geo audit --score-version 1. Both are open source under the MIT licence, so you can read the rules and disagree with them.',
+  },
+  {
+    q: 'Is there a free way to start?',
+    a: 'Yes. The GEO Readiness Manual is free (160 pages), and the GeoReady audit runs without an account. The book is the long-form version of the same method.',
+  },
+];
+
 const audience = [
   'Developers',
   'Technical SEOs',
@@ -47,15 +67,15 @@ const audience = [
   canonical="https://geoready.dev/book/"
 >
   <div class="bg-paper font-text text-ink">
-    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-16">
+    <div class="mx-auto max-w-7xl px-5 pt-12 pb-16 sm:px-6 md:pt-16 md:pb-20">
 
-      <header class="mb-14 md:mb-20">
+      <header class="mb-16 border-b border-rail pb-14 md:mb-20">
         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <p class="font-text font-medium text-[12.5px] text-ink-mute">GeoReady · Book</p>
-          <p class="font-mono text-[11px] text-ink-mute">ISBN {BOOK.isbnFormatted}</p>
+          <div class="eyebrow">GeoReady · Book</div>
+          <div class="eyebrow">ISBN {BOOK.isbnFormatted}</div>
         </div>
 
-        <h1 class="mt-3 font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] md:text-5xl">
+        <h1 class="mt-4 text-[2.55rem] font-semibold leading-[1.03] tracking-[-0.035em] sm:text-[3.4rem] xl:text-[4rem]">
           {BOOK.title}
         </h1>
         <p class="mt-4 max-w-3xl font-head text-lg font-semibold leading-snug text-ink-soft md:text-xl">
@@ -71,7 +91,7 @@ const audience = [
           audit engine implements.
         </p>
 
-        <dl class="mt-8 flex flex-wrap gap-x-10 gap-y-3 border-t border-rail pt-5 font-text font-medium text-[12.5px] text-ink-mute">
+        <dl class="mt-8 flex flex-wrap gap-x-10 gap-y-3 border-t border-rail pt-5 font-mono text-[12px] text-ink-mute">
           <div><dt class="inline">Author </dt><dd class="inline text-ink">{BOOK.author}</dd></div>
           <div><dt class="inline">Pages </dt><dd class="inline text-ink">{BOOK.numberOfPages}</dd></div>
           <div><dt class="inline">Language </dt><dd class="inline text-ink">English</dd></div>
@@ -84,7 +104,7 @@ const audience = [
             target="_blank"
             rel="noopener"
             data-book-format="paperback"
-            class="inline-flex items-center gap-2 rounded-[6px] bg-pass-deep px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-ink"
+            class="inline-flex min-h-11 items-center gap-2 rounded-[9px] bg-pass-deep px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-pass"
           >
             Paperback on Amazon
           </a>
@@ -93,7 +113,7 @@ const audience = [
             target="_blank"
             rel="noopener"
             data-book-format="kindle"
-            class="inline-flex items-center gap-2 rounded-[6px] border border-rail bg-white px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink"
+            class="inline-flex min-h-11 items-center gap-2 rounded-[9px] bg-white px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_var(--color-rail)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-pass-deep)]"
           >
             Kindle edition
           </a>
@@ -105,18 +125,18 @@ const audience = [
         </p>
       </header>
 
-      <div class="space-y-14">
+      <div class="space-y-16 md:space-y-20">
 
         {/* The pipeline */}
-        <section>
-          <h2 class="mb-2 font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
+        <section data-reveal>
+          <h2 class="mb-2 text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">
             The pipeline the book is built around
           </h2>
           <p class="mb-6 max-w-2xl text-sm leading-relaxed text-ink-soft">
             Every chapter attaches to one stage of the path a page travels before it can be cited.
             Naming the stages is what makes GEO measurable instead of anecdotal.
           </p>
-          <ol class="grid grid-cols-1 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail md:grid-cols-2">
+          <ol class="grid grid-cols-1 gap-px overflow-hidden rounded-[14px] border border-rail bg-rail md:grid-cols-2">
             {pipeline.map((p, i) => (
               <li class="bg-white p-5">
                 <div class="flex items-baseline gap-3">
@@ -130,8 +150,8 @@ const audience = [
         </section>
 
         {/* What it covers */}
-        <section>
-          <h2 class="mb-6 font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">What it covers</h2>
+        <section data-reveal>
+          <h2 class="mb-6 text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">What it covers</h2>
           <ul class="grid gap-x-10 gap-y-0 md:grid-cols-2">
             {covers.map((c) => (
               <li class="border-t border-rail py-4 text-sm leading-relaxed text-ink-soft">{c}</li>
@@ -145,11 +165,11 @@ const audience = [
         </section>
 
         {/* Who it is for */}
-        <section>
-          <h2 class="mb-6 font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">Who it is for</h2>
+        <section data-reveal>
+          <h2 class="mb-6 text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">Who it is for</h2>
           <ul class="flex flex-wrap gap-2">
             {audience.map((a) => (
-              <li class="rounded-[6px] border border-rail bg-white px-3 py-1.5 font-text font-medium text-[12.5px] text-ink-soft">
+              <li class="rounded-full border border-rail bg-white px-3 py-1.5 font-mono text-[12px] text-ink-soft">
                 {a}
               </li>
             ))}
@@ -162,23 +182,40 @@ const audience = [
         </section>
 
         {/* Relation to the tool */}
-        <section class="rounded-[10px] border border-rail bg-white p-6 md:p-8">
-          <h2 class="font-head text-xl font-semibold tracking-[-0.02em]">Book and tool, same methodology</h2>
+        <section class="band-dark rounded-[14px] p-6 md:p-10" data-reveal>
+          <div class="eyebrow">Book · engine</div>
+          <h2 class="mt-3 text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">Book and tool, same methodology</h2>
           <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">
-            The book explains the reasoning; GEO Optimizer runs it. The scoring weights, the eight
-            signal categories, and the evidence classification described in print are the ones
-            implemented in the MIT-licensed engine — you can read the rules and disagree with them.
+            The book explains the reasoning; GEO Optimizer runs it. The eight-category rubric
+            described in print is still in the MIT-licensed engine (<code class="font-mono text-[13px]">--score-version 1</code>),
+            next to the nine-category v2 that is now the default — you can read the rules and disagree with them.
           </p>
           <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2">
-            <a href="/methodology/" class="text-sm font-medium text-pass-deep underline decoration-pass/40 underline-offset-4 hover:decoration-pass-deep">
+            <a href="/methodology/" class="text-sm font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">
               How the scoring works
             </a>
-            <a href="/research/" class="text-sm font-medium text-pass-deep underline decoration-pass/40 underline-offset-4 hover:decoration-pass-deep">
+            <a href="/research/" class="text-sm font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">
               The research behind it
             </a>
-            <a href="/" class="text-sm font-medium text-pass-deep underline decoration-pass/40 underline-offset-4 hover:decoration-pass-deep">
+            <a href="/" class="text-sm font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">
               Run a free audit
             </a>
+          </div>
+        </section>
+
+        {/* FAQ: stesse domande del FAQPage nello schema */}
+        <section aria-labelledby="book-faq-h" data-reveal>
+          <div class="eyebrow">FAQ</div>
+          <h2 id="book-faq-h" class="mt-3 text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">Questions about the book</h2>
+          <div class="panel mt-8 overflow-hidden">
+            <div class="grid gap-px bg-rail md:grid-cols-2">
+              {faqs.map((f) => (
+                <div class="bg-white p-6">
+                  <h3 class="text-base font-semibold text-ink">{f.q}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-soft">{f.a}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -240,6 +277,10 @@ const audience = [
             "url": `https://${BOOK.amazonHost}/dp/${BOOK.asinKindle}`
           }
         ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": faqs.map((f) => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } }))
       },
       {
         "@type": "BreadcrumbList",
