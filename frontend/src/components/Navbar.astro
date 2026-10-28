@@ -9,6 +9,8 @@ const version = `v${__ENGINE_VERSION__}`;
 type NavLink = { label: string; href: string; desc: string };
 type NavGroup = { id: string; label: string; links: NavLink[] };
 
+// Menu corti (5 voci): le landing per singolo motore, manuale, roadmap e manifesto
+// restano linkate da tutte le pagine tramite il footer.
 const navGroups: NavGroup[] = [
   {
     id: "tools",
@@ -17,9 +19,6 @@ const navGroups: NavGroup[] = [
       { label: "Audit", href: "/", desc: "Free GEO audit of any URL" },
       { label: "Compare", href: "/compare/", desc: "Score your site against another" },
       { label: "Analyze competitors", href: "/analyze-competitors/", desc: "Benchmark several domains at once" },
-      { label: "ChatGPT visibility", href: "/chatgpt-visibility-checker/", desc: "Check whether your site is ready for AI answers" },
-      { label: "Perplexity citation", href: "/perplexity-citation-checker/", desc: "See whether AI answers cite your domain" },
-      { label: "AI SEO audit", href: "/ai-seo-audit/", desc: "Free ChatGPT and Perplexity readiness audit" },
       { label: "AI citation checker", href: "/tools/ai-citation-checker/", desc: "Is your brand cited by AI? Free check" },
       { label: "llms.txt generator", href: "/tools/llms-txt-generator/", desc: "Free AI-ready llms.txt from your sitemap" },
     ],
@@ -30,13 +29,9 @@ const navGroups: NavGroup[] = [
     links: [
       { label: "Guides", href: "/guides/", desc: "Practical AI visibility guides" },
       { label: "Docs", href: "/docs/", desc: "GEO Optimizer technical reference" },
-      { label: "Best GEO tools", href: "/best-geo-tools/", desc: "How to choose a GEO tool" },
       { label: "Research", href: "/research/", desc: "Princeton KDD + AutoGEO" },
       { label: "Methodology", href: "/methodology/", desc: "How GEO scores are calculated" },
       { label: "State of GEO", href: "/state-of-geo/", desc: "Live benchmark of audited sites" },
-      { label: "GEO Readiness Manual", href: "/geo-readiness-manual/", desc: "160-page technical PDF guide" },
-      { label: "Roadmap", href: "/roadmap/", desc: "What's coming next" },
-      { label: "Manifesto", href: "/manifesto/", desc: "Why we built GeoReady" },
     ],
   },
   {
