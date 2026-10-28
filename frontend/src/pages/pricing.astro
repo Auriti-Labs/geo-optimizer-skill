@@ -264,6 +264,8 @@ const faqs = [
 ];
 
 const linkClass = 'text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep';
+// Prezzo dal dato dei piani, così il testo non diverge dalle card
+const planPrice = (id: string) => plans.find((p) => p.id === id)?.price;
 const sectionHeading = 'font-head text-2xl font-semibold tracking-[-0.03em] text-ink md:text-3xl';
 const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] font-medium text-ink-mute';
 ---
@@ -336,10 +338,11 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
   {/* Piani: tre pannelli, Agency evidenziato (conversione primaria: agenzie e consulenti) */}
   <section id="plans" aria-labelledby="plans-heading" class="scroll-mt-20 border-t border-rail bg-paper">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 id="plans-heading" class={sectionHeading}>Plans</h2>
-        <p class="eyebrow">founding price, locked while your subscription stays active</p>
-      </div>
+      <p class="eyebrow">founding price, locked while your subscription stays active</p>
+      <h2 id="plans-heading" class={`${sectionHeading} mt-2`}>Plans</h2>
+      <p class="mt-2 max-w-2xl text-sm leading-relaxed text-ink-soft">
+        The audit is free and needs no account. Pro is {planPrice('pro')}/month and Agency is {planPrice('agency')}/month at the founding price.
+      </p>
 
       <div class="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
         {plans.map((plan) => (
@@ -433,8 +436,8 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
             What's <em>automated</em>, what isn't
           </h2>
           <p class="mt-4 text-sm leading-relaxed text-ink-soft md:text-base">
-            Site audits and score monitoring run automatically on our servers (weekly on Pro, daily on
-            Agency). AI answer checks query Perplexity through its API. For ChatGPT and Google AI
+            Site audits and score monitoring are automatic: they run on our servers, weekly on Pro and
+            daily on Agency. AI answer checks query Perplexity through its API. For ChatGPT and Google AI
             answers, you paste the answer you see and GeoReady scores it the same way (brand mention,
             cited domains). We don't scrape those interfaces.
           </p>
@@ -549,10 +552,8 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
   {/* Tabella di confronto: colonna Agency evidenziata come la card */}
   <section class="border-t border-rail bg-paper" aria-labelledby="comparison-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16" data-reveal>
-      <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 id="comparison-heading" class={sectionHeading}>Feature comparison</h2>
-        <p class="eyebrow">source: plan entitlements · billed via Stripe</p>
-      </div>
+      <p class="eyebrow">source: plan entitlements · billed via Stripe</p>
+      <h2 id="comparison-heading" class={`${sectionHeading} mt-2`}>Feature comparison</h2>
       <p class="mt-2 text-sm text-ink-soft">
         Items marked "roadmap" are planned and not yet available. Everything else is live today.
       </p>
@@ -699,13 +700,11 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16" data-reveal>
       <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.5fr)]">
         <div>
-          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h2 id="after-checkout-heading" class={sectionHeading}>What happens after you pick a paid plan</h2>
-            <p class="eyebrow">checkout: Stripe</p>
-          </div>
+          <p class="eyebrow">checkout: Stripe</p>
+          <h2 id="after-checkout-heading" class={`${sectionHeading} mt-2`}>What happens after you pick a paid plan</h2>
           <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">
-            Self-serve plans activate through Stripe. The app then guides you to claim the report or
-            add the first monitored domain, with no sales contact step.
+            Self-serve plans activate through Stripe and there is no sales contact step. The app then
+            guides you to claim the report or add the first monitored domain.
           </p>
 
           <ol class="panel mt-6 divide-y divide-rail overflow-hidden">
@@ -753,7 +752,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
       <div>
         <h2 id="faq-heading" class={sectionHeading}>Frequently asked questions</h2>
         <p class="mt-3 text-sm leading-relaxed text-ink-soft">
-          Anything else: <a href="mailto:info@geoready.dev" class={linkClass}>info@geoready.dev</a>.
+          Billing, data and the free audit are covered here. Anything else: <a href="mailto:info@geoready.dev" class={linkClass}>info@geoready.dev</a>.
         </p>
       </div>
       <div class="panel divide-y divide-rail overflow-hidden">

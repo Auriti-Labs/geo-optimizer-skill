@@ -441,9 +441,11 @@ const avgPct = Math.max(0, Math.min(100, Number(BENCHMARK.average) || 0));
             <div class="h-full rounded-full bg-ink" style={`width:${avgPct}%`}></div>
           </div>
           <div class="mt-6">
-            <p class="max-w-[62ch] leading-relaxed text-ink-soft">
-              We measured the sites scored through GeoReady: the average is <strong class="font-semibold text-ink">{BENCHMARK.average} out of 100</strong>, the median {BENCHMARK.median}. A score in the fifties is ordinary, not alarming. Most sites leave a large share of their points unclaimed, in signals a tool can find mechanically.
-            </p>
+            <blockquote class="max-w-[62ch] border-l-2 border-rail pl-4">
+              <p class="leading-relaxed text-ink-soft">
+                We measured the sites scored through GeoReady: the average is <strong class="font-semibold text-ink">{BENCHMARK.average} out of 100</strong>, the median {BENCHMARK.median}. {BENCHMARK.llmsTxtAdoption} publish an llms.txt file and {BENCHMARK.schemaAdoption} carry JSON-LD schema. A score in the fifties is ordinary, not alarming. Most sites leave a large share of their points unclaimed, in signals a tool can find mechanically.
+              </p>
+            </blockquote>
           </div>
           <figcaption class="mt-4 font-mono text-[12px] leading-relaxed text-ink-mute">
             GET /api/public/benchmark · as of <time datetime={BENCHMARK.asOfIso}>{BENCHMARK.asOf}</time> · latest audit per domain, self-selected sample · <a href="/state-of-geo/" class="underline underline-offset-2 hover:text-ink">live benchmark</a>
