@@ -43,11 +43,11 @@ const faqs = [
 ---
 
 <Shell title={title} description={description} canonical={canonical}>
-  <article class="mx-auto max-w-3xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-extrabold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-extrabold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed [&_a]:text-pass-deep [&_a]:underline [&_a]:decoration-rail [&_a]:underline-offset-4 [&_a:hover]:decoration-pass-deep">
+  <article class="mx-auto max-w-3xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed [&_a]:text-pass-deep [&_a]:underline [&_a]:decoration-rail [&_a]:underline-offset-4 [&_a:hover]:decoration-pass-deep">
 
     {/* Header — answer-first */}
     <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-extrabold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+      <h1 class="font-head text-3xl font-semibold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
         GEO Monitoring Tool: Catch AI-Visibility Regressions Before They Cost Citations
       </h1>
 
@@ -119,17 +119,17 @@ const faqs = [
         no card required, available any time — it just doesn't run again on its own. Ongoing monitoring is what the paid
         plans add.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Plan</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Price</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Domains monitored</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Cadence</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Score history</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Regression alerts</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Also included</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Plan</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Price</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Domains monitored</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Cadence</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Score history</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Regression alerts</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Also included</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -229,8 +229,8 @@ const faqs = [
     </section>
 
     {/* CTA */}
-    <section class="rounded-[4px] border border-rail bg-white p-6">
-      <h2 class="font-head text-lg font-extrabold tracking-[-0.02em] text-ink">Start monitoring</h2>
+    <section class="rounded-[10px] border border-rail bg-white p-6">
+      <h2 class="font-head text-lg font-semibold tracking-[-0.02em] text-ink">Start monitoring</h2>
       <p class="mt-2 text-sm leading-relaxed text-ink-soft">
         Run the free audit first — no account, no card. When you're ready for it to keep running on its own, add your
         domain to weekly monitoring on Pro.
@@ -238,13 +238,13 @@ const faqs = [
       <div class="mt-4 flex flex-wrap gap-3">
         <a
           href="/"
-          class="inline-flex items-center gap-2 rounded-[4px] bg-pass-deep px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white no-underline transition-colors hover:bg-pass"
+          class="inline-flex items-center gap-2 rounded-[10px] bg-pass-deep px-6 py-2.5 font-text text-[13px] font-semibold text-white no-underline transition-colors hover:bg-pass"
         >
           Start free audit
         </a>
         <a
           href="/pricing/"
-          class="inline-flex items-center gap-2 rounded-[4px] border border-rail bg-white px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink no-underline transition-colors hover:bg-paper"
+          class="inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-6 py-2.5 font-text text-[13px] font-semibold text-ink no-underline transition-colors hover:bg-paper"
         >
           Start with Pro
         </a>

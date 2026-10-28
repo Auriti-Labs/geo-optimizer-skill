@@ -20,9 +20,9 @@ function CompactCompetitorCard({ report, index }: { report: AuditReport; index: 
   return (
     // Solid-vs-Dashed: every card in this batch is labelled "Competitor N",
     // so all of them are reference data and drawn dashed.
-    <div className="rounded-[4px] border border-dashed border-ink-mute/60 bg-white p-5">
+    <div className="rounded-[10px] border border-dashed border-ink-mute/60 bg-white p-5">
       <div className="mb-4 border-b border-rail pb-3">
-        <span className="rounded-[2px] border border-dashed border-ink-mute/60 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">
+        <span className="rounded-[6px] border border-dashed border-ink-mute/60 px-1.5 py-0.5 font-text text-[12px] font-semibold text-ink-mute">
           Competitor {index + 1}
         </span>
         <p className="mt-2 truncate text-sm font-medium text-ink">{report.url}</p>
@@ -39,7 +39,7 @@ function CompactCompetitorCard({ report, index }: { report: AuditReport; index: 
         </div>
         <div className="flex items-center justify-between">
           <span className="text-ink-mute">Grade</span>
-          <span className="font-mono font-semibold uppercase text-ink">{report.grade}</span>
+          <span className="font-text font-semibold text-ink">{report.grade}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-ink-mute">Categories active</span>
@@ -58,7 +58,7 @@ function CompactCompetitorCard({ report, index }: { report: AuditReport; index: 
       </div>
 
       <div className="mt-4 border-t border-rail pt-3">
-        <h3 className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Top issues</h3>
+        <h3 className="mb-2 font-text text-[12px] font-semibold text-ink-mute">Top issues</h3>
         <ul className="space-y-1.5">
           {report.recommendations.slice(0, 3).map((rec) => (
             <li key={rec.id} className="text-xs leading-snug text-ink-soft">
@@ -149,9 +149,9 @@ export default function AnalyzeCompetitorsContainer() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div
           role="alert"
-          className="flex items-start gap-3 rounded-[4px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail"
+          className="flex items-start gap-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail"
         >
-          <span aria-hidden="true" className="mt-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em]">
+          <span aria-hidden="true" className="mt-0.5 font-text text-[12.5px] font-semibold">
             err
           </span>
           <div>
@@ -161,7 +161,7 @@ export default function AnalyzeCompetitorsContainer() {
         </div>
         <button
           onClick={() => setState({ status: 'idle' })}
-          className="mt-4 inline-flex items-center gap-2 rounded-[4px] border border-rail bg-white px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+          className="mt-4 inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-4 py-2 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
         >
           Back to form
         </button>
@@ -174,8 +174,8 @@ export default function AnalyzeCompetitorsContainer() {
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 md:py-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <h2 className="font-head text-lg font-extrabold tracking-[-0.01em] text-ink">Competitor analysis</h2>
-            <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">POST /api/public/audits × {state.reports.length}</span>
+            <h2 className="font-head text-lg font-semibold tracking-[-0.01em] text-ink">Competitor analysis</h2>
+            <span className="font-text font-medium text-[12.5px] text-ink-mute">POST /api/public/audits × {state.reports.length}</span>
           </div>
           <button
             onClick={() => {
@@ -183,7 +183,7 @@ export default function AnalyzeCompetitorsContainer() {
               u.search = '';
               window.location.href = u.toString();
             }}
-            className="inline-flex items-center gap-2 rounded-[4px] border border-rail bg-white px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-pass-wash"
+            className="inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-3 py-1.5 font-text text-[12.5px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             New analysis
           </button>
@@ -200,10 +200,10 @@ export default function AnalyzeCompetitorsContainer() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6">
-      <div className="overflow-hidden rounded-[4px] border border-rail bg-white">
+      <div className="overflow-hidden rounded-[10px] border border-rail bg-white">
         <div className="flex items-center justify-between gap-3 border-b border-rail px-6 py-2.5 md:px-8">
-          <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">POST /api/public/audits · per domain</span>
-          <span className="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">idle</span>
+          <span className="font-text text-[12.5px] font-semibold text-ink-mute">POST /api/public/audits · per domain</span>
+          <span className="rounded-[6px] border border-rail px-1.5 py-0.5 font-text font-medium text-[12px] text-ink-mute">idle</span>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6 p-6 md:p-8">
           <div>
@@ -215,13 +215,13 @@ export default function AnalyzeCompetitorsContainer() {
               placeholder="https://competitor1.com, https://competitor2.com"
               value={urlsInput}
               onChange={(e) => setUrlsInput(e.target.value)}
-              className="w-full rounded-[4px] border border-ink/25 bg-white px-4 py-3 font-mono text-[15px] text-ink caret-pass-deep transition-shadow placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+              className="w-full rounded-[10px] border border-ink/25 bg-white px-4 py-3 font-mono text-[15px] text-ink caret-pass-deep transition-shadow placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
             />
             <p className="mt-1.5 text-xs text-ink-mute">Enter one or more URLs separated by commas.</p>
           </div>
           <button
             type="submit"
-            className="rounded-[4px] bg-pass-deep px-7 py-3.5 font-mono text-[13px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+            className="rounded-[10px] bg-pass-deep px-7 py-3.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
           >
             Analyze
           </button>

@@ -66,14 +66,7 @@ const linkAttrs = (l: FooterLink) => {
       {/* Brand + tagline */}
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2.5">
-          <svg width="22" height="22" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="48" height="48" rx="4" fill="#0D9488"/>
-            <path d="M11.74 13.71 A16 16 0 1 1 11.74 34.29" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-            <path d="M8 24 C12 14 18 34 24 24 C30 14 36 34 40 24" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-opacity="0.72"/>
-          </svg>
-          <span class="font-head text-sm font-extrabold">
-            <span class="text-pass-deep">Geo</span><span class="text-ink">Ready</span>
-          </span>
+          <img src="/brand/geoready-lockup-light.svg" width="89" height="22" alt="GeoReady" decoding="async">
           <span class="font-mono text-[10px] text-ink-mute">v{__ENGINE_VERSION__}</span>
         </div>
         <p class="max-w-[220px] text-xs leading-relaxed text-ink-mute">
@@ -85,7 +78,7 @@ const linkAttrs = (l: FooterLink) => {
       <div class="grid grid-cols-2 gap-8 sm:grid-cols-3">
         {columns.map((col) => (
           <nav aria-label={`Footer – ${col.heading}`}>
-            <p class="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">{col.heading}</p>
+            <p class="mb-3 font-text text-[12.5px] font-semibold text-ink-mute">{col.heading}</p>
             <ul class="space-y-2.5">
               {col.links.map((l) => (
                 <li><a href={l.href} class="text-[13px] leading-relaxed text-ink-soft transition-colors hover:text-ink" {...linkAttrs(l)}>{l.label}</a></li>
@@ -96,10 +89,10 @@ const linkAttrs = (l: FooterLink) => {
       </div>
 
       {/* Book card — risalto a sé, asset premium a conversione */}
-      <div class="flex flex-col justify-between rounded-[4px] border border-rail bg-white p-5">
+      <div class="flex flex-col justify-between rounded-[10px] border border-rail bg-white p-5">
         <div>
-          <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-pass-deep">The Book</p>
-          <p class="mt-2 font-head text-[17px] font-extrabold leading-tight tracking-[-0.02em] text-ink">
+          <p class="font-text font-medium text-[12px] text-pass-deep">The Book</p>
+          <p class="mt-2 font-head text-[17px] font-semibold leading-tight tracking-[-0.02em] text-ink">
             {BOOK.title}
           </p>
           <p class="mt-1.5 text-xs leading-relaxed text-ink-soft">
@@ -111,7 +104,7 @@ const linkAttrs = (l: FooterLink) => {
         <a
           href="/book/"
           data-cta="footer_book"
-          class="mt-4 inline-flex items-center justify-center gap-1.5 rounded-[4px] bg-pass-deep px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+          class="mt-4 inline-flex items-center justify-center gap-1.5 rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[12.5px] font-semibold text-white transition-colors hover:bg-pass"
         >
           <span>Get the book</span>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

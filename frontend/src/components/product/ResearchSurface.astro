@@ -23,10 +23,10 @@ const methods = [
 const max = 115;
 ---
 
-<div class={`overflow-hidden rounded-[4px] border border-rail bg-white text-ink ${className}`}>
+<div class={`overflow-hidden rounded-[10px] border border-rail bg-white text-ink ${className}`}>
   <div class="flex items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-    <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Citation uplift by method</span>
-    <span class="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">KDD 2024</span>
+    <span class="font-text text-[12.5px] font-semibold text-ink-mute">Citation uplift by method</span>
+    <span class="rounded-[6px] border border-rail px-1.5 py-0.5 font-text text-[12px] font-semibold text-ink-mute">KDD 2024</span>
   </div>
 
   <div class="px-4 py-4">
@@ -37,7 +37,7 @@ const max = 115;
             <span class="text-sm text-ink">{m.label}</span>
             <span class="font-mono text-[12px] tabular-nums text-pass-deep">+{m.uplift}%</span>
           </div>
-          <div class="mt-1.5 h-2.5 rounded-[2px] border border-dashed border-ink-mute/60" aria-hidden="true">
+          <div class="mt-1.5 h-2.5 rounded-[6px] border border-dashed border-ink-mute/60" aria-hidden="true">
             <div class="h-full bg-ink-mute/25" style={`width:${(m.uplift / max) * 100}%`}></div>
           </div>
         </div>
@@ -45,6 +45,6 @@ const max = 115;
     </div>
 
     <p class="mt-4 text-xs leading-relaxed text-ink-mute">Measured visibility gain in AI-generated answers — the signals GEO Optimizer scores.</p>
-    <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">source: arXiv 2311.09735 · KDD 2024</p>
+    <p class="mt-2 font-text font-medium text-[12px] text-ink-mute">source: arXiv 2311.09735 · KDD 2024</p>
   </div>
 </div>

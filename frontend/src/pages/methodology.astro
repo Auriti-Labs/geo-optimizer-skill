@@ -80,10 +80,10 @@ const faqs = [
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-20">
       <header>
         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <h1 class="max-w-3xl font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+          <h1 class="max-w-3xl font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
             How GEO Optimizer scores a site — and why the weights are public.
           </h1>
-          <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">GEO Optimizer · Methodology</p>
+          <p class="font-text font-medium text-[12.5px] text-ink-mute">GEO Optimizer · Methodology</p>
         </div>
 
         <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
@@ -92,9 +92,9 @@ const faqs = [
           constants in an open-source, MIT-licensed repository, so any score can be read,
           reproduced, and challenged on the record.
         </p>
-        <p class="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Last updated: October 2026</p>
+        <p class="mt-2 font-text font-medium text-[12.5px] text-ink-mute">Last updated: October 2026</p>
 
-        <div class="mt-8 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-3">
+        <div class="mt-8 grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-3">
           {[
             ['100 points', 'Distributed across 9 signal categories.'],
             ['Open weights', 'Constants in the MIT-licensed repo.'],
@@ -121,7 +121,7 @@ const faqs = [
   {/* How scoring works */}
   <section class="border-t border-rail bg-white">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">How the score is built</h2>
+      <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">How the score is built</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         A GEO audit produces a single number out of 100. That number is the sum of nine
         category scores, each with a fixed weight. The weights reflect how much a category
@@ -143,8 +143,8 @@ const faqs = [
   <section class="border-t border-rail bg-paper">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">The 9 categories and their exact weights</h2>
-        <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">models/config.py · CATEGORY_MAX_V2 · Σ = 100 pts</p>
+        <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">The 9 categories and their exact weights</h2>
+        <p class="font-text font-medium text-[12.5px] text-ink-mute">models/config.py · CATEGORY_MAX_V2 · Σ = 100 pts</p>
       </div>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Every site is scored on the same nine categories, weighted to a total of 100 points.
@@ -156,13 +156,13 @@ const faqs = [
         <a href="/docs/scoring-rubric/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">scoring rubric</a>
         lists every check, and the v1 weights stay available with <code class="font-mono text-[13px]">--score-version 1</code>.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
         <table class="w-full min-w-[640px] text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Category</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Weight</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">What it measures</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Category</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Weight</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it measures</th>
             </tr>
           </thead>
           <tbody>
@@ -196,21 +196,21 @@ const faqs = [
   <section class="border-t border-rail bg-white">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">How to read the score bands</h2>
-        <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">models/config.py · SCORE_BANDS</p>
+        <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">How to read the score bands</h2>
+        <p class="font-text font-medium text-[12.5px] text-ink-mute">models/config.py · SCORE_BANDS</p>
       </div>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         The total score falls into one of four bands. The band is a summary, not a verdict: it
         tells you roughly how much structural work remains, but the category breakdown is where
         the actual to-do list lives.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
         <table class="w-full min-w-[560px] text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Range</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Band</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">What it means</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Range</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Band</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it means</th>
             </tr>
           </thead>
           <tbody>
@@ -243,8 +243,8 @@ const faqs = [
   <section class="border-t border-rail bg-paper">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">The citability layer: 47 content checks</h2>
-        <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">arXiv:2311.09735 · KDD 2024</p>
+        <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">The citability layer: 47 content checks</h2>
+        <p class="font-text font-medium text-[12.5px] text-ink-mute">arXiv:2311.09735 · KDD 2024</p>
       </div>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Beyond the structural score, GEO Optimizer runs 47 content checks that estimate how
@@ -253,13 +253,13 @@ const faqs = [
         direct quotations and concrete statistics — both measured to raise citation rates in the
         Princeton study.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
         <table class="w-full min-w-[560px] text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Signal</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Citation lift</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Why it works</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Signal</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Citation lift</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Why it works</th>
             </tr>
           </thead>
           <tbody>
@@ -305,7 +305,7 @@ const faqs = [
   {/* Why we publish the weights */}
   <section class="border-t border-rail bg-white">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="why-we-publish-the-weights" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">Why we publish the weights</h2>
+      <h2 id="why-we-publish-the-weights" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Why we publish the weights</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         A visibility score is only useful if you can interrogate it. Publishing the weights as
         open-source constants does three things. It makes the score reproducible — you can run
@@ -330,7 +330,7 @@ const faqs = [
       one log well (One Dark Material Rule). */}
   <section class="border-t border-rail bg-paper">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">Score stability, measured</h2>
+      <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Score stability, measured</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         "Reproducible" is a claim you can check, not a description we'll ask you to trust. We
         measured it against real usage of the hosted audit rather than a synthetic test: every
@@ -338,17 +338,17 @@ const faqs = [
         isolates measurement noise from the site actually changing), across every domain audited
         on GeoReady.
       </p>
-      <div class="mt-6 max-w-3xl overflow-hidden rounded-[4px] bg-well text-well-ink">
+      <div class="mt-6 max-w-3xl overflow-hidden rounded-[10px] bg-well text-well-ink">
         <div class="flex items-center justify-between gap-3 border-b border-well-ink/15 px-6 py-3">
-          <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-well-mute">Audit pairs ≤48h apart · measured 2026-08-30</p>
+          <p class="font-text text-[12.5px] font-semibold text-well-mute">Audit pairs ≤48h apart · measured 2026-08-30</p>
           <span class="font-mono text-[11px] tracking-[0.08em] text-pass-light">exit 0</span>
         </div>
         <div class="overflow-x-auto px-2 py-2">
           <table class="w-full text-left text-sm">
             <thead>
               <tr class="border-b border-well-ink/15">
-                <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-well-mute">Metric</th>
-                <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-well-mute">Value</th>
+                <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-well-mute">Metric</th>
+                <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-well-mute">Value</th>
               </tr>
             </thead>
             <tbody>
@@ -409,7 +409,7 @@ const faqs = [
   {/* FAQ */}
   <section class="border-t border-rail bg-white">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">Methodology FAQ</h2>
+      <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Methodology FAQ</h2>
       <div class="mt-8 max-w-3xl">
         {faqs.map((faq) => (
           <div class="border-t border-rail py-5 first:border-t-0 first:pt-0">

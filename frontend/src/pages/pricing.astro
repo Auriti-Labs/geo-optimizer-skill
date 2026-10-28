@@ -278,7 +278,7 @@ const heroCadenceRows = [
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-20">
       <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.52fr)] lg:gap-14">
         <div>
-          <h1 class="max-w-3xl font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+          <h1 class="max-w-3xl font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
             Free GEO audit, forever. Pay only when you need monitoring.
           </h1>
           <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft">
@@ -291,7 +291,7 @@ const heroCadenceRows = [
             <a
               href="/"
               data-cta="pricing_hero_free_audit"
-              class="inline-flex items-center justify-center gap-2 rounded-[4px] bg-pass-deep px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+              class="inline-flex items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
             >
               Start free audit
               <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
@@ -321,10 +321,10 @@ const heroCadenceRows = [
         </div>
 
         {/* Monitoring cadence — the plan facts as a ledger, not a mockup */}
-        <aside class="rounded-[4px] border border-rail bg-white" aria-label="Monitoring cadence by plan">
+        <aside class="rounded-[10px] border border-rail bg-white" aria-label="Monitoring cadence by plan">
           <div class="flex items-center justify-between border-b border-rail px-5 py-2.5">
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">monitoring cadence</span>
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-pass-deep">per plan</span>
+            <span class="font-text font-medium text-[12.5px] text-ink-mute">monitoring cadence</span>
+            <span class="font-text font-medium text-[12.5px] text-pass-deep">per plan</span>
           </div>
           <ul class="divide-y divide-rail">
             {heroCadenceRows.map((row) => (
@@ -337,12 +337,12 @@ const heroCadenceRows = [
             ))}
           </ul>
           <div class="border-t border-rail px-5 py-2.5">
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">billing: Stripe · cancel anytime</span>
+            <span class="font-text font-medium text-[12.5px] text-ink-mute">billing: Stripe · cancel anytime</span>
           </div>
         </aside>
       </div>
 
-      <div class="mt-12 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail md:grid-cols-3">
+      <div class="mt-12 grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail md:grid-cols-3">
         {[
           ['Free', 'Audit once, learn what to fix.'],
           ['Pro', 'Track up to 10 domains weekly.'],
@@ -360,7 +360,7 @@ const heroCadenceRows = [
   {/* Credibility row — verifiable signals only (open-source, research-backed, coverage) */}
   <section aria-label="What the audit is built on" class="border-t border-rail bg-white">
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-      <ul class="grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-4">
+      <ul class="grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-4">
         {[
           ['Open source, MIT', 'Scoring weights are public and auditable on GitHub.', 'github.com/Auriti-Labs'],
           ['Research-informed', '9 of the 47 content checks come from the methods tested in Princeton KDD 2024. The weights are a published starting point.', 'KDD 2024 · arXiv:2311.09735'],
@@ -370,7 +370,7 @@ const heroCadenceRows = [
           <li class="bg-paper p-5">
             <p class="text-sm font-semibold text-ink">{label}</p>
             <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">{text}</p>
-            <p class="mt-3 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">{source}</p>
+            <p class="mt-3 font-text font-medium text-[12px] text-ink-mute">{source}</p>
           </li>
         ))}
       </ul>
@@ -382,18 +382,18 @@ const heroCadenceRows = [
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <h2 id="plans-heading" class="sr-only">Plans</h2>
 
-      <p class="mb-6 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
+      <p class="mb-6 font-text font-medium text-[12.5px] text-ink-mute">
         Founding price for early members, locked for life while your subscription stays active.
       </p>
 
       {/* Self-serve row */}
       <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
         {selfServePlans.map((plan) => (
-          <div class={`flex flex-col rounded-[4px] border ${plan.recommended ? 'border-pass/50 bg-pass-wash/60' : 'border-rail bg-white'}`}>
+          <div class={`flex flex-col rounded-[10px] border ${plan.recommended ? 'border-pass/50 bg-pass-wash/60' : 'border-rail bg-white'}`}>
             <div class={`flex items-center justify-between border-b px-5 py-2.5 ${plan.recommended ? 'border-pass/30' : 'border-rail'}`}>
-              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{plan.cadence}</span>
+              <span class="font-text font-medium text-[12.5px] text-ink-mute">{plan.cadence}</span>
               {plan.recommended && (
-                <span class="rounded-[2px] bg-pass-deep px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-white">
+                <span class="rounded-[6px] bg-pass-deep px-1.5 py-0.5 font-text text-[12px] font-semibold text-white">
                   Recommended
                 </span>
               )}
@@ -402,12 +402,12 @@ const heroCadenceRows = [
             <div class="flex flex-1 flex-col p-5">
               <div class="mb-3 flex items-center justify-between">
                 <span class="text-sm font-semibold text-ink">{plan.name}</span>
-                <span class={`rounded-[2px] px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] ${plan.statusStyle}`}>
+                <span class={`rounded-[6px] px-2 py-0.5 font-text font-medium text-[12px] ${plan.statusStyle}`}>
                   {plan.status}
                 </span>
               </div>
               <div class="flex items-baseline gap-1">
-                <span class="font-head text-3xl font-extrabold tracking-[-0.02em] text-ink">{plan.price}</span>
+                <span class="font-head text-3xl font-semibold tracking-[-0.02em] text-ink">{plan.price}</span>
                 {plan.period && <span class="font-mono text-xs text-ink-mute">{plan.period}</span>}
               </div>
               <p class="mt-3 text-sm leading-relaxed text-ink-soft">{plan.description}</p>
@@ -431,7 +431,7 @@ const heroCadenceRows = [
                 data-plan-period={plan.period}
                 data-plan-currency="USD"
                 data-cta-location="pricing_page"
-                class={`block rounded-[4px] px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] transition-colors ${plan.ctaStyle}`}
+                class={`block rounded-[10px] px-4 py-2.5 text-center font-text text-[13px] font-semibold transition-colors ${plan.ctaStyle}`}
               >
                 {plan.cta}
               </a>
@@ -443,19 +443,19 @@ const heroCadenceRows = [
       {/* Scale row */}
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         {scalePlans.map((plan) => (
-          <div class="flex flex-col rounded-[4px] border border-rail bg-white">
+          <div class="flex flex-col rounded-[10px] border border-rail bg-white">
             <div class="flex items-center justify-between border-b border-rail px-5 py-2.5">
-              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{plan.cadence}</span>
+              <span class="font-text font-medium text-[12.5px] text-ink-mute">{plan.cadence}</span>
             </div>
             <div class="flex flex-1 flex-col p-5">
               <div class="mb-3 flex items-center justify-between">
                 <span class="text-sm font-semibold text-ink">{plan.name}</span>
-                <span class={`rounded-[2px] px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] ${plan.statusStyle}`}>
+                <span class={`rounded-[6px] px-2 py-0.5 font-text font-medium text-[12px] ${plan.statusStyle}`}>
                   {plan.status}
                 </span>
               </div>
               <div class="flex items-baseline gap-1">
-                <span class="font-head text-3xl font-extrabold tracking-[-0.02em] text-ink">{plan.price}</span>
+                <span class="font-head text-3xl font-semibold tracking-[-0.02em] text-ink">{plan.price}</span>
                 {plan.period && <span class="font-mono text-xs text-ink-mute">{plan.period}</span>}
               </div>
               <p class="mt-3 text-sm leading-relaxed text-ink-soft">{plan.description}</p>
@@ -478,7 +478,7 @@ const heroCadenceRows = [
                 <a
                   href={plan.ctaHref}
                   data-cta="pricing_enterprise_contact_sales"
-                  class="block rounded-[4px] border border-rail bg-white px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+                  class="block rounded-[10px] border border-rail bg-white px-4 py-2.5 text-center font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
                 >
                   {plan.cta}
                 </a>
@@ -491,7 +491,7 @@ const heroCadenceRows = [
                   data-plan-period={plan.period}
                   data-plan-currency="USD"
                   data-cta-location="pricing_page"
-                  class="block rounded-[4px] border border-rail bg-white px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+                  class="block rounded-[10px] border border-rail bg-white px-4 py-2.5 text-center font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
                 >
                   {plan.cta}
                 </a>
@@ -509,20 +509,20 @@ const heroCadenceRows = [
       <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.5fr)]">
         <div>
           <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h2 id="after-checkout-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
+            <h2 id="after-checkout-heading" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
               What happens after you pick a paid plan
             </h2>
-            <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">checkout: Stripe</p>
+            <p class="font-text font-medium text-[12.5px] text-ink-mute">checkout: Stripe</p>
           </div>
           <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">
             Self-serve plans activate through Stripe. The app then guides you to claim the report
             or add the first monitored domain, with no sales contact step.
           </p>
 
-          <ol class="mt-6 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2">
+          <ol class="mt-6 grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2">
             {afterCheckoutSteps.map((item) => (
               <li class="bg-paper p-5">
-                <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-pass-deep">{item.step}</p>
+                <p class="font-text text-[12.5px] font-semibold text-pass-deep">{item.step}</p>
                 <h3 class="mt-2 text-sm font-semibold text-ink">{item.title}</h3>
                 <p class="mt-1 text-sm leading-relaxed text-ink-soft">{item.desc}</p>
               </li>
@@ -530,9 +530,9 @@ const heroCadenceRows = [
           </ol>
         </div>
 
-        <aside class="rounded-[4px] border border-rail bg-paper" aria-label="Buyer checks">
+        <aside class="rounded-[10px] border border-rail bg-paper" aria-label="Buyer checks">
           <div class="border-b border-rail px-5 py-2.5">
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">buyer checks</span>
+            <span class="font-text font-medium text-[12.5px] text-ink-mute">buyer checks</span>
           </div>
           <ul class="divide-y divide-rail">
             {trustAssurances.map(([label, text]) => (
@@ -546,7 +546,7 @@ const heroCadenceRows = [
             <a
               href="/report/demo/"
               data-cta="pricing_after_checkout_demo_report"
-              class="inline-flex rounded-[4px] border border-rail bg-white px-4 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+              class="inline-flex rounded-[10px] border border-rail bg-white px-4 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               View a demo report
             </a>
@@ -560,7 +560,7 @@ const heroCadenceRows = [
   <section class="border-t border-rail bg-paper" aria-labelledby="plan-chooser-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="max-w-3xl">
-        <h2 id="plan-chooser-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
+        <h2 id="plan-chooser-heading" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
           Which GeoReady plan should you choose?
         </h2>
         <p class="mt-3 text-sm leading-relaxed text-ink-soft">
@@ -571,13 +571,13 @@ const heroCadenceRows = [
       </div>
 
       <div class="mt-6 overflow-x-auto">
-        <table class="min-w-full border-collapse overflow-hidden rounded-[4px] border border-rail bg-white text-left text-sm">
+        <table class="min-w-full border-collapse overflow-hidden rounded-[10px] border border-rail bg-white text-left text-sm">
           <thead class="bg-paper">
             <tr>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">If your next job is...</th>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Choose</th>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Why</th>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Action</th>
+              <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">If your next job is...</th>
+              <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Choose</th>
+              <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Why</th>
+              <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -602,7 +602,7 @@ const heroCadenceRows = [
                       data-plan-period={row.period}
                       data-plan-currency="USD"
                       data-cta-location={row.tracking}
-                      class="inline-flex whitespace-nowrap rounded-[4px] border border-rail bg-white px-3 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-pass-wash"
+                      class="inline-flex whitespace-nowrap rounded-[10px] border border-rail bg-white px-3 py-2 font-text text-[12.5px] font-semibold text-ink transition-colors hover:bg-pass-wash"
                     >
                       {row.cta}
                     </a>
@@ -610,7 +610,7 @@ const heroCadenceRows = [
                     <a
                       href={row.href}
                       data-cta={row.tracking}
-                      class="inline-flex whitespace-nowrap rounded-[4px] border border-rail bg-white px-3 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-pass-wash"
+                      class="inline-flex whitespace-nowrap rounded-[10px] border border-rail bg-white px-3 py-2 font-text text-[12.5px] font-semibold text-ink transition-colors hover:bg-pass-wash"
                     >
                       {row.cta}
                     </a>
@@ -627,17 +627,17 @@ const heroCadenceRows = [
   {/* Free vs Pro */}
   <section class="border-t border-rail bg-white" aria-labelledby="free-vs-pro-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="free-vs-pro-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
+      <h2 id="free-vs-pro-heading" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         Free vs Pro: what changes
       </h2>
       <p class="mb-8 mt-2 max-w-2xl text-sm text-ink-soft">
         The free audit is a single-URL, point-in-time snapshot. Pro turns it into an ongoing signal.
       </p>
       <div class="grid gap-6 md:grid-cols-2">
-        <div class="rounded-[4px] border border-rail bg-paper">
+        <div class="rounded-[10px] border border-rail bg-paper">
           <div class="flex items-center justify-between border-b border-rail px-5 py-2.5">
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Free</span>
-            <span class="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">available now</span>
+            <span class="font-text font-medium text-[12.5px] text-ink-mute">Free</span>
+            <span class="rounded-[6px] border border-rail px-1.5 py-0.5 font-text font-medium text-[12px] text-ink-mute">available now</span>
           </div>
           <ul class="space-y-3 p-5 text-sm text-ink-soft">
             {[
@@ -656,10 +656,10 @@ const heroCadenceRows = [
             ))}
           </ul>
         </div>
-        <div class="rounded-[4px] border border-pass/50 bg-pass-wash/60">
+        <div class="rounded-[10px] border border-pass/50 bg-pass-wash/60">
           <div class="flex items-center justify-between border-b border-pass/30 px-5 py-2.5">
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Pro</span>
-            <span class="rounded-[2px] bg-pass-wash px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-pass-deep">founding price</span>
+            <span class="font-text font-medium text-[12.5px] text-ink-mute">Pro</span>
+            <span class="rounded-[6px] bg-pass-wash px-1.5 py-0.5 font-text font-medium text-[12px] text-pass-deep">founding price</span>
           </div>
           {/* Diff notation: '+' marks what Pro adds on top of the Free baseline. */}
           <ul class="space-y-3 p-5 text-sm text-ink-soft">
@@ -684,17 +684,17 @@ const heroCadenceRows = [
   <section class="border-t border-rail bg-paper" aria-labelledby="product-shots-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 id="product-shots-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
+        <h2 id="product-shots-heading" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
           This is what you get
         </h2>
-        <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">captured: 2026-07-15 · app.geoready.dev</p>
+        <p class="font-text font-medium text-[12.5px] text-ink-mute">captured: 2026-07-15 · app.geoready.dev</p>
       </div>
       <p class="mb-8 mt-2 max-w-2xl text-sm text-ink-soft">
         Real screenshots from the live platform: the same dashboard, monitoring and alerts you get on
         every paid plan. No mockups.
       </p>
       <div class="grid gap-6">
-        <figure class="overflow-hidden rounded-[4px] border border-rail bg-white">
+        <figure class="overflow-hidden rounded-[10px] border border-rail bg-white">
           <img
             src="/assets/screenshots/app-dashboard.webp"
             alt="GeoReady dashboard: GEO score 88 with score trend across 30 saved audits, signals passing 16 of 18, citations and coverage tiles"
@@ -709,7 +709,7 @@ const heroCadenceRows = [
           </figcaption>
         </figure>
         <div class="grid gap-6 md:grid-cols-2">
-          <figure class="overflow-hidden rounded-[4px] border border-rail bg-white">
+          <figure class="overflow-hidden rounded-[10px] border border-rail bg-white">
             <img
               src="/assets/screenshots/app-domains-monitoring.webp"
               alt="GeoReady domains page: tracked domain with automatic monitoring enabled, last audit date and score history actions"
@@ -723,7 +723,7 @@ const heroCadenceRows = [
               Domain monitoring: audits re-run automatically, score history per domain.
             </figcaption>
           </figure>
-          <figure class="overflow-hidden rounded-[4px] border border-rail bg-white">
+          <figure class="overflow-hidden rounded-[10px] border border-rail bg-white">
             <img
               src="/assets/screenshots/app-regression-alerts.webp"
               alt="GeoReady regression alerts page: monitoring active, alerts trigger on score drops of 5 or more points, llms.txt changes and AI bot blocking"
@@ -745,13 +745,13 @@ const heroCadenceRows = [
   {/* Why not a traditional SEO tool? */}
   <section class="border-t border-rail bg-white" aria-labelledby="geo-vs-seo-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="geo-vs-seo-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
+      <h2 id="geo-vs-seo-heading" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         Why not a traditional SEO tool?
       </h2>
       <p class="mb-8 mt-2 max-w-2xl text-sm text-ink-soft">
         SEO tools measure ranking signals. GeoReady measures citation signals, which is a different question.
       </p>
-      <div class="grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
         <div class="bg-paper p-5">
           <p class="mb-2 text-sm font-semibold text-ink">Ranking vs. being cited</p>
           <p class="text-sm leading-relaxed text-ink-soft">
@@ -801,20 +801,20 @@ const heroCadenceRows = [
   {/* Feature comparison table */}
   <section class="border-t border-rail bg-paper" aria-labelledby="comparison-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="comparison-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
+      <h2 id="comparison-heading" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         Feature comparison
       </h2>
       <p class="mb-8 mt-2 text-sm text-ink-soft">
         Items marked "roadmap" are planned and not yet available. Everything else is live today.
       </p>
       <div class="overflow-x-auto">
-        <table class="w-full min-w-[480px] border-collapse overflow-hidden rounded-[4px] border border-rail bg-white text-sm">
+        <table class="w-full min-w-[480px] border-collapse overflow-hidden rounded-[10px] border border-rail bg-white text-sm">
           <thead class="bg-paper">
             <tr>
-              <th class="w-[40%] border-b border-rail px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Feature</th>
-              <th class="border-b border-rail px-3 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Free</th>
-              <th class="border-b border-rail bg-pass-wash/60 px-3 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep">Pro</th>
-              <th class="border-b border-rail px-3 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Agency</th>
+              <th class="w-[40%] border-b border-rail px-4 py-3 text-left font-text text-[12.5px] font-semibold text-ink-mute">Feature</th>
+              <th class="border-b border-rail px-3 py-3 text-center font-text text-[12.5px] font-semibold text-ink-mute">Free</th>
+              <th class="border-b border-rail bg-pass-wash/60 px-3 py-3 text-center font-text text-[12.5px] font-semibold text-pass-deep">Pro</th>
+              <th class="border-b border-rail px-3 py-3 text-center font-text text-[12.5px] font-semibold text-ink-mute">Agency</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -837,7 +837,7 @@ const heroCadenceRows = [
           </tbody>
         </table>
       </div>
-      <p class="mt-3 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
+      <p class="mt-3 font-text font-medium text-[12.5px] text-ink-mute">
         source: plan entitlements · billed via Stripe
       </p>
     </div>
@@ -846,7 +846,7 @@ const heroCadenceRows = [
   {/* CLI (free) vs Pro — answers the "why pay if the CLI is free" question with verified rows only */}
   <section class="border-t border-rail bg-white" aria-labelledby="cli-vs-pro-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="cli-vs-pro-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
+      <h2 id="cli-vs-pro-heading" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         The CLI already has geo track and geo monitor. Why pay for Pro?
       </h2>
       <p class="mt-3 max-w-3xl text-sm leading-relaxed text-ink-soft">
@@ -857,12 +857,12 @@ const heroCadenceRows = [
       </p>
 
       <div class="mt-6 overflow-x-auto">
-        <table class="min-w-full border-collapse overflow-hidden rounded-[4px] border border-rail bg-white text-left text-sm">
+        <table class="min-w-full border-collapse overflow-hidden rounded-[10px] border border-rail bg-white text-left text-sm">
           <thead class="bg-paper">
             <tr>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute"></th>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">CLI (free, MIT)</th>
-              <th scope="col" class="border-b border-rail bg-pass-wash/60 px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep">Pro</th>
+              <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute"></th>
+              <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">CLI (free, MIT)</th>
+              <th scope="col" class="border-b border-rail bg-pass-wash/60 px-4 py-3 font-text text-[12.5px] font-semibold text-pass-deep">Pro</th>
             </tr>
           </thead>
           <tbody>
@@ -881,7 +881,7 @@ const heroCadenceRows = [
         Pro is for people who would rather not operate that setup. If you already run the CLI in CI and the exit code is enough for you, you may not need Pro.
         Pro adds the scheduling, the stored history and the alerts around the audit. It is not a different audit.
       </p>
-      <p class="mt-3 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
+      <p class="mt-3 font-text font-medium text-[12.5px] text-ink-mute">
         source: geo-optimizer-skill CLI docs and code · Pro column as listed in the plans above
       </p>
     </div>
@@ -890,7 +890,7 @@ const heroCadenceRows = [
   {/* FAQ */}
   <section class="border-t border-rail bg-white" aria-labelledby="faq-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="faq-heading" class="mb-8 font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
+      <h2 id="faq-heading" class="mb-8 font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         Frequently asked questions
       </h2>
       <div class="grid gap-x-12 gap-y-8 md:grid-cols-2">
@@ -908,7 +908,7 @@ const heroCadenceRows = [
   <section class="border-t border-rail bg-pass-deep">
     <div class="mx-auto max-w-7xl px-4 py-14 text-center sm:px-6 md:py-16">
       <div class="mx-auto flex max-w-3xl flex-wrap items-baseline justify-center gap-x-6 gap-y-2">
-        <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-white md:text-3xl">
+        <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-white md:text-3xl">
           Start with a free audit. Upgrade when you are ready.
         </h2>
       </div>
@@ -919,7 +919,7 @@ const heroCadenceRows = [
         <a
           href="/"
           data-cta="pricing_footer_free_audit"
-          class="inline-block rounded-[4px] border border-white/40 px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:border-white hover:bg-white/10"
+          class="inline-block rounded-[10px] border border-white/40 px-6 py-2.5 font-text text-[13px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
         >
           Start free audit
         </a>
@@ -931,12 +931,12 @@ const heroCadenceRows = [
           data-plan-period="/month"
           data-plan-currency="USD"
           data-cta-location="pricing_footer"
-          class="inline-block rounded-[4px] bg-white px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-pass-deep transition-colors hover:bg-pass-wash"
+          class="inline-block rounded-[10px] bg-white px-6 py-2.5 font-text text-[13px] font-semibold text-pass-deep transition-colors hover:bg-pass-wash"
         >
           Start with Pro
         </a>
       </div>
-      <p class="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-pass-wash">
+      <p class="mt-6 font-text font-medium text-[12.5px] text-pass-wash">
         <FoundingSeatsStatus client:load />
       </p>
     </div>

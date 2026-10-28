@@ -34,10 +34,10 @@ const ranked = [...sites].sort((a, b) => b.score - a.score);
 const isHead = mode === 'head';
 ---
 
-<div class={`overflow-hidden rounded-[4px] border border-rail bg-white text-ink ${className}`}>
+<div class={`overflow-hidden rounded-[10px] border border-rail bg-white text-ink ${className}`}>
   <div class="flex items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-    <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">{isHead ? 'Head to head · sample' : 'AI visibility leaderboard · sample'}</span>
-    <span class="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">GEO score</span>
+    <span class="font-text text-[12.5px] font-semibold text-ink-mute">{isHead ? 'Head to head · sample' : 'AI visibility leaderboard · sample'}</span>
+    <span class="rounded-[6px] border border-rail px-1.5 py-0.5 font-text text-[12px] font-semibold text-ink-mute">GEO score</span>
   </div>
 
   <div class="px-4 py-4">
@@ -51,7 +51,7 @@ const isHead = mode === 'head';
             </span>
             <span class={`font-mono tabular-nums ${isHead ? 'text-lg font-semibold' : 'text-sm'} ${s.you ? 'text-ink' : 'text-ink-soft'}`}>{s.score}</span>
           </div>
-          <div class={`mt-1.5 ${isHead ? 'h-3' : 'h-2.5'} rounded-[2px] ${s.you ? 'border border-ink/40 bg-paper' : 'border border-dashed border-ink-mute/60'}`} aria-hidden="true">
+          <div class={`mt-1.5 ${isHead ? 'h-3' : 'h-2.5'} rounded-[6px] ${s.you ? 'border border-ink/40 bg-paper' : 'border border-dashed border-ink-mute/60'}`} aria-hidden="true">
             <div class={`h-full ${s.you ? 'bg-ink/60' : 'bg-ink-mute/25'}`} style={`width:${s.score}%`}></div>
           </div>
         </div>

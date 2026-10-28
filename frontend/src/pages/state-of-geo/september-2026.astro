@@ -151,7 +151,7 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <header class="mb-12 max-w-3xl">
-        <nav aria-label="Breadcrumb" class="mb-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-mute">
+        <nav aria-label="Breadcrumb" class="mb-5 flex items-center gap-2 font-text font-medium text-[12px] text-ink-mute">
           <a href="/" class="transition-colors hover:text-ink">GeoReady</a>
           <span class="h-1 w-1 rounded-full bg-ink-mute" aria-hidden="true" />
           <a href="/state-of-geo/" class="transition-colors hover:text-ink">State of GEO</a>
@@ -159,7 +159,7 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
           <span>September 2026</span>
         </nav>
 
-        <h1 itemprop="headline" class="font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+        <h1 itemprop="headline" class="font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
           State of GEO: September 2026
         </h1>
         <p class="mt-2 font-head text-xl font-bold tracking-[-0.02em] text-ink-soft md:text-2xl">
@@ -167,7 +167,7 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
         </p>
 
         <div class="mt-4 flex flex-wrap items-center gap-3">
-          <span class="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">
+          <span class="rounded-[6px] border border-rail px-1.5 py-0.5 font-text text-[12px] font-semibold text-ink-mute">
             September 2026 Report
           </span>
           <span class="font-mono text-[11px] text-ink-mute">704 domains · Published <time datetime="2026-10-01">1 October 2026</time></span>
@@ -191,27 +191,27 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
 
       {/* ── Executive summary — the page's single dark well: frames the month's
           main measured result (first-party data). Stat ids are dated anchors. ── */}
-      <section class="mb-12 overflow-hidden rounded-[4px] bg-well text-well-ink" aria-label="Executive summary — September 2026">
+      <section class="mb-12 overflow-hidden rounded-[10px] bg-well text-well-ink" aria-label="Executive summary — September 2026">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-well-ink/15 px-6 py-3">
-          <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-well-mute">Executive summary — September 2026</p>
-          <span class="font-mono text-[11px] uppercase tracking-[0.08em] text-well-mute">{SAMPLE_NOTE}</span>
+          <p class="font-text text-[12.5px] font-semibold text-well-mute">Executive summary — September 2026</p>
+          <span class="font-text font-medium text-[12.5px] text-well-mute">{SAMPLE_NOTE}</span>
         </div>
         <div class="px-6 py-6 md:px-8">
           <div class="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-4">
             <div id="avg-score-september-2026">
-              <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-white">{stats.avgScore}</p>
+              <p class="font-head text-3xl font-semibold tabular-nums tracking-[-0.02em] text-white">{stats.avgScore}</p>
               <p class="mt-1 text-xs leading-relaxed text-well-mute">avg GEO score / 100 <span>(−0.2 vs August)</span></p>
             </div>
             <div id="domains-september-2026">
-              <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-white">{stats.domains}</p>
+              <p class="font-head text-3xl font-semibold tabular-nums tracking-[-0.02em] text-white">{stats.domains}</p>
               <p class="mt-1 text-xs leading-relaxed text-well-mute">unique domains <span>(+422 vs August)</span></p>
             </div>
             <div id="llms-txt-september-2026">
-              <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-white">{stats.pctLlmsTxt}%</p>
+              <p class="font-head text-3xl font-semibold tabular-nums tracking-[-0.02em] text-white">{stats.pctLlmsTxt}%</p>
               <p class="mt-1 text-xs leading-relaxed text-well-mute">have llms.txt <span>(−5.4pp vs August; a lower bound in both months)</span></p>
             </div>
             <div id="good-or-better-september-2026">
-              <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-white">{stats.pctGoodOrAbove}%</p>
+              <p class="font-head text-3xl font-semibold tabular-nums tracking-[-0.02em] text-white">{stats.pctGoodOrAbove}%</p>
               <p class="mt-1 text-xs leading-relaxed text-well-mute">Good or better <span>(−0.3pp vs August)</span></p>
             </div>
           </div>
@@ -235,11 +235,11 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
           </ul>
         </div>
         <div class="border-t border-well-ink/15 px-6 py-3">
-          <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-well-mute">source: benchmark_audit_events · closed window 1–30 Sep 2026</p>
+          <p class="font-text font-medium text-[12.5px] text-well-mute">source: benchmark_audit_events · closed window 1–30 Sep 2026</p>
         </div>
       </section>
 
-      <div class="space-y-14 leading-relaxed text-ink-soft [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-extrabold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-extrabold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
+      <div class="space-y-14 leading-relaxed text-ink-soft [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
 
         {/* ── 1. Engine-version mix — read before any month-over-month delta ── */}
         <section id="engine-versions">
@@ -248,20 +248,20 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
             Every earlier edition was scored on a near-single engine version — August's cohort was scored predominantly on 4.16.2. September's was not. The audit engine shipped several releases during the month, and each domain's latest audit was scored by whichever version was live that day:
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">engine version mix</span>
-              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+              <span class="font-text text-[12.5px] font-semibold text-ink-mute">engine version mix</span>
+              <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full min-w-[640px] text-left text-sm">
                 <caption class="sr-only">Engine versions that scored the September 2026 cohort</caption>
                 <thead>
                   <tr class="border-b border-rail bg-paper">
-                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Version</th>
-                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Released</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Domains</th>
-                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Scoring-relevant change</th>
+                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Version</th>
+                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Released</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Domains</th>
+                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Scoring-relevant change</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-rail">
@@ -296,22 +296,22 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
             The band breakdown moved only slightly:
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">score bands</span>
-              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+              <span class="font-text text-[12.5px] font-semibold text-ink-mute">score bands</span>
+              <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full min-w-[640px] text-left text-sm">
                 <caption class="sr-only">Score bands, September 2026 versus August 2026</caption>
                 <thead>
                   <tr class="border-b border-rail bg-paper">
-                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Band</th>
-                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Score range</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Domains</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Share</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">August 2026</th>
-                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">What it means</th>
+                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Band</th>
+                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Score range</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Domains</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Share</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">August 2026</th>
+                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it means</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-rail">
@@ -371,23 +371,23 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
             The v1 GEO rubric used for this edition scores eight categories (the current default, v2, has nine since engine 4.19.0), each with a different maximum. The table below shows the September 2026 average for each, the maximum, and the efficiency percentage — how much of the available points the average site captures — alongside the August, July and June efficiencies for context.
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">category efficiency</span>
-              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+              <span class="font-text text-[12.5px] font-semibold text-ink-mute">category efficiency</span>
+              <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full min-w-[640px] text-left text-sm">
                 <caption class="sr-only">Category efficiency, June to September 2026</caption>
                 <thead>
                   <tr class="border-b border-rail bg-paper">
-                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Category</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Avg</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Max</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Sep eff.</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Aug</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Jul</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Jun</th>
+                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Category</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Avg</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Max</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Sep eff.</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Aug</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Jul</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Jun</th>
                     <th scope="col" class="px-4 py-3"><span class="sr-only">Efficiency bar</span></th>
                   </tr>
                 </thead>
@@ -402,7 +402,7 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
                       <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">{cat.julPct}%</td>
                       <td class="px-4 py-3 text-right font-mono tabular-nums text-ink-mute">{cat.junPct}%</td>
                       <td class="px-4 py-3 w-32">
-                        <div class="h-2 rounded-[2px] border border-dashed border-ink-mute/60" aria-hidden="true">
+                        <div class="h-2 rounded-[6px] border border-dashed border-ink-mute/60" aria-hidden="true">
                           <div class="h-full bg-ink-mute/25" style={`width:${cat.pct}%`} />
                         </div>
                       </td>
@@ -430,7 +430,7 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
         <section id="adoption-rates">
           <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
             <h2>Adoption rates: the machine-readability stack</h2>
-            <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</p>
+            <p class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</p>
           </div>
           <p class="mt-4">
             Beyond category scores, the rubric checks specific technical signals. These adoption rates show where the default behaviour of an audited site sits in September 2026 — and what changed from August.
@@ -457,7 +457,7 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
                   <span class="text-ink-soft">{item.label}</span>
                   <span class="font-mono text-[12px] font-semibold tabular-nums text-ink">{item.pct}%</span>
                 </div>
-                <div class="mt-1.5 h-2 rounded-[2px] border border-dashed border-ink-mute/60" aria-hidden="true">
+                <div class="mt-1.5 h-2 rounded-[6px] border border-dashed border-ink-mute/60" aria-hidden="true">
                   <div class="h-full bg-ink-mute/25" style={`width:${item.pct}%`} />
                 </div>
                 <p class="mt-1 text-xs text-ink-mute">{item.note}</p>
@@ -470,25 +470,25 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
           </p>
 
           <div class="mt-6 grid gap-4 sm:grid-cols-2">
-            <div class="overflow-hidden rounded-[4px] border border-rail bg-white">
+            <div class="overflow-hidden rounded-[10px] border border-rail bg-white">
               <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-5 py-2.5">
-                <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">llms.txt correlation</p>
-                <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+                <p class="font-text text-[12.5px] font-semibold text-ink-mute">llms.txt correlation</p>
+                <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
               </div>
               <div class="px-5 py-4">
-                <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-ink">+21.4 pts</p>
+                <p class="font-head text-3xl font-semibold tabular-nums tracking-[-0.02em] text-ink">+21.4 pts</p>
                 <p class="mt-1 text-sm leading-relaxed text-ink-soft">
                   Sites <em>with</em> llms.txt average <strong class="text-ink">{stats.corrLlmsWith}/100</strong>. Sites <em>without</em> average <strong class="text-ink">{stats.corrLlmsWithout}/100</strong>. The gap narrowed from +23.3 pts in August but remains one of the clearest dividing lines in the dataset.
                 </p>
               </div>
             </div>
-            <div class="overflow-hidden rounded-[4px] border border-rail bg-white">
+            <div class="overflow-hidden rounded-[10px] border border-rail bg-white">
               <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-5 py-2.5">
-                <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Schema markup correlation</p>
-                <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+                <p class="font-text text-[12.5px] font-semibold text-ink-mute">Schema markup correlation</p>
+                <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
               </div>
               <div class="px-5 py-4">
-                <p class="font-head text-3xl font-extrabold tabular-nums tracking-[-0.02em] text-ink">+28.5 pts</p>
+                <p class="font-head text-3xl font-semibold tabular-nums tracking-[-0.02em] text-ink">+28.5 pts</p>
                 <p class="mt-1 text-sm leading-relaxed text-ink-soft">
                   Sites <em>with</em> valid JSON-LD average <strong class="text-ink">{stats.corrSchemaWith}/100</strong>. Sites <em>without</em> average <strong class="text-ink">{stats.corrSchemaWithout}/100</strong>. The gap is identical to August's +28.5 pts. Structured data stays the highest-leverage technical signal.
                 </p>
@@ -504,22 +504,22 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
             The table below tracks the headline metrics across all four editions. The sample size of every month is printed above the table, because the population changes month to month.
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">four-month trend</span>
-              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">jun n = 288 · jul n = 360 · aug n = 282 · sep n = 704</span>
+              <span class="font-text text-[12.5px] font-semibold text-ink-mute">four-month trend</span>
+              <span class="font-text font-medium text-[12.5px] text-ink-mute">jun n = 288 · jul n = 360 · aug n = 282 · sep n = 704</span>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full min-w-[720px] text-left text-sm">
                 <caption class="sr-only">Headline metrics, June to September 2026</caption>
                 <thead>
                   <tr class="border-b border-rail bg-paper">
-                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Metric</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">June</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">July</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">August</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">September</th>
-                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Trend</th>
+                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Metric</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">June</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">July</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">August</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">September</th>
+                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Trend</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-rail">
@@ -587,9 +587,9 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
             AI discovery files — <code class="text-sm font-mono">/.well-known/ai.txt</code>, and the structured signals inside a complete <code class="text-sm font-mono">llms.txt</code> — describe a site's purpose and its most important content in a form an AI can navigate deliberately. Nothing in a default CMS or hosting setup creates them. They exist only when someone decides to publish them.
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
             <div class="border-b border-rail px-5 py-2.5">
-              <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Opportunity sizing</p>
+              <p class="font-text text-[12.5px] font-semibold text-ink-mute">Opportunity sizing</p>
             </div>
             <p class="px-5 py-4 text-sm leading-relaxed text-ink-soft">
               AI Discovery is worth 6 of the rubric's 100 points and requires no content work. In September 2026, 84.8% of audited sites had not published a single AI discovery endpoint — a few lines at <code class="text-sm font-mono">/.well-known/ai.txt</code> would move a site into the 15.2% that have.
@@ -618,21 +618,21 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
             .com dominates the cohort at 375 of 704 domains and sits close to the overall average at 56.6. The table lists every TLD with at least eight domains in September; most groups are still small.
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[4px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">tld breakdown</span>
-              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{SAMPLE_NOTE}</span>
+              <span class="font-text text-[12.5px] font-semibold text-ink-mute">tld breakdown</span>
+              <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full min-w-[560px] text-left text-sm">
                 <caption class="sr-only">Breakdown by top-level domain, September 2026</caption>
                 <thead>
                   <tr class="border-b border-rail bg-paper">
-                    <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">TLD</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Domains</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Avg score</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">llms.txt</th>
-                    <th scope="col" class="px-4 py-3 text-right font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Schema</th>
+                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">TLD</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Domains</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Avg score</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">llms.txt</th>
+                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Schema</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-rail">
@@ -717,7 +717,7 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
         </section>
 
         {/* ── 12. Mid-page CTA ────────────────────────────────────────────────── */}
-        <section class="rounded-[4px] border border-rail bg-white p-6 md:p-8">
+        <section class="rounded-[10px] border border-rail bg-white p-6 md:p-8">
           <h2>See where your site stands against the September 2026 benchmark</h2>
           <p class="mt-3">
             The average score in September 2026 is 56.2. Run a free audit to see your GEO score across all nine categories, identify which band you are in, and get the specific actions that recover the most points first.
@@ -726,14 +726,14 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
             <a
               href="/ai-seo-audit/"
               data-cta="state_geo_sep2026_mid_audit"
-              class="inline-flex items-center justify-center rounded-[4px] bg-pass-deep px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+              class="inline-flex items-center justify-center rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
             >
               Audit my site free
             </a>
             <a
               href="/state-of-geo/"
               data-cta="state_geo_sep2026_live_benchmark"
-              class="inline-flex items-center justify-center rounded-[4px] border border-rail bg-white px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+              class="inline-flex items-center justify-center rounded-[10px] border border-rail bg-white px-6 py-3 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               See live benchmark data
             </a>
@@ -787,7 +787,7 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
         </section>
 
         {/* ── 16. Final CTA ──────────────────────────────────────────────────── */}
-        <section class="rounded-[4px] border border-rail bg-white p-6 md:p-8">
+        <section class="rounded-[10px] border border-rail bg-white p-6 md:p-8">
           <h2>Beat the September 2026 average of 56.2</h2>
           <p class="mt-3">
             Run a free AI SEO audit to get your full GEO score, see which of the nine categories is costing you the most points, and get a ranked action list. No account required for the baseline snapshot.
@@ -796,14 +796,14 @@ const SAMPLE_NOTE = 'n = 704 · 1–30 Sep 2026';
             <a
               href="/ai-seo-audit/"
               data-cta="state_geo_sep2026_final_audit"
-              class="inline-flex items-center justify-center rounded-[4px] bg-pass-deep px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+              class="inline-flex items-center justify-center rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
             >
               Run your free AI SEO audit
             </a>
             <a
               href="/guides/generative-engine-optimization/"
               data-cta="state_geo_sep2026_geo_guide"
-              class="inline-flex items-center justify-center rounded-[4px] border border-rail bg-white px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+              class="inline-flex items-center justify-center rounded-[10px] border border-rail bg-white px-6 py-3 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Read the full GEO guide
             </a>

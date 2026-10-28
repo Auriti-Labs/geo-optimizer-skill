@@ -41,14 +41,14 @@ export default function CookieBanner({
       className="fixed z-[100] inset-x-3 bottom-3 sm:inset-x-auto sm:left-5 sm:bottom-5 sm:w-[27rem] print:hidden"
     >
       <div
-        className={`relative overflow-hidden rounded-[4px] border border-rail bg-white transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+        className={`relative overflow-hidden rounded-[10px] border border-rail bg-white transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
           entered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`}
       >
         <div className="relative p-3 sm:p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="hidden items-center gap-2.5 sm:flex">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[2px] border border-rail bg-paper text-ink">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border border-rail bg-paper text-ink">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 3a9 9 0 1 0 9 9 3 3 0 0 1-4-4 3 3 0 0 1-5-5Z" />
                   <circle cx="9.5" cy="14.5" r="1" fill="currentColor" stroke="none" />
@@ -58,7 +58,7 @@ export default function CookieBanner({
               </span>
               <div>
                 <p className="text-sm font-semibold text-ink">Your privacy, your call</p>
-                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-mute">Nothing loads without consent</p>
+                <p className="font-text font-medium text-[12px] text-ink-mute">Nothing loads without consent</p>
               </div>
             </div>
 
@@ -82,7 +82,7 @@ export default function CookieBanner({
               onClick={onDismiss}
               aria-label="Close and keep essential settings only"
               title="Close and keep essential settings only"
-              className="-mr-1 -mt-1 shrink-0 rounded-[2px] p-1.5 text-ink-mute transition-colors hover:bg-pass-wash hover:text-ink"
+              className="-mr-1 -mt-1 shrink-0 rounded-[6px] p-1.5 text-ink-mute transition-colors hover:bg-pass-wash hover:text-ink"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -105,7 +105,7 @@ export default function CookieBanner({
               return (
                 <li
                   key={cat}
-                  className="flex items-center gap-2 rounded-[2px] border border-rail bg-paper px-2.5 py-1.5"
+                  className="flex items-center gap-2 rounded-[6px] border border-rail bg-paper px-2.5 py-1.5"
                 >
                   <span
                     aria-hidden="true"
@@ -114,7 +114,7 @@ export default function CookieBanner({
                   <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-ink-soft">
                     {getCategoryLabel(cat)}
                   </span>
-                  <span className={`shrink-0 font-mono text-[10px] uppercase tracking-[0.1em] ${isOn ? 'text-pass-deep' : 'text-ink-mute'}`}>
+                  <span className={`shrink-0 font-text font-medium text-[12px] ${isOn ? 'text-pass-deep' : 'text-ink-mute'}`}>
                     {isOn ? 'on' : count === 0 ? 'none' : 'off'}
                   </span>
                 </li>
@@ -127,19 +127,19 @@ export default function CookieBanner({
           <div className="mt-2.5 grid grid-cols-2 gap-2 sm:mt-4">
             <button
               onClick={onAcceptAll}
-              className="min-h-11 w-full rounded-[4px] sm:col-span-2 sm:min-h-0 bg-pass-deep px-4 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors duration-200 hover:bg-pass motion-reduce:transition-none"
+              className="min-h-11 w-full rounded-[10px] sm:col-span-2 sm:min-h-0 bg-pass-deep px-4 py-2.5 font-text text-[13px] font-semibold text-white transition-colors duration-200 hover:bg-pass motion-reduce:transition-none"
             >
               Accept all
             </button>
             <button
               onClick={onRejectNonEssential}
-              className="min-h-11 rounded-[4px] sm:min-h-0 border border-rail bg-white px-3 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+              className="min-h-11 rounded-[10px] sm:min-h-0 border border-rail bg-white px-3 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Essential only
             </button>
             <button
               onClick={onCustomize}
-              className="hidden rounded-[4px] sm:block border border-rail bg-white px-3 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+              className="hidden rounded-[10px] sm:block border border-rail bg-white px-3 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Customise
             </button>

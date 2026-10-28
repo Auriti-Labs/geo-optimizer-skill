@@ -164,9 +164,9 @@ const schema = {
 ] };
 
 const primaryClass =
-  'inline-flex min-h-11 items-center justify-center rounded-[4px] bg-pass-deep px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass';
+  'inline-flex min-h-11 items-center justify-center rounded-[10px] bg-pass-deep px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass';
 const secondaryClass =
-  'inline-flex min-h-11 items-center justify-center rounded-[4px] border border-rail bg-white px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash';
+  'inline-flex min-h-11 items-center justify-center rounded-[10px] border border-rail bg-white px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash';
 ---
 
 <Shell title={title} description={description} canonical={canonical}>
@@ -177,10 +177,10 @@ const secondaryClass =
         <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(380px,0.72fr)] lg:gap-14">
           <div>
             <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-              <h1 class="max-w-3xl font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+              <h1 class="max-w-3xl font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
                 {h1}
               </h1>
-              <p class="flex items-baseline gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
+              <p class="flex items-baseline gap-2 font-text font-medium text-[12.5px] text-ink-mute">
                 <a href="/" class="transition-colors hover:text-ink">GeoReady</a>
                 <span aria-hidden="true">/</span>
                 <span>{eyebrow}</span>
@@ -188,7 +188,7 @@ const secondaryClass =
             </div>
 
             <p class="mt-4">
-              <span class="inline-flex rounded-[2px] border border-rail bg-white px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">
+              <span class="inline-flex rounded-[6px] border border-rail bg-white px-2 py-1 font-text text-[12px] font-semibold text-ink-mute">
                 {badge}
               </span>
             </p>
@@ -209,7 +209,7 @@ const secondaryClass =
             <dl class="mt-8 grid gap-3 sm:grid-cols-3">
               {stats.map((item) => (
                 <div class="border-l border-rail pl-4">
-                  <dt class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{item.value}</dt>
+                  <dt class="font-text font-medium text-[12.5px] text-ink-mute">{item.value}</dt>
                   <dd class="mt-1 text-sm font-semibold text-ink">{item.label}</dd>
                   <dd class="mt-1 text-sm leading-relaxed text-ink-soft">{item.detail}</dd>
                 </div>
@@ -224,7 +224,7 @@ const secondaryClass =
       </div>
     </header>
 
-    <div class="mx-auto max-w-7xl space-y-14 px-4 py-14 sm:px-6 md:space-y-16 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-extrabold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-ink [&_p]:leading-relaxed [&_p]:text-ink-soft [&_li]:leading-relaxed [&_li]:text-ink-soft">
+    <div class="mx-auto max-w-7xl space-y-14 px-4 py-14 sm:px-6 md:space-y-16 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-ink [&_p]:leading-relaxed [&_p]:text-ink-soft [&_li]:leading-relaxed [&_li]:text-ink-soft">
       <slot />
 
       <section aria-labelledby="decision-table-heading">
@@ -233,13 +233,13 @@ const secondaryClass =
           <p class="mt-4">{tableIntro}</p>
         </div>
 
-        <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+        <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
           <table class="min-w-full border-collapse text-left text-sm">
             <thead class="bg-paper">
               <tr>
-                <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Signal or question</th>
-                <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">What the free check gives you</th>
-                <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">When paid monitoring matters</th>
+                <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Signal or question</th>
+                <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What the free check gives you</th>
+                <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">When paid monitoring matters</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-rail">
@@ -256,10 +256,10 @@ const secondaryClass =
       </section>
 
       {paidStep && (
-        <section aria-labelledby="paid-path-heading" class="overflow-hidden rounded-[4px] border border-rail bg-white">
+        <section aria-labelledby="paid-path-heading" class="overflow-hidden rounded-[10px] border border-rail bg-white">
           <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-rail px-6 py-2.5 md:px-8">
-            <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Free check to paid loop</span>
-            <span class="rounded-[2px] bg-pass-wash px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-pass-deep">{paidStep.plan.name}</span>
+            <span class="font-text text-[12.5px] font-semibold text-ink-mute">Free check to paid loop</span>
+            <span class="rounded-[6px] bg-pass-wash px-1.5 py-0.5 font-text text-[12px] font-semibold text-pass-deep">{paidStep.plan.name}</span>
           </div>
           <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.42fr)]">
             <div class="p-6 md:p-8">
@@ -273,8 +273,8 @@ const secondaryClass =
             </div>
             <aside class="border-t border-rail bg-paper p-6 md:p-8 lg:border-l lg:border-t-0">
               <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <p><span class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink">{paidStep.plan.name}</span></p>
-                <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Recommended plan</span>
+                <p><span class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink">{paidStep.plan.name}</span></p>
+                <span class="font-text font-medium text-[12.5px] text-ink-mute">Recommended plan</span>
               </div>
               <p class="mt-1 text-sm">
                 <span class="font-mono tabular-nums text-ink">{paidStep.plan.price}</span> / month
@@ -308,7 +308,7 @@ const secondaryClass =
 
       <section aria-labelledby="intent-faq-heading">
         <h2 id="intent-faq-heading">Frequently asked questions</h2>
-        <div class="mt-6 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail md:grid-cols-2">
+        <div class="mt-6 grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail md:grid-cols-2">
           {faqs.map((item) => (
             <section class="bg-white p-5">
               <h3>{item.q}</h3>
@@ -318,12 +318,12 @@ const secondaryClass =
         </div>
       </section>
 
-      <section class="rounded-[4px] border border-pass/50 bg-pass-wash/60 p-6 md:p-8" aria-label="Next step">
+      <section class="rounded-[10px] border border-pass/50 bg-pass-wash/60 p-6 md:p-8" aria-label="Next step">
         <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
           <div class="max-w-2xl">
             <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
               <h2>Turn the search intent into a measurable audit.</h2>
-              <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep">Next step</span>
+              <span class="font-text text-[12.5px] font-semibold text-pass-deep">Next step</span>
             </div>
             <p class="mt-3 text-sm">
               Start with a free page-level check. If the score exposes a technical or citation gap, move the same domain into monitoring instead of repeating manual checks.

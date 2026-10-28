@@ -63,13 +63,13 @@ const faqs = [
 ---
 
 <Shell title={title} description={description} canonical={canonical}>
-  <article class="mx-auto max-w-3xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-extrabold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-extrabold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
+  <article class="mx-auto max-w-3xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
 
     {/* Header — answer-first; l'ordine dei paragrafi e la posizione della
         riga di byline (dopo i tre paragrafi introduttivi) seguono esattamente
         il "Final copy" del packet, diverso dal packet Veesie/Otterly. */}
     <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-extrabold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+      <h1 class="font-head text-3xl font-semibold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
         Profound Alternative: An Honest Comparison for 2026
       </h1>
 
@@ -138,16 +138,16 @@ const faqs = [
         cannot edit and includes no history, exports or API. Earlier versions of this page listed
         Starter ($99/mo) and Growth ($399/mo) plans; they no longer appear there.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Plan</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Price</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Engines tracked</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Prompts tracked</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Seats</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Access</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Plan</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Price</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Engines tracked</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Prompts tracked</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Seats</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Access</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -196,13 +196,13 @@ const faqs = [
         tryprofound.com/pricing and tryprofound.com, re-checked 2026-10-23 (as of October 2026).
         GeoReady figures: geoready.dev/pricing, October 2026.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Dimension</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Profound</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">GeoReady</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Dimension</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Profound</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">GeoReady</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -304,7 +304,7 @@ const faqs = [
         dal byline inline di Veesie/Otterly). */}
     <section class="mt-12 border-t border-rail pt-8">
       <h2 class="sr-only">About the author</h2>
-      <div class="rounded-[4px] border border-rail bg-white p-6">
+      <div class="rounded-[10px] border border-rail bg-white p-6">
         <p class="font-semibold text-ink">Juan Camilo Auriti</p>
         <p class="mt-2 text-sm leading-relaxed text-ink-soft">
           Founder of GeoReady and author of GEO Optimizer, the MIT-licensed engine

@@ -42,8 +42,8 @@ const categoryClasses: Record<string, string> = {
     <div class="mx-auto max-w-3xl px-4 py-10 sm:px-6 md:py-16">
       <header class="mb-12 md:mb-16">
         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <h1 class="font-head text-3xl font-extrabold leading-tight tracking-[-0.02em] text-ink md:text-4xl">Cookie Policy</h1>
-          <p class="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-mute">GeoReady · Cookie Policy</p>
+          <h1 class="font-head text-3xl font-semibold leading-tight tracking-[-0.02em] text-ink md:text-4xl">Cookie Policy</h1>
+          <p class="font-text font-medium text-[12px] text-ink-mute">GeoReady · Cookie Policy</p>
         </div>
         <p class="mt-3 font-mono text-[12px] text-ink-mute">Last updated: {lastUpdated} · Consent version {CONSENT_VERSION}</p>
         <p class="mt-4 max-w-3xl text-base leading-relaxed text-ink-soft">
@@ -57,7 +57,7 @@ const categoryClasses: Record<string, string> = {
 
       <div class="space-y-10 leading-relaxed text-ink-soft">
         <section>
-          <h2 class="mb-3 font-head text-xl font-extrabold tracking-[-0.02em] text-ink">Cookies, local storage, and why both matter</h2>
+          <h2 class="mb-3 font-head text-xl font-semibold tracking-[-0.02em] text-ink">Cookies, local storage, and why both matter</h2>
           <p class="mb-3 text-sm">
             A cookie is a small file a site stores on your device. Browsers also offer
             <strong class="font-semibold text-ink">localStorage</strong>, which does the same job
@@ -84,16 +84,16 @@ const categoryClasses: Record<string, string> = {
         </section>
 
         <section>
-          <h2 class="mb-3 font-head text-xl font-extrabold tracking-[-0.02em] text-ink">Categories</h2>
+          <h2 class="mb-3 font-head text-xl font-semibold tracking-[-0.02em] text-ink">Categories</h2>
           <div class="mt-4 space-y-3">
             {categories.map((cat, i) => (
-              <div class="rounded-[4px] border border-rail bg-white p-4">
+              <div class="rounded-[10px] border border-rail bg-white p-4">
                 <div class="mb-1 flex items-center gap-2">
                   <h3 class="text-sm font-semibold text-ink">{i + 1}. {getCategoryLabel(cat)}</h3>
                   {cat === 'necessary' ? (
-                    <span class="font-mono text-[10px] uppercase tracking-[0.1em] text-pass-deep">always on</span>
+                    <span class="font-text font-medium text-[12px] text-pass-deep">always on</span>
                   ) : (
-                    <span class="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">off unless you accept</span>
+                    <span class="font-text font-medium text-[12px] text-ink-mute">off unless you accept</span>
                   )}
                 </div>
                 <p class="text-sm">{getCategoryDescription(cat)}</p>
@@ -108,22 +108,22 @@ const categoryClasses: Record<string, string> = {
         </section>
 
         <section>
-          <h2 class="mb-3 font-head text-xl font-extrabold tracking-[-0.02em] text-ink">Full inventory</h2>
+          <h2 class="mb-3 font-head text-xl font-semibold tracking-[-0.02em] text-ink">Full inventory</h2>
           <p class="mb-4 text-sm">
             Every cookie and storage key this site can create, with the legal basis for each.
             Names shown with <code class="font-mono text-xs text-ink">&lt;…&gt;</code> contain a
             container identifier that varies.
           </p>
 
-          <div class="overflow-x-auto rounded-[4px] border border-rail bg-white">
+          <div class="overflow-x-auto rounded-[10px] border border-rail bg-white">
             <table class="w-full min-w-[560px] text-sm">
               <thead class="bg-paper">
                 <tr>
-                  <th class="border-b border-rail px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Name</th>
-                  <th class="border-b border-rail px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Category</th>
-                  <th class="border-b border-rail px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Type</th>
-                  <th class="border-b border-rail px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Provider</th>
-                  <th class="border-b border-rail px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Duration</th>
+                  <th class="border-b border-rail px-4 py-3 text-left font-text text-[12.5px] font-semibold text-ink-mute">Name</th>
+                  <th class="border-b border-rail px-4 py-3 text-left font-text text-[12.5px] font-semibold text-ink-mute">Category</th>
+                  <th class="border-b border-rail px-4 py-3 text-left font-text text-[12.5px] font-semibold text-ink-mute">Type</th>
+                  <th class="border-b border-rail px-4 py-3 text-left font-text text-[12.5px] font-semibold text-ink-mute">Provider</th>
+                  <th class="border-b border-rail px-4 py-3 text-left font-text text-[12.5px] font-semibold text-ink-mute">Duration</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-rail">
@@ -131,7 +131,7 @@ const categoryClasses: Record<string, string> = {
                   <tr class="align-top">
                     <td class="whitespace-nowrap px-4 py-3 font-mono text-xs text-ink">{c.name}</td>
                     <td class="px-4 py-3">
-                      <span class={`rounded-[2px] border px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] ${categoryClasses[c.category]}`}>
+                      <span class={`rounded-[6px] border px-1.5 py-0.5 font-text text-[12px] font-semibold ${categoryClasses[c.category]}`}>
                         {getCategoryLabel(c.category)}
                       </span>
                     </td>
@@ -146,10 +146,10 @@ const categoryClasses: Record<string, string> = {
 
           <div class="mt-6 space-y-4">
             {cookieRegistry.map((c) => (
-              <div class="rounded-[4px] border border-rail bg-white p-4">
+              <div class="rounded-[10px] border border-rail bg-white p-4">
                 <div class="mb-2 flex flex-wrap items-center gap-2">
                   <code class="font-mono text-xs font-semibold text-ink">{c.name}</code>
-                  <span class={`rounded-[2px] border px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] ${categoryClasses[c.category]}`}>
+                  <span class={`rounded-[6px] border px-1.5 py-0.5 font-text text-[12px] font-semibold ${categoryClasses[c.category]}`}>
                     {getCategoryLabel(c.category)}
                   </span>
                   <span class="font-mono text-[11px] text-ink-mute">
@@ -221,7 +221,7 @@ const categoryClasses: Record<string, string> = {
         </section>
 
         <section>
-          <h2 class="mb-3 font-head text-xl font-extrabold tracking-[-0.02em] text-ink">Consent Mode</h2>
+          <h2 class="mb-3 font-head text-xl font-semibold tracking-[-0.02em] text-ink">Consent Mode</h2>
           <p class="text-sm">
             Before any Google tag can initialise, the site declares
             <strong class="font-semibold text-ink">Google Consent Mode v2</strong> with all four
@@ -235,7 +235,7 @@ const categoryClasses: Record<string, string> = {
         </section>
 
         <section>
-          <h2 class="mb-3 font-head text-xl font-extrabold tracking-[-0.02em] text-ink">Changing or withdrawing your consent</h2>
+          <h2 class="mb-3 font-head text-xl font-semibold tracking-[-0.02em] text-ink">Changing or withdrawing your consent</h2>
           <p class="mb-3 text-sm">
             Click the <strong class="font-semibold text-ink">Cookies</strong> button at the bottom
             left of any page. Withdrawing analytics consent takes effect immediately: the
@@ -262,7 +262,7 @@ const categoryClasses: Record<string, string> = {
         </section>
 
         <section>
-          <h2 class="mb-3 font-head text-xl font-extrabold tracking-[-0.02em] text-ink">Data protection</h2>
+          <h2 class="mb-3 font-head text-xl font-semibold tracking-[-0.02em] text-ink">Data protection</h2>
           <p class="text-sm">
             Who processes your data, on what legal basis, where it goes and how long it is kept:
             see the <a href="/privacy/" class="text-pass-deep underline decoration-rail underline-offset-4 transition-colors hover:decoration-pass-deep">Privacy Policy</a>.
@@ -272,7 +272,7 @@ const categoryClasses: Record<string, string> = {
         </section>
 
         <section>
-          <h2 class="mb-3 font-head text-xl font-extrabold tracking-[-0.02em] text-ink">Updates</h2>
+          <h2 class="mb-3 font-head text-xl font-semibold tracking-[-0.02em] text-ink">Updates</h2>
           <p class="text-sm">
             When we add or remove something that stores data on your device, this page and the
             consent version change together. A new consent version means the banner asks again

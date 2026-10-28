@@ -51,11 +51,11 @@ const audience = [
 
       <header class="mb-14 md:mb-20">
         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">GeoReady · Book</p>
+          <p class="font-text font-medium text-[12.5px] text-ink-mute">GeoReady · Book</p>
           <p class="font-mono text-[11px] text-ink-mute">ISBN {BOOK.isbnFormatted}</p>
         </div>
 
-        <h1 class="mt-3 font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] md:text-5xl">
+        <h1 class="mt-3 font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] md:text-5xl">
           {BOOK.title}
         </h1>
         <p class="mt-4 max-w-3xl font-head text-lg font-semibold leading-snug text-ink-soft md:text-xl">
@@ -71,7 +71,7 @@ const audience = [
           audit engine implements.
         </p>
 
-        <dl class="mt-8 flex flex-wrap gap-x-10 gap-y-3 border-t border-rail pt-5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-mute">
+        <dl class="mt-8 flex flex-wrap gap-x-10 gap-y-3 border-t border-rail pt-5 font-text font-medium text-[12.5px] text-ink-mute">
           <div><dt class="inline">Author </dt><dd class="inline text-ink">{BOOK.author}</dd></div>
           <div><dt class="inline">Pages </dt><dd class="inline text-ink">{BOOK.numberOfPages}</dd></div>
           <div><dt class="inline">Language </dt><dd class="inline text-ink">English</dd></div>
@@ -84,7 +84,7 @@ const audience = [
             target="_blank"
             rel="noopener"
             data-book-format="paperback"
-            class="inline-flex items-center gap-2 rounded-[3px] bg-pass-deep px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-ink"
+            class="inline-flex items-center gap-2 rounded-[6px] bg-pass-deep px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-ink"
           >
             Paperback on Amazon
           </a>
@@ -93,7 +93,7 @@ const audience = [
             target="_blank"
             rel="noopener"
             data-book-format="kindle"
-            class="inline-flex items-center gap-2 rounded-[3px] border border-rail bg-white px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink"
+            class="inline-flex items-center gap-2 rounded-[6px] border border-rail bg-white px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink"
           >
             Kindle edition
           </a>
@@ -109,14 +109,14 @@ const audience = [
 
         {/* The pipeline */}
         <section>
-          <h2 class="mb-2 font-head text-2xl font-extrabold tracking-[-0.02em] md:text-3xl">
+          <h2 class="mb-2 font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
             The pipeline the book is built around
           </h2>
           <p class="mb-6 max-w-2xl text-sm leading-relaxed text-ink-soft">
             Every chapter attaches to one stage of the path a page travels before it can be cited.
             Naming the stages is what makes GEO measurable instead of anecdotal.
           </p>
-          <ol class="grid grid-cols-1 gap-px overflow-hidden rounded-[4px] border border-rail bg-rail md:grid-cols-2">
+          <ol class="grid grid-cols-1 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail md:grid-cols-2">
             {pipeline.map((p, i) => (
               <li class="bg-white p-5">
                 <div class="flex items-baseline gap-3">
@@ -131,7 +131,7 @@ const audience = [
 
         {/* What it covers */}
         <section>
-          <h2 class="mb-6 font-head text-2xl font-extrabold tracking-[-0.02em] md:text-3xl">What it covers</h2>
+          <h2 class="mb-6 font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">What it covers</h2>
           <ul class="grid gap-x-10 gap-y-0 md:grid-cols-2">
             {covers.map((c) => (
               <li class="border-t border-rail py-4 text-sm leading-relaxed text-ink-soft">{c}</li>
@@ -146,10 +146,10 @@ const audience = [
 
         {/* Who it is for */}
         <section>
-          <h2 class="mb-6 font-head text-2xl font-extrabold tracking-[-0.02em] md:text-3xl">Who it is for</h2>
+          <h2 class="mb-6 font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">Who it is for</h2>
           <ul class="flex flex-wrap gap-2">
             {audience.map((a) => (
-              <li class="rounded-[3px] border border-rail bg-white px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">
+              <li class="rounded-[6px] border border-rail bg-white px-3 py-1.5 font-text font-medium text-[12.5px] text-ink-soft">
                 {a}
               </li>
             ))}
@@ -162,8 +162,8 @@ const audience = [
         </section>
 
         {/* Relation to the tool */}
-        <section class="rounded-[4px] border border-rail bg-white p-6 md:p-8">
-          <h2 class="font-head text-xl font-extrabold tracking-[-0.02em]">Book and tool, same methodology</h2>
+        <section class="rounded-[10px] border border-rail bg-white p-6 md:p-8">
+          <h2 class="font-head text-xl font-semibold tracking-[-0.02em]">Book and tool, same methodology</h2>
           <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">
             The book explains the reasoning; GEO Optimizer runs it. The scoring weights, the eight
             signal categories, and the evidence classification described in print are the ones

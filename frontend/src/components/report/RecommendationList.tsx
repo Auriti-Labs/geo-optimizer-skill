@@ -28,7 +28,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
   };
 
   return (
-    <div className="divide-y divide-rail overflow-hidden rounded-[4px] border border-rail bg-white">
+    <div className="divide-y divide-rail overflow-hidden rounded-[10px] border border-rail bg-white">
       {recommendations.map((rec) => {
         const config = priorityConfig[rec.priority];
         const isOpen = expanded.has(rec.id);
@@ -42,7 +42,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
                 aria-expanded={isOpen}
                 className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-pass-wash/50"
               >
-                <span className={`shrink-0 rounded-[2px] px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] ${config.chip}`}>
+                <span className={`shrink-0 rounded-[6px] px-2 py-0.5 font-text text-[12px] font-semibold ${config.chip}`}>
                   {config.label}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{rec.title}</span>
@@ -62,7 +62,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
               </button>
             ) : (
               <div className="flex items-start gap-3 px-4 py-3">
-                <span className={`mt-0.5 shrink-0 rounded-[2px] px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] ${config.chip}`}>
+                <span className={`mt-0.5 shrink-0 rounded-[6px] px-2 py-0.5 font-text text-[12px] font-semibold ${config.chip}`}>
                   {config.label}
                 </span>
                 <span className="text-sm leading-relaxed text-ink">{rec.title}</span>

@@ -44,7 +44,7 @@ export default function NewsletterSignup({
 
   if (status === 'done') {
     return (
-      <div className="flex items-start gap-2.5 rounded-[4px] border border-pass/50 bg-pass-wash px-5 py-4 text-sm text-ink">
+      <div className="flex items-start gap-2.5 rounded-[10px] border border-pass/50 bg-pass-wash px-5 py-4 text-sm text-ink">
         <svg aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-pass-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12" />
         </svg>
@@ -54,7 +54,7 @@ export default function NewsletterSignup({
   }
 
   return (
-    <div className="rounded-[4px] border border-rail bg-white px-5 py-5">
+    <div className="rounded-[10px] border border-rail bg-white px-5 py-5">
       <p className="text-base font-semibold text-ink">{title}</p>
       <p className="mt-1 text-sm text-ink-soft">{detail}</p>
       <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-2 sm:flex-row">
@@ -64,12 +64,12 @@ export default function NewsletterSignup({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@company.com"
-          className="flex-1 rounded-[4px] border border-ink/25 bg-white px-3 py-2 font-mono text-sm text-ink placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+          className="flex-1 rounded-[10px] border border-ink/25 bg-white px-3 py-2 font-mono text-sm text-ink placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
         />
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="rounded-[4px] bg-pass-deep px-5 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass disabled:opacity-50"
+          className="rounded-[10px] bg-pass-deep px-5 py-2 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass disabled:opacity-50"
         >
           {status === 'loading' ? 'Subscribing…' : 'Notify me'}
         </button>
@@ -87,7 +87,7 @@ export default function NewsletterSignup({
       </p>
       {status === 'error' && (
         <p className="mt-2 flex items-start gap-2 text-xs text-fail">
-          <span aria-hidden="true" className="font-mono font-semibold uppercase tracking-[0.1em]">err</span>
+          <span aria-hidden="true" className="font-text font-semibold">err</span>
           <span>Something went wrong — check the email and try again.</span>
         </p>
       )}

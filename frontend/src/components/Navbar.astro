@@ -64,15 +64,8 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
 
     <!-- Logo -->
     <a href="/" class="flex shrink-0 items-center gap-2.5">
-      <svg width="26" height="26" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect width="48" height="48" rx="4" fill="#0D9488"/>
-        <path d="M11.74 13.71 A16 16 0 1 1 11.74 34.29" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-        <path d="M8 24 C12 14 18 34 24 24 C30 14 36 34 40 24" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-opacity="0.72"/>
-      </svg>
-      <span class="font-head text-base font-extrabold tracking-tight">
-        <span class="text-pass-deep">Geo</span><span class="text-ink">Ready</span>
-      </span>
-      <span class="hidden rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] text-ink-mute sm:inline">{version}</span>
+      <img src="/brand/geoready-lockup-light.svg" width="113" height="28" alt="GeoReady" decoding="async">
+      <span class="hidden rounded-[6px] border border-rail px-1.5 py-0.5 font-mono text-[10px] text-ink-mute sm:inline">{version}</span>
     </a>
 
     <!-- Desktop nav -->
@@ -81,7 +74,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
         <div class="relative" data-nav-group>
           <button
             id={`${g.id}-menu-btn`}
-            class="nav-item flex items-center gap-1 rounded-[2px] px-3 py-1.5 text-[13px] font-medium text-ink-soft transition-colors hover:bg-pass-wash hover:text-ink"
+            class="nav-item flex items-center gap-1 rounded-[6px] px-3 py-1.5 text-[13px] font-medium text-ink-soft transition-colors hover:bg-pass-wash hover:text-ink"
             aria-expanded="false"
             aria-controls={`${g.id}-menu`}
           >
@@ -92,13 +85,13 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
           </button>
           <div
             id={`${g.id}-menu`}
-            class="more-menu invisible absolute left-0 top-full mt-2 w-72 translate-y-1 rounded-[4px] border border-rail bg-white p-1 opacity-0 transition-all duration-200"
+            class="more-menu invisible absolute left-0 top-full mt-2 w-72 translate-y-1 rounded-[10px] border border-rail bg-white p-1 opacity-0 transition-all duration-200"
           >
             {g.links.map((l) => (
               <a
                 href={l.href}
                 data-nav-link
-                class="flex flex-col gap-0.5 rounded-[2px] px-3 py-2.5 text-sm transition-colors hover:bg-pass-wash/60"
+                class="flex flex-col gap-0.5 rounded-[6px] px-3 py-2.5 text-sm transition-colors hover:bg-pass-wash/60"
               >
                 <span class="font-medium text-ink">{l.label}</span>
                 <span class="text-xs text-ink-mute">{l.desc}</span>
@@ -112,7 +105,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
       <a
         href={featuredLink.href}
         data-nav-link
-        class="nav-item ml-1 rounded-[2px] px-3 py-1.5 text-[13px] font-semibold text-ink-soft transition-colors hover:bg-pass-wash hover:text-ink"
+        class="nav-item ml-1 rounded-[6px] px-3 py-1.5 text-[13px] font-semibold text-ink-soft transition-colors hover:bg-pass-wash hover:text-ink"
       >
         {featuredLink.label}
       </a>
@@ -127,7 +120,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
           target="_blank"
           rel="noopener"
           aria-label="GitHub repository"
-          class="flex h-8 w-8 items-center justify-center rounded-[2px] text-ink-soft transition-colors hover:bg-pass-wash hover:text-ink"
+          class="flex h-8 w-8 items-center justify-center rounded-[6px] text-ink-soft transition-colors hover:bg-pass-wash hover:text-ink"
         >
           <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
@@ -135,7 +128,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
         </a>
         <a
           href="https://app.geoready.dev/signup"
-          class="group flex items-center gap-1.5 rounded-[4px] bg-pass-deep px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+          class="group flex items-center gap-1.5 rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[12.5px] font-semibold text-white transition-colors hover:bg-pass"
         >
           <span>Get started</span>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true">
@@ -149,7 +142,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
     <!-- Mobile burger — arc + wave morphing into X -->
     <button
       id="mobile-menu-btn"
-      class="relative flex h-10 w-10 items-center justify-center rounded-[2px] text-ink transition-colors hover:bg-pass-wash md:hidden"
+      class="relative flex h-10 w-10 items-center justify-center rounded-[6px] text-ink transition-colors hover:bg-pass-wash md:hidden"
       aria-label="Toggle menu"
       aria-expanded="false"
       aria-controls="mobile-menu"
@@ -181,7 +174,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
       <a
         href="/pricing/"
         data-mobile-link
-        class="group mb-5 flex items-center justify-between gap-3 rounded-[4px] border border-rail bg-white px-4 py-3.5 transition-colors hover:border-pass/50"
+        class="group mb-5 flex items-center justify-between gap-3 rounded-[10px] border border-rail bg-white px-4 py-3.5 transition-colors hover:border-pass/50"
       >
         <div class="min-w-0">
           <p class="text-[15px] font-semibold leading-tight text-ink">Pricing: plans from $0</p>
@@ -195,7 +188,7 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
 
       {navGroups.map((g) => (
         <div>
-          <p class="mb-1.5 mt-5 px-1 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-mute">{g.label}</p>
+          <p class="mb-1.5 mt-5 px-1 font-text font-medium text-[12px] text-ink-mute">{g.label}</p>
           <div class="mb-2 flex flex-col">
             {g.links.map((l) => (
               <a
@@ -216,14 +209,14 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
         <a
           href="https://app.geoready.dev/signup"
           data-mobile-link
-          class="w-full rounded-[4px] bg-pass-deep py-3 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+          class="w-full rounded-[10px] bg-pass-deep py-3 text-center font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
         >
           Get started free
         </a>
         <a
           href="https://app.geoready.dev/login"
           data-mobile-link
-          class="w-full rounded-[4px] border border-rail bg-white py-3 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+          class="w-full rounded-[10px] border border-rail bg-white py-3 text-center font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
         >
           Log in
         </a>

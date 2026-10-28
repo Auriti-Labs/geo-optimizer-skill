@@ -64,10 +64,10 @@ const faqs = [
         <div class="grid gap-10 lg:grid-cols-[minmax(0,0.88fr)_minmax(420px,0.82fr)] lg:items-center">
           <div>
             <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
-              <h1 class="max-w-3xl font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+              <h1 class="max-w-3xl font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
                 Turn a sitemap into an AI-readable orientation file.
               </h1>
-              <div class="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-mute">
+              <div class="flex items-center gap-2 font-text font-medium text-[12px] text-ink-mute">
                 <a href="/" class="transition-colors hover:text-ink">Home</a>
                 <span class="h-1 w-1 rounded-full bg-ink-mute" aria-hidden="true"></span>
                 <span>llms.txt generator</span>
@@ -91,14 +91,14 @@ const faqs = [
                 ['Publish', '/llms.txt at the domain root.'],
               ].map(([label, text]) => (
                 <div class="border-l border-rail pl-4">
-                  <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{label}</p>
+                  <p class="font-text font-medium text-[12.5px] text-ink-mute">{label}</p>
                   <p class="mt-1 text-sm leading-relaxed text-ink-soft">{text}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div class="flex items-center rounded-[4px] border border-rail bg-white p-6">
+          <div class="flex items-center rounded-[10px] border border-rail bg-white p-6">
             <LlmsPreview variant="dark" class="w-full" />
           </div>
         </div>
@@ -118,15 +118,15 @@ const faqs = [
 
         <div class="mx-auto mt-10 max-w-5xl">
           <div class="mb-5 flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
-            <h2 id="llms-tool-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink">Generate your llms.txt</h2>
+            <h2 id="llms-tool-heading" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink">Generate your llms.txt</h2>
             <p class="max-w-md text-sm leading-relaxed text-ink-soft">
               Start from a URL, then edit the Markdown before publishing it.
             </p>
           </div>
-          <div class="overflow-hidden rounded-[4px] border border-rail bg-paper">
+          <div class="overflow-hidden rounded-[10px] border border-rail bg-paper">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-5 py-2.5">
-              <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-mute">Tool workspace</p>
-              <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">POST /api/llms/generate</p>
+              <p class="font-text text-[12.5px] font-semibold text-ink-mute">Tool workspace</p>
+              <p class="font-text font-medium text-[12.5px] text-ink-mute">POST /api/llms/generate</p>
             </div>
             <div class="p-5 sm:p-6">
               <LlmsTxtGenerator client:load />
@@ -141,7 +141,7 @@ const faqs = [
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
         {/* 1. Cos'è un llms.txt generator */}
         <section class="max-w-3xl">
-          <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">What is an llms.txt generator?</h2>
+          <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">What is an llms.txt generator?</h2>
           <p class="mt-4 leading-relaxed text-ink-soft">
             An llms.txt generator is a tool that builds an
             <code class="text-sm font-mono"> llms.txt</code> file for your site
@@ -171,7 +171,7 @@ const faqs = [
 
         {/* 2. Come funziona */}
         <section class="mt-12 max-w-3xl md:mt-16">
-          <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">How this generator works</h2>
+          <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">How this generator works</h2>
           <p class="mt-4 leading-relaxed text-ink-soft">
             The process is straightforward and runs in a few seconds:
           </p>
@@ -202,7 +202,7 @@ const faqs = [
     <section class="border-t border-rail bg-white">
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
         <section class="max-w-3xl">
-          <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">What to do after generating llms.txt</h2>
+          <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">What to do after generating llms.txt</h2>
           <p class="mt-4 leading-relaxed text-ink-soft">
             The generated file is a starting point. To put it to work:
           </p>
@@ -241,18 +241,18 @@ const faqs = [
         </section>
 
         <section class="mt-12 md:mt-16">
-          <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">What llms.txt covers and what it does not cover</h2>
+          <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">What llms.txt covers and what it does not cover</h2>
           <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
             Publishing llms.txt improves orientation, but it does not replace a full
             GEO workflow. Use this table to decide the next check after the file is live.
           </p>
-          <div class="mt-5 overflow-x-auto rounded-[4px] border border-rail bg-white">
+          <div class="mt-5 overflow-x-auto rounded-[10px] border border-rail bg-white">
             <table class="min-w-full border-collapse text-left text-sm">
               <thead class="bg-paper">
                 <tr>
-                  <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Need</th>
-                  <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Covered by llms.txt?</th>
-                  <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Next GeoReady step</th>
+                  <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Need</th>
+                  <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Covered by llms.txt?</th>
+                  <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Next GeoReady step</th>
                 </tr>
               </thead>
               <tbody>
@@ -286,7 +286,7 @@ const faqs = [
     {/* 4. FAQ */}
     <section class="border-t border-rail bg-paper">
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-        <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">llms.txt generator FAQ</h2>
+        <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">llms.txt generator FAQ</h2>
         <div class="mt-8 max-w-3xl">
           {faqs.map((faq) => (
             <div class="border-t border-rail py-5 first:border-t-0 first:pt-0">
@@ -301,7 +301,7 @@ const faqs = [
     {/* CTA — banda di verdetto della pagina */}
     <section class="border-t border-rail bg-pass-deep">
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-        <h2 class="max-w-3xl font-head text-2xl font-extrabold tracking-[-0.02em] text-white md:text-3xl">Go beyond llms.txt with a full AI SEO audit</h2>
+        <h2 class="max-w-3xl font-head text-2xl font-semibold tracking-[-0.02em] text-white md:text-3xl">Go beyond llms.txt with a full AI SEO audit</h2>
         <p class="mt-3 max-w-2xl leading-relaxed text-pass-wash">
           An llms.txt is one signal. The free audit checks your site across eight
           GEO categories — crawlability, llms.txt, schema, content signals, AI
@@ -312,7 +312,7 @@ const faqs = [
           <a
             href="/ai-seo-audit/"
             data-cta="llms_generator_final_free_audit"
-            class="inline-flex items-center justify-center rounded-[4px] bg-white px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-pass-deep transition-colors hover:bg-pass-wash"
+            class="inline-flex items-center justify-center rounded-[10px] bg-white px-6 py-3 font-text text-[13px] font-semibold text-pass-deep transition-colors hover:bg-pass-wash"
           >
             Run a free AI visibility audit
           </a>
@@ -324,14 +324,14 @@ const faqs = [
             data-plan-price="$19"
             data-plan-currency="USD"
             data-cta-location="llms_generator_final_monitoring"
-            class="inline-flex items-center justify-center rounded-[4px] border border-white/40 px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:border-white hover:bg-white/10"
+            class="inline-flex items-center justify-center rounded-[10px] border border-white/40 px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
           >
             Monitor weekly changes
           </a>
           <a
             href="/ai-seo/"
             data-cta="llms_generator_final_ai_seo"
-            class="inline-flex items-center justify-center rounded-[4px] border border-white/40 px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:border-white hover:bg-white/10"
+            class="inline-flex items-center justify-center rounded-[10px] border border-white/40 px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
           >
             Learn about AI SEO
           </a>

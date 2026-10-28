@@ -194,8 +194,8 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
     <div class="mx-auto max-w-7xl px-6 pt-14 pb-16 md:pt-20 md:pb-20">
       <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.42fr)] lg:items-start">
         <div>
-          <p class="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-pass-deep">AI Visibility Audit · Citation Monitoring</p>
-          <h1 class="font-head text-[2.6rem] font-extrabold leading-[1.02] tracking-[-0.03em] md:text-6xl">
+          <p class="mb-3 font-text text-[12.5px] font-semibold text-pass-deep">AI Visibility Audit · Citation Monitoring</p>
+          <h1 class="font-head text-[2.6rem] font-semibold leading-[1.02] tracking-[-0.03em] md:text-6xl">
             Audit your AI visibility, then monitor it over&nbsp;time.
           </h1>
           <p class="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
@@ -211,7 +211,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
           </div>
           <p class="mt-2.5 flex flex-wrap items-center gap-x-3 text-[13px] text-ink-mute">
             <span>Free report, no account required.</span>
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em]">POST /api/audit</span>
+            <span class="font-text font-medium text-[12.5px]">POST /api/audit</span>
           </p>
           <p class="mt-4 border-t border-rail/60 pt-3 text-[13px] leading-relaxed text-ink-soft">
             A single audit is a photograph of one point in time. Monitoring is the video sequence:
@@ -235,10 +235,10 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
         </div>
 
         {/* Run panel — your run against the measured cohort (nested grades) */}
-        <aside class="rounded-[4px] border border-rail bg-white" aria-label="Benchmark of audited sites">
+        <aside class="rounded-[10px] border border-rail bg-white" aria-label="Benchmark of audited sites">
           <div class="flex items-center justify-between gap-3 border-b border-rail px-5 py-3">
-            <h2 class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-mute">Run panel</h2>
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{BENCHMARK.sampleLabel}</span>
+            <h2 class="font-text text-[12.5px] font-semibold text-ink-mute">Run panel</h2>
+            <span class="font-text font-medium text-[12.5px] text-ink-mute">{BENCHMARK.sampleLabel}</span>
           </div>
           <div class="space-y-4 px-5 py-5">
             <div>
@@ -246,14 +246,14 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
                 <span class="text-sm font-semibold text-ink">Your site</span>
                 <span class="font-mono text-[12px] tabular-nums text-queued">— /100 · queued</span>
               </div>
-              <div class="mt-1.5 h-2.5 rounded-[2px] border border-ink/40 bg-paper" aria-hidden="true"></div>
+              <div class="mt-1.5 h-2.5 rounded-[6px] border border-ink/40 bg-paper" aria-hidden="true"></div>
             </div>
             <div>
               <div class="flex items-baseline justify-between gap-2">
                 <span class="text-sm text-ink-soft">Cohort average</span>
                 <span class="font-mono text-[12px] tabular-nums text-ink-soft">{BENCHMARK.average} /100</span>
               </div>
-              <div class="mt-1.5 h-2.5 rounded-[2px] border border-dashed border-ink-mute/60" aria-hidden="true">
+              <div class="mt-1.5 h-2.5 rounded-[6px] border border-dashed border-ink-mute/60" aria-hidden="true">
                 <div class="h-full bg-ink-mute/25" style={`width:${avgPct}%`}></div>
               </div>
             </div>
@@ -262,7 +262,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
                 <span class="text-sm text-ink-soft">Cohort median</span>
                 <span class="font-mono text-[12px] tabular-nums text-ink-soft">{BENCHMARK.median} /100</span>
               </div>
-              <div class="mt-1.5 h-2.5 rounded-[2px] border border-dashed border-ink-mute/60" aria-hidden="true">
+              <div class="mt-1.5 h-2.5 rounded-[6px] border border-dashed border-ink-mute/60" aria-hidden="true">
                 <div class="h-full bg-ink-mute/25" style={`width:${medPct}%`}></div>
               </div>
             </div>
@@ -271,7 +271,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
             </p>
           </div>
           <div class="border-t border-rail px-5 py-3">
-            <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
+            <p class="font-text font-medium text-[12.5px] text-ink-mute">
               GET /api/public/benchmark · as of <time datetime={BENCHMARK.asOfIso}>{BENCHMARK.asOf}</time> · <a href="/state-of-geo/" class="underline underline-offset-2 hover:text-ink">live benchmark</a>
             </p>
           </div>
@@ -281,10 +281,10 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
       {/* The nine gates, with their published weights */}
       <div class="mt-14">
         <div class="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 class="font-head text-xl font-extrabold tracking-[-0.02em]">The nine gates every audit runs</h2>
-          <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">models/config.py · CATEGORY_MAX_V2 · Σ = 100 pts</p>
+          <h2 class="font-head text-xl font-semibold tracking-[-0.02em]">The nine gates every audit runs</h2>
+          <p class="font-text font-medium text-[12.5px] text-ink-mute">models/config.py · CATEGORY_MAX_V2 · Σ = 100 pts</p>
         </div>
-        <ol class="mt-5 grid grid-cols-1 gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
+        <ol class="mt-5 grid grid-cols-1 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
           {SCORING_WEIGHTS.map(([name, points, what, key], i) => (
             <li class="gate bg-white" style={`--i:${i}`}>
               <details class="group">
@@ -298,7 +298,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
                     <span class="mt-0.5 flex items-center justify-between gap-2">
                       <span class="font-mono text-[11px] text-ink-mute">{key}</span>
                       <span class="flex items-center gap-2">
-                        <span class="flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.1em] text-queued">
+                        <span class="flex items-center gap-1 font-text font-medium text-[12px] text-queued">
                           <svg class="h-2 w-2" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="4" cy="4" r="3" /></svg>
                           queued
                         </span>
@@ -321,7 +321,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
   {/* The retrieval path */}
   <section class="world-console border-t border-rail bg-white font-text text-ink">
     <div class="mx-auto max-w-7xl px-6 py-16 md:py-20">
-      <h2 class="max-w-3xl font-head text-3xl font-extrabold tracking-[-0.02em] md:text-5xl">AI SEO is not a checklist. It is a retrieval path.</h2>
+      <h2 class="max-w-3xl font-head text-3xl font-semibold tracking-[-0.02em] md:text-5xl">AI SEO is not a checklist. It is a retrieval path.</h2>
       <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">
         Traditional SEO asks whether a page can rank. AI SEO asks whether an answer engine can reach it, parse it, trust it, and cite it.
       </p>
@@ -334,7 +334,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
         ].map(([num, title, text]) => (
           <li class="relative border-t-2 border-pass pt-4">
             <span class="absolute -top-[5px] left-0 h-2 w-2 rounded-full bg-pass" aria-hidden="true"></span>
-            <h3 class="font-head text-lg font-extrabold tracking-[-0.01em]">
+            <h3 class="font-head text-lg font-semibold tracking-[-0.01em]">
               <span class="mr-2 font-mono text-[12px] font-medium tabular-nums text-ink-mute align-middle">{num}</span>{title}
             </h3>
             <p class="mt-2 text-sm leading-relaxed text-ink-soft">{text}</p>
@@ -363,10 +363,10 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
   {/* The spec sheet */}
   <section class="world-console border-t border-rail bg-paper font-text text-ink">
     <div class="mx-auto max-w-7xl px-6 py-16 md:py-20">
-      <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] md:text-3xl">How GeoReady works</h2>
+      <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">How GeoReady works</h2>
       <div class="mt-8 space-y-8">
         <div class="max-w-3xl">
-          <h3 class="font-head text-lg font-extrabold tracking-[-0.01em]">
+          <h3 class="font-head text-lg font-semibold tracking-[-0.01em]">
             <span class="mr-2 font-mono text-[12px] font-medium tabular-nums text-ink-mute align-middle">1</span>Enter a URL
           </h3>
           <p class="mt-2 leading-relaxed text-ink-soft">
@@ -375,7 +375,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
           </p>
         </div>
         <div>
-          <h3 class="font-head text-lg font-extrabold tracking-[-0.01em]">
+          <h3 class="font-head text-lg font-semibold tracking-[-0.01em]">
             <span class="mr-2 font-mono text-[12px] font-medium tabular-nums text-ink-mute align-middle">2</span>Get a GEO score
           </h3>
           <p class="mt-2 max-w-3xl leading-relaxed text-ink-soft">
@@ -383,14 +383,14 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
             per-category breakdown. These are the published weights, the same numbers the
             open-source engine uses, so any score can be recomputed by hand:
           </p>
-          <div class="mt-4 overflow-x-auto rounded-[4px] border border-rail bg-white">
+          <div class="mt-4 overflow-x-auto rounded-[10px] border border-rail bg-white">
             <table class="w-full min-w-[640px] text-left text-sm">
               <thead>
                 <tr class="border-b border-rail">
-                  <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Gate</th>
-                  <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Category</th>
-                  <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Points</th>
-                  <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">What it measures</th>
+                  <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Gate</th>
+                  <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Category</th>
+                  <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Points</th>
+                  <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it measures</th>
                 </tr>
               </thead>
               <tbody>
@@ -413,7 +413,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
           </p>
         </div>
         <div class="max-w-3xl">
-          <h3 class="font-head text-lg font-extrabold tracking-[-0.01em]">
+          <h3 class="font-head text-lg font-semibold tracking-[-0.01em]">
             <span class="mr-2 font-mono text-[12px] font-medium tabular-nums text-ink-mute align-middle">3</span>Apply prioritized fixes
           </h3>
           <p class="mt-2 leading-relaxed text-ink-soft">
@@ -426,9 +426,9 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
       {/* First-party baseline — a self-contained, quotable passage. Our own
           measurement is the one claim on this page no competitor can restate.
           Reso come "log well": l'unico materiale scuro della pagina. */}
-      <div class="mt-12 overflow-hidden rounded-[4px] bg-well text-well-ink">
+      <div class="mt-12 overflow-hidden rounded-[10px] bg-well text-well-ink">
         <div class="flex items-center justify-between gap-3 border-b border-well-ink/15 px-6 py-3">
-          <h3 class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-well-mute">Run summary · what a typical site scores</h3>
+          <h3 class="font-text text-[12.5px] font-semibold text-well-mute">Run summary · what a typical site scores</h3>
           <span class="font-mono text-[11px] tracking-[0.08em] text-pass-light">exit 0</span>
         </div>
         <figure class="px-6 py-6 md:px-8">
@@ -456,7 +456,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
   {/* Checks on the project itself */}
   <section class="world-console border-t border-rail bg-white font-text text-ink">
     <div class="mx-auto max-w-7xl px-6 py-16 md:py-20">
-      <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] md:text-3xl">Why trust this tool</h2>
+      <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">Why trust this tool</h2>
       <ul class="mt-8 grid gap-x-10 gap-y-0 md:grid-cols-2">
         {projectChecks.map((c) => (
           <li class="flex items-start gap-4 border-t border-rail py-5">
@@ -495,8 +495,8 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
   {/* What you can do today */}
   <section class="world-console border-t border-rail bg-paper font-text text-ink">
     <div class="mx-auto max-w-7xl px-6 py-16">
-      <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] md:text-3xl">What you can do today</h2>
-      <div class="mt-8 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2">
+      <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">What you can do today</h2>
+      <div class="mt-8 grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2">
         {actions.map((a) => (
           <a
             href={a.href}
@@ -507,7 +507,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
             <div class="min-w-0 flex-1">
               <div class="mb-1 flex flex-wrap items-center gap-2">
                 <p class="text-[15px] font-semibold text-ink transition-colors group-hover:text-pass-deep">{a.label}</p>
-                <span class={`rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] ${a.badgeTone === 'pass' ? 'bg-pass-wash text-pass-deep' : 'border border-rail text-ink-mute'}`}>{a.badge}</span>
+                <span class={`rounded-[6px] px-1.5 py-0.5 font-text font-medium text-[12px] ${a.badgeTone === 'pass' ? 'bg-pass-wash text-pass-deep' : 'border border-rail text-ink-mute'}`}>{a.badge}</span>
               </div>
               <p class="text-sm leading-relaxed text-ink-soft">{a.desc}</p>
             </div>
@@ -524,10 +524,10 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
   <section class="world-console border-t border-rail bg-white font-text text-ink">
     <div class="mx-auto max-w-7xl px-6 py-16 md:py-20">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 class="max-w-2xl font-head text-3xl font-extrabold tracking-[-0.02em] md:text-4xl">
+        <h2 class="max-w-2xl font-head text-3xl font-semibold tracking-[-0.02em] md:text-4xl">
           One audit gives the baseline. Monitoring tells you when the baseline moves.
         </h2>
-        <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">paid plans · founding price</p>
+        <p class="font-text font-medium text-[12.5px] text-ink-mute">paid plans · founding price</p>
       </div>
 
       <p class="mt-5 max-w-2xl leading-relaxed text-ink-soft">
@@ -543,15 +543,15 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
 
       <div class="mt-10 grid gap-3 md:grid-cols-2">
         {/* Pro */}
-        <div class="flex flex-col rounded-[4px] border border-rail bg-paper p-5">
+        <div class="flex flex-col rounded-[10px] border border-rail bg-paper p-5">
           <div class="flex items-baseline justify-between gap-3">
             <h3 class="text-base font-semibold text-ink">Pro</h3>
             <span class="whitespace-nowrap">
-              <span class="font-head text-lg font-extrabold text-ink">$19</span>
+              <span class="font-head text-lg font-semibold text-ink">$19</span>
               <span class="font-mono text-xs text-ink-mute">/mo</span>
             </span>
           </div>
-          <p class="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">10 domains · weekly</p>
+          <p class="mt-1 font-text font-medium text-[12.5px] text-ink-mute">10 domains · weekly</p>
           <p class="mt-3 text-sm leading-relaxed text-ink-soft">
             Turns one audit into an ongoing signal for the sites you manage.
           </p>
@@ -561,22 +561,22 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
           <a
             href="/pricing/"
             data-cta="home_pricing_teaser_pro"
-            class="mt-4 block w-full rounded-[4px] border border-rail bg-white px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+            class="mt-4 block w-full rounded-[10px] border border-rail bg-white px-4 py-2.5 text-center font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             Compare plans
           </a>
         </div>
 
         {/* Agency */}
-        <div class="flex flex-col rounded-[4px] border border-rail bg-paper p-5">
+        <div class="flex flex-col rounded-[10px] border border-rail bg-paper p-5">
           <div class="flex items-baseline justify-between gap-3">
             <h3 class="text-base font-semibold text-ink">Agency</h3>
             <span class="whitespace-nowrap">
-              <span class="font-head text-lg font-extrabold text-ink">$89</span>
+              <span class="font-head text-lg font-semibold text-ink">$89</span>
               <span class="font-mono text-xs text-ink-mute">/mo</span>
             </span>
           </div>
-          <p class="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">50 domains · daily</p>
+          <p class="mt-1 font-text font-medium text-[12.5px] text-ink-mute">50 domains · daily</p>
           <p class="mt-3 text-sm leading-relaxed text-ink-soft">
             For teams managing many client domains with shared access and bulk runs.
           </p>
@@ -586,7 +586,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
           <a
             href="/pricing/"
             data-cta="home_pricing_teaser_agency"
-            class="mt-4 block w-full rounded-[4px] border border-rail bg-white px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+            class="mt-4 block w-full rounded-[10px] border border-rail bg-white px-4 py-2.5 text-center font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             Compare plans
           </a>
@@ -594,7 +594,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
       </div>
 
       <p class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-mute">
-        <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-pass-deep">Free stays free</span>
+        <span class="font-text font-medium text-[12.5px] text-pass-deep">Free stays free</span>
         <span>The audit, the CLI, and 5 runs a day never expire or paywall.</span>
         <a
           href="/pricing/"
@@ -610,7 +610,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
   {/* FAQ */}
   <section class="world-console border-t border-rail bg-paper font-text text-ink">
     <div class="mx-auto max-w-7xl px-6 py-16">
-      <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] md:text-3xl">Frequently asked questions</h2>
+      <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">Frequently asked questions</h2>
       <div class="mt-8 max-w-3xl">
         {faqs.map((faq) => (
           <div class="border-t border-rail py-5 first:border-t-0 first:pt-0">
@@ -633,18 +633,18 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
   <section class="world-console border-t border-rail bg-white font-text text-ink">
     <div class="mx-auto max-w-7xl px-6 py-16 md:py-20">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] md:text-3xl">
+        <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
           Auditable by design: every number below is public
         </h2>
-        <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
+        <p class="font-text font-medium text-[12.5px] text-ink-mute">
           GET / api / public / benchmark · GET /api/stats
         </p>
       </div>
 
-      <dl class="mt-8 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
+      <dl class="mt-8 grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
         <div class="flex flex-col gap-1 bg-white p-5">
-          <dt class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">GitHub stars (MIT open source)</dt>
-          <dd class="font-head text-2xl font-extrabold tabular-nums text-ink">
+          <dt class="font-text font-medium text-[12.5px] text-ink-mute">GitHub stars (MIT open source)</dt>
+          <dd class="font-head text-2xl font-semibold tabular-nums text-ink">
             {PUBLIC_STATS.github_stars}
             <span class="ml-1 font-mono text-xs font-medium text-ink-mute">★</span>
           </dd>
@@ -655,8 +655,8 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
         </div>
 
         <div class="flex flex-col gap-1 bg-white p-5">
-          <dt class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{BENCHMARK.sampleLabel} · live cohort</dt>
-          <dd class="font-head text-2xl font-extrabold tabular-nums text-ink">
+          <dt class="font-text font-medium text-[12.5px] text-ink-mute">{BENCHMARK.sampleLabel} · live cohort</dt>
+          <dd class="font-head text-2xl font-semibold tabular-nums text-ink">
             {BENCHMARK.average}<span class="ml-1 font-mono text-xs font-medium text-ink-mute">/100 avg</span>
           </dd>
           <dd class="text-sm leading-relaxed text-ink-soft">
@@ -666,8 +666,8 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
         </div>
 
         <div class="flex flex-col gap-1 bg-white p-5">
-          <dt class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">This site's own score</dt>
-          <dd class="font-head text-2xl font-extrabold tabular-nums text-ink">
+          <dt class="font-text font-medium text-[12.5px] text-ink-mute">This site's own score</dt>
+          <dd class="font-head text-2xl font-semibold tabular-nums text-ink">
             91<span class="ml-1 font-mono text-xs font-medium text-ink-mute">/100</span>
           </dd>
           <dd class="text-sm leading-relaxed text-ink-soft">
@@ -678,7 +678,7 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
         </div>
       </dl>
 
-      <div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-rail pt-5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
+      <div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-rail pt-5 font-text font-medium text-[12.5px] text-ink-mute">
         <span class="inline-flex items-center gap-1.5">
           <span aria-hidden="true" class="inline-block h-1.5 w-1.5 rounded-full bg-pass align-middle" /> no paid claims · no "trusted by"
         </span>
@@ -696,10 +696,10 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
   <section class="world-console bg-pass-deep font-text text-white">
     <div class="mx-auto max-w-7xl px-6 py-16 md:py-20">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
-        <h2 class="max-w-3xl font-head text-3xl font-extrabold tracking-[-0.02em] md:text-5xl">
+        <h2 class="max-w-3xl font-head text-3xl font-semibold tracking-[-0.02em] md:text-5xl">
           AI search is already deciding which sites get cited.
         </h2>
-        <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-pass-wash">Verdict · your site: pending. Check it free, no account</p>
+        <p class="font-text font-medium text-[12.5px] text-pass-wash">Verdict · your site: pending. Check it free, no account</p>
       </div>
       <p class="mt-5 max-w-2xl leading-relaxed text-pass-wash">
         The signals are documented, the research is published, and the audit is free.
@@ -710,19 +710,19 @@ const medPct = Math.max(0, Math.min(100, Number(BENCHMARK.median) || 0));
         <a
           href="#audit-form"
           data-cta="home_final_free_check"
-          class="inline-block rounded-[4px] bg-white px-7 py-3 font-mono text-[13px] font-semibold uppercase tracking-[0.12em] text-pass-deep transition-colors hover:bg-pass-wash"
+          class="inline-block rounded-[10px] bg-white px-7 py-3 font-text text-[13px] font-semibold text-pass-deep transition-colors hover:bg-pass-wash"
         >
           Start free check
         </a>
         <a
           href="/pricing/#comparison-heading"
           data-cta="home_final_compare_plans"
-          class="inline-block rounded-[4px] border border-white/40 px-7 py-3 font-mono text-[13px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:border-white hover:bg-white/10"
+          class="inline-block rounded-[10px] border border-white/40 px-7 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
         >
           Compare Pro &amp; Agency plans
         </a>
       </div>
-      <p class="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-pass-wash">
+      <p class="mt-4 font-text font-medium text-[12.5px] text-pass-wash">
         <a
           href="/pricing/#comparison-heading"
           data-cta="home_final_already_ran"

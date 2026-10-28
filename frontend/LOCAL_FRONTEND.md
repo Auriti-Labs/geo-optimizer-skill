@@ -101,5 +101,5 @@ frontend/
 ## Note
 
 - Nessuna modifica al backend Python — il frontend e completamente separato.
-- I font sono self-hosted via `@fontsource` — nessuna richiesta a Google Fonts.
+- I font (Geist, Geist Mono) sono self-hosted in `public/fonts/`, gli stessi file di app.geoready.dev — nessuna richiesta a Google Fonts.
 - Il cookie banner GDPR va implementato in una fase successiva come componente React.

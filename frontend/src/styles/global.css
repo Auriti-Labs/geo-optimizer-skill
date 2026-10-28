@@ -1,74 +1,146 @@
 @import "tailwindcss";
-@import "@fontsource/jetbrains-mono/400.css";
-@import "@fontsource/jetbrains-mono/500.css";
-/* Console world: non-critical weights via @import; the two critical faces
-   (Archivo 800 display, Public Sans 400 body) are self-hosted below with
-   font-display: optional + preload in Layout.astro — CLS stays 0. */
-@import "@fontsource/archivo/700.css";
-@import "@fontsource/public-sans/500.css";
-@import "@fontsource/public-sans/600.css";
-@import "@fontsource/public-sans/700.css";
-
+/* Instrument panel faces, same files as app.geoready.dev: Geist + Geist Mono, self-hosted,
+   font-display: optional + preload in Layout.astro so CLS stays 0. */
 @font-face {
-  font-family: 'Archivo';
+  font-family: 'Geist';
   font-style: normal;
   font-display: optional;
-  font-weight: 800;
-  src: url(/fonts/archivo-latin-800-normal.woff2) format('woff2');
+  font-weight: 400;
+  src: url(/fonts/geist-latin-400-normal.woff2) format('woff2');
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: 'Archivo';
+  font-family: 'Geist';
   font-style: normal;
   font-display: optional;
-  font-weight: 800;
-  src: url(/fonts/archivo-latin-ext-800-normal.woff2) format('woff2');
+  font-weight: 400;
+  src: url(/fonts/geist-latin-ext-400-normal.woff2) format('woff2');
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 @font-face {
-  font-family: 'Public Sans';
+  font-family: 'Geist';
   font-style: normal;
   font-display: optional;
-  font-weight: 400;
-  src: url(/fonts/public-sans-latin-400-normal.woff2) format('woff2');
+  font-weight: 500;
+  src: url(/fonts/geist-latin-500-normal.woff2) format('woff2');
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: 'Public Sans';
+  font-family: 'Geist';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 500;
+  src: url(/fonts/geist-latin-ext-500-normal.woff2) format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 600;
+  src: url(/fonts/geist-latin-600-normal.woff2) format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 600;
+  src: url(/fonts/geist-latin-ext-600-normal.woff2) format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 700;
+  src: url(/fonts/geist-latin-700-normal.woff2) format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 700;
+  src: url(/fonts/geist-latin-ext-700-normal.woff2) format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Geist Mono';
   font-style: normal;
   font-display: optional;
   font-weight: 400;
-  src: url(/fonts/public-sans-latin-ext-400-normal.woff2) format('woff2');
+  src: url(/fonts/geist-mono-latin-400-normal.woff2) format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 400;
+  src: url(/fonts/geist-mono-latin-ext-400-normal.woff2) format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 500;
+  src: url(/fonts/geist-mono-latin-500-normal.woff2) format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 500;
+  src: url(/fonts/geist-mono-latin-ext-500-normal.woff2) format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 600;
+  src: url(/fonts/geist-mono-latin-600-normal.woff2) format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 600;
+  src: url(/fonts/geist-mono-latin-ext-600-normal.woff2) format('woff2');
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 
 @theme {
   /* ── Console world (DESIGN.md is the authority) ─────────────────────── */
-  --font-head: "Archivo", sans-serif;
-  --font-text: "Public Sans", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-head: "Geist", system-ui, sans-serif;
+  --font-text: "Geist", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
 
   /* Legacy aliases: still referenced across pages as font-display/font-body.
      They now resolve to the console faces so every page speaks one voice. */
-  --font-display: "Archivo", sans-serif;
-  --font-body: "Public Sans", sans-serif;
+  --font-display: "Geist", system-ui, sans-serif;
+  --font-body: "Geist", system-ui, sans-serif;
 
-  --color-paper: #F4F5F2;
-  --color-ink: #0D110E;
-  --color-ink-soft: #3D453F;
-  --color-ink-mute: #5C665F;
-  --color-rail: #D9DED6;
+  --color-paper: #F4F6F6;
+  --color-ink: #0A1514;
+  --color-ink-soft: #48575A;
+  --color-ink-mute: #5F6C6E;
+  --color-rail: #DFE5E5;
   --color-pass: #0A7970;
   --color-pass-deep: #0F766E;
   --color-pass-wash: #E4F3F0;
-  --color-pass-light: #0D978C;  /* pass for small text on the dark well: 4.6:1, the brand pass is 3.9:1 there */
-  --color-fail: #C5392D;
+  --color-pass-light: #2DD4BF;  /* pass for small text on the dark well, the dashboard dark accent */
+  --color-fail: #C42B3B;
   --color-fail-wash: #FAEDEA;
-  --color-warn: #926306;
+  --color-warn: #9A5F00;
   --color-warn-wash: #F7F0DF;
-  --color-well: #10140F;
-  --color-well-ink: #DCE5DC;
-  --color-well-mute: #9FAB9F;
+  --color-well: #111616;
+  --color-well-ink: #E8F0EF;
+  --color-well-mute: #9DADAB;
   --color-queued: #6B746D;
 
   /* ── Legacy color aliases, remapped to the console palette ───────────
@@ -76,36 +148,36 @@
      in the console world without touching every class. The decorative
      accents (electric, violet) collapse to ink: color means state, never
      decoration (Status Monopoly rule). */
-  --color-bg-base: #F4F5F2;
+  --color-bg-base: #F4F6F6;
   --color-bg-surface: #FFFFFF;
-  --color-bg-subtle: #EBEEE9;
-  --color-bg-dark: #10140F;
-  --color-bg-dark-surface: #1A201A;
+  --color-bg-subtle: #EEF2F2;
+  --color-bg-dark: #111616;
+  --color-bg-dark-surface: #172020;
 
-  --color-text-primary: #0D110E;
-  --color-text-secondary: #3D453F;
-  --color-text-muted: #5C665F;
-  --color-text-inverse: #DCE5DC;
+  --color-text-primary: #0A1514;
+  --color-text-secondary: #48575A;
+  --color-text-muted: #5F6C6E;
+  --color-text-inverse: #E8F0EF;
 
   --color-accent-teal: #0F766E;
   --color-accent-teal-dark: #0B8076;
-  --color-accent-electric: #0D110E;
-  --color-accent-violet: #0D110E;
+  --color-accent-electric: #0A1514;
+  --color-accent-violet: #0A1514;
   --color-accent-success: #0F766E;
-  --color-accent-warning: #9C6A06;
-  --color-accent-danger: #C93A2E;
+  --color-accent-warning: #9A5F00;
+  --color-accent-danger: #C42B3B;
 
-  --color-border: #D9DED6;
-  --color-border-dark: #2A312A;
+  --color-border: #DFE5E5;
+  --color-border-dark: #1F2929;
   --color-border-accent: #0B8076;
 
-  /* Near-square geometry: the legacy 8–36px ramp is out of this world. */
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 4px;
-  --radius-xl: 4px;
-  --radius-2xl: 4px;
-  --radius-3xl: 4px;
+  /* Instrument panel geometry, as on app.geoready.dev: 9px controls, 14px panels. */
+  --radius-sm: 6px;
+  --radius-md: 9px;
+  --radius-lg: 14px;
+  --radius-xl: 14px;
+  --radius-2xl: 14px;
+  --radius-3xl: 14px;
 
   /* The No-Lift rule: nothing floats. Separation comes from hairline rails
      and background steps, so the whole shadow scale resolves to nothing. */
@@ -124,7 +196,7 @@ html {
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scrollbar-color: #B7BFB4 transparent;
+  scrollbar-color: #CBD5D5 transparent;
 }
 
 body {
@@ -137,7 +209,7 @@ body {
    their dark-ground pairs. */
 .bg-bg-dark,
 [data-hero-bleed].bg-bg-dark {
-  --color-text-muted: #9FAB9F;
+  --color-text-muted: #9DADAB;
 }
 
 .bg-bg-dark .text-accent-teal,
@@ -147,8 +219,8 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-head);
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  letter-spacing: -0.03em;
   line-height: 1.2;
   text-wrap: balance;
 }

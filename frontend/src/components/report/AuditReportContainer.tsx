@@ -213,12 +213,12 @@ function ReportNextStep({
   const ordinal = repeatCount === 1 ? 'Second' : repeatCount === 2 ? 'Third' : `${(repeatCount ?? 0) + 1}th`;
 
   return (
-    <section className="overflow-hidden rounded-[4px] border border-pass/50 bg-pass-wash/60">
+    <section className="overflow-hidden rounded-[10px] border border-pass/50 bg-pass-wash/60">
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-pass/30 px-5 py-2.5">
-        <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep">
+        <span className="font-text text-[12.5px] font-semibold text-pass-deep">
           Your baseline
         </span>
-        <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-pass-deep">
+        <span className="font-text font-medium text-[12.5px] text-pass-deep">
           {estimate.freeFixCount} free {estimate.freeFixCount === 1 ? 'fix' : 'fixes'} on this page
         </span>
       </div>
@@ -226,7 +226,7 @@ function ReportNextStep({
       <div className="space-y-6 p-5 md:p-6">
         {/* Baseline → tetto stimato */}
         <div>
-          <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-head font-extrabold tracking-[-0.02em] text-ink">
+          <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-head font-semibold tracking-[-0.02em] text-ink">
             <span className="text-3xl tabular-nums md:text-4xl">
               {estimate.baseline}
               <span className="text-lg text-ink-mute">/100</span>
@@ -235,7 +235,7 @@ function ReportNextStep({
               <>
                 <span className="text-xl text-ink-mute" aria-hidden="true">→</span>
                 <span className="text-3xl tabular-nums text-pass-deep md:text-4xl">
-                  <span className="mr-1 align-middle font-mono text-[11px] font-semibold uppercase tracking-[0.12em]">up to</span>
+                  <span className="mr-1 align-middle font-text text-[12.5px] font-semibold">up to</span>
                   {estimate.ceiling}
                   <span className="text-lg text-ink-mute">/100</span>
                 </span>
@@ -263,28 +263,28 @@ function ReportNextStep({
         </div>
 
         {/* Loop gratuito: correggi → ri-verifica → segui il punteggio */}
-        <ol className="grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-3">
+        <ol className="grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-3">
           <li className="bg-white p-4">
-            <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep">1 · Fix</div>
+            <div className="font-text text-[12.5px] font-semibold text-pass-deep">1 · Fix</div>
             <p className="mt-1 text-sm leading-snug text-ink-soft">
               Apply the fixes listed under Recommendations. They are free and need no account.
             </p>
           </li>
           <li className="bg-white p-4">
-            <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep">2 · Re-run</div>
+            <div className="font-text text-[12.5px] font-semibold text-pass-deep">2 · Re-run</div>
             <p className="mt-1 text-sm leading-snug text-ink-soft">
               Audit the same URL again, free. Results are cached for about an hour, so re-run after your change is live.
             </p>
             <a
               href={rerunHref(report.url)}
               onClick={() => trackCtaClicked({ cta_location: 'audit_report_loop', cta_text: 'Re-run audit' })}
-              className="mt-2 inline-flex font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep"
+              className="mt-2 inline-flex font-text text-[12.5px] font-semibold text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep"
             >
               Re-run audit
             </a>
           </li>
           <li className="bg-white p-4">
-            <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep">3 · Watch it climb</div>
+            <div className="font-text text-[12.5px] font-semibold text-pass-deep">3 · Watch it climb</div>
             <p className="mt-1 text-sm leading-snug text-ink-soft">
               This browser keeps your score history. Claim the report to keep it in your account, with a weekly re-check.
             </p>
@@ -312,7 +312,7 @@ function ReportNextStep({
                 cta_text: claimToken ? 'Claim this report' : 'Track this domain',
               })
             }
-            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-[4px] bg-pass-deep px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-5 py-2.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
           >
             {claimToken ? 'Claim this report — free' : 'Track this domain — free'}
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -338,14 +338,14 @@ function ReportNextStep({
               data-plan-price={plan.price}
               data-plan-currency="USD"
               data-cta-location="audit_report_next_step"
-              className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-pass-deep bg-white px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-pass-deep transition-colors hover:bg-pass-wash"
+              className="inline-flex min-h-11 items-center justify-center rounded-[10px] border border-pass-deep bg-white px-5 py-2.5 font-text text-[13px] font-semibold text-pass-deep transition-colors hover:bg-pass-wash"
             >
               {plan.cta}
             </a>
             <a
               href={pricingHref(claimToken)}
               data-cta="audit_report_next_step_pricing"
-              className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-rail bg-white px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+              className="inline-flex min-h-11 items-center justify-center rounded-[10px] border border-rail bg-white px-5 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Compare plans
             </a>
@@ -433,8 +433,8 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
   if (state.status === 'error') {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-        <div className="flex items-start gap-3 rounded-[4px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
-          <span aria-hidden="true" className="mt-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em]">
+        <div className="flex items-start gap-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
+          <span aria-hidden="true" className="mt-0.5 font-text text-[12.5px] font-semibold">
             err
           </span>
           <div>
@@ -476,9 +476,9 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
         highCount={highCount}
       />
 
-      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-4">
         <div className="bg-white p-4">
-          <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Categories</div>
+          <div className="font-text text-[12px] font-semibold text-ink-mute">Categories</div>
           <div className="mt-1 font-mono text-lg font-semibold tabular-nums">
             <span className="text-ink">{activeCategories}</span>
             <span className="text-sm text-ink-mute"> / {report.categories.length}</span>
@@ -486,12 +486,12 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
           <div className="mt-0.5 font-mono text-[10px] text-ink-mute">active</div>
         </div>
         <div className="bg-white p-4">
-          <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Recommendations</div>
+          <div className="font-text text-[12px] font-semibold text-ink-mute">Recommendations</div>
           <div className="mt-1 font-mono text-lg font-semibold tabular-nums text-ink">{report.recommendations.length}</div>
           <div className="mt-0.5 font-mono text-[10px] text-ink-mute">{criticalCount} critical</div>
         </div>
         <div className="bg-white p-4">
-          <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Signals</div>
+          <div className="font-text text-[12px] font-semibold text-ink-mute">Signals</div>
           <div className="mt-1 font-mono text-lg font-semibold tabular-nums">
             <span className="text-pass-deep">{passSignals}</span>
             <span className="text-sm text-ink-mute"> / {report.technicalSignals.length}</span>
@@ -499,7 +499,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
           <div className="mt-0.5 font-mono text-[10px] text-ink-mute">{warnSignals} warn, {failSignals} fail</div>
         </div>
         <div className="bg-white p-4">
-          <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Citability</div>
+          <div className="font-text text-[12px] font-semibold text-ink-mute">Citability</div>
           <div className="mt-1 font-mono text-lg font-semibold tabular-nums text-ink-soft">{report.citabilityScore ?? '—'}</div>
           <div className="mt-0.5 font-mono text-[10px] text-ink-mute">/ 100</div>
         </div>
@@ -513,7 +513,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-3 space-y-4">
-          <div className="flex flex-col items-center rounded-[4px] border border-rail bg-white p-5">
+          <div className="flex flex-col items-center rounded-[10px] border border-rail bg-white p-5">
             <ScoreGauge score={report.geoScore} label="GEO Score" />
             <div className="mt-4 w-full border-t border-rail pt-4">
               <div className="flex items-center justify-between text-xs">
@@ -525,8 +525,8 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
             </div>
           </div>
 
-          <div className="rounded-[4px] border border-rail bg-white p-4">
-            <h3 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Export Report</h3>
+          <div className="rounded-[10px] border border-rail bg-white p-4">
+            <h3 className="mb-3 font-text text-[12.5px] font-semibold text-ink-mute">Export Report</h3>
             <ExportActions reportUrl={report.url} />
             <p className="mt-3 text-xs text-ink-soft leading-relaxed">
               Auditing a prospect&apos;s site? The PDF works as a leave-behind for your pitch.
@@ -540,7 +540,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
         <div className="lg:col-span-9 space-y-8">
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Category Breakdown</h2>
+              <h2 className="font-text text-[12.5px] font-semibold text-ink-mute">Category Breakdown</h2>
               <span className="font-mono text-[11px] tabular-nums text-ink-mute">
                 {activeCategories} of {report.categories.length} active
               </span>
@@ -559,7 +559,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
 
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Technical Signals</h2>
+              <h2 className="font-text text-[12.5px] font-semibold text-ink-mute">Technical Signals</h2>
               <span className="font-mono text-[11px] tabular-nums text-ink-mute">
                 {passSignals} pass · {warnSignals} warn · {failSignals} fail
               </span>
@@ -569,7 +569,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
 
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Recommendations</h2>
+              <h2 className="font-text text-[12.5px] font-semibold text-ink-mute">Recommendations</h2>
               <div className="flex items-center gap-2 font-mono text-[11px] tabular-nums">
                 {criticalCount > 0 && (
                   <span className="text-fail">{criticalCount} critical</span>
@@ -586,7 +586,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
       </div>
 
       {state.claim_token && (
-        <div className="mt-6 flex flex-col items-start gap-4 rounded-[4px] border border-pass/50 bg-pass-wash/60 p-5 sm:flex-row sm:items-center">
+        <div className="mt-6 flex flex-col items-start gap-4 rounded-[10px] border border-pass/50 bg-pass-wash/60 p-5 sm:flex-row sm:items-center">
           <div className="flex-1">
             <p className="mb-0.5 text-sm font-semibold text-ink">Save this report to your dashboard</p>
             <p className="text-xs text-ink-soft">Create a free account to save this report and see how AI engines answer about this site. Report link expires in 24h.</p>
@@ -595,7 +595,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
             <a
               href={`https://app.geoready.dev/signup?claim=${state.claim_token}`}
               onClick={() => trackCtaClicked({ cta_location: 'audit_report_claim', cta_text: 'Save report' })}
-              className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-pass-deep px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+              className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
             >
               Save report
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
@@ -603,7 +603,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
             <a
               href={`https://app.geoready.dev/login?claim=${state.claim_token}`}
               onClick={() => trackCtaClicked({ cta_location: 'audit_report_claim', cta_text: 'Log in to save' })}
-              className="inline-flex items-center justify-center rounded-[4px] border border-rail bg-white px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+              className="inline-flex items-center justify-center rounded-[10px] border border-rail bg-white px-4 py-2 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Log in to save
             </a>

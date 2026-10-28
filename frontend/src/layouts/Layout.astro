@@ -35,8 +35,8 @@ const {
   <!-- Preload dei font critici above-the-fold (self-hosted in /public/fonts).
        Con font-display: optional in global.css, il preload dà al font la possibilità
        di essere pronto entro il block period → niente swap tardivo, CLS azzerato. -->
-  <link rel="preload" href="/fonts/archivo-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/geist-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/geist-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <title>{title}</title>
   <meta name="description" content={description}>
   <meta name="robots" content={robots}>
@@ -67,7 +67,7 @@ const {
   <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#F4F5F2">
+  <meta name="theme-color" content="#F4F6F6">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="alternate" type="application/atom+xml" title="GeoReady Guides" href="https://geoready.dev/feed.xml">
   <link rel="alternate" type="application/atom+xml" title="GEO Optimizer Releases" href="https://github.com/Auriti-Labs/geo-optimizer-skill/releases.atom">
@@ -238,7 +238,7 @@ const {
   })} />
 </head>
 <body class="bg-paper text-ink">
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-pass-deep focus:text-white focus:rounded-[4px] focus:text-sm focus:font-medium">Skip to main content</a>
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-pass-deep focus:text-white focus:rounded-[10px] focus:text-sm focus:font-medium">Skip to main content</a>
   <slot />
 </body>
 </html>

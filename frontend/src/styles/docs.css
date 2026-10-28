@@ -7,25 +7,25 @@
 /* Light theme (default) */
 :root,
 html[data-theme="light"] {
-  --sl-color-white: #0d110e;           /* ink: in Starlight the "white" token is the strongest text colour, not the paper */
+  --sl-color-white: #0A1514;           /* ink: in Starlight the "white" token is the strongest text colour, not the paper */
   --sl-color-gray-6: #eff1ec;
-  --sl-color-gray-5: #d9ded6;          /* rail */
+  --sl-color-gray-5: #DFE5E5;          /* rail */
   --sl-color-gray-4: #b9c2b8;
-  --sl-color-gray-3: #5c665f;          /* ink-mute */
-  --sl-color-gray-2: #3d453f;          /* ink-soft */
-  --sl-color-gray-1: #0d110e;          /* ink */
+  --sl-color-gray-3: #5F6C6E;          /* ink-mute */
+  --sl-color-gray-2: #48575A;          /* ink-soft */
+  --sl-color-gray-1: #0A1514;          /* ink */
 
-  --sl-color-bg: #f4f5f2;              /* paper */
+  --sl-color-bg: #F4F6F6;              /* paper */
   --sl-color-bg-nav: #ffffff;          /* bg-surface */
   --sl-color-bg-sidebar: #ffffff;      /* bg-surface */
   --sl-color-bg-inline: #e4f3f0;       /* pass-wash */
   --sl-color-bg-accent: #0b8076;       /* pass */
   --sl-color-bg-hairline: #0f766e;     /* pass-deep */
 
-  --sl-color-text: #0d110e;
+  --sl-color-text: #0A1514;
   --sl-color-text-accent: #0f766e;     /* pass-deep link */
   --sl-color-text-invert: #ffffff;
-  --sl-color-hairline: #d9ded6;
+  --sl-color-hairline: #DFE5E5;
   --sl-color-hairline-shade: rgba(13, 17, 14, 0.12);
 
   --sl-color-accent-low: #e4f3f0;      /* pass-wash */
@@ -35,24 +35,24 @@ html[data-theme="light"] {
 
 /* Dark theme */
 html[data-theme="dark"] {
-  --sl-color-white: #dce5dc;           /* well-ink */
+  --sl-color-white: #E8F0EF;           /* well-ink */
   --sl-color-gray-6: #212a20;
   --sl-color-gray-5: #2a3429;
   --sl-color-gray-4: #3a4537;
-  --sl-color-gray-3: #9fab9f;          /* well-mute */
+  --sl-color-gray-3: #9DADAB;          /* well-mute */
   --sl-color-gray-2: #c2ccc2;
-  --sl-color-gray-1: #dce5dc;          /* well-ink */
+  --sl-color-gray-1: #E8F0EF;          /* well-ink */
 
-  --sl-color-bg: #10140f;              /* well */
-  --sl-color-bg-nav: #1a201a;          /* bg-dark-surface */
-  --sl-color-bg-sidebar: #1a201a;      /* bg-dark-surface */
-  --sl-color-bg-inline: #1a201a;
+  --sl-color-bg: #111616;              /* well */
+  --sl-color-bg-nav: #172020;          /* bg-dark-surface */
+  --sl-color-bg-sidebar: #172020;      /* bg-dark-surface */
+  --sl-color-bg-inline: #172020;
   --sl-color-bg-accent: #4fd1c5;       /* teal chiaro */
   --sl-color-bg-hairline: #4fd1c5;
 
-  --sl-color-text: #dce5dc;
+  --sl-color-text: #E8F0EF;
   --sl-color-text-accent: #5eead4;     /* teal chiaro link */
-  --sl-color-text-invert: #10140f;     /* well */
+  --sl-color-text-invert: #111616;     /* well */
   --sl-color-hairline: rgba(217, 222, 214, 0.16);
   --sl-color-hairline-shade: rgba(217, 222, 214, 0.08);
 
@@ -63,14 +63,14 @@ html[data-theme="dark"] {
 
 /* Brand fonts */
 :root {
-  --sl-font-headings: "Archivo", sans-serif;
-  --sl-font: "Public Sans", sans-serif;
-  --sl-font-mono: "JetBrains Mono", monospace;
+  --sl-font-headings: "Geist", system-ui, sans-serif;
+  --sl-font: "Geist", system-ui, sans-serif;
+  --sl-font-mono: "Geist Mono", ui-monospace, monospace;
 }
 
 /* Code blocks: dark "well" surface reads in both themes */
 [data-theme="light"] .expressive-code {
-  --expressive-code-theme-bg: #10140f;
+  --expressive-code-theme-bg: #111616;
 }
 
 /* ---- Callout states ---- */
@@ -78,7 +78,7 @@ html[data-theme="dark"] {
 /* Light */
 [data-theme="light"] .starlight-aside--note   { background: #e4f3f0; border-left-color: #0b8076; }
 [data-theme="light"] .starlight-aside--caution{ background: #fbf3de; border-left-color: #7c5104; }
-[data-theme="light"] .starlight-aside--danger { background: #fbeae8; border-left-color: #c93a2e; }
+[data-theme="light"] .starlight-aside--danger { background: #fbeae8; border-left-color: #C42B3B; }
 [data-theme="light"] .starlight-aside__title  { color: #0f766e; }
 
 /* Dark */

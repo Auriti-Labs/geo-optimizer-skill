@@ -43,10 +43,10 @@ function CompactReport({ report }: { report: AuditReport }) {
       />
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="flex flex-col items-center rounded-[4px] border border-rail bg-paper p-4">
+        <div className="flex flex-col items-center rounded-[10px] border border-rail bg-paper p-4">
           <ScoreGauge score={report.geoScore} label="GEO Score" />
         </div>
-        <div className="flex flex-col items-center rounded-[4px] border border-rail bg-paper p-4">
+        <div className="flex flex-col items-center rounded-[10px] border border-rail bg-paper p-4">
           {report.citabilityScore === null ? (
             <div className="font-mono text-sm text-ink-mute">Citability not available</div>
           ) : (
@@ -57,14 +57,14 @@ function CompactReport({ report }: { report: AuditReport }) {
 
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Category Breakdown</h2>
+          <h2 className="font-text text-[12.5px] font-semibold text-ink-mute">Category Breakdown</h2>
         </div>
         <CategoryBreakdown categories={report.categories} />
       </section>
 
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Technical Signals</h2>
+          <h2 className="font-text text-[12.5px] font-semibold text-ink-mute">Technical Signals</h2>
           <span className="font-mono text-[11px] tabular-nums text-ink-mute">
             {passSignals} pass · {warnSignals} warn · {failSignals} fail
           </span>
@@ -86,7 +86,7 @@ function CompactReport({ report }: { report: AuditReport }) {
 
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Recommendations</h2>
+          <h2 className="font-text text-[12.5px] font-semibold text-ink-mute">Recommendations</h2>
           <span className="font-mono text-[11px] tabular-nums text-ink-mute">{report.recommendations.length} total</span>
         </div>
         <RecommendationList recommendations={report.recommendations} />
@@ -154,9 +154,9 @@ export default function CompareContainer() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div
           role="alert"
-          className="flex items-start gap-3 rounded-[4px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail"
+          className="flex items-start gap-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail"
         >
-          <span aria-hidden="true" className="mt-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em]">
+          <span aria-hidden="true" className="mt-0.5 font-text text-[12.5px] font-semibold">
             err
           </span>
           <div>
@@ -166,7 +166,7 @@ export default function CompareContainer() {
         </div>
         <button
           onClick={() => setState({ status: 'idle' })}
-          className="mt-4 inline-flex items-center gap-2 rounded-[4px] border border-rail bg-white px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+          className="mt-4 inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-4 py-2 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
         >
           Back to form
         </button>
@@ -179,8 +179,8 @@ export default function CompareContainer() {
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 md:py-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <h2 className="font-head text-lg font-extrabold tracking-[-0.01em] text-ink">Side-by-side comparison</h2>
-            <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">POST /api/public/audits × 2</span>
+            <h2 className="font-head text-lg font-semibold tracking-[-0.01em] text-ink">Side-by-side comparison</h2>
+            <span className="font-text font-medium text-[12.5px] text-ink-mute">POST /api/public/audits × 2</span>
           </div>
           <button
             onClick={() => {
@@ -188,7 +188,7 @@ export default function CompareContainer() {
               u.search = '';
               window.location.href = u.toString();
             }}
-            className="inline-flex items-center gap-2 rounded-[4px] border border-rail bg-white px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-pass-wash"
+            className="inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-3 py-1.5 font-text text-[12.5px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             New comparison
           </button>
@@ -197,16 +197,16 @@ export default function CompareContainer() {
         {/* Solid-vs-Dashed: Site A (your baseline) is drawn solid, Site B (the
             competing profile) is drawn dashed — reference data, not yours. */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="rounded-[4px] border border-ink/40 bg-white p-5 md:p-6">
+          <div className="rounded-[10px] border border-ink/40 bg-white p-5 md:p-6">
             <div className="mb-4 border-b border-rail pb-3">
-              <span className="rounded-[2px] border border-ink/40 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink">Site A</span>
+              <span className="rounded-[6px] border border-ink/40 px-1.5 py-0.5 font-text text-[12px] font-semibold text-ink">Site A</span>
               <p className="mt-2 truncate text-sm font-medium text-ink">{state.report1.url}</p>
             </div>
             <CompactReport report={state.report1} />
           </div>
-          <div className="rounded-[4px] border border-dashed border-ink-mute/60 bg-white p-5 md:p-6">
+          <div className="rounded-[10px] border border-dashed border-ink-mute/60 bg-white p-5 md:p-6">
             <div className="mb-4 border-b border-rail pb-3">
-              <span className="rounded-[2px] border border-dashed border-ink-mute/60 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">Site B</span>
+              <span className="rounded-[6px] border border-dashed border-ink-mute/60 px-1.5 py-0.5 font-text text-[12px] font-semibold text-ink-mute">Site B</span>
               <p className="mt-2 truncate text-sm font-medium text-ink">{state.report2.url}</p>
             </div>
             <CompactReport report={state.report2} />
@@ -218,10 +218,10 @@ export default function CompareContainer() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6">
-      <div className="overflow-hidden rounded-[4px] border border-rail bg-white">
+      <div className="overflow-hidden rounded-[10px] border border-rail bg-white">
         <div className="flex items-center justify-between gap-3 border-b border-rail px-6 py-2.5 md:px-8">
-          <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">POST /api/public/audits × 2</span>
-          <span className="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">idle</span>
+          <span className="font-text text-[12.5px] font-semibold text-ink-mute">POST /api/public/audits × 2</span>
+          <span className="rounded-[6px] border border-rail px-1.5 py-0.5 font-text font-medium text-[12px] text-ink-mute">idle</span>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6 p-6 md:p-8">
           <div className="grid gap-4 md:grid-cols-2">
@@ -235,7 +235,7 @@ export default function CompareContainer() {
                 placeholder="https://site-a.com"
                 value={url1}
                 onChange={(e) => setUrls((prev) => ({ ...prev, url1: e.target.value }))}
-                className="w-full rounded-[4px] border border-ink/25 bg-white px-4 py-3 font-mono text-[15px] text-ink caret-pass-deep transition-shadow placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+                className="w-full rounded-[10px] border border-ink/25 bg-white px-4 py-3 font-mono text-[15px] text-ink caret-pass-deep transition-shadow placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
               />
             </div>
             <div>
@@ -248,13 +248,13 @@ export default function CompareContainer() {
                 placeholder="https://site-b.com"
                 value={url2}
                 onChange={(e) => setUrls((prev) => ({ ...prev, url2: e.target.value }))}
-                className="w-full rounded-[4px] border border-ink/25 bg-white px-4 py-3 font-mono text-[15px] text-ink caret-pass-deep transition-shadow placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+                className="w-full rounded-[10px] border border-ink/25 bg-white px-4 py-3 font-mono text-[15px] text-ink caret-pass-deep transition-shadow placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
               />
             </div>
           </div>
           <button
             type="submit"
-            className="rounded-[4px] bg-pass-deep px-7 py-3.5 font-mono text-[13px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+            className="rounded-[10px] bg-pass-deep px-7 py-3.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
           >
             Compare
           </button>

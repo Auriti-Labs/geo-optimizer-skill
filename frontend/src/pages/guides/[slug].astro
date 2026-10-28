@@ -247,7 +247,7 @@ const jsonLd = {
   <article class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16" itemscope itemtype="https://schema.org/Article">
     {/* ── Header ──────────────────────────────────────────────────────────── */}
     <header class="mb-12 md:mb-16 max-w-3xl">
-      <nav aria-label="Breadcrumb" class="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-mute">
+      <nav aria-label="Breadcrumb" class="flex items-center gap-2 font-text font-medium text-[12.5px] text-ink-mute">
         <a href="/guides/" class="underline decoration-rail underline-offset-4 transition-colors hover:text-ink hover:decoration-pass-deep">Guides</a>
         {article.focusKeyword && (
           <>
@@ -257,7 +257,7 @@ const jsonLd = {
         )}
       </nav>
 
-      <h1 itemprop="headline" class="mt-4 font-head text-3xl font-extrabold leading-[1.1] tracking-[-0.02em] text-ink md:text-4xl">
+      <h1 itemprop="headline" class="mt-4 font-head text-3xl font-semibold leading-[1.1] tracking-[-0.02em] text-ink md:text-4xl">
         {article.title}
       </h1>
 
@@ -265,7 +265,7 @@ const jsonLd = {
         {article.description}
       </p>
 
-      <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-mute">
+      <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 font-text font-medium text-[12.5px] text-ink-mute">
         <span itemprop="author">{author}</span>
         <span aria-hidden="true">·</span>
         <span>published: <time itemprop="datePublished" datetime={article.datePublished}>
@@ -296,12 +296,12 @@ const jsonLd = {
       <PortableText value={article.body} components={ptComponents} />
     </div>
 
-    <section class="mt-12 max-w-3xl rounded-[4px] border border-pass/50 bg-pass-wash/60" aria-labelledby="guide-next-step-heading">
+    <section class="mt-12 max-w-3xl rounded-[10px] border border-pass/50 bg-pass-wash/60" aria-labelledby="guide-next-step-heading">
       <div class="border-b border-pass/30 px-5 py-2.5 md:px-6">
-        <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-mute">{commercialLinkBlock.eyebrow}</p>
+        <p class="font-text font-medium text-[12.5px] text-ink-mute">{commercialLinkBlock.eyebrow}</p>
       </div>
       <div class="p-5 md:p-6">
-        <h2 id="guide-next-step-heading" class="font-head text-2xl font-extrabold leading-tight tracking-[-0.02em] text-ink">
+        <h2 id="guide-next-step-heading" class="font-head text-2xl font-semibold leading-tight tracking-[-0.02em] text-ink">
           {commercialLinkBlock.heading}
         </h2>
         <p class="mt-3 text-sm leading-relaxed text-ink-soft md:text-base">
@@ -311,14 +311,14 @@ const jsonLd = {
           <a
             href={commercialLinkBlock.primary.href}
             data-cta={`${commercialLinkBlock.primary.dataCta}_${slug}`}
-            class="inline-flex items-center justify-center rounded-[4px] bg-pass-deep px-5 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+            class="inline-flex items-center justify-center rounded-[10px] bg-pass-deep px-5 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
           >
             {commercialLinkBlock.primary.label}
           </a>
           <a
             href={commercialLinkBlock.secondary.href}
             data-cta={`${commercialLinkBlock.secondary.dataCta}_${slug}`}
-            class="inline-flex items-center justify-center rounded-[4px] border border-rail bg-white px-5 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+            class="inline-flex items-center justify-center rounded-[10px] border border-rail bg-white px-5 py-3 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             {commercialLinkBlock.secondary.label}
           </a>
@@ -347,7 +347,7 @@ const jsonLd = {
     {/* ── FAQs ─────────────────────────────────────────────────────────────── */}
     {article.faqs && article.faqs.length > 0 && (
       <section class="mt-16 max-w-3xl">
-        <h2 class="mb-6 font-head text-2xl font-extrabold leading-tight tracking-[-0.02em] text-ink">
+        <h2 class="mb-6 font-head text-2xl font-semibold leading-tight tracking-[-0.02em] text-ink">
           Frequently asked questions
         </h2>
         <div class="space-y-7">
@@ -387,10 +387,10 @@ const jsonLd = {
   .pt-prose li::marker { color: var(--color-ink-mute, inherit); }
   .pt-prose strong { font-weight: 600; color: var(--color-ink, inherit); }
   .pt-prose em { font-style: italic; }
-  .pt-prose code { font-size: 0.875rem; font-family: var(--font-mono, ui-monospace, monospace); background: #FFFFFF; border: 1px solid var(--color-rail, #D9DED6); border-radius: 2px; padding: 0.125rem 0.25rem; }
-  .pt-prose pre { background: #FFFFFF; border: 1px solid var(--color-rail, #D9DED6); border-radius: 4px; padding: 1rem; margin: 1.5rem 0; overflow-x: auto; font-size: 0.875rem; font-family: var(--font-mono, ui-monospace, monospace); }
+  .pt-prose code { font-size: 0.875rem; font-family: var(--font-mono, ui-monospace, monospace); background: #FFFFFF; border: 1px solid var(--color-rail, #DFE5E5); border-radius: 2px; padding: 0.125rem 0.25rem; }
+  .pt-prose pre { background: #FFFFFF; border: 1px solid var(--color-rail, #DFE5E5); border-radius: 4px; padding: 1rem; margin: 1.5rem 0; overflow-x: auto; font-size: 0.875rem; font-family: var(--font-mono, ui-monospace, monospace); }
   .pt-prose pre code { background: none; border: none; padding: 0; }
-  .pt-prose a { color: var(--color-pass-deep, inherit); text-decoration-line: underline; text-decoration-color: var(--color-rail, #D9DED6); text-underline-offset: 4px; }
+  .pt-prose a { color: var(--color-pass-deep, inherit); text-decoration-line: underline; text-decoration-color: var(--color-rail, #DFE5E5); text-underline-offset: 4px; }
   .pt-prose a:hover { text-decoration-color: var(--color-pass-deep, currentColor); }
   .pt-prose blockquote { border-left: 1px solid var(--color-pass, #0B8076); padding-left: 1rem; font-style: italic; color: var(--color-ink-soft, inherit); margin: 1.5rem 0; }
 </style>

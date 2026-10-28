@@ -30,10 +30,10 @@ const robots = isDemo ? 'index, follow' : 'noindex, nofollow';
 <Shell title={title} description={description} canonical={canonical} robots={robots}>
   <header class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 md:pt-16 pb-6">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-      <h1 class="font-head text-4xl md:text-5xl font-extrabold leading-[1.02] tracking-[-0.03em] text-ink">
+      <h1 class="font-head text-4xl md:text-5xl font-semibold leading-[1.02] tracking-[-0.03em] text-ink">
         {isDemo ? 'GEO Audit Report Demo' : 'GEO Audit Report'}
       </h1>
-      <p class="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
+      <p class="flex items-center gap-2 font-text font-medium text-[12.5px] text-ink-mute">
         <span>GeoReady</span>
         <span class="h-1 w-1 rounded-full bg-ink-mute" aria-hidden="true"></span>
         <span>{isDemo ? 'Demo Report' : 'Audit Report'}</span>
@@ -47,13 +47,13 @@ const robots = isDemo ? 'index, follow' : 'noindex, nofollow';
     </p>
 
     {isDemo && (
-      <p class="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Demo snapshot: May 2026</p>
+      <p class="mt-2 font-text font-medium text-[12.5px] text-ink-mute">Demo snapshot: May 2026</p>
     )}
   </header>
 
   {isDemo && (
     <section class="max-w-7xl mx-auto px-4 sm:px-6 pb-6 max-w-2xl">
-      <h2 class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-mute mb-3">
+      <h2 class="font-text text-[12.5px] font-semibold text-ink-mute mb-3">
         What this demo report shows
       </h2>
       <ul class="space-y-2">

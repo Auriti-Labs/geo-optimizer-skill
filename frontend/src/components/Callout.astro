@@ -16,8 +16,8 @@ const styles: Record<string, { box: string; label: string; labelColor: string }>
 const style = styles[variant] ?? styles.info;
 ---
 
-<div class={`callout my-6 rounded-[4px] border px-5 py-4 text-sm leading-relaxed ${style.box}`}>
-  <span class={`mb-1.5 block font-mono text-[10px] uppercase tracking-[0.12em] ${style.labelColor}`}>
+<div class={`callout my-6 rounded-[10px] border px-5 py-4 text-sm leading-relaxed ${style.box}`}>
+  <span class={`mb-1.5 block font-text font-medium text-[12px] ${style.labelColor}`}>
     {style.label}
   </span>
   <span class="text-ink-soft">{body}</span>

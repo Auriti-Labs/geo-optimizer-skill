@@ -50,11 +50,11 @@ const {
 } = Astro.props;
 ---
 
-<figure class={`overflow-hidden rounded-[4px] border border-rail bg-white ${className}`}>
+<figure class={`overflow-hidden rounded-[10px] border border-rail bg-white ${className}`}>
   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-    <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">{label}</span>
+    <span class="font-text text-[12.5px] font-semibold text-ink-mute">{label}</span>
     {eyebrow && (
-      <span class="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">
+      <span class="rounded-[6px] border border-rail px-1.5 py-0.5 font-text font-medium text-[12px] text-ink-mute">
         {eyebrow}
       </span>
     )}
@@ -78,7 +78,7 @@ const {
     <div class="grid gap-px border-t border-rail bg-rail sm:grid-cols-3">
       {metrics.map((metric) => (
         <div class="bg-paper px-4 py-2.5">
-          <p class="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-mute">{metric.label}</p>
+          <p class="font-text font-medium text-[12px] text-ink-mute">{metric.label}</p>
           <p class="mt-0.5 text-sm font-semibold text-ink">{metric.value}</p>
         </div>
       ))}
@@ -93,7 +93,7 @@ const {
       {chips.length > 0 && (
         <div class="flex flex-wrap gap-2 sm:justify-end">
           {chips.map((chip) => (
-            <span class="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">
+            <span class="rounded-[6px] border border-rail px-1.5 py-0.5 font-text font-medium text-[12px] text-ink-mute">
               {chip}
             </span>
           ))}

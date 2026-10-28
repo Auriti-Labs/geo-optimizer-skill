@@ -103,14 +103,14 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
       <div
         ref={panelRef}
         tabIndex={-1}
-        className="relative m-0 flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-t-[4px] border border-rail bg-white outline-none sm:m-4 sm:rounded-[4px]"
+        className="relative m-0 flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-t-[4px] border border-rail bg-white outline-none sm:m-4 sm:rounded-[10px]"
       >
         {/* Panel header strip, same visual language as the banner: the panel reads as
             the expanded form of that card rather than a separate component. */}
         <div className="shrink-0 border-b border-rail bg-paper px-5 py-4 sm:px-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[2px] border border-rail bg-white text-ink">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] border border-rail bg-white text-ink">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 3a9 9 0 1 0 9 9 3 3 0 0 1-4-4 3 3 0 0 1-5-5Z" />
                   <circle cx="9.5" cy="14.5" r="1" fill="currentColor" stroke="none" />
@@ -120,7 +120,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
               </span>
               <div>
                 <h2 className="text-base font-semibold text-ink">Cookie preferences</h2>
-                <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-mute">
+                <p className="mt-0.5 font-text font-medium text-[12px] text-ink-mute">
                   Consent version {CONSENT_VERSION}
                 </p>
               </div>
@@ -128,7 +128,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
             <button
               onClick={onClose}
               aria-label="Close preferences"
-              className="-mr-1 shrink-0 rounded-[2px] p-1.5 text-ink-mute transition-colors hover:bg-pass-wash hover:text-ink"
+              className="-mr-1 shrink-0 rounded-[6px] p-1.5 text-ink-mute transition-colors hover:bg-pass-wash hover:text-ink"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -160,7 +160,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
               return (
                 <div
                   key={cat}
-                  className={`overflow-hidden rounded-[4px] border bg-white transition-colors duration-200 motion-reduce:transition-none ${
+                  className={`overflow-hidden rounded-[10px] border bg-white transition-colors duration-200 motion-reduce:transition-none ${
                     isActive ? 'border-pass/50' : 'border-rail'
                   }`}
                 >
@@ -169,11 +169,11 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
                       <div className="mb-1 flex flex-wrap items-center gap-2">
                         <span className="text-sm font-semibold text-ink">{label}</span>
                         {isNecessary ? (
-                          <span className="rounded-[2px] bg-pass-wash px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-pass-deep">
+                          <span className="rounded-[6px] bg-pass-wash px-1.5 py-0.5 font-text text-[12px] font-semibold text-pass-deep">
                             always on
                           </span>
                         ) : (
-                          <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">
+                          <span className="font-text font-medium text-[12px] text-ink-mute">
                             {cookies.length === 0 ? 'nothing stored' : `${cookies.length} item${cookies.length > 1 ? 's' : ''}`}
                           </span>
                         )}
@@ -233,23 +233,23 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
                               <span className="font-mono text-[11px] font-semibold text-ink">{c.name}</span>
                               <span className="text-[10px] text-ink-mute">{c.type}</span>
                               {c.firstOrThirdParty === 'third' && (
-                                <span className="rounded-[2px] border border-warn/40 px-1 font-mono text-[10px] text-warn">
+                                <span className="rounded-[6px] border border-warn/40 px-1 font-mono text-[10px] text-warn">
                                   third party
                                 </span>
                               )}
                               {c.isCurrentlyUsed && (
-                                <span className="rounded-[2px] border border-pass/40 px-1 font-mono text-[10px] text-pass-deep">
+                                <span className="rounded-[6px] border border-pass/40 px-1 font-mono text-[10px] text-pass-deep">
                                   active
                                 </span>
                               )}
                             </div>
                             <p className="leading-snug">{c.purpose}</p>
                             <dl className="mt-1.5 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-[11px] leading-snug">
-                              <dt className="font-mono uppercase tracking-[0.1em] text-ink-mute">Provider</dt>
+                              <dt className="font-text font-medium text-ink-mute">Provider</dt>
                               <dd className="text-ink-soft">{c.provider}</dd>
-                              <dt className="font-mono uppercase tracking-[0.1em] text-ink-mute">Duration</dt>
+                              <dt className="font-text font-medium text-ink-mute">Duration</dt>
                               <dd className="text-ink-soft">{c.duration}</dd>
-                              <dt className="font-mono uppercase tracking-[0.1em] text-ink-mute">Basis</dt>
+                              <dt className="font-text font-medium text-ink-mute">Basis</dt>
                               <dd className="text-ink-soft">{c.legalBasis}</dd>
                             </dl>
                             {c.notes && <p className="mt-1 italic leading-snug text-ink-mute">{c.notes}</p>}
@@ -281,20 +281,20 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <button
               onClick={handleReject}
-              className="order-2 rounded-[4px] border border-rail bg-white px-4 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash sm:order-1"
+              className="order-2 rounded-[10px] border border-rail bg-white px-4 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash sm:order-1"
             >
               Essential only
             </button>
             <div className="order-1 flex gap-2 sm:order-2">
               <button
                 onClick={handleSave}
-                className="flex-1 rounded-[4px] border border-rail bg-white px-4 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash sm:flex-none"
+                className="flex-1 rounded-[10px] border border-rail bg-white px-4 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash sm:flex-none"
               >
                 Save choices
               </button>
               <button
                 onClick={handleAcceptAll}
-                className="flex-1 rounded-[4px] bg-pass-deep px-4 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass sm:flex-none"
+                className="flex-1 rounded-[10px] bg-pass-deep px-4 py-2.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass sm:flex-none"
               >
                 Accept all
               </button>

@@ -18,7 +18,7 @@ const getBand = (score: number, max: number) => {
   return { label: 'Critical', chip: 'bg-fail-wash text-fail', bar: 'bg-fail' };
 };
 
-// Console treatment: the large Archivo tabular score sits over a horizontal
+// Console treatment: the large Geist tabular score sits over a horizontal
 // meter (the visitor's own data, drawn solid), with the band name as a chip.
 // `size` is the meter width and `strokeWidth` its height, so the legacy
 // ring-gauge props keep their meaning.
@@ -35,7 +35,7 @@ export default function ScoreGauge({
   return (
     <div className="flex flex-col items-center">
       <div className="flex items-baseline gap-1.5">
-        <span className="font-head text-4xl font-extrabold tabular-nums text-ink">
+        <span className="font-head text-4xl font-semibold tabular-nums text-ink">
           {score}
         </span>
         <span className="font-mono text-[11px] tabular-nums text-ink-mute">
@@ -43,7 +43,7 @@ export default function ScoreGauge({
         </span>
       </div>
       <div
-        className="mt-2.5 overflow-hidden rounded-[2px] border border-ink/40 bg-paper"
+        className="mt-2.5 overflow-hidden rounded-[6px] border border-ink/40 bg-paper"
         style={{ width: size, height: strokeWidth }}
         aria-hidden="true"
       >
@@ -53,10 +53,10 @@ export default function ScoreGauge({
         />
       </div>
       <div className="mt-2.5 flex flex-col items-center gap-1 text-center">
-        <span className={`rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] ${band.chip}`}>
+        <span className={`rounded-[6px] px-1.5 py-0.5 font-text text-[12px] font-semibold ${band.chip}`}>
           {band.label}
         </span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-mute">{label}</span>
+        <span className="font-text font-medium text-[12px] text-ink-mute">{label}</span>
       </div>
     </div>
   );

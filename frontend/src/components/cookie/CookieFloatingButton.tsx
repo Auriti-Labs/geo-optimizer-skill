@@ -10,7 +10,7 @@ export default function CookieFloatingButton({ onClick }: CookieFloatingButtonPr
       onClick={onClick}
       aria-label="Manage cookie preferences"
       title="Manage cookie preferences"
-      className="group fixed bottom-4 left-4 z-[90] flex items-center gap-2 rounded-[4px] border border-rail bg-white py-2 pl-2 pr-2 text-ink transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-pass-wash hover:pr-3.5 motion-reduce:transition-none print:hidden"
+      className="group fixed bottom-4 left-4 z-[90] flex items-center gap-2 rounded-[10px] border border-rail bg-white py-2 pl-2 pr-2 text-ink transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-pass-wash hover:pr-3.5 motion-reduce:transition-none print:hidden"
     >
       <span className="flex h-6 w-6 shrink-0 items-center justify-center text-ink">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">

@@ -14,7 +14,7 @@ type CitationsData = NonNullable<CitationsCheckResult['data']>;
 
 // Classi condivise del mondo console (input su ground bianco, ring pass al focus).
 const FIELD_CLASSES =
-  'mt-1 w-full rounded-[4px] border border-ink/25 bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-mute transition-colors focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30';
+  'mt-1 w-full rounded-[10px] border border-ink/25 bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-mute transition-colors focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30';
 
 // Copy del verdetto: stessa semantica dei verdetti della CLI `geo citations`.
 // L'icona emoji è sostituita da path SVG (stroke-width 2) disegnati inline;
@@ -157,7 +157,7 @@ export default function AICitationChecker() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="w-full rounded-[4px] bg-pass-deep px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          className="w-full rounded-[10px] bg-pass-deep px-6 py-2.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {status === 'loading' ? 'Asking the AI… (~20s)' : 'Check my AI citations'}
         </button>
@@ -166,9 +166,9 @@ export default function AICitationChecker() {
       {status === 'error' && (
         <p
           role="alert"
-          className="mt-4 flex items-start gap-3 rounded-[4px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail"
+          className="mt-4 flex items-start gap-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail"
         >
-          <span aria-hidden="true" className="mt-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em]">
+          <span aria-hidden="true" className="mt-0.5 font-text text-[12.5px] font-semibold">
             err
           </span>
           <span>{errorMsg}</span>
@@ -177,7 +177,7 @@ export default function AICitationChecker() {
 
       {status === 'success' && result && verdict && (
         <div className="mt-8 space-y-6">
-          <div className={`rounded-[4px] border px-5 py-4 ${verdict.tone}`}>
+          <div className={`rounded-[10px] border px-5 py-4 ${verdict.tone}`}>
             <p className="flex items-start gap-2.5 text-lg font-semibold text-ink">
               <svg
                 viewBox="0 0 24 24"
@@ -198,16 +198,16 @@ export default function AICitationChecker() {
             <p className="mt-1 text-sm text-ink-soft">{verdict.detail}</p>
           </div>
 
-          <div className="grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail text-sm sm:grid-cols-2">
+          <div className="grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail text-sm sm:grid-cols-2">
             <div className="bg-white px-4 py-3">
-              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Brand mentioned</p>
+              <p className="font-text font-medium text-[12.5px] text-ink-mute">Brand mentioned</p>
               <p className="mt-1 font-mono text-2xl font-semibold tabular-nums text-ink">
                 {Math.round(result.brand_mention_rate * 100)}%
               </p>
               <p className="text-xs text-ink-mute">of AI answers analyzed</p>
             </div>
             <div className="bg-white px-4 py-3">
-              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Domain cited as source</p>
+              <p className="font-text font-medium text-[12.5px] text-ink-mute">Domain cited as source</p>
               <p className="mt-1 font-mono text-2xl font-semibold tabular-nums text-ink">
                 {Math.round(result.domain_citation_rate * 100)}%
               </p>
@@ -216,7 +216,7 @@ export default function AICitationChecker() {
           </div>
 
           {result.top_cited_domains.length > 0 && (
-            <div className="rounded-[4px] border border-rail bg-white px-4 py-3">
+            <div className="rounded-[10px] border border-rail bg-white px-4 py-3">
               <p className="text-sm font-semibold text-ink">Cited instead of you</p>
               <ul className="mt-2 space-y-1 text-sm text-ink-soft">
                 {result.top_cited_domains.map(([d, n]) => (
@@ -231,11 +231,11 @@ export default function AICitationChecker() {
 
           <div className="space-y-3">
             {result.entries.map((entry) => (
-              <details key={entry.query} className="rounded-[4px] border border-rail bg-white px-4 py-3 text-sm">
+              <details key={entry.query} className="rounded-[10px] border border-rail bg-white px-4 py-3 text-sm">
                 <summary className="cursor-pointer text-ink">
                   “{entry.query}” —{' '}
                   <span
-                    className={`font-mono text-[11px] font-semibold uppercase tracking-[0.1em] ${
+                    className={`font-text text-[12.5px] font-semibold ${
                       entry.domain_cited ? 'text-pass-deep' : entry.brand_mentioned ? 'text-warn' : 'text-fail'
                     }`}
                   >
@@ -252,7 +252,7 @@ export default function AICitationChecker() {
             ))}
           </div>
 
-          <div className="rounded-[4px] border border-pass/40 bg-pass-wash/60 px-5 py-4">
+          <div className="rounded-[10px] border border-pass/40 bg-pass-wash/60 px-5 py-4">
             <p className="text-sm font-semibold text-ink">
               This is one snapshot. AI answers change every week.
             </p>
@@ -270,7 +270,7 @@ export default function AICitationChecker() {
                 currency: 'USD',
                 cta_location: 'citation_checker_result_tracking',
               })}
-              className="mt-3 inline-block rounded-[4px] bg-pass-deep px-5 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+              className="mt-3 inline-block rounded-[10px] bg-pass-deep px-5 py-2 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
             >
               Track weekly citations
             </a>

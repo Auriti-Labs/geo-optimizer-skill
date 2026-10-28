@@ -32,17 +32,17 @@ const stages = [
 ];
 ---
 
-<div class={`rounded-[4px] border border-rail bg-white p-4 text-ink ${className}`}>
+<div class={`rounded-[10px] border border-rail bg-white p-4 text-ink ${className}`}>
   <div class="space-y-3">
     {stages.map((s, i) => (
       <>
         <div class="flex items-start gap-4">
-          <span class="mt-0.5 inline-flex rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[11px] font-medium tabular-nums text-ink-mute">{s.n}</span>
+          <span class="mt-0.5 inline-flex rounded-[6px] border border-rail px-1.5 py-0.5 font-mono text-[11px] font-medium tabular-nums text-ink-mute">{s.n}</span>
           <div class="flex-1">
-            <h3 class="font-head text-base font-extrabold tracking-[-0.01em] text-ink">{s.title}</h3>
+            <h3 class="font-head text-base font-semibold tracking-[-0.01em] text-ink">{s.title}</h3>
             <div class="mt-2 flex flex-wrap gap-1.5">
               {s.signals.map((sig) => (
-                <span class="inline-flex items-center gap-1 rounded-[2px] border border-rail px-2 py-0.5 font-mono text-[11px] text-ink-soft">
+                <span class="inline-flex items-center gap-1 rounded-[6px] border border-rail px-2 py-0.5 font-mono text-[11px] text-ink-soft">
                   {sig.label}
                   {sig.ok && (
                     <svg class="h-2.5 w-2.5 text-pass-deep" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="verified">
@@ -58,7 +58,7 @@ const stages = [
         {i < stages.length - 1 && (
           <div class="ml-[11px] flex items-center gap-2">
             <span class="h-6 w-px bg-rail" aria-hidden="true"></span>
-            <span class="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-mute">
+            <span class="inline-flex items-center gap-1 font-text font-medium text-[12px] text-ink-mute">
               retrieves
               <svg class="h-2.5 w-2.5" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M6 2v8" /><path d="M2.5 6.5 6 10l3.5-3.5" />

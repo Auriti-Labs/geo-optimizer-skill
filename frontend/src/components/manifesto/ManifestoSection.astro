@@ -12,7 +12,7 @@ const isGrid = hasItems && (section.items?.length || 0) >= 4;
 
 <section id={section.id} class="scroll-mt-24">
   <header class="mb-6">
-    <h2 class="font-head text-2xl font-extrabold leading-tight tracking-[-0.02em] md:text-3xl">
+    <h2 class="font-head text-2xl font-semibold leading-tight tracking-[-0.02em] md:text-3xl">
       <span class="mr-3 align-middle font-mono text-[13px] font-medium tabular-nums text-ink-mute">{section.number}</span>{section.title}
     </h2>
     {section.intro && (
@@ -59,7 +59,7 @@ const isGrid = hasItems && (section.items?.length || 0) >= 4;
   )}
 
   {hasItems && (
-    <div class={`mt-6 gap-px overflow-hidden rounded-[4px] border border-rail bg-rail ${isGrid ? 'grid grid-cols-1 sm:grid-cols-2' : 'grid grid-cols-1'}`}>
+    <div class={`mt-6 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail ${isGrid ? 'grid grid-cols-1 sm:grid-cols-2' : 'grid grid-cols-1'}`}>
       {section.items?.map((item) => (
         <div class="bg-white p-4">
           <h3 class="text-sm font-semibold text-ink">
