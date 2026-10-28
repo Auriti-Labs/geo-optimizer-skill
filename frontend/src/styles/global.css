@@ -114,11 +114,29 @@
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-display: optional;
+  font-weight: 400;
+  src: url(/fonts/instrument-serif-latin-400-italic.woff2) format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-display: optional;
+  font-weight: 400;
+  src: url(/fonts/instrument-serif-latin-ext-400-italic.woff2) format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
 @theme {
   /* ── Console world (DESIGN.md is the authority) ─────────────────────── */
   --font-head: "Geist", system-ui, sans-serif;
   --font-text: "Geist", system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
+  --font-serif: "Instrument Serif", Georgia, serif;
 
   /* Legacy aliases: still referenced across pages as font-display/font-body.
      They now resolve to the console faces so every page speaks one voice. */
@@ -250,4 +268,49 @@ input, textarea {
 ::selection {
   background-color: rgba(15, 118, 110, 0.16);
   color: var(--color-ink);
+}
+
+/* ── Site v2 primitives, the same material as app.geoready.dev (shell.css) ──
+   One serif word per headline, panels with a hairline ring, a dark instrument band. */
+:where(h1, h2, h3) em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--color-pass-deep);
+}
+
+.panel {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(10, 21, 20, 0.04), 0 0 0 1px var(--color-rail);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--color-ink-mute);
+}
+
+/* The dark instrument band: dashboard dark-mode tokens. */
+.band-dark {
+  --color-ink: #E8F0EF;
+  --color-ink-soft: #9DADAB;
+  --color-ink-mute: #7C8C8B;
+  --color-rail: #1F2929;
+  --color-pass-deep: #2DD4BF;
+  background: #090C0C;
+  color: #E8F0EF;
+}
+.band-dark .panel {
+  background: #111616;
+  box-shadow: 0 0 0 1px #1F2929;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
