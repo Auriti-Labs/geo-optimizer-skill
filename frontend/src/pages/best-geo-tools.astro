@@ -214,12 +214,10 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 
     {/* Header — answer-first, visible to crawlers */}
     <header class="mb-12 md:mb-16">
-      <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h1 class="max-w-3xl font-head text-3xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-4xl">
-          Best GEO Tools for AI Search Visibility
-        </h1>
-        <p class="font-text font-medium text-[12.5px] text-ink-mute">GEO Optimizer · Tools</p>
-      </div>
+      <div class="eyebrow">GEO Optimizer · Tools</div>
+      <h1 class="mt-4 max-w-[22ch] text-[2.3rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3rem]">
+        Best GEO Tools for AI Search Visibility
+      </h1>
 
       <p class="mt-4 max-w-3xl text-base leading-relaxed text-ink-soft md:text-lg">
         The honest answer to "what is the best GEO tool" is that it depends on
@@ -242,9 +240,9 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
         product as a snapshot to re-verify before you buy.
       </p>
 
-      <p class="mt-4 font-text font-medium text-[12.5px] text-ink-mute">
+      <div class="eyebrow mt-4">
         Published June 16, 2026 · Last updated {dateModifiedLabel} · 8 min read
-      </p>
+      </div>
     </header>
 
     <ArticleVisual
@@ -255,7 +253,7 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
     />
 
     {/* What "best" means in a new category */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">What "best" means in a category this young</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Generative Engine Optimization is the practice of structuring a site so AI
@@ -275,19 +273,19 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
     </section>
 
     {/* Evaluation criteria table */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">How to evaluate a GEO tool</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Score any candidate against these seven criteria. Each is a question you can
         answer by reading documentation or running a trial — not a claim you have to
         take on faith.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full min-w-[560px] text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Criterion</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Question to ask</th>
+              <th scope="col" class="eyebrow px-4 py-3">Criterion</th>
+              <th scope="col" class="eyebrow px-4 py-3">Question to ask</th>
             </tr>
           </thead>
           <tbody>
@@ -311,7 +309,7 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
         Own measurements, not vendor claims: this is the part of the comparison no
         competitor can restate, and it gives an answer engine something quotable.
         Reso come "log well": l'unico materiale scuro della pagina. */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">What sites actually score, measured</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Criteria tell you how to judge a tool. They do not tell you how much room a
@@ -370,14 +368,14 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
 
 
     {/* Tool categories */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">The main categories of GEO and AI visibility tools</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Tools in this space fall into a few broad categories. Most teams end up using
         more than one, because readiness and outcome are different things and few
         products do both well.
       </p>
-      <div class="mt-6 grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2">
+      <div class="panel mt-6 grid gap-px overflow-hidden bg-rail sm:grid-cols-2">
         {TOOL_CATEGORIES.map(([name, detail]) => (
           <div class="bg-white p-5">
             <h3 class="font-head text-lg font-semibold tracking-[-0.01em] text-ink">{name}</h3>
@@ -394,7 +392,7 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
     </section>
 
     {/* Category comparison matrix — category level; named tools follow in the next section */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">GEO tools compared, by category</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         This matrix compares the categories, not individual products, so it stays
@@ -403,16 +401,16 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
         you buy. "Varies" means the answer depends on the vendor and is worth
         checking yourself.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full min-w-[760px] text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Tool category</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Best at</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Audit vs monitoring</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Answer-engine querying</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">CI/CD</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Pricing</th>
+              <th scope="col" class="eyebrow px-4 py-3">Tool category</th>
+              <th scope="col" class="eyebrow px-4 py-3">Best at</th>
+              <th scope="col" class="eyebrow px-4 py-3">Audit vs monitoring</th>
+              <th scope="col" class="eyebrow px-4 py-3">Answer-engine querying</th>
+              <th scope="col" class="eyebrow px-4 py-3">CI/CD</th>
+              <th scope="col" class="eyebrow px-4 py-3">Pricing</th>
             </tr>
           </thead>
           <tbody>
@@ -437,7 +435,7 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
     </section>
 
     {/* Named tools — facts as recorded on each comparison page, dated, not ranked */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Named tools, as recorded on our comparison pages</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Each row repeats facts from the linked comparison page, which cites the vendor's
@@ -445,14 +443,14 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
         ranking and prices change, so confirm on the vendor's site before you buy. We
         build GeoReady, so read its row with that in mind.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full min-w-[760px] text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Tool</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Free option</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Entry paid tier</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Scoring weights</th>
+              <th scope="col" class="eyebrow px-4 py-3">Tool</th>
+              <th scope="col" class="eyebrow px-4 py-3">Free option</th>
+              <th scope="col" class="eyebrow px-4 py-3">Entry paid tier</th>
+              <th scope="col" class="eyebrow px-4 py-3">Scoring weights</th>
             </tr>
           </thead>
           <tbody>
@@ -477,10 +475,10 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
     />
 
     {/* GEO Optimizer feature block — verifiable repo facts only */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">GEO Optimizer: an open-source option, by the facts</h2>
-        <p class="font-text font-medium text-[12.5px] text-ink-mute">github.com/Auriti-Labs/geo-optimizer-skill · MIT</p>
+        <div class="eyebrow">github.com/Auriti-Labs/geo-optimizer-skill · MIT</div>
       </div>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         GEO Optimizer is the toolkit behind GeoReady, and the one we can describe
@@ -489,12 +487,12 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
         worked example of the criteria above, not as a verdict that it beats tools we
         have not audited.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full min-w-[560px] text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Capability</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it provides</th>
+              <th scope="col" class="eyebrow px-4 py-3">Capability</th>
+              <th scope="col" class="eyebrow px-4 py-3">What it provides</th>
             </tr>
           </thead>
           <tbody>
@@ -535,7 +533,7 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
     </section>
 
     {/* The research it scores against */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Why research backing matters</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         "Research-backed" is easy to assert and harder to demonstrate. The standard to
@@ -561,7 +559,7 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
     </section>
 
     {/* How to choose */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">How to choose, in practice</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
         Start from the question you actually need answered, then pick the category that
@@ -615,8 +613,9 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
     </section>
 
     {/* CTA band */}
-    <section class="mb-12 rounded-[10px] border border-rail bg-white p-6 md:mb-16 md:p-8">
-      <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">See where your site stands first</h2>
+    <section class="band-dark mb-12 rounded-[14px] p-6 md:mb-16 md:p-10" data-reveal>
+      <div class="eyebrow">Baseline first</div>
+      <h2 class="mt-3 text-3xl font-semibold tracking-[-0.03em] md:text-[2.5rem] md:leading-[1.08]">See where your site stands first</h2>
       <p class="mt-3 max-w-3xl leading-relaxed text-ink-soft">
         Before you choose a tool, get a baseline. The free GEO audit scores your
         site 0 to 100 across nine categories and returns a prioritized fix list, with
@@ -627,13 +626,14 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
         <a
           href="/ai-seo-audit/"
           data-cta="best_geo_tools_cta_ai_seo_audit"
-          class="inline-flex items-center justify-center rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+          class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-[#2DD4BF] px-6 py-3 text-[14px] font-semibold text-[#062420] transition-colors hover:bg-[#5EEAD4]"
         >
           Run the free GEO audit
         </a>
         <a
           href="/pricing/"
-          class="inline-flex items-center justify-center rounded-[10px] border border-rail bg-white px-6 py-3 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+          data-cta="best_geo_tools_cta_pricing"
+          class="inline-flex min-h-11 items-center justify-center rounded-[9px] px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_#2A3838] transition-shadow hover:shadow-[inset_0_0_0_1px_#2DD4BF]"
         >
           See pricing
         </a>
@@ -643,13 +643,15 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
     {/* FAQ */}
     <section>
       <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Frequently asked questions</h2>
-      <div class="mt-6 max-w-3xl">
-        {faqs.map((faq) => (
-          <div class="border-t border-rail py-5 first:border-t-0 first:pt-0">
-            <h3 class="text-base font-semibold text-ink">{faq.q}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-ink-soft">{faq.a}</p>
-          </div>
-        ))}
+      <div class="panel mt-6 overflow-hidden">
+        <div class="grid gap-px bg-rail md:grid-cols-2 md:[&>div:last-child:nth-child(odd)]:col-span-2">
+          {faqs.map((faq) => (
+            <div class="bg-white p-6">
+              <h3 class="text-base font-semibold text-ink">{faq.q}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-soft">{faq.a}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
 
@@ -657,7 +659,7 @@ const PROSE_LINK = 'text-pass-deep underline decoration-rail underline-offset-4 
         a comparison that asks who computed a score should say who wrote it. */}
     <section class="mt-12 border-t border-rail pt-8 md:mt-16">
       <h2 class="sr-only">About the author</h2>
-      <div class="rounded-[10px] border border-rail bg-white p-6">
+      <div class="panel p-6">
         <p class="font-semibold text-ink">Juan Camilo Auriti</p>
         <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-soft">
           Founder of GeoReady and author of GEO Optimizer, the MIT-licensed engine
