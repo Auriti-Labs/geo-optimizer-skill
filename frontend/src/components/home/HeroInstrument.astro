@@ -51,11 +51,11 @@ const STEPS = ['robots.txt', '27 AI bots', 'JSON-LD', 'llms.txt', 'score'];
     <p class="ins-band" data-band><span class="pill pill-foundation">Foundation</span><span class="ins-band-r">36–67</span></p>
   </div>
 
-  <div class="ins-map" aria-hidden="true">
+  <div class="ins-map">
     {SEGMENTS.map((s) => (
       <div class="seg" data-seg>
         <p class="seg-l">{s.label}</p>
-        <div class="cells" style={`grid-template-columns:repeat(${s.max},1fr);width:${(s.max / 20) * 100}%`}>
+        <div class="cells" aria-hidden="true" style={`grid-template-columns:repeat(${s.max},1fr);width:${(s.max / 20) * 100}%`}>
           {Array.from({ length: s.max }, (_, i) => <i class={i < s.got ? 'got' : undefined} />)}
         </div>
         <span class="seg-n">{s.got}/{s.max}</span>

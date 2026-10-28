@@ -282,6 +282,12 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
     burgerBtn?.setAttribute('aria-expanded', 'true');
     setBurgerOpen(true);
     document.body.style.overflow = 'hidden';
+    setPageInert(true);
+  }
+
+  // Con il menu mobile aperto la pagina sotto l'overlay non deve ricevere focus né lettura.
+  function setPageInert(on: boolean) {
+    document.querySelectorAll<HTMLElement>('main, footer').forEach((el) => { el.inert = on; });
   }
 
   function closeMobile() {
@@ -291,6 +297,9 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
     burgerBtn?.setAttribute('aria-expanded', 'false');
     setBurgerOpen(false);
     document.body.style.overflow = '';
+    setPageInert(false);
+    // Solo se il burger è visibile: oltre md è nascosto e il focus finirebbe su body.
+    if (mobileMenu.contains(document.activeElement) && burgerBtn?.offsetParent) burgerBtn.focus();
   }
 
   burgerBtn?.addEventListener('click', () => {
@@ -348,19 +357,13 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
     const btn = group.querySelector<HTMLButtonElement>('button');
     if (!btn) return;
 
-    group.addEventListener('mouseenter', () => {
+    // Disclosure a click: il click arriva da mouse, Enter/Spazio, screen reader e comandi
+    // vocali. L'apertura al passaggio del mouse è stata tolta: chiudeva il menu nel gap
+    // sotto il bottone e non era attivabile dagli screen reader (WCAG 1.4.13, 4.1.2).
+    btn.addEventListener('click', () => {
+      const isOpen = btn.getAttribute('aria-expanded') === 'true';
       closeAllGroups(group);
-      setGroupOpen(group, true);
-    });
-    group.addEventListener('mouseleave', () => setGroupOpen(group, false));
-
-    btn.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        const isOpen = btn.getAttribute('aria-expanded') === 'true';
-        closeAllGroups(group);
-        setGroupOpen(group, !isOpen);
-      }
+      setGroupOpen(group, !isOpen);
     });
 
     group.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -373,6 +376,11 @@ const featuredLink = { label: "Pricing", href: "/pricing/" };
     group.addEventListener('focusout', (e: FocusEvent) => {
       if (!group.contains(e.relatedTarget as Node)) setGroupOpen(group, false);
     });
+  });
+
+  // Escape chiude i menu anche quando il focus non è dentro il gruppo.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAllGroups();
   });
 
   document.addEventListener('click', (e) => {
