@@ -137,12 +137,12 @@ function getCardImage(article: (typeof articles)[number]) {
   <section class="bg-paper">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-20">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h1 class="max-w-3xl font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+        <h1 class="max-w-3xl text-[2.3rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3rem]">
           AI visibility guides for people who need the system to make sense.
         </h1>
-        <p class="font-text font-medium text-[12.5px] text-ink-mute">
+        <div class="eyebrow">
           index: guides · {page.total} published
-        </p>
+        </div>
       </div>
 
       <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
@@ -151,7 +151,7 @@ function getCardImage(article: (typeof articles)[number]) {
         the technical and content signals that help models find and quote you.
       </p>
 
-      <div class="mt-10 grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-3">
+      <div class="mt-10 grid gap-px overflow-hidden rounded-[14px] border border-rail bg-rail sm:grid-cols-3">
         {[
           ['01', 'Foundations', 'AI SEO, GEO, llms.txt, and crawler access.'],
           ['02', 'Citability', 'How answer engines choose sources and references.'],
@@ -179,7 +179,7 @@ function getCardImage(article: (typeof articles)[number]) {
   </section>
 
   {/* Guide list */}
-  <section class="border-t border-rail bg-white">
+  <section class="border-t border-rail bg-white" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <ul class="grid gap-4 md:grid-cols-2">
         {articles.map((a) => {
@@ -188,7 +188,7 @@ function getCardImage(article: (typeof articles)[number]) {
           <li>
             <a
               href={`/guides/${a.slug.current}/`}
-              class="group block h-full overflow-hidden rounded-[10px] border border-rail bg-paper transition-colors hover:border-pass/50"
+              class="group block h-full overflow-hidden rounded-[14px] border border-rail bg-paper transition-colors hover:border-pass/50"
             >
               {cardImage ? (
                 <div class="aspect-[16/9] w-full border-b border-rail bg-white">
@@ -210,9 +210,9 @@ function getCardImage(article: (typeof articles)[number]) {
                 <p class="mt-2 text-sm leading-relaxed text-ink-soft md:text-base">
                   {a.description}
                 </p>
-                <p class="mt-4 font-text font-medium text-[12.5px] text-ink-mute">
+                <div class="eyebrow mt-4">
                   published: {new Date(a.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </p>
+                </div>
               </div>
             </a>
           </li>
@@ -226,7 +226,7 @@ function getCardImage(article: (typeof articles)[number]) {
           {page.url.prev ? (
             <a
               href={page.url.prev}
-              class="rounded-[10px] border border-rail bg-white px-4 py-2 font-text text-[12.5px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+              class="rounded-[9px] border border-rail bg-white px-4 py-2 font-text text-[12.5px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Newer
             </a>
@@ -252,7 +252,7 @@ function getCardImage(article: (typeof articles)[number]) {
           {page.url.next ? (
             <a
               href={page.url.next}
-              class="rounded-[10px] border border-rail bg-white px-4 py-2 font-text text-[12.5px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+              class="rounded-[9px] border border-rail bg-white px-4 py-2 font-text text-[12.5px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Older
             </a>
@@ -263,7 +263,7 @@ function getCardImage(article: (typeof articles)[number]) {
   </section>
 
   {/* Tools — strumenti gratuiti collegati alle guide */}
-  <section class="border-t border-rail bg-paper">
+  <section class="border-t border-rail bg-paper" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="grid gap-6 md:grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)] md:items-start">
         <div>
@@ -271,11 +271,11 @@ function getCardImage(article: (typeof articles)[number]) {
           <p class="mt-3 text-sm leading-relaxed text-ink-soft">
             Use the tools when a guide turns into an implementation task.
           </p>
-          <p class="mt-3 font-text font-medium text-[12.5px] text-ink-mute">
+          <div class="eyebrow mt-3">
             cost: $0 · no account
-          </p>
+          </div>
         </div>
-        <ul class="grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2">
+        <ul class="grid gap-px overflow-hidden rounded-[14px] border border-rail bg-rail sm:grid-cols-2">
           {guideToolCards.map((tool) => (
             <li class="bg-white">
               <a
@@ -289,7 +289,7 @@ function getCardImage(article: (typeof articles)[number]) {
                 <p class="mt-2 text-sm leading-relaxed text-ink-soft">
                   {tool.copy}
                 </p>
-                <p class="mt-3 font-text font-medium text-[12px] text-ink-mute">{tool.meta}</p>
+                <div class="eyebrow mt-3">{tool.meta}</div>
               </a>
             </li>
           ))}
@@ -298,7 +298,7 @@ function getCardImage(article: (typeof articles)[number]) {
     </div>
   </section>
 
-  <section class="border-t border-rail bg-white">
+  <section class="border-t border-rail bg-white" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="grid gap-6 md:grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)] md:items-start">
         <div>
@@ -307,7 +307,7 @@ function getCardImage(article: (typeof articles)[number]) {
             Use these when the guide topic maps to a buyer, SaaS, WordPress, or monitoring workflow.
           </p>
         </div>
-        <ul class="grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2">
+        <ul class="grid gap-px overflow-hidden rounded-[14px] border border-rail bg-rail sm:grid-cols-2">
           {guideIntentCards.map((item) => (
             <li class="bg-paper">
               <a
@@ -330,14 +330,14 @@ function getCardImage(article: (typeof articles)[number]) {
   </section>
 
   {page.currentPage === 1 && (
-    <section class="border-t border-rail bg-paper" aria-labelledby="guides-faq-heading">
+    <section class="border-t border-rail bg-paper" data-reveal aria-labelledby="guides-faq-heading">
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
         <h2 id="guides-faq-heading" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink">
           Frequently asked questions
         </h2>
-        <div class="mt-6 space-y-6">
+        <div class="panel mt-6 divide-y divide-rail overflow-hidden">
           {guideFaqs.map((faq) => (
-            <div>
+            <div class="p-6">
               <h3 class="text-base font-semibold text-ink">{faq.q}</h3>
               <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-soft md:text-base">{faq.a}</p>
             </div>
@@ -347,7 +347,7 @@ function getCardImage(article: (typeof articles)[number]) {
     </section>
   )}
 
-  <section class="border-t border-rail bg-white">
+  <section class="border-t border-rail bg-white" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <NewsletterSignup
         client:visible

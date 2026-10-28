@@ -87,12 +87,12 @@ const faqSchema = {
         {/* Copy column */}
         <div class="hero-in" style="animation-delay:0ms">
           <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h1 class="font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-6xl">
+            <h1 class="text-[2.3rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3rem] lg:text-[3.5rem]">
               The free GEO Readiness Manual for getting cited by AI search.
             </h1>
-            <p class="font-text text-[12.5px] font-semibold text-ink-mute">
+            <div class="eyebrow">
               Free 160-page technical manual
-            </p>
+            </div>
           </div>
 
           <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft md:text-xl">
@@ -117,12 +117,12 @@ const faqSchema = {
           </div>
 
           {/* Preview — no email gate */}
-          <div class="mt-7 max-w-lg rounded-[10px] border border-rail bg-white p-4">
+          <div class="mt-7 max-w-lg panel p-4">
             <p class="text-sm leading-relaxed text-ink-soft">
               <span class="font-semibold text-ink">Not sure yet?</span>
               Read a free 3-chapter preview: Chapter 0 (The Selection Layer), Chapter 4 (Access), and Chapter 7 (Quotability). No email required.
             </p>
-            <a href="/geo-readiness-manual-preview.pdf" class="mt-3 inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-4 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash">
+            <a href="/geo-readiness-manual-preview.pdf" class="mt-3 inline-flex items-center gap-2 rounded-[9px] border border-rail bg-white px-4 py-2.5 min-h-11 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash">
               Download free preview (PDF, 27 pages)
               <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
@@ -141,11 +141,11 @@ const faqSchema = {
                   name="email"
                   required
                   placeholder="you@company.com"
-                  class="manual-email flex-1 rounded-[10px] border border-ink/25 bg-white px-4 py-3.5 text-ink placeholder:text-ink-mute transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+                  class="manual-email flex-1 rounded-[14px] border border-ink/25 bg-white px-4 py-3.5 text-ink placeholder:text-ink-mute transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
                 />
                 <button
                   type="submit"
-                  class="manual-submit inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[10px] bg-pass-deep px-6 py-3.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+                  class="manual-submit inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[9px] bg-pass-deep px-6 py-3.5 min-h-11 text-[14px] font-semibold text-white transition-colors hover:bg-pass"
                 >
                   Get the PDF
                   <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
@@ -157,11 +157,11 @@ const faqSchema = {
                 <input type="checkbox" name="marketing_consent" class="manual-marketing-consent mt-0.5 h-3.5 w-3.5 cursor-pointer rounded-[4px] border-rail accent-pass-deep" />
                 <span>Also send me occasional GEO research updates (new benchmarks, guides). Unchecked, you'll only get this one download email.</span>
               </label>
-              <div class="manual-success hidden mt-4 rounded-[10px] border border-pass/30 bg-pass-wash p-4 text-sm">
+              <div class="manual-success hidden mt-4 rounded-[14px] border border-pass/30 bg-pass-wash p-4 text-sm">
                 <p class="font-medium text-ink">Check your inbox.</p>
                 <p class="manual-success-msg mt-0.5 text-ink-soft"></p>
               </div>
-              <div class="manual-error hidden mt-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
+              <div class="manual-error hidden mt-3 rounded-[14px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
                 <span aria-hidden="true" class="mr-2 font-text text-[12.5px] font-semibold">err</span>
                 <span class="manual-error-msg"></span>
               </div>
@@ -174,7 +174,7 @@ const faqSchema = {
 
         {/* Cover column — the book sits in a white panel with a 1px rail border (No-Lift) */}
         <div class="hero-in flex justify-center lg:justify-end" style="animation-delay:120ms">
-          <div class="w-[240px] rounded-[10px] border border-rail bg-white p-4 sm:w-[280px]">
+          <div class="w-[240px] panel p-4 sm:w-[280px]">
             <img
               src="/assets/manual/cover-500.webp"
               srcset="/assets/manual/cover-500.webp 500w, /assets/manual/cover-1400.webp 1400w"
@@ -212,11 +212,11 @@ const faqSchema = {
               name="email"
               required
               placeholder="you@company.com"
-              class="manual-email flex-1 rounded-[10px] border border-ink/25 bg-white px-4 py-3 text-ink placeholder:text-ink-mute transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+              class="manual-email flex-1 rounded-[14px] border border-ink/25 bg-white px-4 py-3 text-ink placeholder:text-ink-mute transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
             />
             <button
               type="submit"
-              class="manual-submit inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+              class="manual-submit inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[9px] bg-pass-deep px-6 py-3 min-h-11 text-[14px] font-semibold text-white transition-colors hover:bg-pass"
             >
               Get the PDF
               <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
@@ -228,11 +228,11 @@ const faqSchema = {
             <input type="checkbox" name="marketing_consent" class="manual-marketing-consent mt-0.5 h-3.5 w-3.5 cursor-pointer rounded-[4px] border-rail accent-pass-deep" />
             <span>Also send me occasional GEO research updates. Unchecked, you'll only get this one download email.</span>
           </label>
-          <div class="manual-success hidden mt-3 rounded-[10px] border border-pass/30 bg-pass-wash p-3 text-sm">
+          <div class="manual-success hidden mt-3 rounded-[14px] border border-pass/30 bg-pass-wash p-3 text-sm">
             <p class="font-medium text-ink">Check your inbox.</p>
             <p class="manual-success-msg mt-0.5 text-ink-soft"></p>
           </div>
-          <div class="manual-error hidden mt-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
+          <div class="manual-error hidden mt-3 rounded-[14px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
             <span aria-hidden="true" class="mr-2 font-text text-[12.5px] font-semibold">err</span>
             <span class="manual-error-msg"></span>
           </div>
@@ -244,7 +244,7 @@ const faqSchema = {
   <div class="mx-auto max-w-7xl bg-paper px-4 py-16 font-text text-ink sm:px-6 md:py-20">
 
     {/* Bottom strip stats — moved from old hero, now a standalone row */}
-    <section class="mb-20 grid grid-cols-1 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail md:grid-cols-4">
+    <section class="mb-20 grid grid-cols-1 gap-px overflow-hidden rounded-[14px] border border-rail bg-rail md:grid-cols-4" data-reveal>
       {[
         ['Crawler access', '11 AI crawlers documented'],
         ['Schema deep dive', '12 types with JSON-LD templates'],
@@ -259,7 +259,7 @@ const faqSchema = {
     </section>
 
     {/* The problem */}
-    <section class="mb-20 max-w-4xl">
+    <section class="mb-20 max-w-4xl" data-reveal>
       <h2 class="mb-6 font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         AI search selects its sources before the user sees anything.
       </h2>
@@ -277,7 +277,7 @@ const faqSchema = {
     </section>
 
     {/* The four-layer model */}
-    <section class="mb-20">
+    <section class="mb-20" data-reveal>
       <h2 class="mb-4 font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         The four-layer model
       </h2>
@@ -285,7 +285,7 @@ const faqSchema = {
         Everything in the manual reduces to four layers, applied in order, plus entity authority as a multiplier. Fix access before orientation. Fix orientation before schema. Fix schema before quotability. Build entity authority alongside all of them. Measure last.
       </p>
 
-      <ol class="max-w-3xl divide-y divide-rail overflow-hidden rounded-[10px] border border-rail bg-white">
+      <ol class="max-w-3xl divide-y divide-rail overflow-hidden panel">
         {layers.map((layer) => (
           <li class="flex items-start gap-4 p-4 md:p-5">
             <span class="pt-0.5 font-mono text-[12px] font-medium tabular-nums text-ink-mute">{layer.num}</span>
@@ -299,7 +299,7 @@ const faqSchema = {
     </section>
 
     {/* Sample pages — proof it's a real document, not a placeholder */}
-    <section class="mb-20">
+    <section class="mb-20" data-reveal>
       <h2 class="mb-3 font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         Inside the manual
       </h2>
@@ -307,7 +307,7 @@ const faqSchema = {
         Two real spreads: server log commands for verifying AI crawler access, and the site-speed factors that shrink your crawl budget.
       </p>
       <div class="grid max-w-3xl gap-6 sm:grid-cols-2">
-        <figure class="overflow-hidden rounded-[10px] border border-rail bg-white">
+        <figure class="overflow-hidden panel">
           <img
             src="/assets/manual/page-sample-1.webp"
             alt="Manual page 25: how to verify which AI crawlers access your site, with grep commands for Nginx and Apache access logs"
@@ -319,7 +319,7 @@ const faqSchema = {
           />
           <figcaption class="border-t border-rail px-4 py-3 font-mono text-[11px] text-ink-mute">Page 25: verifying AI crawler access via server logs</figcaption>
         </figure>
-        <figure class="overflow-hidden rounded-[10px] border border-rail bg-white">
+        <figure class="overflow-hidden panel">
           <img
             src="/assets/manual/page-sample-2.webp"
             alt="Manual page 45: site speed and crawl accessibility, covering TTFB targets, page weight limits, and internal linking depth"
@@ -335,11 +335,11 @@ const faqSchema = {
     </section>
 
     {/* What's inside */}
-    <section class="mb-20">
+    <section class="mb-20" data-reveal>
       <h2 class="mb-8 font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         What's inside
       </h2>
-      <div class="grid max-w-6xl grid-cols-1 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid max-w-6xl grid-cols-1 gap-px overflow-hidden rounded-[14px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
         {whatInside.map((item) => (
           <div class="bg-white p-5">
             <h3 class="mb-2 text-base font-semibold text-ink">{item.title}</h3>
@@ -350,11 +350,11 @@ const faqSchema = {
     </section>
 
     {/* Who this is for */}
-    <section class="mb-20">
+    <section class="mb-20" data-reveal>
       <h2 class="mb-8 font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         Who this is for
       </h2>
-      <div class="grid max-w-4xl grid-cols-1 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2">
+      <div class="grid max-w-4xl grid-cols-1 gap-px overflow-hidden rounded-[14px] border border-rail bg-rail sm:grid-cols-2">
         {whoFor.map((item) => (
           <div class="bg-white p-5">
             <div class="flex items-start gap-3">
@@ -372,7 +372,7 @@ const faqSchema = {
     </section>
 
     {/* Table of contents */}
-    <section class="mb-20">
+    <section class="mb-20" data-reveal>
       <h2 class="mb-8 font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         Table of contents
       </h2>
@@ -387,7 +387,7 @@ const faqSchema = {
       </div>
 
       <div class="mt-6 max-w-4xl">
-        <p class="mb-3 font-text text-[12.5px] font-semibold text-ink-mute">Appendices</p>
+        <p class="mb-3 eyebrow">Appendices</p>
         <div class="grid grid-cols-1 gap-x-12 gap-y-2 md:grid-cols-2">
           {appendices.map((ap) => (
             <div class="flex items-baseline gap-3 border-b border-rail py-2">
@@ -400,7 +400,7 @@ const faqSchema = {
     </section>
 
     {/* FAQ */}
-    <section class="mb-20 max-w-3xl">
+    <section class="mb-20 max-w-3xl" data-reveal>
       <h2 class="mb-8 font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">
         FAQ
       </h2>
@@ -415,8 +415,8 @@ const faqSchema = {
     </section>
 
     {/* Final CTA — repeats the download form so bottom-of-page readers convert without scrolling back */}
-    <section class="border-t border-rail pt-10">
-      <div class="mx-auto max-w-2xl rounded-[10px] border border-rail bg-white p-6 text-center md:p-10">
+    <section class="border-t border-rail pt-10" data-reveal>
+      <div class="mx-auto max-w-2xl panel p-6 text-center md:p-10">
         <h2 class="mb-3 font-head text-2xl font-semibold tracking-[-0.02em] text-ink">
           Get the manual, free.
         </h2>
@@ -432,11 +432,11 @@ const faqSchema = {
               name="email"
               required
               placeholder="you@company.com"
-              class="manual-email flex-1 rounded-[10px] border border-ink/25 bg-white px-4 py-3 text-ink placeholder:text-ink-mute transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+              class="manual-email flex-1 rounded-[14px] border border-ink/25 bg-white px-4 py-3 text-ink placeholder:text-ink-mute transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
             />
             <button
               type="submit"
-              class="manual-submit inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+              class="manual-submit inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[9px] bg-pass-deep px-6 py-3 min-h-11 text-[14px] font-semibold text-white transition-colors hover:bg-pass"
             >
               Get the PDF
               <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
@@ -448,11 +448,11 @@ const faqSchema = {
             <input type="checkbox" name="marketing_consent" class="manual-marketing-consent mt-0.5 h-3.5 w-3.5 cursor-pointer rounded-[4px] border-rail accent-pass-deep" />
             <span>Also send me occasional GEO research updates. Unchecked, you'll only get this one download email.</span>
           </label>
-          <div class="manual-success hidden mt-3 rounded-[10px] border border-pass/30 bg-pass-wash p-3 text-sm">
+          <div class="manual-success hidden mt-3 rounded-[14px] border border-pass/30 bg-pass-wash p-3 text-sm">
             <p class="font-medium text-ink">Check your inbox.</p>
             <p class="manual-success-msg mt-0.5 text-ink-soft"></p>
           </div>
-          <div class="manual-error hidden mt-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
+          <div class="manual-error hidden mt-3 rounded-[14px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
             <span aria-hidden="true" class="mr-2 font-text text-[12.5px] font-semibold">err</span>
             <span class="manual-error-msg"></span>
           </div>
@@ -462,11 +462,11 @@ const faqSchema = {
         </div>
 
         {/* Preview — no email gate */}
-        <div class="mx-auto mt-6 max-w-md rounded-[10px] border border-rail bg-paper px-6 py-4">
+        <div class="mx-auto mt-6 max-w-md rounded-[14px] border border-rail bg-paper px-6 py-4">
           <p class="mb-3 text-sm leading-relaxed text-ink-soft">
             Prefer to read first? Download a free 3-chapter preview. No email required.
           </p>
-          <a href="/geo-readiness-manual-preview.pdf" class="inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-4 py-2 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash">
+          <a href="/geo-readiness-manual-preview.pdf" class="inline-flex items-center gap-2 rounded-[9px] border border-rail bg-white px-4 py-2 min-h-11 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash">
             Get the free preview (PDF, 27 pages)
             <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
@@ -578,8 +578,8 @@ const faqSchema = {
   </script>
 
   <style>
-    /* L'unico momento di moto orchestrato della pagina: l'ingresso dell'hero,
-       già presente e disattivato sotto prefers-reduced-motion. */
+    /* Ingresso dell'hero (le sezioni sotto usano data-reveal via motion.ts),
+       disattivato sotto prefers-reduced-motion. */
     @media (prefers-reduced-motion: no-preference) {
       .hero-in {
         opacity: 0;
