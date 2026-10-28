@@ -61,10 +61,10 @@ const faqs = [
         <div class="grid gap-10 lg:grid-cols-[minmax(0,0.88fr)_minmax(420px,0.82fr)] lg:items-center">
           <div>
             <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
-              <h1 class="max-w-3xl font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+              <h1 class="max-w-3xl text-[2.3rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3rem]">
                 AI Citation Checker: is your brand cited by AI answer engines?
               </h1>
-              <div class="flex items-center gap-2 font-text font-medium text-[12px] text-ink-mute">
+              <div class="eyebrow flex items-center gap-2">
                 <a href="/" class="transition-colors hover:text-ink">Home</a>
                 <span class="h-1 w-1 rounded-full bg-ink-mute" aria-hidden="true"></span>
                 <span>AI citation checker</span>
@@ -94,14 +94,14 @@ const faqs = [
                 ['Act', 'Verdicts that point to the next fix.'],
               ].map(([label, text]) => (
                 <div class="border-l border-rail pl-4">
-                  <p class="font-text font-medium text-[12.5px] text-ink-mute">{label}</p>
+                  <div class="eyebrow">{label}</div>
                   <p class="mt-1 text-sm leading-relaxed text-ink-soft">{text}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div class="flex items-center rounded-[10px] border border-rail bg-white p-6 lg:p-8">
+          <div class="flex items-center panel p-6 lg:p-8">
             <CitationSurface mode="sov" variant="light" class="w-full" />
           </div>
         </div>
@@ -109,7 +109,7 @@ const faqs = [
     </section>
 
     {/* ── Isola React: il checker vero e proprio ──────────────────────────── */}
-    <section class="border-t border-rail bg-white">
+    <section class="border-t border-rail bg-white" data-reveal>
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
         <ArticleVisual
           src="/images/article-visuals/B2RankingVsCitation.png"
@@ -123,9 +123,9 @@ const faqs = [
           <h2 id="citation-intent-links-heading" class="max-w-3xl font-head text-2xl font-semibold tracking-[-0.02em] text-ink">
             Citation checks and visibility checks answer different questions.
           </h2>
-          <div class="mt-5 overflow-hidden rounded-[10px] border border-rail bg-white">
+          <div class="mt-5 overflow-hidden panel">
             <div class="border-b border-rail px-4 py-2.5">
-              <p class="font-text text-[12.5px] font-semibold text-ink-mute">Choose the right check</p>
+              <div class="eyebrow">Choose the right check</div>
             </div>
             <div class="grid gap-px bg-rail md:grid-cols-3">
               <a href="/perplexity-citation-checker/" class="bg-paper p-4 transition-colors hover:bg-pass-wash/50">
@@ -161,10 +161,10 @@ const faqs = [
               Test a brand, domain, and category against source-backed AI answers.
             </p>
           </div>
-          <div class="overflow-hidden rounded-[10px] border border-rail bg-paper">
+          <div class="overflow-hidden rounded-[14px] border border-rail bg-paper">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-5 py-2.5">
-              <p class="font-text text-[12.5px] font-semibold text-ink-mute">Tool workspace</p>
-              <p class="font-text font-medium text-[12.5px] text-ink-mute">POST /api/citations</p>
+              <div class="eyebrow">Tool workspace</div>
+              <div class="eyebrow">POST /api/citations</div>
             </div>
             <div class="p-5 sm:p-6">
               <AICitationChecker client:load />
@@ -175,7 +175,7 @@ const faqs = [
     </section>
 
     {/* ── Contenuto SEO statico e crawlable ───────────────────────────────── */}
-    <section class="border-t border-rail bg-paper">
+    <section class="border-t border-rail bg-paper" data-reveal>
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
         <section class="max-w-3xl">
           <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Why AI citations matter more than rankings</h2>
@@ -200,7 +200,7 @@ const faqs = [
         <section class="mt-12 md:mt-16">
           <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">What the four verdicts mean</h2>
           <ul class="mt-5 max-w-3xl space-y-3" role="list">
-            <li class="flex gap-3 rounded-[10px] border border-rail bg-white p-4">
+            <li class="flex gap-3 panel p-4">
               <svg viewBox="0 0 24 24" class="mt-0.5 h-4 w-4 shrink-0 text-pass-deep" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M8 21h8" />
                 <path d="M12 17v4" />
@@ -210,13 +210,13 @@ const faqs = [
               </svg>
               <p class="text-sm leading-relaxed text-ink-soft"><strong class="text-ink">Strong</strong> — your domain is cited as a source in most answers. Monitor it: positions degrade silently.</p>
             </li>
-            <li class="flex gap-3 rounded-[10px] border border-rail bg-white p-4">
+            <li class="flex gap-3 panel p-4">
               <svg viewBox="0 0 24 24" class="mt-0.5 h-4 w-4 shrink-0 text-pass-deep" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M20 6 9 17l-5-5" />
               </svg>
               <p class="text-sm leading-relaxed text-ink-soft"><strong class="text-ink">Cited</strong> — you appear among sources, but not consistently. Strengthen citability to win more answers.</p>
             </li>
-            <li class="flex gap-3 rounded-[10px] border border-rail bg-white p-4">
+            <li class="flex gap-3 panel p-4">
               <svg viewBox="0 0 24 24" class="mt-0.5 h-4 w-4 shrink-0 text-warn" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="8" />
                 <path d="M12 8v4" />
@@ -224,7 +224,7 @@ const faqs = [
               </svg>
               <p class="text-sm leading-relaxed text-ink-soft"><strong class="text-ink">Mentioned only</strong> — the AI knows your brand from third parties but never cites your own pages. Make your domain the reference.</p>
             </li>
-            <li class="flex gap-3 rounded-[10px] border border-rail bg-white p-4">
+            <li class="flex gap-3 panel p-4">
               <svg viewBox="0 0 24 24" class="mt-0.5 h-4 w-4 shrink-0 text-fail" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="8" />
                 <path d="m15 9-6 6" />
@@ -257,7 +257,7 @@ const faqs = [
       </div>
     </section>
 
-    <section class="border-t border-rail bg-white">
+    <section class="border-t border-rail bg-white" data-reveal>
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
         <section>
           <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Which AI citation result should trigger action?</h2>
@@ -266,14 +266,14 @@ const faqs = [
             step. Use the result below to decide whether to monitor, improve the
             source page, or rebuild the visibility foundation.
           </p>
-          <div class="mt-5 overflow-x-auto rounded-[10px] border border-rail bg-white">
+          <div class="mt-5 overflow-x-auto panel">
             <table class="min-w-full border-collapse text-left text-sm">
               <thead class="bg-paper">
                 <tr>
-                  <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Result</th>
-                  <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Risk</th>
-                  <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Next action</th>
-                  <th scope="col" class="border-b border-rail px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">GeoReady workflow</th>
+                  <th scope="col" class="border-b border-rail px-4 py-3 eyebrow">Result</th>
+                  <th scope="col" class="border-b border-rail px-4 py-3 eyebrow">Risk</th>
+                  <th scope="col" class="border-b border-rail px-4 py-3 eyebrow">Next action</th>
+                  <th scope="col" class="border-b border-rail px-4 py-3 eyebrow">GeoReady workflow</th>
                 </tr>
               </thead>
               <tbody>
@@ -316,12 +316,12 @@ const faqs = [
     </section>
 
     {/* FAQ visibili (stesse del FAQPage schema) */}
-    <section class="border-t border-rail bg-paper">
+    <section class="border-t border-rail bg-paper" data-reveal>
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
         <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">Frequently asked questions</h2>
-        <div class="mt-8 max-w-3xl">
+        <div class="panel mt-8 max-w-3xl divide-y divide-rail overflow-hidden">
           {faqs.map((faq) => (
-            <div class="border-t border-rail py-5 first:border-t-0 first:pt-0">
+            <div class="p-6">
               <h3 class="text-base font-semibold text-ink">{faq.question}</h3>
               <p class="mt-2 text-sm leading-relaxed text-ink-soft">{faq.answer}</p>
             </div>
@@ -331,10 +331,11 @@ const faqs = [
     </section>
 
     {/* CTA finale → SaaS — banda di verdetto della pagina */}
-    <section class="border-t border-rail bg-pass-deep">
-      <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-        <h2 class="max-w-3xl font-head text-2xl font-semibold tracking-[-0.02em] text-white md:text-3xl">One check is a snapshot. Tracking is the moat.</h2>
-        <p class="mt-4 max-w-2xl leading-relaxed text-pass-wash">
+    <section class="band-dark" aria-labelledby="citation_checker-next-h" data-reveal>
+      <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
+        <div class="eyebrow">Next step</div>
+        <h2 id="citation_checker-next-h" class="mt-3 max-w-3xl text-3xl font-semibold tracking-[-0.03em] text-ink md:text-[2.5rem] md:leading-[1.08]">One check is a snapshot. Tracking is the moat.</h2>
+        <p class="mt-4 max-w-2xl leading-relaxed text-ink-soft">
           AI answers change every week. GeoReady turns this one-off check into
           ongoing AI citation tracking: it runs your citation checks on a
           schedule, alerts you when you lose or win a citation, and shows who
@@ -349,14 +350,14 @@ const faqs = [
             data-plan-price="$89"
             data-plan-currency="USD"
             data-cta-location="citation_checker_final_tracking"
-            class="inline-flex items-center justify-center rounded-[10px] bg-white px-6 py-3 font-text text-[13px] font-semibold text-pass-deep transition-colors hover:bg-pass-wash"
+            class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-[#2DD4BF] px-6 py-3 text-[14px] font-semibold text-[#062420] transition-colors hover:bg-[#5EEAD4]"
           >
             Track citations weekly
           </a>
           <a
             href="/pricing/"
             data-cta="citation_checker_final_pricing"
-            class="inline-flex items-center justify-center rounded-[10px] border border-white/40 px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
+            class="inline-flex min-h-11 items-center justify-center rounded-[9px] px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_#2A3838] transition-shadow hover:shadow-[inset_0_0_0_1px_#2DD4BF]"
           >
             See pricing
           </a>

@@ -143,7 +143,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <header class="mb-12 max-w-3xl">
-        <nav aria-label="Breadcrumb" class="mb-5 flex items-center gap-2 font-text font-medium text-[12px] text-ink-mute">
+        <nav aria-label="Breadcrumb" class="eyebrow mb-5 flex items-center gap-2">
           <a href="/" class="transition-colors hover:text-ink">GeoReady</a>
           <span class="h-1 w-1 rounded-full bg-ink-mute" aria-hidden="true" />
           <a href="/state-of-geo/" class="transition-colors hover:text-ink">State of GEO</a>
@@ -151,7 +151,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
           <span>July 2026</span>
         </nav>
 
-        <h1 itemprop="headline" class="font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+        <h1 itemprop="headline" class="text-[2.3rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3rem]">
           State of GEO: July 2026
         </h1>
         <p class="mt-2 font-head text-xl font-bold tracking-[-0.02em] text-ink-soft md:text-2xl">
@@ -176,7 +176,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
 
       {/* ── Executive summary — l'unico log well della pagina: incornicia il
           risultato misurato principale del mese (dati first-party) ─────────── */}
-      <section class="mb-12 overflow-hidden rounded-[10px] bg-well text-well-ink" aria-label="Executive summary — July 2026">
+      <section class="mb-12 overflow-hidden rounded-[14px] bg-well text-well-ink" aria-label="Executive summary — July 2026">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-well-ink/15 px-6 py-3">
           <p class="font-text text-[12.5px] font-semibold text-well-mute">Executive summary — July 2026</p>
           <span class="font-text font-medium text-[12.5px] text-well-mute">{SAMPLE_NOTE}</span>
@@ -227,7 +227,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
       <div class="space-y-14 leading-relaxed text-ink-soft [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
 
         {/* ── 1. Score distribution ──────────────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <h2>Score distribution: 75% still below the Good threshold</h2>
           <p class="mt-4">
             The average GEO score across {stats.domains} unique domains is <strong class="text-ink">{stats.avgScore} out of 100</strong> — up 0.5 points from June's 53.6. The median is {stats.median}, with the bottom quarter of sites scoring at or below {stats.p25} and the top quarter at or above {stats.p75}. The highest score in the dataset is {stats.maxScore} — the first perfect 100 in the benchmark's history, up from a maximum of 90 in June. The lowest is {stats.minScore}.
@@ -236,7 +236,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
             The band breakdown shows a meaningful shift toward higher tiers compared to June:
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden panel">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
               <span class="font-text text-[12.5px] font-semibold text-ink-mute">score bands</span>
               <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
@@ -245,12 +245,12 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
               <table class="w-full min-w-[640px] text-left text-sm">
                 <thead>
                   <tr class="border-b border-rail bg-paper">
-                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Band</th>
-                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Score range</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Domains</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Share</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">June 2026</th>
-                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it means</th>
+                    <th scope="col" class="px-4 py-3 eyebrow">Band</th>
+                    <th scope="col" class="px-4 py-3 eyebrow">Score range</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">Domains</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">Share</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">June 2026</th>
+                    <th scope="col" class="px-4 py-3 eyebrow">What it means</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-rail">
@@ -297,13 +297,13 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 2. Category breakdown ──────────────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <h2>Category breakdown: schema is gaining, llms.txt is slipping</h2>
           <p class="mt-4">
             The v1 GEO rubric used for this edition scores eight categories (the current default, v2, has nine since engine 4.19.0). Each has a different maximum. The table below shows the July 2026 average for each, what the maximum is, and the efficiency percentage — how much of the available points the average site is capturing.
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden panel">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
               <span class="font-text text-[12.5px] font-semibold text-ink-mute">category efficiency</span>
               <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
@@ -312,11 +312,11 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
               <table class="w-full min-w-[640px] text-left text-sm">
                 <thead>
                   <tr class="border-b border-rail bg-paper">
-                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Category</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Avg score</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Max</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Efficiency</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">June eff.</th>
+                    <th scope="col" class="px-4 py-3 eyebrow">Category</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">Avg score</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">Max</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">Efficiency</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">June eff.</th>
                     <th scope="col" class="px-4 py-3"></th>
                   </tr>
                 </thead>
@@ -354,10 +354,10 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 3. Adoption rates ──────────────────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
             <h2>Adoption rates: the machine-readability stack</h2>
-            <p class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</p>
+            <div class="eyebrow">{SAMPLE_NOTE}</div>
           </div>
           <p class="mt-4">
             The GEO rubric checks specific technical signals beyond category scores. These adoption rates show where the default behavior of the web sits in July 2026 — and what changed from June.
@@ -396,9 +396,9 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
           </p>
 
           <div class="mt-6 grid gap-4 sm:grid-cols-2">
-            <div class="overflow-hidden rounded-[10px] border border-rail bg-white">
+            <div class="overflow-hidden panel">
               <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-5 py-2.5">
-                <p class="font-text text-[12.5px] font-semibold text-ink-mute">llms.txt correlation</p>
+                <div class="eyebrow">llms.txt correlation</div>
                 <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
               </div>
               <div class="px-5 py-4">
@@ -408,9 +408,9 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
                 </p>
               </div>
             </div>
-            <div class="overflow-hidden rounded-[10px] border border-rail bg-white">
+            <div class="overflow-hidden panel">
               <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-5 py-2.5">
-                <p class="font-text text-[12.5px] font-semibold text-ink-mute">Schema markup correlation</p>
+                <div class="eyebrow">Schema markup correlation</div>
                 <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
               </div>
               <div class="px-5 py-4">
@@ -424,13 +424,13 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 4. Month-over-month comparison ─────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <h2>Month-over-month: what changed between June and July</h2>
           <p class="mt-4">
             This is the first edition with a prior month to compare against. The table below shows the key metrics side by side, with the direction and magnitude of change.
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden panel">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
               <span class="font-text text-[12.5px] font-semibold text-ink-mute">month-over-month</span>
               <span class="font-text font-medium text-[12.5px] text-ink-mute">jun n = 288 · jul n = 360</span>
@@ -439,11 +439,11 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
               <table class="w-full min-w-[640px] text-left text-sm">
                 <thead>
                   <tr class="border-b border-rail bg-paper">
-                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Metric</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">June 2026</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">July 2026</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Change</th>
-                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Direction</th>
+                    <th scope="col" class="px-4 py-3 eyebrow">Metric</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">June 2026</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">July 2026</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">Change</th>
+                    <th scope="col" class="px-4 py-3 eyebrow">Direction</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-rail">
@@ -573,7 +573,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 5. The AI Discovery gap ────────────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <h2>The biggest gap remains: AI Discovery at 10.0% efficiency</h2>
           <p class="mt-4">
             Every category in the GEO rubric has a gap. But AI Discovery is still in a different tier. The average score is <strong class="text-ink">0.6 points out of a maximum of 6</strong> — a 10.0% capture rate, up from 8.3% in June. Only 17.5% of audited sites expose any AI discovery endpoint, up from 16.0%.
@@ -585,9 +585,9 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
             The gap exists because these standards are new and publishing them requires deliberate action — nothing in a default CMS install or hosting setup creates them automatically. That makes it one of the rarest signals in July 2026, and one of the easiest to capture simply by doing what almost nobody has done yet. The modest improvement from 8.3% to 10.0% efficiency means the category is moving, but at this rate it will take many months before AI discovery becomes mainstream.
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden panel">
             <div class="border-b border-rail px-5 py-2.5">
-              <p class="font-text text-[12.5px] font-semibold text-ink-mute">Opportunity sizing</p>
+              <div class="eyebrow">Opportunity sizing</div>
             </div>
             <p class="px-5 py-4 text-sm leading-relaxed text-ink-soft">
               A site that publishes a complete <code class="text-sm font-mono">/.well-known/ai.txt</code>, a structured <code class="text-sm font-mono">llms.txt</code>, and correct Organization + WebSite schema can move from a Foundation score to a Good score without touching a single line of content. That is roughly 15–25 points of recoverable GEO score from three files, none of which require backend changes. In July 2026, only 17.5% of sites have taken even the first step.
@@ -596,13 +596,13 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 6. TLD analysis ────────────────────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <h2>By TLD: who is leading AI search readiness in July 2026</h2>
           <p class="mt-4">
             The TLD landscape shifted in July. The dataset diversified — .com remains dominant at 199 domains (up from 163), but new extensions entered with strong scores. <strong class="text-ink">.fr debuted at the top of the table with a 64.2 average and 100% schema adoption</strong>, and .hk followed at 63.3 with 100% schema adoption as well. Italian .it domains improved dramatically from June.
           </p>
 
-          <div class="mt-6 overflow-hidden rounded-[10px] border border-rail bg-white">
+          <div class="mt-6 overflow-hidden panel">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
               <span class="font-text text-[12.5px] font-semibold text-ink-mute">tld breakdown</span>
               <span class="font-text font-medium text-[12.5px] text-ink-mute">{SAMPLE_NOTE}</span>
@@ -611,11 +611,11 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
               <table class="w-full min-w-[560px] text-left text-sm">
                 <thead>
                   <tr class="border-b border-rail bg-paper">
-                    <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">TLD</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Domains</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Avg score</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">llms.txt</th>
-                    <th scope="col" class="px-4 py-3 text-right font-text text-[12.5px] font-semibold text-ink-mute">Schema</th>
+                    <th scope="col" class="px-4 py-3 eyebrow">TLD</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">Domains</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">Avg score</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">llms.txt</th>
+                    <th scope="col" class="px-4 py-3 text-right eyebrow">Schema</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-rail">
@@ -651,7 +651,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 7. What the data tells us ─────────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <h2>What July 2026 tells us about AI search readiness</h2>
           <p class="mt-4">
             The June-to-July comparison reveals two things at once. First, <strong class="text-ink">the floor is rising slowly</strong>: the share of sites below Good dropped from 79.2% to 75.3%, and the Good band grew from 19.4% to 22.8%. The first perfect 100-point score appeared. Seven domains now sit in the Excellent band. These are real gains, even if the average moved only 0.5 points.
@@ -668,7 +668,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 8. Quick wins checklist ────────────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <h2>The July 2026 quick-win checklist</h2>
           <p class="mt-4">
             Based on where audited sites lose the most points in July 2026 — and the month-over-month trends — these are the highest-leverage actions, ordered by expected point recovery per hour of work:
@@ -696,7 +696,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 9. Mid-page CTA ─────────────────────────────────────────────────── */}
-        <section class="rounded-[10px] border border-rail bg-white p-6 md:p-8">
+        <section class="panel p-6 md:p-8" data-reveal>
           <h2>See where your site stands against the July 2026 benchmark</h2>
           <p class="mt-3">
             The average score in July 2026 is 54.1. Run a free audit to see your GEO score across all nine categories, identify which band you are in, and get the specific actions that recover the most points first.
@@ -705,14 +705,14 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
             <a
               href="/"
               data-cta="state_geo_july2026_mid_audit"
-              class="inline-flex items-center justify-center rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+              class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-pass-deep px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-pass"
             >
               Audit my site free
             </a>
             <a
               href="/state-of-geo/"
               data-cta="state_geo_july2026_live_benchmark"
-              class="inline-flex items-center justify-center rounded-[10px] border border-rail bg-white px-6 py-3 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+              class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-white px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_var(--color-rail)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-pass-deep)]"
             >
               See live benchmark data
             </a>
@@ -720,7 +720,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 10. Methodology ─────────────────────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <h2>Methodology</h2>
           <p class="mt-4">
             This report covers {stats.domains} unique domains audited by GeoReady between 1 July and 31 July 2026. When a domain was audited multiple times in the period, only the most recent audit is included — this prevents repeat users from inflating the cohort size and ensures each domain appears once at its best-known state.
@@ -739,7 +739,7 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 11. Newsletter ─────────────────────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <NewsletterSignup
             client:visible
             source="newsletter-state-of-geo-july-2026"
@@ -749,11 +749,11 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 12. FAQ ────────────────────────────────────────────────────────── */}
-        <section>
+        <section data-reveal>
           <h2>Frequently asked questions</h2>
-          <div class="mt-4 space-y-7">
+          <div class="panel mt-4 divide-y divide-rail overflow-hidden">
             {faqs.map((faq) => (
-              <div>
+              <div class="p-6">
                 <h3>{faq.question}</h3>
                 <p class="mt-2">{faq.answer}</p>
               </div>
@@ -762,8 +762,9 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
         </section>
 
         {/* ── 13. Final CTA ──────────────────────────────────────────────────── */}
-        <section class="rounded-[10px] border border-rail bg-white p-6 md:p-8">
-          <h2>Beat the July 2026 average of 54.1</h2>
+        <section class="band-dark rounded-[14px] p-6 md:p-10" aria-labelledby="sog_july_2026-next-h" data-reveal>
+          <div class="eyebrow">Next step</div>
+          <h2 id="sog_july_2026-next-h" class="mt-3">Beat the July 2026 average of 54.1</h2>
           <p class="mt-3">
             Run a free AI SEO audit to get your full GEO score, see which of the nine categories is costing you the most points, and get a ranked action list. No account required for the baseline snapshot.
           </p>
@@ -771,23 +772,23 @@ const SAMPLE_NOTE = 'n = 360 · 1–31 Jul 2026';
             <a
               href="/"
               data-cta="state_geo_july2026_final_audit"
-              class="inline-flex items-center justify-center rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+              class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-[#2DD4BF] px-6 py-3 text-[14px] font-semibold text-[#062420] transition-colors hover:bg-[#5EEAD4]"
             >
               Run your free AI SEO audit
             </a>
             <a
               href="/guides/generative-engine-optimization/"
               data-cta="state_geo_july2026_geo_guide"
-              class="inline-flex items-center justify-center rounded-[10px] border border-rail bg-white px-6 py-3 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+              class="inline-flex min-h-11 items-center justify-center rounded-[9px] px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_#2A3838] transition-shadow hover:shadow-[inset_0_0_0_1px_#2DD4BF]"
             >
               Read the full GEO guide
             </a>
           </div>
           <p class="mt-4 text-xs text-ink-mute">
             New to AI search readiness?
-            <a href="/ai-seo/" class="ml-1 text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">What is AI SEO</a> ·
-            <a href="/guides/what-is-llms-txt/" class="ml-1 text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">What is llms.txt</a> ·
-            <a href="/tools/llms-txt-generator/" class="ml-1 text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">Free llms.txt generator</a>
+            <a href="/ai-seo/" class="ml-1 text-pass-deep underline decoration-ink-mute underline-offset-4 hover:decoration-pass-deep">What is AI SEO</a> ·
+            <a href="/guides/what-is-llms-txt/" class="ml-1 text-pass-deep underline decoration-ink-mute underline-offset-4 hover:decoration-pass-deep">What is llms.txt</a> ·
+            <a href="/tools/llms-txt-generator/" class="ml-1 text-pass-deep underline decoration-ink-mute underline-offset-4 hover:decoration-pass-deep">Free llms.txt generator</a>
           </p>
         </section>
 

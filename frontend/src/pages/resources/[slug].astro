@@ -99,19 +99,19 @@ const jsonLd = {
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-16">
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <header class="mb-12 max-w-3xl md:mb-16">
-        <h1 itemprop="headline" class="font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] md:text-5xl">
+        <h1 itemprop="headline" class="text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.035em] text-ink sm:text-[2.6rem]">
           {article.title}
         </h1>
 
-        <p class="mt-3 font-text font-medium text-[12.5px] text-ink-mute">
+        <div class="eyebrow mt-3">
           Resources{article.focusKeyword && ` · ${article.focusKeyword}`}
-        </p>
+        </div>
 
         <p class="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
           {article.description}
         </p>
 
-        <div class="mt-5 flex flex-wrap items-center gap-3 font-mono text-[12px] text-ink-mute">
+        <div class="eyebrow mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
           <span itemprop="author">{author}</span>
           <span>·</span>
           <time itemprop="datePublished" datetime={article.datePublished}>
@@ -135,13 +135,13 @@ const jsonLd = {
 
       {/* ── FAQs ─────────────────────────────────────────────────────────────── */}
       {article.faqs && article.faqs.length > 0 && (
-        <section class="mt-16 max-w-3xl border-t border-rail pt-10">
+        <section class="mt-16 max-w-3xl" data-reveal>
           <h2 class="mb-6 font-head text-2xl font-semibold leading-tight tracking-[-0.02em]">
             Frequently asked questions
           </h2>
-          <div class="space-y-7">
+          <div class="panel divide-y divide-rail overflow-hidden">
             {article.faqs.map((faq: any) => (
-              <div>
+              <div class="p-6">
                 <h3 class="text-base font-semibold text-ink">{faq.question}</h3>
                 <p class="mt-2 leading-relaxed text-ink-soft">{faq.answer}</p>
               </div>
