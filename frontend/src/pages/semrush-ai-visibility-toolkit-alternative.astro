@@ -1,5 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
+import CompareNextBand from '../components/CompareNextBand.astro';
 
 const title = 'Semrush AI Visibility Toolkit Alternative | GeoReady';
 const description =
@@ -57,7 +58,8 @@ const faqs = [
 
     {/* Header — answer-first, entrambi gli intent (valutare il toolkit / cercare un'alternativa) */}
     <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-semibold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+      <div class="eyebrow">GeoReady · Compare</div>
+      <h1 class="mt-4 text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.035em] text-ink sm:text-[2.6rem]">
         Semrush AI Visibility Toolkit Alternative: What It Is, What It Costs, and When to Use Something Else
       </h1>
 
@@ -85,13 +87,13 @@ const faqs = [
         re-checked from Europe. GeoReady facts are from geoready.dev/pricing, October 2026.
       </p>
 
-      <p class="mt-4 font-mono text-xs text-ink-mute">
+      <div class="eyebrow mt-4">
         Published September 16, 2026 · Last updated October 23, 2026
-      </p>
+      </div>
     </header>
 
     {/* What is it, exactly */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>What is Semrush's "AI Visibility Toolkit," exactly?</h2>
       <p class="mt-4">
         This is the first thing worth clearing up, because Semrush itself doesn't use one
@@ -115,7 +117,7 @@ const faqs = [
     </section>
 
     {/* What it does */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>What it does</h2>
       <p class="mt-4">
         Based on semrush.com/features/ai-visibility/ and semrush.com/one (both accessed
@@ -138,7 +140,7 @@ const faqs = [
     </section>
 
     {/* Pricing table */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>What it costs (dollar prices as of September 2026)</h2>
       <p class="mt-4">
         All figures below are volatile and were verified on semrush.com/pricing/ on 2026-09-01.
@@ -147,14 +149,14 @@ const faqs = [
         independently confirmed beyond that. The AI-visibility limits in the last column were
         re-checked on 2026-10-23.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Plan</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Monthly, billed annually</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Monthly, billed month-to-month</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">AI-visibility limits named on this row</th>
+              <th scope="col" class="eyebrow px-4 py-3">Plan</th>
+              <th scope="col" class="eyebrow px-4 py-3">Monthly, billed annually</th>
+              <th scope="col" class="eyebrow px-4 py-3">Monthly, billed month-to-month</th>
+              <th scope="col" class="eyebrow px-4 py-3">AI-visibility limits named on this row</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -181,7 +183,7 @@ const faqs = [
     </section>
 
     {/* Cadence discrepancy, not reconciled */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Monitoring cadence: what Semrush's own pages say (not reconciled)</h2>
       <p class="mt-4">
         Semrush's own pages are not fully consistent about how often AI-visibility data
@@ -200,7 +202,7 @@ const faqs = [
     </section>
 
     {/* Where Semrush wins */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Where Semrush genuinely wins</h2>
       <p class="mt-4">
         Semrush has advantages here that a small, dedicated tool does not have.
@@ -214,7 +216,7 @@ const faqs = [
     </section>
 
     {/* Case for a dedicated tool */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>The case for a dedicated tool instead</h2>
       <p class="mt-4">
         Someone searching "Semrush AI Visibility Toolkit alternative" is very often someone who
@@ -232,7 +234,7 @@ const faqs = [
     </section>
 
     {/* Price band comparison */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Semrush vs. GeoReady, by price band</h2>
       <p class="mt-4">
         A different lens than a feature-by-feature table: what does each price band actually buy
@@ -240,13 +242,13 @@ const faqs = [
         dollar prices accessed 2026-09-01, plan limits re-checked 2026-10-23. GeoReady figures:
         geoready.dev/pricing, October 2026.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Price band</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Semrush: what's bundled at this band</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">GeoReady: what's included at this band</th>
+              <th scope="col" class="eyebrow px-4 py-3">Price band</th>
+              <th scope="col" class="eyebrow px-4 py-3">Semrush: what's bundled at this band</th>
+              <th scope="col" class="eyebrow px-4 py-3">GeoReady: what's included at this band</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -263,7 +265,7 @@ const faqs = [
     </section>
 
     {/* Who should stay */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Who should stay on Semrush</h2>
       <p class="mt-4">
         If you're already paying for Semrush's full suite and the AI-visibility module is a
@@ -276,7 +278,7 @@ const faqs = [
     </section>
 
     {/* Getting started */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Getting started with a dedicated tool</h2>
       <ol class="mt-4 list-decimal space-y-3 pl-5">
         <li><strong>Run the free audit first.</strong> No account, no card: a full GEO score and nine-category breakdown for any URL, to see what a dedicated audit surfaces that a bundled module might not.</li>
@@ -288,11 +290,11 @@ const faqs = [
     </section>
 
     {/* FAQ */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Frequently asked questions</h2>
-      <div class="mt-6 space-y-6">
+      <div class="panel mt-6 divide-y divide-rail overflow-hidden">
         {faqs.map((faq) => (
-          <div>
+          <div class="p-6">
             <h3>{faq.q}</h3>
             <p class="mt-2">{faq.a}</p>
           </div>
@@ -301,7 +303,7 @@ const faqs = [
     </section>
 
     {/* Bottom CTA */}
-    <section class="mb-12 md:mb-16 rounded-[10px] border border-rail bg-white p-6">
+    <section class="panel mb-12 p-6 md:mb-16">
       <h2>Start with the free audit</h2>
       <p class="mt-4">
         No account, no card, no suite required. See your GEO score, then decide if dedicated
@@ -334,6 +336,8 @@ const faqs = [
       </p>
     </section>
   </article>
+
+  <CompareNextBand slug="semrush_ai_visibility_toolkit_alternative" />
 
   {/* Page-specific schema — WebPage con autore Person (byline nominato), niente FAQPage/HowTo/AggregateRating */}
   <script type="application/ld+json" set:html={JSON.stringify({

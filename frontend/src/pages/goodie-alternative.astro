@@ -1,5 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
+import CompareNextBand from '../components/CompareNextBand.astro';
 
 const title = 'Goodie AI Alternative: Transparent AI-Visibility Monitoring';
 const description =
@@ -52,13 +53,14 @@ const faqs = [
   <article class="mx-auto max-w-3xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
 
     <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-semibold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+      <div class="eyebrow">GeoReady · Compare</div>
+      <h1 class="mt-4 text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.035em] text-ink sm:text-[2.6rem]">
         Goodie AI Alternative: Managed Attribution vs Open, Published Scoring
       </h1>
 
-      <p class="mt-4 font-mono text-xs text-ink-mute">
+      <div class="eyebrow mt-4">
         Published September 21, 2026 · Last updated October 23, 2026 · by Juan Camilo Auriti · 8 min read
-      </p>
+      </div>
 
       <p class="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
         Goodie AI (higoodie.com) is an AEO platform founded in 2024 with an office in New York City, built as a closed
@@ -71,7 +73,7 @@ const faqs = [
       </p>
     </header>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>What Goodie AI is</h2>
       <p class="mt-4">
         Goodie AI describes its plans as "full-stack AEO" where every plan "runs the full loop" from research to
@@ -93,7 +95,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Who Goodie AI fits well</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li><strong class="text-ink">Teams that need revenue attribution</strong> — if connecting AI visibility to AI-sourced revenue through GA4/CRM is the metric you report on, Goodie's attribution is a real differentiator GeoReady doesn't claim (higoodie.com/features/ai-traffic-revenue-attribution, as of October 2026).</li>
@@ -102,7 +104,7 @@ const faqs = [
       </ul>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>When a Goodie AI alternative makes sense</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li>You want a free option that is genuinely $0 and permanent. Goodie's pricing page offers a 7-day free trial of Core and no ongoing free plan (higoodie.com/pricing, as of October 2026); GeoReady's Free plan is $0 forever, 5 full audits a day, no account, no card.</li>
@@ -116,7 +118,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Being fair about Goodie AI's strengths</h2>
       <p class="mt-4">
         None of this is a case that Goodie is a weak product. It is a serious, end-to-end AEO platform
@@ -127,20 +129,20 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Goodie AI vs GeoReady, head-to-head</h2>
       <p class="mt-4 text-sm italic text-ink-mute">
         Goodie figures: higoodie.com/pricing, /about, /features/ai-visibility-monitoring and
         /features/ai-traffic-revenue-attribution, re-checked 2026-10-23; the probabilistic-metrics blog was accessed
         2026-09-21 and not re-checked. GeoReady figures: geoready.dev/pricing, October 2026. Currency stated as each vendor publishes it; no conversion applied.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute"></th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Goodie AI</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">GeoReady</th>
+              <th scope="col" class="eyebrow px-4 py-3"></th>
+              <th scope="col" class="eyebrow px-4 py-3">Goodie AI</th>
+              <th scope="col" class="eyebrow px-4 py-3">GeoReady</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -160,11 +162,11 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Frequently asked questions</h2>
-      <div class="mt-6 space-y-6">
+      <div class="panel mt-6 divide-y divide-rail overflow-hidden">
         {faqs.map((faq) => (
-          <div>
+          <div class="p-6">
             <h3>{faq.q}</h3>
             <p class="mt-2" set:html={faq.a} />
           </div>
@@ -187,6 +189,8 @@ const faqs = [
       </p>
     </section>
   </article>
+
+  <CompareNextBand slug="goodie_alternative" />
 
   {/* Page-specific schema — WebPage (stessa scelta delle altre comparative) */}
   <script type="application/ld+json" set:html={JSON.stringify({

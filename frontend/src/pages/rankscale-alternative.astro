@@ -1,5 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
+import CompareNextBand from '../components/CompareNextBand.astro';
 
 const title = 'RankScale Alternative: Free Audit, Published Scoring';
 const description =
@@ -54,13 +55,14 @@ const faqs = [
 
     {/* Header — answer-first, byline direttamente sotto l'H1 come da packet */}
     <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-semibold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+      <div class="eyebrow">GeoReady · Compare</div>
+      <h1 class="mt-4 text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.035em] text-ink sm:text-[2.6rem]">
         RankScale Alternative: Multi-Engine Monitoring vs Open, Published Scoring
       </h1>
 
-      <p class="mt-4 font-mono text-xs text-ink-mute">
+      <div class="eyebrow mt-4">
         Published September 21, 2026 · Last updated October 23, 2026 · by Juan Camilo Auriti · 8 min read
-      </p>
+      </div>
 
       <p class="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
         RankScale (rankscale.ai) is an AI Visibility Platform built by Rankscale GmbH in Vienna, tracking 17+ AI
@@ -73,7 +75,7 @@ const faqs = [
       </p>
     </header>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>What RankScale is</h2>
       <p class="mt-4">
         RankScale describes itself as "the GEO platform for measuring, tracking, and improving how you rank across
@@ -93,7 +95,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Who RankScale fits well</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li><strong class="text-ink">Teams that want 17+ engine coverage</strong> — RankScale tracks a genuinely broad set of generative engines including DeepSeek, Grok, and Mistral, a coverage GeoReady doesn't try to match for free (rankscale.ai, as of October 2026).</li>
@@ -102,7 +104,7 @@ const faqs = [
       </ul>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>When a RankScale alternative makes sense</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li>You want a free option that isn't a paid credits system. RankScale shows no ongoing free plan, only a 7-day free trial of Pro (rankscale.ai/pricing, as of October 2026); GeoReady's Free plan is $0 forever, 5 full audits a day, no account.</li>
@@ -117,7 +119,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Being fair about RankScale's strengths</h2>
       <p class="mt-4">
         None of this is a case that RankScale is a weak product. It is a serious, well-scoped competitor: a 17+ engine
@@ -129,7 +131,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>RankScale vs GeoReady, head-to-head</h2>
       <p class="mt-4 text-sm italic text-ink-mute">
         RankScale figures: rankscale.ai, /pricing, /api, /resources/glossary/visibility-score, and /team, accessed
@@ -138,13 +140,13 @@ const faqs = [
         figures: geoready.dev/pricing, October 2026. Currency stated as each vendor publishes it; no
         conversion applied.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute"></th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">RankScale</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">GeoReady</th>
+              <th scope="col" class="eyebrow px-4 py-3"></th>
+              <th scope="col" class="eyebrow px-4 py-3">RankScale</th>
+              <th scope="col" class="eyebrow px-4 py-3">GeoReady</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -164,11 +166,11 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Frequently asked questions</h2>
-      <div class="mt-6 space-y-6">
+      <div class="panel mt-6 divide-y divide-rail overflow-hidden">
         {faqs.map((faq) => (
-          <div>
+          <div class="p-6">
             <h3>{faq.q}</h3>
             <p class="mt-2" set:html={faq.a} />
           </div>
@@ -191,6 +193,8 @@ const faqs = [
       </p>
     </section>
   </article>
+
+  <CompareNextBand slug="rankscale_alternative" />
 
   {/* Page-specific schema — WebPage (stessa scelta delle altre comparative) */}
   <script type="application/ld+json" set:html={JSON.stringify({

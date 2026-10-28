@@ -1,5 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
+import CompareNextBand from '../components/CompareNextBand.astro';
 
 const title = 'Otterly Alternative: Pricing & Coverage | GeoReady';
 const description =
@@ -61,13 +62,14 @@ const faqs = [
 
     {/* Header — answer-first, byline direttamente sotto l'H1 come da packet */}
     <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-semibold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+      <div class="eyebrow">GeoReady · Compare</div>
+      <h1 class="mt-4 text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.035em] text-ink sm:text-[2.6rem]">
         Otterly Alternative: What You Get Before and After the Price Jump
       </h1>
 
-      <p class="mt-4 font-mono text-xs text-ink-mute">
+      <div class="eyebrow mt-4">
         Published September 16, 2026 · Last updated October 23, 2026 · by Juan Camilo Auriti · 9 min read
-      </p>
+      </div>
 
       <p class="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
         Otterly (otterly.ai) is a capable, purpose-built AI-search-visibility
@@ -84,7 +86,7 @@ const faqs = [
       </p>
     </header>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>What Otterly does today</h2>
       <p class="mt-4">
         Otterly's core product is AI Search Analytics: tracking brand and website
@@ -120,7 +122,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Where the price jumps</h2>
       <p class="mt-4">Otterly's published pricing (otterly.ai/pricing, as of October 2026):</p>
       <ul class="ml-5 mt-4 list-disc space-y-2">
@@ -150,7 +152,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>The engines-included-vs-advertised nuance</h2>
       <p class="mt-4">
         Otterly's homepage markets coverage across "ChatGPT, Perplexity, AI
@@ -176,7 +178,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Where GeoReady starts cheaper</h2>
       <p class="mt-4">
         A full GEO audit (no account, no card, 5 runs a day) costs $0 forever on
@@ -190,7 +192,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Where Otterly is genuinely stronger, and who should keep it</h2>
       <p class="mt-4">
         If what you need is continuous, automated, daily citation and brand-mention
@@ -209,23 +211,23 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Otterly vs GeoReady, tier by tier</h2>
       <p class="mt-4 text-sm italic text-ink-mute">
         Otterly figures: otterly.ai/pricing, accessed 2026-09-01, re-checked 2026-10-21 and 2026-10-23 (plans, prompt limits and request allotments unchanged). Otterly localises prices by country: on 2026-10-21 a browser in Europe was shown €29, €189 and €489, while the page as served on 2026-10-23 lists $29, $189 and $489 and states add-on prices in US dollars, excluding tax. GeoReady figures:
         geoready.dev/pricing, October 2026. Figures are stated as published by each vendor;
         no scores or ratings are assigned to either.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Otterly tier</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Price</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it includes</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">GeoReady tier</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Price</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">What it includes</th>
+              <th scope="col" class="eyebrow px-4 py-3">Otterly tier</th>
+              <th scope="col" class="eyebrow px-4 py-3">Price</th>
+              <th scope="col" class="eyebrow px-4 py-3">What it includes</th>
+              <th scope="col" class="eyebrow px-4 py-3">GeoReady tier</th>
+              <th scope="col" class="eyebrow px-4 py-3">Price</th>
+              <th scope="col" class="eyebrow px-4 py-3">What it includes</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -253,11 +255,11 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Frequently asked questions</h2>
-      <div class="mt-6 space-y-6">
+      <div class="panel mt-6 divide-y divide-rail overflow-hidden">
         {faqs.map((faq) => (
-          <div>
+          <div class="p-6">
             <h3>{faq.q}</h3>
             <p class="mt-2" set:html={faq.a} />
           </div>
@@ -279,6 +281,8 @@ const faqs = [
       </p>
     </section>
   </article>
+
+  <CompareNextBand slug="otterly_alternative" />
 
   {/* Page-specific schema — WebPage (packet's recommended type, not Article) */}
   <script type="application/ld+json" set:html={JSON.stringify({

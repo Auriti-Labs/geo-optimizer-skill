@@ -1,5 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
+import CompareNextBand from '../components/CompareNextBand.astro';
 
 const title = "Open-Source GEO Tool: MIT Optimizer, Self-Host";
 const description =
@@ -101,7 +102,8 @@ const ENGINE_VS_HOSTED: [string, string, string][] = [
 
     {/* Header — answer-first, la frase-àncora esatta della query nei primi 100 caratteri */}
     <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-semibold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+      <div class="eyebrow">GeoReady · Compare</div>
+      <h1 class="mt-4 text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.035em] text-ink sm:text-[2.6rem]">
         The Open-Source GEO Optimizer (MIT): Read It, Fork It, Run It in Your Pipeline
       </h1>
 
@@ -141,13 +143,13 @@ const ENGINE_VS_HOSTED: [string, string, string][] = [
         {' '}<a href="/veesie-alternative/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">Veesie</a>.
       </p>
 
-      <p class="mt-4 font-mono text-xs text-ink-mute">
+      <div class="eyebrow mt-4">
         Published July 8, 2026 · Last updated October 23, 2026
-      </p>
+      </div>
     </header>
 
     {/* Direct answer section */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Is there an open-source alternative to Profound or Otterly?</h2>
       <p class="mt-4">
         Yes. Most generative engine optimization tools — including Profound and Otterly
@@ -165,7 +167,7 @@ const ENGINE_VS_HOSTED: [string, string, string][] = [
     </section>
 
     {/* Comparison table — solo assi verificabili */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Open-source vs proprietary GEO tools</h2>
       <p class="mt-4">
         The comparison below is deliberately limited to facts that do not change from
@@ -173,13 +175,13 @@ const ENGINE_VS_HOSTED: [string, string, string][] = [
         priced, and whether you can read the methodology. These are the axes where an
         open-source toolkit differs structurally from a closed hosted product.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Dimension</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">GEO Optimizer (open-source)</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Proprietary GEO SaaS (e.g. Profound, Otterly)</th>
+              <th scope="col" class="eyebrow px-4 py-3">Dimension</th>
+              <th scope="col" class="eyebrow px-4 py-3">GEO Optimizer (open-source)</th>
+              <th scope="col" class="eyebrow px-4 py-3">Proprietary GEO SaaS (e.g. Profound, Otterly)</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -202,12 +204,12 @@ const ENGINE_VS_HOSTED: [string, string, string][] = [
     </section>
 
     {/* What you get with the open-source toolkit */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>What GEO Optimizer gives you</h2>
       <p class="mt-4">
         Every item below is verifiable in the public repository — no marketing claims.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <tbody class="divide-y divide-rail">
             {GEO_OPTIMIZER_FEATURES.map(([name, detail]) => (
@@ -222,14 +224,14 @@ const ENGINE_VS_HOSTED: [string, string, string][] = [
     </section>
 
     {/* Engine vs hosted */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Open-source engine or hosted GeoReady</h2>
       <p class="mt-4">
         Both run the same audit engine, so the score is the same. The hosted product adds
         the parts a CLI does not do on its own: running on a schedule, keeping history and
         sending alerts. Plan details are on the <a href="/pricing/">pricing page</a>.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr>
@@ -252,12 +254,12 @@ const ENGINE_VS_HOSTED: [string, string, string][] = [
     </section>
 
     {/* Getting started */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Try the open-source toolkit</h2>
       <p class="mt-4">
         Install it from PyPI and score any site from your terminal:
       </p>
-      <div class="mt-4 overflow-hidden rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-4 overflow-hidden">
         <div class="border-b border-rail px-4 py-2.5">
           <span class="font-text text-[12.5px] font-semibold text-ink-mute">PyPI · geo-optimizer-skill</span>
         </div>
@@ -277,9 +279,9 @@ const ENGINE_VS_HOSTED: [string, string, string][] = [
     {/* FAQ */}
     <section>
       <h2>Frequently asked questions</h2>
-      <div class="mt-6 space-y-6">
+      <div class="panel mt-6 divide-y divide-rail overflow-hidden">
         {faqs.map((faq) => (
-          <div>
+          <div class="p-6">
             <h3>{faq.q}</h3>
             <p class="mt-2">{faq.a}</p>
           </div>
@@ -287,6 +289,8 @@ const ENGINE_VS_HOSTED: [string, string, string][] = [
       </div>
     </section>
   </article>
+
+  <CompareNextBand slug="open_source_profound_otterly_alternative" />
 
   {/* Page-specific schema — Article */}
   <script type="application/ld+json" set:html={JSON.stringify({

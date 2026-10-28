@@ -1,5 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
+import CompareNextBand from '../components/CompareNextBand.astro';
 import { BENCHMARK } from '../lib/benchmarkSnapshot';
 
 const title = 'Veesie Alternative: Global GEO Monitoring | GeoReady';
@@ -77,13 +78,14 @@ const faqs = [
 
     {/* Header — answer-first, byline direttamente sotto l'H1 come da packet */}
     <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-semibold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+      <div class="eyebrow">GeoReady · Compare</div>
+      <h1 class="mt-4 text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.035em] text-ink sm:text-[2.6rem]">
         Veesie Alternative: Global AI-Visibility Monitoring at Global Pricing
       </h1>
 
-      <p class="mt-4 font-mono text-xs text-ink-mute">
+      <div class="eyebrow mt-4">
         Published September 16, 2026 · Last updated October 23, 2026 · by Juan Camilo Auriti · 9 min read
-      </p>
+      </div>
 
       <p class="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
         Veesie (veesie.com) is a GEO-monitoring tool made in Belgium for Belgium and
@@ -98,7 +100,7 @@ const faqs = [
       </p>
     </header>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>What Veesie is</h2>
       <p class="mt-4">
         Veesie describes itself as "GEO-monitoring voor België en Nederland", meaning GEO
@@ -131,7 +133,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Who Veesie fits well</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li><strong class="text-ink">Benelux-based teams</strong> who want product copy and support in Dutch or French as well as English.</li>
@@ -141,7 +143,7 @@ const faqs = [
       </ul>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>When a Veesie alternative makes sense</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li>You're outside Belgium, the Netherlands, or Luxembourg and don't need Dutch/French localization.</li>
@@ -163,7 +165,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Veesie's strengths</h2>
       <p class="mt-4">
         Veesie is a purpose-fit tool for its market. It offers
@@ -179,7 +181,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Veesie vs GeoReady, head-to-head</h2>
       <p class="mt-4 text-sm italic text-ink-mute">
         Veesie figures: veesie.com, veesie.com/pricing and veesie.com/benchmark,
@@ -187,13 +189,13 @@ const faqs = [
         publishes, with no currency conversion applied. Veesie prices exclude VAT.
         GeoReady figures: geoready.dev/pricing, October 2026.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[10px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute"></th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Veesie</th>
-              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">GeoReady</th>
+              <th scope="col" class="eyebrow px-4 py-3"></th>
+              <th scope="col" class="eyebrow px-4 py-3">Veesie</th>
+              <th scope="col" class="eyebrow px-4 py-3">GeoReady</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -218,11 +220,11 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Frequently asked questions</h2>
-      <div class="mt-6 space-y-6">
+      <div class="panel mt-6 divide-y divide-rail overflow-hidden">
         {faqs.map((faq) => (
-          <div>
+          <div class="p-6">
             <h3>{faq.q}</h3>
             <p class="mt-2" set:html={faq.a} />
           </div>
@@ -244,6 +246,8 @@ const faqs = [
       </p>
     </section>
   </article>
+
+  <CompareNextBand slug="veesie_alternative" />
 
   {/* Page-specific schema — WebPage (packet's recommended type, not Article) */}
   <script type="application/ld+json" set:html={JSON.stringify({
