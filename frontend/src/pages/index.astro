@@ -171,7 +171,7 @@ const avgPct = Math.max(0, Math.min(100, Number(BENCHMARK.average) || 0));
           Know if AI answers can <em>cite</em> your site.
         </h1>
         <p class="mt-6 max-w-[54ch] text-[17px] leading-relaxed text-ink-soft">
-          GeoReady is a Generative Engine Optimization (GEO) platform. Enter one URL and in about a minute you see whether ChatGPT, Perplexity, Claude and Gemini can reach, read and attribute it: a 0-100 score across 9 published categories, the fixes ranked by points, and the rule behind every point.
+          GeoReady is a Generative Engine Optimization (GEO) platform. The free audit checks in about a minute whether ChatGPT, Perplexity, Claude and Gemini can reach, read and attribute your site; monitoring re-runs it on a schedule and emails you when the score drops.
         </p>
 
         <div class="mt-8 max-w-[600px]">
@@ -179,9 +179,9 @@ const avgPct = Math.max(0, Math.min(100, Number(BENCHMARK.average) || 0));
         </div>
         <p class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-ink-mute">
           <span class="inline-flex items-center gap-1.5"><span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-pass"></span>Free · no account · 5 audits a day</span>
+          <a href="/pricing/" data-cta="home_hero_pro_monitoring" class="font-medium text-ink underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">See monitoring plans</a>
           <a href="/report/demo/" data-cta="home_hero_demo_report" class="font-medium text-ink underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">View a sample report</a>
           <a href="/geo-readiness-manual/" data-cta="home_hero_manual" class="font-medium text-ink underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Read the GEO manual</a>
-          <a href="/pricing/" data-cta="home_hero_pro_monitoring" class="font-medium text-ink underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Monitoring plans</a>
         </p>
       </div>
 
@@ -259,24 +259,13 @@ const avgPct = Math.max(0, Math.min(100, Number(BENCHMARK.average) || 0));
         <a href="/guides/" class="text-pass-deep underline underline-offset-4">guides</a>
       </p>
 
-      {/* Il percorso di recupero, con i link editoriali verso le guide */}
-      <ol class="mt-14 grid gap-px overflow-hidden rounded-[14px] bg-rail md:grid-cols-3" data-reveal="stagger">
-        {[
-          ['Access', 'Crawler permissions, HTTP behavior and server-rendered content decide whether AI systems can reach the page.', '/guides/', 'AI visibility guides'],
-          ['Meaning', 'Schema, headings, llms.txt and a consistent entity name tell the model what the page is about.', '/guides/what-are-ai-citations/', 'What counts as an AI citation'],
-          ['Citation', 'Self-contained answers and factual density make a passage easy to quote inside a generated response.', '/citation-gap-analysis/', 'Citation gap analysis'],
-        ].map(([title, text, href, label], i) => (
-          <li class="bg-paper p-6">
-            <p class="font-mono text-[12px] text-ink-mute">step {i + 1}</p>
-            <h3 class="mt-2 text-lg font-semibold">{title}</h3>
-            <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">{text}</p>
-            <a href={href} class="mt-4 inline-block text-[14px] font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">{label}</a>
-          </li>
-        ))}
-      </ol>
-      <p class="mt-6 max-w-[62ch] text-[14px] leading-relaxed text-ink-soft">
-        To test your own pages, read
-        {' '}<a href="/guides/ai-citations-check/" class="text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">how do I know if my content is cited in ChatGPT answers</a>.
+      {/* Paragrafo editoriale: sostituisce la griglia a tre step (audit UI/UX; vedi ~/geoready-site-v2/DESIGN-CONTRACT.md) */}
+      <p class="mt-10 max-w-[68ch] leading-relaxed text-ink-soft" data-reveal>
+        Most sites lose points in three places: access (crawler permissions and server-rendered content), meaning
+        (schema, headings and a consistent entity name) and citation (self-contained answers with facts in them).
+        For example, the guide on{' '}<a href="/guides/what-are-ai-citations/" class="text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">what counts as an AI citation</a>{' '}explains
+        the last one. To test your own pages, read{' '}<a href="/guides/ai-citations-check/" class="text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">how do I know if my content is cited in ChatGPT answers</a>,
+        and when a competitor is cited in your place, a{' '}<a href="/citation-gap-analysis/" class="text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">citation gap analysis</a>{' '}shows where and why.
       </p>
     </div>
   </section>
@@ -355,7 +344,7 @@ const avgPct = Math.max(0, Math.min(100, Number(BENCHMARK.average) || 0));
             <li>Team roles: owner, editor, viewer</li>
             <li>Batch audits and competitor comparison</li>
           </ul>
-          <a href="/pricing/" data-cta="home_pricing_teaser_agency" class="mt-auto pt-6 text-[14px] font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Agency plan, $89/mo founding</a>
+          <a href="/pricing/" data-cta="home_pricing_teaser_agency" class="mt-auto pt-6 text-[14px] font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Agency plan, $89/mo founding, then $199</a>
         </article>
         <article class="flex flex-col border-b border-rail p-6 md:p-8 lg:border-r lg:border-b-0">
           <p class="font-mono text-[12px] text-pass-deep">SEO consultants</p>
@@ -365,7 +354,7 @@ const avgPct = Math.max(0, Math.min(100, Number(BENCHMARK.average) || 0));
             <li>Score history and regression emails</li>
             <li>PDF export and API access</li>
           </ul>
-          <a href="/pricing/" data-cta="home_pricing_teaser_pro" class="mt-auto pt-6 text-[14px] font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Pro plan, $19/mo founding</a>
+          <a href="/pricing/" data-cta="home_pricing_teaser_pro" class="mt-auto pt-6 text-[14px] font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Pro plan, $19/mo founding, then $29</a>
         </article>
         <article class="flex min-w-0 flex-col p-6 md:p-8">
           <p class="font-mono text-[12px] text-pass-deep">Developers</p>
@@ -447,8 +436,9 @@ const avgPct = Math.max(0, Math.min(100, Number(BENCHMARK.average) || 0));
           <div class="mt-6">
             <blockquote class="max-w-[62ch] border-l-2 border-rail pl-4">
               <p class="leading-relaxed text-ink-soft">
-                We measured the sites scored through GeoReady: the average is <strong class="font-semibold text-ink">{BENCHMARK.average} out of 100</strong>, the median {BENCHMARK.median}. {BENCHMARK.llmsTxtAdoption} publish an llms.txt file and {BENCHMARK.schemaAdoption} carry JSON-LD schema. A score in the fifties is ordinary, not alarming. Most sites leave a large share of their points unclaimed, in signals a tool can find mechanically.
+                We measured the sites scored through GeoReady: the average is <strong class="font-semibold text-ink">{BENCHMARK.average} out of 100</strong>, the median {BENCHMARK.median}. {BENCHMARK.llmsTxtAdoption} publish an llms.txt file and {BENCHMARK.schemaAdoption} carry JSON-LD schema. The data shows that a score in the fifties is ordinary, not alarming, and we found that most sites leave a large share of their points unclaimed, in signals a tool can find mechanically.
               </p>
+              <footer class="mt-2 font-mono text-[12px] text-ink-mute">— <cite class="not-italic">GeoReady cohort benchmark</cite></footer>
             </blockquote>
           </div>
           <figcaption class="mt-4 font-mono text-[12px] leading-relaxed text-ink-mute">
@@ -461,7 +451,7 @@ const avgPct = Math.max(0, Math.min(100, Number(BENCHMARK.average) || 0));
             ['Open engine', `GEO Optimizer, MIT licensed. ${PUBLIC_STATS.github_stars} GitHub stars, scoring weights in the source.`, 'https://github.com/Auriti-Labs/geo-optimizer-skill', 'View the source'],
             ['Published research', '9 of the 47 citability checks come from the Princeton KDD 2024 GEO paper (arXiv:2311.09735). AutoGEO (arXiv:2510.11438) is a preprint.', '/research/', 'Read the research'],
             ['Documented in print', 'AI Search Engineering, 992 pages on GEO, AI citations and agent-ready websites. ISBN 979-8172934568.', '/book/', 'About the book'],
-            ['One maintainer', 'Built independently in Italy by Juan Camilo Auriti, who also maintains the engine.', '/about/', "Who's behind it"],
+            ['No lock-in', 'The scoring engine is on PyPI, so every score can be reproduced without GeoReady. Built in Italy by Juan Camilo Auriti.', '/about/', "Who's behind it"],
           ].map(([t, d, href, label]) => (
             <li class="p-5 md:px-6">
               <p class="text-[15px] font-semibold">{t}</p>
