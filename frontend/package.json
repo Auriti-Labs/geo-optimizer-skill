@@ -38,6 +38,7 @@
     "astro-portabletext": "^0.13.0",
     "dotenv": "^18.0.2",
     "groq": "^6.3.0",
+    "gsap": "3.15.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "satori": "^0.33.4",
