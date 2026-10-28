@@ -37,7 +37,7 @@ const strong = 'font-semibold text-ink';
   <div class="bg-paper">
     <div class="mx-auto max-w-3xl px-4 py-10 sm:px-6 md:py-16">
       {isDraft && (
-        <div class="mb-8 rounded-[10px] border border-warn bg-warn-wash p-4 text-sm text-ink" role="note">
+        <div class="mb-8 rounded-[14px] border border-warn bg-warn-wash p-4 text-sm text-ink" role="note">
           <strong class={strong}>Draft for review.</strong> This page has not been approved yet.
           Sections marked “To be decided” need the operator’s decision before publication.
         </div>
@@ -45,8 +45,8 @@ const strong = 'font-semibold text-ink';
 
       <header class="mb-12 md:mb-16">
         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <h1 class="font-head text-3xl font-semibold leading-tight tracking-[-0.02em] text-ink md:text-4xl">Terms of Use</h1>
-          <p class="font-text font-medium text-[12px] text-ink-mute">GeoReady · Terms of Use</p>
+          <h1 class="text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.035em] text-ink sm:text-[2.6rem]">Terms of Use</h1>
+          <div class="eyebrow">GeoReady · Terms of Use</div>
         </div>
         <p class="mt-3 font-mono text-[12px] text-ink-mute">Last updated: {lastUpdated}</p>
         <p class="mt-4 max-w-3xl text-base leading-relaxed text-ink-soft">

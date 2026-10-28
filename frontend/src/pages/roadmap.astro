@@ -10,10 +10,10 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
       {/* Hero */}
       <header class="mb-14 md:mb-20">
         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <h1 class="max-w-3xl font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] md:text-5xl">
+          <h1 class="max-w-3xl text-[2.3rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3rem]">
             GeoReady Roadmap — AI Visibility &amp; GEO Monitoring
           </h1>
-          <p class="font-text font-medium text-[12.5px] text-ink-mute">GeoReady · Roadmap</p>
+          <div class="eyebrow">GeoReady · Roadmap</div>
         </div>
 
         <p class="mt-4 max-w-2xl text-lg font-medium text-ink-soft">
@@ -23,7 +23,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
         <p class="mt-3 max-w-2xl text-base leading-relaxed text-ink-soft">
           GEO Optimizer evolves through deliberate releases focused on signal quality, auditability, retrieval visibility, and developer workflows.
         </p>
-        <p class="mt-3 font-text font-medium text-[12.5px] text-ink-mute">Last updated: October 2026 · v{__ENGINE_VERSION__}</p>
+        <div class="eyebrow mt-3">Last updated: October 2026 · v{__ENGINE_VERSION__}</div>
       </header>
 
       {/* Legend */}
@@ -86,7 +86,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
       </section>
 
       {/* CTA */}
-      <section class="mt-14 rounded-[10px] border border-rail bg-white p-6 md:mt-20 md:p-8">
+      <section class="mt-14 panel p-6 md:mt-20 md:p-8">
         <h2 class="font-head text-xl font-semibold tracking-[-0.02em] md:text-2xl">
           Want to influence the roadmap?
         </h2>
@@ -98,7 +98,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
             href="https://github.com/Auriti-Labs/geo-optimizer-skill/issues"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 rounded-[10px] bg-pass-deep px-5 py-2.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+            class="inline-flex items-center gap-2 rounded-[9px] bg-pass-deep px-5 py-2.5 min-h-11 text-[14px] font-semibold text-white transition-colors hover:bg-pass"
           >
             Open an issue
             <span class="sr-only">(opens in a new tab)</span>
@@ -108,7 +108,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
             href="https://github.com/Auriti-Labs/geo-optimizer-skill/discussions"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-5 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+            class="inline-flex items-center gap-2 rounded-[9px] border border-rail bg-white px-5 py-2.5 min-h-11 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             Start a discussion
             <span class="sr-only">(opens in a new tab)</span>
@@ -118,7 +118,7 @@ import { roadmapPhases, releaseCadence } from '../lib/roadmapContent';
             href="https://github.com/Auriti-Labs/geo-optimizer-skill"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-5 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+            class="inline-flex items-center gap-2 rounded-[9px] border border-rail bg-white px-5 py-2.5 min-h-11 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             Star on GitHub
             <span class="sr-only">(opens in a new tab)</span>
