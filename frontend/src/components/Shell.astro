@@ -30,6 +30,10 @@ const { title, description, canonical, robots, ogImage, twitterImage } = Astro.p
   // L'evento è silenzioso finché non c'è consenso analytics (gestito in track()).
   import { initCtaTracking } from '../lib/ctaTracking';
   initCtaTracking();
+
+  if (document.querySelector('[data-reveal]')) {
+    import('../lib/motion').then((m) => m.initReveals()).catch(() => {});
+  }
 </script>
 
 <style is:global>
