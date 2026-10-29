@@ -1,0 +1,48 @@
+---
+// Tavola hero v3: render light/dark dello stesso soggetto; display:none esclude la variante inattiva
+// sia dal download lazy sia dall'albero di accessibilità, quindi entrambe portano lo stesso alt.
+interface Props {
+  name: string;
+  alt: string;
+  class?: string;
+  /** rapporto della tavola desktop: soggetti alti (colonne) vogliono più altezza */
+  ratio?: string;
+}
+const { name, alt, class: cls = '', ratio = '8 / 3' } = Astro.props;
+const base = `/images/site/${name}`;
+const variants = ['light', 'dark'] as const;
+---
+
+<figure class={`site-art mx-auto max-w-7xl px-5 sm:px-6 ${cls}`} style={`--art-ratio: ${ratio}`}>
+  {variants.map((v) => (
+    <picture class={`th-${v}`}>
+      <source type="image/avif" srcset={`${base}-${v}-768.avif 768w, ${base}-${v}-1536.avif 1536w`} sizes="(min-width: 1280px) 1232px, 100vw" />
+      <img
+        src={`${base}-${v}-1536.webp`}
+        srcset={`${base}-${v}-768.webp 768w, ${base}-${v}-1536.webp 1536w`}
+        sizes="(min-width: 1280px) 1232px, 100vw"
+        width="1536"
+        height="1024"
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+      />
+    </picture>
+  ))}
+</figure>
+
+<style>
+  .site-art img {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--art-ratio);
+    object-fit: cover;
+    object-position: 72% 50%;
+    /* il fondo del render non è identico a --bg (vignetta): bordi sfumati, nessun rettangolo visibile */
+    -webkit-mask-image: radial-gradient(ellipse 70% 72% at 66% 50%, #000 58%, transparent 100%);
+    mask-image: radial-gradient(ellipse 70% 72% at 66% 50%, #000 58%, transparent 100%);
+  }
+  @media (max-width: 640px) {
+    .site-art img { aspect-ratio: 4 / 3; object-position: 80% 50%; }
+  }
+</style>

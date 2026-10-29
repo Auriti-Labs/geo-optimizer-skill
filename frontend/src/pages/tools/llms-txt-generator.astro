@@ -1,5 +1,6 @@
 ---
 import Shell from '../../components/Shell.astro';
+import SiteArt from '../../components/SiteArt.astro';
 import LlmsTxtGenerator from '../../components/tools/LlmsTxtGenerator';
 import LlmsPreview from '../../components/product/LlmsPreview.astro';
 import ArticleVisual from '../../components/ArticleVisual.astro';
@@ -64,7 +65,7 @@ const faqs = [
         <div class="grid gap-10 lg:grid-cols-[minmax(0,0.88fr)_minmax(420px,0.82fr)] lg:items-center">
           <div>
             <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
-              <h1 class="max-w-3xl text-[2.3rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3rem]">
+              <h1 class="max-w-3xl text-[2.3rem] leading-[1.05] tracking-[-0.03em] text-ink sm:text-[3rem]">
                 Turn a sitemap into an AI-readable orientation file.
               </h1>
               <div class="eyebrow flex items-center gap-2">
@@ -104,9 +105,10 @@ const faqs = [
         </div>
       </div>
     </section>
+    <SiteArt name="tools-llms-txt-generator-hero-file-tray" alt="A ceramic file tile with a teal band sliding out of a shallow aluminium tray" class="pb-12 md:pb-16" />
 
     {/* ── Isola React: il generatore vero e proprio ───────────────────────── */}
-    <section class="border-t border-rail bg-white" data-reveal aria-labelledby="llms-tool-heading">
+    <section class="border-t border-rail bg-raised" data-reveal aria-labelledby="llms-tool-heading">
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
         <ArticleVisual
           src="/images/article-visuals/M1HeroLlmsGeneratorFlow.png"
@@ -118,7 +120,7 @@ const faqs = [
 
         <div class="mx-auto mt-10 max-w-5xl">
           <div class="mb-5 flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
-            <h2 id="llms-tool-heading" class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink">Generate your llms.txt</h2>
+            <h2 id="llms-tool-heading" class="font-head text-2xl tracking-[-0.02em] text-ink">Generate your llms.txt</h2>
             <p class="max-w-md text-sm leading-relaxed text-ink-soft">
               Start from a URL, then edit the Markdown before publishing it.
             </p>
@@ -141,7 +143,7 @@ const faqs = [
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
         {/* 1. Cos'è un llms.txt generator */}
         <section class="max-w-3xl">
-          <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">What is an llms.txt generator?</h2>
+          <h2 class="font-head text-2xl tracking-[-0.02em] text-ink md:text-3xl">What is an llms.txt generator?</h2>
           <p class="mt-4 leading-relaxed text-ink-soft">
             An llms.txt generator is a tool that builds an
             <code class="text-sm font-mono"> llms.txt</code> file for your site
@@ -171,7 +173,7 @@ const faqs = [
 
         {/* 2. Come funziona */}
         <section class="mt-12 max-w-3xl md:mt-16">
-          <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">How this generator works</h2>
+          <h2 class="font-head text-2xl tracking-[-0.02em] text-ink md:text-3xl">How this generator works</h2>
           <p class="mt-4 leading-relaxed text-ink-soft">
             The process is straightforward and runs in a few seconds:
           </p>
@@ -199,10 +201,10 @@ const faqs = [
     </section>
 
     {/* 3. Cosa fare dopo */}
-    <section class="border-t border-rail bg-white" data-reveal>
+    <section class="border-t border-rail bg-raised" data-reveal>
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
         <section class="max-w-3xl">
-          <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">What to do after generating llms.txt</h2>
+          <h2 class="font-head text-2xl tracking-[-0.02em] text-ink md:text-3xl">What to do after generating llms.txt</h2>
           <p class="mt-4 leading-relaxed text-ink-soft">
             The generated file is a starting point. To put it to work:
           </p>
@@ -241,7 +243,7 @@ const faqs = [
         </section>
 
         <section class="mt-12 md:mt-16">
-          <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">What llms.txt covers and what it does not cover</h2>
+          <h2 class="font-head text-2xl tracking-[-0.02em] text-ink md:text-3xl">What llms.txt covers and what it does not cover</h2>
           <p class="mt-4 max-w-3xl leading-relaxed text-ink-soft">
             Publishing llms.txt improves orientation, but it does not replace a full
             GEO workflow. Use this table to decide the next check after the file is live.
@@ -286,7 +288,7 @@ const faqs = [
     {/* 4. FAQ */}
     <section class="border-t border-rail bg-paper" data-reveal>
       <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-        <h2 class="font-head text-2xl font-semibold tracking-[-0.02em] text-ink md:text-3xl">llms.txt generator FAQ</h2>
+        <h2 class="font-head text-2xl tracking-[-0.02em] text-ink md:text-3xl">llms.txt generator FAQ</h2>
         <div class="panel mt-8 max-w-3xl divide-y divide-rail overflow-hidden">
           {faqs.map((faq) => (
             <div class="p-6">
@@ -302,7 +304,7 @@ const faqs = [
     <section class="band-dark" aria-labelledby="llms_generator-next-h" data-reveal>
       <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
         <div class="eyebrow">Next step</div>
-        <h2 id="llms_generator-next-h" class="mt-3 max-w-3xl text-3xl font-semibold tracking-[-0.03em] text-ink md:text-[2.5rem] md:leading-[1.08]">Go beyond llms.txt with a full AI SEO audit</h2>
+        <h2 id="llms_generator-next-h" class="mt-3 max-w-3xl text-3xl tracking-[-0.03em] text-ink md:text-[2.5rem] md:leading-[1.08]">Go beyond llms.txt with a full AI SEO audit</h2>
         <p class="mt-3 max-w-2xl leading-relaxed text-ink-soft">
           An llms.txt is one signal. The free audit checks your site across nine
           GEO categories — crawlability, llms.txt, schema, content signals, AI
@@ -313,7 +315,7 @@ const faqs = [
           <a
             href="/ai-seo-audit/"
             data-cta="llms_generator_final_free_audit"
-            class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-[#2DD4BF] px-6 py-3 text-[14px] font-semibold text-[#062420] transition-colors hover:bg-[#5EEAD4]"
+            class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-accent px-6 py-3 text-[14px] font-semibold text-on-accent transition-colors hover:bg-pass"
           >
             Run a free AI visibility audit
           </a>
