@@ -26,12 +26,6 @@
     "@astrojs/react": "^5.0.4",
     "@astrojs/sitemap": "^3.7.4",
     "@astrojs/starlight": "^0.42.2",
-    "@fontsource/archivo": "^5.3.0",
-    "@fontsource/geist": "^5.2.8",
-    "@fontsource/jetbrains-mono": "^5.2.8",
-    "@fontsource/newsreader": "^5.2.10",
-    "@fontsource/public-sans": "^5.3.0",
-    "@fontsource/space-grotesk": "^5.2.10",
     "@portabletext/to-html": "^5.0.2",
     "@resvg/resvg-js": "^2.6.2",
     "@sanity/astro": "^3.5.1",
@@ -44,10 +38,12 @@
     "astro-portabletext": "^0.13.0",
     "dotenv": "^18.0.2",
     "groq": "^6.3.0",
+    "gsap": "3.15.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "satori": "^0.33.4",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.3.0",
+    "three": "0.186.0"
   },
   "overrides": {
     "@vercel/frameworks": {

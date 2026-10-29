@@ -13,8 +13,8 @@ const dateModified = '2026-09-16';
 // (pricing.astro riga 114): niente più asterisco/disclaimer RE-VERIFY sulla riga.
 const CADENCE_ROWS = [
   ['Free', '$0 forever', '— (one-shot audit only)', '—', '—', '—', '5 audits/day, full nine-category report, no account'],
-  ['Pro', '$19/mo, founding price', '10 domains', 'Weekly', 'Last 30 audits', 'Score moves ≥5 points', 'Unlimited audits, PDF export, API access (Bearer token)'],
-  ['Agency', '$89/mo, founding price', '50 domains', 'Daily', '24 months', 'Score moves ≥5 points', 'Everything in Pro, AI citation tracking via automated Perplexity checks, competitor comparison, unbranded PDF export, 24-month history, team workspace, unlimited batch audits, AI answer snapshots (Perplexity automated; ChatGPT/Google via manual paste)'],
+  ['Pro', '$19/mo founding, then $29', '10 domains', 'Weekly', 'Last 30 audits', 'Score moves ≥5 points', 'Unlimited audits, PDF export, API access (Bearer token)'],
+  ['Agency', '$89/mo founding, then $199', '50 domains', 'Daily', '24 months', 'Score moves ≥5 points', 'Everything in Pro, AI citation tracking via automated Perplexity checks, competitor comparison, unbranded PDF export, 24-month history, team workspace, unlimited batch audits, AI answer snapshots (Perplexity automated; ChatGPT/Google via manual paste)'],
   ['Enterprise', 'Talk to us', 'Unlimited', 'Hourly', '—', '—', 'Everything in Agency, SLA, on-premise deployment, webhooks/Slack/CMS integrations, dedicated account manager'],
 ] as const;
 
@@ -43,15 +43,16 @@ const faqs = [
 ---
 
 <Shell title={title} description={description} canonical={canonical}>
-  <article class="mx-auto max-w-3xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-extrabold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-extrabold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed [&_a]:text-pass-deep [&_a]:underline [&_a]:decoration-rail [&_a]:underline-offset-4 [&_a:hover]:decoration-pass-deep">
+  <article class="mx-auto max-w-5xl bg-paper px-5 pt-12 pb-16 font-text text-ink sm:px-6 md:pt-16 md:pb-20 [&>section>p]:max-w-[70ch] [&>section>ul]:max-w-[70ch] [&>section>ol]:max-w-[70ch] [&_h2]:text-[1.75rem] [&_h2]:leading-[1.12] [&_h2]:tracking-[-0.03em] md:[&_h2]:text-[2.1rem] [&_h2]:text-ink [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed [:where(&)_a]:text-pass-deep [:where(&)_a]:underline [:where(&)_a]:decoration-rail [:where(&)_a]:underline-offset-4 [:where(&)_a:hover]:decoration-pass-deep">
 
     {/* Header — answer-first */}
-    <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-extrabold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+    <header class="mb-16 border-b border-rail pb-14 md:mb-20 [&>p]:max-w-[62ch]">
+      <div class="eyebrow">GEO monitoring · Pro and Agency</div>
+      <h1 class="mt-4 max-w-[22ch] text-[2.3rem] leading-[1.05] tracking-[-0.03em] text-ink sm:text-[3rem]">
         GEO Monitoring Tool: Catch AI-Visibility Regressions Before They Cost Citations
       </h1>
 
-      <p class="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
+      <p class="mt-6 text-[17px] leading-relaxed text-ink-soft">
         <strong>GEO monitoring is the practice of re-running the same AI-visibility audit on a fixed schedule and alerting you when a tracked score drops</strong> —
         turning a one-time citation-readiness check into an ongoing signal.
       </p>
@@ -66,13 +67,13 @@ const faqs = [
         scheduled monitoring — weekly and up — starts on Pro.
       </p>
 
-      <p class="mt-4 font-mono text-xs text-ink-mute">
+      <p class="eyebrow mt-6">
         Published September 16, 2026 · Last updated September 16, 2026
       </p>
     </header>
 
     {/* What it does */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-16 md:mb-20" data-reveal>
       <h2>What a GEO monitoring tool actually does</h2>
       <p class="mt-4">
         "GEO monitoring" is young enough as a category that vendors use the term loosely. Concretely, for GeoReady it means
@@ -92,7 +93,7 @@ const faqs = [
     </section>
 
     {/* Signal categories */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-16 md:mb-20" data-reveal>
       <h2>What GeoReady monitors — the signal categories</h2>
       <p class="mt-4">
         Each scheduled re-audit checks the same signal set as the free one-shot audit: llms.txt and ai.txt presence,
@@ -112,24 +113,24 @@ const faqs = [
     </section>
 
     {/* Cadence table */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-16 md:mb-20" data-reveal>
       <h2>Monitoring cadence and alerts, tier by tier</h2>
       <p class="mt-4">
         Monitoring is not a Free-tier feature. The free audit is a complete, one-shot nine-category report with no account and
         no card required, available any time — it just doesn't run again on its own. Ongoing monitoring is what the paid
         plans add.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+      <div class="panel mt-8 overflow-x-auto">
         <table class="w-full text-left text-sm">
-          <thead class="bg-paper">
+          <thead>
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Plan</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Price</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Domains monitored</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Cadence</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Score history</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Regression alerts</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Also included</th>
+              <th scope="col" class="eyebrow px-5 py-3.5 font-medium">Plan</th>
+              <th scope="col" class="eyebrow px-5 py-3.5 font-medium">Price</th>
+              <th scope="col" class="eyebrow px-5 py-3.5 font-medium">Domains monitored</th>
+              <th scope="col" class="eyebrow px-5 py-3.5 font-medium">Cadence</th>
+              <th scope="col" class="eyebrow px-5 py-3.5 font-medium">Score history</th>
+              <th scope="col" class="eyebrow px-5 py-3.5 font-medium">Regression alerts</th>
+              <th scope="col" class="eyebrow px-5 py-3.5 font-medium">Also included</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -155,7 +156,7 @@ const faqs = [
     </section>
 
     {/* What a regression alert looks like */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-16 md:mb-20" data-reveal>
       <h2>What a regression alert looks like</h2>
       <p class="mt-4 italic">Illustrative example — not a customer case, and no measured figures below.</p>
       <p class="mt-4">
@@ -172,7 +173,7 @@ const faqs = [
     </section>
 
     {/* Positioning */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-16 md:mb-20" data-reveal>
       <h2>Monitoring vs. one-shot audits vs. rank tracking</h2>
       <p class="mt-4">
         Three different tools get lumped together under "AI visibility," and it's worth being precise about which one this is.
@@ -199,7 +200,7 @@ const faqs = [
     </section>
 
     {/* Open methodology */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-16 md:mb-20" data-reveal>
       <h2>Open methodology: verify what the monitor measures</h2>
       <p class="mt-4">
         Every category in the score, and the exact weight it carries, is documented and public — not a black box you have
@@ -216,45 +217,41 @@ const faqs = [
     </section>
 
     {/* FAQ */}
-    <section class="mb-12 md:mb-16">
+    <section class="mb-16 md:mb-20" data-reveal>
       <h2>FAQ</h2>
-      <div class="mt-6 space-y-6">
+      <div class="panel mt-8 divide-y divide-rail">
         {faqs.map((faq) => (
-          <div>
+          <div class="p-6">
             <h3>{faq.q}</h3>
             <p class="mt-2">{faq.a}</p>
           </div>
         ))}
       </div>
     </section>
-
-    {/* CTA */}
-    <section class="rounded-[4px] border border-rail bg-white p-6">
-      <h2 class="font-head text-lg font-extrabold tracking-[-0.02em] text-ink">Start monitoring</h2>
-      <p class="mt-2 text-sm leading-relaxed text-ink-soft">
-        Run the free audit first — no account, no card. When you're ready for it to keep running on its own, add your
-        domain to weekly monitoring on Pro.
-      </p>
-      <div class="mt-4 flex flex-wrap gap-3">
-        <a
-          href="/"
-          class="inline-flex items-center gap-2 rounded-[4px] bg-pass-deep px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white no-underline transition-colors hover:bg-pass"
-        >
-          Start free audit
-        </a>
-        <a
-          href="/pricing/"
-          class="inline-flex items-center gap-2 rounded-[4px] border border-rail bg-white px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink no-underline transition-colors hover:bg-paper"
-        >
-          Start with Pro
-        </a>
-      </div>
-    </section>
   </article>
 
-  {/* Page-specific schema — WebPage referencing the sitewide #webapp entity (no standalone Offer block) */}
+  {/* Chiusura: la stessa banda scura della home */}
+  <section class="band-dark" aria-labelledby="monitor-cta-h">
+    <div class="mx-auto flex max-w-5xl flex-col gap-8 px-5 py-16 sm:px-6 md:py-20 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-xl">
+        <div class="eyebrow">Next step</div>
+        <h2 id="monitor-cta-h" class="mt-3 text-3xl tracking-[-0.03em] md:text-[2.5rem] md:leading-[1.08]">Start monitoring</h2>
+        <p class="mt-4 leading-relaxed text-ink-soft">
+          Run the free audit first — no account, no card. When you're ready for it to keep running on its own, add your
+          domain to weekly monitoring on Pro.
+        </p>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <a href="/" data-cta="monitoring_final_free_audit" class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-accent px-6 py-3 text-[14px] font-semibold text-on-accent transition-colors hover:bg-pass">Start free audit</a>
+        <a href="/pricing/" data-cta="monitoring_final_pro" class="inline-flex min-h-11 items-center justify-center rounded-[9px] px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_#2A3838] transition-shadow hover:shadow-[inset_0_0_0_1px_#2DD4BF]">Start with Pro</a>
+      </div>
+    </div>
+  </section>
+
+  {/* Schema di pagina: WebPage legata a #webapp + FAQPage delle domande visibili (nessun Offer) */}
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
+    "@graph": [{
     "@type": "WebPage",
     "name": title,
     "description": description,
@@ -264,5 +261,9 @@ const faqs = [
     "datePublished": datePublished,
     "dateModified": dateModified,
     "mainEntity": { "@id": "https://geoready.dev/#webapp" }
+  }, {
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((f) => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } }))
+  }]
   })} />
 </Shell>

@@ -1,5 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
+import SiteArt from '../components/SiteArt.astro';
 import ResearchCard from '../components/content/ResearchCard.astro';
 import ResearchSurface from '../components/product/ResearchSurface.astro';
 import { researchSources, researchClosing } from '../lib/researchContent';
@@ -12,24 +13,24 @@ import { researchSources, researchClosing } from '../lib/researchContent';
       <header class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.82fr)] lg:items-center">
         <div>
           <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h1 class="max-w-3xl font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+            <h1 class="max-w-3xl text-[2.3rem] leading-[1.05] tracking-[-0.03em] text-ink sm:text-[3rem]">
               The research foundation behind AI visibility scoring.
             </h1>
-            <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">GEO Optimizer · Research</p>
+            <div class="eyebrow">GEO Optimizer · Research</div>
           </div>
 
           <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
             Built on published research and our own documented analysis, not marketing claims. The weights are a considered starting point, not a law of nature.
           </p>
-          <p class="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Last updated: September 2026</p>
+          <div class="eyebrow mt-2">Last updated: September 2026</div>
 
-          <div class="mt-8 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-3">
+          <div class="mt-8 grid gap-px overflow-hidden rounded-[14px] border border-rail bg-rail sm:grid-cols-3">
             {[
               ['Papers', 'Research patterns that shape the scoring model.'],
               ['Benchmarks', 'Evidence from retrieval and answer behavior.'],
               ['Rules', 'Auditable checks that map evidence to action.'],
             ].map(([label, text]) => (
-              <div class="bg-white p-5">
+              <div class="bg-raised p-5">
                 <p class="text-sm font-semibold text-ink">{label}</p>
                 <p class="mt-1 text-sm leading-relaxed text-ink-soft">{text}</p>
               </div>
@@ -47,33 +48,34 @@ import { researchSources, researchClosing } from '../lib/researchContent';
           </p>
         </div>
 
-        <div class="flex items-center rounded-[4px] border border-rail bg-white p-6 lg:p-8">
+        <div class="flex items-center panel p-6 lg:p-8">
           <ResearchSurface variant="light" class="w-full" />
         </div>
       </header>
     </div>
+  <SiteArt name="research-hero-paper-stack" alt="A stack of three bound paper reams with teal bookmarks" class="pb-12 md:pb-16" />
   </section>
 
   {/* Sources */}
-  <section class="border-t border-rail bg-white">
+  <section class="border-t border-rail bg-raised" data-reveal>
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       {/* Type legend — i quattro valori reali del campo `type` in researchContent.ts */}
-      <div class="mb-8 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[4px] border border-rail bg-paper px-4 py-3">
-        <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">src/lib/researchContent.ts · type</span>
+      <div class="mb-8 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[14px] border border-rail bg-paper px-4 py-3">
+        <span class="eyebrow">src/lib/researchContent.ts · type</span>
         {[
           'Research paper',
           'Benchmark',
           'Industry report',
           'Internal analysis',
         ].map((label) => (
-          <span class="rounded-[2px] border border-rail bg-white px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">{label}</span>
+          <span class="rounded-[6px] border border-rail bg-raised px-1.5 py-0.5 eyebrow">{label}</span>
         ))}
       </div>
 
       <div class="mb-8 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">Sources and findings</h2>
-          <span class="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">Traceable scoring</span>
+          <h2 class="font-head text-2xl tracking-[-0.02em] text-ink md:text-3xl">Sources and findings</h2>
+          <span class="rounded-[6px] border border-rail px-1.5 py-0.5 eyebrow">Traceable scoring</span>
         </div>
         <a href="/manifesto/" class="text-sm font-medium text-pass-deep underline decoration-rail underline-offset-4 transition-colors hover:decoration-pass-deep">
           Read the manifesto

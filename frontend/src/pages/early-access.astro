@@ -13,10 +13,10 @@ import SurveyForm from '../components/SurveyForm';
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-16">
       <header class="mb-10">
         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <h1 class="font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] md:text-5xl">
+          <h1 class="text-[2.3rem] leading-[1.05] tracking-[-0.03em] text-ink sm:text-[3rem]">
             Founding access is open
           </h1>
-          <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">GeoReady · Founding Access</p>
+          <div class="eyebrow">GeoReady · Founding Access</div>
         </div>
         <p class="mt-4 max-w-xl text-base leading-relaxed text-ink-soft">
           Run a free audit now, or create an account to track your domain over time. Pro plan starts at $19/month.
@@ -26,14 +26,14 @@ import SurveyForm from '../components/SurveyForm';
           <a
             href="https://geoready.dev"
             data-cta="early_access_free_audit"
-            class="inline-flex items-center justify-center rounded-[4px] bg-pass-deep px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+            class="inline-flex items-center justify-center rounded-[9px] bg-pass-deep px-5 py-2.5 min-h-11 text-[14px] font-semibold text-on-accent transition-colors hover:bg-pass"
           >
             Run a free audit
           </a>
           <a
             href="https://app.geoready.dev/signup"
             data-cta="early_access_signup"
-            class="inline-flex items-center justify-center rounded-[4px] border border-rail bg-white px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+            class="inline-flex items-center justify-center rounded-[9px] border border-rail bg-raised px-5 py-2.5 min-h-11 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             Create free account
           </a>
@@ -52,7 +52,7 @@ import SurveyForm from '../components/SurveyForm';
       </header>
 
       {/* Real dashboard screenshot — the platform being sold, not a mockup */}
-      <figure class="mb-12 overflow-hidden rounded-[4px] border border-rail bg-white">
+      <figure class="mb-12 overflow-hidden panel">
         <img
           src="/assets/screenshots/app-dashboard.webp"
           alt="GeoReady dashboard: GEO score 88, score trend across saved audits, signals passing 16 of 18"
@@ -69,7 +69,7 @@ import SurveyForm from '../components/SurveyForm';
 
       <div class="grid gap-10 md:grid-cols-2 md:gap-16">
         <div>
-          <h2 class="mb-5 font-head text-xl font-extrabold tracking-[-0.02em] md:text-2xl">What Pro includes</h2>
+          <h2 class="mb-5 font-head text-xl tracking-[-0.02em] md:text-2xl">What Pro includes</h2>
           <ul class="space-y-4 text-sm text-ink-soft">
             <li class="flex items-start gap-3">
               <span class="mt-0.5 h-4 w-4 shrink-0 text-pass-deep">
@@ -83,7 +83,7 @@ import SurveyForm from '../components/SurveyForm';
               </span>
               <span>
                 <strong class="font-semibold text-ink">Weekly AI search monitoring</strong>
-                <span class="ml-2 rounded-[2px] bg-pass-wash px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-pass-deep">Founding access</span>
+                <span class="ml-2 rounded-[6px] bg-pass-wash px-1.5 py-0.5 font-text text-[12px] font-semibold text-pass-deep">Founding access</span>
                 — track score changes over time per domain
               </span>
             </li>
@@ -111,13 +111,13 @@ import SurveyForm from '../components/SurveyForm';
               </span>
               <span>
                 <strong class="font-semibold text-ink">API access</strong>
-                <span class="ml-2 rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">Beta</span>
+                <span class="ml-2 rounded-[6px] border border-rail px-1.5 py-0.5 font-text text-[12px] font-semibold text-ink-mute">Beta</span>
                 — integrate GEO audits in your own tools and workflows
               </span>
             </li>
           </ul>
 
-          <div class="mt-8 rounded-[4px] border border-rail bg-white p-4">
+          <div class="mt-8 panel p-4">
             <p class="text-sm leading-relaxed text-ink-soft">
               The CLI and the free web audit remain MIT-licensed and free. Pro adds continuity and
               professional tools — it does not replace the open-source toolkit.
@@ -126,7 +126,7 @@ import SurveyForm from '../components/SurveyForm';
         </div>
 
         <div>
-          <h2 class="mb-5 font-head text-xl font-extrabold tracking-[-0.02em] md:text-2xl">Get product updates</h2>
+          <h2 class="mb-5 font-head text-xl tracking-[-0.02em] md:text-2xl">Get product updates</h2>
           <WaitlistForm client:load />
           <p class="mt-3 text-xs leading-relaxed text-ink-mute">
             Get notified about new features and GEO research. No spam.
@@ -139,7 +139,7 @@ import SurveyForm from '../components/SurveyForm';
 
       <div class="mt-16 max-w-xl border-t border-rail pt-12">
         <div class="mb-6">
-          <h2 class="mb-2 font-head text-xl font-extrabold tracking-[-0.02em] md:text-2xl">
+          <h2 class="mb-2 font-head text-xl tracking-[-0.02em] md:text-2xl">
             Quick survey — 4 questions
           </h2>
           <p class="text-sm leading-relaxed text-ink-soft">

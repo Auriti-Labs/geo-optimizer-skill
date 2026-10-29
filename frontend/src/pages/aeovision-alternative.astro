@@ -1,5 +1,6 @@
 ---
 import Shell from '../components/Shell.astro';
+import CompareNextBand from '../components/CompareNextBand.astro';
 
 const title = 'AEO Vision Alternative: Open AI-Visibility Monitoring';
 const description =
@@ -57,17 +58,18 @@ const faqs = [
 ---
 
 <Shell title={title} description={description} canonical={canonical}>
-  <article class="mx-auto max-w-3xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-extrabold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-extrabold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
+  <article class="mx-auto max-w-3xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed">
 
     {/* Header — answer-first, byline direttamente sotto l'H1 come da packet */}
     <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-extrabold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+      <div class="eyebrow">GeoReady · Compare</div>
+      <h1 class="mt-4 text-[2.1rem] leading-[1.08] tracking-[-0.03em] text-ink sm:text-[2.6rem]">
         AEO Vision Alternative: Open AI-Visibility Monitoring, Open Scoring
       </h1>
 
-      <p class="mt-4 font-mono text-xs text-ink-mute">
+      <div class="eyebrow mt-4">
         Published September 19, 2026 · Last updated October 23, 2026 · by Juan Camilo Auriti · 8 min read
-      </p>
+      </div>
 
       <p class="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
         AEO Vision (aeovision.ai) is an AI Search Visibility Platform founded in Toronto in 2025, positioning
@@ -80,7 +82,7 @@ const faqs = [
       </p>
     </header>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>What AEO Vision is</h2>
       <p class="mt-4">
         AEO Vision describes itself as "the leading AI Search Visibility Platform built for marketers, agencies, and
@@ -101,7 +103,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Who AEO Vision fits well</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li><strong class="text-ink">Teams that want Reddit- and ads-level views</strong> — Reddit Insights, Ads AI Share, and Top Cited Domains are specific, working features AEO Vision built and GeoReady doesn't replicate directly (aeovision.ai/features, as of October 2026).</li>
@@ -110,7 +112,7 @@ const faqs = [
       </ul>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>When an AEO Vision alternative makes sense</h2>
       <ul class="ml-5 mt-4 list-disc space-y-2">
         <li>You want a free option that isn't a paid-only platform. AEO Vision has no free plan and no free trial on paid Agency plans (aeovision.ai/plans, /agency-pricing, as of October 2026); GeoReady's Free plan is $0 forever, 5 full audits a day, no account.</li>
@@ -125,7 +127,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Being fair about AEO Vision's strengths</h2>
       <p class="mt-4">
         None of this is a case that AEO Vision is a weak product. It is a purpose-built AI-visibility platform with a
@@ -138,7 +140,7 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>AEO Vision vs GeoReady, head-to-head</h2>
       <p class="mt-4 text-sm italic text-ink-mute">
         AEO Vision figures: aeovision.ai/plans, /features, /agency-pricing, /enterprise, /tools, /citation-insights,
@@ -147,13 +149,13 @@ const faqs = [
         not be confirmed on the pages fetched on 2026-10-23 and keep the 2026-09-19 date. GeoReady figures: geoready.dev/pricing, October 2026. Currency stated as each
         vendor publishes it; no conversion applied.
       </p>
-      <div class="mt-6 overflow-x-auto rounded-[4px] border border-rail bg-white">
+      <div class="panel mt-6 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute"></th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">AEO Vision</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">GeoReady</th>
+              <th scope="col" class="eyebrow px-4 py-3"></th>
+              <th scope="col" class="eyebrow px-4 py-3">AEO Vision</th>
+              <th scope="col" class="eyebrow px-4 py-3">GeoReady</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -173,11 +175,11 @@ const faqs = [
       </p>
     </section>
 
-    <section class="mb-12 md:mb-16">
+    <section class="mb-12 md:mb-16" data-reveal>
       <h2>Frequently asked questions</h2>
-      <div class="mt-6 space-y-6">
+      <div class="panel mt-6 divide-y divide-rail overflow-hidden">
         {faqs.map((faq) => (
-          <div>
+          <div class="p-6">
             <h3>{faq.q}</h3>
             <p class="mt-2" set:html={faq.a} />
           </div>
@@ -200,6 +202,8 @@ const faqs = [
       </p>
     </section>
   </article>
+
+  <CompareNextBand slug="aeovision_alternative" />
 
   {/* Page-specific schema — WebPage (stessa scelta di veesie-alternative) */}
   <script type="application/ld+json" set:html={JSON.stringify({

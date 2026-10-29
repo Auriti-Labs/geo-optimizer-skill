@@ -14,8 +14,8 @@ DST = SRC / "ttf"
 DST.mkdir(parents=True, exist_ok=True)
 
 FONTS = {
-    "archivo-latin-800-normal.woff2": "archivo-bold.ttf",
-    "public-sans-latin-400-normal.woff2": "publicsans-regular.ttf",
+    "geist-latin-600-normal.woff2": "geist-semibold.ttf",
+    "geist-latin-400-normal.woff2": "geist-regular.ttf",
 }
 
 for src, dst in FONTS.items():

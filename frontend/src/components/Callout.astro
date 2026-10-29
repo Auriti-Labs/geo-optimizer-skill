@@ -8,16 +8,16 @@ const { variant = "info", body } = node;
 // Console world: 1px full border + wash ground; green/amber only where the
 // callout reports an attention state (tip/warning), neutral otherwise.
 const styles: Record<string, { box: string; label: string; labelColor: string }> = {
-  info: { box: "border-rail bg-white", label: "Info", labelColor: "text-ink-mute" },
+  info: { box: "border-rail bg-raised", label: "Info", labelColor: "text-ink-mute" },
   tip: { box: "border-pass/40 bg-pass-wash", label: "Tip", labelColor: "text-pass-deep" },
   warning: { box: "border-warn/40 bg-warn-wash", label: "Warning", labelColor: "text-warn" },
-  stat: { box: "border-rail bg-white", label: "Stat", labelColor: "text-ink-mute" },
+  stat: { box: "border-rail bg-raised", label: "Stat", labelColor: "text-ink-mute" },
 };
 const style = styles[variant] ?? styles.info;
 ---
 
-<div class={`callout my-6 rounded-[4px] border px-5 py-4 text-sm leading-relaxed ${style.box}`}>
-  <span class={`mb-1.5 block font-mono text-[10px] uppercase tracking-[0.12em] ${style.labelColor}`}>
+<div class={`callout my-6 rounded-[10px] border px-5 py-4 text-sm leading-relaxed ${style.box}`}>
+  <span class={`mb-1.5 block font-text font-medium text-[12px] ${style.labelColor}`}>
     {style.label}
   </span>
   <span class="text-ink-soft">{body}</span>

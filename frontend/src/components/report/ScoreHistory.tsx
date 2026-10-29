@@ -30,9 +30,9 @@ export default function ScoreHistory({ url, currentScore }: ScoreHistoryProps) {
   const deltaPositive = delta > 0;
 
   return (
-    <div className="rounded-[4px] border border-rail bg-white p-4">
+    <div className="rounded-[10px] border border-rail bg-raised p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">
+        <h3 className="font-text text-[12.5px] font-semibold text-ink-mute">
           Score History
         </h3>
         <span className={`font-mono text-xs font-semibold tabular-nums ${deltaPositive ? 'text-pass-deep' : delta < 0 ? 'text-fail' : 'text-ink-mute'}`}>
@@ -48,10 +48,10 @@ export default function ScoreHistory({ url, currentScore }: ScoreHistoryProps) {
           return (
             <div key={i} className="group relative flex flex-1 flex-col items-center gap-0.5">
               <div
-                className={`w-full rounded-[2px] transition-all ${isLast ? 'ring-1 ring-ink/40' : ''}`}
+                className={`w-full rounded-[6px] transition-all ${isLast ? 'ring-1 ring-ink/40' : ''}`}
                 style={{ height: `${heightPct}%`, backgroundColor: color, opacity: isLast ? 1 : 0.5 }}
               />
-              <div className="absolute -top-7 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-[2px] border border-rail bg-white px-1.5 py-0.5 font-mono text-[10px] tabular-nums text-ink group-hover:flex">
+              <div className="absolute -top-7 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-[6px] border border-rail bg-raised px-1.5 py-0.5 font-mono text-[10px] tabular-nums text-ink group-hover:flex">
                 {entry.score} · {new Date(entry.timestamp).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
               </div>
             </div>

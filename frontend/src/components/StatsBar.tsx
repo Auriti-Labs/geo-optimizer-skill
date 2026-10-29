@@ -65,7 +65,7 @@ export default function StatsBar({ initial, initialIsLive = false, variant = 'de
             </div>
           ))}
         </dl>
-        <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
+        <p className="mt-2 font-text font-medium text-[12.5px] text-ink-mute">
           {live ? (
             <>
               <span aria-hidden="true" className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-pass align-middle" />

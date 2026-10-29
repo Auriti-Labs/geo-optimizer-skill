@@ -24,12 +24,12 @@ export default function BenchmarkComparison({ score, grade }: BenchmarkCompariso
   const isTopQuarter = grade === 'excellent';
 
   return (
-    <div className="overflow-hidden rounded-[4px] border border-rail bg-white">
+    <div className="overflow-hidden rounded-[10px] border border-rail bg-raised">
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-rail px-5 py-2.5">
-        <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">
+        <span className="font-text text-[12.5px] font-semibold text-ink-mute">
           Benchmark
         </span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">
+        <span className="font-text font-medium text-[12px] text-ink-mute">
           State of GEO · {totalDomains} domains · June 2026
         </span>
       </div>
@@ -38,15 +38,15 @@ export default function BenchmarkComparison({ score, grade }: BenchmarkCompariso
         {/* Score vs average */}
         <div className="mb-4 grid grid-cols-3 gap-4">
           <div>
-            <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Your score</div>
+            <div className="font-text text-[12px] font-semibold text-ink-mute">Your score</div>
             <div className="mt-0.5 font-mono text-2xl font-bold tabular-nums text-ink">{score}</div>
           </div>
           <div>
-            <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Average</div>
+            <div className="font-text text-[12px] font-semibold text-ink-mute">Average</div>
             <div className="mt-0.5 font-mono text-2xl font-bold tabular-nums text-ink-soft">{avgScore}</div>
           </div>
           <div>
-            <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Median</div>
+            <div className="font-text text-[12px] font-semibold text-ink-mute">Median</div>
             <div className="mt-0.5 font-mono text-2xl font-bold tabular-nums text-ink-soft">{medianScore}</div>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function BenchmarkComparison({ score, grade }: BenchmarkCompariso
             <span>50</span>
             <span>100</span>
           </div>
-          <div className="relative h-2.5 overflow-hidden rounded-[2px] border border-ink/40 bg-paper">
+          <div className="relative h-2.5 overflow-hidden rounded-[6px] border border-ink/40 bg-paper">
             {/* Cohort average marker (reference data → dashed) */}
             <div
               className="absolute bottom-0 top-0 w-0 border-l border-dashed border-ink-mute/60"
@@ -95,7 +95,7 @@ export default function BenchmarkComparison({ score, grade }: BenchmarkCompariso
       </div>
 
       <div className="border-t border-rail px-5 py-2.5">
-        <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">
+        <p className="font-text font-medium text-[12px] text-ink-mute">
           source: lib/benchmark2026.ts
         </p>
       </div>

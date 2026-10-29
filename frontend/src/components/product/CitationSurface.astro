@@ -25,21 +25,21 @@ const sov = [
 const maxCites = 4;
 ---
 
-<div class={`overflow-hidden rounded-[4px] border border-rail bg-white text-ink ${className}`}>
+<div class={`overflow-hidden rounded-[10px] border border-rail bg-raised text-ink ${className}`}>
   {mode === 'verdict' ? (
     <>
       <div class="flex items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-        <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">AI citation check · sample</span>
-        <span class="rounded-[2px] bg-warn-wash px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-warn">Mentioned, not cited</span>
+        <span class="font-text text-[12.5px] font-semibold text-ink-mute">AI citation check · sample</span>
+        <span class="rounded-[6px] bg-warn-wash px-1.5 py-0.5 font-text text-[12px] font-semibold text-warn">Mentioned, not cited</span>
       </div>
       <div class="px-4 py-4">
         <div class="grid grid-cols-2 gap-4">
           <div class="border-l border-rail pl-3">
-            <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-mute">Brand mentioned</p>
+            <p class="font-text font-medium text-[12px] text-ink-mute">Brand mentioned</p>
             <p class="mt-1 font-mono text-2xl font-semibold tabular-nums text-ink">67%</p>
           </div>
           <div class="border-l border-rail pl-3">
-            <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-mute">Domain cited</p>
+            <p class="font-text font-medium text-[12px] text-ink-mute">Domain cited</p>
             <p class="mt-1 font-mono text-2xl font-semibold tabular-nums text-warn">0%</p>
           </div>
         </div>
@@ -52,8 +52,8 @@ const maxCites = 4;
   ) : (
     <>
       <div class="flex items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-        <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Share of AI citations · sample</span>
-        <span class="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">Perplexity</span>
+        <span class="font-text text-[12.5px] font-semibold text-ink-mute">Share of AI citations · sample</span>
+        <span class="rounded-[6px] border border-rail px-1.5 py-0.5 font-text text-[12px] font-semibold text-ink-mute">Perplexity</span>
       </div>
       <div class="px-4 py-4">
         <div class="space-y-3">
@@ -63,7 +63,7 @@ const maxCites = 4;
                 <span class={`text-sm ${s.you ? 'font-semibold text-ink' : 'text-ink-soft'}`}>{s.name}{s.you && ' · you'}</span>
                 <span class={`font-mono text-[12px] tabular-nums ${s.you ? 'text-warn' : 'text-ink-soft'}`}>{s.cites} citations</span>
               </div>
-              <div class={`mt-1.5 h-2.5 rounded-[2px] ${s.you ? 'border border-ink/40 bg-paper' : 'border border-dashed border-ink-mute/60'}`} aria-hidden="true">
+              <div class={`mt-1.5 h-2.5 rounded-[6px] ${s.you ? 'border border-ink/40 bg-paper' : 'border border-dashed border-ink-mute/60'}`} aria-hidden="true">
                 {s.cites > 0 && (
                   <div class={`h-full ${s.you ? 'bg-ink/60' : 'bg-ink-mute/25'}`} style={`width:${(s.cites / maxCites) * 100}%`}></div>
                 )}

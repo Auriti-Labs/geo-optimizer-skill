@@ -37,10 +37,10 @@ const faqs = [
 ---
 
 <Shell title={title} description={description} canonical={canonical}>
-  <article class="mx-auto max-w-3xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:font-extrabold [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:font-head [&_h3]:text-lg [&_h3]:font-extrabold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed [&_a]:text-pass-deep [&_a]:underline [&_a]:decoration-rail [&_a]:underline-offset-4 [&_a:hover]:decoration-pass-deep">
+  <article class="mx-auto max-w-3xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16 [&_h2]:font-head [&_h2]:text-2xl [&_h2]:leading-tight [&_h2]:tracking-[-0.02em] [&_h2]:text-ink [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:tracking-[-0.01em] [&_h3]:text-ink [&_p]:text-ink-soft [&_p]:leading-relaxed [&_li]:text-ink-soft [&_li]:leading-relaxed [:where(&)_a]:text-pass-deep [:where(&)_a]:underline [:where(&)_a]:decoration-rail [:where(&)_a]:underline-offset-4 [:where(&)_a:hover]:decoration-pass-deep">
 
     <header class="mb-12 md:mb-16">
-      <h1 class="font-head text-3xl font-extrabold leading-tight tracking-[-0.03em] text-ink md:text-4xl">
+      <h1 class="font-head text-3xl leading-tight tracking-[-0.03em] text-ink md:text-4xl">
         How to Track AI Overviews Trends Over Time (A Repeatable Workflow)
       </h1>
 
@@ -108,17 +108,17 @@ const faqs = [
       <p class="mt-3">
         A spreadsheet works fine — the schema matters more than the tool. At minimum, log one row per query per check date:
       </p>
-      <div class="mt-4 overflow-x-auto rounded-[4px] border border-rail bg-white">
+      <div class="mt-4 overflow-x-auto rounded-[10px] border border-rail bg-raised">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Date</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Query (exact wording)</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Location / device</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Overview present?</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Your domain cited?</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Other domains cited</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Notes</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Date</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Query (exact wording)</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Location / device</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Overview present?</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Your domain cited?</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Other domains cited</th>
+              <th scope="col" class="px-4 py-3 font-text text-[12.5px] font-semibold text-ink-mute">Notes</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -220,20 +220,20 @@ const faqs = [
       </div>
     </section>
 
-    <section class="rounded-[4px] border border-rail bg-white p-6">
+    <section class="rounded-[10px] border border-rail bg-raised p-6">
       <p class="text-sm leading-relaxed text-ink-soft">
         Run a free GEO audit to see where your readiness signals stand today — no account required.
       </p>
       <div class="mt-4 flex flex-wrap gap-3">
         <a
           href="/ai-seo-audit/"
-          class="inline-flex items-center gap-2 rounded-[4px] bg-pass-deep px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white no-underline transition-colors hover:bg-pass"
+          class="inline-flex items-center gap-2 rounded-[10px] bg-pass-deep px-6 py-2.5 font-text text-[13px] font-semibold text-on-accent no-underline transition-colors hover:bg-pass"
         >
           Start your free audit
         </a>
         <a
           href="/pricing/"
-          class="inline-flex items-center gap-2 rounded-[4px] border border-rail bg-white px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink no-underline transition-colors hover:bg-paper"
+          class="inline-flex items-center gap-2 rounded-[10px] border border-rail bg-raised px-6 py-2.5 font-text text-[13px] font-semibold text-ink no-underline transition-colors hover:bg-paper"
         >
           See how GeoReady's monitoring plans work
         </a>

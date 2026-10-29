@@ -19,18 +19,18 @@ const typeLabels: Record<string, string> = {
 const meta = [source.venue, source.year].filter(Boolean).join(' · ');
 ---
 
-<article class="overflow-hidden rounded-[4px] border border-rail bg-paper">
+<article class="overflow-hidden rounded-[10px] border border-rail bg-paper">
   <header class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-rail px-5 py-2.5">
-    <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">
+    <span class="font-text text-[12.5px] font-semibold text-ink-mute">
       {typeLabels[source.type] || source.type}
     </span>
     {meta && (
-      <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{meta}</span>
+      <span class="font-text font-medium text-[12.5px] text-ink-mute">{meta}</span>
     )}
   </header>
 
   <div class="p-5 md:p-6">
-    <h3 class="font-head text-lg font-extrabold leading-snug tracking-[-0.01em] text-ink md:text-xl">
+    <h3 class="font-head text-lg font-semibold leading-snug tracking-[-0.01em] text-ink md:text-xl">
       {source.title}
     </h3>
     {source.authors && (
@@ -39,22 +39,22 @@ const meta = [source.venue, source.year].filter(Boolean).join(' · ');
 
     <div class="mt-4 space-y-4">
       <div>
-        <p class="mb-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Finding</p>
+        <p class="mb-1 font-text text-[12.5px] font-semibold text-ink-mute">Finding</p>
         <p class="max-w-3xl text-sm leading-relaxed text-ink-soft">{source.finding}</p>
       </div>
 
       <div>
-        <p class="mb-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">How GEO Optimizer uses it</p>
+        <p class="mb-1 font-text text-[12.5px] font-semibold text-ink-mute">How GEO Optimizer uses it</p>
         <p class="max-w-3xl text-sm leading-relaxed text-ink-soft">{source.howWeUseIt}</p>
       </div>
 
       {source.metrics && (
         <div class="pt-2">
-          <p class="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Key metrics</p>
-          <dl class="grid grid-cols-2 gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-3">
+          <p class="mb-2 font-text text-[12.5px] font-semibold text-ink-mute">Key metrics</p>
+          <dl class="grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-3">
             {source.metrics.map((m) => (
-              <div class="bg-white p-2.5">
-                <dt class="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">{m.label}</dt>
+              <div class="bg-raised p-2.5">
+                <dt class="font-text font-medium text-[12px] text-ink-mute">{m.label}</dt>
                 <dd class="mt-0.5 font-mono text-sm font-semibold tabular-nums text-ink">{m.value}</dd>
               </div>
             ))}

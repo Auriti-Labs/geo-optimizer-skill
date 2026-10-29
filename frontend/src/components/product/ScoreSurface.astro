@@ -45,21 +45,21 @@ const dot = {
 };
 ---
 
-<div class={`overflow-hidden rounded-[4px] border border-rail bg-white text-ink ${className}`}>
+<div class={`overflow-hidden rounded-[10px] border border-rail bg-raised text-ink ${className}`}>
   <div class="flex items-center justify-between gap-3 border-b border-rail px-4 py-2.5">
-    <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">GEO score · sample</span>
-    <span class="rounded-[2px] bg-pass-wash px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-pass-deep">{band}</span>
+    <span class="font-text text-[12.5px] font-semibold text-ink-mute">GEO score · sample</span>
+    <span class="rounded-[6px] bg-pass-wash px-1.5 py-0.5 font-text text-[12px] font-semibold text-pass-deep">{band}</span>
   </div>
 
   <div class="px-4 py-4">
     <div class="flex items-baseline justify-between gap-3">
       <p class="flex items-baseline gap-1.5">
         <span class="font-mono text-4xl font-semibold tabular-nums text-ink">{score}</span>
-        <span class="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute">/ 100</span>
+        <span class="font-text font-medium text-[12.5px] text-ink-mute">/ 100</span>
       </p>
-      <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">9 categories</span>
+      <span class="font-text font-medium text-[12.5px] text-ink-mute">9 categories</span>
     </div>
-    <div class="mt-2 h-2.5 rounded-[2px] border border-ink/40 bg-paper" aria-hidden="true">
+    <div class="mt-2 h-2.5 rounded-[6px] border border-ink/40 bg-paper" aria-hidden="true">
       <div class="h-full bg-ink/60" style={`width:${pct}%`}></div>
     </div>
 

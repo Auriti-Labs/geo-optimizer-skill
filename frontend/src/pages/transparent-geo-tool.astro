@@ -117,12 +117,12 @@ const WEIGHT_ROWS = [
   <div class="mx-auto max-w-4xl bg-paper px-4 py-10 font-text text-ink sm:px-6 md:py-16">
     <header>
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h1 class="max-w-3xl font-head text-3xl font-extrabold leading-[1.05] tracking-[-0.03em] text-ink md:text-4xl">
+        <h1 class="max-w-3xl text-[2.3rem] leading-[1.05] tracking-[-0.03em] text-ink sm:text-[3rem]">
           Which GEO tool has a transparent methodology?
         </h1>
-        <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">
+        <div class="eyebrow">
           Transparency
-        </p>
+        </div>
       </div>
       <p class="mt-5 max-w-3xl text-lg leading-relaxed text-ink-soft">
         A visibility score you cannot inspect is a score you cannot argue with. Below is
@@ -131,8 +131,8 @@ const WEIGHT_ROWS = [
       </p>
     </header>
 
-    <section class="mt-12">
-      <h2 class="font-head text-xl font-extrabold tracking-[-0.02em] text-ink">What this score cannot tell you</h2>
+    <section class="mt-12" data-reveal>
+      <h2 class="font-head text-xl tracking-[-0.02em] text-ink">What this score cannot tell you</h2>
       <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-soft">
         This section comes before the claims on purpose. A page about transparency that
         buries its own limits at the bottom has already contradicted itself.
@@ -147,11 +147,11 @@ const WEIGHT_ROWS = [
       </ul>
     </section>
 
-    <section class="mt-12">
-      <h2 class="font-head text-xl font-extrabold tracking-[-0.02em] text-ink">
+    <section class="mt-12" data-reveal>
+      <h2 class="font-head text-xl tracking-[-0.02em] text-ink">
         Six things you can check yourself
       </h2>
-      <div class="mt-6 divide-y divide-rail overflow-hidden rounded-[4px] border border-rail bg-white">
+      <div class="mt-6 divide-y divide-rail overflow-hidden panel">
         {VERIFIABLE.map((item, i) => (
           <div class="flex items-start gap-4 p-5">
             <span class="font-mono text-[12px] font-medium tabular-nums text-ink-mute">{String(i + 1).padStart(2, '0')}</span>
@@ -167,10 +167,10 @@ const WEIGHT_ROWS = [
       </div>
     </section>
 
-    <section class="mt-12">
+    <section class="mt-12" data-reveal>
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 class="font-head text-xl font-extrabold tracking-[-0.02em] text-ink">Where the 100 points go</h2>
-        <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">source: src/geo_optimizer/models/config.py · CATEGORY_MAX_V2</p>
+        <h2 class="font-head text-xl tracking-[-0.02em] text-ink">Where the 100 points go</h2>
+        <div class="eyebrow">source: src/geo_optimizer/models/config.py · CATEGORY_MAX_V2</div>
       </div>
       <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-soft">
         These are the same integers you will find in
@@ -178,13 +178,13 @@ const WEIGHT_ROWS = [
         derivation, including the score bands and the citability layer, is on the
         <a href="/methodology/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">methodology page</a>.
       </p>
-      <div class="mt-5 overflow-x-auto rounded-[4px] border border-rail bg-white">
+      <div class="mt-5 overflow-x-auto panel">
         <table class="w-full text-left text-sm">
           <thead class="bg-paper">
             <tr class="border-b border-rail">
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Category</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Points</th>
-              <th scope="col" class="px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Why it weighs what it does</th>
+              <th scope="col" class="px-4 py-3 eyebrow">Category</th>
+              <th scope="col" class="px-4 py-3 eyebrow">Points</th>
+              <th scope="col" class="px-4 py-3 eyebrow">Why it weighs what it does</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-rail">
@@ -200,16 +200,16 @@ const WEIGHT_ROWS = [
       </div>
     </section>
 
-    <section class="mt-12">
-      <h2 class="font-head text-xl font-extrabold tracking-[-0.02em] text-ink">Reproduce a score in one command</h2>
+    <section class="mt-12" data-reveal>
+      <h2 class="font-head text-xl tracking-[-0.02em] text-ink">Reproduce a score in one command</h2>
       <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-soft">
         No account, no API key, no email. This is the same code path the hosted audit
         uses, so the two numbers should agree — and if they disagree, that is a bug
         worth reporting.
       </p>
-      <div class="mt-4 overflow-hidden rounded-[4px] border border-rail bg-white">
+      <div class="mt-4 overflow-hidden panel">
         <div class="border-b border-rail px-4 py-2.5">
-          <span class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">PyPI · geo-optimizer-skill</span>
+          <span class="eyebrow">PyPI · geo-optimizer-skill</span>
         </div>
         <pre class="overflow-x-auto p-4 font-mono text-xs text-ink"><code>pip install geo-optimizer-skill
 geo audit --url https://your-site.com</code></pre>
@@ -221,8 +221,8 @@ geo audit --url https://your-site.com</code></pre>
       </p>
     </section>
 
-    <section class="mt-12">
-      <h2 class="font-head text-xl font-extrabold tracking-[-0.02em] text-ink">Frequently asked questions</h2>
+    <section class="mt-12" data-reveal>
+      <h2 class="font-head text-xl tracking-[-0.02em] text-ink">Frequently asked questions</h2>
       <div class="mt-6">
         {faqs.map((faq) => (
           <div class="border-t border-rail py-5 first:border-t-0 first:pt-0">
@@ -233,8 +233,8 @@ geo audit --url https://your-site.com</code></pre>
       </div>
     </section>
 
-    <section class="mt-12 rounded-[4px] border border-rail bg-white p-6">
-      <h2 class="font-head text-lg font-extrabold tracking-[-0.02em] text-ink">See your own score</h2>
+    <section class="mt-12 panel p-6" data-reveal>
+      <h2 class="font-head text-lg tracking-[-0.02em] text-ink">See your own score</h2>
       <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-soft">
         Run a public audit on any URL — no account required — or read the
         <a href="/methodology/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">full methodology</a>
@@ -242,7 +242,7 @@ geo audit --url https://your-site.com</code></pre>
       </p>
       <a
         href="/"
-        class="mt-4 inline-flex items-center gap-2 rounded-[4px] bg-pass-deep px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+        class="mt-4 inline-flex items-center gap-2 rounded-[9px] bg-pass-deep px-6 py-2.5 min-h-11 text-[14px] font-semibold text-on-accent transition-colors hover:bg-pass"
       >
         Audit a site
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

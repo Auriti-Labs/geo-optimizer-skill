@@ -1,0 +1,22 @@
+---
+// Banda scura di chiusura delle pagine di confronto: stessa ricetta di methodology e monitoring.
+// `slug` prefissa i data-cta, così ogni pagina resta distinguibile nel tracking.
+interface Props { slug: string }
+const { slug } = Astro.props;
+---
+
+<section class="band-dark" aria-labelledby={`${slug}-next-h`}>
+  <div class="mx-auto flex max-w-5xl flex-col gap-8 px-5 py-16 sm:px-6 md:py-20 lg:flex-row lg:items-end lg:justify-between">
+    <div class="max-w-xl">
+      <div class="eyebrow">Next step</div>
+      <h2 id={`${slug}-next-h`} class="mt-3 text-3xl tracking-[-0.03em] md:text-[2.5rem] md:leading-[1.08]">Check your own site before you choose.</h2>
+      <p class="mt-4 leading-relaxed text-ink-soft">
+        The free audit is the open-source engine run on your URL: a score out of 100 across nine categories, with fixes in priority order. It costs $0 with no account; monitoring on Pro is $19/mo founding, then $29.
+      </p>
+    </div>
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <a href="/ai-seo-audit/" data-cta={`${slug}_final_audit`} class="inline-flex min-h-11 items-center justify-center rounded-[9px] bg-accent px-6 py-3 text-[14px] font-semibold text-on-accent transition-colors hover:bg-pass">Run a free audit</a>
+      <a href="/pricing/" data-cta={`${slug}_final_pricing`} class="inline-flex min-h-11 items-center justify-center rounded-[9px] px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_#2A3838] transition-shadow hover:shadow-[inset_0_0_0_1px_#2DD4BF]">See pricing</a>
+    </div>
+  </div>
+</section>

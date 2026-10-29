@@ -3,19 +3,20 @@ import Shell from '../components/Shell.astro';
 import PricingObjectionSurvey from '../components/PricingObjectionSurvey';
 import FoundingSeatsStatus from '../components/FoundingSeatsStatus';
 
-const selfServePlans = [
+// Piani self-serve. Le liste feature rispecchiano le entitlement del backend: non aggiungere
+// voci che il codice non implementa. `price`/`period` alimentano anche i data-plan-* (GA4).
+const plans = [
   {
     id: 'free',
     name: 'Free',
     price: '$0',
     period: 'forever',
-    status: 'Available now',
-    statusStyle: 'bg-pass-wash text-pass-deep',
+    terms: 'no card · no account',
     description: 'Single-URL audit with a full GEO score and the complete 9-category breakdown. No account required.',
     cta: 'Start free audit',
     ctaHref: '/',
-    ctaStyle: 'border border-rail bg-white text-ink hover:bg-pass-wash',
-    recommended: false,
+    ctaStyle: 'border border-rail bg-raised text-ink hover:bg-pass-wash',
+    highlight: false,
     cadence: 'run: on demand · 5/day',
     features: [
       '5 audits per day',
@@ -31,13 +32,12 @@ const selfServePlans = [
     name: 'Pro',
     price: '$19',
     period: '/month',
-    status: 'Founding price, then $29/month',
-    statusStyle: 'bg-pass-wash text-pass-deep',
+    terms: 'founding price · then $29/month',
     description: 'Weekly monitoring for up to 10 domains, score history, regression alerts, PDF export, and API access. For developers and consultants managing a few sites.',
     cta: 'Start with Pro',
     ctaHref: 'https://app.geoready.dev/signup?plan=pro&intent=monitoring&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=pro_card',
-    ctaStyle: 'bg-pass-deep text-white hover:bg-pass',
-    recommended: true,
+    ctaStyle: 'bg-ink text-paper hover:bg-ink-soft',
+    highlight: false,
     cadence: 'schedule: weekly · 10 domains',
     features: [
       'Unlimited audits',
@@ -48,19 +48,17 @@ const selfServePlans = [
       'API access (Bearer token)',
     ],
   },
-];
-
-const scalePlans = [
   {
     id: 'agency',
     name: 'Agency',
     price: '$89',
     period: '/month',
-    status: 'Founding price, then $199/month',
-    statusStyle: 'bg-pass-wash text-pass-deep',
+    terms: 'founding price · then $199/month',
     description: 'Team workspace, 50-domain daily portfolio monitoring, AI answer snapshots, and unlimited batch audits.',
     cta: 'Start with Agency',
     ctaHref: 'https://app.geoready.dev/signup?plan=agency&intent=portfolio&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=agency_card',
+    ctaStyle: 'bg-pass-deep text-on-accent hover:bg-pass',
+    highlight: true,
     cadence: 'schedule: daily · 50 domains',
     features: [
       'Everything in Pro',
@@ -74,31 +72,29 @@ const scalePlans = [
       'Citation quality scoring',
     ],
   },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    status: 'Talk to us',
-    statusStyle: 'border border-rail text-ink-mute',
-    description: 'SLA, dedicated account manager, on-premise deployment, hourly monitoring, and custom integrations.',
-    // No sales team today — honest label + direct email to the maintainer
-    // (address already public on the privacy policy page).
-    cta: 'Contact us',
-    ctaHref: 'mailto:info@geoready.dev?subject=GeoReady%20Enterprise',
-    cadence: 'schedule: hourly · unlimited',
-    features: [
-      'Everything in Agency',
-      'Unlimited domains',
-      'Hourly monitoring',
-      'SLA',
-      'On-premise deployment',
-      'Webhooks / Slack / CMS integrations',
-      'Dedicated account manager',
-      'Custom onboarding',
-    ],
-  },
-];
+] as const;
+
+const heroCadenceRows = [
+  { plan: 'Free', value: 'on demand', detail: '5/day' },
+  { plan: 'Pro', value: 'weekly', detail: '10 domains' },
+  { plan: 'Agency', value: 'daily', detail: '50 domains' },
+] as const;
+
+// Cosa gira da solo e cosa no: stessa verità della sezione "automated" e della FAQ "Is any part manual?".
+const automationRows = [
+  { item: 'Site audits', mode: 'automated', how: 'On our servers: weekly on Pro, daily on Agency' },
+  { item: 'Score monitoring', mode: 'automated', how: 'Same schedule, with regression alerts' },
+  { item: 'Perplexity answers', mode: 'automated', how: 'Queried through the Perplexity API' },
+  { item: 'ChatGPT answers', mode: 'manual paste', how: 'Scored the same way: brand mention, cited domains' },
+  { item: 'Google AI answers', mode: 'manual paste', how: 'Scored the same way: brand mention, cited domains' },
+] as const;
+
+const credibility = [
+  { value: '27', label: 'AI bots checked', text: 'robots.txt access verified across 27 AI crawlers.', source: 'models/config.py · AI_BOTS' },
+  { value: '47', label: 'citability checks', text: 'A content analysis reported next to the 0-100 score. The score itself comes from 9 categories.', source: 'core/citability.py' },
+  { value: '9', label: 'checks from KDD 2024', text: '9 of the 47 content checks come from the methods tested in Princeton KDD 2024. The weights are a published starting point.', source: 'KDD 2024 · arXiv:2311.09735' },
+  { value: 'MIT', label: 'open source', text: 'Scoring weights are public and auditable on GitHub.', source: 'github.com/Auriti-Labs' },
+] as const;
 
 const planChoiceRows = [
   {
@@ -169,7 +165,7 @@ const trustAssurances = [
   ['Founding price lock', 'The founding price stays locked while the subscription remains active.'],
 ] as const;
 
-// '✓' renders as a drawn SVG check; '—' stays typographic.
+// '✓' diventa un check SVG disegnato; '—' resta tipografico.
 const comparisonRows: [string, string, string, string][] = [
   ['GEO score (0-100)', '✓', '✓', '✓'],
   ['Full 9-category report', '✓', '✓', '✓'],
@@ -188,10 +184,10 @@ const comparisonRows: [string, string, string, string][] = [
   ['CLI (MIT)', '✓', '✓', '✓'],
 ];
 
-// CLI vs Pro. Every row below was checked against the CLI source and docs:
+// CLI vs Pro. Ogni riga è verificata sul sorgente e sui docs della CLI:
 // src/geo_optimizer/cli/{track,monitor,history,audit}_cmd.py, core/history.py,
-// core/monitor.py, models/config.py. The Pro column only restates what the plan
-// cards and the feature comparison above already claim.
+// core/monitor.py, models/config.py. La colonna Pro ripete solo ciò che già
+// dichiarano le card piano e la tabella di confronto.
 const cliVsProRows = [
   [
     'Where the audit runs',
@@ -215,9 +211,7 @@ const cliVsProRows = [
   ],
 ] as const;
 
-const cliVsProAnswer =
-  'If you already run the CLI in CI, you may not need Pro. geo track and geo monitor use the same open-source audit engine, store snapshots in a local SQLite file (~/.geo-optimizer/tracking.db), and run only when you start them, so the schedule, the storage and reading the output are yours to set up. Pro is for people who would rather not operate that: the audit runs weekly for up to 10 domains, history is kept in your account, and a score drop of 5 points or more triggers an email alert.';
-
+// Unica fonte per la FAQ visibile e per il FAQPage JSON-LD: domande e risposte devono coincidere.
 const faqs = [
   {
     q: 'Is the free audit really free?',
@@ -233,7 +227,15 @@ const faqs = [
   },
   {
     q: 'The CLI already has geo track and geo monitor. Why pay for Pro?',
-    a: cliVsProAnswer,
+    a: 'If you already run the CLI in CI, you may not need Pro. geo track and geo monitor use the same open-source audit engine, store snapshots in a local SQLite file (~/.geo-optimizer/tracking.db), and run only when you start them, so the schedule, the storage and reading the output are yours to set up. Pro is for people who would rather not operate that: the audit runs weekly for up to 10 domains, history is kept in your account, and a score drop of 5 points or more triggers an email alert.',
+  },
+  {
+    q: 'Does a high score guarantee AI citations?',
+    a: 'No. The score measures whether AI engines can reach, read and attribute your pages. Whether a page is cited also depends on the query and on the engine, and no tool controls that.',
+  },
+  {
+    q: 'Is any part manual?',
+    a: "Yes, one part. Site audits and score monitoring run automatically on our servers (weekly on Pro, daily on Agency), and AI answer checks query Perplexity through its API. For ChatGPT and Google AI answers, you paste the answer you see and GeoReady scores it the same way (brand mention, cited domains). We don't scrape those interfaces.",
   },
   {
     q: 'Are paid plans available right now?',
@@ -261,11 +263,11 @@ const faqs = [
   },
 ];
 
-const heroCadenceRows = [
-  { plan: 'Free', value: 'run: on demand', detail: '5 audits/day' },
-  { plan: 'Pro', value: 'schedule: weekly', detail: '10 domains' },
-  { plan: 'Agency', value: 'schedule: daily', detail: '50 domains' },
-] as const;
+const linkClass = 'text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep';
+// Prezzo dal dato dei piani, così il testo non diverge dalle card
+const planPrice = (id: string) => plans.find((p) => p.id === id)?.price;
+const sectionHeading = 'font-head text-2xl font-semibold tracking-[-0.03em] text-ink md:text-3xl';
+const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] font-medium text-ink-mute';
 ---
 
 <Shell
@@ -273,150 +275,110 @@ const heroCadenceRows = [
   description="The full 9-category GEO audit is free, no account. Pro adds weekly monitoring, score history, and alerts. Agency adds multi-site daily monitoring."
   canonical="https://geoready.dev/pricing/"
 >
-  {/* Hero */}
+  {/* Hero: claim a sinistra, ledger delle cadenze a destra (pannello impostazioni della dashboard) */}
   <section class="bg-paper">
-    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-20">
-      <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.52fr)] lg:gap-14">
+    <div class="mx-auto max-w-7xl px-4 pb-12 pt-14 sm:px-6 md:pb-16 md:pt-20">
+      <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-16">
         <div>
-          <h1 class="max-w-3xl font-head text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
-            Free GEO audit, forever. Pay only when you need monitoring.
+          <p class="eyebrow">pricing · USD · billed monthly via Stripe</p>
+          <h1 class="mt-4 max-w-3xl font-head text-[2.5rem] leading-[1.04] tracking-[-0.03em] text-ink md:text-[3.5rem]">
+            Pay for <em>monitoring</em>, not for the audit.
           </h1>
-          <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft">
-            Run a full GEO score on any URL with no account and no card, as often as you want.
-            Paid plans add what a one-shot audit can't: weekly monitoring, score history, regression
-            alerts, exports, and team workflows.
+          <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
+            The full 9-category audit stays free, with no account and no card. The audit engine and the
+            CLI are MIT-licensed. Paid plans add what a one-shot audit can't: the schedule, the stored
+            history and the alerts.
           </p>
 
-          <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <a
+              href="#plans"
+              data-cta="pricing_hero_compare_plans"
+              class="inline-flex items-center justify-center rounded-[9px] bg-pass-deep px-6 py-3 text-[14px] font-semibold text-on-accent transition-colors hover:bg-pass"
+            >
+              Compare plans
+            </a>
             <a
               href="/"
               data-cta="pricing_hero_free_audit"
-              class="inline-flex items-center justify-center gap-2 rounded-[4px] bg-pass-deep px-6 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+              class="inline-flex items-center justify-center gap-2 rounded-[9px] border border-rail bg-raised px-6 py-3 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Start free audit
               <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
                 <path d="M3 1.5 9.5 6 3 10.5V1.5Z" />
               </svg>
             </a>
-            <span class="text-sm text-ink-mute">
-              No card required for Free. 14-day Agency trial on request. Cancel anytime.
-            </span>
           </div>
-
-          <div class="mt-8 grid gap-3 sm:grid-cols-2">
-            <div class="border-l border-rail pl-4">
-              <p class="text-sm font-semibold text-ink">Free</p>
-              <p class="mt-1 text-sm text-ink-soft">Single-URL audit, no account.</p>
-            </div>
-            <div class="border-l border-rail pl-4">
-              <p class="text-sm font-semibold text-ink">Pro</p>
-              <p class="mt-1 text-sm text-ink-soft">$19/month founding price, then $29/month.</p>
-            </div>
-          </div>
-
-          <p class="mt-8 max-w-2xl text-sm leading-relaxed text-ink-mute">
-            The web audit and CLI are MIT-licensed and remain free forever. The CLI runs locally with
-            no usage limits.
+          <p class="mt-4 font-mono text-[12px] text-ink-mute">
+            no card for Free · 14-day Agency trial on request · cancel anytime
           </p>
         </div>
 
-        {/* Monitoring cadence — the plan facts as a ledger, not a mockup */}
-        <aside class="rounded-[4px] border border-rail bg-white" aria-label="Monitoring cadence by plan">
-          <div class="flex items-center justify-between border-b border-rail px-5 py-2.5">
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">monitoring cadence</span>
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-pass-deep">per plan</span>
+        <aside class="panel overflow-hidden" aria-label="Monitoring cadence by plan">
+          <div class="flex items-center justify-between border-b border-rail px-5 py-3">
+            <span class="eyebrow">cadence ledger</span>
+            <span class="font-mono text-[12px] text-pass-deep">per plan</span>
           </div>
-          <ul class="divide-y divide-rail">
+          <dl class="divide-y divide-rail">
             {heroCadenceRows.map((row) => (
-              <li class="flex items-baseline justify-between gap-4 px-5 py-3.5">
-                <span class="text-sm font-semibold text-ink">{row.plan}</span>
-                <span class="text-right font-mono text-[12px] text-ink-soft">
-                  {row.value} <span class="text-ink-mute">· {row.detail}</span>
-                </span>
-              </li>
+              <div class="grid grid-cols-[72px_minmax(0,1fr)_auto] items-baseline gap-3 px-5 py-3.5">
+                <dt class="text-sm font-semibold text-ink">{row.plan}</dt>
+                <dd class="font-mono text-[13px] text-ink-soft">{row.value}</dd>
+                <dd class="text-right font-mono text-[12px] tabular-nums text-ink-mute">{row.detail}</dd>
+              </div>
             ))}
-          </ul>
-          <div class="border-t border-rail px-5 py-2.5">
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">billing: Stripe · cancel anytime</span>
+          </dl>
+          <div class="border-t border-rail bg-surface px-5 py-3">
+            <span class="font-mono text-[12px] text-ink-mute">billing: Stripe · cancel anytime</span>
           </div>
         </aside>
       </div>
-
-      <div class="mt-12 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail md:grid-cols-3">
-        {[
-          ['Free', 'Audit once, learn what to fix.'],
-          ['Pro', 'Track up to 10 domains weekly.'],
-          ['Agency', 'Add team and bulk workflows.'],
-        ].map(([label, text]) => (
-          <div class="bg-white p-5">
-            <p class="text-sm font-semibold text-ink">{label}</p>
-            <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">{text}</p>
-          </div>
-        ))}
-      </div>
     </div>
   </section>
 
-  {/* Credibility row — verifiable signals only (open-source, research-backed, coverage) */}
-  <section aria-label="What the audit is built on" class="border-t border-rail bg-white">
-    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-      <ul class="grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          ['Open source, MIT', 'Scoring weights are public and auditable on GitHub.', 'github.com/Auriti-Labs'],
-          ['Research-informed', '9 of the 47 content checks come from the methods tested in Princeton KDD 2024. The weights are a published starting point.', 'KDD 2024 · arXiv:2311.09735'],
-          ['27 AI bots checked', 'robots.txt access verified across 27 AI crawlers.', 'models/config.py · AI_BOTS'],
-          ['47 citability checks', 'A content analysis reported next to the 0-100 score. The score itself comes from 9 categories.', 'core/citability.py'],
-        ].map(([label, text, source]) => (
-          <li class="bg-paper p-5">
-            <p class="text-sm font-semibold text-ink">{label}</p>
-            <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">{text}</p>
-            <p class="mt-3 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">{source}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  {/* Plan cards */}
-  <section aria-labelledby="plans-heading" class="border-t border-rail bg-paper">
+  {/* Piani: tre pannelli, Agency evidenziato (conversione primaria: agenzie e consulenti) */}
+  <section id="plans" aria-labelledby="plans-heading" class="scroll-mt-20 border-t border-rail bg-paper">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="plans-heading" class="sr-only">Plans</h2>
-
-      <p class="mb-6 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
-        Founding price for early members, locked for life while your subscription stays active.
+      <p class="eyebrow">founding price, locked while your subscription stays active</p>
+      <h2 id="plans-heading" class={`${sectionHeading} mt-2`}>Plans</h2>
+      <p class="mt-2 max-w-2xl text-sm leading-relaxed text-ink-soft">
+        The audit is free and needs no account. Pro is {planPrice('pro')}/month and Agency is {planPrice('agency')}/month at the founding price.
       </p>
 
-      {/* Self-serve row */}
-      <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-        {selfServePlans.map((plan) => (
-          <div class={`flex flex-col rounded-[4px] border ${plan.recommended ? 'border-pass/50 bg-pass-wash/60' : 'border-rail bg-white'}`}>
-            <div class={`flex items-center justify-between border-b px-5 py-2.5 ${plan.recommended ? 'border-pass/30' : 'border-rail'}`}>
-              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{plan.cadence}</span>
-              {plan.recommended && (
-                <span class="rounded-[2px] bg-pass-deep px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-white">
-                  Recommended
-                </span>
-              )}
+      <div class="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
+        {plans.map((plan) => (
+          <div
+            class="panel flex flex-col overflow-hidden"
+            style={plan.highlight ? 'box-shadow: 0 0 0 1.5px #0F766E' : undefined}
+          >
+            <div class={`flex items-center border-b px-5 py-3 ${plan.highlight ? 'border-pass-deep/30 bg-pass-wash' : 'border-rail'}`}>
+              <span class="eyebrow whitespace-nowrap">{plan.cadence}</span>
             </div>
 
-            <div class="flex flex-1 flex-col p-5">
-              <div class="mb-3 flex items-center justify-between">
-                <span class="text-sm font-semibold text-ink">{plan.name}</span>
-                <span class={`rounded-[2px] px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] ${plan.statusStyle}`}>
-                  {plan.status}
-                </span>
+            <div class="flex flex-1 flex-col p-6">
+              <div class="flex items-center justify-between gap-3">
+                <h3 class="text-base font-semibold text-ink">{plan.name}</h3>
+                {plan.highlight && (
+                  <span class="whitespace-nowrap rounded-[6px] bg-pass-deep px-2 py-0.5 font-mono text-[11.5px] font-medium text-on-accent">
+                    For client portfolios
+                  </span>
+                )}
               </div>
-              <div class="flex items-baseline gap-1">
-                <span class="font-head text-3xl font-extrabold tracking-[-0.02em] text-ink">{plan.price}</span>
-                {plan.period && <span class="font-mono text-xs text-ink-mute">{plan.period}</span>}
+              <div class="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                <span class="font-mono text-[44px] font-medium leading-none tracking-[-0.04em] tabular-nums text-ink md:text-[48px]">{plan.price}</span>
+                <span class="font-mono text-[13px] text-ink-mute">{plan.period}</span>
+                {plan.id !== 'free' && (
+                  <span class="ml-auto rounded-[6px] border border-rail px-2 py-0.5 font-mono text-[11.5px] text-ink-soft">cancel anytime</span>
+                )}
               </div>
-              <p class="mt-3 text-sm leading-relaxed text-ink-soft">{plan.description}</p>
+              <p class="mt-2 font-mono text-[12px] text-ink-mute">{plan.terms}</p>
+              <p class="mt-4 text-sm leading-relaxed text-ink-soft">{plan.description}</p>
 
-              <ul class="mb-6 mt-4 flex-1 space-y-2">
+              <ul class="mb-6 mt-5 flex-1 space-y-2.5 border-t border-rail pt-5">
                 {plan.features.map((f) => (
-                  <li class="flex items-start gap-2 text-sm text-ink-soft">
+                  <li class="flex items-start gap-2.5 text-sm text-ink-soft">
                     <svg aria-hidden="true" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-pass-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
+                      <polyline points="20 6 9 17 4 12" />
                     </svg>
                     {f}
                   </li>
@@ -431,7 +393,7 @@ const heroCadenceRows = [
                 data-plan-period={plan.period}
                 data-plan-currency="USD"
                 data-cta-location="pricing_page"
-                class={`block rounded-[4px] px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] transition-colors ${plan.ctaStyle}`}
+                class={`block rounded-[9px] px-4 py-3 text-center text-[14px] font-semibold transition-colors ${plan.ctaStyle}`}
               >
                 {plan.cta}
               </a>
@@ -440,261 +402,255 @@ const heroCadenceRows = [
         ))}
       </div>
 
-      {/* Scale row */}
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {scalePlans.map((plan) => (
-          <div class="flex flex-col rounded-[4px] border border-rail bg-white">
-            <div class="flex items-center justify-between border-b border-rail px-5 py-2.5">
-              <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">{plan.cadence}</span>
-            </div>
-            <div class="flex flex-1 flex-col p-5">
-              <div class="mb-3 flex items-center justify-between">
-                <span class="text-sm font-semibold text-ink">{plan.name}</span>
-                <span class={`rounded-[2px] px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] ${plan.statusStyle}`}>
-                  {plan.status}
-                </span>
-              </div>
-              <div class="flex items-baseline gap-1">
-                <span class="font-head text-3xl font-extrabold tracking-[-0.02em] text-ink">{plan.price}</span>
-                {plan.period && <span class="font-mono text-xs text-ink-mute">{plan.period}</span>}
-              </div>
-              <p class="mt-3 text-sm leading-relaxed text-ink-soft">{plan.description}</p>
+      <p class="mt-5 text-sm text-ink-mute">
+        Want to try Agency first? A 14-day trial is available on request at <a href="mailto:info@geoready.dev?subject=GeoReady%20Agency%20trial" class={linkClass}>info@geoready.dev</a>.
+      </p>
 
-              <ul class="mb-6 mt-4 flex-1 space-y-2">
-                {plan.features.map((f) => (
-                  <li class="flex items-start gap-2 text-sm text-ink-soft">
-                    <svg aria-hidden="true" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-pass-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              {/* Enterprise è lead-gen ("Contact us" via mailto), non selezione piano self-serve:
-                  usa data-cta → geo_cta_clicked, non data-plan-id → geo_plan_selected.
-                  Il nome evento resta "pricing_enterprise_contact_sales" per continuità storica GA4. */}
-              {plan.id === 'enterprise' ? (
-                <a
-                  href={plan.ctaHref}
-                  data-cta="pricing_enterprise_contact_sales"
-                  class="block rounded-[4px] border border-rail bg-white px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
-                >
-                  {plan.cta}
-                </a>
-              ) : (
-                <a
-                  href={plan.ctaHref}
-                  data-plan-id={plan.id}
-                  data-plan-name={plan.name}
-                  data-plan-price={plan.price}
-                  data-plan-period={plan.period}
-                  data-plan-currency="USD"
-                  data-cta-location="pricing_page"
-                  class="block rounded-[4px] border border-rail bg-white px-4 py-2.5 text-center font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
-                >
-                  {plan.cta}
-                </a>
-              )}
-            </div>
-          </div>
-        ))}
+      {/* Custom: una riga, non una quarta card. Niente promesse che il codice non mantiene. */}
+      <div class="panel mt-8 flex flex-col gap-5 p-6 md:flex-row md:items-center md:justify-between">
+        <div class="max-w-3xl">
+          <p class="eyebrow">custom</p>
+          <p class="mt-2 text-base leading-relaxed text-ink">
+            More than 50 domains, invoicing, or a security questionnaire? Email info@geoready.dev. You get a reply from the person who builds GeoReady.
+          </p>
+        </div>
+        {/* Lead-gen via mailto, non selezione piano: data-cta → geo_cta_clicked.
+            Il nome evento resta "pricing_enterprise_contact_sales" per continuità storica GA4. */}
+        <a
+          href="mailto:info@geoready.dev?subject=GeoReady%20Enterprise"
+          data-cta="pricing_enterprise_contact_sales"
+          class="inline-flex shrink-0 items-center justify-center rounded-[9px] border border-rail bg-raised px-5 py-3 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+        >
+          Email info@geoready.dev
+        </a>
       </div>
     </div>
   </section>
 
-  {/* After checkout */}
-  <section class="border-t border-rail bg-white" aria-labelledby="after-checkout-heading">
-    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.5fr)]">
+  {/* Cosa è automatico e cosa no: unica banda scura della pagina, per ritmo */}
+  <section class="band-dark" aria-labelledby="automation-heading">
+    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-20">
+      <div class="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16" data-reveal>
         <div>
-          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h2 id="after-checkout-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
-              What happens after you pick a paid plan
-            </h2>
-            <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">checkout: Stripe</p>
-          </div>
-          <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">
-            Self-serve plans activate through Stripe. The app then guides you to claim the report
-            or add the first monitored domain, with no sales contact step.
+          <p class="eyebrow">what runs on its own</p>
+          <h2 id="automation-heading" class={`mt-3 ${sectionHeading}`}>
+            What's automated, what isn't
+          </h2>
+          <p class="mt-4 text-sm leading-relaxed text-ink-soft md:text-base">
+            Site audits and score monitoring are automatic: they run on our servers, weekly on Pro and
+            daily on Agency. AI answer checks query Perplexity through its API. For ChatGPT and Google AI
+            answers, you paste the answer you see and GeoReady scores it the same way (brand mention,
+            cited domains). We don't scrape those interfaces.
           </p>
-
-          <ol class="mt-6 grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2">
-            {afterCheckoutSteps.map((item) => (
-              <li class="bg-paper p-5">
-                <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-pass-deep">{item.step}</p>
-                <h3 class="mt-2 text-sm font-semibold text-ink">{item.title}</h3>
-                <p class="mt-1 text-sm leading-relaxed text-ink-soft">{item.desc}</p>
-              </li>
-            ))}
-          </ol>
+          <p class="mt-4 text-sm leading-relaxed text-ink">
+            The score measures technical readiness; it does not guarantee citations.
+          </p>
         </div>
 
-        <aside class="rounded-[4px] border border-rail bg-paper" aria-label="Buyer checks">
-          <div class="border-b border-rail px-5 py-2.5">
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">buyer checks</span>
+        <div class="panel overflow-hidden">
+          <div class="flex items-center justify-between border-b border-rail px-5 py-3">
+            <span class="eyebrow">job</span>
+            <span class="eyebrow">mode</span>
           </div>
           <ul class="divide-y divide-rail">
-            {trustAssurances.map(([label, text]) => (
-              <li class="px-5 py-4">
-                <p class="text-sm font-semibold text-ink">{label}</p>
-                <p class="mt-1 text-sm leading-relaxed text-ink-soft">{text}</p>
+            {automationRows.map((row) => (
+              <li class="flex items-start justify-between gap-4 px-5 py-4">
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-ink">{row.item}</p>
+                  <p class="mt-1 text-[13px] leading-relaxed text-ink-soft">{row.how}</p>
+                </div>
+                <span class={`shrink-0 rounded-[6px] px-2 py-0.5 font-mono text-[11.5px] ${row.mode === 'automated' ? 'bg-pass-wash text-pass-deep' : 'border border-rail text-ink-soft'}`}>
+                  {row.mode}
+                </span>
               </li>
             ))}
           </ul>
-          <div class="border-t border-rail px-5 py-4">
-            <a
-              href="/report/demo/"
-              data-cta="pricing_after_checkout_demo_report"
-              class="inline-flex rounded-[4px] border border-rail bg-white px-4 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
-            >
-              View a demo report
-            </a>
-          </div>
-        </aside>
+        </div>
       </div>
     </div>
   </section>
 
-  {/* Plan chooser */}
-  <section class="border-t border-rail bg-paper" aria-labelledby="plan-chooser-heading">
-    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
+  {/* Credibilità: solo segnali verificabili nel codice (open source, ricerca, copertura) */}
+  <section aria-label="What the audit is built on" class="border-b border-rail bg-raised">
+    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <ul class="grid gap-px overflow-hidden rounded-[14px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-4" data-reveal="stagger">
+        {credibility.map((c) => (
+          <li class="bg-raised p-5">
+            <p class="flex items-baseline gap-2">
+              <span class="font-mono text-[28px] font-medium leading-none tracking-[-0.03em] tabular-nums text-ink">{c.value}</span>
+              <span class="text-sm font-semibold text-ink">{c.label}</span>
+            </p>
+            <p class="mt-3 text-sm leading-relaxed text-ink-soft">{c.text}</p>
+            <p class="eyebrow mt-3">{c.source}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* Scelta del piano per lavoro da fare */}
+  <section class="bg-paper" aria-labelledby="plan-chooser-heading">
+    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16" data-reveal>
       <div class="max-w-3xl">
-        <h2 id="plan-chooser-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
-          Which GeoReady plan should you choose?
-        </h2>
+        <h2 id="plan-chooser-heading" class={sectionHeading}>Which GeoReady plan should you choose?</h2>
         <p class="mt-3 text-sm leading-relaxed text-ink-soft">
           Pick the plan by the job you need done after the audit, not by feature count. A one-time
-          diagnosis stays free. Ongoing monitoring starts with Pro. AI citation
-          tracking and client workflows start with Agency.
+          diagnosis stays free. Ongoing monitoring starts with Pro. AI citation tracking and client
+          workflows start with Agency.
         </p>
       </div>
 
-      <div class="mt-6 overflow-x-auto">
-        <table class="min-w-full border-collapse overflow-hidden rounded-[4px] border border-rail bg-white text-left text-sm">
-          <thead class="bg-paper">
-            <tr>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">If your next job is...</th>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Choose</th>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Why</th>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {planChoiceRows.map((row) => (
+      <div class="panel mt-6 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[760px] border-collapse text-left text-sm">
+            <thead class="bg-surface">
               <tr>
-                <th scope="row" class="border-b border-rail px-4 py-3 text-sm font-semibold text-ink">
-                  {row.intent}
-                </th>
-                <td class="border-b border-rail px-4 py-3 font-mono text-xs text-pass-deep">
-                  {row.plan}
-                </td>
-                <td class="border-b border-rail px-4 py-3 text-ink-soft">
-                  {row.reason}
-                </td>
-                <td class="border-b border-rail px-4 py-3">
-                  {row.planId ? (
-                    <a
-                      href={row.href}
-                      data-plan-id={row.planId}
-                      data-plan-name={row.planName}
-                      data-plan-price={row.price}
-                      data-plan-period={row.period}
-                      data-plan-currency="USD"
-                      data-cta-location={row.tracking}
-                      class="inline-flex whitespace-nowrap rounded-[4px] border border-rail bg-white px-3 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-pass-wash"
-                    >
-                      {row.cta}
-                    </a>
-                  ) : (
-                    <a
-                      href={row.href}
-                      data-cta={row.tracking}
-                      class="inline-flex whitespace-nowrap rounded-[4px] border border-rail bg-white px-3 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-pass-wash"
-                    >
-                      {row.cta}
-                    </a>
-                  )}
-                </td>
+                <th scope="col" class={thClass}>If your next job is...</th>
+                <th scope="col" class={thClass}>Choose</th>
+                <th scope="col" class={thClass}>Why</th>
+                <th scope="col" class={thClass}>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody class="divide-y divide-rail">
+              {planChoiceRows.map((row) => (
+                <tr>
+                  <th scope="row" class="px-4 py-3.5 align-top text-sm font-semibold text-ink">{row.intent}</th>
+                  <td class="px-4 py-3.5 align-top font-mono text-[12px] text-pass-deep">{row.plan}</td>
+                  <td class="px-4 py-3.5 align-top text-ink-soft">{row.reason}</td>
+                  <td class="px-4 py-3.5 align-top">
+                    {row.planId ? (
+                      <a
+                        href={row.href}
+                        data-plan-id={row.planId}
+                        data-plan-name={row.planName}
+                        data-plan-price={row.price}
+                        data-plan-period={row.period}
+                        data-plan-currency="USD"
+                        data-cta-location={row.tracking}
+                        class="inline-flex whitespace-nowrap rounded-[9px] border border-rail bg-raised px-3 py-2 text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+                      >
+                        {row.cta}
+                      </a>
+                    ) : (
+                      <a
+                        href={row.href}
+                        data-cta={row.tracking}
+                        class="inline-flex whitespace-nowrap rounded-[9px] border border-rail bg-raised px-3 py-2 text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+                      >
+                        {row.cta}
+                      </a>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </section>
 
-  {/* Free vs Pro */}
-  <section class="border-t border-rail bg-white" aria-labelledby="free-vs-pro-heading">
-    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="free-vs-pro-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
-        Free vs Pro: what changes
-      </h2>
-      <p class="mb-8 mt-2 max-w-2xl text-sm text-ink-soft">
-        The free audit is a single-URL, point-in-time snapshot. Pro turns it into an ongoing signal.
+  {/* Tabella di confronto: colonna Agency evidenziata come la card */}
+  <section class="border-t border-rail bg-paper" aria-labelledby="comparison-heading">
+    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16" data-reveal>
+      <p class="eyebrow">source: plan entitlements · billed via Stripe</p>
+      <h2 id="comparison-heading" class={`${sectionHeading} mt-2`}>Feature comparison</h2>
+      <p class="mt-2 text-sm text-ink-soft">
+        Items marked "roadmap" are planned and not yet available. Everything else is live today.
       </p>
-      <div class="grid gap-6 md:grid-cols-2">
-        <div class="rounded-[4px] border border-rail bg-paper">
-          <div class="flex items-center justify-between border-b border-rail px-5 py-2.5">
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Free</span>
-            <span class="rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-mute">available now</span>
-          </div>
-          <ul class="space-y-3 p-5 text-sm text-ink-soft">
-            {[
-              'Full GEO score (0-100) for any public URL',
-              'All 9 category breakdowns, no email required',
-              'Actionable recommendations',
-              'Up to 5 audits per day, no account needed',
-              'CLI unlimited via pip (MIT license, forever)',
-            ].map((f) => (
-              <li class="flex items-start gap-2.5">
-                <svg aria-hidden="true" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-pass-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                {f}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div class="rounded-[4px] border border-pass/50 bg-pass-wash/60">
-          <div class="flex items-center justify-between border-b border-pass/30 px-5 py-2.5">
-            <span class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Pro</span>
-            <span class="rounded-[2px] bg-pass-wash px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-pass-deep">founding price</span>
-          </div>
-          {/* Diff notation: '+' marks what Pro adds on top of the Free baseline. */}
-          <ul class="space-y-3 p-5 text-sm text-ink-soft">
-            {[
-              'Weekly monitoring: score tracked automatically',
-              'Score history: 30 audits, see trends over time',
-              'Regression alerts: an email when your score drops by 5 points or more',
-              'PDF export + API access (Bearer token)',
-            ].map((f) => (
-              <li class="flex items-start gap-2.5">
-                <span aria-hidden="true" class="mt-0.5 shrink-0 font-mono text-[13px] font-semibold leading-none text-pass-deep">+</span>
-                {f}
-              </li>
-            ))}
-          </ul>
+      <div class="panel mt-6 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[560px] border-collapse text-sm">
+            <thead class="bg-surface">
+              <tr>
+                <th scope="col" class={`w-[40%] ${thClass}`}>Feature</th>
+                <th scope="col" class="border-b border-rail px-3 py-3 text-center font-mono text-[12px] font-medium text-ink-mute">Free</th>
+                <th scope="col" class="border-b border-rail px-3 py-3 text-center font-mono text-[12px] font-medium text-ink-mute">Pro</th>
+                <th scope="col" class="border-b border-rail bg-pass-wash px-3 py-3 text-center font-mono text-[12px] font-semibold text-pass-deep">Agency</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-rail">
+              {comparisonRows.map(([feature, ...cells]) => (
+                <tr>
+                  <th scope="row" class="px-4 py-2.5 text-left font-normal text-ink-soft">{feature}</th>
+                  {cells.map((value, i) => (
+                    <td class={`px-3 py-2.5 text-center font-mono text-xs tabular-nums ${i === 2 ? 'bg-pass-wash/50' : ''} ${value === '—' ? 'text-ink-mute' : 'text-ink-soft'}`}>
+                      {value === '✓' ? (
+                        <svg aria-label="Included" role="img" class="inline h-3.5 w-3.5 text-pass-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      ) : value === '—' ? (
+                        <><span aria-hidden="true">—</span><span class="sr-only">Not included</span></>
+                      ) : (
+                        value
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   </section>
 
-  {/* Product screenshots — real dashboard, real data (captured 2026-07-15) */}
+  {/* CLI (free) vs Pro: risponde a "perché pagare se la CLI è gratis" con sole righe verificate */}
+  <section class="border-t border-rail bg-raised" aria-labelledby="cli-vs-pro-heading">
+    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16" data-reveal>
+      <h2 id="cli-vs-pro-heading" class={`max-w-3xl ${sectionHeading}`}>
+        The CLI already has geo track and geo monitor. Why pay for Pro?
+      </h2>
+      <p class="mt-3 max-w-3xl text-sm leading-relaxed text-ink-soft">
+        You may not need to. <a href="/docs/geo-track/" class={linkClass}>geo track</a> and <a href="/docs/geo-monitor/" class={linkClass}>geo monitor</a> use the
+        same open-source audit engine, and they are enough if you are willing to run them yourself: your own cron or CI job, your own storage, and you read the output.
+        Neither command stays running or sends anything on its own.
+      </p>
+
+      <div class="panel mt-6 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[640px] border-collapse text-left text-sm">
+            <thead class="bg-surface">
+              <tr>
+                <th scope="col" class={thClass}><span class="sr-only">Aspect</span></th>
+                <th scope="col" class={thClass}>CLI (free, MIT)</th>
+                <th scope="col" class="border-b border-rail bg-pass-wash px-4 py-3 text-left font-mono text-[12px] font-semibold text-pass-deep">Pro</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-rail">
+              {cliVsProRows.map(([label, cli, pro]) => (
+                <tr>
+                  <th scope="row" class="px-4 py-3.5 align-top text-sm font-semibold text-ink">{label}</th>
+                  <td class="px-4 py-3.5 align-top text-ink-soft">{cli}</td>
+                  <td class="bg-pass-wash/50 px-4 py-3.5 align-top text-ink-soft">{pro}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="mt-6 max-w-3xl text-sm leading-relaxed text-ink-soft">
+        Pro is for people who would rather not operate that setup. If you already run the CLI in CI and the exit code is enough for you, you may not need Pro.
+        Pro adds the scheduling, the stored history and the alerts around the audit. It is not a different audit.
+      </p>
+      <p class="eyebrow mt-3">source: geo-optimizer-skill CLI docs and code · Pro column as listed in the plans above</p>
+    </div>
+  </section>
+
+  {/* Screenshot prodotto: dashboard reale, dati reali (catturati il 2026-07-15) */}
   <section class="border-t border-rail bg-paper" aria-labelledby="product-shots-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
       <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 id="product-shots-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
-          This is what you get
-        </h2>
-        <p class="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">captured: 2026-07-15 · app.geoready.dev</p>
+        <h2 id="product-shots-heading" class={sectionHeading}>This is what you get</h2>
+        <p class="eyebrow">captured: 2026-07-15 · app.geoready.dev</p>
       </div>
-      <p class="mb-8 mt-2 max-w-2xl text-sm text-ink-soft">
+      <p class="mt-2 max-w-2xl text-sm text-ink-soft">
         Real screenshots from the live platform: the same dashboard, monitoring and alerts you get on
         every paid plan. No mockups.
       </p>
-      <div class="grid gap-6">
-        <figure class="overflow-hidden rounded-[4px] border border-rail bg-white">
+      <div class="mt-8 grid gap-6" data-reveal="stagger">
+        <figure class="panel overflow-hidden">
           <img
             src="/assets/screenshots/app-dashboard.webp"
             alt="GeoReady dashboard: GEO score 88 with score trend across 30 saved audits, signals passing 16 of 18, citations and coverage tiles"
@@ -709,7 +665,7 @@ const heroCadenceRows = [
           </figcaption>
         </figure>
         <div class="grid gap-6 md:grid-cols-2">
-          <figure class="overflow-hidden rounded-[4px] border border-rail bg-white">
+          <figure class="panel overflow-hidden">
             <img
               src="/assets/screenshots/app-domains-monitoring.webp"
               alt="GeoReady domains page: tracked domain with automatic monitoring enabled, last audit date and score history actions"
@@ -723,7 +679,7 @@ const heroCadenceRows = [
               Domain monitoring: audits re-run automatically, score history per domain.
             </figcaption>
           </figure>
-          <figure class="overflow-hidden rounded-[4px] border border-rail bg-white">
+          <figure class="panel overflow-hidden">
             <img
               src="/assets/screenshots/app-regression-alerts.webp"
               alt="GeoReady regression alerts page: monitoring active, alerts trigger on score drops of 5 or more points, llms.txt changes and AI bot blocking"
@@ -742,209 +698,135 @@ const heroCadenceRows = [
     </div>
   </section>
 
-  {/* Why not a traditional SEO tool? */}
-  <section class="border-t border-rail bg-white" aria-labelledby="geo-vs-seo-heading">
-    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="geo-vs-seo-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
-        Why not a traditional SEO tool?
-      </h2>
-      <p class="mb-8 mt-2 max-w-2xl text-sm text-ink-soft">
-        SEO tools measure ranking signals. GeoReady measures citation signals, which is a different question.
-      </p>
-      <div class="grid gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-3">
-        <div class="bg-paper p-5">
-          <p class="mb-2 text-sm font-semibold text-ink">Ranking vs. being cited</p>
-          <p class="text-sm leading-relaxed text-ink-soft">
-            Traditional SEO predicts whether Google ranks your page. GEO predicts whether ChatGPT,
-            Perplexity, or Claude cites your content in an answer. These are correlated but not the same.
+  {/* Dopo il checkout: passi numerati + controlli per chi compra */}
+  <section class="border-t border-rail bg-raised" aria-labelledby="after-checkout-heading">
+    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16" data-reveal>
+      <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.5fr)]">
+        <div>
+          <p class="eyebrow">checkout: Stripe</p>
+          <h2 id="after-checkout-heading" class={`${sectionHeading} mt-2`}>What happens after you pick a paid plan</h2>
+          <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">
+            Self-serve plans activate through Stripe and there is no sales contact step. The app then
+            guides you to claim the report or add the first monitored domain.
           </p>
-        </div>
-        <div class="bg-paper p-5">
-          <p class="mb-2 text-sm font-semibold text-ink">Different signal set</p>
-          <p class="text-sm leading-relaxed text-ink-soft">
-            GEO audits llms.txt, ai.txt, JSON-LD depth, factual density, brand entity coherence,
-            and AI-crawler permissions. SEO tools don't surface these signals.
-          </p>
-        </div>
-        <div class="bg-paper p-5">
-          <p class="mb-2 text-sm font-semibold text-ink">Published sources</p>
-          <p class="text-sm leading-relaxed text-ink-soft">
-            9 of the 47 citability checks are taken from the methods tested in the <a href="/research/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">Princeton KDD 2024 GEO paper</a>.
-            The weights are a considered starting point, published so you can disagree with a specific number.
-          </p>
-        </div>
-        <div class="bg-paper p-5">
-          <p class="mb-2 text-sm font-semibold text-ink">Open source and auditable</p>
-          <p class="text-sm leading-relaxed text-ink-soft">
-            Every scoring rule is readable in the <a href="https://github.com/Auriti-Labs/geo-optimizer-skill" target="_blank" rel="noopener" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">public repository</a>.
-            No black box: you can audit the auditor.
-          </p>
-        </div>
-        <div class="bg-paper p-5">
-          <p class="mb-2 text-sm font-semibold text-ink">Forward-looking signals</p>
-          <p class="text-sm leading-relaxed text-ink-soft">
-            llms.txt and ai.txt are emerging standards. GEO tracks adoption curves and updates scoring
-            weights as AI search changes.
-          </p>
-        </div>
-        <div class="bg-paper p-5">
-          <p class="mb-2 text-sm font-semibold text-ink">Works alongside SEO tools</p>
-          <p class="text-sm leading-relaxed text-ink-soft">
-            Use GeoReady with your existing SEO tooling. A strong GEO score makes a well-ranked
-            page more likely to be cited by AI assistants.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  {/* Feature comparison table */}
-  <section class="border-t border-rail bg-paper" aria-labelledby="comparison-heading">
-    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="comparison-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
-        Feature comparison
-      </h2>
-      <p class="mb-8 mt-2 text-sm text-ink-soft">
-        Items marked "roadmap" are planned and not yet available. Everything else is live today.
-      </p>
-      <div class="overflow-x-auto">
-        <table class="w-full min-w-[480px] border-collapse overflow-hidden rounded-[4px] border border-rail bg-white text-sm">
-          <thead class="bg-paper">
-            <tr>
-              <th class="w-[40%] border-b border-rail px-4 py-3 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Feature</th>
-              <th class="border-b border-rail px-3 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Free</th>
-              <th class="border-b border-rail bg-pass-wash/60 px-3 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep">Pro</th>
-              <th class="border-b border-rail px-3 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Agency</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-rail">
-            {comparisonRows.map(([feature, ...cells]) => (
-              <tr class="transition-colors hover:bg-pass-wash/30">
-                <td class="px-4 py-2.5 text-ink-soft">{feature}</td>
-                {cells.map((value, i) => (
-                  <td class={`px-3 py-2.5 text-center font-mono text-xs tabular-nums ${i === 1 ? 'bg-pass-wash/40' : ''} ${value === '—' ? 'text-rail' : 'text-ink-soft'}`}>
-                    {value === '✓' ? (
-                      <svg aria-label="Included" role="img" class="inline h-3.5 w-3.5 text-pass-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"/>
-                      </svg>
-                    ) : (
-                      value
-                    )}
-                  </td>
-                ))}
-              </tr>
+          <ol class="panel mt-6 divide-y divide-rail overflow-hidden">
+            {afterCheckoutSteps.map((item) => (
+              <li class="grid grid-cols-[40px_minmax(0,1fr)] gap-3 px-5 py-4">
+                <span class="font-mono text-[13px] tabular-nums text-pass-deep">{item.step}</span>
+                <div>
+                  <h3 class="text-sm font-semibold text-ink">{item.title}</h3>
+                  <p class="mt-1 text-sm leading-relaxed text-ink-soft">{item.desc}</p>
+                </div>
+              </li>
             ))}
-          </tbody>
-        </table>
-      </div>
-      <p class="mt-3 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
-        source: plan entitlements · billed via Stripe
-      </p>
-    </div>
-  </section>
+          </ol>
+        </div>
 
-  {/* CLI (free) vs Pro — answers the "why pay if the CLI is free" question with verified rows only */}
-  <section class="border-t border-rail bg-white" aria-labelledby="cli-vs-pro-heading">
-    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="cli-vs-pro-heading" class="font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
-        The CLI already has geo track and geo monitor. Why pay for Pro?
-      </h2>
-      <p class="mt-3 max-w-3xl text-sm leading-relaxed text-ink-soft">
-        You may not need to. <a href="/docs/geo-track/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">geo track</a> and
-        <a href="/docs/geo-monitor/" class="text-pass-deep underline decoration-rail underline-offset-4 hover:decoration-pass-deep">geo monitor</a> use the
-        same open-source audit engine, and they are enough if you are willing to run them yourself: your own cron or CI job, your own storage, and you read the output.
-        Neither command stays running or sends anything on its own.
-      </p>
-
-      <div class="mt-6 overflow-x-auto">
-        <table class="min-w-full border-collapse overflow-hidden rounded-[4px] border border-rail bg-white text-left text-sm">
-          <thead class="bg-paper">
-            <tr>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute"></th>
-              <th scope="col" class="border-b border-rail px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">CLI (free, MIT)</th>
-              <th scope="col" class="border-b border-rail bg-pass-wash/60 px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-pass-deep">Pro</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cliVsProRows.map(([label, cli, pro]) => (
-              <tr>
-                <th scope="row" class="border-b border-rail px-4 py-3 align-top text-sm font-semibold text-ink">{label}</th>
-                <td class="border-b border-rail px-4 py-3 align-top text-ink-soft">{cli}</td>
-                <td class="border-b border-rail bg-pass-wash/40 px-4 py-3 align-top text-ink-soft">{pro}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <p class="mt-6 max-w-3xl text-sm leading-relaxed text-ink-soft">
-        Pro is for people who would rather not operate that setup. If you already run the CLI in CI and the exit code is enough for you, you may not need Pro.
-        Pro adds the scheduling, the stored history and the alerts around the audit. It is not a different audit.
-      </p>
-      <p class="mt-3 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">
-        source: geo-optimizer-skill CLI docs and code · Pro column as listed in the plans above
-      </p>
-    </div>
-  </section>
-
-  {/* FAQ */}
-  <section class="border-t border-rail bg-white" aria-labelledby="faq-heading">
-    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16">
-      <h2 id="faq-heading" class="mb-8 font-head text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
-        Frequently asked questions
-      </h2>
-      <div class="grid gap-x-12 gap-y-8 md:grid-cols-2">
-        {faqs.map((faq) => (
-          <div>
-            <p class="mb-2 text-sm font-semibold text-ink">{faq.q}</p>
-            <p class="text-sm leading-relaxed text-ink-soft">{faq.a}</p>
+        <aside class="panel self-start overflow-hidden" aria-label="Buyer checks">
+          <div class="border-b border-rail px-5 py-3">
+            <span class="eyebrow">buyer checks</span>
           </div>
+          <ul class="divide-y divide-rail">
+            {trustAssurances.map(([label, text]) => (
+              <li class="px-5 py-4">
+                <p class="text-sm font-semibold text-ink">{label}</p>
+                <p class="mt-1 text-sm leading-relaxed text-ink-soft">{text}</p>
+              </li>
+            ))}
+          </ul>
+          <div class="border-t border-rail px-5 py-4">
+            <a
+              href="/report/demo/"
+              data-cta="pricing_after_checkout_demo_report"
+              class="inline-flex rounded-[9px] border border-rail bg-raised px-4 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+            >
+              View a demo report
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  {/* FAQ: details/summary nativi; la stessa array genera il FAQPage JSON-LD */}
+  <section class="border-t border-rail bg-paper" aria-labelledby="faq-heading">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 md:py-16 lg:grid-cols-[minmax(0,0.6fr)_minmax(0,1.4fr)] lg:gap-16">
+      <div>
+        <h2 id="faq-heading" class={sectionHeading}>Frequently asked questions</h2>
+        <p class="mt-3 text-sm leading-relaxed text-ink-soft">
+          Billing, data and the free audit are covered here. Anything else: <a href="mailto:info@geoready.dev" class={linkClass}>info@geoready.dev</a>.
+        </p>
+      </div>
+      <div class="panel divide-y divide-rail overflow-hidden">
+        {faqs.map((faq) => (
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 focus-visible:outline-offset-[-2px] text-sm font-semibold text-ink transition-colors hover:bg-pass-wash/40 [&::-webkit-details-marker]:hidden">
+              <h3 class="text-sm font-semibold">{faq.q}</h3>
+              <span aria-hidden="true" class="mt-px shrink-0 font-mono text-[14px] leading-none text-ink-mute transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <p class="px-5 pb-5 text-sm leading-relaxed text-ink-soft">{faq.a}</p>
+          </details>
         ))}
       </div>
     </div>
   </section>
 
-  {/* Footer CTA — the page's verdict band */}
-  <section class="border-t border-rail bg-pass-deep">
-    <div class="mx-auto max-w-7xl px-4 py-14 text-center sm:px-6 md:py-16">
-      <div class="mx-auto flex max-w-3xl flex-wrap items-baseline justify-center gap-x-6 gap-y-2">
-        <h2 class="font-head text-2xl font-extrabold tracking-[-0.02em] text-white md:text-3xl">
-          Start with a free audit. Upgrade when you are ready.
-        </h2>
+  {/* CTA finale: allineata a sinistra, Agency come conversione primaria */}
+  <section class="border-t border-rail bg-paper">
+    <div class="mx-auto max-w-7xl px-4 pb-14 sm:px-6 md:pb-16">
+      <div class="panel flex flex-col gap-6 p-6 md:p-8 lg:flex-row lg:items-end lg:justify-between" data-reveal>
+        <div class="max-w-2xl">
+          <h2 class={sectionHeading}>
+            Start with a <em>free</em> audit. Upgrade when you are ready.
+          </h2>
+          <p class="mt-3 text-sm leading-relaxed text-ink-soft">
+            No account required for the audit. Paid plans are live now at a founding price, locked for life while your subscription stays active. Cancel anytime.
+          </p>
+          <p class="eyebrow mt-4">
+            <FoundingSeatsStatus client:load />
+          </p>
+        </div>
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <a
+            href="/"
+            data-cta="pricing_footer_free_audit"
+            class="inline-flex items-center justify-center rounded-[9px] border border-rail bg-raised px-5 py-3 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+          >
+            Start free audit
+          </a>
+          <a
+            href="https://app.geoready.dev/signup?plan=pro"
+            data-plan-id="pro"
+            data-plan-name="Pro"
+            data-plan-price="$19"
+            data-plan-period="/month"
+            data-plan-currency="USD"
+            data-cta-location="pricing_footer"
+            class="inline-flex items-center justify-center rounded-[9px] bg-ink px-5 py-3 text-[14px] font-semibold text-paper transition-colors hover:bg-ink-soft"
+          >
+            Start with Pro
+          </a>
+          <a
+            href="https://app.geoready.dev/signup?plan=agency"
+            data-plan-id="agency"
+            data-plan-name="Agency"
+            data-plan-price="$89"
+            data-plan-period="/month"
+            data-plan-currency="USD"
+            data-cta-location="pricing_footer"
+            class="inline-flex items-center justify-center rounded-[9px] bg-pass-deep px-5 py-3 text-[14px] font-semibold text-on-accent transition-colors hover:bg-pass"
+          >
+            Start with Agency
+          </a>
+        </div>
       </div>
-      <p class="mx-auto mb-6 mt-3 max-w-md text-sm leading-relaxed text-pass-wash">
-        No account required for the audit. Paid plans are live now at a founding price, locked for life while your subscription stays active. Cancel anytime.
-      </p>
-      <div class="flex flex-col justify-center gap-3 sm:flex-row">
-        <a
-          href="/"
-          data-cta="pricing_footer_free_audit"
-          class="inline-block rounded-[4px] border border-white/40 px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:border-white hover:bg-white/10"
-        >
-          Start free audit
-        </a>
-        <a
-          href="https://app.geoready.dev/signup?plan=pro"
-          data-plan-id="pro"
-          data-plan-name="Pro"
-          data-plan-price="$19"
-          data-plan-period="/month"
-          data-plan-currency="USD"
-          data-cta-location="pricing_footer"
-          class="inline-block rounded-[4px] bg-white px-6 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-pass-deep transition-colors hover:bg-pass-wash"
-        >
-          Start with Pro
-        </a>
-      </div>
-      <p class="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-pass-wash">
-        <FoundingSeatsStatus client:load />
-      </p>
     </div>
   </section>
 
-  {/* Exit micro-survey — 1 domanda, solo evento GA4 (geo_pricing_objection), nessun backend */}
+  {/* Micro-survey d'uscita: 1 domanda, solo evento GA4 (geo_pricing_objection), nessun backend */}
   <section class="bg-paper" aria-label="Pricing feedback">
-    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <div class="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
       <PricingObjectionSurvey client:visible />
     </div>
   </section>
@@ -973,6 +855,7 @@ const heroCadenceRows = [
         "name": "GeoReady Pricing",
         "description": "GeoReady pricing: free audit with no account required, Pro monitoring, Agency multi-site and workspace.",
         "url": "https://geoready.dev/pricing/",
+        "dateModified": "2026-10-29",
         "isPartOf": { "@id": "https://geoready.dev/#website" }
       },
       {
@@ -989,7 +872,7 @@ const heroCadenceRows = [
               "priceCurrency": "USD",
               "description": "Single-URL GEO audit, no account required, full 9-category report.",
               "availability": "https://schema.org/InStock",
-              "url": "https://geoready.dev"
+              "url": "https://geoready.dev/"
             }
           },
           {
@@ -1034,58 +917,11 @@ const heroCadenceRows = [
       },
       {
         "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Is the free audit really free?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. The web audit requires no account, no credit card, and no signup. You get a full GEO score and the complete 9-category breakdown immediately. The CLI is MIT-licensed and free to use without limits." }
-          },
-          {
-            "@type": "Question",
-            "name": "Do I need to register to use the free audit?",
-            "acceptedAnswer": { "@type": "Answer", "text": "No. Just enter a URL and run the audit. No email is required to see your results." }
-          },
-          {
-            "@type": "Question",
-            "name": "What does Pro add that Free does not?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Pro adds continuity rather than a bigger report. The free audit is a one-shot snapshot with all 9 categories. Pro monitors your domain weekly, tracks score history over time, and sends alerts when your GEO score drops. It also includes PDF export and API access." }
-          },
-          {
-            "@type": "Question",
-            "name": "The CLI already has geo track and geo monitor. Why pay for Pro?",
-            "acceptedAnswer": { "@type": "Answer", "text": cliVsProAnswer }
-          },
-          {
-            "@type": "Question",
-            "name": "Are paid plans available right now?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pick a plan, create an account, and pay. Your subscription is active immediately. No sales call, no waitlist. Payments are processed securely by Stripe." }
-          },
-          {
-            "@type": "Question",
-            "name": "What happens after I choose a paid plan?",
-            "acceptedAnswer": { "@type": "Answer", "text": "You complete Stripe checkout, return to the GeoReady app, and the selected plan activates immediately. If you came from a free report, the claim link can attach that report to your account; otherwise you add a domain from the dashboard and monitoring starts from that point." }
-          },
-          {
-            "@type": "Question",
-            "name": "What is the founding price?",
-            "acceptedAnswer": { "@type": "Answer", "text": "The current prices are a founding rate for early members. They are locked for the life of the subscription as long as it stays active. Pro is $19/month founding, then $29/month; Agency is $89/month founding, then $199/month." }
-          },
-          {
-            "@type": "Question",
-            "name": "Will the CLI remain open source?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. The CLI (geo-optimizer-skill on PyPI) is MIT-licensed and will remain free forever. SaaS plans add what the CLI leaves for you to run: the schedule, the stored history and the alerts." }
-          },
-          {
-            "@type": "Question",
-            "name": "Is there a free trial for paid plans?",
-            "acceptedAnswer": { "@type": "Answer", "text": "There is no self-serve trial. The Free plan is the permanent baseline and returns real audit results without commitment. A 14-day Agency trial is available on request: contact us at info@geoready.dev." }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I cancel at any time?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can cancel from your account settings at any time, with no lock-in or penalties." }
-          }
-        ]
+        "mainEntity": faqs.map((faq) => ({
+          "@type": "Question",
+          "name": faq.q,
+          "acceptedAnswer": { "@type": "Answer", "text": faq.a },
+        }))
       }
     ]
   })} />

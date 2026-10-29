@@ -40,10 +40,10 @@ export default function ReportHeader({
   });
 
   return (
-    <div className="overflow-hidden rounded-[4px] border border-rail bg-white">
+    <div className="overflow-hidden rounded-[10px] border border-rail bg-raised">
       <div className="flex items-center justify-between gap-3 border-b border-rail px-5 py-2.5">
-        <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Audit Report</span>
-        <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">v{version}</span>
+        <span className="font-text text-[12.5px] font-semibold text-ink-mute">Audit Report</span>
+        <span className="font-text font-medium text-[12.5px] text-ink-mute">v{version}</span>
       </div>
 
       <div className="flex flex-col gap-5 p-5 md:flex-row md:items-start md:justify-between">
@@ -55,7 +55,7 @@ export default function ReportHeader({
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[11px] text-ink-mute">
             <span>{date}</span>
             <span className="h-1 w-1 rounded-full bg-ink-mute" aria-hidden="true" />
-            <span className={`rounded-[2px] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] ${config.chip}`}>
+            <span className={`rounded-[6px] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] ${config.chip}`}>
               {config.label}
             </span>
             {(criticalCount > 0 || highCount > 0) && (
@@ -77,7 +77,7 @@ export default function ReportHeader({
 
         <div className="flex items-center gap-6 shrink-0">
           <div className="text-center min-w-[72px]">
-            <div className={`font-head text-2xl md:text-3xl font-extrabold tabular-nums ${config.text}`}>
+            <div className={`font-head text-2xl md:text-3xl font-semibold tabular-nums ${config.text}`}>
               {geoScore}
             </div>
             <div className="mt-0.5 font-mono text-[10px] text-ink-mute">/ 100 GEO</div>
@@ -86,7 +86,7 @@ export default function ReportHeader({
           <div className="h-10 w-px bg-rail" aria-hidden="true" />
 
           <div className="text-center min-w-[72px]">
-            <div className="font-head text-2xl md:text-3xl font-extrabold tabular-nums text-ink-soft">
+            <div className="font-head text-2xl md:text-3xl font-semibold tabular-nums text-ink-soft">
               {citabilityScore ?? '—'}
             </div>
             <div className="mt-0.5 font-mono text-[10px] text-ink-mute">/ 100 Citability</div>

@@ -15,7 +15,7 @@ interface TechnicalSignalsProps {
 
 export default function TechnicalSignals({ signals }: TechnicalSignalsProps) {
   return (
-    <div className="divide-y divide-rail overflow-hidden rounded-[4px] border border-rail bg-white">
+    <div className="divide-y divide-rail overflow-hidden rounded-[10px] border border-rail bg-raised">
       {signals.map((signal) => {
         const config = statusConfig[signal.status];
 
@@ -50,7 +50,7 @@ export default function TechnicalSignals({ signals }: TechnicalSignalsProps) {
               <span className="shrink-0 text-xs text-ink-soft sm:ml-auto">{signal.description}</span>
             </div>
 
-            <span className={`shrink-0 rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] ${config.chip}`}>
+            <span className={`shrink-0 rounded-[6px] px-1.5 py-0.5 font-text text-[12px] font-semibold ${config.chip}`}>
               {signal.status}
             </span>
           </div>

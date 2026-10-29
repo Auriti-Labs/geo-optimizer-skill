@@ -72,8 +72,12 @@ def _resolve_consts(astro_source: str) -> dict[str, str]:
 
 
 def _find_shell_tag(astro_source: str) -> str | None:
-    """Ritorna il contenuto degli attributi del tag <Shell ...> di apertura."""
-    match = re.search(r"<Shell\b(.*?)>", astro_source, re.DOTALL)
+    """Ritorna il contenuto degli attributi del tag <Shell ...> di apertura.
+
+    La home v3 non usa Shell (ha header e footer propri): passa gli stessi
+    title/description/canonical direttamente a <Layout>, quindi si accetta anche quello.
+    """
+    match = re.search(r"<(?:Shell|Layout)\b(.*?)>", astro_source, re.DOTALL)
     return match.group(1) if match else None
 
 
@@ -203,7 +207,7 @@ class TestKeyPagesMetadata:
         source = (_PAGES_DIR / filename).read_text(encoding="utf-8")
         canonical = _extract_shell_prop(source, "canonical")
         # Guardia anti-falso-positivo: la prop deve essere effettivamente trovata.
-        assert canonical is not None, f"{filename}: canonical non trovato sul tag <Shell>"
+        assert canonical is not None, f"{filename}: canonical non trovato sul tag <Shell>/<Layout>"
         assert canonical == CANONICAL_HOST + slug, (
             f"{filename}: canonical atteso {CANONICAL_HOST + slug}, trovato {canonical}"
         )
@@ -336,6 +340,10 @@ _TARGET_GUIDES = (
 )
 _GUIDES_HUB = _PAGES_DIR / "guides" / "[...page].astro"
 _HOMEPAGE = _PAGES_DIR / "index.astro"
+_HOME_CHROME = (
+    _FRONTEND / "src" / "components" / "home-v3" / "SiteHeader.astro",
+    _FRONTEND / "src" / "components" / "home-v3" / "SiteFooter.astro",
+)
 _RESEARCH = _PAGES_DIR / "research.astro"
 
 
@@ -368,7 +376,11 @@ class TestGuideInternalLinks:
         )
 
     def test_homepage_linka_hub_guide(self):
-        hrefs = _hrefs(_HOMEPAGE.read_text(encoding="utf-8"))
+        # La home v3 non ha una nav propria: i link globali stanno in SiteHeader e
+        # SiteFooter, che il footer elenca come coppie ['/path/', 'Label'].
+        sources = [p.read_text(encoding="utf-8") for p in (_HOMEPAGE, *_HOME_CHROME)]
+        hrefs = [h for src in sources for h in _hrefs(src)]
+        hrefs += [h for src in sources for h in re.findall(r"""\[\s*['"](/[^'"]*)['"]\s*,""", src)]
         assert "/guides/" in hrefs, "Homepage non linka l'hub /guides/"
 
     def test_research_linka_almeno_una_guida_target(self):
@@ -553,6 +565,6 @@ def test_homepage_hero_defines_the_brand():
     # detect_entity_disambiguation legge solo i primi 3 <p> di <main>: la definizione
     # "GeoReady is a ..." deve restare nell'hero (persa una volta nel redesign console)
     src = (_FRONTEND / "src" / "pages" / "index.astro").read_text(encoding="utf-8")
-    main = src[src.index('id="audit-form"') :]
+    main = src[src.index("<main") :]
     first_ps = re.findall(r"<p\b[^>]*>(.*?)</p>", main, re.S)[:2]
-    assert any(re.search(r"\bGeoReady is a\b", " ".join(p.split())) for p in first_ps)
+    assert any(re.search(r"\bGeoReady is (?:a|an|the)\b", " ".join(p.split())) for p in first_ps)

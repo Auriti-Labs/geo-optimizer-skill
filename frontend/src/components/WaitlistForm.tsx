@@ -123,7 +123,7 @@ export default function WaitlistForm() {
 
   if (state === "success") {
     return (
-      <div className="rounded-[4px] border border-rail bg-white p-6 text-center">
+      <div className="rounded-[10px] border border-rail bg-raised p-6 text-center">
         <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-pass-wash">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-pass-deep">
             <polyline points="20 6 9 17 4 12" />
@@ -179,7 +179,7 @@ export default function WaitlistForm() {
           required
           autoComplete="email"
           placeholder="you@example.com"
-          className="w-full rounded-[4px] border border-ink/25 bg-white px-3 py-2.5 text-sm text-ink placeholder:text-ink-mute transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+          className="w-full rounded-[10px] border border-ink/25 bg-raised px-3 py-2.5 text-sm text-ink placeholder:text-ink-mute transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
         />
       </div>
 
@@ -191,7 +191,7 @@ export default function WaitlistForm() {
           id="wl-user-type"
           name="user_type"
           required
-          className="w-full rounded-[4px] border border-ink/25 bg-white px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+          className="w-full rounded-[10px] border border-ink/25 bg-raised px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
         >
           <option value="">Select…</option>
           {USER_TYPE_OPTIONS.map((o) => (
@@ -208,7 +208,7 @@ export default function WaitlistForm() {
           id="wl-sites"
           name="managed_sites_range"
           required
-          className="w-full rounded-[4px] border border-ink/25 bg-white px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+          className="w-full rounded-[10px] border border-ink/25 bg-raised px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
         >
           <option value="">Select…</option>
           {SITES_RANGE_OPTIONS.map((o) => (
@@ -225,7 +225,7 @@ export default function WaitlistForm() {
           id="wl-interest"
           name="main_interest"
           required
-          className="w-full rounded-[4px] border border-ink/25 bg-white px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+          className="w-full rounded-[10px] border border-ink/25 bg-raised px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
         >
           <option value="">Select…</option>
           {MAIN_INTEREST_OPTIONS.map((o) => (
@@ -240,7 +240,7 @@ export default function WaitlistForm() {
           name="consent"
           type="checkbox"
           required
-          className="mt-0.5 h-4 w-4 cursor-pointer rounded-[2px] border-ink/25 text-pass-deep focus:ring-pass/30"
+          className="mt-0.5 h-4 w-4 cursor-pointer rounded-[6px] border-ink/25 text-pass-deep focus:ring-pass/30"
         />
         <label htmlFor="wl-consent" className="cursor-pointer text-sm leading-relaxed text-ink-soft">
           I agree to receive product updates about GeoReady. See our{" "}
@@ -252,8 +252,8 @@ export default function WaitlistForm() {
       </div>
 
       {state === "error" && (
-        <div role="alert" className="flex items-start gap-3 rounded-[4px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
-          <span aria-hidden="true" className="mt-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em]">
+        <div role="alert" className="flex items-start gap-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
+          <span aria-hidden="true" className="mt-0.5 font-text text-[12.5px] font-semibold">
             err
           </span>
           <span>{message}</span>
@@ -263,7 +263,7 @@ export default function WaitlistForm() {
       <button
         type="submit"
         disabled={state === "loading"}
-        className="w-full rounded-[4px] bg-pass-deep px-4 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-[10px] bg-pass-deep px-4 py-3 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass disabled:cursor-not-allowed disabled:opacity-60"
       >
         {state === "loading" ? "Subscribing…" : "Get product updates"}
       </button>

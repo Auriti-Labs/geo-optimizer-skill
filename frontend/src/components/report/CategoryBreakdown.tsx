@@ -18,14 +18,14 @@ interface LockedCardProps {
 // fissati qui (v1) mostravano valori sbagliati, per esempio "/ 10" per Brand.
 function LockedCard({ category }: LockedCardProps) {
   return (
-    <div className="relative overflow-hidden bg-white p-4">
+    <div className="relative overflow-hidden bg-raised p-4">
       {/* Blurred content background — hides the locked data, not decoration */}
       <div className="blur-[3px] pointer-events-none select-none" aria-hidden="true">
         <div className="mb-2 flex items-center justify-between gap-2">
           <span className="truncate text-xs font-medium text-ink-soft">
             {category.name}
           </span>
-          <span className="shrink-0 rounded-[2px] border border-rail px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-mute">
+          <span className="shrink-0 rounded-[6px] border border-rail px-1.5 py-0.5 font-text text-[12px] font-semibold text-ink-mute">
             —
           </span>
         </div>
@@ -33,25 +33,25 @@ function LockedCard({ category }: LockedCardProps) {
           <span className="font-mono text-xl font-bold tabular-nums text-ink-mute">??</span>
           <span className="font-mono text-xs tabular-nums text-ink-mute">/ {category.maxScore}</span>
         </div>
-        <div className="h-1 overflow-hidden rounded-[2px] bg-paper">
-          <div className="h-full w-1/3 rounded-[2px] bg-ink-mute/30" />
+        <div className="h-1 overflow-hidden rounded-[6px] bg-paper">
+          <div className="h-full w-1/3 rounded-[6px] bg-ink-mute/30" />
         </div>
         <ul className="mt-2.5 space-y-1">
           {[1, 2, 3].map((i) => (
-            <li key={i} className="h-3 rounded-[2px] bg-paper" />
+            <li key={i} className="h-3 rounded-[6px] bg-paper" />
           ))}
         </ul>
       </div>
 
       {/* Lock overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/85 p-3 text-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-raised/85 p-3 text-center">
         <div className="mb-2 flex h-7 w-7 items-center justify-center rounded-full bg-pass-wash">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pass-deep">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
         </div>
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.1em] leading-tight text-pass-deep">
+        <span className="font-text text-[12px] font-semibold leading-tight text-pass-deep">
           Pro
         </span>
       </div>
@@ -68,7 +68,7 @@ export default function CategoryBreakdown({ categories, lockedSlugs = [] }: Cate
   const lockedSet = new Set(lockedSlugs);
 
   return (
-    <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-4">
       {categories.map((cat, i) => {
         // Il flag della categoria vale anche dove il chiamante non passa lockedSlugs (pagine di confronto)
         if (cat.locked || lockedSet.has(cat.slug)) {
@@ -82,14 +82,14 @@ export default function CategoryBreakdown({ categories, lockedSlugs = [] }: Cate
         return (
           <div
             key={cat.slug}
-            className={`bg-white p-4 ${isEmpty ? 'opacity-75' : ''}`}
+            className={`bg-raised p-4 ${isEmpty ? 'opacity-75' : ''}`}
           >
             <div className="mb-2 flex items-start justify-between gap-2">
               <span className="flex min-w-0 items-baseline gap-2">
                 <span className="font-mono text-[11px] font-medium tabular-nums text-ink-mute">{String(i + 1).padStart(2, '0')}</span>
                 <span className="truncate text-xs font-medium text-ink">{cat.name}</span>
               </span>
-              <span className={`shrink-0 rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] ${config.chip}`}>
+              <span className={`shrink-0 rounded-[6px] px-1.5 py-0.5 font-text text-[12px] font-semibold ${config.chip}`}>
                 {config.label}
               </span>
             </div>
@@ -104,9 +104,9 @@ export default function CategoryBreakdown({ categories, lockedSlugs = [] }: Cate
               <span className="truncate font-mono text-[11px] text-ink-mute">{cat.slug}</span>
             </div>
 
-            <div className="h-1 overflow-hidden rounded-[2px] bg-paper">
+            <div className="h-1 overflow-hidden rounded-[6px] bg-paper">
               <div
-                className={`h-full rounded-[2px] transition-all duration-700 ease-out ${config.bar}`}
+                className={`h-full rounded-[6px] transition-all duration-700 ease-out ${config.bar}`}
                 style={{ width: `${pct}%` }}
               />
             </div>

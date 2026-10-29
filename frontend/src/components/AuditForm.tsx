@@ -42,7 +42,7 @@ export default function AuditForm({ variant: _variant = 'console' }: AuditFormPr
           <label htmlFor="audit-url" className="sr-only">
             Website URL to audit
           </label>
-          <div className="flex min-w-0 flex-1 items-stretch overflow-hidden rounded-[4px] border border-ink/25 bg-white transition-shadow focus-within:border-pass-deep focus-within:ring-2 focus-within:ring-pass/30">
+          <div className="flex min-w-0 flex-1 items-stretch overflow-hidden rounded-[10px] border border-ink/25 bg-raised transition-shadow focus-within:border-pass-deep focus-within:ring-2 focus-within:ring-pass/30">
             <span aria-hidden="true" className="hidden shrink-0 items-center border-r border-pass/15 bg-pass/10 px-4 font-mono text-[13px] font-medium text-ink-mute md:flex whitespace-nowrap select-none">
               $ geo audit
             </span>
@@ -65,7 +65,7 @@ export default function AuditForm({ variant: _variant = 'console' }: AuditFormPr
           <button
             type="submit"
             disabled={isLoading}
-            className="flex shrink-0 items-center justify-center gap-2 rounded-[4px] bg-pass-deep px-7 py-3.5 font-mono text-[13px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex shrink-0 items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-7 py-3.5 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isLoading ? (
               <>
@@ -90,9 +90,9 @@ export default function AuditForm({ variant: _variant = 'console' }: AuditFormPr
           <div
             id="audit-error"
             role="alert"
-            className="flex items-start gap-3 rounded-[4px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail"
+            className="flex items-start gap-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail"
           >
-            <span aria-hidden="true" className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] mt-0.5">
+            <span aria-hidden="true" className="font-text text-[12.5px] font-semibold mt-0.5">
               err
             </span>
             <span>{errorMsg}</span>

@@ -38,6 +38,9 @@ const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET } = loadEnv(
 export default defineConfig({
   site: 'https://geoready.dev',
   trailingSlash: 'always',
+  // Compression drops the line-break whitespace between text and an inline tag
+  // ("in\n<a>AI Search…" rendered as "inAI Search…"); gzip recovers the bytes.
+  compressHTML: false,
   integrations: [
     react(),
     // robots.txt points to the hand-built /sitemap.xml. This second, automatic

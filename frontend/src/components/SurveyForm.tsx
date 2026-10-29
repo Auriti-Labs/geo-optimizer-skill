@@ -92,7 +92,7 @@ export default function SurveyForm() {
 
   if (state === 'success') {
     return (
-      <div className="rounded-[4px] border border-rail bg-white p-6 text-center">
+      <div className="rounded-[10px] border border-rail bg-raised p-6 text-center">
         <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-pass-wash">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-pass-deep">
             <polyline points="20 6 9 17 4 12" />
@@ -116,7 +116,7 @@ export default function SurveyForm() {
           id="sv-current-tool"
           name="current_tool"
           required
-          className="w-full rounded-[4px] border border-ink/25 bg-white px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+          className="w-full rounded-[10px] border border-ink/25 bg-raised px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
         >
           <option value="">Select…</option>
           {CURRENT_TOOL_OPTIONS.map((o) => (
@@ -133,7 +133,7 @@ export default function SurveyForm() {
           id="sv-main-problem"
           name="main_problem"
           required
-          className="w-full rounded-[4px] border border-ink/25 bg-white px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+          className="w-full rounded-[10px] border border-ink/25 bg-raised px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
         >
           <option value="">Select…</option>
           {MAIN_PROBLEM_OPTIONS.map((o) => (
@@ -150,7 +150,7 @@ export default function SurveyForm() {
           id="sv-wtp"
           name="wtp"
           required
-          className="w-full rounded-[4px] border border-ink/25 bg-white px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+          className="w-full rounded-[10px] border border-ink/25 bg-raised px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
         >
           <option value="">Select…</option>
           {WTP_OPTIONS.map((o) => (
@@ -167,7 +167,7 @@ export default function SurveyForm() {
           id="sv-priority"
           name="priority_feature"
           required
-          className="w-full rounded-[4px] border border-ink/25 bg-white px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+          className="w-full rounded-[10px] border border-ink/25 bg-raised px-3 py-2.5 text-sm text-ink transition-shadow focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
         >
           <option value="">Select…</option>
           {PRIORITY_FEATURE_OPTIONS.map((o) => (
@@ -177,8 +177,8 @@ export default function SurveyForm() {
       </div>
 
       {state === 'error' && (
-        <div role="alert" className="flex items-start gap-3 rounded-[4px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
-          <span aria-hidden="true" className="mt-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em]">
+        <div role="alert" className="flex items-start gap-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail">
+          <span aria-hidden="true" className="mt-0.5 font-text text-[12.5px] font-semibold">
             err
           </span>
           <span>{errorMsg}</span>
@@ -188,7 +188,7 @@ export default function SurveyForm() {
       <button
         type="submit"
         disabled={state === 'loading'}
-        className="w-full rounded-[4px] border border-rail bg-white px-4 py-3 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-[10px] border border-rail bg-raised px-4 py-3 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash disabled:cursor-not-allowed disabled:opacity-60"
       >
         {state === 'loading' ? 'Submitting…' : 'Submit answers'}
       </button>

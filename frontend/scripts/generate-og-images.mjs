@@ -7,7 +7,7 @@
  *   3. scrive dist/og/<slug>.png e inietta <meta og:image>/<twitter:image>
  *
  * Logo GeoReady (rettangolo teal + archi bianchi) incluso in alto a sinistra.
- * Testo chiaro su fondo ink (#0D110E) con accento teal — leggibile a 200px.
+ * Testo chiaro sul fondo scuro della dashboard (#090C0C) con accento teal — leggibile a 200px.
  */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -24,20 +24,20 @@ const OUT_DIR = join(DIST, 'og');
 const W = 1200, H = 630;
 const h = React.createElement;
 
-const COLORS = { ink:'#0D110E', paper:'#F4F5F2', pass:'#0B8076', passDeep:'#0F766E', mute:'#9FAB9F' };
+const COLORS = { ink:'#090C0C', paper:'#E8F0EF', pass:'#0D9488', passDeep:'#0F766E', accent:'#2DD4BF', mute:'#9DADAB' };
 // satori accetta solo TTF/OTF, non WOFF2. I TTF sono generati da fontTools a
-// build (vedi scripts/convert-fonts.mjs) in public/fonts/ttf/.
-const FONT_BOLD = readFileSync(join(ROOT,'public','fonts','ttf','archivo-bold.ttf'));
-const FONT_REG = readFileSync(join(ROOT,'public','fonts','ttf','publicsans-regular.ttf'));
+// build (vedi scripts/convert-fonts.py) in public/fonts/ttf/.
+const FONT_BOLD = readFileSync(join(ROOT,'public','fonts','ttf','geist-semibold.ttf'));
+const FONT_REG = readFileSync(join(ROOT,'public','fonts','ttf','geist-regular.ttf'));
 const FONTS = [
-  { name:'Archivo', data:FONT_BOLD, weight:800, style:'normal' },
-  { name:'PublicSans', data:FONT_REG, weight:400, style:'normal' },
+  { name:'Geist', data:FONT_BOLD, weight:600, style:'normal' },
+  { name:'Geist', data:FONT_REG, weight:400, style:'normal' },
 ];
 
 const GeoLogo = ({ size=40 }) => h('svg', { width:size, height:size, viewBox:'0 0 48 48', fill:'none' },
-  h('rect', { width:48, height:48, rx:4, fill:COLORS.pass }),
+  h('rect', { width:48, height:48, rx:10, fill:COLORS.pass }),
   h('path', { d:'M11.74 13.71 A16 16 0 1 1 11.74 34.29', stroke:'white', 'stroke-width':2.8, 'stroke-linecap':'round' }),
-  h('path', { d:'M8 24 C12 14 18 34 24 24 C30 14 36 34 40 24', stroke:'white', 'stroke-width':2.1, 'stroke-linecap':'round', 'stroke-opacity':0.72 })
+  h('path', { d:'M8 24 C12 14 18 34 24 24 C30 14 36 34 40 24', stroke:'white', 'stroke-width':2.1, 'stroke-linecap':'round', 'stroke-opacity':0.88 })
 );
 
 function pageType(path) {
@@ -53,36 +53,36 @@ function pageType(path) {
   return 'default';
 }
 const truncate = (s,n) => (s||'').length<=n ? s : s.slice(0,n-1).trim()+'…';
-const EYEBROW = { home:'AI SEARCH VISIBILITY', guide:'GUIDE', comparison:'COMPARISON', tool:'TOOL', book:'BOOK', report:'STATE OF GEO', default:'AI SEARCH VISIBILITY' };
+const EYEBROW = { home:'AI search visibility', guide:'Guide', comparison:'Comparison', tool:'Tool', book:'Book', report:'State of GEO', default:'AI search visibility' };
 
 function OgTemplate({ eyebrow, title, subtitle, type, slug }) {
   const isComp = type==='comparison';
   const bg = isComp ? '#0F2E29' : COLORS.ink;
   const eyebrowText = isComp
-    ? (slug||'COMPARISON').replace(/-alternative$/,'').replace(/-/g,' ').toUpperCase() + ' VS GEOREADY'
+    ? (slug||'comparison').replace(/-alternative$/,'').replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) + ' vs GeoReady'
     : (EYEBROW[type]||EYEBROW.default);
-  return h('div', { style:{ width:W, height:H, background:bg, color:COLORS.paper, display:'flex', flexDirection:'column', padding:'56px 64px', position:'relative', overflow:'hidden', fontFamily:'Archivo' } },
+  return h('div', { style:{ width:W, height:H, background:bg, color:COLORS.paper, display:'flex', flexDirection:'column', padding:'56px 64px', position:'relative', overflow:'hidden', fontFamily:'Geist' } },
     h('div', { style:{ position:'absolute', top:-90, right:-90, width:340, height:340, borderRadius:'50%', background:isComp?COLORS.pass:'#123B35', opacity:0.8 } }),
     h('div', { style:{ position:'absolute', bottom:-40, right:120, width:180, height:180, borderRadius:'50%', background:isComp?COLORS.passDeep:'#0F766E', opacity:0.5 } }),
     // logo + wordmark
     h('div', { style:{ display:'flex', alignItems:'center', gap:12, position:'relative', zIndex:1 } },
       GeoLogo({ size:46 }),
-      h('span', { style:{ fontFamily:'Archivo', fontWeight:800, fontSize:36, letterSpacing:'-0.02em' } },
-        h('span', { style:{ color:COLORS.pass } }, 'geo'), 'ready'
+      h('span', { style:{ fontFamily:'Geist', fontWeight:600, fontSize:36, letterSpacing:'-0.03em' } },
+        h('span', { style:{ color:COLORS.accent } }, 'Geo'), 'Ready'
       )
     ),
     // eyebrow
-    h('div', { style:{ marginTop:48, fontFamily:'PublicSans', fontWeight:400, fontSize:20, letterSpacing:'0.14em', textTransform:'uppercase', color:'#4FD1C5' } }, eyebrowText),
+    h('div', { style:{ marginTop:48, fontFamily:'Geist', fontWeight:600, fontSize:22, color:COLORS.accent } }, eyebrowText),
     // titolo 2 righe
-    h('div', { style:{ marginTop:16, fontFamily:'Archivo', fontWeight:800, fontSize:50, lineHeight:1.08, letterSpacing:'-0.02em', maxWidth:980 } }, truncate(title,120) || 'GeoReady'),
+    h('div', { style:{ marginTop:16, fontFamily:'Geist', fontWeight:600, fontSize:52, lineHeight:1.08, letterSpacing:'-0.03em', maxWidth:980 } }, truncate(title,120) || 'GeoReady'),
     // sottotitolo
-    subtitle && h('div', { style:{ marginTop:18, fontFamily:'PublicSans', fontWeight:400, fontSize:22, lineHeight:1.35, maxWidth:960, color:COLORS.mute } }, truncate(subtitle,130)),
+    subtitle && h('div', { style:{ marginTop:18, fontFamily:'Geist', fontWeight:400, fontSize:22, lineHeight:1.35, maxWidth:960, color:COLORS.mute } }, truncate(subtitle,130)),
     // spacer
     h('div', { style:{ flex:1 } }),
     // footer url
     h('div', { style:{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', position:'relative', zIndex:1 } },
-      h('span', { style:{ fontFamily:'PublicSans', fontSize:20, letterSpacing:'0.06em', color:'#C8D0CB' } }, 'geoready.dev'),
-      h('span', { style:{ fontFamily:'PublicSans', fontSize:17, color:'#5C665F' } }, '· Free GEO audit · ChatGPT · Perplexity')
+      h('span', { style:{ fontFamily:'Geist', fontSize:20, color:COLORS.paper } }, 'geoready.dev'),
+      h('span', { style:{ fontFamily:'Geist', fontSize:17, color:'#7C8C8B' } }, '· Free GEO audit · ChatGPT · Perplexity')
     )
   );
 }
@@ -127,6 +127,7 @@ async function main() {
     if (/<meta property="og:image"/.test(html)) {
       html = html.replace(/<meta property="og:image"[^>]*>/, `<meta property="og:image" content="${assetUrl}">`);
       html = html.replace(/<meta property="og:image:secure_url"[^>]*>/, `<meta property="og:image:secure_url" content="${assetUrl}">`);
+      html = html.replace(/<meta name="twitter:image"[^>]*>/, `<meta name="twitter:image" content="${assetUrl}">`);
     } else {
       html = html.replace('</title>', `</title>\n    <meta property="og:image" content="${assetUrl}">`);
     }

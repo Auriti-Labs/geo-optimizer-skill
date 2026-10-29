@@ -23,7 +23,7 @@ const DEFAULT_MAX_PER_SECTION = 10;
 
 // Classi condivise del mondo console (input su ground bianco, ring pass al focus).
 const FIELD_CLASSES =
-  'w-full rounded-[4px] border border-ink/25 bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-mute transition-colors focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30 disabled:opacity-60';
+  'w-full rounded-[10px] border border-ink/25 bg-raised px-3 py-2 text-sm text-ink placeholder:text-ink-mute transition-colors focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30 disabled:opacity-60';
 const LABEL_CLASSES = 'mb-1.5 block text-sm font-medium text-ink';
 
 // Formatta i byte in una stringa leggibile (B / KB).
@@ -235,9 +235,9 @@ export default function LlmsTxtGenerator() {
           <p
             id="llms-error"
             role="alert"
-            className="flex items-start gap-3 rounded-[4px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail"
+            className="flex items-start gap-3 rounded-[10px] border border-fail/30 bg-fail-wash px-4 py-3 text-sm text-fail"
           >
-            <span aria-hidden="true" className="mt-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em]">
+            <span aria-hidden="true" className="mt-0.5 font-text text-[12.5px] font-semibold">
               err
             </span>
             <span>{errorMsg}</span>
@@ -247,7 +247,7 @@ export default function LlmsTxtGenerator() {
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-[4px] bg-pass-deep px-6 py-3 font-mono text-[13px] font-semibold tracking-[0.08em] text-white transition-colors hover:bg-pass disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-6 py-3 font-mono text-[13px] font-semibold tracking-[0.08em] text-on-accent transition-colors hover:bg-pass disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
           {isLoading ? (
             <>
@@ -273,27 +273,27 @@ export default function LlmsTxtGenerator() {
       {status === 'success' && result && (
         <section className="space-y-5" aria-label="Generated llms.txt">
           {/* Riga di statistiche sintetiche — griglia hairline, valori mono. */}
-          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[4px] border border-rail bg-rail sm:grid-cols-4">
-            <div className="bg-white px-4 py-3">
-              <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Sitemap found</dt>
+          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-4">
+            <div className="bg-raised px-4 py-3">
+              <dt className="font-text font-medium text-[12.5px] text-ink-mute">Sitemap found</dt>
               <dd className="mt-1 font-mono text-lg font-semibold text-ink">
                 {result.found_sitemap ? 'Yes' : 'No'}
               </dd>
             </div>
-            <div className="bg-white px-4 py-3">
-              <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">URLs</dt>
+            <div className="bg-raised px-4 py-3">
+              <dt className="font-text font-medium text-[12.5px] text-ink-mute">URLs</dt>
               <dd className="mt-1 font-mono text-lg font-semibold tabular-nums text-ink">
                 {result.url_count}
               </dd>
             </div>
-            <div className="bg-white px-4 py-3">
-              <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Lines</dt>
+            <div className="bg-raised px-4 py-3">
+              <dt className="font-text font-medium text-[12.5px] text-ink-mute">Lines</dt>
               <dd className="mt-1 font-mono text-lg font-semibold tabular-nums text-ink">
                 {result.line_count}
               </dd>
             </div>
-            <div className="bg-white px-4 py-3">
-              <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-mute">Size</dt>
+            <div className="bg-raised px-4 py-3">
+              <dt className="font-text font-medium text-[12.5px] text-ink-mute">Size</dt>
               <dd className="mt-1 font-mono text-lg font-semibold tabular-nums text-ink">
                 {formatBytes(result.size_bytes)}
               </dd>
@@ -302,7 +302,7 @@ export default function LlmsTxtGenerator() {
 
           {/* Nota informativa quando nessuna sitemap è stata trovata (NON è un errore). */}
           {!result.found_sitemap && (
-            <p className="rounded-[4px] border border-warn/30 bg-warn-wash px-4 py-3 text-sm text-ink-soft">
+            <p className="rounded-[10px] border border-warn/30 bg-warn-wash px-4 py-3 text-sm text-ink-soft">
               No sitemap was found — generated a minimal file from the homepage. You can edit it below or
               provide a sitemap URL.
             </p>
@@ -310,7 +310,7 @@ export default function LlmsTxtGenerator() {
 
           {/* Editor del contenuto — il log well della pagina: output di prima parte
               da POST /api/llms/generate, incorniciato come log con header strip. */}
-          <div className="overflow-hidden rounded-[4px] bg-well">
+          <div className="overflow-hidden rounded-[10px] bg-well">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-well-ink/15 px-4 py-2.5">
               <label htmlFor="llms-output" className="font-mono text-[11px] font-semibold tracking-[0.08em] text-well-mute">
                 Your llms.txt
@@ -332,14 +332,14 @@ export default function LlmsTxtGenerator() {
             <button
               type="button"
               onClick={handleCopy}
-              className="inline-flex items-center gap-2 rounded-[4px] bg-pass-deep px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+              className="inline-flex items-center gap-2 rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass"
             >
               {copied ? 'Copied!' : 'Copy'}
             </button>
             <button
               type="button"
               onClick={handleDownload}
-              className="rounded-[4px] border border-rail bg-white px-4 py-2 font-mono text-[12px] font-semibold tracking-[0.08em] text-ink transition-colors hover:bg-pass-wash"
+              className="rounded-[10px] border border-rail bg-raised px-4 py-2 font-mono text-[12px] font-semibold tracking-[0.08em] text-ink transition-colors hover:bg-pass-wash"
             >
               Download llms.txt
             </button>
@@ -357,7 +357,7 @@ export default function LlmsTxtGenerator() {
             <a
               href="/ai-seo-audit/"
               data-cta="llms_generator_result_ai_seo_audit"
-              className="rounded-[4px] bg-pass-deep px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-pass"
+              className="rounded-[10px] bg-pass-deep px-5 py-2.5 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass"
             >
               Run a full AI SEO audit
             </a>
@@ -371,7 +371,7 @@ export default function LlmsTxtGenerator() {
                 currency: 'USD',
                 cta_location: 'llms_generator_result_monitoring',
               })}
-              className="rounded-[4px] border border-rail bg-white px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:bg-pass-wash"
+              className="rounded-[10px] border border-rail bg-raised px-5 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Monitor weekly changes
             </a>
