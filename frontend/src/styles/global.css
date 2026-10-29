@@ -349,10 +349,16 @@ html:not(.js) .theme .t-system { opacity: 1; transform: none; }
   .foot-brand, .foot-cols { grid-column: 1 / -1; }
 }
 @media (max-width: 640px) {
-  .bar-cta { padding-inline: 0.8rem; }
+  .bar-cta { padding-inline: 0.8rem; white-space: nowrap; }
   .bar-cta::after { display: none; }
   .foot-cols { grid-template-columns: repeat(2, 1fr); row-gap: 2.5rem; }
   .foot-ver { margin-left: 0; }
+}
+
+/* 320 px: logo, tema, CTA e burger devono stare su una riga senza far andare a capo il CTA */
+@media (max-width: 360px) {
+  .bar-end { gap: 0.5rem; }
+  .bar-cta { padding-inline: 0.65rem; }
 }
 
 /* entrate di sezione: visibili senza script */
