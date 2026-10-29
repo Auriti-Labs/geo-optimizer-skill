@@ -375,8 +375,9 @@ const jsonLd = {
 </Shell>
 
 <style is:global>
-  .pt-prose h2 { font-family: var(--font-head, inherit); font-size: 1.5rem; font-weight: 800; color: var(--color-ink, inherit); line-height: 1.25; letter-spacing: -0.02em; margin-top: 3rem; margin-bottom: 1rem; }
-  .pt-prose h3 { font-family: var(--font-head, inherit); font-size: 1.125rem; font-weight: 800; color: var(--color-ink, inherit); letter-spacing: -0.01em; margin-top: 2rem; margin-bottom: 0.75rem; }
+  /* pesi titoli dalla base v3 (h2 Headline 520, h3 Text 600); fondi codice dai token tema, non #FFF fisso (illeggibile in dark) */
+  .pt-prose h2 { font-family: var(--font-head, inherit); font-size: 1.5rem; color: var(--color-ink, inherit); line-height: 1.25; letter-spacing: -0.02em; margin-top: 3rem; margin-bottom: 1rem; }
+  .pt-prose h3 { font-size: 1.125rem; color: var(--color-ink, inherit); margin-top: 2rem; margin-bottom: 0.75rem; }
   .pt-prose h4 { font-weight: 600; color: var(--color-ink, inherit); margin-top: 1.5rem; margin-bottom: 0.5rem; }
   .pt-prose p { color: var(--color-ink-soft, inherit); line-height: 1.75; margin-top: 1rem; }
   .pt-prose ul { list-style-type: disc; padding-left: 1.25rem; margin-top: 1rem; }
@@ -385,9 +386,9 @@ const jsonLd = {
   .pt-prose li::marker { color: var(--color-ink-mute, inherit); }
   .pt-prose strong { font-weight: 600; color: var(--color-ink, inherit); }
   .pt-prose em { font-style: italic; }
-  .pt-prose code { font-size: 0.875rem; font-family: var(--font-mono, ui-monospace, monospace); background: #FFFFFF; border: 1px solid var(--color-rail, #DFE5E5); border-radius: 2px; padding: 0.125rem 0.25rem; }
-  .pt-prose pre { background: #FFFFFF; border: 1px solid var(--color-rail, #DFE5E5); border-radius: 4px; padding: 1rem; margin: 1.5rem 0; overflow-x: auto; font-size: 0.875rem; font-family: var(--font-mono, ui-monospace, monospace); }
-  .pt-prose pre code { background: none; border: none; padding: 0; }
+  .pt-prose code { font-size: 0.875rem; font-family: var(--font-mono, ui-monospace, monospace); color: var(--color-ink, inherit); overflow-wrap: anywhere; background: var(--color-raised, #FFFFFF); border: 1px solid var(--color-rail, #DFE5E5); border-radius: 2px; padding: 0.125rem 0.25rem; }
+  .pt-prose pre { color: var(--color-ink, inherit); background: var(--color-raised, #FFFFFF); border: 1px solid var(--color-rail, #DFE5E5); border-radius: 4px; padding: 1rem; margin: 1.5rem 0; overflow-x: auto; font-size: 0.875rem; font-family: var(--font-mono, ui-monospace, monospace); }
+  .pt-prose pre code { background: none; border: none; padding: 0; overflow-wrap: normal; }
   .pt-prose a { color: var(--color-pass-deep, inherit); text-decoration-line: underline; text-decoration-color: var(--color-rail, #DFE5E5); text-underline-offset: 4px; }
   .pt-prose a:hover { text-decoration-color: var(--color-pass-deep, currentColor); }
   .pt-prose blockquote { border-left: 1px solid var(--color-pass, #0B8076); padding-left: 1rem; font-style: italic; color: var(--color-ink-soft, inherit); margin: 1.5rem 0; }
