@@ -42,7 +42,8 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "satori": "^0.33.4",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.3.0",
+    "three": "0.186.0"
   },
   "overrides": {
     "@vercel/frameworks": {
