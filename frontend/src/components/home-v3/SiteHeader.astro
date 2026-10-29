@@ -1,6 +1,11 @@
 ---
 // Header v3: sprite delle icone, barra in vetro con mega menu Platform e sheet mobile.
-// I link verso le sezioni puntano a "/#..." così il componente regge anche fuori dalla home.
+// I link verso le sezioni puntano a "/#..." così il componente regge anche fuori dalla home;
+// fuori dalla home Pricing apre la sua pagina e gli eventi CTA perdono il prefisso home_.
+interface Props { home?: boolean }
+const { home = false } = Astro.props;
+const pricing = home ? '/#pricing' : '/pricing/';
+const cta = (name: string) => (home ? 'home_' : 'site_') + name;
 const views = [
   ['Crawler access', '27 AI bots, search told apart from training'],
   ['Ranked fixes', 'File, line and points for every fix'],
@@ -12,7 +17,7 @@ const views = [
 const sheetLinks = [
   ['/#platform', 'Platform'],
   ['/#how', 'How it works'],
-  ['/#pricing', 'Pricing'],
+  [pricing, 'Pricing'],
   ['/research/', 'Research'],
   ['/docs/', 'Docs'],
 ];
@@ -39,7 +44,7 @@ const sheetLinks = [
   <nav class="nav" aria-label="Main">
     <button class="nav-mega" type="button" aria-expanded="false" aria-controls="mega">Platform<svg class="ic ic-s" aria-hidden="true"><use href="#i-chev"/></svg></button>
     <a href="/#how">How it works</a>
-    <a href="/#pricing">Pricing</a>
+    <a href={pricing}>Pricing</a>
     <a href="/research/">Research</a>
     <a href="/docs/">Docs</a>
   </nav>
@@ -50,7 +55,7 @@ const sheetLinks = [
       <svg class="ic t-dark" aria-hidden="true"><use href="#i-dark"/></svg>
     </button>
     <a class="btn btn-small btn-ghost" href="https://app.geoready.dev/login">Sign in</a>
-    <a class="btn btn-small btn-go bar-cta" href="/#audit" data-cta="home_header_free_audit">Free audit</a>
+    <a class="btn btn-small btn-go bar-cta" href="/#audit" data-cta={cta('header_free_audit')}>Free audit</a>
     <button class="burger" type="button" popovertarget="sheet" aria-expanded="false" aria-label="Open menu"><i></i><i></i></button>
   </div>
 </div>
@@ -83,7 +88,7 @@ const sheetLinks = [
     ))}
   </nav>
   <div class="sheet-end wrap">
-    <a class="btn btn-go" href="/#audit" data-cta="home_sheet_free_audit">Run free audit</a>
+    <a class="btn btn-go" href="/#audit" data-cta={cta('sheet_free_audit')}>Run free audit</a>
     <a class="btn btn-ghost" href="https://app.geoready.dev/login">Sign in</a>
   </div>
 </div>

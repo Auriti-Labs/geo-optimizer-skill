@@ -32,16 +32,14 @@ const {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="facebook-domain-verification" content="5iii5znx9cju7zra4pfmhv0wsea970">
-  <!-- Preload dei font critici above-the-fold (self-hosted in /public/fonts).
-       Con font-display: optional in global.css, il preload dà al font la possibilità
-       di essere pronto entro il block period → niente swap tardivo, CLS azzerato. -->
-  <!-- Slot "head": una pagina con un sistema tipografico suo (la home v3) sostituisce
-       questi preload con i propri e aggiunge lo script del tema prima del primo paint. -->
-  <slot name="head">
-    <link rel="preload" href="/fonts/geist-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/geist-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
-  </slot>
+  <!-- Font Stack Sans self-hosted (font-display: swap) precaricati; tema e pausa animazioni
+       applicati prima del primo paint, così non c'è il lampo del tema sbagliato. Lo slot "head"
+       resta per le pagine che devono aggiungere altro in testa. -->
+  <link rel="preload" href="/fonts/stack-sans-headline-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/stack-sans-text-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <meta name="color-scheme" content="light dark">
+  <script is:inline>(function(){var d=document.documentElement,t=new URLSearchParams(location.search).get('theme'),m=null;try{t=t||localStorage.getItem('theme');m=localStorage.getItem('motion')}catch(e){}if(t==='light'||t==='dark')d.dataset.theme=t;if(m==='off')d.classList.add('motion-off');d.classList.add('js');})();</script>
+  <slot name="head" />
   <title>{title}</title>
   <meta name="description" content={description}>
   <meta name="robots" content={robots}>
@@ -72,7 +70,8 @@ const {
   <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#F4F6F6">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F8FAF8">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B0F19">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="alternate" type="application/atom+xml" title="GeoReady Guides" href="https://geoready.dev/feed.xml">
   <link rel="alternate" type="application/atom+xml" title="GEO Optimizer Releases" href="https://github.com/Auriti-Labs/geo-optimizer-skill/releases.atom">
@@ -243,7 +242,7 @@ const {
   })} />
 </head>
 <body class="bg-paper text-ink">
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-pass-deep focus:text-white focus:rounded-[10px] focus:text-sm focus:font-medium">Skip to main content</a>
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-pass-deep focus:text-on-accent focus:rounded-[10px] focus:text-sm focus:font-medium">Skip to main content</a>
   <slot />
 </body>
 </html>

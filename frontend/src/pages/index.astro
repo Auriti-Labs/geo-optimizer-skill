@@ -7,7 +7,7 @@ import { getPublicStats, STATS_FALLBACK_AS_OF } from '../utils/publicStats';
 import '../styles/home-v3.css';
 
 // Home v3: header, footer e sistema tipografico propri (Stack Sans), quindi niente Shell.
-// Le altre pagine restano su Shell con Navbar/Footer v2 finché non vengono portate.
+// Le altre pagine usano Shell, che monta gli stessi SiteHeader/SiteFooter senza il prop `home`.
 
 // Contatori pubblici letti a build time, così l'HTML statico porta i numeri veri.
 // Se /api/stats non risponde si usano i fallback datati di utils/publicStats.ts.
@@ -129,15 +129,8 @@ const signup = (plan: string) =>
   description="Free AI visibility audit: check if ChatGPT, Perplexity, Claude and Gemini can reach, read and cite your site, then monitor the score over time."
   canonical="https://geoready.dev/"
 >
-  <Fragment slot="head">
-    <link rel="preload" href="/fonts/stack-sans-headline-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/stack-sans-text-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <meta name="color-scheme" content="light dark">
-    {/* Tema e pausa animazioni prima del primo paint: niente lampo del tema sbagliato */}
-    <script is:inline>(function(){var d=document.documentElement,t=new URLSearchParams(location.search).get('theme'),m=null;try{t=t||localStorage.getItem('theme');m=localStorage.getItem('motion')}catch(e){}if(t==='light'||t==='dark')d.dataset.theme=t;if(m==='off')d.classList.add('motion-off');d.classList.add('js');})();</script>
-  </Fragment>
 
-  <SiteHeader />
+  <SiteHeader home />
 
 <main id="main-content">
 
@@ -506,7 +499,7 @@ const signup = (plan: string) =>
 
 </main>
 
-  <SiteFooter />
+  <SiteFooter home />
   <CookieConsentManager client:only="react" />
 </Layout>
 

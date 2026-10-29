@@ -32,6 +32,8 @@ const cols: [string, [string, string][]][] = [
     ['mailto:info@geoready.dev', 'info@geoready.dev'],
   ]],
 ];
+interface Props { home?: boolean }
+const { home = false } = Astro.props;
 const year = new Date().getFullYear();
 ---
 <footer class="foot">
@@ -40,7 +42,7 @@ const year = new Date().getFullYear();
       <img class="logo logo-light" src="/brand/geoready-lockup-light.svg" width="146" height="36" alt="GeoReady" loading="lazy">
       <img class="logo logo-dark" src="/brand/geoready-lockup-dark.svg" width="146" height="36" alt="" role="presentation" loading="lazy">
       <p>GEO audit and monitoring on a public 100-point rubric. The engine is MIT licensed.</p>
-      <form class="news" id="news" method="post" novalidate data-source="newsletter-home-footer">
+      <form class="news" id="news" method="post" novalidate data-source={home ? 'newsletter-home-footer' : 'newsletter-site-footer'}>
         <label for="news-email">One email a month: State of GEO data and what changed in AI search.</label>
         <div class="news-row">
           <input id="news-email" name="email" type="email" autocomplete="email" placeholder="you@company.com" aria-describedby="news-msg news-consent" required>

@@ -1,8 +1,8 @@
-// GeoReady v3 — home: tema, rubric viva, carousel, prezzi, reveal.
+// GeoReady v3 — home: rubric viva, carousel, FAQ, prezzi, hero. La shell sta in site-v3/shell.js.
 import { gsap as G } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
-import { initCtaTracking } from '../../lib/ctaTracking';
+import { root, still, fine, store, reveal, pauseOffScreen } from '../site-v3/shell.js';
 import { toAuditableUrl } from '../../lib/urlInput';
 import { trackAuditStarted } from '../../lib/geo_track';
 import { initMonitor } from './monitor.js';
@@ -10,79 +10,7 @@ import { initMonitor } from './monitor.js';
 G.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
 
 (function () {
-  var root = document.documentElement;
-  var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  var EASE = 'cubic-bezier(0.22, 1, 0.36, 1)', EASE_IO = 'cubic-bezier(0.77, 0, 0.175, 1)';
-
-  // indice per gli stagger CSS: ogni figlio di [data-stagger] riceve --i
-  document.querySelectorAll('[data-stagger], .sheet-nav, .mega-views').forEach(function (p) {
-    Array.prototype.forEach.call(p.children, function (c, i) { c.style.setProperty('--i', i); });
-  });
-
-  // barra: vetro dopo i primi pixel di scroll
-  var top = document.querySelector('.top');
-  function stick() { top.classList.toggle('stuck', scrollY > 8); }
-  addEventListener('scroll', stick, { passive: true }); stick();
-
-  // tema a 3 stati: system -> light -> dark -> system; bottone in barra e selettore nel footer
-  var themeBtn = document.querySelector('[data-theme-toggle]');
-  var segs = Array.prototype.slice.call(document.querySelectorAll('input[name="theme-seg"]'));
-  var order = ['system', 'light', 'dark'];
-  function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
-  function setTheme(t) {
-    if (t === 'system') { delete root.dataset.theme; store('theme'); }
-    else { root.dataset.theme = t; store('theme', t); }
-    themeBtn.dataset.state = t;
-    themeBtn.setAttribute('aria-label', 'Theme: ' + t + '. Switch to ' + order[(order.indexOf(t) + 1) % 3]);
-    segs.forEach(function (r) { r.checked = r.value === t; });
-  }
-  setTheme(root.dataset.theme || 'system');
-  function switchTheme(next, from) {
-    if (still || !document.startViewTransition) { setTheme(next); return; }
-    // il nuovo tema si apre a cerchio dal controllo usato
-    var r = from.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
-    var end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-    document.startViewTransition(function () { setTheme(next); }).ready.then(function () {
-      root.animate({ clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + end + 'px at ' + x + 'px ' + y + 'px)'] },
-        { duration: 560, easing: EASE_IO, pseudoElement: '::view-transition-new(root)' });
-    });
-  }
-  themeBtn.addEventListener('click', function () { switchTheme(order[(order.indexOf(root.dataset.theme || 'system') + 1) % 3], themeBtn); });
-  segs.forEach(function (r) { r.addEventListener('change', function () { switchTheme(r.value, r.parentNode); }); });
-
-  // mega-menu Platform: click, hover con ritardo, Esc e click fuori chiudono
-  var megaBtn = document.querySelector('.nav-mega'), mega = document.getElementById('mega'), megaT = 0;
-  function megaSet(open) {
-    clearTimeout(megaT);
-    if (open === !mega.hidden) return;
-    mega.hidden = !open; megaBtn.setAttribute('aria-expanded', open);
-  }
-  var hoverAt = 0;
-  // un click subito dopo l'apertura via hover non deve richiudere
-  megaBtn.addEventListener('click', function () { if (!mega.hidden && Date.now() - hoverAt < 600) return; megaSet(mega.hidden); });
-  // tastiera: dal bottone si entra nel pannello, dall'ultimo link si torna alla nav; uscendo il pannello si chiude
-  var megaLinks = mega.querySelectorAll('a'), afterMega = megaBtn.parentNode.querySelector('.nav-mega ~ a');
-  megaBtn.addEventListener('keydown', function (e) { if (e.key === 'Tab' && !e.shiftKey && !mega.hidden) { e.preventDefault(); megaLinks[0].focus(); } });
-  megaLinks[megaLinks.length - 1].addEventListener('keydown', function (e) { if (e.key === 'Tab' && !e.shiftKey && afterMega) { e.preventDefault(); megaSet(false); afterMega.focus(); } });
-  megaLinks[0].addEventListener('keydown', function (e) { if (e.key === 'Tab' && e.shiftKey) { e.preventDefault(); megaBtn.focus(); } });
-  mega.addEventListener('focusout', function (e) { if (!mega.contains(e.relatedTarget) && e.relatedTarget !== megaBtn) megaSet(false); });
-  if (fine) {
-    [megaBtn, mega].forEach(function (el) {
-      el.addEventListener('pointerenter', function () { clearTimeout(megaT); megaT = setTimeout(function () { if (mega.hidden) hoverAt = Date.now(); megaSet(true); }, 90); });
-      el.addEventListener('pointerleave', function () { clearTimeout(megaT); megaT = setTimeout(function () { megaSet(false); }, 180); });
-    });
-  }
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !mega.hidden) { var inMega = mega.contains(document.activeElement); megaSet(false); if (inMega) megaBtn.focus(); } });
-  document.addEventListener('click', function (e) { if (!mega.hidden && !mega.contains(e.target) && !megaBtn.contains(e.target)) megaSet(false); });
-
-  // menu mobile: popover nativo; il burger segue lo stato, i link lo chiudono
-  var sheet = document.getElementById('sheet'), burger = document.querySelector('.bar .burger');
-  sheet.addEventListener('toggle', function (e) { burger.setAttribute('aria-expanded', e.newState === 'open'); });
-  // lo sheet copre la pagina: il Tab non deve finire sul contenuto dietro (sync, prima del ritorno del focus)
-  var behind = document.querySelectorAll('a[href="#main-content"], .top, main, .foot');
-  sheet.addEventListener('beforetoggle', function (e) { behind.forEach(function (el) { el.inert = e.newState === 'open'; }); });
-  sheet.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { sheet.hidePopover(); }); });
+  var EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
   // rubric: gli switch spostano categoria, punteggio e banda
   var scoreEl = document.getElementById('score');
@@ -285,7 +213,6 @@ G.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
     });
   }
 
-
   // fisarmonica FAQ: altezza misurata e animata con WAAPI, una sola aperta
   var faqs = Array.prototype.slice.call(document.querySelectorAll('.faq details'));
   var setters = faqs.map(function (d) {
@@ -349,27 +276,6 @@ G.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
     document.addEventListener('geo:motion', function () { clearTimeout(cpT); if (cpOn) cpRun(); });
   }
 
-  // newsletter: doppio opt-in, stesso endpoint e stessi testi di NewsletterSignup
-  var news = document.getElementById('news'), newsMsg = document.getElementById('news-msg'), newsBusy = false;
-  news.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (newsBusy) return;
-    var em = news.email.value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { newsMsg.textContent = 'Enter a valid email address.'; news.email.setAttribute('aria-invalid', 'true'); news.email.focus(); return; }
-    news.email.removeAttribute('aria-invalid');
-    newsBusy = true; newsMsg.textContent = 'Sending…';
-    fetch('https://app.geoready.dev/api/email/capture', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: em, source: news.dataset.source, source_url: location.href }),
-    }).then(function (r) {
-      if (!r.ok) throw new Error(String(r.status));
-      newsMsg.textContent = 'Check your inbox and confirm. Nothing is sent until you click the link.';
-      news.reset();
-    }).catch(function () {
-      newsMsg.textContent = 'Something went wrong — check the email and try again.';
-    }).finally(function () { newsBusy = false; });
-  });
-
   // form di audit (hero e CTA): stessa normalizzazione e stesso evento di AuditForm
   document.querySelectorAll('form[data-audit-form]').forEach(function (f) {
     var input = f.querySelector('input[name="url"]'), note = f.parentNode.querySelector('[data-audit-note]'), noteHtml = note.innerHTML;
@@ -385,20 +291,6 @@ G.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
       location.href = '/report/audit/?url=' + encodeURIComponent(url);
     });
   });
-
-  // footer: la parola grande prende luce sotto il puntatore
-  var word = document.querySelector('.foot-word');
-  if (fine && !still) {
-    var wf = 0;
-    document.querySelector('.foot').addEventListener('pointermove', function (e) {
-      cancelAnimationFrame(wf);
-      wf = requestAnimationFrame(function () {
-        var r = word.getBoundingClientRect();
-        word.style.setProperty('--fx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
-        word.style.setProperty('--fy', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
-      });
-    });
-  }
 
   // hero: il titolo entra parola per parola (dividere per lettera perde il kerning); il gradiente resta continuo sulla riga
   var grad = document.querySelector('#hero-title .grad');
@@ -429,16 +321,7 @@ G.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
   // pricing: le tacche delle run si accendono in sequenza quando i piani entrano in vista
   document.querySelectorAll('.pr-runs').forEach(function (r) { r.querySelectorAll('i.on').forEach(function (t, k) { t.style.setProperty('--k', k); }); });
   var prc = document.querySelector('.pr-cols');
-  if (prc) prc.classList.add('reveal');
-
-  // entrate di sezione
-  var reveals = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { rootMargin: '0px 0px -12% 0px' });
-    reveals.forEach(function (el) { io.observe(el); });
-  } else reveals.forEach(function (el) { el.classList.add('in'); });
+  if (prc) { prc.classList.add('reveal'); reveal(prc); }
 
   // pausa delle animazioni continue (WCAG 2.2.2): WebGL della hero, anteprima CTA, pulsazioni; la scelta resta salvata
   var motionBtn = document.querySelector('.motion-btn');
@@ -454,14 +337,10 @@ G.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
     motionBtn.addEventListener('click', function () { motionSet(!root.classList.contains('motion-off')); });
   }
 
-  // loop infiniti in pausa fuori schermo: un solo observer per tutti
-  var offIO = new IntersectionObserver(function (es) {
-    es.forEach(function (e) { e.target.classList.toggle('off-screen', !e.isIntersecting); });
-  });
-  document.querySelectorAll('.hero, .ev-fetch, .cta-prev, .foot, #mon').forEach(function (el) { offIO.observe(el); });
+  // loop infiniti in pausa fuori schermo (il footer lo osserva la shell)
+  document.querySelectorAll('.hero, .ev-fetch, .cta-prev, #mon').forEach(pauseOffScreen);
 
   initMonitor();
-  initCtaTracking();
 
   // three.js solo dopo load + idle, da tablet in su e senza risparmio dati
   var conn = navigator.connection;
