@@ -23,8 +23,9 @@ export interface PublicStats {
   audits_run: number;
 }
 
-// Ultima lettura verificata a mano (2026-09-18, endpoint in produzione). Da aggiornare
-// quando si tocca questo file: è ciò che vede un crawler se il fetch fallisce.
+// Ultima lettura verificata a mano (2026-10-29, endpoint in produzione). Da aggiornare
+// quando si tocca questo file, insieme a STATS_FALLBACK_AS_OF: è ciò che vede un crawler
+// se il fetch fallisce, e la home stampa la data accanto ai numeri.
 //
 // ATTENZIONE al confronto con i valori precedenti (71.997 il 2026-09-04): quel numero
 // NON era mensile. L'endpoint sommava pypistats /system, cioè i download per sistema
@@ -32,10 +33,11 @@ export interface PublicStats {
 // "downloads/mo". Ora /api/stats usa /recent → last_month, quindi il valore corretto è
 // un ordine di grandezza più basso. Non è una regressione: prima era sovradichiarato.
 export const STATS_FALLBACK: PublicStats = {
-  github_stars: 831,
-  pypi_downloads_month: 5690,
-  audits_run: 2006,
+  github_stars: 1230,
+  pypi_downloads_month: 16022,
+  audits_run: 2590,
 };
+export const STATS_FALLBACK_AS_OF = '2026-10-29';
 
 export async function getPublicStats(): Promise<{ stats: PublicStats; isLive: boolean }> {
   try {

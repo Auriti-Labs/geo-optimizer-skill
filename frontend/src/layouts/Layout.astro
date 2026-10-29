@@ -35,9 +35,13 @@ const {
   <!-- Preload dei font critici above-the-fold (self-hosted in /public/fonts).
        Con font-display: optional in global.css, il preload dà al font la possibilità
        di essere pronto entro il block period → niente swap tardivo, CLS azzerato. -->
-  <link rel="preload" href="/fonts/geist-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/geist-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Slot "head": una pagina con un sistema tipografico suo (la home v3) sostituisce
+       questi preload con i propri e aggiunge lo script del tema prima del primo paint. -->
+  <slot name="head">
+    <link rel="preload" href="/fonts/geist-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/geist-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
+  </slot>
   <title>{title}</title>
   <meta name="description" content={description}>
   <meta name="robots" content={robots}>

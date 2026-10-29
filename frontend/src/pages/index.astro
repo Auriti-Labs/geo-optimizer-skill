@@ -1,96 +1,61 @@
 ---
-import Shell from '../components/Shell.astro';
-import AuditForm from '../components/AuditForm';
-import StatsBar from '../components/StatsBar';
-import HeroInstrument from '../components/home/HeroInstrument.astro';
-import { getBenchmark } from '../utils/benchmark';
-import { getPublicStats } from '../utils/publicStats';
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/home-v3/SiteHeader.astro';
+import SiteFooter from '../components/home-v3/SiteFooter.astro';
+import CookieConsentManager from '../components/cookie/CookieConsentManager';
+import { getPublicStats, STATS_FALLBACK_AS_OF } from '../utils/publicStats';
+import '../styles/home-v3.css';
 
-// I nove pesi della rubrica v2 (default dalla 4.19.0), come in models/config.py
-// (CATEGORY_MAX_V2). Sono qui perché la pagina rivendica "auditable scoring": affermarlo
-// e non mostrarlo è la stessa opacità che il prodotto critica. Tenere allineato ai pesi reali.
-// La quarta colonna è la chiave di categoria dello score_breakdown JSON: è l'ID
-// che il rail dei gate mostra come annotazione, quindi deve restare quella vera.
-const SCORING_WEIGHTS = [
-  ['Google AI readiness', 20, 'Indexable page, snippet controls, canonical, dates, byline, crawlable links, viewport, sitemap.', 'google_ai'],
-  ['Robots.txt', 14, 'Whether citation crawlers are allowed to fetch the site at all.', 'robots'],
-  ['Schema JSON-LD', 14, 'Valid structured data: Organization, WebSite, Article, FAQ.', 'schema'],
-  ['Content', 14, 'Heading hierarchy, word count, lists, front-loaded answers, image alt text.', 'content'],
-  ['Brand & entity', 12, 'Naming coherence, Knowledge Graph readiness, topic authority.', 'brand_entity'],
-  ['Meta tags', 11, 'Title, description, canonical, and Open Graph completeness.', 'meta'],
-  ['llms.txt', 6, 'Presence and depth of the root-level orientation file, including llms-full.txt.', 'llms'],
-  ['Signals', 6, 'Declared language, feed availability, freshness date.', 'signals'],
-  ['AI discovery', 3, 'The .well-known/ai.txt and /ai/*.json endpoints.', 'ai_discovery'],
-] as const;
+// Home v3: header, footer e sistema tipografico propri (Stack Sans), quindi niente Shell.
+// Le altre pagine restano su Shell con Navbar/Footer v2 finché non vengono portate.
 
-// Aggregati della coorte, letti a build time da GET /api/public/benchmark: erano
-// hardcoded perché la build Docker gira prima che l'app locale sia in piedi, ma
-// l'endpoint è pubblico e la build lo raggiunge come già fa con Sanity. I valori scritti
-// a mano restavano indietro senza che nessuno se ne accorgesse — «750+ siti, media 54.3»
-// contro i 900+ e 54.6 reali. Se l'endpoint non risponde si usano i valori di fallback:
-// vedi utils/benchmark.ts.
-const BENCHMARK = await getBenchmark();
-
-// Stessa ragione: i contatori di StatsBar arrivavano solo via JS, quindi l'HTML statico
-// mostrava a un crawler il fallback fermo a luglio (587 stelle, 5.134 download).
+// Contatori pubblici letti a build time, così l'HTML statico porta i numeri veri.
+// Se /api/stats non risponde si usano i fallback datati di utils/publicStats.ts.
 const { stats: PUBLIC_STATS, isLive: STATS_ARE_LIVE } = await getPublicStats();
+const fmt = (n: number) => n.toLocaleString('en-US');
+const STARS = fmt(PUBLIC_STATS.github_stars);
+const STATS_AS_OF_ISO = STATS_ARE_LIVE ? new Date().toISOString().slice(0, 10) : STATS_FALLBACK_AS_OF;
+const statsAsOf = new Date(STATS_AS_OF_ISO).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
-// Un esempio concreto di fallimento per ogni gate: è quello che il pannello mostra
-// quando si seleziona la categoria. Descrive check che il motore esegue davvero
-// (core/audit.py), non promesse.
-const GATE_EXAMPLES: Record<string, { check: string; fail: string }> = {
-  google_ai: { check: '<meta name="robots" content="nosnippet">', fail: 'Snippet controls stop Google from quoting the page in AI Overviews.' },
-  robots: { check: 'User-agent: GPTBot\nDisallow: /', fail: 'The citation crawler is refused before it reads a single line.' },
-  schema: { check: '"@type": "Organization", "name": "Acme Inc"', fail: 'Structured data names a brand the visible page never uses.' },
-  content: { check: '<h3>Pricing</h3> before any <h2>', fail: 'A broken heading outline makes passages harder to lift as answers.' },
-  brand_entity: { check: 'title: "ACME" · schema: "Acme Studio" · footer: "Acme srl"', fail: 'Three names for one entity weaken the knowledge-graph match.' },
-  meta: { check: '<meta name="description"> missing', fail: 'Engines fall back to an arbitrary excerpt for the summary.' },
-  llms: { check: 'GET /llms.txt → 404', fail: 'No orientation file for agents that look for one.' },
-  signals: { check: '"dateModified": "2027-01-01"', fail: 'A future date fails the freshness check.' },
-  ai_discovery: { check: 'GET /.well-known/ai.txt → 404', fail: 'No machine-readable statement of AI crawler permissions.' },
-};
+// Titolo diviso per parola al build: l'ingresso è solo CSS, l'LCP coincide con l'FCP.
+// L'indice --i prosegue tra le due righe per lo stagger.
+const HERO_LINES = ['Know if AI answers', 'can cite your site.'];
+let wordIndex = 0;
+const heroWords = HERO_LINES.map((line) => line.split(' ').map((w) => ({ w, i: wordIndex++ })));
 
-// Serie di esempio per il grafico del monitoring: 12 settimane di un dominio fittizio,
-// con una regressione alla settimana 8 sopra la soglia di alert (5 punti).
-const HISTORY = [58, 61, 63, 66, 68, 71, 73, 64, 73, 74, 75, 76];
-const CH = { w: 640, h: 200, pad: 18 };
-const x = (i: number) => CH.pad + (i * (CH.w - CH.pad * 2)) / (HISTORY.length - 1);
-const y = (v: number) => CH.h - CH.pad - ((v - 50) * (CH.h - CH.pad * 2)) / 30;
-const HISTORY_PATH = HISTORY.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-const DROP = 7; // indice della settimana con la regressione
-
+// Le FAQ visibili e lo schema FAQPage escono dallo stesso array (check G-SD-VISIBLE).
 const faqs = [
   {
-    q: 'What is Generative Engine Optimization?',
-    a: 'GEO is the practice of making websites discoverable, readable, and citable by AI search engines such as ChatGPT, Perplexity, Claude, and Gemini. It focuses on structured data, content hierarchy, and technical signals that AI crawlers prioritize.',
+    q: 'Does a high score guarantee that AI answers will cite my site?',
+    a: 'No. The score measures whether answer engines can reach, read and attribute your pages. Whether a page is cited also depends on the question, the engine and the competing sources. A low score usually means a blocker that no content work can get past.',
+  },
+  {
+    q: 'Is the free audit really free?',
+    a: 'Yes. No account, no card, five audits a day, and the full nine-category report. The CLI is MIT licensed and has no limits.',
   },
   {
     q: 'What does GeoReady check?',
-    a: 'GeoReady audits 9 categories: Google AI readiness, robots.txt, JSON-LD schema, content quality, brand entity signals, meta tags, llms.txt, technical signals, and AI discovery paths. It also detects prompt injection patterns and negative signals through the same open-source GEO Optimizer engine. The CLI additionally offers Agent Access Audit (bot vs browser access simulation via `geo access`) and AI Crawler Activity Analytics (server log parsing via `geo logs`).',
-  },
-  {
-    q: 'How is GEO different from traditional SEO?',
-    a: 'Traditional SEO optimizes for keyword rankings and backlinks in conventional search engines. GEO optimizes for AI citation signals: structured data, clear content architecture, AI crawler permissions, and self-contained answer blocks. The two complement rather than replace each other.',
-  },
-  {
-    q: 'Does a high score guarantee that AI answers will cite my site?',
-    a: 'No. The score measures whether answer engines can reach, read, and attribute your pages. Whether a page is cited also depends on the question asked, the engine, and the competing sources. A low score, on the other hand, usually means a blocker that no content work can get past.',
-  },
-  {
-    q: 'Do I still need Semrush or Ahrefs?',
-    a: 'Yes, if you track keyword rankings and backlinks. GeoReady measures a different layer: AI crawler access, structured data, passage structure, and AI answer checks. Most teams run both.',
+    a: 'Nine categories: Google AI readiness, robots.txt, JSON-LD schema, content, brand and entity signals, meta tags, llms.txt, technical signals and AI discovery files. The same engine also flags prompt-injection patterns in page content.',
   },
   {
     q: 'Which parts of monitoring are automated?',
-    a: 'Site audits and score monitoring run automatically on our servers: weekly on Pro, daily on Agency. AI answer checks query Perplexity through its API. For ChatGPT and Google AI answers you paste the answer you see and GeoReady scores it the same way. GeoReady does not scrape those interfaces.',
+    a: 'Site audits and score monitoring run on our servers, weekly on Pro and daily on Agency. Perplexity answers are checked through its API. ChatGPT and Google answers are pasted by you and scored the same way; GeoReady does not scrape those interfaces.',
   },
   {
-    q: 'Is the Pro plan available now?',
-    a: 'Yes. Pick a plan and your account activates immediately. No sales call, no waitlist.',
+    q: 'The CLI has geo track and geo monitor. Why pay for Pro?',
+    a: 'If you already run the CLI in CI, you may not need Pro. The CLI runs when you start it and stores history in a local SQLite file. Pro is for teams who would rather not operate the schedule, the storage and the alerts.',
   },
   {
-    q: 'Is GeoReady open source?',
-    a: 'The core GEO Optimizer engine is MIT licensed. Source code, scoring weights, and methodology are publicly available on GitHub. The CLI and the free web audit remain free; GeoReady Pro adds monitoring, history, alerts, exports, and team workflows.',
+    q: 'Do I still need Semrush or Ahrefs?',
+    a: 'Yes, if you track keyword rankings and backlinks. GeoReady measures a different layer: AI crawler access, structured data, passage structure and AI answer checks. Most teams run both.',
+  },
+  {
+    q: 'Can I cancel at any time?',
+    a: 'Yes, from your account settings, with no lock-in and no penalty.',
+  },
+  {
+    q: 'Is there a trial for paid plans?',
+    a: 'There is no self-serve trial: the free audit is the permanent baseline. A 14-day Agency trial is available on request at info@geoready.dev.',
   },
 ];
 
@@ -114,9 +79,9 @@ const faqSchema = {
 //  2. il @graph di Layout è emesso su ogni pagina, e una data di aggiornamento valida
 //     per la sola homepage non deve finire su tutte le altre.
 //
-// `dateModified` è la data della lettura del benchmark mostrata in pagina (la stessa di
-// <time datetime> più sotto): è l'ultimo dato che cambia davvero su questa pagina, e non
-// la data della build, che cambierebbe a ogni deploy anche senza modifiche di contenuto.
+// `dateModified` è la data "as of" dei contatori pubblici mostrata in pagina (la stessa di
+// <time datetime> più sotto): è l'ultimo dato che cambia davvero su questa pagina. Con
+// /api/stats raggiungibile coincide con il giorno della build, perché i numeri sono di quel giorno.
 // `datePublished` è omesso apposta: la data di lancio reale non è nel repository e non
 // va inventata.
 //
@@ -147,457 +112,404 @@ const pageSchema = {
     "@id": "https://geoready.dev/#founder",
     "name": "Juan Camilo Auriti"
   },
-  "dateModified": BENCHMARK.asOfIso
+  "dateModified": STATS_AS_OF_ISO
 };
+// Tacche delle esecuzioni mensili per piano (Free: nessuna programmata).
+const ticks = (n: number, on: number) => Array.from({ length: n }, (_, k) => k < on);
 
-// Larghezza della barra del benchmark: dato reale della coorte.
-const avgPct = Math.max(0, Math.min(100, Number(BENCHMARK.average) || 0));
-
+// Link di signup con gli stessi UTM delle card piano del resto del sito.
+const signup = (plan: string) =>
+  `https://app.geoready.dev/signup?plan=${plan}&utm_source=home&utm_medium=plan_card&utm_campaign=home_to_paid&utm_content=${plan}_card`;
 ---
 
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 <script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
-<Shell
+<Layout
   title={PAGE_TITLE}
   description="Free AI visibility audit: check if ChatGPT, Perplexity, Claude and Gemini can reach, read and cite your site, then monitor the score over time."
   canonical="https://geoready.dev/"
 >
-  {/* Hero: la promessa a sinistra, lo strumento a destra */}
-  <section id="audit-form" data-hero-bleed class="hero-v2 relative overflow-hidden bg-paper text-ink">
-    <div class="mx-auto grid max-w-7xl gap-12 px-5 pt-14 pb-16 sm:px-6 md:pt-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,540px)] lg:items-center lg:gap-14 lg:pb-24">
-      <div class="min-w-0">
-        <p class="eyebrow">AI visibility audit · monitoring</p>
-        <h1 class="mt-4 max-w-[15ch] text-[2.55rem] font-semibold leading-[1.03] tracking-[-0.035em] sm:text-[3.4rem] xl:text-[4rem]">
-          Know if AI answers can <em>cite</em> your site.
-        </h1>
-        <p class="mt-6 max-w-[54ch] text-[17px] leading-relaxed text-ink-soft">
-          GeoReady is a Generative Engine Optimization (GEO) platform. The free audit checks in about a minute whether ChatGPT, Perplexity, Claude and Gemini can reach, read and attribute your site; monitoring re-runs it on a schedule and emails you when the score drops.
-        </p>
+  <Fragment slot="head">
+    <link rel="preload" href="/fonts/stack-sans-headline-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/stack-sans-text-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <meta name="color-scheme" content="light dark">
+    {/* Tema e pausa animazioni prima del primo paint: niente lampo del tema sbagliato */}
+    <script is:inline>(function(){var d=document.documentElement,t=new URLSearchParams(location.search).get('theme'),m=null;try{t=t||localStorage.getItem('theme');m=localStorage.getItem('motion')}catch(e){}if(t==='light'||t==='dark')d.dataset.theme=t;if(m==='off')d.classList.add('motion-off');d.classList.add('js');})();</script>
+  </Fragment>
 
-        <div class="mt-8 max-w-[600px]">
-          <AuditForm client:load variant="console" />
-        </div>
-        <p class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-ink-mute">
-          <span class="inline-flex items-center gap-1.5"><span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-pass"></span>Free · no account · 5 audits a day</span>
-          <a href="/pricing/" data-cta="home_hero_pro_monitoring" class="font-medium text-ink underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">See monitoring plans</a>
-          <a href="/report/demo/" data-cta="home_hero_demo_report" class="font-medium text-ink underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">View a sample report</a>
-          <a href="/geo-readiness-manual/" data-cta="home_hero_manual" class="font-medium text-ink underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Read the GEO manual</a>
-        </p>
-      </div>
+  <SiteHeader />
 
-      <div class="min-w-0">
-        <HeroInstrument />
-      </div>
-    </div>
-  </section>
+<main id="main-content">
 
-  {/* Proof strip: fatti verificabili, contatori live */}
-  <section class="border-y border-rail bg-white text-ink" aria-label="GeoReady in numbers">
-    <div class="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-6 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
-      <dl class="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-4 lg:gap-x-10">
-        <div><dt class="eyebrow">AI bots checked</dt><dd class="mt-1 font-mono text-xl font-medium tabular-nums">27</dd></div>
-        <div><dt class="eyebrow">Categories · points</dt><dd class="mt-1 font-mono text-xl font-medium tabular-nums">9 · 100</dd></div>
-        <div><dt class="eyebrow">Citability checks</dt><dd class="mt-1 font-mono text-xl font-medium tabular-nums">47</dd></div>
-        <div><dt class="eyebrow">Engine licence</dt><dd class="mt-1 font-mono text-xl font-medium">MIT</dd></div>
-      </dl>
-      <div class="[&_dl]:mt-0">
-        <StatsBar client:idle variant="console" initial={PUBLIC_STATS} initialIsLive={STATS_ARE_LIVE} />
-      </div>
-    </div>
-  </section>
+{/* HERO: headline + rubric dal vivo */}
+<section class="hero wrap" aria-labelledby="hero-title">
+  <canvas class="hero-gl" id="hero-gl" aria-hidden="true"></canvas>
+  <div class="hero-copy">
+    <h1 id="hero-title" class="display mask">
+      {heroWords.map((words, l) => (
+        <span class="line"><span class={l === 1 ? 'grad' : undefined}>{words.map(({ w, i }, k) => <Fragment>{k > 0 && ' '}<span class="ch" style={`--i:${i}`}>{w}</span></Fragment>)}</span></span>
+      ))}
+    </h1>
+    <p class="lead hero-lead">GeoReady checks whether ChatGPT, Perplexity, Claude and Gemini can reach, read and attribute your pages, scores them on a public 100-point rubric, and ranks the fixes by the points they win.</p>
+    <form class="audit" id="audit" action="/report/audit/" method="get" data-audit-form>
+      <label class="sr" for="audit-url">Website address</label>
+      <input id="audit-url" name="url" type="text" inputmode="url" autocomplete="url" placeholder="your-site.com" required aria-describedby="audit-note">
+      <button class="btn btn-go" type="submit">Run free audit</button>
+    </form>
+    <p class="note" id="audit-note" data-audit-note aria-live="polite">Free, no account, five audits a day. Or run the same engine yourself: <code>pip install geo-optimizer-skill</code></p>
+    <p class="hero-proof"><a class="hero-demo" href="/report/demo/" data-cta="home_hero_demo_report">View a sample report<svg class="ic ic-s" aria-hidden="true"><use href="#i-arrow"/></svg></a><a href="https://github.com/Auriti-Labs/geo-optimizer-skill" data-cta="home_hero_github"><svg class="ic ic-s" aria-hidden="true"><use href="#i-star"/></svg><b>{STARS}</b> stars on GitHub</a><button class="motion-btn" type="button" aria-pressed="false"><svg class="ic ic-s" aria-hidden="true"><use href="#i-pause"/></svg>Pause motion</button></p>
+  </div>
 
-  {/* I nove gate: lista a sinistra, dettaglio a destra. Senza JS sono tutti visibili. */}
-  <section class="bg-paper text-ink" aria-labelledby="gates-h">
-    <div class="mx-auto max-w-7xl px-5 py-20 sm:px-6 md:py-28">
-      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end" data-reveal>
-        <div>
-          <p class="eyebrow">What the audit reads</p>
-          <h2 id="gates-h" class="mt-3 max-w-[18ch] text-3xl font-semibold tracking-[-0.03em] md:text-[2.75rem] md:leading-[1.08]">
-            Nine gates, published weights, one score.
-          </h2>
-        </div>
-        <p class="max-w-[52ch] leading-relaxed text-ink-soft">
-          AI SEO is not a checklist, it is a retrieval path: an answer engine has to reach the page, understand it, trust it and quote it. Each gate below covers one step. The weights are the ones in the open-source engine (<code class="font-mono text-[13px]">CATEGORY_MAX_V2</code>), so any score can be recomputed by hand. For the engine-by-engine view, see the <a href="/ai-seo-audit/" data-cta="home_ai_seo_audit_link" class="text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">AI SEO audit</a>.
-        </p>
-      </div>
-
-      <div class="gates panel mt-10 grid overflow-hidden md:grid-cols-[minmax(0,300px)_minmax(0,1fr)]" data-gates data-reveal>
-        <div class="gate-list border-b border-rail md:border-r md:border-b-0" aria-label="Scoring categories" data-gate-list>
-          {SCORING_WEIGHTS.map(([name, points, , key], i) => (
-            <button type="button" id={`gate-tab-${key}`} aria-controls={`gate-${key}`} class="gate-tab" data-gate-tab>
-              <span aria-hidden="true" class="font-mono text-[11.5px] tabular-nums text-ink-mute">{String(i + 1).padStart(2, '0')}</span>
-              <span class="min-w-0 flex-1 truncate text-left text-[14px] font-medium">{name}</span>
-              <span class="gate-bar" aria-hidden="true"><i style={`width:${(points / 20) * 100}%`}></i></span>
-              <span class="w-6 text-right font-mono text-[12px] tabular-nums text-ink-soft">{points}<span class="sr-only"> points</span></span>
-            </button>
-          ))}
-        </div>
-        <div class="min-w-0">
-          {SCORING_WEIGHTS.map(([name, points, what, key], i) => (
-            <article id={`gate-${key}`} aria-labelledby={`gate-tab-${key}`} class="gate-panel p-6 md:p-8" data-gate-panel>
-              <div class="flex flex-wrap items-baseline justify-between gap-3">
-                <h3 class="text-xl font-semibold tracking-[-0.02em]">{name}</h3>
-                <p class="font-mono text-[13px] tabular-nums text-ink-mute"><span class="text-ink">{points}</span> / 100 pts · <span>{key}</span></p>
-              </div>
-              <p class="mt-3 max-w-[60ch] leading-relaxed text-ink-soft">{what}</p>
-              <div class="mt-6 overflow-hidden rounded-[9px] bg-[#0B1010] text-[#E8F0EF]">
-                <div class="flex items-center justify-between border-b border-[#1F2929] px-4 py-2">
-                  <span class="font-mono text-[11.5px] text-[#7C8C8B]">a typical failing check</span>
-                  <span class="rounded-[6px] bg-[#FF6B78]/15 px-2 py-0.5 font-mono text-[11px] text-[#FF6B78]">fail</span>
-                </div>
-                <pre class="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed"><code>{GATE_EXAMPLES[key].check}</code></pre>
-              </div>
-              <p class="mt-3 text-[14px] leading-relaxed text-ink-soft">{GATE_EXAMPLES[key].fail}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-
-      <p class="mt-6 font-mono text-[12px] tabular-nums text-ink-mute">
-        Bands: 86-100 excellent · 68-85 good · 36-67 foundation · 0-35 critical ·
-        <a href="/methodology/" class="text-pass-deep underline underline-offset-4">full methodology</a> ·
-        <a href="/guides/" class="text-pass-deep underline underline-offset-4">guides</a>
-      </p>
-
-      {/* Paragrafo editoriale: sostituisce la griglia a tre step (audit UI/UX; vedi ~/geoready-site-v2/DESIGN-CONTRACT.md) */}
-      <p class="mt-10 max-w-[68ch] leading-relaxed text-ink-soft" data-reveal>
-        Most sites lose points in three places: access (crawler permissions and server-rendered content), meaning
-        (schema, headings and a consistent entity name) and citation (self-contained answers with facts in them).
-        For example, the guide on{' '}<a href="/guides/what-are-ai-citations/" class="text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">what counts as an AI citation</a>{' '}explains
-        the last one. To test your own pages, read{' '}<a href="/guides/ai-citations-check/" class="text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">how do I know if my content is cited in ChatGPT answers</a>,
-        and when a competitor is cited in your place, a{' '}<a href="/citation-gap-analysis/" class="text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">citation gap analysis</a>{' '}shows where and why.
-      </p>
-    </div>
-  </section>
-
-  {/* Monitoring: la banda scura, come la dashboard in dark mode */}
-  <section class="band-dark" aria-labelledby="monitor-h">
-    <div class="mx-auto max-w-7xl px-5 py-20 sm:px-6 md:py-28">
-      <div class="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-center">
-        <div data-reveal>
-          <p class="eyebrow">Monitoring</p>
-          <h2 id="monitor-h" class="mt-3 max-w-[16ch] text-3xl font-semibold tracking-[-0.03em] md:text-[2.75rem] md:leading-[1.08]">
-            An audit is a baseline. Monitoring tells you when it moves.
-          </h2>
-          <p class="mt-5 max-w-[50ch] leading-relaxed text-ink-soft">
-            A plugin update rewrites robots.txt, a theme drops the JSON-LD, a migration loses the canonical. Monitoring re-runs the same scoring on a schedule, keeps the history, and emails you when the score drops by 5 points or more.
-          </p>
-          <dl class="mt-8 divide-y divide-rail border-y border-rail text-[14px]">
-            <div class="flex justify-between gap-4 py-3"><dt class="text-ink-soft">Pro</dt><dd class="font-mono tabular-nums">10 domains · weekly</dd></div>
-            <div class="flex justify-between gap-4 py-3"><dt class="text-ink-soft">Agency</dt><dd class="font-mono tabular-nums">50 domains · daily</dd></div>
-            <div class="flex justify-between gap-4 py-3"><dt class="text-ink-soft">Alert threshold</dt><dd class="font-mono tabular-nums">−5 pts</dd></div>
-          </dl>
-          <a href="/pricing/" data-cta="home_hero_monitoring_micro" class="mt-8 inline-flex items-center gap-2 rounded-[9px] bg-[#2DD4BF] px-5 py-3 text-[14px] font-semibold text-[#062420] transition-colors hover:bg-[#5EEAD4]">
-            See monitoring plans
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-          </a>
-        </div>
-
-        <figure class="panel p-5 md:p-6" data-history data-reveal>
-          <div class="flex flex-wrap items-baseline justify-between gap-2">
-            <p class="text-[14px] font-medium">Score history · sample domain</p>
-            <p class="font-mono text-[12px] text-ink-mute">12 weekly runs</p>
-          </div>
-          <svg viewBox={`0 0 ${CH.w} ${CH.h}`} class="mt-4 h-auto w-full" role="img" aria-label={`Sample score history: from ${HISTORY[0]} to ${HISTORY[HISTORY.length - 1]}, with a drop from ${HISTORY[DROP - 1]} to ${HISTORY[DROP]} in week ${DROP + 1}`}>
-            {[55, 65, 75].map((v) => (
-              <g>
-                <line x1={CH.pad} x2={CH.w - CH.pad} y1={y(v)} y2={y(v)} stroke="#1F2929" stroke-dasharray="3 5" />
-                <text x={CH.w - CH.pad} y={y(v) - 6} text-anchor="end" fill="#7C8C8B" font-size="11" font-family="Geist Mono, monospace">{v}</text>
-              </g>
-            ))}
-            <rect x={x(DROP) - 14} y={CH.pad} width="28" height={CH.h - CH.pad * 2} rx="6" fill="#FF6B78" opacity="0.08" />
-            <path d={HISTORY_PATH} fill="none" stroke="#2DD4BF" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round" data-history-line />
-            {HISTORY.map((v, i) => (
-              <circle cx={x(i)} cy={y(v)} r={i === DROP ? 5 : 3} fill={i === DROP ? '#FF6B78' : '#111616'} stroke={i === DROP ? '#FF6B78' : '#2DD4BF'} stroke-width="2" data-history-dot />
-            ))}
-          </svg>
-          <div class="mt-4 flex items-start gap-3 rounded-[9px] bg-[#172020] px-4 py-3" data-history-alert>
-            <span class="mt-0.5 rounded-[6px] bg-[#FF6B78]/15 px-2 py-0.5 font-mono text-[11px] text-[#FF6B78]">alert</span>
-            <p class="text-[13.5px] leading-relaxed text-ink-soft">
-              <span class="font-medium text-ink">Week {DROP + 1}: {HISTORY[DROP - 1]} → {HISTORY[DROP]} (−{HISTORY[DROP - 1] - HISTORY[DROP]} pts).</span> robots.txt now disallows GPTBot. Email sent with the diff; fixed the next week.
-            </p>
-          </div>
-          <figcaption class="mt-4 text-[12.5px] leading-relaxed text-ink-mute">
-            What runs on its own: site audits and score monitoring on our servers, and AI answer checks on Perplexity through its API. ChatGPT and Google AI answers are pasted in by you and scored the same way; GeoReady does not scrape those interfaces.
-          </figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  {/* Per chi è: un pannello unico diviso in tre colonne */}
-  <section class="bg-white text-ink" aria-labelledby="who-h">
-    <div class="mx-auto max-w-7xl px-5 py-20 sm:px-6 md:py-28">
-      <div data-reveal>
-        <p class="eyebrow">Who uses it</p>
-        <h2 id="who-h" class="mt-3 max-w-[20ch] text-3xl font-semibold tracking-[-0.03em] md:text-[2.75rem] md:leading-[1.08]">
-          One engine, three ways to run it.
-        </h2>
-      </div>
-      <div class="mt-10 grid overflow-hidden rounded-[14px] border border-rail lg:grid-cols-3" data-reveal="stagger">
-        <article class="flex flex-col border-b border-rail p-6 md:p-8 lg:border-r lg:border-b-0">
-          <p class="font-mono text-[12px] text-pass-deep">Agencies</p>
-          <h3 class="mt-3 text-xl font-semibold tracking-[-0.02em]">Every client domain in one workspace.</h3>
-          <ul class="mt-4 space-y-2 text-[14px] leading-relaxed text-ink-soft">
-            <li>50 domains re-scored daily</li>
-            <li>Unbranded PDF reports for clients</li>
-            <li>Team roles: owner, editor, viewer</li>
-            <li>Batch audits and competitor comparison</li>
-          </ul>
-          <a href="/pricing/" data-cta="home_pricing_teaser_agency" class="mt-auto pt-6 text-[14px] font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Agency plan, $89/mo founding, then $199</a>
-        </article>
-        <article class="flex flex-col border-b border-rail p-6 md:p-8 lg:border-r lg:border-b-0">
-          <p class="font-mono text-[12px] text-pass-deep">SEO consultants</p>
-          <h3 class="mt-3 text-xl font-semibold tracking-[-0.02em]">Show the client where they stand, then prove the fix.</h3>
-          <ul class="mt-4 space-y-2 text-[14px] leading-relaxed text-ink-soft">
-            <li>10 domains re-scored weekly</li>
-            <li>Score history and regression emails</li>
-            <li>PDF export and API access</li>
-          </ul>
-          <a href="/pricing/" data-cta="home_pricing_teaser_pro" class="mt-auto pt-6 text-[14px] font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Pro plan, $19/mo founding, then $29</a>
-        </article>
-        <article class="flex min-w-0 flex-col p-6 md:p-8">
-          <p class="font-mono text-[12px] text-pass-deep">Developers</p>
-          <h3 class="mt-3 text-xl font-semibold tracking-[-0.02em]">The same engine in your terminal and your CI.</h3>
-          <pre class="mt-4 overflow-x-auto rounded-[9px] bg-[#0B1010] px-4 py-4 font-mono text-[12.5px] leading-[1.7] text-[#E8F0EF]"><code><span class="text-[#7C8C8B]">$</span> pip install geo-optimizer-skill
-<span class="text-[#7C8C8B]">$</span> geo audit --url https://example.com \
-    --format json</code></pre>
-          <p class="mt-4 text-[14px] leading-relaxed text-ink-soft">MIT licensed, free forever, SARIF and JUnit output for pipelines.</p>
-          <a href="https://github.com/Auriti-Labs/geo-optimizer-skill" target="_blank" rel="noopener" class="mt-auto pt-6 text-[14px] font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Source on GitHub</a>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  {/* Rispetto ai tool SEO: domande, non accuse */}
-  <section class="border-t border-rail bg-paper text-ink" aria-labelledby="vs-h">
-    <div class="mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-6 md:py-28 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-      <div data-reveal>
-        <p class="eyebrow">Next to your SEO suite</p>
-        <h2 id="vs-h" class="mt-3 max-w-[16ch] text-3xl font-semibold tracking-[-0.03em] md:text-[2.75rem] md:leading-[1.08]">
-          Keep your SEO tools. This is a different layer.
-        </h2>
-        <p class="mt-5 max-w-[46ch] leading-relaxed text-ink-soft">
-          Rank trackers answer where you rank. GeoReady answers whether an answer engine can use the page at all. Comparing GEO trackers? See the <a href="/best-geo-tools/" class="text-pass-deep underline decoration-current/50 underline-offset-4">GEO tools guide</a> and the <a href="/rankscale-alternative/" class="text-pass-deep underline decoration-current/50 underline-offset-4">RankScale comparison</a>.
-        </p>
-      </div>
-      <div class="panel overflow-x-auto" data-reveal>
-        <table class="w-full min-w-[520px] text-left text-[14px]">
-          <thead>
-            <tr class="border-b border-rail">
-              <th scope="col" class="px-5 py-3 font-medium text-ink-mute">The question</th>
-              <th scope="col" class="px-5 py-3 font-medium text-ink-mute">SEO suite</th>
-              <th scope="col" class="px-5 py-3 font-medium text-ink-mute">GeoReady</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              ['Where do I rank for this keyword?', true, false],
-              ['Who links to this page?', true, false],
-              ['Can GPTBot, ClaudeBot and PerplexityBot fetch it?', false, true],
-              ['Does the JSON-LD match what the page shows?', false, true],
-              ['Is there a quotable answer in the first passage?', false, true],
-              ['Did Perplexity cite my domain for this question?', false, true],
-              ['Can I recompute the score from published weights?', false, true],
-            ].map(([q, a, b]) => (
-              <tr class="border-b border-rail last:border-0">
-                <th scope="row" class="px-5 py-3.5 font-normal text-ink">{q}</th>
-                <td class="px-5 py-3.5 font-mono text-[13px]">{a ? <span class="text-ink">yes</span> : <span class="text-ink-mute">—</span>}</td>
-                <td class="px-5 py-3.5 font-mono text-[13px]">{b ? <span class="text-pass-deep">yes</span> : <span class="text-ink-mute">—</span>}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  {/* Prove: benchmark della coorte, motore aperto, libro, chi c'è dietro */}
-  <section class="border-t border-rail bg-white text-ink" aria-labelledby="proof-h">
-    <div class="mx-auto max-w-7xl px-5 py-20 sm:px-6 md:py-28">
-      <div data-reveal>
-        <p class="eyebrow">Auditable by design</p>
-        <h2 id="proof-h" class="mt-3 max-w-[20ch] text-3xl font-semibold tracking-[-0.03em] md:text-[2.75rem] md:leading-[1.08]">
-          Every number here is public.
-        </h2>
-      </div>
-
-      <div class="mt-10 grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <figure class="panel p-6 md:p-8" data-reveal>
-          <p class="eyebrow">Cohort benchmark · {BENCHMARK.sampleLabel}</p>
-          <div class="mt-5 grid grid-cols-3 gap-4">
-            <div><p class="font-mono text-[2.6rem] font-medium leading-none tracking-[-0.04em] tabular-nums">{BENCHMARK.average}</p><p class="mt-2 text-[13px] text-ink-mute">average /100</p></div>
-            <div><p class="font-mono text-[2.6rem] font-medium leading-none tracking-[-0.04em] tabular-nums">{BENCHMARK.median}</p><p class="mt-2 text-[13px] text-ink-mute">median /100</p></div>
-            <div><p class="font-mono text-[2.6rem] font-medium leading-none tracking-[-0.04em] tabular-nums">{BENCHMARK.llmsTxtAdoption}</p><p class="mt-2 text-[13px] text-ink-mute">publish llms.txt</p></div>
-          </div>
-          <div class="mt-6 h-2 overflow-hidden rounded-full bg-[#EEF2F2]" aria-hidden="true">
-            <div class="h-full rounded-full bg-ink" style={`width:${avgPct}%`}></div>
-          </div>
-          <div class="mt-6">
-            <blockquote class="max-w-[62ch] border-l-2 border-rail pl-4">
-              <p class="leading-relaxed text-ink-soft">
-                We measured the sites scored through GeoReady: the average is <strong class="font-semibold text-ink">{BENCHMARK.average} out of 100</strong>, the median {BENCHMARK.median}. {BENCHMARK.llmsTxtAdoption} publish an llms.txt file and {BENCHMARK.schemaAdoption} carry JSON-LD schema. The data shows that a score in the fifties is ordinary, not alarming, and we found that most sites leave a large share of their points unclaimed, in signals a tool can find mechanically.
-              </p>
-              <footer class="mt-2 font-mono text-[12px] text-ink-mute">— <cite class="not-italic">GeoReady cohort benchmark</cite></footer>
-            </blockquote>
-          </div>
-          <figcaption class="mt-4 font-mono text-[12px] leading-relaxed text-ink-mute">
-            GET /api/public/benchmark · as of <time datetime={BENCHMARK.asOfIso}>{BENCHMARK.asOf}</time> · latest audit per domain, self-selected sample · <a href="/state-of-geo/" class="underline underline-offset-2 hover:text-ink">live benchmark</a>
-          </figcaption>
-        </figure>
-
-        <ul class="panel divide-y divide-rail" data-reveal="stagger">
-          {[
-            ['Open engine', `GEO Optimizer, MIT licensed. ${PUBLIC_STATS.github_stars} GitHub stars, scoring weights in the source.`, 'https://github.com/Auriti-Labs/geo-optimizer-skill', 'View the source'],
-            ['Published research', '9 of the 47 citability checks come from the Princeton KDD 2024 GEO paper (arXiv:2311.09735). AutoGEO (arXiv:2510.11438) is a preprint.', '/research/', 'Read the research'],
-            ['Documented in print', 'AI Search Engineering, 992 pages on GEO, AI citations and agent-ready websites. ISBN 979-8172934568.', '/book/', 'About the book'],
-            ['No lock-in', 'The scoring engine is on PyPI, so every score can be reproduced without GeoReady. Built in Italy by Juan Camilo Auriti.', '/about/', "Who's behind it"],
-          ].map(([t, d, href, label]) => (
-            <li class="p-5 md:px-6">
-              <p class="text-[15px] font-semibold">{t}</p>
-              <p class="mt-1 text-[14px] leading-relaxed text-ink-soft">{d}</p>
-              <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noopener' : undefined} class="mt-2 inline-block text-[14px] font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">{label}</a>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <p class="mt-6 text-[14px] text-ink-soft">
-        Run the same audit on <code class="font-mono text-ink">geoready.dev</code> and check our own score. <a href="#audit-form" data-cta="home_proof_self_audit" class="font-medium text-pass-deep underline decoration-current/50 underline-offset-4 hover:decoration-pass-deep">Check a URL</a>
-      </p>
-    </div>
-  </section>
-
-  {/* FAQ: stesse domande del FAQPage JSON-LD, più la nota privacy */}
-  <section class="border-t border-rail bg-paper text-ink" aria-labelledby="faq-h">
-    <div class="mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-6 md:py-28 lg:grid-cols-[minmax(0,0.6fr)_minmax(0,1.4fr)]">
+  <figure class="rubric" data-ui aria-label="Sample audit of example.com: switch on a fix to see the score change">
+    <div class="rb-head">
       <div>
-        <p class="eyebrow">Questions</p>
-        <h2 id="faq-h" class="mt-3 text-3xl font-semibold tracking-[-0.03em] md:text-[2.75rem] md:leading-[1.08]">Frequently asked questions</h2>
-        <p class="mt-5 text-[14px] leading-relaxed text-ink-soft">
-          Plans and billing are on the <a href="/pricing/" data-cta="home_free_note_pricing" class="text-pass-deep underline decoration-current/50 underline-offset-4">pricing page</a>. The free audit, the CLI and 5 runs a day never expire.
-        </p>
+        <p class="rb-site">example.com</p>
+        <p class="rb-meta">Sample audit · rubric v2</p>
+        <p class="rb-band" id="band">Foundation</p>
       </div>
-      <div class="panel divide-y divide-rail">
-        {faqs.map((faq, i) => (
-          <details class="faq group" open={i === 0}>
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[15px] font-medium md:px-6 [&::-webkit-details-marker]:hidden">
-              <h3 class="text-[15px] font-medium">{faq.q}</h3>
-              <span class="faq-plus" aria-hidden="true"></span>
-            </summary>
-            <p class="px-5 pb-5 text-[14.5px] leading-relaxed text-ink-soft md:px-6">{faq.a}</p>
-          </details>
-        ))}
-        <details class="faq group">
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[15px] font-medium md:px-6 [&::-webkit-details-marker]:hidden">
-            <h3 class="text-[15px] font-medium">Does the audit store submitted URLs?</h3>
-            <span class="faq-plus" aria-hidden="true"></span>
-          </summary>
-          <p class="px-5 pb-5 text-[14.5px] leading-relaxed text-ink-soft md:px-6">
-            Yes. The report is kept for 24 hours and its record is deleted within 7 days after that. Benchmark rows are kept indefinitely in hashed, aggregate form, as research data, and server logs rotate within 14 to 30 days. Retention for every data type is in the <a href="/privacy/" class="text-pass-deep underline decoration-current/50 underline-offset-2">Privacy Policy</a>.
-          </p>
-        </details>
+      <div class="rb-score">
+        <svg class="score-ring" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="ring-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" class="rg-a"/><stop offset="1" class="rg-b"/></linearGradient></defs><circle class="ring-t" cx="50" cy="50" r="44"/><circle class="ring-v" id="ring" cx="50" cy="50" r="44" pathLength="100"/></svg>
+        <p class="rb-val"><output class="rb-num" id="score" aria-live="off">56</output><span class="rb-max">/100</span></p>
+        <p class="sr" id="score-sr" aria-live="polite"></p>
       </div>
     </div>
-  </section>
+    <ul class="rb-cats" id="cats">
+      <li data-cat="google_ai"><span>Google AI readiness</span><b>14</b><i>/20</i><s></s></li>
+      <li data-cat="robots"><span>Robots.txt</span><b>3</b><i>/14</i><s></s></li>
+      <li data-cat="schema"><span>Schema JSON-LD</span><b>7</b><i>/14</i><s></s></li>
+      <li data-cat="content"><span>Content</span><b>11</b><i>/14</i><s></s></li>
+      <li data-cat="brand"><span>Brand &amp; entity</span><b>6</b><i>/12</i><s></s></li>
+      <li data-cat="meta"><span>Meta tags</span><b>9</b><i>/11</i><s></s></li>
+      <li data-cat="llms"><span>llms.txt</span><b>0</b><i>/6</i><s></s></li>
+      <li data-cat="signals"><span>Signals</span><b>4</b><i>/6</i><s></s></li>
+      <li data-cat="ai_discovery"><span>AI discovery</span><b>2</b><i>/3</i><s></s></li>
+    </ul>
+    <fieldset class="rb-fixes">
+      <legend>Fixes, ranked by points <span class="rb-hint">· flip one, watch the score</span></legend>
+      <label class="fix"><input type="checkbox" role="switch" data-cat="robots" data-pts="11"><span class="fx-t">Allow OAI-SearchBot, PerplexityBot and Claude-SearchBot<small>robots.txt · line 4</small></span><b>+11</b><span class="sw" aria-hidden="true"></span></label>
+      <label class="fix"><input type="checkbox" role="switch" data-cat="llms" data-pts="5"><span class="fx-t">Publish /llms.txt with sections and links<small>site root · file missing</small></span><b>+5</b><span class="sw" aria-hidden="true"></span></label>
+      <label class="fix"><input type="checkbox" role="switch" data-cat="schema" data-pts="3"><span class="fx-t">Add Organization schema<small>&lt;head&gt; · JSON-LD</small></span><b>+3</b><span class="sw" aria-hidden="true"></span></label>
+      <label class="fix"><input type="checkbox" role="switch" data-cat="signals" data-pts="2"><span class="fx-t">Show a visible publish date<small>article template · &lt;time&gt;</small></span><b>+2</b><span class="sw" aria-hidden="true"></span></label>
+    </fieldset>
+  </figure>
+</section>
 
-  {/* Chiusura */}
-  <section class="band-dark" aria-labelledby="final-h">
-    <div class="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-20 sm:px-6 md:py-24 lg:flex-row lg:items-end lg:justify-between">
-      <div data-reveal>
-        <h2 id="final-h" class="max-w-[18ch] text-3xl font-semibold tracking-[-0.03em] md:text-5xl md:leading-[1.05]">
-          Your score is one URL <em>away</em>.
-        </h2>
-        <p class="mt-5 max-w-[52ch] leading-relaxed text-ink-soft">
-          Free, about a minute, no account. If you already have your score, monitoring is the next step: a single report is a snapshot, a trend is something you can act on.
-        </p>
-      </div>
-      <div class="flex flex-wrap items-center gap-3">
-        <a href="#audit-form" data-cta="home_final_free_check" class="rounded-[9px] bg-[#2DD4BF] px-6 py-3 text-[14px] font-semibold text-[#062420] transition-colors hover:bg-[#5EEAD4]">Run a free audit</a>
-        <a href="/pricing/#comparison-heading" data-cta="home_final_compare_plans" class="rounded-[9px] px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_#2A3838] transition-colors hover:shadow-[inset_0_0_0_1px_#2DD4BF]">Compare plans</a>
-        <a href="/pricing/#plans" data-cta="home_final_already_ran" class="w-full text-[13px] text-ink-mute transition-colors hover:text-ink lg:w-auto">Already ran your audit? Start monitoring →</a>
+{/* PLATFORM: pannello illuminato, fila scura */}
+<section class="platform" id="platform" aria-labelledby="platform-title">
+  <div class="wrap pf-top">
+    <h2 id="platform-title" class="head">Six views, one engine.</h2>
+    <div class="pf-ctrl">
+      <p class="pf-count" id="pf-count" aria-hidden="true">1 / 6</p>
+      <button class="round" type="button" data-pf="-1" aria-label="Previous view"><svg class="ic flip" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <button class="round" type="button" data-pf="1" aria-label="Next view"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+    </div>
+  </div>
+  <div class="pf-stage">
+    <div class="pf-row" id="pf-row" tabindex="0" role="region" aria-label="Product views, scroll sideways">
+
+      <article class="pf-item" aria-label="Crawler access" data-name="Crawler access" data-plan="Free" data-desc="27 AI crawlers checked against your robots.txt, rule by rule. Search bots and training bots are told apart, so blocking training never costs you citations.">
+        <div class="panel" data-ui>
+          <p class="p-title">Crawler access <span>27 bots</span></p>
+          <table class="p-table">
+            <caption class="sr">Sample crawler access for example.com</caption>
+            <thead><tr><th scope="col">Bot</th><th scope="col">Used for</th><th scope="col">Status</th></tr></thead>
+            <tbody data-stagger>
+              <tr><td>OAI-SearchBot</td><td>Search</td><td><span class="st bad">Blocked</span></td></tr>
+              <tr><td>PerplexityBot</td><td>Search</td><td><span class="st bad">Blocked</span></td></tr>
+              <tr><td>Claude-SearchBot</td><td>Search</td><td><span class="st bad">Blocked</span></td></tr>
+              <tr><td>GPTBot</td><td>Training</td><td><span class="st">Blocked</span></td></tr>
+              <tr><td>Google-Extended</td><td>Training</td><td><span class="st ok">Allowed</span></td></tr>
+              <tr><td>CCBot</td><td>Training</td><td><span class="st">Blocked</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="pf-item" aria-label="Ranked fixes" data-name="Ranked fixes" data-plan="Free" data-desc="Every fix names the file, the line and the points it is worth, so the first hour of work goes where the score moves most.">
+        <div class="panel" data-ui>
+          <p class="p-title">Fixes <span>4 open</span></p>
+          <ol class="p-fixes" data-stagger>
+            <li><span>robots.txt, line 4<small>Disallow: / blocks the three search bots</small></span><b>+11</b></li>
+            <li><span>/llms.txt<small>File missing at the site root</small></span><b>+5</b></li>
+            <li><span>&lt;head&gt; JSON-LD<small>No Organization entity</small></span><b>+3</b></li>
+            <li><span>Article template<small>Publish date not visible</small></span><b>+2</b></li>
+          </ol>
+        </div>
+      </article>
+
+      <article class="pf-item" aria-label="Citability" data-name="Citability" data-plan="Free" data-desc="47 checks read the rendered page, not the source: whether a passage answers first, carries its numbers and holds its structure when quoted alone.">
+        <div class="panel" data-ui>
+          <p class="p-title">Citability <span>/guides/espresso-grind</span></p>
+          <ul class="p-checks" data-stagger>
+            <li class="ok">Answer in the first 60 words</li>
+            <li class="ok">Heading hierarchy, H1 to H3</li>
+            <li class="bad">Comparison written as prose, not a table</li>
+            <li class="ok">Numbers stated in the text</li>
+            <li class="bad">4 of 9 images without alt text</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="pf-item" aria-label="Score alerts" data-name="Score alerts" data-plan="Pro and Agency" data-desc="Monitoring re-runs the audit on a schedule and emails you when the score drops five points or more, with the change that caused it.">
+        <div class="panel mail" data-ui>
+          <p class="m-from">GeoReady alerts · Tue 27 Oct, 07:02</p>
+          <p class="m-subj">example.com dropped from 67 to 56</p>
+          <p class="m-body">robots.txt changed since last week. Line 4 now blocks OAI-SearchBot, PerplexityBot and Claude-SearchBot, so ChatGPT, Perplexity and Claude search can no longer cite you.</p>
+          <p class="m-diff"><code>- Allow: /</code><code>+ Disallow: /</code></p>
+          <span class="m-btn">Open the report</span>
+        </div>
+      </article>
+
+      <article class="pf-item" aria-label="AI answer checks" data-name="AI answer checks" data-plan="One a week with a free account, more on paid plans" data-desc="Ask Perplexity a real question and see which domains its answer cites. ChatGPT and Google answers are pasted and scored the same way, never scraped.">
+        <div class="panel" data-ui>
+          <p class="p-title">Perplexity <span>answer check</span></p>
+          <p class="q">“Which espresso grinder is quietest for a small kitchen?”</p>
+          <ul class="p-cites" data-stagger>
+            <li><span>coffeegeek.com</span><b>cited</b></li>
+            <li><span>seriouseats.com</span><b>cited</b></li>
+            <li><span>reddit.com</span><b>cited</b></li>
+            <li class="you"><span>example.com</span><b>not cited</b></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="pf-item" aria-label="CLI and MCP" data-name="CLI and MCP" data-plan="Free, MIT licensed" data-desc="The engine behind the report is MIT licensed. Run it in CI, from a terminal, or as an MCP server inside your own agent.">
+        <div class="panel code" data-ui>
+<pre><code><span class="c-p">$</span> pip install geo-optimizer-skill
+<span class="c-p">$</span> geo audit --url https://example.com
+
+  GEO score   56/100  foundation
+  robots.txt   3/14   citation bots blocked
+  llms.txt     0/6    not found
+  4 fixes ranked · +21 available</code></pre>
+        </div>
+      </article>
+    </div>
+    <ol class="wrap pf-rail" aria-label="Views">
+      <li><button type="button" data-rail="0">Crawler access</button></li>
+      <li><button type="button" data-rail="1">Ranked fixes</button></li>
+      <li><button type="button" data-rail="2">Citability</button></li>
+      <li><button type="button" data-rail="3">Score alerts</button></li>
+      <li><button type="button" data-rail="4">AI answer checks</button></li>
+      <li><button type="button" data-rail="5">CLI and MCP</button></li>
+    </ol>
+    <div class="wrap pf-caption">
+      <p class="pf-name" id="pf-name">Crawler access</p>
+      <p class="pf-plan" id="pf-plan">Free</p>
+      <p class="pf-desc" id="pf-desc">27 AI crawlers checked against your robots.txt, rule by rule. Search bots and training bots are told apart, so blocking training never costs you citations.</p>
+    </div>
+    <p class="sr" id="pf-live" aria-live="polite"></p>
+  </div>
+</section>
+
+{/* HOW: colonna run-in */}
+<section class="how wrap" id="how" aria-labelledby="how-title">
+  <div class="how-col">
+    <h2 id="how-title" class="head">How an audit turns into citations</h2>
+
+    <div class="stage reveal">
+      <p><strong>To begin,</strong> paste a URL. GeoReady fetches the page the way AI crawlers do: robots.txt first, then the rendered HTML, the structured data and the discovery files. It takes about a minute and needs no account.</p>
+      <div class="ev ev-fetch" data-ui>
+        <span>example.com</span><span class="ev-bar"><s></s></span><span>Reading robots.txt · 27 bots</span>
       </div>
     </div>
-  </section>
-</Shell>
 
-<style>
-  /* Una sola texture: la griglia di punti del pannello, sfumata a destra dietro lo strumento. */
-  .hero-v2::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(#C9D3D3 1px, transparent 1px);
-    background-size: 22px 22px;
-    mask-image: linear-gradient(100deg, transparent 38%, #000 75%);
-    opacity: 0.55;
-    pointer-events: none;
-  }
-  .hero-v2 > div { position: relative; }
+    <div class="stage reveal">
+      <p><strong>Within a minute,</strong> the report scores nine categories on rubric v2. The weights are public and versioned, so a score from June means the same thing as a score from today.</p>
+      <div class="ev ev-weights" data-ui>
+        <div class="ev-stack" aria-hidden="true" data-stagger><span style="--w:20">20</span><span style="--w:14">14</span><span style="--w:14">14</span><span style="--w:14">14</span><span style="--w:12">12</span><span style="--w:11">11</span><span style="--w:6">6</span><span style="--w:6">6</span><span style="--w:3">3</span></div>
+        <p class="ev-key">Google AI 20 · Robots.txt 14 · Schema 14 · Content 14 · Brand 12 · Meta 11 · llms.txt 6 · Signals 6 · AI discovery 3</p>
+      </div>
+    </div>
 
-  .gate-tab {
-    display: flex; width: 100%; align-items: center; gap: 12px; padding: 12px 18px;
-    border-left: 2px solid transparent; color: var(--color-ink-soft);
-    transition: background-color .2s, color .2s, border-color .2s;
-  }
-  .gate-tab:hover { background: #F8FAFA; color: var(--color-ink); }
-  .gate-tab[aria-selected='true'] { background: #F4F6F6; color: var(--color-ink); border-left-color: #0F766E; }
-  .gate-tab:focus-visible, .faq summary:focus-visible { outline-offset: -2px; }
-  .gate-bar { width: 44px; height: 4px; flex: none; border-radius: 99px; background: #E3E9E9; overflow: hidden; }
-  .gate-bar i { display: block; height: 100%; background: #0A1514; border-radius: inherit; }
-  .gate-tab[aria-selected='true'] .gate-bar i { background: #0F766E; }
-  /* Senza JS i pannelli sono tutti visibili, impilati; lo script nasconde i non attivi. */
-  [data-gates].is-tabs [data-gate-panel][hidden] { display: none; }
-  [data-gates]:not(.is-tabs) [data-gate-panel] + [data-gate-panel] { border-top: 1px solid var(--color-rail); }
+    <div class="stage reveal">
+      <p><strong>After that,</strong> you work down the fixes in order of points. Each one names the file and the line, and a re-run shows whether it landed.</p>
+<pre class="ev ev-diff"><code data-stagger><span class="d-ctx">  User-agent: OAI-SearchBot</span>
+<span class="d-ctx">  User-agent: PerplexityBot</span>
+<span class="d-ctx">  User-agent: Claude-SearchBot</span>
+<span class="d-del">- Disallow: /</span>
+<span class="d-add">+ Allow: /</span></code></pre>
+    </div>
 
-  .faq-plus { position: relative; width: 12px; height: 12px; flex: none; }
-  .faq-plus::before, .faq-plus::after { content: ''; position: absolute; inset: 5.25px 0; height: 1.5px; background: var(--color-ink-mute); transition: transform .3s cubic-bezier(.16,1,.3,1); }
-  .faq-plus::after { transform: rotate(90deg); }
-  .faq[open] .faq-plus::after { transform: rotate(0deg); }
-</style>
+    <div class="stage reveal">
+      <p><strong>From then on,</strong> monitoring re-runs the audit for you, weekly on Pro and daily on Agency, keeps the history and emails you when the score drops five points or more. <a class="stage-link" href="#pricing" data-cta="home_how_plans">See plans</a></p>
+      <figure class="ev ev-mon" data-ui id="mon">
+        <div class="mc-head"><span class="mc-site">example.com</span><span class="mc-sched"><i aria-hidden="true"></i>Weekly run · Pro</span></div>
+        <div class="mc-plot">
+          <svg viewBox="0 0 560 330" role="img" aria-labelledby="mon-cap">
+            <defs>
+              <linearGradient id="mc-stroke" gradientUnits="userSpaceOnUse" x1="40" y1="0" x2="508" y2="0">
+                <stop offset="0" class="mc-sa"/><stop offset="0.575" class="mc-sa"/><stop offset="0.6" class="mc-sx"/><stop offset="0.73" class="mc-sx"/><stop offset="0.755" class="mc-sa"/><stop offset="1" class="mc-sb"/>
+              </linearGradient>
+              <linearGradient id="mc-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="mc-fa"/><stop offset="1" class="mc-fb"/></linearGradient>
+              <clipPath id="mc-clip"><rect class="mc-cliprect" x="30" y="0" width="518" height="300"/></clipPath>
+            </defs>
+            {/* corsie delle bande: asse ritagliato 50-80, etichette vere */}
+            <rect class="mc-lane mc-lane-good" x="30" y="20" width="518" height="80"/>
+            <rect class="mc-lane mc-lane-found" x="30" y="100" width="518" height="187"/>
+            <line class="mc-edge" x1="30" y1="100" x2="548" y2="100"/>
+            <line class="mc-edge-hot" x1="414" y1="100" x2="548" y2="100"/>
+            <text class="mc-ax" x="24" y="24">80</text><text class="mc-ax" x="24" y="104">68</text><text class="mc-ax" x="24" y="291">40</text>
+            <text class="mc-band" x="40" y="35">GOOD · 68–85</text>
+            <text class="mc-band" x="40" y="277">FOUNDATION · 36–67</text>
+            <line class="mc-base" x1="30" y1="296" x2="548" y2="296"/>
+            <g clip-path="url(#mc-clip)"><path class="mc-area" d="M40 140 L92 133.3 L144 120 L196 113.3 L248 106.7 L300 106.7 L352 180 L404 106.7 L456 73.3 L508 53.3 L508 287 L40 287 Z"/></g>
+            <path class="mc-glow" d="M40 140 L92 133.3 L144 120 L196 113.3 L248 106.7 L300 106.7 L352 180 L404 106.7 L456 73.3 L508 53.3"/>
+            <path class="mc-line" d="M40 140 L92 133.3 L144 120 L196 113.3 L248 106.7 L300 106.7 L352 180 L404 106.7 L456 73.3 L508 53.3"/>
+            {/* una corsa per settimana: scan, tacca, anello, punto */}
+            <g class="mc-run" data-s="62"><line class="mc-scan" x1="40" y1="296" x2="40" y2="140"/><line class="mc-tick" x1="40" y1="292" x2="40" y2="300"/><circle class="mc-ring" cx="40" cy="140" r="5"/><circle class="mc-dot" cx="40" cy="140" r="4"/></g>
+            <g class="mc-run" data-s="63"><line class="mc-scan" x1="92" y1="296" x2="92" y2="133.3"/><line class="mc-tick" x1="92" y1="292" x2="92" y2="300"/><circle class="mc-ring" cx="92" cy="133.3" r="5"/><circle class="mc-dot" cx="92" cy="133.3" r="4"/></g>
+            <g class="mc-run" data-s="65"><line class="mc-scan" x1="144" y1="296" x2="144" y2="120"/><line class="mc-tick" x1="144" y1="292" x2="144" y2="300"/><circle class="mc-ring" cx="144" cy="120" r="5"/><circle class="mc-dot" cx="144" cy="120" r="4"/></g>
+            <g class="mc-run" data-s="66"><line class="mc-scan" x1="196" y1="296" x2="196" y2="113.3"/><line class="mc-tick" x1="196" y1="292" x2="196" y2="300"/><circle class="mc-ring" cx="196" cy="113.3" r="5"/><circle class="mc-dot" cx="196" cy="113.3" r="4"/></g>
+            <g class="mc-run" data-s="67"><line class="mc-scan" x1="248" y1="296" x2="248" y2="106.7"/><line class="mc-tick" x1="248" y1="292" x2="248" y2="300"/><circle class="mc-ring" cx="248" cy="106.7" r="5"/><circle class="mc-dot" cx="248" cy="106.7" r="4"/></g>
+            <g class="mc-run" data-s="67"><line class="mc-scan" x1="300" y1="296" x2="300" y2="106.7"/><line class="mc-tick" x1="300" y1="292" x2="300" y2="300"/><circle class="mc-ring" cx="300" cy="106.7" r="5"/><circle class="mc-dot" cx="300" cy="106.7" r="4"/></g>
+            <g class="mc-run mc-drop" data-s="56"><line class="mc-scan" x1="352" y1="296" x2="352" y2="180"/><line class="mc-tick" x1="352" y1="292" x2="352" y2="300"/><circle class="mc-ring" cx="352" cy="180" r="5"/><circle class="mc-dot mc-dot-ok" cx="352" cy="180" r="4"/><circle class="mc-dot mc-dot-bad" cx="352" cy="180" r="5"/></g>
+            <g class="mc-run" data-s="67"><line class="mc-scan" x1="404" y1="296" x2="404" y2="106.7"/><line class="mc-tick" x1="404" y1="292" x2="404" y2="300"/><circle class="mc-ring" cx="404" cy="106.7" r="5"/><circle class="mc-dot" cx="404" cy="106.7" r="4"/></g>
+            <g class="mc-run" data-s="72"><line class="mc-scan" x1="456" y1="296" x2="456" y2="73.3"/><line class="mc-tick" x1="456" y1="292" x2="456" y2="300"/><circle class="mc-ring" cx="456" cy="73.3" r="5"/><circle class="mc-dot" cx="456" cy="73.3" r="4"/></g>
+            <g class="mc-run" data-s="75"><line class="mc-scan" x1="508" y1="296" x2="508" y2="53.3"/><line class="mc-tick" x1="508" y1="292" x2="508" y2="300"/><circle class="mc-ring" cx="508" cy="53.3" r="5"/><circle class="mc-dot" cx="508" cy="53.3" r="4.5"/></g>
+            {/* note sugli eventi */}
+            <text class="mc-note mc-note-bad" data-at="6" x="352" y="200" text-anchor="middle">56</text>
+            <text class="mc-note" data-at="7" x="412" y="126">robots.txt fixed</text>
+            <g class="mc-cross" data-at="7.2"><circle cx="414" cy="100" r="3"/><text class="mc-note mc-wide" x="406" y="93" text-anchor="end">enters good</text></g>
+            <text class="mc-note mc-accent" data-at="8" x="446" y="66" text-anchor="end">+5 llms.txt</text>
+            <text class="mc-note mc-accent" data-at="9" x="498" y="36" text-anchor="end"><tspan class="mc-wide">+3 Organization schema</tspan><tspan class="mc-narrow">+3 schema</tspan></text>
+            <g class="mc-final" data-at="9.3"><circle class="mc-live" cx="508" cy="53.3" r="5"/><text class="mc-big" x="520" y="56">75</text><text class="mc-band mc-band-on" x="520" y="70">GOOD</text></g>
+            <g class="mc-wks"><text x="40" y="318">W1</text><text class="mc-minor" x="92" y="318">W2</text><text class="mc-minor" x="144" y="318">W3</text><text x="196" y="318">W4</text><text class="mc-minor" x="248" y="318">W5</text><text class="mc-minor" x="300" y="318">W6</text><text x="352" y="318">W7</text><text class="mc-minor" x="404" y="318">W8</text><text class="mc-minor" x="456" y="318">W9</text><text x="508" y="318">W10</text></g>
+          </svg>
+          <div class="mc-alert" role="note">
+            <p class="mc-alert-h"><i aria-hidden="true"></i>Alert sent · example.com <b>−11</b></p>
+            <p class="mc-alert-b"><code>robots.txt</code> line 4 blocks OAI-SearchBot, PerplexityBot, Claude-SearchBot</p>
+          </div>
+        </div>
+        <figcaption id="mon-cap">Sample history for example.com: weekly scores from 62 up to 67, then week 7 dropped from 67 to 56 and the alert went out. The fix landed in week 8, and llms.txt and Organization schema took it to 75, inside the good band.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+{/* PROVA: numeri reali letti da /api/stats a build time */}
+<section class="open wrap" aria-labelledby="open-title">
+  <h2 id="open-title" class="head open-t">The engine is open source, and people run it.</h2>
+  <ul class="proof">
+    <li><a href="https://github.com/Auriti-Labs/geo-optimizer-skill" data-cta="home_proof_github"><b data-count={PUBLIC_STATS.github_stars}>{STARS}</b><span>stars on GitHub</span></a></li>
+    <li><a href="https://pypi.org/project/geo-optimizer-skill/" data-cta="home_proof_pypi"><b data-count={PUBLIC_STATS.pypi_downloads_month}>{fmt(PUBLIC_STATS.pypi_downloads_month)}</b><span>PyPI downloads last month</span></a></li>
+    <li><b data-count={PUBLIC_STATS.audits_run}>{fmt(PUBLIC_STATS.audits_run)}</b><span>audits run on geoready.dev</span></li>
+    <li><a href="https://github.com/Auriti-Labs/geo-optimizer-skill/blob/main/LICENSE"><b>MIT</b><span>licensed, scoring weights public on GitHub</span></a></li>
+  </ul>
+  <p class="proof-asof">Figures as of <time datetime={STATS_AS_OF_ISO}>{statsAsOf}</time>, from GitHub, PyPI and our own audit counter.</p>
+</section>
+
+{/* PRICING: tre piani affiancati, Pro in rilievo */}
+<section class="pricing wrap" id="pricing" aria-labelledby="pricing-title">
+  <h2 id="pricing-title" class="head">Pay for monitoring, not for the audit.</h2>
+  <p class="lead pr-lead">The audit is a snapshot of today. Monitoring re-runs it on a schedule and tells you when something breaks.</p>
+  <ul class="pr-cols">
+    <li class="pr-card">
+      <h3>Free</h3>
+      <p class="pr-price"><b>$0</b><span>forever, no account</span></p>
+      <p class="pr-badge">No card required</p>
+      <div class="pr-runs"><p>On demand, when you run it</p><span aria-hidden="true">{ticks(30, 0).map(() => <i></i>)}</span></div>
+      <ul class="pr-list">
+        <li>Five audits a day</li>
+        <li>Full nine-category report with ranked fixes</li>
+        <li>Shareable report link</li>
+        <li>MIT licensed CLI, no limits</li>
+      </ul>
+      <div class="pr-foot"><a class="btn btn-ghost" href="#audit" data-cta="home_plan_free">Run a free audit</a><p class="pr-fine">No card, no account</p></div>
+    </li>
+    <li class="pr-card pr-pick">
+      <h3>Pro</h3>
+      <p class="pr-rec">Recommended</p>
+      <p class="pr-price"><b>$19</b><span>per month, then $29</span></p>
+      <p class="pr-badge">Founding price · save $10 a month</p>
+      <div class="pr-runs"><p>Weekly · 4 runs a month</p><span class="wk" aria-hidden="true">{ticks(4, 4).map(() => <i class="on"></i>)}</span></div>
+      <ul class="pr-list">
+        <li>Weekly monitoring, up to 10 domains</li>
+        <li>History of your last 30 audits</li>
+        <li>Email when the score drops 5+ points</li>
+        <li>PDF export and API access</li>
+      </ul>
+      <div class="pr-foot"><a class="btn btn-go" href={signup('pro')} data-plan-id="pro" data-plan-name="Pro" data-plan-price="19" data-plan-period="monthly" data-plan-currency="USD" data-cta-location="home_pricing">Start Pro</a><p class="pr-fine">Cancel anytime, no lock-in</p></div>
+    </li>
+    <li class="pr-card">
+      <h3>Agency</h3>
+      <p class="pr-price"><b>$89</b><span>per month, then $199</span></p>
+      <p class="pr-badge">Founding price · save $110 a month</p>
+      <div class="pr-runs"><p>Daily · 30 runs a month</p><span aria-hidden="true">{ticks(30, 30).map(() => <i class="on"></i>)}</span></div>
+      <ul class="pr-list">
+        <li>Daily monitoring, up to 50 domains</li>
+        <li>Team seats and 24 months of history</li>
+        <li>Unlimited batch audits and snapshots</li>
+        <li>14-day trial on request</li>
+      </ul>
+      <div class="pr-foot"><a class="btn btn-ghost" href={signup('agency')} data-plan-id="agency" data-plan-name="Agency" data-plan-price="89" data-plan-period="monthly" data-plan-currency="USD" data-cta-location="home_pricing">Start Agency</a><p class="pr-fine">Cancel anytime, no lock-in</p></div>
+    </li>
+  </ul>
+  <p class="pr-terms">Billed monthly through Stripe. Cancel from your account settings whenever you like, with no lock-in or penalties. The founding price stays locked while the subscription remains active.</p>
+</section>
+
+{/* FAQ: riquadri pieni, stesso array dello schema FAQPage */}
+<section class="faq wrap" id="faq" aria-labelledby="faq-title">
+  <h2 id="faq-title" class="head faq-t">Plain answers</h2>
+  <div class="faq-list">
+    {faqs.map((f, i) => (
+      <details name="faq" open={i === 0}><summary>{f.q}<span class="tog" aria-hidden="true"><svg class="ic"><use href="#i-plus"/></svg></span></summary><p>{f.a}</p></details>
+    ))}
+  </div>
+</section>
+
+{/* CTA: la frase a sinistra, il report che sta per nascere a destra */}
+<section class="cta wrap" aria-labelledby="cta-title">
+  <div class="cta-card">
+    <svg class="cta-mark" viewBox="4 4 40 40" aria-hidden="true" focusable="false"><path d="M11.74 13.71 A16 16 0 1 1 11.74 34.29" fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round"/><path class="cta-mark-wave" d="M8 24 C12 14 18 34 24 24 C30 14 36 34 40 24" fill="none" stroke="currentColor" stroke-width="0.55" stroke-linecap="round"/></svg>
+    <div class="cta-copy">
+      <h2 id="cta-title" class="display">Can AI answers cite your site?</h2>
+      <form class="audit" action="/report/audit/" method="get" data-audit-form>
+        <label class="sr" for="cta-url">Website address</label>
+        <input id="cta-url" name="url" type="text" inputmode="url" autocomplete="url" placeholder="your-site.com" required aria-describedby="cta-note">
+        <button class="btn btn-go" type="submit">Run free audit</button>
+      </form>
+      <p class="note" id="cta-note" data-audit-note aria-live="polite">Free, no account. The report opens in about a minute; after that, <a class="cta-next" href="#pricing" data-cta="home_cta_pricing">Pro keeps watching it every week for $19</a>.</p>
+      <ul class="cta-facts">
+        <li><b>100</b><span>points, public weights</span></li>
+        <li><b>27</b><span>AI crawlers checked</span></li>
+        <li><b>47</b><span>citability checks</span></li>
+      </ul>
+    </div>
+    <figure class="cta-prev" aria-label="What the report checks, in order">
+      <div class="cp-head">
+        <span class="cp-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <p class="cp-url"><span class="cp-scheme">https://</span><span id="cp-domain">your-site.com</span><span class="cp-caret" aria-hidden="true"></span></p>
+      </div>
+      <div class="cp-body">
+        <div class="cp-score">
+          <svg class="score-ring cp-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="ring-t" cx="50" cy="50" r="44"/><circle class="ring-v cp-ring-v" cx="50" cy="50" r="44" pathLength="100"/></svg>
+          <p class="cp-q" aria-hidden="true"><b>?</b><span>/100</span></p>
+        </div>
+        <p class="cp-status" aria-hidden="true"><span class="cp-pulse"></span><span id="cp-step">Reading robots.txt</span></p>
+      </div>
+      <ol class="cp-cats" id="cp-cats">
+        <li><span>Google AI readiness</span><i>/20</i><s></s></li>
+        <li><span>Robots.txt</span><i>/14</i><s></s></li>
+        <li><span>Schema JSON-LD</span><i>/14</i><s></s></li>
+        <li><span>Content</span><i>/14</i><s></s></li>
+        <li><span>Brand &amp; entity</span><i>/12</i><s></s></li>
+        <li><span>Meta tags</span><i>/11</i><s></s></li>
+        <li><span>llms.txt</span><i>/6</i><s></s></li>
+        <li><span>Signals</span><i>/6</i><s></s></li>
+        <li><span>AI discovery</span><i>/3</i><s></s></li>
+      </ol>
+      <figcaption class="cp-foot">Your score and ranked fixes appear here once the audit runs.</figcaption>
+    </figure>
+  </div>
+</section>
+
+</main>
+
+  <SiteFooter />
+  <CookieConsentManager client:only="react" />
+</Layout>
 
 <script>
-  // Tab dei gate: pattern ARIA tabs con frecce su/giù. Il contenuto è già nell'HTML.
-  const gates = document.querySelector<HTMLElement>('[data-gates]');
-  if (gates) {
-    const tabs = Array.from(gates.querySelectorAll<HTMLButtonElement>('[data-gate-tab]'));
-    const panels = Array.from(gates.querySelectorAll<HTMLElement>('[data-gate-panel]'));
-    const select = (i: number, focus = false) => {
-      tabs.forEach((t, j) => {
-        t.setAttribute('aria-selected', String(i === j));
-        t.tabIndex = i === j ? 0 : -1;
-      });
-      panels.forEach((p, j) => { p.hidden = i !== j; });
-      if (focus) tabs[i].focus();
-    };
-    gates.querySelector('[data-gate-list]')?.setAttribute('role', 'tablist');
-    gates.querySelector('[data-gate-list]')?.setAttribute('aria-orientation', 'vertical');
-    tabs.forEach((t) => t.setAttribute('role', 'tab'));
-    panels.forEach((p) => { p.setAttribute('role', 'tabpanel'); p.tabIndex = 0; });
-    gates.classList.add('is-tabs');
-    select(0);
-    tabs.forEach((t, i) => {
-      t.addEventListener('click', () => select(i));
-      t.addEventListener('keydown', (e) => {
-        const k = e.key;
-        if (k !== 'ArrowDown' && k !== 'ArrowUp' && k !== 'Home' && k !== 'End') return;
-        e.preventDefault();
-        const n = k === 'Home' ? 0 : k === 'End' ? tabs.length - 1 : (i + (k === 'ArrowDown' ? 1 : -1) + tabs.length) % tabs.length;
-        select(n, true);
-      });
-    });
-  }
-
-  // Il grafico del monitoring si disegna quando entra in vista.
-  const history = document.querySelector<SVGElement>('[data-history]');
-  if (history && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-    Promise.all([import('gsap'), import('gsap/ScrollTrigger')]).then(([{ gsap }, { ScrollTrigger }]) => {
-      gsap.registerPlugin(ScrollTrigger);
-      const line = history.querySelector<SVGPathElement>('[data-history-line]')!;
-      const len = line.getTotalLength();
-      const tl = gsap.timeline({ scrollTrigger: { trigger: history, start: 'top 75%', once: true } });
-      tl.fromTo(line, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: 1.6, ease: 'power2.inOut' })
-        .from(history.querySelectorAll('[data-history-dot]'), { scale: 0, transformOrigin: 'center', duration: 0.3, stagger: 0.1, ease: 'back.out(2)' }, 0.1)
-        .from(history.querySelector('[data-history-alert]'), { opacity: 0, y: 8, duration: 0.5, ease: 'expo.out' }, '-=0.4');
-    });
-  }
+  import '../scripts/home-v3/app.js';
 </script>
