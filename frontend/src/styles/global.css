@@ -390,7 +390,7 @@ html:not(.js) .theme .t-system { opacity: 1; transform: none; }
   --accent-hover: color-mix(in srgb, var(--accent) 86%, var(--ink));
   --accent-wash: color-mix(in srgb, var(--accent) 10%, var(--bg));
   --bad-wash: color-mix(in srgb, var(--bad) 9%, var(--bg));
-  --warn: #9A5F00;
+  --warn: #8F5800; /* era #9A5F00: 4.32:1 su warn-wash, sotto AA */
   --warn-wash: color-mix(in srgb, var(--warn) 11%, var(--bg));
   --field-raised: color-mix(in srgb, var(--field-ink) 6%, var(--field));
   --field-rail: color-mix(in srgb, var(--field-ink) 13%, var(--field));
