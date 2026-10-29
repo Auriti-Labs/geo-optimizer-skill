@@ -28,7 +28,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
   };
 
   return (
-    <div className="divide-y divide-rail overflow-hidden rounded-[10px] border border-rail bg-white">
+    <div className="divide-y divide-rail overflow-hidden rounded-[10px] border border-rail bg-raised">
       {recommendations.map((rec) => {
         const config = priorityConfig[rec.priority];
         const isOpen = expanded.has(rec.id);

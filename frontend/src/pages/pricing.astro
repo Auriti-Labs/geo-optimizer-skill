@@ -15,7 +15,7 @@ const plans = [
     description: 'Single-URL audit with a full GEO score and the complete 9-category breakdown. No account required.',
     cta: 'Start free audit',
     ctaHref: '/',
-    ctaStyle: 'border border-rail bg-white text-ink hover:bg-pass-wash',
+    ctaStyle: 'border border-rail bg-raised text-ink hover:bg-pass-wash',
     highlight: false,
     cadence: 'run: on demand · 5/day',
     features: [
@@ -36,7 +36,7 @@ const plans = [
     description: 'Weekly monitoring for up to 10 domains, score history, regression alerts, PDF export, and API access. For developers and consultants managing a few sites.',
     cta: 'Start with Pro',
     ctaHref: 'https://app.geoready.dev/signup?plan=pro&intent=monitoring&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=pro_card',
-    ctaStyle: 'bg-ink text-white hover:bg-ink-soft',
+    ctaStyle: 'bg-ink text-paper hover:bg-ink-soft',
     highlight: false,
     cadence: 'schedule: weekly · 10 domains',
     features: [
@@ -57,7 +57,7 @@ const plans = [
     description: 'Team workspace, 50-domain daily portfolio monitoring, AI answer snapshots, and unlimited batch audits.',
     cta: 'Start with Agency',
     ctaHref: 'https://app.geoready.dev/signup?plan=agency&intent=portfolio&onboarding=first_domain&utm_source=pricing&utm_medium=plan_card&utm_campaign=pricing_to_paid&utm_content=agency_card',
-    ctaStyle: 'bg-pass-deep text-white hover:bg-pass',
+    ctaStyle: 'bg-pass-deep text-on-accent hover:bg-pass',
     highlight: true,
     cadence: 'schedule: daily · 50 domains',
     features: [
@@ -281,7 +281,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
       <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-16">
         <div>
           <p class="eyebrow">pricing · USD · billed monthly via Stripe</p>
-          <h1 class="mt-4 max-w-3xl font-head text-[2.5rem] font-semibold leading-[1.04] tracking-[-0.035em] text-ink md:text-[3.5rem]">
+          <h1 class="mt-4 max-w-3xl font-head text-[2.5rem] leading-[1.04] tracking-[-0.03em] text-ink md:text-[3.5rem]">
             Pay for <em>monitoring</em>, not for the audit.
           </h1>
           <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
@@ -294,14 +294,14 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
             <a
               href="#plans"
               data-cta="pricing_hero_compare_plans"
-              class="inline-flex items-center justify-center rounded-[9px] bg-pass-deep px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-pass"
+              class="inline-flex items-center justify-center rounded-[9px] bg-pass-deep px-6 py-3 text-[14px] font-semibold text-on-accent transition-colors hover:bg-pass"
             >
               Compare plans
             </a>
             <a
               href="/"
               data-cta="pricing_hero_free_audit"
-              class="inline-flex items-center justify-center gap-2 rounded-[9px] border border-rail bg-white px-6 py-3 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+              class="inline-flex items-center justify-center gap-2 rounded-[9px] border border-rail bg-raised px-6 py-3 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Start free audit
               <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
@@ -328,7 +328,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
               </div>
             ))}
           </dl>
-          <div class="border-t border-rail bg-[#EEF2F2] px-5 py-3">
+          <div class="border-t border-rail bg-surface px-5 py-3">
             <span class="font-mono text-[12px] text-ink-mute">billing: Stripe · cancel anytime</span>
           </div>
         </aside>
@@ -359,7 +359,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
               <div class="flex items-center justify-between gap-3">
                 <h3 class="text-base font-semibold text-ink">{plan.name}</h3>
                 {plan.highlight && (
-                  <span class="whitespace-nowrap rounded-[6px] bg-pass-deep px-2 py-0.5 font-mono text-[11.5px] font-medium text-white">
+                  <span class="whitespace-nowrap rounded-[6px] bg-pass-deep px-2 py-0.5 font-mono text-[11.5px] font-medium text-on-accent">
                     For client portfolios
                   </span>
                 )}
@@ -419,7 +419,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
         <a
           href="mailto:info@geoready.dev?subject=GeoReady%20Enterprise"
           data-cta="pricing_enterprise_contact_sales"
-          class="inline-flex shrink-0 items-center justify-center rounded-[9px] border border-rail bg-white px-5 py-3 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+          class="inline-flex shrink-0 items-center justify-center rounded-[9px] border border-rail bg-raised px-5 py-3 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
         >
           Email info@geoready.dev
         </a>
@@ -459,7 +459,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
                   <p class="text-sm font-semibold text-ink">{row.item}</p>
                   <p class="mt-1 text-[13px] leading-relaxed text-ink-soft">{row.how}</p>
                 </div>
-                <span class={`shrink-0 rounded-[6px] px-2 py-0.5 font-mono text-[11.5px] ${row.mode === 'automated' ? 'bg-[#0F2A27] text-pass-deep' : 'border border-rail text-ink-soft'}`}>
+                <span class={`shrink-0 rounded-[6px] px-2 py-0.5 font-mono text-[11.5px] ${row.mode === 'automated' ? 'bg-pass-wash text-pass-deep' : 'border border-rail text-ink-soft'}`}>
                   {row.mode}
                 </span>
               </li>
@@ -471,11 +471,11 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
   </section>
 
   {/* Credibilità: solo segnali verificabili nel codice (open source, ricerca, copertura) */}
-  <section aria-label="What the audit is built on" class="border-b border-rail bg-white">
+  <section aria-label="What the audit is built on" class="border-b border-rail bg-raised">
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <ul class="grid gap-px overflow-hidden rounded-[14px] border border-rail bg-rail sm:grid-cols-2 lg:grid-cols-4" data-reveal="stagger">
         {credibility.map((c) => (
-          <li class="bg-white p-5">
+          <li class="bg-raised p-5">
             <p class="flex items-baseline gap-2">
               <span class="font-mono text-[28px] font-medium leading-none tracking-[-0.03em] tabular-nums text-ink">{c.value}</span>
               <span class="text-sm font-semibold text-ink">{c.label}</span>
@@ -503,7 +503,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
       <div class="panel mt-6 overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full min-w-[760px] border-collapse text-left text-sm">
-            <thead class="bg-[#EEF2F2]">
+            <thead class="bg-surface">
               <tr>
                 <th scope="col" class={thClass}>If your next job is...</th>
                 <th scope="col" class={thClass}>Choose</th>
@@ -527,7 +527,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
                         data-plan-period={row.period}
                         data-plan-currency="USD"
                         data-cta-location={row.tracking}
-                        class="inline-flex whitespace-nowrap rounded-[9px] border border-rail bg-white px-3 py-2 text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+                        class="inline-flex whitespace-nowrap rounded-[9px] border border-rail bg-raised px-3 py-2 text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
                       >
                         {row.cta}
                       </a>
@@ -535,7 +535,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
                       <a
                         href={row.href}
                         data-cta={row.tracking}
-                        class="inline-flex whitespace-nowrap rounded-[9px] border border-rail bg-white px-3 py-2 text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+                        class="inline-flex whitespace-nowrap rounded-[9px] border border-rail bg-raised px-3 py-2 text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
                       >
                         {row.cta}
                       </a>
@@ -561,7 +561,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
       <div class="panel mt-6 overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full min-w-[560px] border-collapse text-sm">
-            <thead class="bg-[#EEF2F2]">
+            <thead class="bg-surface">
               <tr>
                 <th scope="col" class={`w-[40%] ${thClass}`}>Feature</th>
                 <th scope="col" class="border-b border-rail px-3 py-3 text-center font-mono text-[12px] font-medium text-ink-mute">Free</th>
@@ -596,7 +596,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
   </section>
 
   {/* CLI (free) vs Pro: risponde a "perché pagare se la CLI è gratis" con sole righe verificate */}
-  <section class="border-t border-rail bg-white" aria-labelledby="cli-vs-pro-heading">
+  <section class="border-t border-rail bg-raised" aria-labelledby="cli-vs-pro-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16" data-reveal>
       <h2 id="cli-vs-pro-heading" class={`max-w-3xl ${sectionHeading}`}>
         The CLI already has geo track and geo monitor. Why pay for Pro?
@@ -610,7 +610,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
       <div class="panel mt-6 overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full min-w-[640px] border-collapse text-left text-sm">
-            <thead class="bg-[#EEF2F2]">
+            <thead class="bg-surface">
               <tr>
                 <th scope="col" class={thClass}><span class="sr-only">Aspect</span></th>
                 <th scope="col" class={thClass}>CLI (free, MIT)</th>
@@ -699,7 +699,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
   </section>
 
   {/* Dopo il checkout: passi numerati + controlli per chi compra */}
-  <section class="border-t border-rail bg-white" aria-labelledby="after-checkout-heading">
+  <section class="border-t border-rail bg-raised" aria-labelledby="after-checkout-heading">
     <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16" data-reveal>
       <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.5fr)]">
         <div>
@@ -739,7 +739,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
             <a
               href="/report/demo/"
               data-cta="pricing_after_checkout_demo_report"
-              class="inline-flex rounded-[9px] border border-rail bg-white px-4 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+              class="inline-flex rounded-[9px] border border-rail bg-raised px-4 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               View a demo report
             </a>
@@ -791,7 +791,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
           <a
             href="/"
             data-cta="pricing_footer_free_audit"
-            class="inline-flex items-center justify-center rounded-[9px] border border-rail bg-white px-5 py-3 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+            class="inline-flex items-center justify-center rounded-[9px] border border-rail bg-raised px-5 py-3 text-[14px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             Start free audit
           </a>
@@ -803,7 +803,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
             data-plan-period="/month"
             data-plan-currency="USD"
             data-cta-location="pricing_footer"
-            class="inline-flex items-center justify-center rounded-[9px] bg-ink px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-ink-soft"
+            class="inline-flex items-center justify-center rounded-[9px] bg-ink px-5 py-3 text-[14px] font-semibold text-paper transition-colors hover:bg-ink-soft"
           >
             Start with Pro
           </a>
@@ -815,7 +815,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
             data-plan-period="/month"
             data-plan-currency="USD"
             data-cta-location="pricing_footer"
-            class="inline-flex items-center justify-center rounded-[9px] bg-pass-deep px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-pass"
+            class="inline-flex items-center justify-center rounded-[9px] bg-pass-deep px-5 py-3 text-[14px] font-semibold text-on-accent transition-colors hover:bg-pass"
           >
             Start with Agency
           </a>
@@ -855,6 +855,7 @@ const thClass = 'border-b border-rail px-4 py-3 text-left font-mono text-[12px] 
         "name": "GeoReady Pricing",
         "description": "GeoReady pricing: free audit with no account required, Pro monitoring, Agency multi-site and workspace.",
         "url": "https://geoready.dev/pricing/",
+        "dateModified": "2026-10-29",
         "isPartOf": { "@id": "https://geoready.dev/#website" }
       },
       {

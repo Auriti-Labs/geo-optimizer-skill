@@ -53,7 +53,7 @@ const meta = [source.venue, source.year].filter(Boolean).join(' · ');
           <p class="mb-2 font-text text-[12.5px] font-semibold text-ink-mute">Key metrics</p>
           <dl class="grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-3">
             {source.metrics.map((m) => (
-              <div class="bg-white p-2.5">
+              <div class="bg-raised p-2.5">
                 <dt class="font-text font-medium text-[12px] text-ink-mute">{m.label}</dt>
                 <dd class="mt-0.5 font-mono text-sm font-semibold tabular-nums text-ink">{m.value}</dd>
               </div>

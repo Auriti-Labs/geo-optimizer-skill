@@ -24,7 +24,7 @@ export default function BenchmarkComparison({ score, grade }: BenchmarkCompariso
   const isTopQuarter = grade === 'excellent';
 
   return (
-    <div className="overflow-hidden rounded-[10px] border border-rail bg-white">
+    <div className="overflow-hidden rounded-[10px] border border-rail bg-raised">
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-rail px-5 py-2.5">
         <span className="font-text text-[12.5px] font-semibold text-ink-mute">
           Benchmark

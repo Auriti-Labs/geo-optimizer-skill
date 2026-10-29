@@ -54,7 +54,7 @@ export default function NewsletterSignup({
   }
 
   return (
-    <div className="rounded-[10px] border border-rail bg-white px-5 py-5">
+    <div className="rounded-[10px] border border-rail bg-raised px-5 py-5">
       <p className="text-base font-semibold text-ink">{title}</p>
       <p className="mt-1 text-sm text-ink-soft">{detail}</p>
       <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-2 sm:flex-row">
@@ -64,12 +64,12 @@ export default function NewsletterSignup({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@company.com"
-          className="flex-1 rounded-[10px] border border-ink/25 bg-white px-3 py-2 font-mono text-sm text-ink placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+          className="flex-1 rounded-[10px] border border-ink/25 bg-raised px-3 py-2 font-mono text-sm text-ink placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
         />
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="rounded-[10px] bg-pass-deep px-5 py-2 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass disabled:opacity-50"
+          className="rounded-[10px] bg-pass-deep px-5 py-2 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass disabled:opacity-50"
         >
           {status === 'loading' ? 'Subscribing…' : 'Notify me'}
         </button>

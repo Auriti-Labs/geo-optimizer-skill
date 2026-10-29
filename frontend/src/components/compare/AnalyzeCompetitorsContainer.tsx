@@ -20,7 +20,7 @@ function CompactCompetitorCard({ report, index }: { report: AuditReport; index: 
   return (
     // Solid-vs-Dashed: every card in this batch is labelled "Competitor N",
     // so all of them are reference data and drawn dashed.
-    <div className="rounded-[10px] border border-dashed border-ink-mute/60 bg-white p-5">
+    <div className="rounded-[10px] border border-dashed border-ink-mute/60 bg-raised p-5">
       <div className="mb-4 border-b border-rail pb-3">
         <span className="rounded-[6px] border border-dashed border-ink-mute/60 px-1.5 py-0.5 font-text text-[12px] font-semibold text-ink-mute">
           Competitor {index + 1}
@@ -161,7 +161,7 @@ export default function AnalyzeCompetitorsContainer() {
         </div>
         <button
           onClick={() => setState({ status: 'idle' })}
-          className="mt-4 inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-4 py-2 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+          className="mt-4 inline-flex items-center gap-2 rounded-[10px] border border-rail bg-raised px-4 py-2 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
         >
           Back to form
         </button>
@@ -183,7 +183,7 @@ export default function AnalyzeCompetitorsContainer() {
               u.search = '';
               window.location.href = u.toString();
             }}
-            className="inline-flex items-center gap-2 rounded-[10px] border border-rail bg-white px-3 py-1.5 font-text text-[12.5px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+            className="inline-flex items-center gap-2 rounded-[10px] border border-rail bg-raised px-3 py-1.5 font-text text-[12.5px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             New analysis
           </button>
@@ -200,7 +200,7 @@ export default function AnalyzeCompetitorsContainer() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6">
-      <div className="overflow-hidden rounded-[10px] border border-rail bg-white">
+      <div className="overflow-hidden rounded-[10px] border border-rail bg-raised">
         <div className="flex items-center justify-between gap-3 border-b border-rail px-6 py-2.5 md:px-8">
           <span className="font-text text-[12.5px] font-semibold text-ink-mute">POST /api/public/audits · per domain</span>
           <span className="rounded-[6px] border border-rail px-1.5 py-0.5 font-text font-medium text-[12px] text-ink-mute">idle</span>
@@ -215,13 +215,13 @@ export default function AnalyzeCompetitorsContainer() {
               placeholder="https://competitor1.com, https://competitor2.com"
               value={urlsInput}
               onChange={(e) => setUrlsInput(e.target.value)}
-              className="w-full rounded-[10px] border border-ink/25 bg-white px-4 py-3 font-mono text-[15px] text-ink caret-pass-deep transition-shadow placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+              className="w-full rounded-[10px] border border-ink/25 bg-raised px-4 py-3 font-mono text-[15px] text-ink caret-pass-deep transition-shadow placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
             />
             <p className="mt-1.5 text-xs text-ink-mute">Enter one or more URLs separated by commas.</p>
           </div>
           <button
             type="submit"
-            className="rounded-[10px] bg-pass-deep px-7 py-3.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+            className="rounded-[10px] bg-pass-deep px-7 py-3.5 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass"
           >
             Analyze
           </button>

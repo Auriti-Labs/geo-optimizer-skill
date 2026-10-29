@@ -41,7 +41,7 @@ export default function PricingObjectionSurvey() {
 
   if (submitted) {
     return (
-      <div className="rounded-[10px] border border-rail bg-white p-6 text-center">
+      <div className="rounded-[10px] border border-rail bg-raised p-6 text-center">
         <p className="text-sm font-semibold text-ink">Thanks, that helps.</p>
         <p className="mt-1 text-sm text-ink-soft">
           Your answer directly shapes what we improve on this page.
@@ -51,7 +51,7 @@ export default function PricingObjectionSurvey() {
   }
 
   return (
-    <div className="rounded-[10px] border border-rail bg-white p-6 md:p-8">
+    <div className="rounded-[10px] border border-rail bg-raised p-6 md:p-8">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
         <p className="text-base font-semibold text-ink">
           Not ready yet? What's stopping you today?
@@ -71,7 +71,7 @@ export default function PricingObjectionSurvey() {
             className={`rounded-[6px] border px-4 py-2 text-sm transition-colors ${
               selected === r.value
                 ? 'border-pass/50 bg-pass-wash font-semibold text-pass-deep'
-                : 'border-rail bg-white text-ink-soft hover:bg-pass-wash/50 hover:text-ink'
+                : 'border-rail bg-raised text-ink-soft hover:bg-pass-wash/50 hover:text-ink'
             }`}
           >
             {r.label}
@@ -87,11 +87,11 @@ export default function PricingObjectionSurvey() {
             maxLength={MAX_NOTE_LENGTH}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Anything else? (optional)"
-            className="flex-1 rounded-[10px] border border-ink/25 bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
+            className="flex-1 rounded-[10px] border border-ink/25 bg-raised px-3 py-2 text-sm text-ink placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30"
           />
           <button
             type="submit"
-            className="shrink-0 rounded-[10px] border border-rail bg-white px-4 py-2 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+            className="shrink-0 rounded-[10px] border border-rail bg-raised px-4 py-2 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
           >
             Send
           </button>

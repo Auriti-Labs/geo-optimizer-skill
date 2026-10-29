@@ -74,7 +74,7 @@ export default function EmailGateBanner({ score, categories, claimToken }: Email
   }
 
   return (
-    <div className="rounded-[10px] border border-rail bg-white p-5">
+    <div className="rounded-[10px] border border-rail bg-raised p-5">
       <div className="mb-2 flex items-center gap-2">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-ink-mute" aria-hidden="true">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -98,12 +98,12 @@ export default function EmailGateBanner({ score, categories, claimToken }: Email
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={status === 'submitting'}
-          className="flex-1 rounded-[10px] border border-ink/25 bg-white px-3 py-2 text-sm text-ink caret-pass-deep placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30 disabled:opacity-60"
+          className="flex-1 rounded-[10px] border border-ink/25 bg-raised px-3 py-2 text-sm text-ink caret-pass-deep placeholder:text-ink-mute focus:border-pass-deep focus:outline-none focus:ring-2 focus:ring-pass/30 disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={status === 'submitting' || !email || !claimToken}
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass disabled:cursor-not-allowed disabled:opacity-50"
         >
           {status === 'submitting' ? (
             <>

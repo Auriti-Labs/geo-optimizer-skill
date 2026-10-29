@@ -264,13 +264,13 @@ function ReportNextStep({
 
         {/* Loop gratuito: correggi → ri-verifica → segui il punteggio */}
         <ol className="grid gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-3">
-          <li className="bg-white p-4">
+          <li className="bg-raised p-4">
             <div className="font-text text-[12.5px] font-semibold text-pass-deep">1 · Fix</div>
             <p className="mt-1 text-sm leading-snug text-ink-soft">
               Apply the fixes listed under Recommendations. They are free and need no account.
             </p>
           </li>
-          <li className="bg-white p-4">
+          <li className="bg-raised p-4">
             <div className="font-text text-[12.5px] font-semibold text-pass-deep">2 · Re-run</div>
             <p className="mt-1 text-sm leading-snug text-ink-soft">
               Audit the same URL again, free. Results are cached for about an hour, so re-run after your change is live.
@@ -283,7 +283,7 @@ function ReportNextStep({
               Re-run audit
             </a>
           </li>
-          <li className="bg-white p-4">
+          <li className="bg-raised p-4">
             <div className="font-text text-[12.5px] font-semibold text-pass-deep">3 · Watch it climb</div>
             <p className="mt-1 text-sm leading-snug text-ink-soft">
               This browser keeps your score history. Claim the report to keep it in your account, with a weekly re-check.
@@ -312,7 +312,7 @@ function ReportNextStep({
                 cta_text: claimToken ? 'Claim this report' : 'Track this domain',
               })
             }
-            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-5 py-2.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-5 py-2.5 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass"
           >
             {claimToken ? 'Claim this report — free' : 'Track this domain — free'}
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -338,14 +338,14 @@ function ReportNextStep({
               data-plan-price={plan.price}
               data-plan-currency="USD"
               data-cta-location="audit_report_next_step"
-              className="inline-flex min-h-11 items-center justify-center rounded-[10px] border border-pass-deep bg-white px-5 py-2.5 font-text text-[13px] font-semibold text-pass-deep transition-colors hover:bg-pass-wash"
+              className="inline-flex min-h-11 items-center justify-center rounded-[10px] border border-pass-deep bg-raised px-5 py-2.5 font-text text-[13px] font-semibold text-pass-deep transition-colors hover:bg-pass-wash"
             >
               {plan.cta}
             </a>
             <a
               href={pricingHref(claimToken)}
               data-cta="audit_report_next_step_pricing"
-              className="inline-flex min-h-11 items-center justify-center rounded-[10px] border border-rail bg-white px-5 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+              className="inline-flex min-h-11 items-center justify-center rounded-[10px] border border-rail bg-raised px-5 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Compare plans
             </a>
@@ -477,7 +477,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
       />
 
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-rail bg-rail sm:grid-cols-4">
-        <div className="bg-white p-4">
+        <div className="bg-raised p-4">
           <div className="font-text text-[12px] font-semibold text-ink-mute">Categories</div>
           <div className="mt-1 font-mono text-lg font-semibold tabular-nums">
             <span className="text-ink">{activeCategories}</span>
@@ -485,12 +485,12 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
           </div>
           <div className="mt-0.5 font-mono text-[10px] text-ink-mute">active</div>
         </div>
-        <div className="bg-white p-4">
+        <div className="bg-raised p-4">
           <div className="font-text text-[12px] font-semibold text-ink-mute">Recommendations</div>
           <div className="mt-1 font-mono text-lg font-semibold tabular-nums text-ink">{report.recommendations.length}</div>
           <div className="mt-0.5 font-mono text-[10px] text-ink-mute">{criticalCount} critical</div>
         </div>
-        <div className="bg-white p-4">
+        <div className="bg-raised p-4">
           <div className="font-text text-[12px] font-semibold text-ink-mute">Signals</div>
           <div className="mt-1 font-mono text-lg font-semibold tabular-nums">
             <span className="text-pass-deep">{passSignals}</span>
@@ -498,7 +498,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
           </div>
           <div className="mt-0.5 font-mono text-[10px] text-ink-mute">{warnSignals} warn, {failSignals} fail</div>
         </div>
-        <div className="bg-white p-4">
+        <div className="bg-raised p-4">
           <div className="font-text text-[12px] font-semibold text-ink-mute">Citability</div>
           <div className="mt-1 font-mono text-lg font-semibold tabular-nums text-ink-soft">{report.citabilityScore ?? '—'}</div>
           <div className="mt-0.5 font-mono text-[10px] text-ink-mute">/ 100</div>
@@ -513,7 +513,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-3 space-y-4">
-          <div className="flex flex-col items-center rounded-[10px] border border-rail bg-white p-5">
+          <div className="flex flex-col items-center rounded-[10px] border border-rail bg-raised p-5">
             <ScoreGauge score={report.geoScore} label="GEO Score" />
             <div className="mt-4 w-full border-t border-rail pt-4">
               <div className="flex items-center justify-between text-xs">
@@ -525,7 +525,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
             </div>
           </div>
 
-          <div className="rounded-[10px] border border-rail bg-white p-4">
+          <div className="rounded-[10px] border border-rail bg-raised p-4">
             <h3 className="mb-3 font-text text-[12.5px] font-semibold text-ink-mute">Export Report</h3>
             <ExportActions reportUrl={report.url} />
             <p className="mt-3 text-xs text-ink-soft leading-relaxed">
@@ -595,7 +595,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
             <a
               href={`https://app.geoready.dev/signup?claim=${state.claim_token}`}
               onClick={() => trackCtaClicked({ cta_location: 'audit_report_claim', cta_text: 'Save report' })}
-              className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+              className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-pass-deep px-4 py-2 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass"
             >
               Save report
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
@@ -603,7 +603,7 @@ export default function AuditReportContainer({ reportId }: AuditReportContainerP
             <a
               href={`https://app.geoready.dev/login?claim=${state.claim_token}`}
               onClick={() => trackCtaClicked({ cta_location: 'audit_report_claim', cta_text: 'Log in to save' })}
-              className="inline-flex items-center justify-center rounded-[10px] border border-rail bg-white px-4 py-2 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+              className="inline-flex items-center justify-center rounded-[10px] border border-rail bg-raised px-4 py-2 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Log in to save
             </a>

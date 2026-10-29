@@ -41,7 +41,7 @@ export default function CookieBanner({
       className="fixed z-[100] inset-x-3 bottom-3 sm:inset-x-auto sm:left-5 sm:bottom-5 sm:w-[27rem] print:hidden"
     >
       <div
-        className={`relative overflow-hidden rounded-[10px] border border-rail bg-white transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+        className={`relative overflow-hidden rounded-[10px] border border-rail bg-raised transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
           entered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`}
       >
@@ -127,19 +127,19 @@ export default function CookieBanner({
           <div className="mt-2.5 grid grid-cols-2 gap-2 sm:mt-4">
             <button
               onClick={onAcceptAll}
-              className="min-h-11 w-full rounded-[10px] sm:col-span-2 sm:min-h-0 bg-pass-deep px-4 py-2.5 font-text text-[13px] font-semibold text-white transition-colors duration-200 hover:bg-pass motion-reduce:transition-none"
+              className="min-h-11 w-full rounded-[10px] sm:col-span-2 sm:min-h-0 bg-pass-deep px-4 py-2.5 font-text text-[13px] font-semibold text-on-accent transition-colors duration-200 hover:bg-pass motion-reduce:transition-none"
             >
               Accept all
             </button>
             <button
               onClick={onRejectNonEssential}
-              className="min-h-11 rounded-[10px] sm:min-h-0 border border-rail bg-white px-3 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+              className="min-h-11 rounded-[10px] sm:min-h-0 border border-rail bg-raised px-3 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Essential only
             </button>
             <button
               onClick={onCustomize}
-              className="hidden rounded-[10px] sm:block border border-rail bg-white px-3 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+              className="hidden rounded-[10px] sm:block border border-rail bg-raised px-3 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
             >
               Customise
             </button>

@@ -12,7 +12,7 @@ const robots = 'noindex, nofollow';
 <Shell title={title} description={description} canonical={canonical} robots={robots}>
   <header class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 md:pt-16 pb-6">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-      <h1 class="font-head text-4xl md:text-5xl font-semibold leading-[1.02] tracking-[-0.03em] text-ink">
+      <h1 class="font-head text-4xl md:text-5xl leading-[1.02] tracking-[-0.03em] text-ink">
         GEO Audit Report
       </h1>
       <p class="flex items-center gap-2 font-text font-medium text-[12.5px] text-ink-mute">
@@ -38,7 +38,7 @@ const robots = 'noindex, nofollow';
 
   {/* Static next-step CTA — server-rendered, visible after the report */}
   <section class="max-w-7xl mx-auto px-4 sm:px-6 pb-16 md:pb-24">
-    <div class="overflow-hidden rounded-[10px] border border-rail bg-white">
+    <div class="overflow-hidden rounded-[10px] border border-rail bg-raised">
       <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-rail px-6 py-2.5 md:px-10">
         <p class="flex items-center gap-2 font-text text-[12.5px] font-semibold text-ink-mute">
           <span>GeoReady</span>
@@ -49,7 +49,7 @@ const robots = 'noindex, nofollow';
       </div>
 
       <div class="px-6 py-6 md:p-10">
-        <h2 class="font-head text-2xl md:text-3xl font-semibold tracking-[-0.02em] leading-tight text-ink">
+        <h2 class="font-head text-2xl md:text-3xl tracking-[-0.02em] leading-tight text-ink">
           This is a snapshot. AI visibility changes as engines re-crawl.
         </h2>
 
@@ -63,7 +63,7 @@ const robots = 'noindex, nofollow';
           <a
             href="/pricing/"
             data-cta="report_to_pricing"
-            class="inline-block rounded-[10px] bg-pass-deep px-6 py-2.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+            class="inline-block rounded-[10px] bg-pass-deep px-6 py-2.5 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass"
           >
             See monitoring plans
           </a>

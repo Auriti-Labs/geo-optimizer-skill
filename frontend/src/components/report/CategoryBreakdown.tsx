@@ -18,7 +18,7 @@ interface LockedCardProps {
 // fissati qui (v1) mostravano valori sbagliati, per esempio "/ 10" per Brand.
 function LockedCard({ category }: LockedCardProps) {
   return (
-    <div className="relative overflow-hidden bg-white p-4">
+    <div className="relative overflow-hidden bg-raised p-4">
       {/* Blurred content background — hides the locked data, not decoration */}
       <div className="blur-[3px] pointer-events-none select-none" aria-hidden="true">
         <div className="mb-2 flex items-center justify-between gap-2">
@@ -44,7 +44,7 @@ function LockedCard({ category }: LockedCardProps) {
       </div>
 
       {/* Lock overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/85 p-3 text-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-raised/85 p-3 text-center">
         <div className="mb-2 flex h-7 w-7 items-center justify-center rounded-full bg-pass-wash">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pass-deep">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -82,7 +82,7 @@ export default function CategoryBreakdown({ categories, lockedSlugs = [] }: Cate
         return (
           <div
             key={cat.slug}
-            className={`bg-white p-4 ${isEmpty ? 'opacity-75' : ''}`}
+            className={`bg-raised p-4 ${isEmpty ? 'opacity-75' : ''}`}
           >
             <div className="mb-2 flex items-start justify-between gap-2">
               <span className="flex min-w-0 items-baseline gap-2">

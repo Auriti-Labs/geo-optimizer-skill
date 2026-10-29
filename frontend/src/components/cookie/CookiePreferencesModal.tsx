@@ -103,14 +103,14 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
       <div
         ref={panelRef}
         tabIndex={-1}
-        className="relative m-0 flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-t-[4px] border border-rail bg-white outline-none sm:m-4 sm:rounded-[10px]"
+        className="relative m-0 flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-t-[4px] border border-rail bg-raised outline-none sm:m-4 sm:rounded-[10px]"
       >
         {/* Panel header strip, same visual language as the banner: the panel reads as
             the expanded form of that card rather than a separate component. */}
         <div className="shrink-0 border-b border-rail bg-paper px-5 py-4 sm:px-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] border border-rail bg-white text-ink">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] border border-rail bg-raised text-ink">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 3a9 9 0 1 0 9 9 3 3 0 0 1-4-4 3 3 0 0 1-5-5Z" />
                   <circle cx="9.5" cy="14.5" r="1" fill="currentColor" stroke="none" />
@@ -160,7 +160,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
               return (
                 <div
                   key={cat}
-                  className={`overflow-hidden rounded-[10px] border bg-white transition-colors duration-200 motion-reduce:transition-none ${
+                  className={`overflow-hidden rounded-[10px] border bg-raised transition-colors duration-200 motion-reduce:transition-none ${
                     isActive ? 'border-pass/50' : 'border-rail'
                   }`}
                 >
@@ -215,7 +215,7 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
                       } ${isNecessary ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                     >
                       <span
-                        className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full border border-rail bg-white transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+                        className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full border border-rail bg-raised transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
                           isActive ? 'translate-x-5' : 'translate-x-0'
                         }`}
                       />
@@ -281,20 +281,20 @@ export default function CookiePreferencesModal({ isOpen, onClose }: CookiePrefer
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <button
               onClick={handleReject}
-              className="order-2 rounded-[10px] border border-rail bg-white px-4 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash sm:order-1"
+              className="order-2 rounded-[10px] border border-rail bg-raised px-4 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash sm:order-1"
             >
               Essential only
             </button>
             <div className="order-1 flex gap-2 sm:order-2">
               <button
                 onClick={handleSave}
-                className="flex-1 rounded-[10px] border border-rail bg-white px-4 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash sm:flex-none"
+                className="flex-1 rounded-[10px] border border-rail bg-raised px-4 py-2.5 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash sm:flex-none"
               >
                 Save choices
               </button>
               <button
                 onClick={handleAcceptAll}
-                className="flex-1 rounded-[10px] bg-pass-deep px-4 py-2.5 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass sm:flex-none"
+                className="flex-1 rounded-[10px] bg-pass-deep px-4 py-2.5 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass sm:flex-none"
               >
                 Accept all
               </button>

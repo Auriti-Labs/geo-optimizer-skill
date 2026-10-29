@@ -15,7 +15,7 @@ interface TechnicalSignalsProps {
 
 export default function TechnicalSignals({ signals }: TechnicalSignalsProps) {
   return (
-    <div className="divide-y divide-rail overflow-hidden rounded-[10px] border border-rail bg-white">
+    <div className="divide-y divide-rail overflow-hidden rounded-[10px] border border-rail bg-raised">
       {signals.map((signal) => {
         const config = statusConfig[signal.status];
 

@@ -40,7 +40,7 @@ export default function ReportHeader({
   });
 
   return (
-    <div className="overflow-hidden rounded-[10px] border border-rail bg-white">
+    <div className="overflow-hidden rounded-[10px] border border-rail bg-raised">
       <div className="flex items-center justify-between gap-3 border-b border-rail px-5 py-2.5">
         <span className="font-text text-[12.5px] font-semibold text-ink-mute">Audit Report</span>
         <span className="font-text font-medium text-[12.5px] text-ink-mute">v{version}</span>

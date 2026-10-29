@@ -60,7 +60,7 @@ const faqs = [
       <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-16">
         <header class="grid gap-8 lg:grid-cols-[minmax(0,0.86fr)_minmax(360px,0.74fr)] lg:items-center">
           <div>
-            <h1 class="max-w-3xl font-head text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
+            <h1 class="max-w-3xl font-head text-4xl leading-[1.05] tracking-[-0.03em] text-ink md:text-5xl">
               AI SEO: make the page easy to find, parse, and cite.
             </h1>
 
@@ -77,7 +77,7 @@ const faqs = [
             </p>
             <div class="mt-6 flex flex-wrap gap-2">
               {['Crawler access', 'Structured data', 'Quotable content'].map((item) => (
-                <span class="rounded-[6px] border border-rail bg-white px-2 py-0.5 font-text font-medium text-[12px] text-ink-mute">{item}</span>
+                <span class="rounded-[6px] border border-rail bg-raised px-2 py-0.5 font-text font-medium text-[12px] text-ink-mute">{item}</span>
               ))}
             </div>
             <p class="mt-5 font-mono text-xs text-ink-mute">
@@ -99,7 +99,7 @@ const faqs = [
 
         <section class="mt-10" aria-labelledby="ai-seo-checks-heading">
           <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h2 id="ai-seo-checks-heading" class="font-head text-2xl font-semibold leading-tight tracking-[-0.02em] text-ink">
+            <h2 id="ai-seo-checks-heading" class="font-head text-2xl leading-tight tracking-[-0.02em] text-ink">
               Turn the concept into a measurable check.
             </h2>
             <p class="font-text text-[12.5px] font-semibold text-ink-mute">High-intent checks</p>
@@ -116,7 +116,7 @@ const faqs = [
               ['/perplexity-citation-checker/', 'Perplexity citation checker', 'See whether source-backed answers cite your domain or competitors.'],
               ['/perplexity-citation-monitoring/', 'Perplexity citation monitoring', 'Track citation losses, source changes, and competitor replacements over time.'],
             ].map(([href, label, text]) => (
-              <a href={href} data-cta={`ai_seo_high_intent_${label.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`} class="group bg-white p-4 transition-colors hover:bg-pass-wash/50">
+              <a href={href} data-cta={`ai_seo_high_intent_${label.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`} class="group bg-raised p-4 transition-colors hover:bg-pass-wash/50">
                 <span class="text-sm font-semibold text-ink transition-colors group-hover:text-pass-deep">{label}</span>
                 <span class="mt-2 block text-sm leading-relaxed text-ink-soft">{text}</span>
               </a>
@@ -127,7 +127,7 @@ const faqs = [
     </section>
 
     {/* What is AI SEO / how it differs — white band */}
-    <section class="border-t border-rail bg-white">
+    <section class="border-t border-rail bg-raised">
       <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
         <div class={prose}>
           {/* What is AI SEO */}
@@ -304,7 +304,7 @@ const faqs = [
     </section>
 
     {/* Checklist / mistakes — white band */}
-    <section class="border-t border-rail bg-white">
+    <section class="border-t border-rail bg-raised">
       <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
         <div class={prose}>
           {/* Audit checklist */}
@@ -475,7 +475,7 @@ const faqs = [
     </section>
 
     {/* FAQ — white band */}
-    <section class="border-t border-rail bg-white">
+    <section class="border-t border-rail bg-raised">
       <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
         <div class={prose}>
           <section>
@@ -498,7 +498,7 @@ const faqs = [
       <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
         <div class={prose}>
           {/* CTA */}
-          <section class="rounded-[10px] border border-rail bg-white p-6 md:p-8">
+          <section class="rounded-[10px] border border-rail bg-raised p-6 md:p-8">
             <h2>Run a free AI visibility audit</h2>
             <p class="mt-3">
               See how your site scores across eight AI SEO signal categories
@@ -510,13 +510,13 @@ const faqs = [
               <a
                 href="/ai-seo-audit/"
                 data-cta="ai_seo_final_ai_seo_audit"
-                class="inline-flex items-center justify-center rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-white transition-colors hover:bg-pass"
+                class="inline-flex items-center justify-center rounded-[10px] bg-pass-deep px-6 py-3 font-text text-[13px] font-semibold text-on-accent transition-colors hover:bg-pass"
               >
                 Run a free AI visibility audit
               </a>
               <a
                 href="/pricing/"
-                class="inline-flex items-center justify-center rounded-[10px] border border-rail bg-white px-6 py-3 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
+                class="inline-flex items-center justify-center rounded-[10px] border border-rail bg-raised px-6 py-3 font-text text-[13px] font-semibold text-ink transition-colors hover:bg-pass-wash"
               >
                 See pricing and plans
               </a>

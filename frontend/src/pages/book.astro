@@ -75,7 +75,7 @@ const audience = [
           <div class="eyebrow">ISBN {BOOK.isbnFormatted}</div>
         </div>
 
-        <h1 class="mt-4 text-[2.55rem] font-semibold leading-[1.03] tracking-[-0.035em] sm:text-[3.4rem] xl:text-[4rem]">
+        <h1 class="mt-4 text-[2.55rem] leading-[1.03] tracking-[-0.03em] sm:text-[3.4rem] xl:text-[4rem]">
           {BOOK.title}
         </h1>
         <p class="mt-4 max-w-3xl font-head text-lg font-semibold leading-snug text-ink-soft md:text-xl">
@@ -104,7 +104,7 @@ const audience = [
             target="_blank"
             rel="noopener"
             data-book-format="paperback"
-            class="inline-flex min-h-11 items-center gap-2 rounded-[9px] bg-pass-deep px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-pass"
+            class="inline-flex min-h-11 items-center gap-2 rounded-[9px] bg-pass-deep px-6 py-3 text-[14px] font-semibold text-on-accent transition-colors hover:bg-pass"
           >
             Paperback on Amazon
           </a>
@@ -113,7 +113,7 @@ const audience = [
             target="_blank"
             rel="noopener"
             data-book-format="kindle"
-            class="inline-flex min-h-11 items-center gap-2 rounded-[9px] bg-white px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_var(--color-rail)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-pass-deep)]"
+            class="inline-flex min-h-11 items-center gap-2 rounded-[9px] bg-raised px-6 py-3 text-[14px] font-semibold text-ink shadow-[inset_0_0_0_1px_var(--color-rail)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-pass-deep)]"
           >
             Kindle edition
           </a>
@@ -129,7 +129,7 @@ const audience = [
 
         {/* The pipeline */}
         <section data-reveal>
-          <h2 class="mb-2 text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">
+          <h2 class="mb-2 text-[1.75rem] leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">
             The pipeline the book is built around
           </h2>
           <p class="mb-6 max-w-2xl text-sm leading-relaxed text-ink-soft">
@@ -138,7 +138,7 @@ const audience = [
           </p>
           <ol class="grid grid-cols-1 gap-px overflow-hidden rounded-[14px] border border-rail bg-rail md:grid-cols-2">
             {pipeline.map((p, i) => (
-              <li class="bg-white p-5">
+              <li class="bg-raised p-5">
                 <div class="flex items-baseline gap-3">
                   <span class="font-mono text-[11px] text-ink-mute">{String(i + 1).padStart(2, '0')}</span>
                   <h3 class="text-[15px] font-semibold text-ink">{p.step}</h3>
@@ -151,7 +151,7 @@ const audience = [
 
         {/* What it covers */}
         <section data-reveal>
-          <h2 class="mb-6 text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">What it covers</h2>
+          <h2 class="mb-6 text-[1.75rem] leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">What it covers</h2>
           <ul class="grid gap-x-10 gap-y-0 md:grid-cols-2">
             {covers.map((c) => (
               <li class="border-t border-rail py-4 text-sm leading-relaxed text-ink-soft">{c}</li>
@@ -166,10 +166,10 @@ const audience = [
 
         {/* Who it is for */}
         <section data-reveal>
-          <h2 class="mb-6 text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">Who it is for</h2>
+          <h2 class="mb-6 text-[1.75rem] leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">Who it is for</h2>
           <ul class="flex flex-wrap gap-2">
             {audience.map((a) => (
-              <li class="rounded-full border border-rail bg-white px-3 py-1.5 font-mono text-[12px] text-ink-soft">
+              <li class="rounded-full border border-rail bg-raised px-3 py-1.5 font-mono text-[12px] text-ink-soft">
                 {a}
               </li>
             ))}
@@ -184,7 +184,7 @@ const audience = [
         {/* Relation to the tool */}
         <section class="band-dark rounded-[14px] p-6 md:p-10" data-reveal>
           <div class="eyebrow">Book · engine</div>
-          <h2 class="mt-3 text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">Book and tool, same methodology</h2>
+          <h2 class="mt-3 text-[1.75rem] leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">Book and tool, same methodology</h2>
           <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">
             The book explains the reasoning; GEO Optimizer runs it. The eight-category rubric
             described in print is still in the MIT-licensed engine (<code class="font-mono text-[13px]">--score-version 1</code>),
@@ -206,11 +206,11 @@ const audience = [
         {/* FAQ: stesse domande del FAQPage nello schema */}
         <section aria-labelledby="book-faq-h" data-reveal>
           <div class="eyebrow">FAQ</div>
-          <h2 id="book-faq-h" class="mt-3 text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">Questions about the book</h2>
+          <h2 id="book-faq-h" class="mt-3 text-[1.75rem] leading-[1.12] tracking-[-0.03em] md:text-[2.1rem]">Questions about the book</h2>
           <div class="panel mt-8 overflow-hidden">
             <div class="grid gap-px bg-rail md:grid-cols-2">
               {faqs.map((f) => (
-                <div class="bg-white p-6">
+                <div class="bg-raised p-6">
                   <h3 class="text-base font-semibold text-ink">{f.q}</h3>
                   <p class="mt-2 text-sm leading-relaxed text-ink-soft">{f.a}</p>
                 </div>
