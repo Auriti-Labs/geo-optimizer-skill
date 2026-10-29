@@ -143,7 +143,7 @@ const signup = (plan: string) =>
         <span class="line"><span class={l === 1 ? 'grad' : undefined}>{words.map(({ w, i }, k) => <Fragment>{k > 0 && ' '}<span class="ch" style={`--i:${i}`}>{w}</span></Fragment>)}</span></span>
       ))}
     </h1>
-    <p class="lead hero-lead">GeoReady checks whether ChatGPT, Perplexity, Claude and Gemini can reach, read and attribute your pages, scores them on a public 100-point rubric, and ranks the fixes by the points they win.</p>
+    <p class="lead hero-lead">GeoReady is an AI visibility audit that checks whether ChatGPT, Perplexity, Claude and Gemini can reach, read and attribute your pages, scores them on a public 100-point rubric, and ranks the fixes by the points they win.</p>
     <form class="audit" id="audit" action="/report/audit/" method="get" data-audit-form>
       <label class="sr" for="audit-url">Website address</label>
       <input id="audit-url" name="url" type="text" inputmode="url" autocomplete="url" placeholder="your-site.com" required aria-describedby="audit-note">
