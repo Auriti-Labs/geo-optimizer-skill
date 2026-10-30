@@ -281,7 +281,7 @@ Treat AI visibility like test coverage. The GitHub Action scores your site, fail
 
 ```yaml
 # .github/workflows/geo.yml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.19.8
+- uses: Auriti-Labs/geo-optimizer-skill@v4.19.9
   with:
     url: https://yoursite.com
     min-score: 70        # fail the build below 70
@@ -460,7 +460,7 @@ Yes. *AI Search Engineering: A Technical Guide to Generative Engine Optimization
 
 ## Roadmap
 
-Focused release waves, not noisy patches: 94 releases since February 2026, currently **v4.19.8**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
+Focused release waves, not noisy patches: 95 releases since February 2026, currently **v4.19.9**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ---
 
@@ -498,6 +498,6 @@ GEO Optimizer is built and maintained by [Juan Camilo Auriti](https://www.linked
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?style=for-the-badge&logo=GitHub-Sponsors&logoColor=white)](https://github.com/sponsors/auriti)
 [![Free hosted audit](https://img.shields.io/badge/Free_hosted_audit-geoready.dev-0D9488?style=for-the-badge)](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=footer)
 
-**MIT License** · [Name and logo policy](TRADEMARKS.md)
+**MIT License** · [Name and logo policy](TRADEMARKS.md) · The HTML/PDF report embeds the Stack Sans fonts under the [SIL Open Font License 1.1](src/geo_optimizer/cli/report_assets/OFL.txt)
 
 </div>
