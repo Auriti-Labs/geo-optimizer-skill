@@ -1,37 +1,8 @@
 # ─── GEO Optimizer Web — Docker image per Railway ──────────────────────────
-# Avvia il server FastAPI per servire l'API di audit + frontend Astro statico
+# Avvia il server FastAPI per servire l'API di audit (il sito geoready.dev ha un repository e un'immagine propri: Auriti-Labs/geoready-site)
 #
 # Build:  docker build -f Dockerfile.web -t geo-optimizer-web .
 # Run:    docker run -p 8000:8000 geo-optimizer-web
-
-# ─── Stage 0: Astro frontend build ────────────────────────────────────────────
-FROM node:22-slim AS astro-build
-
-WORKDIR /frontend
-
-COPY frontend/package*.json ./
-RUN npm ci
-
-COPY frontend/ ./
-# astro.config.mjs imports the local astro-geoready integration via ../integrations
-# (WORKDIR is /frontend, so the repo layout is preserved one level up)
-COPY integrations/ /integrations/
-# astro.config.mjs reads the engine version from ../pyproject.toml to stamp the
-# navbar/footer/roadmap badges, so it has to exist one level up from /frontend too.
-COPY pyproject.toml /pyproject.toml
-ENV PUBLIC_GA_MEASUREMENT_ID=G-KV5MQTGFZG
-# Regenerates public/sitemap.xml from the live Sanity dataset (guides/resources,
-# same status/scheduledFor gate the site itself uses) before the Astro build picks
-# it up as a static asset — keeps the sitemap current on every rebuild instead of
-# depending on someone remembering to run `npm run generate:sitemap` by hand.
-RUN npm run generate:sitemap
-# Same reasoning for public/llms.txt: it used to be a hand-maintained file, so every
-# article published from Sanity was born invisible to LLMs until someone remembered to
-# add it (patched by hand in 386777a, 5c8f01e, 609bb60). Regenerating the "## Guides"
-# section here keeps the discovery file as current as the sitemap. Fails the build if
-# Sanity is unreachable or the section would shrink — same fail-fast stance as above.
-RUN npm run generate:llms
-RUN npm run build
 
 # ─── Stage 1: Python build ────────────────────────────────────────────────────
 FROM python:3.12-slim AS builder
@@ -48,7 +19,7 @@ RUN pip install --no-cache-dir --prefix=/install ".[web,pdf]"
 FROM python:3.12-slim
 
 LABEL org.opencontainers.image.title="GEO Optimizer Web" \
-      org.opencontainers.image.description="FastAPI audit service + Astro frontend" \
+      org.opencontainers.image.description="FastAPI audit service" \
       org.opencontainers.image.source="https://github.com/auriti-labs/geo-optimizer-skill"
 
 COPY --from=builder /install /usr/local
@@ -63,8 +34,9 @@ RUN useradd --create-home --shell /bin/bash geo
 USER geo
 WORKDIR /home/geo
 
-# Copia frontend buildato
-COPY --from=astro-build --chown=geo:geo /frontend/dist /home/geo/static
+# The app mounts GEO_STATIC_DIR at "/" and refuses to start if it is missing; this image
+# serves the API only, so an empty directory is enough (the site image fills it).
+RUN mkdir -p /home/geo/static
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
