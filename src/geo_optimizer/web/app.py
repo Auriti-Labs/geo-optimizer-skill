@@ -1766,7 +1766,31 @@ def _dict_to_audit_result(data: dict):
         http_status=data.get("http_status", 0),
         page_size=data.get("page_size", 0),
         score_breakdown=data.get("score_breakdown", {}),
+        # Without these the report fell back to v1 maxima under v2 scores ("Content 14/12")
+        score_version=data.get("score_version", 1),
+        score_max=data.get("score_max", {}),
     )
+
+    if "google_ai" in data and isinstance(data["google_ai"], dict):
+        from geo_optimizer.models.results import GoogleAiReadinessResult, ReadinessCheck
+
+        ga = data["google_ai"]
+        # Old or foreign cache entries may carry extra keys: keep only the known fields
+        check_fields = {f.name for f in dataclasses.fields(ReadinessCheck)}
+        checks = []
+        for c in ga.get("checks", []):
+            if isinstance(c, dict):
+                try:
+                    checks.append(ReadinessCheck(**{k: v for k, v in c.items() if k in check_fields}))
+                except TypeError:
+                    continue
+        result.google_ai = GoogleAiReadinessResult(
+            checked=ga.get("checked", False),
+            points=ga.get("points", 0),
+            max_points=ga.get("max_points", 0),
+            final_url=ga.get("final_url", ""),
+            checks=checks,
+        )
 
     # Fix #34: reconstruct additional fields if present in cache
     if "signals" in data and isinstance(data["signals"], dict):
