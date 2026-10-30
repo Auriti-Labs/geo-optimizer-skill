@@ -2548,5 +2548,20 @@ _register_seo_redirects()
 # application/octet-stream, invalidando il <link rel="preload" as="font">).
 mimetypes.add_type("font/woff2", ".woff2")
 
-# Serve il frontend Astro buildato
-app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+# Serve il frontend Astro buildato (se presente; altrimenti fallback per API-only #680)
+if static_dir.is_dir():
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+else:
+    logger.info("Static directory '%s' does not exist; running in API-only mode.", static_dir)
+
+    @app.get("/", include_in_schema=False)
+    @app.head("/", include_in_schema=False)
+    async def _root_headless_fallback():
+        return JSONResponse(
+            status_code=404,
+            content={
+                "message": "GEO Optimizer web UI is not mounted. The engine API is available.",
+                "docs": "/docs",
+                "health": "/health",
+            },
+        )

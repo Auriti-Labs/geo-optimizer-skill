@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Fixed
+- Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#680). A clean JSON 404 is served at `/` with links to `/docs` and `/health`.
+
 ## [4.19.9] — 2026-10-30
 
 ### Changed
