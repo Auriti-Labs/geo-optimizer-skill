@@ -34,9 +34,7 @@ def _audit_result() -> AuditResult:
         schema=SchemaResult(found_types=["Organization", "FAQPage"], has_faq=True, has_article=True),
         citability=CitabilityResult(
             grade="B",
-            methods=[
-                MethodScore(name="front_loaded_answers", label="Front-loaded answers", score=9, max_score=10)
-            ],
+            methods=[MethodScore(name="front_loaded_answers", label="Front-loaded answers", score=9, max_score=10)],
         ),
     )
 
@@ -74,9 +72,7 @@ class TestPerceptionCmd:
     def test_file_output(self, mock_audit, tmp_path):
         mock_audit.return_value = _audit_result()
         out_file = tmp_path / "perception.txt"
-        result = CliRunner().invoke(
-            cli, ["perception", "--url", "https://example.com", "--output", str(out_file)]
-        )
+        result = CliRunner().invoke(cli, ["perception", "--url", "https://example.com", "--output", str(out_file)])
         assert result.exit_code == 0
         assert out_file.exists()
-        assert "AI PERCEPTION SNAPSHOT" in out_file.read_text()
+        assert "AI PERCEPTION SNAPSHOT" in out_file.read_text(encoding="utf-8")
