@@ -302,7 +302,10 @@ html:not(.js) .faq details[open] .tog, .faq details.is-open .tog { transform: ro
 /* tablet */
 @media (max-width: 1080px) {
   .hero-copy, .rubric { grid-column: 1 / -1; }
-  .rubric { margin-top: 3.5rem; max-width: 40rem; }
+  .rubric { margin-top: 3.5rem; }
+  /* una colonna sola: testo, form e scheda riempiono la colonna invece di restare a sinistra con il vuoto a destra */
+  .hero-lead { max-width: 60ch; }
+  .audit, .hero .note { max-width: none; }
   .stage > p, .stage > .ev { grid-column: 1 / -1; }
   .stage > .ev { margin-top: 1.25rem; }
   .faq-t { grid-column: 1 / -1; position: static; margin-bottom: 2rem; }
@@ -431,11 +434,16 @@ html:not(.js) .faq details[open] .tog, .faq details.is-open .tog { transform: ro
 .pr-rec { position: absolute; top: calc(clamp(1.5rem, 2.4vw, 2.25rem) + 1.5rem); right: clamp(1.5rem, 2.4vw, 2.25rem); padding: 3px 10px; border-radius: 999px; font-size: var(--step-small); font-weight: 600; color: #0B0F19; background: linear-gradient(120deg, #2DD4BF, #A5F3FC); }
 .pr-terms { margin-top: 3.5rem; max-width: 62ch; color: var(--muted); }
 @media (max-width: 1080px) {
-  .pr-cols { grid-template-columns: 1fr; grid-template-rows: none; max-width: 560px; padding-block: 0; }
+  .pr-cols { grid-template-columns: 1fr; grid-template-rows: none; padding-block: 0; }
   .pr-card { grid-row: auto; grid-template-rows: none; }
   .pr-pick { order: -1; margin-block: 0; padding-block: clamp(1.5rem, 2.4vw, 2.25rem); }
   .pr-rec { top: clamp(1.5rem, 2.4vw, 2.25rem); }
   .pr-terms { margin-top: 2.5rem; }
+}
+/* tablet verticale: il piano consigliato a tutta larghezza, gli altri due affiancati */
+@media (min-width: 700px) and (max-width: 1080px) {
+  .pr-cols { grid-template-columns: 1fr 1fr; }
+  .pr-pick { grid-column: 1 / -1; }
 }
 
 /* hero-gl overlay */
