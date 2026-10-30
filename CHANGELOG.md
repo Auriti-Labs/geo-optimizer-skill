@@ -8,6 +8,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ## [Unreleased]
 
 ### Changed
+- The website (`frontend/`, the Sanity scheduled-publish workflow, its SEO regression test and the `frontend-unit` CI job) moved to its own repository, Auriti-Labs/geoready-site. `Dockerfile.web` now builds the engine only; the site image installs this engine from PyPI at a pinned version. `integrations/astro-geoready` stays here for people who use it from the README.
 - User-facing text no longer presents per-method "+N% AI visibility" figures as results of the Princeton GEO paper. Audit findings, CI output and the recommendations text drop the unsourced percentages; the paper reports figures only as relative gains in visibility metrics on its own benchmark, and the per-method values in the docs are labelled as derived from its Table 1 absolute scores. `MethodScore.impact` is documented as a historical, unverified label.
 - The rubric documents state the nine categories of rubric v2 and describe `llms.txt` as agent-facing hygiene. The demo templates (`index`, `manifesto`, `research`) use the same wording.
 
