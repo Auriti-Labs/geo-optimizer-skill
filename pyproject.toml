@@ -96,6 +96,8 @@ where = ["src"]
 # Solo i file compilati .mo — i sorgenti .po non appartengono al pacchetto distribuito (#135)
 "geo_optimizer" = [
     "py.typed",
+    "cli/report_assets/*.woff2",
+    "cli/report_assets/OFL.txt",
     "i18n/locales/*/LC_MESSAGES/*.mo",
     "web/templates/*.html",
     "web/docs/*.md",
