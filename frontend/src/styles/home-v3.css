@@ -5,6 +5,11 @@ pre code { white-space: pre; }
 
 
 
+/* Il bagliore dell'hero e i pannelli della sezione piattaforma sporgono dal viewport. Un documento più largo
+   della finestra su iPad Safari viene rimpicciolito per entrarci (contenuto a sinistra, vuoto a destra) e
+   overflow-x su html/body non lo impedisce: si taglia alla sorgente. clip non crea un contenitore di scroll. */
+#main-content { overflow-x: clip; }
+
 /* hero */
 .hero { position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(12, 1fr); column-gap: var(--gutter); align-items: start; padding-top: clamp(2.5rem, 7vh, 5rem); padding-bottom: var(--section); }
 .hero::before { content: ""; position: absolute; z-index: -1; inset: -88px calc(50% - 50vw) 0; background: radial-gradient(color-mix(in srgb, var(--ink) 16%, transparent) 1px, transparent 1.3px) 0 0 / 22px 22px; -webkit-mask-image: radial-gradient(ellipse 70% 75% at 68% 40%, #000 10%, transparent 72%); mask-image: radial-gradient(ellipse 70% 75% at 68% 40%, #000 10%, transparent 72%); }
