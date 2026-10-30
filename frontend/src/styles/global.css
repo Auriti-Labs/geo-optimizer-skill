@@ -361,6 +361,13 @@ html:not(.js) .theme .t-system { opacity: 1; transform: none; }
   .bar-cta { padding-inline: 0.65rem; }
 }
 
+/* Il testo nascosto per gli screen reader (.sr-only, position: absolute) dentro un contenitore con scroll orizzontale
+   esce dal clip se il contenitore non è posizionato, allarga la pagina e iOS Safari la rimpicciolisce. */
+.overflow-x-auto { position: relative; }
+
+/* Hash, indirizzi e simili senza spazi vanno a capo invece di allargare la pagina oltre lo schermo. */
+main :is(p, li, dd, figcaption) { overflow-wrap: break-word; }
+
 /* entrate di sezione: visibili senza script */
 .js .reveal > * { opacity: 0; translate: 0 28px; transition: opacity 700ms var(--ease-out), translate 900ms var(--ease-expo); }
 .js .reveal > :nth-child(2) { transition-delay: 110ms; }
