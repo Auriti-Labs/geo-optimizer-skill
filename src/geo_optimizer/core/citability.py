@@ -5,6 +5,13 @@ Each detect_*() function analyzes one aspect of HTML content and returns
 a MethodScore. No ML dependencies — only regex, HTML tags and structural metrics.
 
 Paper: "GEO: Generative Engine Optimization" (arxiv.org/abs/2311.09735)
+
+About ``MethodScore.impact`` and the "(+N%)" banners below: they are historical labels kept
+for backward compatibility. Only a few trace to a named source (AutoGEO arXiv:2510.11438, a
+preprint; Stanford, Nature Communications 2025; SE Ranking 2025). The Princeton paper states no
+per-method percentage except the 41% in its Table 1 caption; the other Princeton-method values
+were derived here from Table 1 and are unverified. None was re-measured on current engines, and
+none affects the score.
 """
 
 from __future__ import annotations
@@ -3461,60 +3468,73 @@ def detect_retrieval_triggers(soup, clean_text: str | None = None) -> MethodScor
 
 # ─── Orchestrator ─────────────────────────────────────────────────────────────
 
-# Improvement suggestions for each undetected method
+
+# Improvement suggestions for each undetected method.
+# Only two suggestions keep a figure, with its source and caveat. The other Princeton-method
+# figures were derived from Table 1 and are not stated by the paper per method, so they are omitted.
+_QUOTATION_NOTE = (
+    "(Aggarwal et al. 2023 reported about +41% in position-adjusted visibility for quotation addition "
+    "on its own benchmark; not re-measured on current engines)"
+)
+_STATISTICS_NOTE = (
+    "(Aggarwal et al. 2023 reported about +33% on the word-count metric (about +31% position-adjusted) "
+    "on its own benchmark; not re-measured on current engines)"
+)
+
+
 _IMPROVEMENT_SUGGESTIONS = {
-    "quotation_addition": "Add attributed quotes in <blockquote> (+41% AI visibility)",
-    "statistics_addition": "Include quantitative data: percentages, figures, metrics (+33%)",
-    "fluency_optimization": "Improve fluency with longer paragraphs and logical connectives (+29%)",
-    "cite_sources": "Cite authoritative sources (.edu, .gov, Wikipedia) with external links (+27%)",
-    "answer_first": "Start each section with a concrete fact in the first sentence (+25% AI citation)",
-    "passage_density": "Write self-contained paragraphs of 50-150 words with numeric data (+23%)",
-    "technical_terms": "Use domain-specific technical terminology (+18%)",
-    "authoritative_tone": "Add author bio with credentials and assertive tone (+16%)",
-    "readability": "Target Flesch-Kincaid Grade 6-8 with 100-150 word sections (+15% AI citation)",
-    "citability_density": "Add 2+ citable facts (numbers, names, dates) per paragraph (+15%)",
-    "easy_to_understand": "Improve readability: short sentences, hierarchical headings, FAQ (+14%)",
-    "faq_in_content": "Add FAQ patterns in content: headings ending with '?' followed by answers (+12%)",
-    "content_freshness": "Add dateModified in JSON-LD and reference current year in content (+10%)",
-    "definition_patterns": "Start sections with definitions: 'X is...', 'X refers to...' (+10%)",
-    "image_alt_quality": "Write descriptive alt text (>10 chars, not generic) for all images (+8%)",
-    "format_mix": "Mix content formats: paragraphs + bullet lists + tables (+8%)",
-    "unique_words": "Vary vocabulary: use synonyms, avoid repetitions (+7%)",
-    "keyword_stuffing": "Reduce density of repeated keywords (-9% if present)",
+    "quotation_addition": "Add attributed quotes in <blockquote> " + _QUOTATION_NOTE,
+    "statistics_addition": "Include quantitative data: percentages, figures, metrics " + _STATISTICS_NOTE,
+    "fluency_optimization": "Improve fluency with longer paragraphs and logical connectives",
+    "cite_sources": "Cite authoritative sources (.edu, .gov, Wikipedia) with external links",
+    "answer_first": "Start each section with a concrete fact in the first sentence",
+    "passage_density": "Write self-contained paragraphs of 50-150 words with numeric data",
+    "technical_terms": "Use domain-specific technical terminology",
+    "authoritative_tone": "Add author bio with credentials and assertive tone",
+    "readability": "Target Flesch-Kincaid Grade 6-8 with 100-150 word sections",
+    "citability_density": "Add 2+ citable facts (numbers, names, dates) per paragraph",
+    "easy_to_understand": "Improve readability: short sentences, hierarchical headings, FAQ",
+    "faq_in_content": "Add FAQ patterns in content: headings ending with '?' followed by answers",
+    "content_freshness": "Add dateModified in JSON-LD and reference current year in content",
+    "definition_patterns": "Start sections with definitions: 'X is...', 'X refers to...'",
+    "image_alt_quality": "Write descriptive alt text (>10 chars, not generic) for all images",
+    "format_mix": "Mix content formats: paragraphs + bullet lists + tables",
+    "unique_words": "Vary vocabulary: use synonyms, avoid repetitions",
+    "keyword_stuffing": "Reduce density of repeated keywords",
     # Quality Signals Batch 2
-    "attribution_completeness": "Add inline attributions: 'according to X', 'Y (2024) found that' (+12%)",
-    "no_negative_signals": "Remove excessive CTAs, add author info, avoid repetitive phrases (-15%)",
-    "comparison_content": "Add comparison tables, pro/con sections, or 'X vs Y' headings (+10%)",
-    "eeat_signals": "Add privacy policy, terms, about page, and contact links for E-E-A-T trust (+15%)",
-    "no_content_decay": "Update old year references and add recent dateModified (-10%)",
-    "boilerplate_ratio": "Ensure main content is >60% of page text; use <main> or <article> tags (+8%)",
-    "nuance_signals": "Add nuance: 'however', 'limitations include', 'on the other hand' (+5%)",
+    "attribution_completeness": "Add inline attributions: 'according to X', 'Y (2024) found that'",
+    "no_negative_signals": "Remove excessive CTAs, add author info, avoid repetitive phrases",
+    "comparison_content": "Add comparison tables, pro/con sections, or 'X vs Y' headings",
+    "eeat_signals": "Add privacy policy, terms, about page, and contact links for E-E-A-T trust",
+    "no_content_decay": "Update old year references and add recent dateModified",
+    "boilerplate_ratio": "Ensure main content is >60% of page text; use <main> or <article> tags",
+    "nuance_signals": "Add nuance: 'however', 'limitations include', 'on the other hand'",
     # Quality Signals Batch 3+4
-    "snippet_ready": "Add snippet-ready definitions after headings: 'X is...', 'X refers to...' (+10%)",
-    "chunk_quotability": "Write self-contained paragraphs (50-150 words) with concrete data for AI quoting (+10%)",
-    "blog_structure": "Add Article/BlogPosting schema with datePublished, author, and categories (+8%)",
-    "shopping_readiness": "Add Product schema with price, availability, and AggregateRating (+8%)",
-    "chatgpt_shopping": "Complete Product schema with name, price, image, availability, brand for ChatGPT Shopping (+8%)",
+    "snippet_ready": "Add snippet-ready definitions after headings: 'X is...', 'X refers to...'",
+    "chunk_quotability": "Write self-contained paragraphs (50-150 words) with concrete data for AI quoting",
+    "blog_structure": "Add Article/BlogPosting schema with datePublished, author, and categories",
+    "shopping_readiness": "Add Product schema with price, availability, and AggregateRating",
+    "chatgpt_shopping": "Complete Product schema with name, price, image, availability, brand for ChatGPT Shopping",
     # Quality Signals Batch A v3.16.0
-    "voice_search_ready": "Add question-format headings with concise answers for voice search (+5%)",
-    "multi_platform": "Add 3+ platform links in sameAs schema (GitHub, LinkedIn, Twitter, etc.) (+10%)",
-    "entity_disambiguation": "Use consistent naming across title, og:title, and schema; add explicit definition (+8%)",
-    "first_party_data": "Include original research signals: 'our data shows', methodology section (+12%)",
-    "no_stale_data": "Remove stale year references and update copyright year (-10%)",
-    "social_proof": "Add testimonials, AggregateRating with reviews, or trust badges (+8%)",
-    "accessibility_signals": "Use semantic HTML (<main>, <nav>), ARIA landmarks, and skip links (+5%)",
-    "conversion_funnel": "Add visible CTAs, pricing page link, and contact information (+8%)",
+    "voice_search_ready": "Add question-format headings with concise answers for voice search",
+    "multi_platform": "Add 3+ platform links in sameAs schema (GitHub, LinkedIn, Twitter, etc.)",
+    "entity_disambiguation": "Use consistent naming across title, og:title, and schema; add explicit definition",
+    "first_party_data": "Include original research signals: 'our data shows', methodology section",
+    "no_stale_data": "Remove stale year references and update copyright year",
+    "social_proof": "Add testimonials, AggregateRating with reviews, or trust badges",
+    "accessibility_signals": "Use semantic HTML (<main>, <nav>), ARIA landmarks, and skip links",
+    "conversion_funnel": "Add visible CTAs, pricing page link, and contact information",
     # Quality Signals Batch B v3.16.0
-    "temporal_coherence": "Add coherent date signals: schema dateModified, visible 'Last updated' dates within 30 days (+8%)",
-    "anchor_text_quality": "Use descriptive anchor text for internal links instead of 'click here' or 'read more' (+5%)",
-    "international_geo": "Add hreflang tags and schema inLanguage for multilingual sites (+5%)",
-    "crawl_budget": "Remove meta robots noindex/nofollow to allow AI crawlers to index content (+5%)",
+    "temporal_coherence": "Add coherent date signals: schema dateModified, visible 'Last updated' dates within 30 days",
+    "anchor_text_quality": "Use descriptive anchor text for internal links instead of 'click here' or 'read more'",
+    "international_geo": "Add hreflang tags and schema inLanguage for multilingual sites",
+    "crawl_budget": "Remove meta robots noindex/nofollow to allow AI crawlers to index content",
     # RAG Readiness Batch v4.1.0
-    "answer_capsule": "Write self-contained answer paragraphs (30-120 words) with concrete facts for RAG extraction (+12%)",
-    "token_efficiency": "Increase content-to-noise ratio: use <main>/<article> tags, reduce boilerplate (+8%)",
-    "entity_resolution": "Define entities at first use and add schema.org with name + description + sameAs (+10%)",
-    "kg_density": "Add explicit relationship statements ('X is a Y', 'founded by Z') for knowledge graph extraction (+10%)",
-    "retrieval_triggers": "Use RAG trigger phrases: 'research shows', 'best practice', 'how to', question headings (+10%)",
+    "answer_capsule": "Write self-contained answer paragraphs (30-120 words) with concrete facts for RAG extraction",
+    "token_efficiency": "Increase content-to-noise ratio: use <main>/<article> tags, reduce boilerplate",
+    "entity_resolution": "Define entities at first use and add schema.org with name + description + sameAs",
+    "kg_density": "Add explicit relationship statements ('X is a Y', 'founded by Z') for knowledge graph extraction",
+    "retrieval_triggers": "Use RAG trigger phrases: 'research shows', 'best practice', 'how to', question headings",
 }
 
 # Order by decreasing impact (excluding penalties)

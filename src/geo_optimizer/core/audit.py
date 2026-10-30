@@ -337,7 +337,7 @@ def build_categorized_recommendations(
 
     # Content details (numbers 1pt, links 1pt)
     if not content.has_numbers:
-        _l_content.append("Add numerical data and concrete statistics (+40% AI visibility)")
+        _l_content.append("Add numerical data and concrete statistics")
     if not content.has_links:
         _l_content.append("Cite authoritative sources with external links (increase AI credibility)")
 

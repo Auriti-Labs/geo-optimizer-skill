@@ -7,6 +7,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Changed
+- User-facing text no longer presents per-method "+N% AI visibility" figures as results of the Princeton GEO paper. Audit findings, CI output and the recommendations text drop the unsourced percentages; the paper reports figures only as relative gains in visibility metrics on its own benchmark, and the per-method values in the docs are labelled as derived from its Table 1 absolute scores. `MethodScore.impact` is documented as a historical, unverified label.
+- The rubric documents state the nine categories of rubric v2 and describe `llms.txt` as agent-facing hygiene. The demo templates (`index`, `manifesto`, `research`) use the same wording.
+
 ## [4.19.8] — 2026-10-26
 
 ### Added

@@ -21,7 +21,7 @@ Available tools (12):
 Available resources:
     geo://ai-bots            — List of tracked AI bots
     geo://score-bands        — GEO score bands
-    geo://methods            — 47 citability methods with impact data (dynamic)
+    geo://methods            — 47 citability methods with legacy impact labels (dynamic)
     geo://changelog          — Latest changes
     geo://ai-discovery-spec  — AI discovery endpoint specification
 
@@ -610,7 +610,11 @@ def get_score_bands() -> str:
 
 @mcp.resource("geo://methods")
 def get_citability_methods() -> str:
-    """All 47 citability methods with measured impact (fix #1: generated dynamically from the engine)."""
+    """All 47 citability methods with their historical impact label (generated dynamically from the engine).
+
+    The ``impact`` value is a legacy label kept for compatibility: it is not measured on current
+    engines and does not affect the score.
+    """
     from bs4 import BeautifulSoup
 
     from geo_optimizer.core.citability import audit_citability
@@ -635,6 +639,7 @@ def get_citability_methods() -> str:
             "total_methods": len(methods),
             "total_max_score": total_max,
             "note": "Score capped at 100",
+            "impact_note": "impact is a historical label, unverified and not re-measured on current engines; it does not affect the score",
             "source": "Princeton KDD 2024 + AutoGEO (arXiv:2510.11438, preprint) + SE Ranking 2025 + Growth Marshal 2026",
         },
         indent=2,

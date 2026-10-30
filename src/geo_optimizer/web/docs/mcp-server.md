@@ -385,7 +385,7 @@ MCP resources provide read-only reference data. Access them via the `geo://` URI
 |-----|-------------|
 | `geo://ai-bots` | List of all 24 tracked AI bots with 3-tier classification (training/search/user) and citation bot identification |
 | `geo://score-bands` | GEO score band definitions (critical, foundation, good, excellent) with ranges |
-| `geo://methods` | The 11 citability methods with measured impact data and max scores |
+| `geo://methods` | The 47 citability methods with max scores and a legacy `impact` label (historical, not measured on current engines) |
 | `geo://changelog` | Latest changes from CHANGELOG.md (first 50 lines) |
 | `geo://ai-discovery-spec` | AI discovery endpoint specification (geo-checklist.dev standard) with required fields and JSON schemas |
 

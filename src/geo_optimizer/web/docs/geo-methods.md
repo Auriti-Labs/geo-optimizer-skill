@@ -11,19 +11,21 @@ Research-backed content optimization techniques for AI citation visibility.
 **Paper:** "GEO: Generative Engine Optimization" — Aggarwal et al., KDD 2024  
 **Link:** [arxiv.org/abs/2311.09735](https://arxiv.org/abs/2311.09735)  
 **Dataset:** [generative-engines.com/GEO](https://generative-engines.com/GEO/)  
-**Methodology:** 10,000 real queries across diverse domains on Perplexity.ai; GPT-4 simulated responses
+**Methodology:** GEO-bench, 10,000 queries; the main experiments feed the top-5 Google results to gpt-3.5-turbo
 
-The study measured three signals: word count overlap (how much of your content appears in the AI response), rank position (where your source is cited), and citation frequency.
+The paper reports relative gains in visibility metrics (word count and position-adjusted word count) on the authors' benchmark, not citation rates. It does not show that the same gains hold on current engines.
 
-**Key finding:** Certain content modifications significantly increase the probability of being cited. The top method produces up to +115% visibility for rank-5 citation positions.
+**Key finding:** The paper tested nine content-optimization methods on GEO-bench and reported visibility gains of up to about 40% in generative-engine responses. Table 2 shows the gain depends on the source's rank in the search results: Cite Sources raised visibility by 115.1% for sources ranked fifth and lowered it by 30.3% for the top-ranked source.
+
+> **Read the percentages as historical.** The paper states no per-method percentage except the 41% in its Table 1 caption; the others were derived from Table 1 absolute values and are unverified. They come from a 2023 pipeline (top-5 Google results fed to gpt-3.5-turbo), not from live engines. Two preprints published in 2026 report that the 2023 levers (quotations, statistics, cited sources) do not move citation on ten current engine families (arXiv 2609.07559), and that FAQ, schema, headings and lists show no within-site effect (arXiv 2610.15033). The score uses these checks as content hygiene, not as a prediction of citation. Methods without a named source carry an `impact` label with no traceable origin.
 
 ---
 
 ## Method 1 — Cite Sources
 
-**Measured impact: +30–115% AI visibility**
+**Reported effect:** one of the nine methods tested in the paper. The paper's figures for this method are not quoted here.
 
-Link to authoritative external sources inline in your content. This is the single highest-impact method in the study. AI engines use citations as a trust signal: if your page already cites authoritative sources, it looks more credible and is more likely to be cited itself.
+Link to authoritative external sources inline in your content. Linked sources make a claim easier for a reader to check.
 
 **Apply when:** Making any factual claim — statistics, cause-effect statements, comparisons, medical or financial advice.
 
@@ -40,9 +42,9 @@ Prefer linking to: academic papers, government domains (`.gov`, `.edu`), industr
 
 ## Method 2 — Statistics
 
-**Measured impact: +40% average AI visibility**
+**Reported effect:** statistics addition about +33% on the word-count metric (about +31% position-adjusted). These are relative gains in a visibility metric on the authors' benchmark (top-5 Google results fed to gpt-3.5-turbo), not citation rates.
 
-Replace vague claims with specific, verifiable numerical data. AI engines prefer content with concrete facts — numbers, percentages, dates, study results — because they are easy to extract and verify.
+Replace vague claims with specific, verifiable numerical data. Numbers, dates and study results are easier to extract and to check than general statements.
 
 **Apply when:** Describing frequency, scale, comparison, cost, or performance of anything.
 
@@ -59,9 +61,9 @@ Always specify the source and year. Avoid statistics older than 3 years unless t
 
 ## Method 3 — Quotation Addition
 
-**Measured impact: +30–40% AI visibility**
+**Reported effect:** quotation addition about +41% on position-adjusted word count. This is a relative gain in a visibility metric on the authors' benchmark (top-5 Google results fed to gpt-3.5-turbo), not a citation rate.
 
-Include direct quotes from domain experts, researchers, or official documents. Quotation marks signal attribution and verifiability, which AI engines interpret as a quality signal.
+Include direct quotes from domain experts, researchers, or official documents. Quotation marks make attribution explicit.
 
 **Apply when:** Covering YMYL (Your Money, Your Life) topics — finance, health, legal. Also effective for history and science.
 
@@ -79,7 +81,7 @@ Format: `"Quote" — Name, Role, Organization, Year`
 
 ## Method 4 — Authoritative Tone
 
-**Measured impact: +6–12% average AI visibility**
+**Measured impact: not stated.** The source paper gives no per-method figure for this method, so none is quoted here.
 
 Write with an expert voice. Eliminate vague hedging language and replace it with precise, structured explanations. Use the format: definition → how it works → practical implications.
 
@@ -100,7 +102,7 @@ Eliminate: "often", "generally", "might", "could be", "in some cases". Replace w
 
 ## Method 5 — Fluency Optimization
 
-**Measured impact: +15–30% AI visibility**
+**Measured impact: not stated.** The source paper gives no per-method figure for this method, so none is quoted here.
 
 Improve text flow and readability. LLMs extract information more reliably from well-structured, grammatically correct prose. Choppy or error-prone text is harder to parse and cite.
 
@@ -121,7 +123,7 @@ Target: sentences of 15–25 words. Use logical connectives: "therefore", "howev
 
 ## Method 6 — Easy-to-Understand
 
-**Measured impact: +8–15% AI visibility**
+**Measured impact: not stated.** The source paper gives no per-method figure for this method, so none is quoted here.
 
 Simplify without losing precision. AI engines can more reliably extract and paraphrase content that is clearly explained. Add brief in-context definitions for technical terms.
 
@@ -141,7 +143,7 @@ Two-level structure: plain explanation first, technical details second. Add a gl
 
 ## Method 7 — Unique Words
 
-**Measured impact: +5–8% AI visibility**
+**Measured impact: not stated.** The source paper gives no per-method figure for this method, so none is quoted here.
 
 Vary vocabulary. Avoid repeating the same term in consecutive sentences; use contextually appropriate synonyms. A varied vocabulary signals content quality to language models.
 
@@ -160,7 +162,7 @@ Note: this method has lower impact than the others — prioritize it last.
 
 ## Method 8 — Technical Terms
 
-**Measured impact: +5–10% for specialized queries**
+**Measured impact: not stated.** The source paper gives no per-method figure for this method, so none is quoted here.
 
 Use correct, industry-standard terminology. Relevant for expert users searching with technical vocabulary. Works best in combination with Authoritative and Cite Sources.
 
@@ -179,9 +181,9 @@ Include official acronyms with their full form on first use: `APR (Annual Percen
 
 ## Method 9 — Keyword Stuffing ⚠️
 
-**Measured impact: Neutral or NEGATIVE**
+**Reported effect:** keyword stuffing did not perform well in the paper.
 
-The Princeton study tested keyword density manipulation — forcefully repeating target keywords throughout the content. The result: no significant improvement in AI visibility, and in some cases a net negative effect by degrading fluency scores.
+The Princeton study tested keyword stuffing, repeating target keywords throughout the content, and reported that it did not perform well.
 
 This is a carryover from traditional SEO. **Do not apply it for GEO.**
 
@@ -191,7 +193,7 @@ Instead: use Fluency Optimization + Cite Sources + Statistics.
 
 ## Method 10 — Answer-First Structure
 
-**Measured impact: +25% AI visibility** (AutoGEO, arXiv:2510.11438, preprint)
+**Measured impact: not stated.** This check is inspired by AutoGEO (arXiv preprint 2510.11438, 2025); no per-method figure is quoted here.
 
 Place the key conclusion or answer in the first 150 characters after every H2 heading. AI engines extract content from the opening of each section to build answers — if your conclusion is buried in the third paragraph, it may never be surfaced.
 
@@ -216,7 +218,7 @@ Structure: **Answer → Context → Detail**. The first sentence after each H2 s
 
 ## Method 11 — Passage Density
 
-**Measured impact: +23% AI visibility** (Stanford, 2025)
+**Measured impact: not stated.** No per-method figure is quoted here.
 
 Write paragraphs of 50–150 words, each containing at least one concrete data point (number, date, measurement, percentage). AI retrieval systems chunk content into passages — dense, self-contained paragraphs are more likely to be selected and cited than long, sprawling blocks of text.
 

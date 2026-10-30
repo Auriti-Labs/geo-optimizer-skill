@@ -52,7 +52,7 @@ Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1`
 | `G-SD-VISIBLE` | 2 | JSON-LD `name` or `headline` appears in visible text; scored in Schema JSON-LD. | https://developers.google.com/search/docs/appearance/structured-data/sd-policies |
 | `G-GENAI-CONTROL` | 0 | Search Console generative-AI opt-out; manual check. | https://developers.google.com/search/docs/fundamentals/ai-optimization-guide |
 
-`llms.txt` is useful to other AI agents but is ignored by Google Search.
+`llms.txt` is ignored by Google Search (Google's own guidance says so). It is scored as agent-facing hygiene for other AI agents, with a small weight (6 points), and has no bearing on Google eligibility.
 
 ### v2 signal breakdown
 
