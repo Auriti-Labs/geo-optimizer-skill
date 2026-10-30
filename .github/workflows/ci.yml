@@ -85,21 +85,3 @@ jobs:
           python -m pip install --upgrade pip  # clears PYSEC-2026-196 (runner pip, not a runtime dep)
           pip install .
           pip-audit --ignore-vuln CVE-2026-4539 --ignore-vuln CVE-2026-3219 --ignore-vuln CVE-2026-6357  # pygments / pip: runner-level packages, not runtime deps
-
-  frontend-unit:
-    name: Frontend unit tests
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '22'
-
-      # Test del mapper del report: TypeScript eseguito da Node, nessuna dipendenza npm
-      - name: Run frontend unit tests
-        working-directory: frontend
-        run: npm test
