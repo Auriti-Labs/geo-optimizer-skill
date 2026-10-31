@@ -862,22 +862,21 @@ def test_redirect_301_seo_paginazione_e_state_of_geo(client, source, target):
         assert response.headers["location"] == target
 
 
-def test_headless_mode_without_static_dir(monkeypatch, tmp_path):
+def test_headless_mode_without_static_dir(tmp_path):
     """When static_dir does not exist, the app starts in API-only mode without crashing (#680)."""
-    import importlib
+    from fastapi import FastAPI
+    from starlette.testclient import TestClient
 
-    import geo_optimizer.web.app as web_app
+    from geo_optimizer.web.app import _mount_static_or_fallback
 
+    dummy_app = FastAPI()
     non_existent = tmp_path / "non_existent_static_dir"
-    monkeypatch.setenv("GEO_STATIC_DIR", str(non_existent))
-    try:
-        reloaded = importlib.reload(web_app)
-        test_client = TestClient(reloaded.app)
-        res = test_client.get("/")
-        assert res.status_code == 404
-        data = res.json()
-        assert "web UI is not mounted" in data["message"]
-        assert test_client.get("/health").status_code == 200
-    finally:
-        monkeypatch.undo()
-        importlib.reload(web_app)
+    _mount_static_or_fallback(dummy_app, non_existent)
+
+    client = TestClient(dummy_app)
+    res = client.get("/")
+    assert res.status_code == 200
+    data = res.json()
+    assert "web UI is not mounted" in data["message"]
+    assert data["docs"] == "/docs"
+    assert data["health"] == "/health"

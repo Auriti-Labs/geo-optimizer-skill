@@ -2548,20 +2548,26 @@ _register_seo_redirects()
 # application/octet-stream, invalidando il <link rel="preload" as="font">).
 mimetypes.add_type("font/woff2", ".woff2")
 
-# Serve il frontend Astro buildato (se presente; altrimenti fallback per API-only #680)
-if static_dir.is_dir():
-    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
-else:
-    logger.info("Static directory '%s' does not exist; running in API-only mode.", static_dir)
 
-    @app.get("/", include_in_schema=False)
-    @app.head("/", include_in_schema=False)
-    async def _root_headless_fallback():
-        return JSONResponse(
-            status_code=404,
-            content={
-                "message": "GEO Optimizer web UI is not mounted. The engine API is available.",
-                "docs": "/docs",
-                "health": "/health",
-            },
-        )
+def _mount_static_or_fallback(app_instance: FastAPI, static_path: Path) -> None:
+    """Mount static files at / if directory exists; otherwise serve a JSON API info endpoint."""
+    if static_path.is_dir():
+        app_instance.mount("/", StaticFiles(directory=static_path, html=True), name="static")
+    else:
+        logger.info("Static directory '%s' does not exist; running in API-only mode.", static_path)
+
+        @app_instance.get("/", include_in_schema=False)
+        @app_instance.head("/", include_in_schema=False)
+        async def _root_headless_fallback():
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "message": "GEO Optimizer web UI is not mounted. The engine API is available.",
+                    "docs": "/docs",
+                    "health": "/health",
+                },
+            )
+
+
+# Serve il frontend Astro buildato (se presente; altrimenti fallback per API-only #680)
+_mount_static_or_fallback(app, static_dir)
