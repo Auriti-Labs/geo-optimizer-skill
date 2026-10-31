@@ -70,7 +70,11 @@ def test_google_ai_not_checked_is_not_a_pass():
 
 
 def test_pdf_embeds_the_font_and_blocks_local_files(tmp_path):
-    pytest.importorskip("weasyprint")
+    try:
+        import weasyprint  # noqa: F401
+
+    except (ImportError, OSError) as exc:
+        pytest.skip(f"weasyprint or its native C libraries unavailable: {exc}")
     from geo_optimizer.cli.pdf_formatter import _data_only_fetcher, format_audit_pdf
 
     pdf = format_audit_pdf(_v2_result())

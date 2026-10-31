@@ -7,6 +7,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Fixed
+- SQLite connection management: `HistoryStore`, `SnapshotStore` and `TelemetryStore` now manage SQLite connections with `@contextmanager`, properly closing handles upon exiting the transaction block. This prevents file locking (`WinError 32`) on Windows and leaks during repeated store instantiations.
+- Test suite cross-platform compatibility: `test_telemetry` uses pytest's `tmp_path` fixture; `test_perception_cmd` reads text with `encoding="utf-8"`; `test_rich_formatter` accepts standard box corners on Windows consoles; `test_report_v3` gracefully skips PDF generation when native WeasyPrint C libraries (`libgobject-2.0-0`) are missing.
+
 ## [4.19.9] — 2026-10-30
 
 ### Changed
