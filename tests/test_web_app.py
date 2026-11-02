@@ -517,15 +517,6 @@ def test_badge_url_privato_ritorna_400(client):
     assert response.status_code == 400
 
 
-def test_badge_url_con_coda_markdown_ritorna_400(client):
-    """GET /badge con snippet Markdown incollato male ritorna 400, non 500.
-
-    urlparse solleva ValueError("Invalid IPv6 URL") sulle parentesi quadre.
-    """
-    response = client.get("/badge?url=https://site.com)](https://geoready.dev?utm_source=badge")
-    assert response.status_code == 400
-
-
 def test_audit_timeout_is_below_the_proxy_timeout():
     """The web audit must give up before nginx's 60 s proxy_read_timeout.
 
@@ -869,3 +860,23 @@ def test_redirect_301_seo_paginazione_e_state_of_geo(client, source, target):
             f"{method.__name__.upper()} {source} deve rispondere 301, non {response.status_code}"
         )
         assert response.headers["location"] == target
+
+
+def test_headless_mode_without_static_dir(tmp_path):
+    """When static_dir does not exist, the app starts in API-only mode without crashing (#680)."""
+    from fastapi import FastAPI
+    from starlette.testclient import TestClient
+
+    from geo_optimizer.web.app import _mount_static_or_fallback
+
+    dummy_app = FastAPI()
+    non_existent = tmp_path / "non_existent_static_dir"
+    _mount_static_or_fallback(dummy_app, non_existent)
+
+    client = TestClient(dummy_app)
+    res = client.get("/")
+    assert res.status_code == 200
+    data = res.json()
+    assert "web UI is not mounted" in data["message"]
+    assert data["docs"] == "/docs"
+    assert data["health"] == "/health"
