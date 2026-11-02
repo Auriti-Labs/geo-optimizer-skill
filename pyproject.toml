@@ -64,7 +64,7 @@ embedding = [
 ]
 llm = [
     "openai>=1.0.0,<4.0",
-    "anthropic>=0.30.0,<2.0",
+    "anthropic>=0.30.0,<3.0",
 ]
 dev = [
     "pytest>=7.0,<10.0",
