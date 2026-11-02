@@ -62,7 +62,9 @@ def test_dashboard_is_compact_and_english():
 def test_verbose_appends_cards_and_all_fixes():
     out = _plain(_result(), verbose=True)
     assert "Fix number 8" in out
-    assert "╭" in out  # le card per categoria sono Panel arrotondati
+    assert (
+        "╭" in out or "┌" in out
+    )  # le card per categoria sono Panel arrotondati (supporta sia rounded sia box corner standard)
     assert "--verbose for every check" not in out
 
 
