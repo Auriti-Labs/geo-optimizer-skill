@@ -81,7 +81,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
         "server": "",  # check value
     }
 
-    from geo_optimizer.utils.http import create_session_with_retry
+    from geo_optimizer.utils.http import _stream_response, create_session_with_retry
     from geo_optimizer.utils.validators import resolve_and_validate_url
 
     # Fix #283: SSRF validation before CDN requests
@@ -94,20 +94,24 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
     # Session with DNS pinning — all requests use pre-validated IPs
     session = create_session_with_retry(total_retries=1, pinned_ips=pinned_ips)
 
+    def _get_capped(user_agent: str):
+        """GET base_url streaming the body; returns None once it exceeds 5 MB (fix #348)."""
+        r = session.get(base_url, headers={"User-Agent": user_agent}, timeout=10, allow_redirects=False, stream=True)
+        content, err = _stream_response(r, 5 * 1024 * 1024)
+        if err:
+            r.close()
+            return None
+        r._content = content  # noqa: SLF001 — lets r.text decode the already-read body
+        return r
+
     try:
         # Step 1: Browser request (baseline)
         try:
-            browser_r = session.get(
-                base_url,
-                headers={"User-Agent": browser_ua},
-                timeout=10,
-                allow_redirects=False,
-            )
-            result.browser_status = browser_r.status_code
-            # Fix #348: size check to avoid OOM on oversized responses
-            if len(browser_r.content) > 5 * 1024 * 1024:  # 5 MB
+            browser_r = _get_capped(browser_ua)
+            if browser_r is None:
                 result.error = "Response too large for CDN check"
                 return result
+            result.browser_status = browser_r.status_code
             result.browser_content_length = len(browser_r.text)
 
             # Detect CDN from headers
@@ -138,12 +142,10 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
                 "challenge_detected": False,
             }
             try:
-                bot_r = session.get(
-                    base_url,
-                    headers={"User-Agent": bot_ua},
-                    timeout=10,
-                    allow_redirects=False,
-                )
+                bot_r = _get_capped(bot_ua)
+                if bot_r is None:
+                    result.error = "Response too large for CDN check"
+                    return result
                 bot_entry["status"] = bot_r.status_code
                 bot_entry["content_length"] = len(bot_r.text)
 

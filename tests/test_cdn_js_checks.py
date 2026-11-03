@@ -280,3 +280,32 @@ class TestCdnAiCrawlerCheck:
 
         assert result.checked is True
         assert "x-vercel-id" in result.cdn_headers
+
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_oversized_body_stops_streaming_at_the_cap(self, mock_session_factory, mock_validate):
+        """The body is streamed and reading stops just past 5 MB instead of downloading it whole."""
+        chunks_read = 0
+
+        def endless_body(chunk_size):
+            nonlocal chunks_read
+            while True:
+                chunks_read += 1
+                yield b"x" * chunk_size
+
+        mock_session = MagicMock()
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.iter_content.side_effect = endless_body
+        mock_session.get.return_value = mock_response
+        mock_session_factory.return_value = mock_session
+
+        result = audit_cdn_ai_crawler("https://example.com")
+
+        assert result.error == "Response too large for CDN check"
+        assert result.checked is False
+        assert mock_session.get.call_args.kwargs["stream"] is True
+        assert mock_session.get.call_count == 1  # no bot request after the oversized baseline
+        chunk_size = mock_response.iter_content.call_args.kwargs["chunk_size"]
+        assert chunks_read == 5 * 1024 * 1024 // chunk_size + 1
+        mock_response.close.assert_called_once()

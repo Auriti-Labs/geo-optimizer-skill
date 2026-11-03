@@ -11,6 +11,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#680). An informative JSON response is served at `/` (HTTP 200) with links to `/docs` and `/health`.
 - `geo audit --no-plugins` had no effect: the audit core loaded and ran every installed `geo_optimizer.checks` plugin regardless. The flag now reaches the audit (single URL, `--sitemap` and `--max-pages`), which then neither loads nor runs plugins. API and MCP callers still load them by default.
 - The Groq provider imports the `groq` SDK, which no extra declared. `groq>=0.13.0,<2.0` is now part of `[llm]`, and the missing-SDK message points at `[llm]` instead of `[dev]`.
+- CDN AI crawler check: the browser and bot requests downloaded the whole homepage before the 5 MB size check (and the bot requests had no check). They now stream the body and stop reading once it passes 5 MB.
 
 ## [4.19.9] — 2026-10-30
 
