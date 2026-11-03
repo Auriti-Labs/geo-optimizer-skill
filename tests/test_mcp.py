@@ -177,12 +177,17 @@ class TestGeoAuditTool:
         assert "attempts" not in data["receipt"]
 
     @pytest.mark.parametrize(
-        ("error", "http_status"),
-        [("Connection failed", 0), ("HTTP 403", 403)],
+        ("error", "http_status", "expected_code"),
+        [
+            ("Connection failed", 0, "connection_failed"),
+            ("HTTP 403", 403, "http_error"),
+            ("Timeout (10s) dopo retry esponenziale", 0, "timeout"),
+            ("Response too large: 12000000 bytes (max: 5000000)", 0, "too_large"),
+        ],
     )
     @patch("geo_optimizer.core.audit.run_full_audit")
-    def test_audit_include_receipt_on_early_error(self, mock_audit, error, http_status):
-        """An unreachable or erroring homepage fails the fetch stage without raising (#557)."""
+    def test_audit_include_receipt_on_early_error(self, mock_audit, error, http_status, expected_code):
+        """An unreachable or erroring homepage fails the fetch stage with a normalized code (#557)."""
         from geo_optimizer.models.config import AUDIT_STEPS
 
         def _early_return(url, score_version=2, on_step=None):
@@ -197,7 +202,7 @@ class TestGeoAuditTool:
         data = json.loads(geo_audit("https://example.com", include_receipt=True))
         assert data["receipt"]["stages_completed"] == []
         assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[0]]
-        assert data["receipt"]["terminal_error"] == error
+        assert data["receipt"]["terminal_error"] == expected_code
 
     def test_audit_include_receipt_on_unsafe_url(self):
         """geo_audit retains partial receipt on unsafe URL errors (#557)."""
@@ -206,8 +211,17 @@ class TestGeoAuditTool:
         assert "error" in data
         assert "receipt" in data
         assert data["receipt"]["stages_failed"] == ["validate_url"]
-        assert data["receipt"]["terminal_error"] == data["error"]
+        assert data["receipt"]["terminal_error"] == "unsafe_url"
         assert "attempts" not in data["receipt"]
+
+    def test_audit_include_receipt_on_invalid_score_version(self):
+        """Invalid score_version records normalized 'internal' error in receipt (#557)."""
+        result = geo_audit("https://example.com", score_version=99, include_receipt=True)
+        data = json.loads(result)
+        assert "error" in data
+        assert "receipt" in data
+        assert data["receipt"]["stages_failed"] == ["validate_score_version"]
+        assert data["receipt"]["terminal_error"] == "internal"
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_audit_include_receipt_on_exception(self, mock_audit):
@@ -232,8 +246,27 @@ class TestGeoAuditTool:
         assert data["receipt"]["url"] == "https://example.com"
         assert data["receipt"]["stages_completed"] == [AUDIT_STEPS[0]]
         assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[1]]
-        assert data["receipt"]["terminal_error"] == "Internal error during operation"
+        assert data["receipt"]["terminal_error"] == "internal"
         assert "attempts" not in data["receipt"]
+
+    @pytest.mark.parametrize(
+        ("err", "expected"),
+        [
+            (None, None),
+            ("", None),
+            ("Timeout (10s) dopo retry esponenziale", "timeout"),
+            ("Connection failed", "connection_failed"),
+            ("HTTP 500", "http_error"),
+            ("Too many redirects (max: 5)", "http_error"),
+            ("Response too large: 6000000 bytes", "too_large"),
+            ("Unsafe URL: private IP", "unsafe_url"),
+            ("Something unexpected", "internal"),
+        ],
+    )
+    def test_normalize_terminal_error(self, err, expected):
+        from geo_optimizer.mcp.server import _normalize_terminal_error
+
+        assert _normalize_terminal_error(err) == expected
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_audit_include_receipt_on_immediate_exception(self, mock_audit):

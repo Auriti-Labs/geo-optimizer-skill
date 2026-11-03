@@ -61,6 +61,28 @@ def _normalize_url(url: str) -> str:
     return normalize_url_scheme(url).rstrip("/")
 
 
+def _normalize_terminal_error(err: str | None) -> str | None:
+    """Normalize raw error message into a fixed terminal_error code (#557).
+
+    Returns one of: 'timeout', 'connection_failed', 'http_error', 'too_large',
+    'unsafe_url', 'internal', or None if no error.
+    """
+    if not err:
+        return None
+    err_lower = err.lower()
+    if "timeout" in err_lower:
+        return "timeout"
+    if "connection" in err_lower:
+        return "connection_failed"
+    if "too large" in err_lower or "max_size" in err_lower:
+        return "too_large"
+    if "http" in err_lower or "redirect" in err_lower:
+        return "http_error"
+    if "unsafe" in err_lower or "ssrf" in err_lower:
+        return "unsafe_url"
+    return "internal"
+
+
 # ─── Tool 1: geo_audit ───────────────────────────────────────────────────────
 
 
@@ -93,7 +115,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_url"],
-                "terminal_error": f"Unsafe URL: {reason}",
+                "terminal_error": "unsafe_url",
             }
         return json.dumps(err_payload)
     from geo_optimizer.models.config import AUDIT_STEPS, CATEGORY_MAX_BY_VERSION
@@ -105,7 +127,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_score_version"],
-                "terminal_error": "score_version must be 1 or 2",
+                "terminal_error": "internal",
             }
         return json.dumps(err_payload)
 
@@ -131,7 +153,8 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
 
         # An unreachable homepage or an HTTP error ends the audit early with
         # result.error set instead of raising.
-        terminal_error = getattr(result, "error", None)
+        raw_error = getattr(result, "error", None)
+        terminal_error = _normalize_terminal_error(raw_error)
         completed, failed = split_failed() if terminal_error else (stages_started, [])
         data = asdict(result) if hasattr(result, "__dataclass_fields__") else dict(result)
         data["receipt"] = {
@@ -152,7 +175,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": completed,
                 "stages_failed": failed,
-                "terminal_error": "Internal error during operation",
+                "terminal_error": "internal",
             }
         return json.dumps(err_payload)
 

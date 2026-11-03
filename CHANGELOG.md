@@ -13,6 +13,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - `scripts/build_ai_context.py` generates the preflight and agent-rules block of the six `ai-context/` files from SKILL.md, and keeps the plugin's copy of SKILL.md, its `plugin.json` version and its `.mcp.json` minimum version in sync; `--check` reports stale files and a test fails on drift.
 
 ### Changed
+- MCP server: `geo_audit` receipt normalizes `terminal_error` to a stable set of error codes (`timeout`, `connection_failed`, `http_error`, `too_large`, `unsafe_url`, `internal`) instead of arbitrary exception or HTTP error strings (#557).
 - `SECURITY.md`: reports go to juan@geoready.dev or to GitHub's private vulnerability reporting (Security tab, Report a vulnerability), which is now enabled. The previous address did not exist (#691).
 
 ### Fixed
