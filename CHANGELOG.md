@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.19.10] — 2026-11-03
+
 ### Fixed
 - Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#680). An informative JSON response is served at `/` (HTTP 200) with links to `/docs` and `/health`.
 - SQLite connection management: `HistoryStore`, `SnapshotStore` and `TelemetryStore` now manage SQLite connections with `@contextmanager`, properly closing handles upon exiting the transaction block. This prevents file locking (`WinError 32`) on Windows and leaks during repeated store instantiations.
