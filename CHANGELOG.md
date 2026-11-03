@@ -9,6 +9,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Fixed
 - Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#680). An informative JSON response is served at `/` (HTTP 200) with links to `/docs` and `/health`.
+- Web demo: a self-hosted `geo-web` no longer contacts an external stats service unless `GEO_STATS_API_URL` is set. The variable used to default to a third-party URL, so `/api/stats` sent a GET there even with no configuration; the audit counter now stays at 0 until the variable is set.
 
 ## [4.19.9] — 2026-10-30
 
