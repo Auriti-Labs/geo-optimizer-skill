@@ -97,7 +97,11 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
     def _get_capped(user_agent: str):
         """GET base_url streaming the body; returns None once it exceeds 5 MB (fix #348)."""
         r = session.get(base_url, headers={"User-Agent": user_agent}, timeout=10, allow_redirects=False, stream=True)
-        content, err = _stream_response(r, 5 * 1024 * 1024)
+        try:
+            content, err = _stream_response(r, 5 * 1024 * 1024)
+        except Exception:
+            r.close()  # e.g. ReadTimeout mid-body: release the connection, then let the caller handle it
+            raise
         if err:
             r.close()
             return None

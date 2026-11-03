@@ -309,3 +309,19 @@ class TestCdnAiCrawlerCheck:
         chunk_size = mock_response.iter_content.call_args.kwargs["chunk_size"]
         assert chunks_read == 5 * 1024 * 1024 // chunk_size + 1
         mock_response.close.assert_called_once()
+
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_body_error_mid_stream_closes_the_response(self, mock_session_factory, mock_validate):
+        """A read error while streaming closes the response before the check gives up."""
+        mock_session = MagicMock()
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.iter_content.side_effect = TimeoutError("read timed out")
+        mock_session.get.return_value = mock_response
+        mock_session_factory.return_value = mock_session
+
+        result = audit_cdn_ai_crawler("https://example.com")
+
+        assert result.checked is False
+        mock_response.close.assert_called_once()
