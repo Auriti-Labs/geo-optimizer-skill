@@ -11,11 +11,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Claude Code plugin and marketplace: `/plugin marketplace add Auriti-Labs/geo-optimizer-skill`, then `/plugin install geo-optimizer@geoready`. The plugin (`plugins/geo-optimizer/`) ships the GEO Optimizer skill and starts the `geo-mcp` server through `uvx` (needs uv); it does not install the `geo` CLI.
 - `scripts/build_ai_context.py` generates the preflight and agent-rules block of the six `ai-context/` files from SKILL.md, and keeps the plugin's copy of SKILL.md, its `plugin.json` version and its `.mcp.json` minimum version in sync; `--check` reports stale files and a test fails on drift.
 
+### Fixed
+- `geo fix`: the generated `schema-faqpage.jsonld` was hardcoded in Italian ("Cos'è …?", "Come contattare …?") and pointed to a guessed `/contatti` URL on every site. It now uses the same English example Q&A as `/ai/faq.json`, with a contact answer that links the homepage instead of inventing a path. `/ai/summary.json` gets the generation date in `lastModified` instead of the literal `{{ISO_DATE}}` placeholder.
+
 ## [4.19.10] — 2026-11-03
 
 ### Fixed
-- `geo fix`: the generated `schema-faqpage.jsonld` was hardcoded in Italian ("Cos'è …?", "Come contattare …?") and pointed to a guessed `/contatti` URL on every site. It now uses the same English example Q&A as `/ai/faq.json`, with a contact answer that links the homepage instead of inventing a path. `/ai/summary.json` gets the generation date in `lastModified` instead of the literal `{{ISO_DATE}}` placeholder.
-- Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#680). An informative JSON response is served at `/` (HTTP 200) with links to `/docs` and `/health`.
+- Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#682). An informative JSON response is served at `/` (HTTP 200) with links to `/docs` and `/health`.
 - SQLite connection management: `HistoryStore`, `SnapshotStore` and `TelemetryStore` now manage SQLite connections with `@contextmanager`, properly closing handles upon exiting the transaction block. This prevents file locking (`WinError 32`) on Windows and leaks during repeated store instantiations.
 - Test suite cross-platform compatibility: `test_telemetry` uses pytest's `tmp_path` fixture; `test_perception_cmd` reads text with `encoding="utf-8"`; `test_rich_formatter` accepts standard box corners on Windows consoles; `test_report_v3` gracefully skips PDF generation when native WeasyPrint C libraries (`libgobject-2.0-0`) are missing.
 - Web demo: a self-hosted `geo-web` no longer contacts an external stats service unless `GEO_STATS_API_URL` is set. The variable used to default to a third-party URL, so `/api/stats` sent a GET there even with no configuration; the audit counter now stays at 0 until the variable is set.
