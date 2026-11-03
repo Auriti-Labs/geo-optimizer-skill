@@ -10,9 +10,6 @@ Copre:
 
 from __future__ import annotations
 
-import tempfile
-from pathlib import Path
-
 import pytest
 
 from geo_optimizer.core.telemetry import (
@@ -28,11 +25,10 @@ from geo_optimizer.core.telemetry import (
 
 
 @pytest.fixture
-def store():
+def store(tmp_path):
     """TelemetryStore con database temporaneo (isolato per test)."""
-    with tempfile.NamedTemporaryFile(suffix=".db") as tmp:
-        s = TelemetryStore(Path(tmp.name))
-        yield s
+    db_file = tmp_path / "test_telemetry.db"
+    return TelemetryStore(db_file)
 
 
 class TestTelemetryStore:
