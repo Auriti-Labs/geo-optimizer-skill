@@ -12,6 +12,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - SQLite connection management: `HistoryStore`, `SnapshotStore` and `TelemetryStore` now manage SQLite connections with `@contextmanager`, properly closing handles upon exiting the transaction block. This prevents file locking (`WinError 32`) on Windows and leaks during repeated store instantiations.
 - Test suite cross-platform compatibility: `test_telemetry` uses pytest's `tmp_path` fixture; `test_perception_cmd` reads text with `encoding="utf-8"`; `test_rich_formatter` accepts standard box corners on Windows consoles; `test_report_v3` gracefully skips PDF generation when native WeasyPrint C libraries (`libgobject-2.0-0`) are missing.
 - Web demo: a self-hosted `geo-web` no longer contacts an external stats service unless `GEO_STATS_API_URL` is set. The variable used to default to a third-party URL, so `/api/stats` sent a GET there even with no configuration; the audit counter now stays at 0 until the variable is set.
+- `geo audit --no-plugins` had no effect: the audit core loaded and ran every installed `geo_optimizer.checks` plugin regardless. The flag now reaches the audit (single URL, `--sitemap` and `--max-pages`), which then neither loads nor runs plugins. API and MCP callers still load them by default.
+- The Groq provider imports the `groq` SDK, which no extra declared. `groq>=0.13.0,<2.0` is now part of `[llm]`, and the missing-SDK message points at `[llm]` instead of `[dev]`.
+- CDN AI crawler check: the browser and bot requests downloaded the whole homepage before the 5 MB size check (and the bot requests had no check). They now stream the body and stop reading once it passes 5 MB.
 
 ## [4.19.9] — 2026-10-30
 
