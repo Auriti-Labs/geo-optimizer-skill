@@ -23,7 +23,6 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Changed
 - `SKILL.md` now opens with a fail-closed `geo --version` preflight, install commands per extra, a table of network targets, API keys and disk writes for each command, and four rules for agents (#688). `capabilities.json` carries the same facts in machine-readable form, and a test fails if a CLI command or MCP tool is added without updating it.
 - Bot documentation: ClaudeBot and Google-Extended are no longer described as citation bots in the six `ai-context/` files, `references/ai-bots-list.md` and the copies of `ai-bots-reference.md`. They follow the search, training and user-fetch tiers that `SKILL.md` and `models/config.py` already used; being allowed means eligible, never a guarantee of citation. Bots that `config.py` does not list were dropped, and a test pins the tiers (#689).
-- MCP server: `geo_audit` accepts an optional `include_receipt: bool = False` flag to attach per-stage execution observability (`stages_completed`, `stages_failed`, `attempts`, `duration_ms`) to the returned JSON envelope without affecting the underlying retry policy or HTTP limits (#557). Default output is unchanged.
 
 ### Fixed
 - Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#682). An informative JSON response is served at `/` (HTTP 200) with links to `/docs` and `/health`.
