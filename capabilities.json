@@ -44,7 +44,7 @@
       "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "llms": {
-      "network": "target sitemap and its sub-sitemaps",
+      "network": "target site: robots.txt and common sitemap paths (unless --sitemap), the sitemap and its sub-sitemaps; every listed page with --fetch-titles; {base-url}/llms.txt with --check-drift (unless --llms-file)",
       "api_keys": [],
       "writes": [
         "--output"
@@ -203,9 +203,11 @@
     ]
   },
   "geo_web": {
-    "network": "audit targets requested through its API; /api/stats calls api.github.com and pypistats.org; an external stats service only when GEO_STATS_API_URL is set",
+    "network": "audit targets requested through its API; /api/stats calls api.github.com and pypistats.org; an external stats service only when GEO_STATS_API_URL is set; /api/citations calls Perplexity only when PERPLEXITY_API_KEY is set; competitive narrative calls the LLM provider whose key is in the environment, only when one is set",
     "writes": [
-      "~/.geo-optimizer/telemetry.db (local usage events)"
+      "~/.geo-optimizer/tracking.db (every /api/audit; prunes records older than 90 days)",
+      "~/.geo-optimizer/telemetry.db (local usage events)",
+      "a temporary .log file in the system temp directory (log upload)"
     ],
     "spawns_processes": "only with --reload (uvicorn's reloader process)",
     "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out"

@@ -41,7 +41,7 @@ Any command you give `--output` also writes that file.
 | `audit`, `access`, `diff`, `perception` | Target (`audit --sitemap`/`--max-pages`: also the sitemap's pages) | None | `audit --format pdf` writes `geo-report.pdf`; `--cache` uses `~/.geo-cache`; `audit --save-history`/`--regression` use `~/.geo-optimizer/tracking.db` |
 | `coherence`, `authority` | Target, including the sitemap's pages and sub-sitemaps | None | None |
 | `fix` | Target | None | Nothing by default (preview). Files in `./geo-fixes/` only with `--apply` |
-| `llms` | Target sitemap and its sub-sitemaps | None | None |
+| `llms` | Target: robots.txt and common sitemap paths (unless `--sitemap`), the sitemap and its sub-sitemaps; every listed page with `--fetch-titles`; `<base-url>/llms.txt` with `--check-drift` | None | None |
 | `schema` | None | None | `--inject` edits the `.html` file you name, after writing `<file>.bak` |
 | `monitor`, `track` | Target | None | `~/.geo-optimizer/tracking.db`; `track --report` writes `geo-track-report.html` |
 | `history`, `drift` | None | None | `~/.geo-optimizer/tracking.db` |
@@ -49,13 +49,13 @@ Any command you give `--output` also writes that file.
 | `logs` | None | None | None (reads the log file you name) |
 | `citations` | The LLM or SERP API you configure (OpenAI, Anthropic, Groq, Perplexity, Gemini, DeepSeek, MiniMax, SerpBase) | Required, one of: `GEO_LLM_PROVIDER` + `GEO_LLM_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GROQ_API_KEY`, `PERPLEXITY_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`, `MINIMAX_API_KEY`; `SERPBASE_API_KEY` for `--provider serpbase` | None |
 
-`history`, `drift`, `track`, `monitor` and `audit --save-history`/`--regression` delete `tracking.db` records older than the retention window: 90 days, or `--retention-days N` on `audit`, `history`, `monitor` and `track`.
+`history`, `drift`, `track`, `monitor`, `audit --save-history`/`--regression` and every `geo-web` audit delete `tracking.db` records older than the retention window: 90 days, or `--retention-days N` on `audit`, `history`, `monitor` and `track`.
 
 `audit`, `fix`, `diff`, `monitor` and `track` read `.geo-optimizer.yml` (or `.yaml`) from the working directory when PyYAML is installed, unless `--config <file>` is given. It can set the URL, extra bots, cache and `audit.output`, so `geo audit` can write a file without `--output`.
 
 `citations` sends the provider only the query texts, built from `--topic` (default: the brand) or given with `--query`. The domain is matched locally in the answers; page content is never sent. Keys are read from the environment only; never paste them into a command line or a file.
 
-`geo` and `geo-mcp` have no telemetry and no update check, and never start a shell or another executable. `geo-web` (the demo server) differs: see `capabilities.json`. Every fetch of a user URL goes through private-network (SSRF) validation, re-checked on each redirect, with DNS pinning and a response size limit.
+`geo` and `geo-mcp` have no telemetry and no update check, and never start a shell or another executable. `geo-web` (the demo server) differs in network, disk and processes: see `geo_web` in `capabilities.json`. Every fetch of a user URL goes through private-network (SSRF) validation, re-checked on each redirect, with DNS pinning and a response size limit.
 
 ### Rules for agents
 
