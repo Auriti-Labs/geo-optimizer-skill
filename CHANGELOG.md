@@ -11,6 +11,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#680). An informative JSON response is served at `/` (HTTP 200) with links to `/docs` and `/health`.
 - SQLite connection management: `HistoryStore`, `SnapshotStore` and `TelemetryStore` now manage SQLite connections with `@contextmanager`, properly closing handles upon exiting the transaction block. This prevents file locking (`WinError 32`) on Windows and leaks during repeated store instantiations.
 - Test suite cross-platform compatibility: `test_telemetry` uses pytest's `tmp_path` fixture; `test_perception_cmd` reads text with `encoding="utf-8"`; `test_rich_formatter` accepts standard box corners on Windows consoles; `test_report_v3` gracefully skips PDF generation when native WeasyPrint C libraries (`libgobject-2.0-0`) are missing.
+- Web demo: a self-hosted `geo-web` no longer contacts an external stats service unless `GEO_STATS_API_URL` is set. The variable used to default to a third-party URL, so `/api/stats` sent a GET there even with no configuration; the audit counter now stays at 0 until the variable is set.
 
 ## [4.19.9] — 2026-10-30
 
