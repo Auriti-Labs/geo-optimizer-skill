@@ -8,42 +8,56 @@
     "geo-mcp",
     "geo-web"
   ],
-  "spawns_processes": false,
-  "telemetry": false,
+  "spawns_processes": {
+    "geo": false,
+    "geo-mcp": false,
+    "geo-web": "only with --reload (uvicorn's reloader process)"
+  },
+  "telemetry": {
+    "geo": false,
+    "geo-mcp": false,
+    "geo-web": "local events only, in ~/.geo-optimizer/telemetry.db"
+  },
   "url_fetch_guard": "validate_public_url + DNS pinning, re-validated on every redirect (src/geo_optimizer/utils/http.py)",
   "fetched_content": "untrusted data; never executed; prompt-injection patterns are flagged, not removed",
+  "network_target": "the URL, domain or sitemap passed, plus redirect targets and, where noted, the pages and sub-sitemaps its sitemap lists; any public host, private and internal addresses blocked",
   "commands": {
     "audit": {
-      "network": "target",
+      "network": "target; with --sitemap or --max-pages also the sitemap's pages",
       "api_keys": [],
       "writes": [
-        "--output",
+        "--output, or audit.output from .geo-optimizer.yml",
         "geo-report.pdf (--format pdf)",
         "~/.geo-cache (--cache)",
-        "~/.geo-optimizer/tracking.db (--save-history, --regression)"
+        "~/.geo-optimizer/tracking.db (--save-history, --regression; prunes records older than --retention-days, default 90)"
       ],
-      "loads_plugins": "installed geo_optimizer.checks entry points unless --no-plugins"
+      "loads_plugins": "installed geo_optimizer.checks entry points unless --no-plugins",
+      "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "fix": {
       "network": "target",
       "api_keys": [],
       "writes": [
         "./geo-fixes/ or --output-dir, only with --apply"
-      ]
+      ],
+      "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out",
+      "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "llms": {
-      "network": "target",
+      "network": "target sitemap and its sub-sitemaps",
       "api_keys": [],
       "writes": [
         "--output"
-      ]
+      ],
+      "loads_plugins": false
     },
     "schema": {
       "network": "none",
       "api_keys": [],
       "writes": [
         "--file with --inject, after <file>.bak unless --no-backup"
-      ]
+      ],
+      "loads_plugins": false
     },
     "diff": {
       "network": "target",
@@ -51,44 +65,53 @@
       "writes": [
         "--output",
         "~/.geo-cache (--cache)"
-      ]
+      ],
+      "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out",
+      "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "history": {
       "network": "none",
       "api_keys": [],
       "writes": [
-        "~/.geo-optimizer/tracking.db (prunes rows older than 90 days)",
+        "~/.geo-optimizer/tracking.db (prunes records older than --retention-days, default 90)",
         "--output"
-      ]
+      ],
+      "loads_plugins": false
     },
     "coherence": {
-      "network": "target",
+      "network": "target, including the sitemap's pages and sub-sitemaps",
       "api_keys": [],
-      "writes": []
+      "writes": [],
+      "loads_plugins": false
     },
     "monitor": {
       "network": "target",
       "api_keys": [],
       "writes": [
-        "~/.geo-optimizer/tracking.db",
+        "~/.geo-optimizer/tracking.db (prunes records older than --retention-days, default 90)",
         "--output",
         "~/.geo-cache (--cache)"
-      ]
+      ],
+      "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out",
+      "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "track": {
       "network": "target",
       "api_keys": [],
       "writes": [
-        "~/.geo-optimizer/tracking.db",
+        "~/.geo-optimizer/tracking.db (prunes records older than --retention-days, default 90)",
         "geo-track-report.html (--report)",
         "--output",
         "~/.geo-cache (--cache)"
-      ]
+      ],
+      "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out",
+      "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "logs": {
       "network": "none",
       "api_keys": [],
-      "writes": []
+      "writes": [],
+      "loads_plugins": false
     },
     "snapshots": {
       "network": "none",
@@ -96,19 +119,22 @@
       "writes": [
         "~/.geo-optimizer/snapshots.db",
         "--output"
-      ]
+      ],
+      "loads_plugins": false
     },
     "access": {
       "network": "target",
       "api_keys": [],
       "writes": [
         "--output"
-      ]
+      ],
+      "loads_plugins": false
     },
     "authority": {
-      "network": "target",
+      "network": "target, including the sitemap's pages and sub-sitemaps",
       "api_keys": [],
-      "writes": []
+      "writes": [],
+      "loads_plugins": false
     },
     "citations": {
       "network": "the configured provider only: OpenAI, Anthropic, Groq (official SDK endpoints), api.perplexity.ai, generativelanguage.googleapis.com, api.deepseek.com, api.minimax.io, api.serpbase.dev (--provider serpbase)",
@@ -124,17 +150,19 @@
         "SERPBASE_API_KEY"
       ],
       "api_keys_required": true,
-      "sends": "questions, brand name and domain; never page content",
+      "sends": "only the query texts, built from --topic (default: the brand) or given with --query; the domain is matched locally; never page content",
       "writes": [
         "--output"
-      ]
+      ],
+      "loads_plugins": false
     },
     "drift": {
       "network": "none",
       "api_keys": [],
       "writes": [
-        "~/.geo-optimizer/tracking.db"
-      ]
+        "~/.geo-optimizer/tracking.db (prunes records older than 90 days)"
+      ],
+      "loads_plugins": false
     },
     "perception": {
       "network": "target",
@@ -142,11 +170,14 @@
       "writes": [
         "--output",
         "~/.geo-cache (--cache)"
-      ]
+      ],
+      "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out"
     }
   },
   "mcp_tools": {
-    "writes_to_disk": false,
+    "writes_to_disk": [
+      "~/.geo-cache (geo_trust_score, geo_negative_signals)"
+    ],
     "network": "target URL; geo_factual_accuracy also fetches up to 8 links found on the page, through the same guard",
     "tools": [
       "geo_audit",
@@ -161,6 +192,22 @@
       "geo_trust_score",
       "geo_negative_signals",
       "geo_factual_accuracy"
+    ],
+    "loads_plugins": [
+      "geo_audit",
+      "geo_fix",
+      "geo_compare",
+      "geo_gap_analysis",
+      "geo_trust_score",
+      "geo_negative_signals"
     ]
+  },
+  "geo_web": {
+    "network": "audit targets requested through its API; /api/stats calls api.github.com and pypistats.org; an external stats service only when GEO_STATS_API_URL is set",
+    "writes": [
+      "~/.geo-optimizer/telemetry.db (local usage events)"
+    ],
+    "spawns_processes": "only with --reload (uvicorn's reloader process)",
+    "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out"
   }
 }
