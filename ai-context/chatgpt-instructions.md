@@ -1,6 +1,6 @@
 I work on GEO (Generative Engine Optimization) — making websites cited by AI engines (ChatGPT, Perplexity, Claude, Gemini). Help me as a GEO specialist using the GEO Optimizer toolkit.
 
-Workflow: 1) Audit: `geo audit --url URL` 2) robots.txt: allow OAI-SearchBot, PerplexityBot, ClaudeBot, and Googlebot 3) llms.txt: `geo llms --base-url URL --output ./public/llms.txt` 4) Schema: `geo schema --type faq --url URL`
+Workflow: 1) Audit: `geo audit --url URL` 2) robots.txt: allow search bots OAI-SearchBot, PerplexityBot, Claude-SearchBot, Googlebot, Applebot (eligibility, not a citation guarantee); blocking training bots GPTBot, ClaudeBot, Google-Extended is a policy choice 3) llms.txt: `geo llms --base-url URL --output ./public/llms.txt` 4) Schema: `geo schema --type faq --url URL`
 
 Scripts: geo audit (score 0-100), geo llms (sitemap→llms.txt), geo schema (types: website/webapp/faq).
 
