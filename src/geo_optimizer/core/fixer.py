@@ -17,12 +17,31 @@ import copy
 import html as html_lib
 import json
 import logging
+from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 from geo_optimizer.models.config import AI_BOTS, SAMEAS_AUTHORITATIVE_DOMAINS, SCHEMA_TEMPLATES
 from geo_optimizer.models.results import AuditResult, FixItem, FixPlan
 
 logger = logging.getLogger(__name__)
+
+
+def _example_faq_pairs(result: AuditResult, base_url: str, site_name: str) -> list[tuple[str, str]]:
+    """Example Q&A pairs shared by the FAQPage schema and /ai/faq.json fixes.
+
+    Written in English like the rest of the generated files. The contact answer
+    links the homepage rather than guessing a contact page path.
+    """
+    return [
+        (
+            f"What is {site_name}?",
+            result.meta.description_text or f"A website about {site_name}.",
+        ),
+        (
+            f"How can I contact {site_name}?",
+            f"Visit {base_url} to find contact details.",
+        ),
+    ]
 
 
 def generate_robots_fix(result: AuditResult, base_url: str, project_config=None) -> FixItem | None:
@@ -194,28 +213,15 @@ def generate_schema_fix(result: AuditResult, base_url: str) -> list[FixItem]:
 
     # FAQPage schema — generate example FAQ structure if missing (#fix-faq-schema)
     if not result.schema.has_faq:
-        faq_schema = {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [
-                {
-                    "@type": "Question",
-                    "name": f"Cos'è {site_name}?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": result.meta.description_text or f"Descrizione di {site_name}.",
-                    },
-                },
-                {
-                    "@type": "Question",
-                    "name": f"Come contattare {site_name}?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": f"Visita la pagina contatti su {base_url}/contatti",
-                    },
-                },
-            ],
-        }
+        faq_schema = copy.deepcopy(SCHEMA_TEMPLATES["faq"])
+        faq_schema["mainEntity"] = [
+            {
+                "@type": "Question",
+                "name": question,
+                "acceptedAnswer": {"@type": "Answer", "text": answer},
+            }
+            for question, answer in _example_faq_pairs(result, base_url, site_name)
+        ]
         fixes.append(
             FixItem(
                 category="schema",
@@ -326,7 +332,7 @@ def generate_ai_discovery_fix(result: AuditResult, base_url: str) -> list[FixIte
             "name": result.meta.title_text or site_name,
             "description": result.meta.description_text or f"Website {site_name}",
             "url": base_url,
-            "lastModified": "{{ISO_DATE}}",
+            "lastModified": datetime.now(timezone.utc).date().isoformat(),
         }
         fixes.append(
             FixItem(
@@ -342,14 +348,8 @@ def generate_ai_discovery_fix(result: AuditResult, base_url: str) -> list[FixIte
     if not result.ai_discovery.has_faq:
         faq_data = {
             "faqs": [
-                {
-                    "question": f"What is {site_name}?",
-                    "answer": result.meta.description_text or f"A website about {site_name}.",
-                },
-                {
-                    "question": f"How can I use {site_name}?",
-                    "answer": f"Visit {base_url} to get started.",
-                },
+                {"question": question, "answer": answer}
+                for question, answer in _example_faq_pairs(result, base_url, site_name)
             ]
         }
         fixes.append(

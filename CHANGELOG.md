@@ -8,6 +8,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ## [Unreleased]
 
 ### Fixed
+- `geo fix`: the generated `schema-faqpage.jsonld` was hardcoded in Italian ("Cos'è …?", "Come contattare …?") and pointed to a guessed `/contatti` URL on every site. It now uses the same English example Q&A as `/ai/faq.json`, with a contact answer that links the homepage instead of inventing a path. `/ai/summary.json` gets the generation date in `lastModified` instead of the literal `{{ISO_DATE}}` placeholder.
 - Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#680). An informative JSON response is served at `/` (HTTP 200) with links to `/docs` and `/health`.
 
 ## [4.19.9] — 2026-10-30
