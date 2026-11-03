@@ -411,6 +411,15 @@ def test_audit_result_to_dict_include_tutti_campi():
     assert "external_links_count" in content
 
 
+def test_audit_result_to_dict_excludes_non_serialized_fields():
+    """_audit_result_to_dict never leaks auxiliary telemetry like fetch_errors (#557)."""
+    from geo_optimizer.web.app import _audit_result_to_dict
+
+    result = _make_mock_audit_result()
+    d = _audit_result_to_dict(result)
+    assert "fetch_errors" not in d
+
+
 # ─── Test: round-trip _audit_result_to_dict → _dict_to_audit_result ──────────
 
 
