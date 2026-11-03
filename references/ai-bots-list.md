@@ -1,6 +1,6 @@
 # AI Bots List — User-Agents for robots.txt
 
-> Last updated: February 2026  
+> Last updated: November 2026 (Anthropic and Google entries; tiers follow `src/geo_optimizer/models/config.py`)  
 > Source: server log analysis, official vendor documentation, Momentic Marketing (Feb 2026)
 
 ## Recommended Full robots.txt
@@ -9,9 +9,9 @@ Copy this block into your `robots.txt` to optimize AI access:
 
 ```
 # ═══════════════════════════════════════════════
-#   AI SEARCH & CITATION BOTS — Allow All
+#   AI BOTS — Allow All (search, training, user fetch)
 #   GEO-Optimized robots.txt
-#   Updated: 2026-02
+#   Updated: 2026-11
 # ═══════════════════════════════════════════════
 
 # ——— OpenAI ———
@@ -23,11 +23,11 @@ User-agent: ChatGPT-User
 Allow: /
 
 # ——— Anthropic (Claude) ———
-User-agent: anthropic-ai
-Allow: /
 User-agent: ClaudeBot
 Allow: /
-User-agent: claude-web
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: Claude-User
 Allow: /
 
 # ——— Perplexity ———
@@ -36,7 +36,7 @@ Allow: /
 User-agent: Perplexity-User
 Allow: /
 
-# ——— Google AI (Gemini) ———
+# ——— Google AI (Gemini/Vertex training token — does not affect Search or AI Overviews) ———
 User-agent: Google-Extended
 Allow: /
 
@@ -51,8 +51,6 @@ User-agent: Applebot-Extended
 Allow: /
 
 # ——— Meta (AI) ———
-User-agent: FacebookBot
-Allow: /
 User-agent: meta-externalagent
 Allow: /
 
@@ -106,8 +104,8 @@ Allow: /
 ```
 
 **Notes:**
-- `OAI-SearchBot` = the bot that decides whether to cite you in ChatGPT Search
-- `GPTBot` = training data. You can block training but allow citations:
+- `OAI-SearchBot` = the ChatGPT search crawler; allowing it makes the site eligible for ChatGPT search answers, it does not guarantee citation
+- `GPTBot` = training data. You can block training and stay open to ChatGPT search:
   ```
   User-agent: GPTBot
   Disallow: /
@@ -122,9 +120,11 @@ Allow: /
 
 | User-Agent | Type | Purpose | GEO Priority |
 |-----------|------|---------|--------------|
-| `anthropic-ai` | Training | Claude model training | ⚠️ Training only |
-| `ClaudeBot` | Search/Citation | **Claude.ai citations** | 🔴 CRITICAL |
-| `claude-web` | Crawl | Generic Claude web crawling | ⭐⭐ |
+| `ClaudeBot` | Training | Claude model training | ⚠️ Training only |
+| `Claude-SearchBot` | Search | **Claude search index** | 🔴 CRITICAL |
+| `Claude-User` | On-demand | Fetch pages when a Claude user asks | ⭐⭐⭐ |
+
+Anthropic's published crawler docs name only these three; `anthropic-ai` and `claude-web` are no longer listed.
 
 **Full ClaudeBot User-Agent:**
 ```
@@ -133,19 +133,19 @@ Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +c
 
 **robots.txt snippet:**
 ```
-User-agent: anthropic-ai
-Allow: /
 User-agent: ClaudeBot
 Allow: /
-User-agent: claude-web
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: Claude-User
 Allow: /
 ```
 
-**If you want to separate training from citations:**
+**If you want to block training and stay open to Claude search:**
 ```
-User-agent: anthropic-ai
-Disallow: /
 User-agent: ClaudeBot
+Disallow: /
+User-agent: Claude-SearchBot
 Allow: /
 ```
 
@@ -176,8 +176,8 @@ Allow: /
 
 | User-Agent | Type | Purpose | GEO Priority |
 |-----------|------|---------|--------------|
-| `Google-Extended` | Training/AI | Gemini training and AI Overviews | ⭐⭐⭐ |
-| `Googlebot` | Search | Traditional Google Search | 🔴 CRITICAL |
+| `Google-Extended` | Training (token) | Gemini/Vertex training and grounding, not Search or AI Overviews | ⚠️ Training only |
+| `Googlebot` | Search | Google Search, which also feeds AI Overviews and AI Mode | 🔴 CRITICAL |
 
 **robots.txt snippet:**
 ```
@@ -189,8 +189,8 @@ Allow: /
 
 **Notes:**
 - `Google-Extended` is a **robots.txt token**, not a separate user-agent
-- Controls both Gemini training and AI Overviews in Google Search
-- Blocking `Google-Extended` removes the site from Google AI Overviews
+- Controls only whether Google may use content for Gemini/Vertex training and grounding
+- It does not affect Search or AI Overviews: those are governed by Googlebot access and snippet controls (`nosnippet`, `max-snippet`)
 
 ---
 
@@ -233,14 +233,14 @@ Allow: /
 
 | User-Agent | Type | Purpose | GEO Priority |
 |-----------|------|---------|--------------|
-| `FacebookBot` | Preview | Facebook/Instagram link preview | ⭐ |
-| `meta-externalagent` | Backup | Meta backup fetcher | ⭐ |
+| `meta-externalagent` | Training | Meta AI (Facebook/Instagram AI features) | ⭐ |
+| `Meta-ExternalFetcher` | On-demand | Meta content fetch on-demand | ⭐ |
 
 **robots.txt snippet:**
 ```
-User-agent: FacebookBot
-Allow: /
 User-agent: meta-externalagent
+Allow: /
+User-agent: Meta-ExternalFetcher
 Allow: /
 ```
 
@@ -299,26 +299,28 @@ Allow: /
 ```
 Simple, allows everything. Ideal for content sites that want maximum visibility.
 
-### Strategy 2: Allow citations, block training
+### Strategy 2: Allow AI search, block training (policy choice)
 ```
 # Training — block (no AI training data)
 User-agent: GPTBot
 Disallow: /
-User-agent: anthropic-ai
+User-agent: ClaudeBot
 Disallow: /
 User-agent: Google-Extended
 Disallow: /
 User-agent: CCBot
 Disallow: /
 
-# AI citations — allow
+# AI search — allow (eligibility, not a citation guarantee)
 User-agent: OAI-SearchBot
 Allow: /
-User-agent: ClaudeBot
+User-agent: Claude-SearchBot
 Allow: /
 User-agent: PerplexityBot
 Allow: /
 User-agent: Bingbot
+Allow: /
+User-agent: Googlebot
 Allow: /
 ```
 
@@ -331,7 +333,7 @@ Allow: /
 User-agent: *
 Disallow: /
 ```
-⚠️ Removes the site from all AI search engines.
+⚠️ Blocks every AI-specific crawler (OAI-SearchBot, Claude-SearchBot, PerplexityBot…), so the site drops out of those AI search indexes. Google AI Overviews and Copilot still read the Googlebot and Bingbot indexes.
 
 ---
 
@@ -346,6 +348,9 @@ curl -A "GPTBot" https://yoursite.com/robots.txt
 # Simulate ClaudeBot
 curl -A "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +claudebot@anthropic.com)" https://yoursite.com
 
+# Simulate Claude-SearchBot
+curl -A "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-SearchBot/1.0; +https://www.anthropic.com/claude-searchbot)" https://yoursite.com
+
 # Simulate PerplexityBot
 curl -A "PerplexityBot/1.0 (+https://perplexity.ai/bot)" https://yoursite.com
 ```
@@ -358,10 +363,11 @@ Search server logs (nginx/apache):
 
 ```bash
 # Search all AI bots in nginx logs
-grep -E "GPTBot|OAI-SearchBot|ClaudeBot|PerplexityBot|Google-Extended|anthropic-ai|claude-web" /var/log/nginx/access.log
+# Google-Extended is a robots.txt token, never a user-agent, so it does not appear in logs
+grep -E "GPTBot|OAI-SearchBot|ClaudeBot|Claude-SearchBot|Claude-User|PerplexityBot" /var/log/nginx/access.log
 
 # Count visits per bot
-grep -oE "GPTBot|OAI-SearchBot|ClaudeBot|PerplexityBot" /var/log/nginx/access.log | sort | uniq -c | sort -rn
+grep -oE "GPTBot|OAI-SearchBot|ClaudeBot|Claude-SearchBot|PerplexityBot" /var/log/nginx/access.log | sort | uniq -c | sort -rn
 ```
 
 ---

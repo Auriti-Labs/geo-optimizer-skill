@@ -9,13 +9,15 @@
 
 ## robots.txt
 
-Always include these user-agents with `Allow: /`:
-- Critical citation bots: `OAI-SearchBot`, `PerplexityBot`, `ClaudeBot`, `Google-Extended`
-- Also include: `GPTBot`, `ChatGPT-User`, `anthropic-ai`, `claude-web`, `Googlebot`, `Bingbot`, `Applebot`, `Applebot-Extended`, `meta-externalagent`, `Bytespider`, `cohere-ai`, `DuckAssistBot`
+By default include these user-agents with `Allow: /`:
+- AI search bots (keep allowed to stay eligible for AI search answers): `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Googlebot` (Googlebot also feeds AI Overviews/AI Mode, governed by snippet controls)
+- Training bots: `GPTBot`, `ClaudeBot`, `Google-Extended` (a robots.txt token, not a crawler: Gemini/Vertex training and grounding, not Search or AI Overviews)
+- User-triggered fetch: `ChatGPT-User`, `Claude-User`, `Perplexity-User`
+- Also include: `Bingbot`, `Applebot`, `Applebot-Extended`, `meta-externalagent`, `Bytespider`, `cohere-ai`, `DuckAssistBot`
 
-Never block critical citation bots even if blocking training bots.
-Use `Disallow: /` for `GPTBot` and `anthropic-ai` to block training while keeping citations.
-Always keep `OAI-SearchBot`, `ClaudeBot`, `PerplexityBot` at `Allow: /` for citation access.
+Never block the AI search bots, even if blocking training bots.
+Use `Disallow: /` for `GPTBot`, `ClaudeBot` and `Google-Extended` to opt out of training; this is a policy choice and does not affect the search bots.
+Being allowed makes a site eligible for AI answers; it does not guarantee citation.
 
 ## llms.txt
 

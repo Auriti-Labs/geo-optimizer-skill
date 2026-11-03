@@ -4,16 +4,16 @@ Complete reference for AI crawler user-agents and `robots.txt` configuration str
 
 ---
 
-## Citation Bots vs Training Bots
+## Search Bots vs Training Bots
 
 This is the most important distinction in GEO robot configuration.
 
 | Type | What they do | GEO impact | Example |
 |------|-------------|-----------|---------|
-| **Citation bots** | Crawl and index your content for use in AI-generated answers | 🔴 Critical — blocking these = not being cited | `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`, `Googlebot`, `Applebot` |
-| **Training bots** | Collect data to train AI models (offline process) | ⚠️ Optional — blocking doesn't affect citations | `GPTBot`, `ClaudeBot`, `CCBot` |
+| **Search bots** | Crawl and index your content for use in AI-generated answers | 🔴 Keep allowed — blocking them removes eligibility; allowing them does not guarantee citation | `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`, `Googlebot`, `Applebot` |
+| **Training bots** | Collect data to train AI models (offline process) | ⚠️ Policy choice — vendors treat training and search settings as independent | `GPTBot`, `ClaudeBot`, `Google-Extended`, `CCBot` |
 
-**Key insight:** You can block training bots (if you have IP concerns) while still allowing citation bots. Blocking `GPTBot` does not prevent ChatGPT from citing you — `OAI-SearchBot` is the relevant bot for citations. Likewise `ClaudeBot` is Anthropic's training crawler, not the one Claude cites through — `Claude-SearchBot` (index) and `Claude-User` (on-demand, when a user asks Claude to visit a URL) are.
+**Key insight:** You can block training bots (if you have IP concerns) while still allowing search bots. A third tier, user-triggered fetch (`ChatGPT-User`, `Claude-User`, `Perplexity-User`), fetches a page when a user asks for it. Blocking `GPTBot` does not prevent ChatGPT from citing you — `OAI-SearchBot` is the relevant bot for citations. Likewise `ClaudeBot` is Anthropic's training crawler, not the one Claude cites through — `Claude-SearchBot` (index) and `Claude-User` (on-demand, when a user asks Claude to visit a URL) are.
 
 ---
 
@@ -21,7 +21,7 @@ This is the most important distinction in GEO robot configuration.
 
 ### 🔴 Critical Citation Bots
 
-These five bots directly determine whether AI search engines cite your site. **Never block them.**
+These five bots build the indexes AI search engines answer from. Blocking them removes the site from those answers; allowing them makes it eligible, it does not guarantee citation. **Never block them.**
 
 | Bot | Vendor | Type | Purpose | Crawl Frequency |
 |-----|--------|------|---------|----------------|
@@ -65,7 +65,7 @@ have been removed from this reference.
 | `Google-Extended` | Training only | Gemini Apps and Vertex AI generative model training/grounding | Frequent |
 | `Googlebot` | Search + Citation | Traditional Google Search and AI Overviews (same crawler, same index) | Very frequent |
 
-Note: `Google-Extended` is a `robots.txt` token, not a separate user-agent. Per Google's own documentation, it controls only whether content is used to improve Gemini Apps and Vertex AI generative models — it has no effect on Search inclusion or AI Overviews eligibility, which are governed entirely by standard Googlebot access. To opt out of AI Overviews specifically, Google introduced a dedicated Search Console control (Settings → Search generative AI) starting mid-2026; blocking Google-Extended alone will not achieve that.
+Note: `Google-Extended` is a `robots.txt` token, not a separate user-agent. Per Google's own documentation, it controls only whether content is used to improve Gemini Apps and Vertex AI generative models — it has no effect on Search inclusion or AI Overviews eligibility, which are governed entirely by standard Googlebot access. AI Overviews and AI Mode follow Googlebot access and snippet controls (`nosnippet`, `max-snippet`); the audit's manual check `G-GENAI-CONTROL` asks you to review the Search Console generative-AI opt-out ([Google's AI optimization guide](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)). Blocking Google-Extended alone does not opt a site out of AI Overviews.
 
 ### Microsoft (Copilot)
 
@@ -118,9 +118,9 @@ Full GEO-optimized `robots.txt` block. Replace `https://yoursite.com/sitemap.xml
 
 ```
 # ═══════════════════════════════════════════════
-#   AI SEARCH & CITATION BOTS — Allow All
+#   AI BOTS — Allow All (search, training, user fetch)
 #   GEO-Optimized robots.txt
-#   Updated: 2026-02
+#   Updated: 2026-11
 # ═══════════════════════════════════════════════
 
 # ——— OpenAI ———
@@ -160,8 +160,6 @@ User-agent: Applebot-Extended
 Allow: /
 
 # ——— Meta (AI) ———
-User-agent: FacebookBot
-Allow: /
 User-agent: meta-externalagent
 Allow: /
 
@@ -194,9 +192,9 @@ Sitemap: https://yoursite.com/sitemap.xml
 
 ---
 
-## Strategy: Allow Citations, Block Training
+## Strategy: Allow AI Search, Block Training
 
-If you want to appear in AI answers but prevent your content from being used as training data:
+If you want to stay eligible for AI answers but prevent your content from being used as training data (a policy choice):
 
 ```
 # ─── Training bots — blocked ──────────────────
@@ -215,7 +213,7 @@ Disallow: /
 User-agent: Applebot-Extended
 Disallow: /
 
-# ─── Citation bots — allowed ──────────────────
+# ─── Search bots — allowed ────────────────────
 User-agent: OAI-SearchBot
 Allow: /
 
@@ -273,15 +271,15 @@ grep -E "GPTBot|OAI-SearchBot|ClaudeBot|Claude-SearchBot|PerplexityBot|Googlebot
   /var/log/nginx/access.log
 
 # Count hits per bot (last 7 days)
-grep -oE "GPTBot|OAI-SearchBot|ClaudeBot|PerplexityBot|Google-Extended" \
+grep -oE "GPTBot|OAI-SearchBot|ClaudeBot|Claude-SearchBot|PerplexityBot" \
   /var/log/nginx/access.log | sort | uniq -c | sort -rn
 
 # Apache equivalent
-grep -E "GPTBot|OAI-SearchBot|ClaudeBot|PerplexityBot" \
+grep -E "GPTBot|OAI-SearchBot|ClaudeBot|Claude-SearchBot|PerplexityBot" \
   /var/log/apache2/access.log | awk '{print $1, $7}' | head -50
 ```
 
-For managed hosting without log access, check **Google Search Console → Settings → Crawl Stats** — it shows `Googlebot` and `Google-Extended` activity. For other bots, there is no equivalent dashboard; server logs are the only reliable source.
+For managed hosting without log access, check **Google Search Console → Settings → Crawl Stats** — it shows `Googlebot` activity (`Google-Extended` is a robots.txt token, not a crawler, so it never shows up as separate traffic). For other bots, there is no equivalent dashboard; server logs are the only reliable source.
 
 ---
 
