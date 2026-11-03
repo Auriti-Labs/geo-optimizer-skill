@@ -1,0 +1,21 @@
+{
+  "name": "geo-optimizer",
+  "version": "4.19.10",
+  "description": "Audit and fix a website for AI search visibility (GEO): score it 0-100 with geo audit and fix robots.txt AI crawler rules, llms.txt, JSON-LD schema, meta tags and content citability.",
+  "author": {
+    "name": "Juan Camilo Auriti",
+    "url": "https://github.com/auriti"
+  },
+  "homepage": "https://geoready.dev",
+  "repository": "https://github.com/Auriti-Labs/geo-optimizer-skill",
+  "license": "MIT",
+  "keywords": [
+    "geo",
+    "aeo",
+    "ai-search",
+    "llms-txt",
+    "schema-org",
+    "seo",
+    "mcp"
+  ]
+}

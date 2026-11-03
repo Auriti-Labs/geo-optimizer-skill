@@ -200,7 +200,8 @@
       "geo_gap_analysis",
       "geo_trust_score",
       "geo_negative_signals"
-    ]
+    ],
+    "claude_code_plugin": "plugins/geo-optimizer/.mcp.json starts geo-mcp via uvx (needs uv); no other executable"
   },
   "geo_web": {
     "network": "audit targets requested through its API; /api/stats calls api.github.com and pypistats.org; an external stats service only when GEO_STATS_API_URL is set; /api/citations calls Perplexity only when PERPLEXITY_API_KEY is set; competitive narrative calls the LLM provider whose key is in the environment, only when one is set",

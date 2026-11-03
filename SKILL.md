@@ -30,7 +30,7 @@ Core dependencies (click, requests, beautifulsoup4, lxml, urllib3, rich) and eve
 
 ### What each command touches
 
-Machine-readable version: [`capabilities.json`](capabilities.json). A test keeps it in sync with the registered commands and MCP tools.
+Machine-readable version: [`capabilities.json`](https://github.com/Auriti-Labs/geo-optimizer-skill/blob/main/capabilities.json). A test keeps it in sync with the registered commands and MCP tools.
 
 **Target** below means the URL, domain or sitemap you pass, plus redirect targets and, where noted, the pages and sub-sitemaps its sitemap lists. Those can be on any public host; private and internal addresses are blocked.
 
@@ -278,12 +278,12 @@ Platform-optimized versions of this skill for different AI tools:
 
 | Platform | File | Size | Limit | How to use |
 |----------|------|------|-------|------------|
-| Claude Projects | `ai-context/claude-project.md` | ~12,800 chars | No limit | Project → Add as Knowledge |
-| ChatGPT Custom GPT | `ai-context/chatgpt-custom-gpt.md` | ~5,300 chars | 8,000 chars | GPT Builder → System prompt |
+| Claude Projects | `ai-context/claude-project.md` | ~13,200 chars | No limit | Project → Add as Knowledge |
+| ChatGPT Custom GPT | `ai-context/chatgpt-custom-gpt.md` | ~5,800 chars | 8,000 chars | GPT Builder → System prompt |
 | ChatGPT Instructions | `ai-context/chatgpt-instructions.md` | ~1,100 chars | 1,500 chars/field | Settings → Custom Instructions |
-| Cursor | `ai-context/cursor.mdc` | ~4,700 chars | No limit | Copy to `.cursor/rules/geo-optimizer.mdc` |
-| Windsurf | `ai-context/windsurf.md` | ~5,000 chars | 12,000 chars | Copy to `.windsurf/rules/geo-optimizer.md` |
-| Kiro | `ai-context/kiro-steering.md` | ~3,800 chars | No limit | Copy to `.kiro/steering/geo-optimizer.md` |
+| Cursor | `ai-context/cursor.mdc` | ~7,000 chars | No limit | Copy to `.cursor/rules/geo-optimizer.mdc` |
+| Windsurf | `ai-context/windsurf.md` | ~7,300 chars | 12,000 chars | Copy to `.windsurf/rules/geo-optimizer.md` |
+| Kiro | `ai-context/kiro-steering.md` | ~6,200 chars | No limit | Copy to `.kiro/steering/geo-optimizer.md` |
 
 ```bash
 # Quick copy commands

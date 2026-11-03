@@ -26,6 +26,8 @@ claude mcp add geo-optimizer -- geo-mcp
 
 That's it. The tools are immediately available in your Claude Code session.
 
+To get the server and the skill together without installing the package, use the [Claude Code plugin](../README.md#claude-code-plugin) (needs `uv`).
+
 ### Cursor
 
 Add to your `.cursor/mcp.json`:

@@ -305,6 +305,17 @@ claude mcp add geo-optimizer -- geo-mcp
 
 Then ask: *"audit my site and fix what's missing."*
 
+#### Claude Code plugin
+
+Installs the skill and the MCP server in one go, no files to copy:
+
+```text
+/plugin marketplace add Auriti-Labs/geo-optimizer-skill
+/plugin install geo-optimizer@geoready
+```
+
+On Claude Code 2.1.275 or later one step is enough: `/plugin install geo-optimizer --marketplace Auriti-Labs/geo-optimizer-skill` (the shell form, `claude plugin install ...`, needs 2.1.292). The plugin starts `geo-mcp` with `uvx`, so [uv](https://docs.astral.sh/uv/) must be on your `PATH`. It does not install the `geo` CLI the skill runs: the skill's preflight asks for it.
+
 <details>
 <summary><b>12 MCP tools</b></summary>
 

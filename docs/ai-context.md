@@ -219,6 +219,8 @@ fileMatchPattern:
 
 ## Updating context files
 
+The install, version check and agent rules near the top of each file are generated: edit SKILL.md, then run `python scripts/build_ai_context.py`.
+
 When the GEO Optimizer toolkit is updated, re-copy the relevant files:
 
 ```bash

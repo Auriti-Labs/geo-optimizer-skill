@@ -255,9 +255,10 @@ Open a GitHub Issue with:
 
 1. Update `CHANGELOG.md` — move `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD`
 2. Update version in `pyproject.toml` and `src/geo_optimizer/__init__.py`
-3. Tag release: `git tag vX.Y.Z && git push origin vX.Y.Z`
-4. GitHub Actions publishes to PyPI (OIDC trusted publisher)
-5. Create GitHub Release with changelog excerpt
+3. Run `python scripts/build_ai_context.py` and commit the regenerated `ai-context/` files
+4. Tag release: `git tag vX.Y.Z && git push origin vX.Y.Z`
+5. GitHub Actions publishes to PyPI (OIDC trusted publisher)
+6. Create GitHub Release with changelog excerpt
 
 ## Optional Dependencies
 
