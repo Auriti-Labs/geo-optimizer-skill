@@ -7,6 +7,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- Claude Code plugin and marketplace: `/plugin marketplace add Auriti-Labs/geo-optimizer-skill`, then `/plugin install geo-optimizer@geoready`. The plugin (`plugins/geo-optimizer/`) ships the GEO Optimizer skill and starts the `geo-mcp` server through `uvx` (needs uv); it does not install the `geo` CLI.
+- `scripts/build_ai_context.py` generates the preflight and agent-rules block of the six `ai-context/` files from SKILL.md, and keeps the plugin's copy of SKILL.md, its `plugin.json` version and its `.mcp.json` minimum version in sync; `--check` reports stale files and a test fails on drift.
+
 ## [4.19.10] — 2026-11-03
 
 ### Fixed
