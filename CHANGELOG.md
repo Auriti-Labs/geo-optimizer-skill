@@ -11,10 +11,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - Claude Code plugin and marketplace: `/plugin marketplace add Auriti-Labs/geo-optimizer-skill`, then `/plugin install geo-optimizer@geoready`. The plugin (`plugins/geo-optimizer/`) ships the GEO Optimizer skill and starts the `geo-mcp` server through `uvx` (needs uv); it does not install the `geo` CLI.
 - `scripts/build_ai_context.py` generates the preflight and agent-rules block of the six `ai-context/` files from SKILL.md, and keeps the plugin's copy of SKILL.md, its `plugin.json` version and its `.mcp.json` minimum version in sync; `--check` reports stale files and a test fails on drift.
 
+### Changed
+- `SECURITY.md`: reports go to juan@geoready.dev or to GitHub's private vulnerability reporting (Security tab, Report a vulnerability), which is now enabled. The previous address did not exist (#691).
+
 ### Fixed
 - `geo fix`: the generated `schema-faqpage.jsonld` was hardcoded in Italian ("Cos'è …?", "Come contattare …?") and pointed to a guessed `/contatti` URL on every site. It now uses the same English example Q&A as `/ai/faq.json`, with a contact answer that links the homepage instead of inventing a path. `/ai/summary.json` gets the generation date in `lastModified` instead of the literal `{{ISO_DATE}}` placeholder.
 
 ## [4.19.10] — 2026-11-03
+
+### Changed
+- `SKILL.md` now opens with a fail-closed `geo --version` preflight, install commands per extra, a table of network targets, API keys and disk writes for each command, and four rules for agents (#688). `capabilities.json` carries the same facts in machine-readable form, and a test fails if a CLI command or MCP tool is added without updating it.
+- Bot documentation: ClaudeBot and Google-Extended are no longer described as citation bots in the six `ai-context/` files, `references/ai-bots-list.md` and the copies of `ai-bots-reference.md`. They follow the search, training and user-fetch tiers that `SKILL.md` and `models/config.py` already used; being allowed means eligible, never a guarantee of citation. Bots that `config.py` does not list were dropped, and a test pins the tiers (#689).
 
 ### Fixed
 - Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#682). An informative JSON response is served at `/` (HTTP 200) with links to `/docs` and `/health`.
