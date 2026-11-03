@@ -601,12 +601,13 @@ def _markdown_to_html(md: str) -> str:
 #     return html.replace("__NONCE_ATTR__", nonce_attr)
 
 # ─── Stats API esterna (AgencyPilot) ─────────────────────────────────────────
-# Audit counter persisted on an external SQLite DB via REST API
-_STATS_API_URL = os.environ.get("GEO_STATS_API_URL", "https://agencypilot.it/api/geo-stats")
+# Audit counter persisted on an external SQLite DB via REST API.
+# Off by default: without GEO_STATS_API_URL no request leaves for the stats service.
+_STATS_API_URL = os.environ.get("GEO_STATS_API_URL", "")
 _STATS_API_KEY = os.environ.get("GEO_STATS_API_KEY", "")
 
 # Fix #307/#349: anti-SSRF validation on GEO_STATS_API_URL at startup
-_STATS_API_URL_SAFE = True
+_STATS_API_URL_SAFE = bool(_STATS_API_URL)
 if _STATS_API_URL:
     from urllib.parse import urlparse as _urlparse_stats
 

@@ -280,7 +280,7 @@ def _query_groq(prompt: LLMPrompt, *, system: str, api_key: str, model: str, max
             ChatCompletionUserMessageParam,
         )
     except ImportError:
-        return LLMResponse(error="groq not installed (pip install geo-optimizer-skill[dev])")
+        return LLMResponse(error="groq not installed (pip install geo-optimizer-skill[llm])")
 
     try:
         client = Groq(api_key=api_key, timeout=_LLM_TIMEOUT)

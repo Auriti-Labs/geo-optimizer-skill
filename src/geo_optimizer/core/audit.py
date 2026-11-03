@@ -545,6 +545,7 @@ def _build_audit_result(
     hallucination_bait=None,  # v4.10: Hallucination Bait Detection (#377)
     google_ai=None,  # v4.19: Google AI readiness
     score_version: int = DEFAULT_SCORE_VERSION,
+    load_plugins: bool = True,
 ) -> AuditResult:
     """Build AuditResult from sub-audits (fix #97: shared sync/async logic).
 
@@ -563,6 +564,7 @@ def _build_audit_result(
         soup: BeautifulSoup of the homepage (optional, passed to plugins).
         extra_checks: Dict with pre-computed results (not used internally).
         signals: Technical signals v4.0 (lang, RSS, freshness).
+        load_plugins: If False, neither load nor run ``geo_optimizer.checks`` plugins.
 
     Returns:
         Complete AuditResult with score, band, recommendations and plugins.
@@ -739,12 +741,13 @@ def _build_audit_result(
     )
 
     # Fix #460: load entry_point plugins if not already loaded (API + MCP callers)
-    CheckRegistry.load_entry_points()
+    if load_plugins:
+        CheckRegistry.load_entry_points()
 
     # Fix #104: run plugins registered in CheckRegistry
     # Their results do not affect the base score
     plugin_results = {}
-    if CheckRegistry.all():
+    if load_plugins and CheckRegistry.all():
         check_results = CheckRegistry.run_all(base_url, soup=soup)
         plugin_results = {
             r.name: {
@@ -874,6 +877,7 @@ def run_full_audit(
     project_config=None,
     on_step: Callable[[str], None] | None = None,
     score_version: int = DEFAULT_SCORE_VERSION,
+    load_plugins: bool = True,
 ) -> AuditResult:
     """Run complete audit and return AuditResult with all sub-results, score, band, and recommendations.
 
@@ -882,6 +886,7 @@ def run_full_audit(
         use_cache: If True, use disk cache for HTTP requests.
         project_config: Optional ProjectConfig — if it has extra_bots, merges them with AI_BOTS (fix #120).
         on_step: Optional callback called with the name of each phase (AUDIT_STEPS) as it starts.
+        load_plugins: If False, installed ``geo_optimizer.checks`` plugins are neither loaded nor run.
     """
     _t0 = time.perf_counter()
     _notify(on_step, AUDIT_STEPS[0])
@@ -1078,6 +1083,7 @@ def run_full_audit(
         trust_stack=trust_stack_result,
         google_ai=google_ai_result,
         score_version=score_version,
+        load_plugins=load_plugins,
     )
 
     # gap #10: brand sentiment analysis — opt-in, requires project_config.brand_name
@@ -1105,6 +1111,7 @@ async def run_full_audit_async(
     project_config=None,
     on_step: Callable[[str], None] | None = None,
     score_version: int = DEFAULT_SCORE_VERSION,
+    load_plugins: bool = True,
 ) -> AuditResult:
     """Async variant of the full audit with parallel fetch (httpx).
 
@@ -1118,6 +1125,7 @@ async def run_full_audit_async(
         url: URL of the site to analyze.
         project_config: Optional ProjectConfig — if it has extra_bots, merges them with AI_BOTS.
         on_step: Optional callback called with the name of each phase (AUDIT_STEPS) as it starts.
+        load_plugins: If False, installed ``geo_optimizer.checks`` plugins are neither loaded nor run.
 
     Requires: pip install geo-optimizer-skill[async]
     """
@@ -1314,6 +1322,7 @@ async def run_full_audit_async(
         trust_stack=trust_stack_result,
         google_ai=google_ai_result,
         score_version=score_version,
+        load_plugins=load_plugins,
     )
 
     # gap #10: brand sentiment analysis — opt-in, requires project_config.brand_name

@@ -24,6 +24,7 @@ def run_batch_audit(
     max_urls: int = _DEFAULT_BATCH_MAX_URLS,
     concurrency: int = _DEFAULT_BATCH_CONCURRENCY,
     score_version: int = DEFAULT_SCORE_VERSION,
+    load_plugins: bool = True,
 ) -> BatchAuditResult:
     """Esegue un audit batch sincrono partendo da una sitemap XML."""
     return asyncio.run(
@@ -34,6 +35,7 @@ def run_batch_audit(
             max_urls=max_urls,
             concurrency=concurrency,
             score_version=score_version,
+            load_plugins=load_plugins,
         )
     )
 
@@ -46,6 +48,7 @@ async def run_batch_audit_async(
     max_urls: int = _DEFAULT_BATCH_MAX_URLS,
     concurrency: int = _DEFAULT_BATCH_CONCURRENCY,
     score_version: int = DEFAULT_SCORE_VERSION,
+    load_plugins: bool = True,
 ) -> BatchAuditResult:
     """Esegue audit concorrenti sugli URL contenuti in una sitemap."""
     if max_urls <= 0:
@@ -67,6 +70,7 @@ async def run_batch_audit_async(
         project_config=project_config,
         concurrency=concurrency,
         score_version=score_version,
+        load_plugins=load_plugins,
     )
     return _aggregate_batch_result(
         sitemap_url=sitemap_url,
@@ -98,6 +102,7 @@ async def _audit_urls(
     project_config,
     concurrency: int,
     score_version: int,
+    load_plugins: bool = True,
 ) -> list[BatchAuditPageResult]:
     """Esegue gli audit delle pagine con un limite di concorrenza."""
     semaphore = asyncio.Semaphore(concurrency)
@@ -108,7 +113,11 @@ async def _audit_urls(
             try:
                 return await asyncio.wait_for(
                     _audit_single_url(
-                        url, use_cache=use_cache, project_config=project_config, score_version=score_version
+                        url,
+                        use_cache=use_cache,
+                        project_config=project_config,
+                        score_version=score_version,
+                        load_plugins=load_plugins,
                     ),
                     timeout=BATCH_URL_TIMEOUT_SECONDS,
                 )
@@ -119,13 +128,17 @@ async def _audit_urls(
     return await asyncio.gather(*(_worker(url) for url in urls))
 
 
-async def _audit_single_url(url: str, *, use_cache: bool, project_config, score_version: int) -> BatchAuditPageResult:
+async def _audit_single_url(
+    url: str, *, use_cache: bool, project_config, score_version: int, load_plugins: bool = True
+) -> BatchAuditPageResult:
     """Esegue un audit singolo e lo converte in un risultato batch sintetico."""
     try:
         if use_cache or not _async_runtime_available():
             audit_kwargs = {"use_cache": use_cache, "project_config": project_config}
             if score_version != DEFAULT_SCORE_VERSION:
                 audit_kwargs["score_version"] = score_version
+            if not load_plugins:
+                audit_kwargs["load_plugins"] = False
             result = await asyncio.to_thread(
                 run_full_audit,
                 url,
@@ -135,6 +148,8 @@ async def _audit_single_url(url: str, *, use_cache: bool, project_config, score_
             audit_kwargs = {"project_config": project_config}
             if score_version != DEFAULT_SCORE_VERSION:
                 audit_kwargs["score_version"] = score_version
+            if not load_plugins:
+                audit_kwargs["load_plugins"] = False
             result = await run_full_audit_async(url, **audit_kwargs)
     except Exception as exc:  # pragma: no cover - rete/eccezioni inattese
         result = AuditResult(url=url, error=f"{type(exc).__name__}: {exc}", band="critical")
