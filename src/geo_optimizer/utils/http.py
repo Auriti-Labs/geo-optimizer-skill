@@ -15,6 +15,7 @@ Implements anti-SSRF protections:
 
 from __future__ import annotations
 
+import contextvars
 import functools
 import logging
 import socket
@@ -126,6 +127,41 @@ def create_session_with_retry(
     return session
 
 
+_last_request_attempts: contextvars.ContextVar[int] = contextvars.ContextVar("_last_request_attempts", default=1)
+
+
+def reset_request_attempts() -> None:
+    """Reset the observed request attempts count to 1 (#557)."""
+    _last_request_attempts.set(1)
+
+
+def _get_urllib3_retry_count(response: object) -> int:
+    """Extract urllib3 retry count from a response if available (#557)."""
+    raw = getattr(response, "raw", None)
+    if raw is not None:
+        retries = getattr(raw, "retries", None)
+        if retries is not None:
+            history = getattr(retries, "history", None)
+            if isinstance(history, (tuple, list)):
+                return len(history)
+    return 0
+
+
+def get_response_attempts(response: object | None = None) -> int:
+    """Read the attempt count from a response's urllib3 retry history or last request (#557).
+
+    Returns the observed attempt count, or 1 if no retry history/attempts are available.
+    """
+    if response is not None:
+        if type(response).__name__ == "CachedResponse":
+            return 1
+        history_attempts = _get_urllib3_retry_count(response) + 1
+    else:
+        history_attempts = 1
+    last_attempts = _last_request_attempts.get()
+    return max(history_attempts, last_attempts)
+
+
 def with_retry(max_retries: int = _MAX_RETRIES, backoff_base: int = _BACKOFF_BASE):
     """Decorator per retry con backoff esponenziale sui transient failures.
 
@@ -143,8 +179,12 @@ def with_retry(max_retries: int = _MAX_RETRIES, backoff_base: int = _BACKOFF_BAS
         def wrapper(*args, **kwargs):
             last_exception = None
             for attempt in range(max_retries + 1):
+                _last_request_attempts.set(attempt + 1)
                 try:
-                    return func(*args, **kwargs)
+                    result = func(*args, **kwargs)
+                    retries_count = _get_urllib3_retry_count(result)
+                    _last_request_attempts.set(attempt + 1 + retries_count)
+                    return result
                 except _RETRYABLE_EXCEPTIONS as exc:
                     last_exception = exc
                     if attempt < max_retries:
@@ -289,6 +329,8 @@ def fetch_url(
     Returns:
         tuple: (response, error_msg) where response is None on failure
     """
+    _last_request_attempts.set(1)
+
     # Import here to avoid circular import (http ← validators ← http)
     from geo_optimizer.utils.validators import resolve_and_validate_url
 

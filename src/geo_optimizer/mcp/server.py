@@ -107,6 +107,11 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
             When enabled, receipt.terminal_error is one of: 'timeout',
             'connection_failed', 'http_error', 'too_large', 'unsafe_url',
             'invalid_argument', 'internal', or None on success.
+            The receipt also includes 'attempts', representing the observed
+            HTTP attempts made for the main page (homepage) request on the
+            sync path (transient retries and status retries; defaults to 1 on
+            the async path). For redirects, only attempts on the final hop are
+            counted as each hop establishes a new session.
     """
     from geo_optimizer.utils.validators import validate_public_url
 
@@ -121,6 +126,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_url"],
+                "attempts": 1,
                 "terminal_error": "unsafe_url",
             }
         return json.dumps(err_payload)
@@ -133,6 +139,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_score_version"],
+                "attempts": 1,
                 "terminal_error": "invalid_argument",
             }
         return json.dumps(err_payload)
@@ -151,11 +158,17 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
         return stages_started[:-1], [stages_started[-1]]
 
     try:
-        from geo_optimizer.core.audit import run_full_audit
+        from geo_optimizer.core.audit import get_audit_telemetry, reset_audit_telemetry, run_full_audit
+
+        if include_receipt:
+            reset_audit_telemetry()
 
         result = run_full_audit(url, score_version=score_version, on_step=on_step if include_receipt else None)
         if not include_receipt:
             return _to_json(result)
+
+        telemetry = get_audit_telemetry()
+        attempts = telemetry.get("attempts", 1)
 
         # An unreachable homepage or an HTTP error ends the audit early with
         # result.error set instead of raising.
@@ -167,6 +180,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
             "url": url,
             "stages_completed": completed,
             "stages_failed": failed,
+            "attempts": attempts,
             "duration_ms": getattr(result, "audit_duration_ms", 0),
             "terminal_error": terminal_error,
         }
@@ -181,6 +195,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": completed,
                 "stages_failed": failed,
+                "attempts": 1,
                 "terminal_error": "internal",
             }
         return json.dumps(err_payload)

@@ -8,9 +8,11 @@ instead of printing — the CLI layer handles display and formatting.
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import logging
 import time
 from collections.abc import Callable
+from typing import Any
 from urllib.parse import urljoin
 
 # ─── Re-exports from split modules (backward compatibility, #402) ────────────
@@ -84,7 +86,7 @@ from geo_optimizer.models.results import (
     SignalsResult,
     WebMcpResult,
 )
-from geo_optimizer.utils.http import fetch_url
+from geo_optimizer.utils.http import fetch_url, get_response_attempts, reset_request_attempts
 from geo_optimizer.utils.validators import normalize_url_scheme
 
 # Shared by build_recommendations / build_categorized_recommendations: one (category, text) pair per
@@ -893,6 +895,22 @@ def _notify(on_step: Callable[[str], None] | None, step: str) -> None:
         on_step(step)
 
 
+_audit_telemetry: contextvars.ContextVar[dict[str, Any] | None] = contextvars.ContextVar(
+    "_audit_telemetry", default=None
+)
+
+
+def get_audit_telemetry() -> dict[str, Any]:
+    """Return execution telemetry from the most recent audit in current context (#557)."""
+    val = _audit_telemetry.get()
+    return dict(val) if val is not None else {}
+
+
+def reset_audit_telemetry() -> None:
+    """Reset execution telemetry for current context (#557)."""
+    _audit_telemetry.set({})
+
+
 def run_full_audit(
     url: str,
     use_cache: bool = False,
@@ -911,6 +929,7 @@ def run_full_audit(
         load_plugins: If False, installed ``geo_optimizer.checks`` plugins are neither loaded nor run.
     """
     _t0 = time.perf_counter()
+    _audit_telemetry.set({"attempts": 1})
     _notify(on_step, AUDIT_STEPS[0])
     from bs4 import BeautifulSoup
 
@@ -940,12 +959,17 @@ def run_full_audit(
                 headers=headers,
             )
             err = None
+            reset_request_attempts()
         else:
             r, err = fetch_url(base_url)  # type: ignore[assignment]
             if r is not None and not err and r.status_code in (200, 203):
                 cache.put(base_url, r.status_code, r.text, dict(r.headers))
     else:
         r, err = fetch_url(base_url)  # type: ignore[assignment]
+    attempts = get_response_attempts(r)
+    telemetry = dict(_audit_telemetry.get() or {})
+    telemetry["attempts"] = attempts
+    _audit_telemetry.set(telemetry)
     # `r is None`, not `not r`: requests.Response.__bool__ is `ok`, so any 4xx/5xx
     # is falsy and would land here — reporting "Connection failed" for a request
     # that succeeded, and skipping the status branch below that exists to name the
@@ -1152,6 +1176,7 @@ async def run_full_audit_async(
     Requires: pip install geo-optimizer-skill[async]
     """
     _t0 = time.perf_counter()
+    _audit_telemetry.set({"attempts": 1})
     _notify(on_step, AUDIT_STEPS[0])
     from bs4 import BeautifulSoup
 
