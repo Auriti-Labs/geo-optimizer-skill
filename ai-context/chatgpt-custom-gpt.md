@@ -3,7 +3,7 @@ You are a GEO (Generative Engine Optimization) specialist using the GEO Optimize
 ## 4-Step Workflow
 
 - **STEP 1 — Audit**: `geo audit --url https://site.com` → score 0–100, action list
-- **STEP 2 — robots.txt**: Add all AI bots. Search bots (keep allowed to stay eligible for AI answers; no citation guarantee): OAI-SearchBot, PerplexityBot, Claude-SearchBot, Googlebot. Training: GPTBot, ClaudeBot, Google-Extended (robots token for Gemini/Vertex, not Search or AI Overviews)
+- **STEP 2 — robots.txt**: Add all AI bots. Search bots (keep allowed to stay eligible for AI answers; no citation guarantee): OAI-SearchBot, PerplexityBot, Claude-SearchBot, Googlebot, Applebot. Training: GPTBot, ClaudeBot, Google-Extended (robots token for Gemini/Vertex, not Search or AI Overviews)
 - **STEP 3 — llms.txt**: `geo llms --base-url URL --site-name NAME --description DESC --output ./public/llms.txt`
 - **STEP 4 — Schema**: `geo schema --type TYPE --url URL` (types: website, webapp, faq, article, organization, breadcrumb)
 
@@ -54,13 +54,11 @@ User-agent: meta-externalagent
 Allow: /
 User-agent: Bytespider
 Allow: /
-User-agent: cohere-ai
-Allow: /
 User-agent: DuckAssistBot
 Allow: /
 ```
 
-> AI search without training (policy choice): Disallow GPTBot + ClaudeBot + Google-Extended, keep OAI-SearchBot + Claude-SearchBot + PerplexityBot + Googlebot allowed. ChatGPT-User, Claude-User, Perplexity-User are user-triggered fetches.
+> AI search without training (policy choice): Disallow GPTBot + ClaudeBot + Google-Extended, keep OAI-SearchBot + Claude-SearchBot + PerplexityBot + Googlebot + Applebot allowed. ChatGPT-User, Claude-User, Perplexity-User are user-triggered fetches.
 
 ## llms.txt Minimum Structure
 

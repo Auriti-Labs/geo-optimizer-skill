@@ -110,7 +110,7 @@ Use whichever returns `200 OK` as the `--sitemap` value.
 **Cause A:** The bot entry has a comment on the same line, which is invalid `robots.txt` syntax.
 
 ```diff
-- User-agent: ClaudeBot  # Anthropic citation bot
+- User-agent: ClaudeBot  # Anthropic training crawler
 + User-agent: ClaudeBot
 + Allow: /
 ```

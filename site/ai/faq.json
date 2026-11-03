@@ -22,7 +22,7 @@
     },
     {
       "question": "What AI bots does GEO Optimizer track?",
-      "answer": "GEO Optimizer tracks 27 AI bots across 3 tiers: training (GPTBot, anthropic-ai, Google-Extended, Applebot-Extended, cohere-ai, Bytespider, CCBot, and more), search/citation (OAI-SearchBot, ClaudeBot, Claude-SearchBot, PerplexityBot, Bingbot, xAI-Bot, DuckAssistBot, YouBot, Amazonbot), and user-fetch (ChatGPT-User, Perplexity-User, Meta-ExternalFetcher, facebookexternalhit). Critical citation bots: OAI-SearchBot, ClaudeBot, Claude-SearchBot, PerplexityBot."
+      "answer": "GEO Optimizer tracks 27 AI bots across 3 tiers: training (GPTBot, ClaudeBot, Google-Extended, Applebot-Extended, Bytespider, CCBot, and more), search (OAI-SearchBot, Claude-SearchBot, PerplexityBot, Googlebot, Applebot, Bingbot, xAI-Bot, DuckAssistBot, YouBot, Amazonbot), and user-fetch (ChatGPT-User, Claude-User, Perplexity-User, Meta-ExternalFetcher, facebookexternalhit). The robots.txt score checks the citation bots OAI-SearchBot, Claude-SearchBot, PerplexityBot, Googlebot and Applebot; allowing them makes a site eligible for AI answers, it does not guarantee citation."
     }
   ]
 }

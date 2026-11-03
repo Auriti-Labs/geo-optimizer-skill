@@ -77,10 +77,10 @@ Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1`
 | Signal | Points | Condition |
 |--------|--------|-----------|
 | `robots_found` | 5 | File exists and is reachable |
-| `robots_citation_ok` | 13 | All 4 citation bots allowed (OAI-SearchBot, ClaudeBot, Claude-SearchBot, PerplexityBot) |
+| `robots_citation_ok` | 13 | All 5 citation bots in `CITATION_BOTS` explicitly allowed (OAI-SearchBot, Claude-SearchBot, PerplexityBot, Googlebot, Applebot) |
 | `robots_some_allowed` | 10 | At least some AI bots allowed (partial credit — **not cumulative** with `citation_ok`) |
 
-> **Citation bots** are the most critical: OAI-SearchBot, ClaudeBot, Claude-SearchBot, and PerplexityBot drive real-time citations in ChatGPT, Claude, and Perplexity. The `robots_some_allowed` score is awarded only when citation bots are not fully covered — it acts as partial credit for sites that allow some AI bots via wildcard rules.
+> **Citation bots** are the search-tier crawlers the check uses (`CITATION_BOTS`): OAI-SearchBot, Claude-SearchBot, PerplexityBot, Googlebot and Applebot. Allowing them keeps the site eligible for ChatGPT, Claude, Perplexity, Google and Apple search answers; it does not guarantee citation. Training crawlers such as GPTBot and ClaudeBot are not part of the check. The `robots_some_allowed` score is awarded only when citation bots are not fully covered — it acts as partial credit for sites that allow some AI bots via wildcard rules.
 
 ### 2. llms.txt — max 18 pts (v1 legacy)
 

@@ -7,10 +7,10 @@ alwaysApply: false
 ## robots.txt
 
 By default include these user-agents with `Allow: /`:
-- AI search bots (keep allowed to stay eligible for AI search answers): `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Googlebot` (Googlebot also feeds AI Overviews/AI Mode, governed by snippet controls)
+- AI search bots (keep allowed to stay eligible for AI search answers): `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Googlebot` (also feeds AI Overviews/AI Mode, governed by snippet controls), `Applebot` (Spotlight/Siri/Safari search)
 - Training bots: `GPTBot`, `ClaudeBot`, `Google-Extended` (a robots.txt token, not a crawler: Gemini/Vertex training and grounding, not Search or AI Overviews)
 - User-triggered fetch: `ChatGPT-User`, `Claude-User`, `Perplexity-User`
-- Also include: `Bingbot`, `Applebot`, `Applebot-Extended`, `meta-externalagent`, `Bytespider`, `cohere-ai`, `DuckAssistBot`
+- Also include: `Bingbot`, `Applebot-Extended`, `meta-externalagent`, `Bytespider`, `DuckAssistBot`
 
 Never block the AI search bots, even if blocking training bots.
 Use `Disallow: /` for `GPTBot`, `ClaudeBot` and `Google-Extended` to opt out of training; this is a policy choice and does not affect the search bots.

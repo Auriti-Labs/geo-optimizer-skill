@@ -85,24 +85,23 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
-# ——— Meta, ByteDance, Cohere, DuckDuckGo ———
+# ——— Meta, ByteDance, DuckDuckGo ———
 User-agent: meta-externalagent
 Allow: /
 User-agent: Bytespider
-Allow: /
-User-agent: cohere-ai
 Allow: /
 User-agent: DuckAssistBot
 Allow: /
 ```
 
-> **AI search without training:** Use `Disallow: /` for the training bots `GPTBot`, `ClaudeBot` and `Google-Extended`, but keep `Allow: /` for `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot` and `Googlebot`. Blocking training is a policy choice; vendors treat these settings as independent.
+> **AI search without training:** Use `Disallow: /` for the training bots `GPTBot`, `ClaudeBot` and `Google-Extended`, but keep `Allow: /` for `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`, `Googlebot` and `Applebot`. Blocking training is a policy choice; OpenAI states these settings are independent; other vendors document separate agents for training and search.
 
 **AI search bots (keep allowed to stay eligible for AI search answers):**
 - `OAI-SearchBot` — ChatGPT search
 - `PerplexityBot` — Perplexity search index
 - `Claude-SearchBot` — Claude search
 - `Googlebot` — Google Search, which also feeds AI Overviews and AI Mode (governed by snippet controls such as `nosnippet`, `max-snippet`, not by `Google-Extended`)
+- `Applebot` — Apple search features in Spotlight, Siri and Safari
 
 `ClaudeBot`, `GPTBot` and `Google-Extended` are training-tier. `Google-Extended` is a robots.txt token, not a crawler: it controls Gemini/Vertex training and grounding, not Search or AI Overviews. `ChatGPT-User`, `Claude-User` and `Perplexity-User` fetch a page when a user asks for it.
 
@@ -276,7 +275,7 @@ Score: 11/11 = GEO Score 100. Each missing item drops the score.
 2. **Report the GEO Score first** — then list issues in priority order (red before orange before green)
 3. **Generate ready-to-paste code** — never just explain concepts, produce the actual snippet
 4. **Apply Princeton methods to content** — when reviewing copy, check for statistics and citations first
-5. **Check robots.txt for AI search bots** — `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Googlebot`; blocking training bots (`GPTBot`, `ClaudeBot`, `Google-Extended`) is a policy choice
+5. **Check robots.txt for AI search bots** — `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Googlebot`, `Applebot`; blocking training bots (`GPTBot`, `ClaudeBot`, `Google-Extended`) is a policy choice
 6. **Validate llms.txt structure** — H1 present, blockquote present, all links have descriptions
 7. **Recommend FAQPage schema on every page** — it has the highest single-schema citation impact
 8. **Be specific about numbers** — "add 5 statistics" not "add some data"

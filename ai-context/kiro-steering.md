@@ -17,12 +17,12 @@ Make this site citable by AI search engines (ChatGPT, Perplexity, Claude, Gemini
 ## robots.txt
 
 By default include these user-agents with `Allow: /`:
-- AI search bots (keep allowed to stay eligible for AI search answers): `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Googlebot` (Googlebot also feeds AI Overviews/AI Mode, governed by snippet controls)
+- AI search bots (keep allowed to stay eligible for AI search answers): `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Googlebot` (also feeds AI Overviews/AI Mode, governed by snippet controls), `Applebot` (Spotlight/Siri/Safari search)
 - Training bots: `GPTBot`, `ClaudeBot`, `Google-Extended` (a robots.txt token, not a crawler: Gemini/Vertex training and grounding, not Search or AI Overviews)
 - User-triggered fetch: `ChatGPT-User`, `Claude-User`, `Perplexity-User`
-- Also allow: `Bingbot`, `Applebot`, `Applebot-Extended`, `meta-externalagent`, `Bytespider`, `cohere-ai`, `DuckAssistBot`
+- Also allow: `Bingbot`, `Applebot-Extended`, `meta-externalagent`, `Bytespider`, `DuckAssistBot`
 
-Never block `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot` or `Googlebot` — these are search bots, not training bots.
+Never block `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`, `Googlebot` or `Applebot` — these are search bots, not training bots.
 Use `Disallow: /` only for training bots (`GPTBot`, `ClaudeBot`, `Google-Extended`) when training opt-out is desired; this is a policy choice.
 Being allowed makes a site eligible for AI answers; it does not guarantee citation.
 

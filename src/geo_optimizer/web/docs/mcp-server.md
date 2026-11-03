@@ -300,7 +300,7 @@ Check which AI bots can access a website via robots.txt. Returns per-bot status 
   "citation_bots_ok": true,
   "bots": {
     "OAI-SearchBot": { "description": "OpenAI (ChatGPT search citations)", "status": "allowed", "tier": "search" },
-    "ClaudeBot": { "description": "Anthropic (Claude citations)", "status": "allowed", "tier": "search" },
+    "Claude-SearchBot": { "description": "Anthropic (Claude search citations)", "status": "allowed", "tier": "search" },
     "GPTBot": { "description": "OpenAI (ChatGPT training)", "status": "blocked", "tier": "training" }
   },
   "summary": { "allowed": 20, "blocked": 2, "missing": 2 }

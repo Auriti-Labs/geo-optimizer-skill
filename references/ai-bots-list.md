@@ -62,10 +62,6 @@ Allow: /
 User-agent: DuckAssistBot
 Allow: /
 
-# ——— Cohere ———
-User-agent: cohere-ai
-Allow: /
-
 # ——— Academic / Open ———
 User-agent: AI2Bot
 Allow: /
@@ -112,7 +108,7 @@ Allow: /
   User-agent: OAI-SearchBot
   Allow: /
   ```
-- `ChatGPT-User` follows robots.txt but can be user-triggered
+- `ChatGPT-User` fetches a page when a user asks ChatGPT; OpenAI says robots.txt rules may not apply to these user-initiated visits
 
 ---
 
@@ -156,7 +152,7 @@ Allow: /
 | User-Agent | Type | Purpose | GEO Priority |
 |-----------|------|---------|--------------|
 | `PerplexityBot` | Index | **Builds Perplexity index** | 🔴 CRITICAL |
-| `Perplexity-User` | On-demand | Fetch when user clicks citation | ⭐⭐⭐ |
+| `Perplexity-User` | On-demand | Fetches a page when a user asks Perplexity a question; generally ignores robots.txt | ⭐⭐⭐ |
 
 **robots.txt snippet:**
 ```
@@ -216,8 +212,8 @@ Allow: /
 
 | User-Agent | Type | Purpose | GEO Priority |
 |-----------|------|---------|--------------|
-| `Applebot` | Search | Siri, Spotlight Search | ⭐⭐ |
-| `Applebot-Extended` | Training | Apple Intelligence training | ⭐ |
+| `Applebot` | Search | Apple search features in Spotlight, Siri and Safari | ⭐⭐ |
+| `Applebot-Extended` | Training (token) | Controls use for Apple Intelligence training; a robots.txt token that does not crawl webpages | ⭐ |
 
 **robots.txt snippet:**
 ```
@@ -233,8 +229,8 @@ Allow: /
 
 | User-Agent | Type | Purpose | GEO Priority |
 |-----------|------|---------|--------------|
-| `meta-externalagent` | Training | Meta AI (Facebook/Instagram AI features) | ⭐ |
-| `Meta-ExternalFetcher` | On-demand | Meta content fetch on-demand | ⭐ |
+| `meta-externalagent` | Training | AI model training and product indexing | ⭐ |
+| `Meta-ExternalFetcher` | On-demand | User-requested link fetches (incl. agentic AI tasks); may bypass robots.txt | ⭐ |
 
 **robots.txt snippet:**
 ```
@@ -268,24 +264,12 @@ Allow: /
 
 ---
 
-### Cohere
-
-| User-Agent | Type | Purpose | GEO Priority |
-|-----------|------|---------|--------------|
-| `cohere-ai` | Training | Cohere model training | ⭐ |
-| `cohere-training-data-crawler` | Training | Cohere data crawler | ⭐ |
-
----
-
 ### Academic & Open Source
 
 | User-Agent | Type | Purpose |
 |-----------|------|---------|
 | `AI2Bot` | Academic | Allen Institute for AI, Semantic Scholar |
 | `CCBot` | Open | Common Crawl — base for many models |
-| `Diffbot` | Data | Structured data extraction |
-| `omgili` | Forum | Forums and discussions |
-| `LinkedInBot` | Preview | LinkedIn link preview |
 | `Amazonbot` | AI | Alexa, Fire OS AI |
 
 ---
@@ -374,9 +358,11 @@ grep -oE "GPTBot|OAI-SearchBot|ClaudeBot|Claude-SearchBot|PerplexityBot" /var/lo
 
 ## Official Resources
 
-- OpenAI: https://openai.com/gptbot
-- Anthropic: https://www.anthropic.com/legal/aup
-- Perplexity: https://docs.perplexity.ai/guides/perplexity-bot
+- OpenAI: https://developers.openai.com/api/docs/bots
+- Anthropic: https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler
+- Perplexity: https://docs.perplexity.ai/guides/bots
+- Apple: https://support.apple.com/en-us/119829
+- Meta: https://developers.facebook.com/docs/sharing/webmasters/web-crawlers
 - Google: https://developers.google.com/search/docs/crawling-indexing/google-common-crawlers
 - Momentic Marketing Bot List: https://momenticmarketing.com/blog/ai-search-crawlers-bots
 - Search Engine Journal: https://www.searchenginejournal.com/ai-crawler-user-agents-list/

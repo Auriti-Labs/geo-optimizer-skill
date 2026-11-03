@@ -84,7 +84,7 @@ Each section shows what passed and what's missing:
 ▸ ROBOTS.TXT ─────────────────────────── 5 / 14
   ✅ robots.txt found
   ❌ OAI-SearchBot   MISSING   ← critical
-  ❌ ClaudeBot        MISSING   ← critical
+  ❌ Claude-SearchBot MISSING   ← critical
 
 ▸ LLMS.TXT ───────────────────────────── 0 / 6
   ❌ Not found at https://yoursite.com/llms.txt

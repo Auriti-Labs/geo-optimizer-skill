@@ -28,11 +28,12 @@ AI crawlers fall into three tiers: training, search, and user-triggered fetch. T
 - `OAI-SearchBot` — ChatGPT search
 - `PerplexityBot` — Perplexity search index
 - `Claude-SearchBot` — Claude search
+- `Applebot` — Apple search features in Spotlight, Siri and Safari
 - `Googlebot` — Google Search, which also feeds AI Overviews and AI Mode. These are governed by Googlebot access and snippet controls (`nosnippet`, `max-snippet`), not by `Google-Extended`
 
 `Google-Extended` is a robots.txt token, not a separate crawler. It controls whether Google may use content for Gemini/Vertex training and grounding. It does not affect Search or AI Overviews.
 
-To opt out of training while staying open to AI search: `Disallow: /` for the training bots (`GPTBot`, `ClaudeBot`, `Google-Extended`), and keep `Allow: /` for `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`, and `Googlebot`. Whether to block training is a policy choice; vendors treat these settings as independent.
+To opt out of training while staying open to AI search: `Disallow: /` for the training bots (`GPTBot`, `ClaudeBot`, `Google-Extended`), and keep `Allow: /` for `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`, `Googlebot` and `Applebot`. Whether to block training is a policy choice; OpenAI states these settings are independent; other vendors document separate agents for training and search.
 
 ### Step 3 — Generate llms.txt
 
