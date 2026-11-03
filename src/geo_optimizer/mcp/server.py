@@ -115,6 +115,13 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
     def on_step(stage: str) -> None:
         stages_started.append(stage)
 
+    def split_failed() -> tuple[list[str], list[str]]:
+        # The stage that failed is the last one started; a failure before any
+        # stage started is attributed to the first one.
+        if not stages_started:
+            return [], [AUDIT_STEPS[0]]
+        return stages_started[:-1], [stages_started[-1]]
+
     try:
         from geo_optimizer.core.audit import run_full_audit
 
@@ -122,13 +129,17 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
         if not include_receipt:
             return _to_json(result)
 
+        # An unreachable homepage or an HTTP error ends the audit early with
+        # result.error set instead of raising.
+        terminal_error = getattr(result, "error", None)
+        completed, failed = split_failed() if terminal_error else (stages_started, [])
         data = asdict(result) if hasattr(result, "__dataclass_fields__") else dict(result)
         data["receipt"] = {
             "url": url,
-            "stages_completed": stages_started,
-            "stages_failed": [],
+            "stages_completed": completed,
+            "stages_failed": failed,
             "duration_ms": getattr(result, "audit_duration_ms", 0),
-            "terminal_error": getattr(result, "error", None),
+            "terminal_error": terminal_error,
         }
         return json.dumps(data, indent=2, ensure_ascii=False, default=str)
     except Exception as e:
@@ -136,15 +147,11 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
         logger.error("Error in geo_audit for %s: %s", url, e)
         err_payload = {"error": "Internal error during operation", "url": url}
         if include_receipt:
-            # The stage that raised is the last one started; an error before any
-            # stage started is attributed to the first one.
-            failed_stage = stages_started[-1] if stages_started else AUDIT_STEPS[0]
-            stages_completed = stages_started[:-1]
-
+            completed, failed = split_failed()
             err_payload["receipt"] = {
                 "url": url,
-                "stages_completed": stages_completed,
-                "stages_failed": [failed_stage],
+                "stages_completed": completed,
+                "stages_failed": failed,
                 "terminal_error": "Internal error during operation",
             }
         return json.dumps(err_payload)

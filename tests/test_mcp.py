@@ -176,6 +176,29 @@ class TestGeoAuditTool:
         assert data["receipt"]["terminal_error"] is None
         assert "attempts" not in data["receipt"]
 
+    @pytest.mark.parametrize(
+        ("error", "http_status"),
+        [("Connection failed", 0), ("HTTP 403", 403)],
+    )
+    @patch("geo_optimizer.core.audit.run_full_audit")
+    def test_audit_include_receipt_on_early_error(self, mock_audit, error, http_status):
+        """An unreachable or erroring homepage fails the fetch stage without raising (#557)."""
+        from geo_optimizer.models.config import AUDIT_STEPS
+
+        def _early_return(url, score_version=2, on_step=None):
+            if on_step:
+                on_step(AUDIT_STEPS[0])
+            res = _mock_audit_result()
+            res.error = error
+            res.http_status = http_status
+            return res
+
+        mock_audit.side_effect = _early_return
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert data["receipt"]["stages_completed"] == []
+        assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[0]]
+        assert data["receipt"]["terminal_error"] == error
+
     def test_audit_include_receipt_on_unsafe_url(self):
         """geo_audit retains partial receipt on unsafe URL errors (#557)."""
         result = geo_audit("http://169.254.169.254/metadata", include_receipt=True)
