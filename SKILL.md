@@ -30,7 +30,7 @@ Core dependencies (click, requests, beautifulsoup4, lxml, urllib3, rich) and eve
 
 ### What each command touches
 
-Machine-readable version: [`capabilities.json`](capabilities.json). A test keeps it in sync with the registered commands and MCP tools.
+Machine-readable version: [`capabilities.json`](https://github.com/Auriti-Labs/geo-optimizer-skill/blob/main/capabilities.json). A test keeps it in sync with the registered commands and MCP tools.
 
 **Target** below means the URL, domain or sitemap you pass, plus redirect targets and, where noted, the pages and sub-sitemaps its sitemap lists. Those can be on any public host; private and internal addresses are blocked.
 

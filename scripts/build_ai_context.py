@@ -1,13 +1,15 @@
-"""Regenerate the preflight block of the ai-context/ files from SKILL.md and capabilities.json.
+"""Regenerate the preflight block of the ai-context/ files and the Claude Code plugin from the skill sources.
 
 The platform context files are hand-written copies of the skill and drifted from it before
 (wrong bot advice, fixed in #689). Only the block between the generated markers is rewritten,
-so install, version check and safety rules always match SKILL.md:
+so install, version check and safety rules always match SKILL.md. The plugin under
+plugins/geo-optimizer/ gets a byte-for-byte copy of SKILL.md, the pyproject version in
+plugin.json and the capabilities.json min_version in the uvx requirement of .mcp.json:
 
     python scripts/build_ai_context.py           # rewrites the blocks
     python scripts/build_ai_context.py --check   # exit 1 and list stale files, write nothing
 
-Run it after editing SKILL.md's "Before you run anything" section or bumping `min_version`.
+Run it after editing SKILL.md or bumping the version or `min_version`.
 """
 
 from __future__ import annotations
@@ -21,6 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BEGIN = "<!-- BEGIN generated: geo-preflight -->"
 END = "<!-- END generated: geo-preflight -->"
 REPO = "https://github.com/Auriti-Labs/geo-optimizer-skill/blob/main"
+PLUGIN = "plugins/geo-optimizer"
 
 # agent: the tool can run shell commands; chat: the user runs geo; compact: one line only
 VARIANTS = {
@@ -82,8 +85,32 @@ def blocks(root: Path) -> dict[str, str]:
     return {"agent": agent, "chat": chat, "compact": compact}
 
 
+def plugin_files(root: Path) -> dict[str, str]:
+    """Return the generated files of the Claude Code plugin, keyed by path from the repo root."""
+    caps = json.loads((root / "capabilities.json").read_text(encoding="utf-8"))
+    pyproject = (root / "pyproject.toml").read_text(encoding="utf-8")
+    version = re.search(r'^version = "([^"]+)"', pyproject, re.M)
+    if not version:
+        sys.exit("pyproject.toml: no version line")
+    # Hand-written fields stay as they are: only the version and the requirement are synced
+    manifest = json.loads((root / PLUGIN / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
+    manifest["version"] = version.group(1)
+    mcp = json.loads((root / PLUGIN / ".mcp.json").read_text(encoding="utf-8"))
+    mcp["mcpServers"]["geo-optimizer"]["args"] = [
+        "--from",
+        f"geo-optimizer-skill[mcp]>={caps['min_version']}",
+        "geo-mcp",
+    ]
+    return {
+        # Byte copy: SKILL.md links repo files by absolute URL, so nothing needs rewriting
+        f"{PLUGIN}/skills/geo-optimizer/SKILL.md": (root / "SKILL.md").read_text(encoding="utf-8"),
+        f"{PLUGIN}/.claude-plugin/plugin.json": json.dumps(manifest, indent=2) + "\n",
+        f"{PLUGIN}/.mcp.json": json.dumps(mcp, indent=2) + "\n",
+    }
+
+
 def render(root: Path) -> dict[str, str]:
-    """Return the regenerated text of every ai-context file; exit if a marker or limit fails."""
+    """Return every generated file keyed by path from the repo root; exit if a marker or limit fails."""
     variants = blocks(root)
     out = {}
     for name, variant in VARIANTS.items():
@@ -94,23 +121,23 @@ def render(root: Path) -> dict[str, str]:
         new = f"{head}{BEGIN}\n{variants[variant]}\n{END}{rest.split(END)[1]}"
         if len(new) > LIMITS.get(name, sys.maxsize):
             sys.exit(f"ai-context/{name}: {len(new)} chars, limit {LIMITS[name]}")
-        out[name] = new
-    return out
+        out[f"ai-context/{name}"] = new
+    return out | plugin_files(root)
 
 
 def check(root: Path = ROOT) -> list[str]:
-    """Return the names of the files whose generated block is out of date."""
-    return [n for n, t in render(root).items() if (root / "ai-context" / n).read_text(encoding="utf-8") != t]
+    """Return the paths of the generated files that are out of date."""
+    return [n for n, t in render(root).items() if (root / n).read_text(encoding="utf-8") != t]
 
 
 def main() -> int:
     if "--check" in sys.argv[1:]:
         stale = check()
         for name in stale:
-            print(f"stale: ai-context/{name} (run python scripts/build_ai_context.py)")
+            print(f"stale: {name} (run python scripts/build_ai_context.py)")
         return 1 if stale else 0
     for name, text in render(ROOT).items():
-        (ROOT / "ai-context" / name).write_text(text, encoding="utf-8")
+        (ROOT / name).write_text(text, encoding="utf-8")
     return 0
 
 

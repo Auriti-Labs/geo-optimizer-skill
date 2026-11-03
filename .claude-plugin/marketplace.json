@@ -1,0 +1,15 @@
+{
+  "name": "geoready",
+  "description": "GEO Optimizer plugins from Auriti Labs",
+  "owner": {
+    "name": "Auriti Labs",
+    "url": "https://geoready.dev"
+  },
+  "plugins": [
+    {
+      "name": "geo-optimizer",
+      "source": "./plugins/geo-optimizer",
+      "description": "GEO audit skill plus the geo-mcp server (12 tools): score a site 0-100 for AI search visibility and generate the fixes."
+    }
+  ]
+}
