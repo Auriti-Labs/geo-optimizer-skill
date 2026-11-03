@@ -93,6 +93,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_url"],
+                "attempts": 1,
                 "terminal_error": f"Unsafe URL: {reason}",
             }
         return json.dumps(err_payload)
@@ -105,6 +106,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_score_version"],
+                "attempts": 1,
                 "terminal_error": "score_version must be 1 or 2",
             }
         return json.dumps(err_payload)
@@ -138,6 +140,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
             "url": url,
             "stages_completed": completed,
             "stages_failed": failed,
+            "attempts": getattr(result, "attempts", 1),
             "duration_ms": getattr(result, "audit_duration_ms", 0),
             "terminal_error": terminal_error,
         }
@@ -152,6 +155,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": completed,
                 "stages_failed": failed,
+                "attempts": 1,
                 "terminal_error": "Internal error during operation",
             }
         return json.dumps(err_payload)

@@ -6,7 +6,7 @@ Richiede: pip install geo-optimizer-skill[mcp]
 """
 
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from urllib.parse import urlparse
 
 import pytest
@@ -174,7 +174,7 @@ class TestGeoAuditTool:
         assert data["receipt"]["stages_failed"] == []
         assert data["receipt"]["duration_ms"] == 350
         assert data["receipt"]["terminal_error"] is None
-        assert "attempts" not in data["receipt"]
+        assert data["receipt"]["attempts"] == 1
 
     @pytest.mark.parametrize(
         ("error", "http_status"),
@@ -207,7 +207,7 @@ class TestGeoAuditTool:
         assert "receipt" in data
         assert data["receipt"]["stages_failed"] == ["validate_url"]
         assert data["receipt"]["terminal_error"] == data["error"]
-        assert "attempts" not in data["receipt"]
+        assert data["receipt"]["attempts"] == 1
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_audit_include_receipt_on_exception(self, mock_audit):
@@ -233,7 +233,7 @@ class TestGeoAuditTool:
         assert data["receipt"]["stages_completed"] == [AUDIT_STEPS[0]]
         assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[1]]
         assert data["receipt"]["terminal_error"] == "Internal error during operation"
-        assert "attempts" not in data["receipt"]
+        assert data["receipt"]["attempts"] == 1
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_audit_include_receipt_on_immediate_exception(self, mock_audit):
@@ -246,6 +246,44 @@ class TestGeoAuditTool:
         assert "error" in data
         assert data["receipt"]["stages_completed"] == []
         assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[0]]
+
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_receipt_reflects_http_attempts(self, mock_fetch):
+        """geo_audit receipt attempts count reflects retries from HTTP layer (#557)."""
+
+        class FakeRetries:
+            def __init__(self, count):
+                self.history = tuple(range(count))
+
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
+        mock_resp.content = mock_resp.text.encode("utf-8")
+        mock_resp.headers = {"Content-Type": "text/html"}
+        mock_resp.raw.retries = FakeRetries(2)
+
+        mock_fetch.return_value = (mock_resp, None)
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert "receipt" in data
+        assert data["receipt"]["attempts"] == 3
+
+    def test_get_response_attempts_helper(self):
+        """get_response_attempts safely extracts retry history count (#557)."""
+        from geo_optimizer.utils.http import get_response_attempts
+
+        class FakeRetries:
+            def __init__(self, count):
+                self.history = tuple(range(count))
+
+        assert get_response_attempts(None) == 1
+        assert get_response_attempts(MagicMock(raw=None)) == 1
+
+        mock_resp = MagicMock()
+        mock_resp.raw.retries = FakeRetries(0)
+        assert get_response_attempts(mock_resp) == 1
+
+        mock_resp.raw.retries = FakeRetries(3)
+        assert get_response_attempts(mock_resp) == 4
 
 
 # ============================================================================

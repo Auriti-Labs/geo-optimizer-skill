@@ -83,7 +83,7 @@ from geo_optimizer.models.results import (
     SignalsResult,
     WebMcpResult,
 )
-from geo_optimizer.utils.http import fetch_url
+from geo_optimizer.utils.http import fetch_url, get_response_attempts
 from geo_optimizer.utils.validators import normalize_url_scheme
 
 # Shared by build_recommendations / build_categorized_recommendations: one (category, text) pair per
@@ -924,6 +924,7 @@ def run_full_audit(
                 cache.put(base_url, r.status_code, r.text, dict(r.headers))
     else:
         r, err = fetch_url(base_url)  # type: ignore[assignment]
+    attempts = get_response_attempts(r)
     # `r is None`, not `not r`: requests.Response.__bool__ is `ok`, so any 4xx/5xx
     # is falsy and would land here — reporting "Connection failed" for a request
     # that succeeded, and skipping the status branch below that exists to name the
@@ -932,6 +933,7 @@ def run_full_audit(
         result = AuditResult(
             url=base_url,
             error=str(err) if err else "Connection failed",
+            attempts=attempts,
             score_version=score_version,
             score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
         )
@@ -945,6 +947,7 @@ def run_full_audit(
             url=base_url,
             http_status=r.status_code,
             error=f"HTTP {r.status_code}",
+            attempts=attempts,
             score_version=score_version,
             score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
         )
@@ -1085,6 +1088,7 @@ def run_full_audit(
         score_version=score_version,
         load_plugins=load_plugins,
     )
+    result.attempts = attempts
 
     # gap #10: brand sentiment analysis — opt-in, requires project_config.brand_name
     _brand_name = getattr(project_config, "brand_name", None)
@@ -1177,10 +1181,12 @@ async def run_full_audit_async(
     r_ai_faq, _ = responses.get(ai_faq_url, (None, None))
     r_ai_service, _ = responses.get(ai_service_url, (None, None))
 
+    attempts_async = get_response_attempts(r_home)
     if err_home or r_home is None:
         result = AuditResult(
             url=base_url,
             error=str(err_home) if err_home else "Connection failed",
+            attempts=attempts_async,
             score_version=score_version,
             score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
         )
@@ -1194,6 +1200,7 @@ async def run_full_audit_async(
             url=base_url,
             http_status=r_home.status_code,
             error=f"HTTP {r_home.status_code}",
+            attempts=attempts_async,
             score_version=score_version,
             score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
         )
@@ -1324,6 +1331,7 @@ async def run_full_audit_async(
         score_version=score_version,
         load_plugins=load_plugins,
     )
+    result.attempts = attempts_async
 
     # gap #10: brand sentiment analysis — opt-in, requires project_config.brand_name
     _brand_name = getattr(project_config, "brand_name", None)
