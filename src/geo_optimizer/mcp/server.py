@@ -109,10 +109,11 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
             }
         return json.dumps(err_payload)
 
-    stages_completed: list[str] = []
+    # run_full_audit calls on_step when a stage starts, not when it ends
+    stages_started: list[str] = []
 
     def on_step(stage: str) -> None:
-        stages_completed.append(stage)
+        stages_started.append(stage)
 
     try:
         from geo_optimizer.core.audit import run_full_audit
@@ -124,7 +125,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
         data = asdict(result) if hasattr(result, "__dataclass_fields__") else dict(result)
         data["receipt"] = {
             "url": url,
-            "stages_completed": stages_completed,
+            "stages_completed": stages_started,
             "stages_failed": [],
             "duration_ms": getattr(result, "audit_duration_ms", 0),
             "terminal_error": getattr(result, "error", None),
@@ -135,15 +136,10 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
         logger.error("Error in geo_audit for %s: %s", url, e)
         err_payload = {"error": "Internal error during operation", "url": url}
         if include_receipt:
-            if not stages_completed:
-                failed_stage = AUDIT_STEPS[0]
-            elif stages_completed[-1] in AUDIT_STEPS:
-                idx = AUDIT_STEPS.index(stages_completed[-1])
-                failed_stage = AUDIT_STEPS[idx + 1] if idx + 1 < len(AUDIT_STEPS) else "execute_audit"
-            elif len(stages_completed) < len(AUDIT_STEPS):
-                failed_stage = AUDIT_STEPS[len(stages_completed)]
-            else:
-                failed_stage = "execute_audit"
+            # The stage that raised is the last one started; an error before any
+            # stage started is attributed to the first one.
+            failed_stage = stages_started[-1] if stages_started else AUDIT_STEPS[0]
+            stages_completed = stages_started[:-1]
 
             err_payload["receipt"] = {
                 "url": url,

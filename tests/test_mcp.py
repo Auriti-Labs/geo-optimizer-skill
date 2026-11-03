@@ -188,12 +188,16 @@ class TestGeoAuditTool:
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_audit_include_receipt_on_exception(self, mock_audit):
-        """geo_audit retains receipt with completed and failed stage when run_full_audit raises (#557)."""
+        """The stage running when run_full_audit raises is failed, not completed (#557).
+
+        on_step fires when a stage starts: stage 0 finished, stage 1 raised.
+        """
         from geo_optimizer.models.config import AUDIT_STEPS
 
         def _raising_run(url, score_version=2, on_step=None):
             if on_step:
                 on_step(AUDIT_STEPS[0])
+                on_step(AUDIT_STEPS[1])
             raise RuntimeError("Network failure during audit")
 
         mock_audit.side_effect = _raising_run
