@@ -111,6 +111,11 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
             robots.txt, llms.txt, or AI discovery endpoints) could not be fetched
             (listed in failed_fetches), while terminal_error remains None and the
             audit score is returned.
+            The receipt also includes 'attempts', representing the observed
+            HTTP attempts made for the main page (homepage) request on the
+            sync path (transient retries and status retries; defaults to 1 on
+            the async path). For redirects, only attempts on the final hop are
+            counted as each hop establishes a new session.
     """
     from geo_optimizer.utils.validators import validate_public_url
 
@@ -125,6 +130,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_url"],
+                "attempts": 1,
                 "terminal_error": "unsafe_url",
             }
         return json.dumps(err_payload)
@@ -137,6 +143,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_score_version"],
+                "attempts": 1,
                 "terminal_error": "invalid_argument",
             }
         return json.dumps(err_payload)
@@ -166,6 +173,8 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
 
         telemetry = get_audit_telemetry()
         failed_fetches = list(telemetry.get("fetch_errors", []))
+        attempts = telemetry.get("attempts", 1)
+        reset_audit_telemetry()
 
         # An unreachable homepage or an HTTP error ends the audit early with
         # result.error set instead of raising.
@@ -188,6 +197,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
             "stages_completed": completed,
             "stages_failed": failed,
             "failed_fetches": failed_fetches,
+            "attempts": attempts,
             "duration_ms": getattr(result, "audit_duration_ms", 0),
             "terminal_error": terminal_error,
         }
@@ -202,6 +212,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
                 "url": url,
                 "stages_completed": completed,
                 "stages_failed": failed,
+                "attempts": 1,
                 "terminal_error": "internal",
             }
         return json.dumps(err_payload)

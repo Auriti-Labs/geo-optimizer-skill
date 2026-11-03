@@ -86,7 +86,12 @@ from geo_optimizer.models.results import (
     SignalsResult,
     WebMcpResult,
 )
-from geo_optimizer.utils.http import fetch_url
+from geo_optimizer.utils.http import (
+    fetch_url,
+    get_response_attempts,
+    reset_attempt_recorder,
+    set_attempt_recorder,
+)
 from geo_optimizer.utils.validators import normalize_url_scheme
 
 # Shared by build_recommendations / build_categorized_recommendations: one (category, text) pair per
@@ -953,7 +958,7 @@ def run_full_audit(
         load_plugins: If False, installed ``geo_optimizer.checks`` plugins are neither loaded nor run.
     """
     _t0 = time.perf_counter()
-    _audit_telemetry.set({"fetch_errors": []})
+    _audit_telemetry.set({"fetch_errors": [], "attempts": 1})
     _notify(on_step, AUDIT_STEPS[0])
     from bs4 import BeautifulSoup
 
@@ -968,27 +973,46 @@ def run_full_audit(
     # Fetch homepage (with optional cache)
     # r is CachedResponse (disk cache hit) or requests.Response (live fetch)
     err: str | None
-    if use_cache:
-        from geo_optimizer.utils.cache import FileCache
 
-        cache = FileCache()
-        cached = cache.get(base_url)
-        if cached:
-            # Build response-like object from cache (fix #83: use dataclass)
-            status_code, text, headers = cached
-            r = CachedResponse(
-                status_code=status_code,
-                text=text,
-                content=text.encode("utf-8"),
-                headers=headers,
-            )
-            err = None
+    def _record_homepage_attempts(attempts: int) -> None:
+        telemetry = dict(_audit_telemetry.get() or {})
+        telemetry["attempts"] = max(telemetry.get("attempts", 1), attempts)
+        _audit_telemetry.set(telemetry)
+
+    token = set_attempt_recorder(_record_homepage_attempts)
+    try:
+        if use_cache:
+            from geo_optimizer.utils.cache import FileCache
+
+            cache = FileCache()
+            cached = cache.get(base_url)
+            if cached:
+                # Build response-like object from cache (fix #83: use dataclass)
+                status_code, text, headers = cached
+                r = CachedResponse(
+                    status_code=status_code,
+                    text=text,
+                    content=text.encode("utf-8"),
+                    headers=headers,
+                )
+                err = None
+                telemetry = dict(_audit_telemetry.get() or {})
+                telemetry["attempts"] = 1
+                _audit_telemetry.set(telemetry)
+            else:
+                r, err = fetch_url(base_url)  # type: ignore[assignment]
+                if r is not None and not err and r.status_code in (200, 203):
+                    cache.put(base_url, r.status_code, r.text, dict(r.headers))
         else:
             r, err = fetch_url(base_url)  # type: ignore[assignment]
-            if r is not None and not err and r.status_code in (200, 203):
-                cache.put(base_url, r.status_code, r.text, dict(r.headers))
-    else:
-        r, err = fetch_url(base_url)  # type: ignore[assignment]
+    finally:
+        reset_attempt_recorder(token)
+
+    if r is not None:
+        resp_attempts = get_response_attempts(r)
+        telemetry = dict(_audit_telemetry.get() or {})
+        telemetry["attempts"] = max(telemetry.get("attempts", 1), resp_attempts)
+        _audit_telemetry.set(telemetry)
     # `r is None`, not `not r`: requests.Response.__bool__ is `ok`, so any 4xx/5xx
     # is falsy and would land here — reporting "Connection failed" for a request
     # that succeeded, and skipping the status branch below that exists to name the
@@ -1209,7 +1233,7 @@ async def run_full_audit_async(
     Requires: pip install geo-optimizer-skill[async]
     """
     _t0 = time.perf_counter()
-    _audit_telemetry.set({"fetch_errors": []})
+    _audit_telemetry.set({"fetch_errors": [], "attempts": 1})
     _notify(on_step, AUDIT_STEPS[0])
     from bs4 import BeautifulSoup
 

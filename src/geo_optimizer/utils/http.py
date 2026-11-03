@@ -15,11 +15,13 @@ Implements anti-SSRF protections:
 
 from __future__ import annotations
 
+import contextvars
 import functools
 import logging
 import socket
 import threading
 import time
+from collections.abc import Callable
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -126,6 +128,49 @@ def create_session_with_retry(
     return session
 
 
+_attempt_recorder: contextvars.ContextVar[Callable[[int], None] | None] = contextvars.ContextVar(
+    "_attempt_recorder", default=None
+)
+
+
+def set_attempt_recorder(
+    recorder: Callable[[int], None] | None,
+) -> contextvars.Token[Callable[[int], None] | None]:
+    """Register a context-local callback for recording HTTP attempt counts (#557)."""
+    return _attempt_recorder.set(recorder)
+
+
+def reset_attempt_recorder(token: contextvars.Token[Callable[[int], None] | None]) -> None:
+    """Reset the context-local attempt recorder (#557)."""
+    _attempt_recorder.reset(token)
+
+
+def _get_urllib3_retry_count(response: object) -> int:
+    """Extract urllib3 retry count from a response if available (#557)."""
+    raw = getattr(response, "raw", None)
+    if raw is not None:
+        retries = getattr(raw, "retries", None)
+        if retries is not None:
+            history = getattr(retries, "history", None)
+            if isinstance(history, (tuple, list)):
+                return len(history)
+    return 0
+
+
+def get_response_attempts(response: object | None = None) -> int:
+    """Read the attempt count from a response's urllib3 retry history (#557).
+
+    Returns the observed attempt count, or 1 if no retry history is available.
+    """
+    if response is not None:
+        from geo_optimizer.models.results import CachedResponse
+
+        if isinstance(response, CachedResponse) or getattr(response, "from_cache", False) is True:
+            return 1
+        return _get_urllib3_retry_count(response) + 1
+    return 1
+
+
 def with_retry(max_retries: int = _MAX_RETRIES, backoff_base: int = _BACKOFF_BASE):
     """Decorator per retry con backoff esponenziale sui transient failures.
 
@@ -143,8 +188,15 @@ def with_retry(max_retries: int = _MAX_RETRIES, backoff_base: int = _BACKOFF_BAS
         def wrapper(*args, **kwargs):
             last_exception = None
             for attempt in range(max_retries + 1):
+                recorder = _attempt_recorder.get()
+                if recorder is not None:
+                    recorder(attempt + 1)
                 try:
-                    return func(*args, **kwargs)
+                    result = func(*args, **kwargs)
+                    retries_count = _get_urllib3_retry_count(result)
+                    if recorder is not None:
+                        recorder(attempt + 1 + retries_count)
+                    return result
                 except _RETRYABLE_EXCEPTIONS as exc:
                     last_exception = exc
                     if attempt < max_retries:
@@ -289,6 +341,10 @@ def fetch_url(
     Returns:
         tuple: (response, error_msg) where response is None on failure
     """
+    recorder = _attempt_recorder.get()
+    if recorder is not None:
+        recorder(1)
+
     # Import here to avoid circular import (http ← validators ← http)
     from geo_optimizer.utils.validators import resolve_and_validate_url
 
