@@ -13,6 +13,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Changed
 - `SECURITY.md`: reports go to juan@geoready.dev or to GitHub's private vulnerability reporting (Security tab, Report a vulnerability), which is now enabled. The previous address did not exist (#691).
+- The website (`frontend/`, the Sanity scheduled-publish workflow, its SEO regression test and the `frontend-unit` CI job) moved to its own repository, Auriti-Labs/geoready-site. `Dockerfile.web` now builds the engine only; the site image installs this engine from PyPI at a pinned version. `integrations/astro-geoready` stays here for people who use it from the README.
 
 ### Fixed
 - `geo fix`: the generated `schema-faqpage.jsonld` was hardcoded in Italian ("Cos'è …?", "Come contattare …?") and pointed to a guessed `/contatti` URL on every site. It now uses the same English example Q&A as `/ai/faq.json`, with a contact answer that links the homepage instead of inventing a path. `/ai/summary.json` gets the generation date in `lastModified` instead of the literal `{{ISO_DATE}}` placeholder.

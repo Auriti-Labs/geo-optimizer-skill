@@ -1,3 +1,5 @@
+> **Moved.** The website now lives in [Auriti-Labs/geoready-site](https://github.com/Auriti-Labs/geoready-site). The `frontend/` paths below are relative to the root of that repository, and the scheduled-publish workflow runs there.
+
 # Scheduled publishing with Sanity
 
 GeoReady is a static Astro site. A content change in Sanity therefore needs two

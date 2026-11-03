@@ -7,14 +7,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CONTEXT_DIR = ROOT / "ai-context"
-# Each docs page ships in three copies: docs/, the packaged web docs and the geoready.dev docs site.
+# Each docs page ships in two copies here: docs/ and the packaged web docs. The geoready.dev copy
+# lives in Auriti-Labs/geoready-site.
 DOC_COPIES = [
     path
     for name in ("ai-bots-reference", "scoring-rubric", "troubleshooting", "mcp-server")
     for path in (
         ROOT / f"docs/{name}.md",
         ROOT / f"src/geo_optimizer/web/docs/{name}.md",
-        ROOT / f"frontend/src/content/docs/docs/{name}.md",
     )
 ]
 FILES = [
