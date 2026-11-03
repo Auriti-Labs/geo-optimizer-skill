@@ -175,7 +175,7 @@ class TestGeoAuditTool:
         assert data["receipt"]["failed_fetches"] == []
         assert data["receipt"]["duration_ms"] == 350
         assert data["receipt"]["terminal_error"] is None
-        assert "attempts" not in data["receipt"]
+        assert data["receipt"]["attempts"] == 1
         assert "fetch_errors" not in data
 
     @pytest.mark.parametrize(
@@ -205,6 +205,8 @@ class TestGeoAuditTool:
         assert data["receipt"]["stages_completed"] == []
         assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[0]]
         assert data["receipt"]["terminal_error"] == expected_code
+        assert data["receipt"]["attempts"] == 1
+        assert "attempts" not in data
 
     def test_audit_include_receipt_on_unsafe_url(self):
         """geo_audit retains partial receipt on unsafe URL errors (#557)."""
@@ -214,7 +216,8 @@ class TestGeoAuditTool:
         assert "receipt" in data
         assert data["receipt"]["stages_failed"] == ["validate_url"]
         assert data["receipt"]["terminal_error"] == "unsafe_url"
-        assert "attempts" not in data["receipt"]
+        assert data["receipt"]["attempts"] == 1
+        assert "attempts" not in data
 
     def test_audit_include_receipt_on_invalid_score_version(self):
         """Invalid score_version records normalized 'invalid_argument' error in receipt (#557)."""
@@ -225,6 +228,8 @@ class TestGeoAuditTool:
         assert "receipt" in data
         assert data["receipt"]["stages_failed"] == ["validate_score_version"]
         assert data["receipt"]["terminal_error"] == "invalid_argument"
+        assert data["receipt"]["attempts"] == 1
+        assert "attempts" not in data
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_audit_include_receipt_on_exception(self, mock_audit):
@@ -250,7 +255,8 @@ class TestGeoAuditTool:
         assert data["receipt"]["stages_completed"] == [AUDIT_STEPS[0]]
         assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[1]]
         assert data["receipt"]["terminal_error"] == "internal"
-        assert "attempts" not in data["receipt"]
+        assert data["receipt"]["attempts"] == 1
+        assert "attempts" not in data
 
     @pytest.mark.parametrize(
         ("err", "expected"),
@@ -470,6 +476,7 @@ class TestGeoAuditTool:
             patch("geo_optimizer.core.audit.check_markdown_negotiation_async", new=AsyncMock(return_value=False)),
             patch("geo_optimizer.core.audit.audit_cdn_ai_crawler", return_value=MagicMock()),
         ):
+
             async def _run():
                 res = await run_full_audit_async(url)
                 return res, get_audit_telemetry()
@@ -479,6 +486,369 @@ class TestGeoAuditTool:
             # AuditResult dataclass itself has no fetch_errors field; asdict never leaks it (#557)
             assert not hasattr(result, "fetch_errors")
             assert "fetch_errors" not in asdict(result)
+
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_receipt_reflects_http_attempts(self, mock_fetch):
+        """geo_audit receipt attempts count reflects retries from HTTP layer (#557)."""
+        from urllib3.util.retry import RequestHistory, Retry
+
+        retry = Retry()
+        retry.history = (
+            RequestHistory("GET", "https://example.com", None, 500, None),
+            RequestHistory("GET", "https://example.com", None, 503, None),
+        )
+
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
+        mock_resp.content = mock_resp.text.encode("utf-8")
+        mock_resp.headers = {"Content-Type": "text/html"}
+        mock_resp.raw.retries = retry
+
+        mock_fetch.return_value = (mock_resp, None)
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert "receipt" in data
+        assert data["receipt"]["attempts"] == 3
+        assert "attempts" not in data
+
+    def test_get_response_attempts_helper(self):
+        """get_response_attempts safely extracts retry history count (#557)."""
+        from unittest.mock import Mock
+
+        from geo_optimizer.utils.http import get_response_attempts
+
+        class FakeRetries:
+            def __init__(self, count):
+                self.history = tuple(range(count))
+
+        assert get_response_attempts(None) == 1
+        assert get_response_attempts(MagicMock(raw=None)) == 1
+
+        mock_resp = MagicMock()
+        mock_resp.raw.retries = FakeRetries(0)
+        assert get_response_attempts(mock_resp) == 1
+
+        mock_resp.raw.retries = FakeRetries(3)
+        assert get_response_attempts(mock_resp) == 4
+
+        # Standard Mock whose child attributes are also Mocks must return 1 and not raise TypeError
+        plain_mock = Mock()
+        assert get_response_attempts(plain_mock) == 1
+
+    def test_get_response_attempts_with_real_urllib3_retry(self):
+        """get_response_attempts correctly inspects real urllib3 Retry history (#557)."""
+        from urllib3.util.retry import RequestHistory, Retry
+
+        from geo_optimizer.utils.http import get_response_attempts
+
+        retry = Retry()
+        retry.history = (
+            RequestHistory("GET", "https://example.com", None, 500, None),
+            RequestHistory("GET", "https://example.com", None, 503, None),
+        )
+        resp = MagicMock()
+        resp.raw.retries = retry
+        assert get_response_attempts(resp) == 3
+
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    @patch("time.sleep")
+    def test_audit_receipt_reflects_timeout_retries(self, mock_sleep, mock_create, mock_resolve):
+        """geo_audit receipt reflects observed attempts when fetch exhausts retries on timeout (#557)."""
+        import requests
+
+        mock_session = MagicMock()
+        mock_session.get.side_effect = requests.exceptions.Timeout("Connection timed out")
+        mock_create.return_value = mock_session
+
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert "receipt" in data
+        assert data["receipt"]["attempts"] == 4
+        assert mock_session.get.call_count == 4
+        assert "attempts" not in data
+
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_receipt_default_excludes_attempts(self, mock_fetch):
+        """Default output (include_receipt=False) never leaks attempts (#557)."""
+        from urllib3.util.retry import RequestHistory, Retry
+
+        retry = Retry()
+        retry.history = (
+            RequestHistory("GET", "https://example.com", None, 500, None),
+            RequestHistory("GET", "https://example.com", None, 503, None),
+        )
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.text = "<html><head><title>Test</title></head><body>Hello</body></html>"
+        mock_resp.content = mock_resp.text.encode("utf-8")
+        mock_resp.headers = {"Content-Type": "text/html"}
+        mock_resp.raw.retries = retry
+        mock_fetch.return_value = (mock_resp, None)
+
+        data = json.loads(geo_audit("https://example.com", include_receipt=False))
+        assert "attempts" not in data
+        assert "receipt" not in data
+
+    @patch("geo_optimizer.utils.cache.FileCache.get")
+    def test_audit_receipt_cache_hit_resets_attempts_to_one(self, mock_cache_get):
+        """A cached homepage returns attempts=1 even if a previous fetch had retries in the same context (#557)."""
+        from dataclasses import asdict
+
+        from geo_optimizer.core.audit import _audit_telemetry, get_audit_telemetry, run_full_audit
+
+        # Simulate previous request leaving 4 attempts in context
+        _audit_telemetry.set({"attempts": 4})
+
+        # Mock cache hit for homepage
+        mock_cache_get.return_value = (
+            200,
+            "<html><head><title>Test</title></head><body>Cached content</body></html>",
+            {"Content-Type": "text/html"},
+        )
+
+        with patch("geo_optimizer.core.audit.fetch_url") as mock_fetch:
+            mock_resp = MagicMock(status_code=200, text="Not cached", headers={})
+            mock_fetch.return_value = (mock_resp, None)
+            result = run_full_audit("https://example.com", use_cache=True)
+
+            fetched = [call.args[0] for call in mock_fetch.call_args_list]
+            assert "https://example.com" not in fetched
+            telemetry = get_audit_telemetry()
+            assert telemetry["attempts"] == 1
+            # AuditResult itself never has attempts field (#557)
+            assert not hasattr(result, "attempts")
+            assert "attempts" not in asdict(result)
+
+    def test_get_response_attempts_with_cached_response(self):
+        """get_response_attempts returns 1 for CachedResponse or from_cache responses (#557)."""
+        from geo_optimizer.models.results import CachedResponse
+        from geo_optimizer.utils.http import get_response_attempts
+
+        cached = CachedResponse(status_code=200, text="ok", content=b"ok", headers={})
+        assert get_response_attempts(cached) == 1
+
+        # Also verify response with from_cache attribute
+        mock_cached = MagicMock()
+        mock_cached.from_cache = True
+        assert get_response_attempts(mock_cached) == 1
+
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    @patch("time.sleep")
+    def test_audit_receipt_attempts_not_inflated_by_auxiliary_fetches(self, mock_sleep, mock_create, mock_resolve):
+        """Attempts in receipt must reflect homepage only and not be inflated by auxiliary retries (#557)."""
+        import requests
+
+        mock_session = MagicMock()
+
+        def _fake_get(url, *args, **kwargs):
+            if "llms.txt" in url:
+                raise requests.exceptions.Timeout("llms.txt timeout")
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
+            resp.content = resp.text.encode("utf-8")
+            resp.headers = {"Content-Type": "text/html"}
+            resp.raw = None
+            return resp
+
+        mock_session.get.side_effect = _fake_get
+        mock_create.return_value = mock_session
+
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert "receipt" in data
+        # Homepage succeeded on 1st attempt, so receipt attempts must be 1, not inflated by llms.txt retries
+        assert data["receipt"]["attempts"] == 1
+        assert "llms.txt" in data["receipt"]["failed_fetches"]
+
+    @patch("geo_optimizer.core.audit.audit_schema", side_effect=RuntimeError("Schema failure mid-audit"))
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_include_receipt_preserves_attempts_on_exception(self, mock_fetch, mock_schema):
+        """geo_audit preserves recorded homepage attempts when an exception occurs mid-audit (#557)."""
+        from urllib3.util.retry import RequestHistory, Retry
+
+        from geo_optimizer.core.audit import get_audit_telemetry
+        from geo_optimizer.models.config import AUDIT_STEPS
+
+        retry = Retry()
+        retry.history = (
+            RequestHistory("GET", "https://example.com", None, 500, None),
+            RequestHistory("GET", "https://example.com", None, 503, None),
+        )
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.text = "<html><head><title>Test</title></head><body>Hello</body></html>"
+        mock_resp.content = mock_resp.text.encode("utf-8")
+        mock_resp.headers = {"Content-Type": "text/html"}
+        mock_resp.raw.retries = retry
+        mock_fetch.return_value = (mock_resp, None)
+
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert data["error"] == "Internal error during operation"
+        assert data["receipt"]["terminal_error"] == "internal"
+        assert data["receipt"]["stages_completed"] == [AUDIT_STEPS[0]]
+        assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[1]]
+        assert data["receipt"]["attempts"] == 3
+        # Telemetry must be reset in finally even after an exception
+        assert get_audit_telemetry() == {}
+
+    def test_fetch_url_does_not_record_attempt_on_ssrf_rejection(self):
+        """fetch_url does not invoke attempt recorder when SSRF/DNS validation fails; receipt reports 1 (#557)."""
+        from geo_optimizer.utils.http import fetch_url, reset_attempt_recorder, set_attempt_recorder
+
+        recorded: list[int] = []
+        token = set_attempt_recorder(recorded.append)
+        try:
+            with patch(
+                "geo_optimizer.utils.validators.resolve_and_validate_url",
+                return_value=(False, "DNS resolution failed", []),
+            ):
+                resp, err = fetch_url("https://dns-fail.example.com")
+        finally:
+            reset_attempt_recorder(token)
+
+        assert resp is None
+        assert err == "Unsafe URL: DNS resolution failed"
+        assert recorded == []
+
+        # End-to-end via geo_audit when validate_public_url passes (fixture) but resolve_and_validate_url fails
+        with patch(
+            "geo_optimizer.utils.validators.resolve_and_validate_url",
+            return_value=(False, "DNS resolution failed", []),
+        ):
+            data = json.loads(geo_audit("https://dns-fail.example.com", include_receipt=True))
+
+        assert data["receipt"]["terminal_error"] == "unsafe_url"
+        assert data["receipt"]["attempts"] == 1
+
+    def _run_geo_audit_with_urllib3_script(
+        self,
+        url: str,
+        homepage_script: list[tuple[int, dict[str, str], bytes]],
+    ) -> tuple[dict, list[tuple[str, str]]]:
+        """Execute geo_audit against real urllib3.urlopen + _CappedRetry with _make_request mocked (no sockets)."""
+        import io
+
+        from urllib3.connectionpool import HTTPConnectionPool
+        from urllib3.response import HTTPResponse
+
+        html_ok = b"<html><head><title>Test</title></head><body>Hello world</body></html>"
+        pending = list(homepage_script)
+        homepage_calls: list[tuple[str, str]] = []
+        in_homepage = True
+
+        def _fake_make_request(pool, conn, method, req_url, **kwargs):
+            nonlocal in_homepage
+            if req_url == "/robots.txt":
+                in_homepage = False
+            if in_homepage:
+                homepage_calls.append((method, req_url))
+                if not pending:
+                    raise AssertionError(f"Unexpected extra homepage request: {(method, req_url)}")
+                status, headers, body = pending.pop(0)
+            else:
+                status, headers, body = 200, {"Content-Type": "text/html"}, html_ok
+            return HTTPResponse(
+                body=io.BytesIO(body),
+                headers=headers,
+                status=status,
+                preload_content=False,
+                retries=kwargs.get("retries"),
+            )
+
+        with (
+            patch("socket.socket", side_effect=AssertionError("real socket forbidden")),
+            patch("urllib3.util.retry.time.sleep"),
+            patch(
+                "geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"])
+            ),
+            patch.object(HTTPConnectionPool, "_make_request", _fake_make_request),
+        ):
+            payload = json.loads(geo_audit(url, include_receipt=True))
+
+        assert pending == [], f"Unconsumed homepage script entries: {pending}"
+        return payload, homepage_calls
+
+    def test_audit_receipt_real_urllib3_zero_retries(self):
+        """Real urllib3 retry loop with direct 200 reports attempts=1 and terminal_error=None (#557)."""
+        html_ok = b"<html><head><title>Test</title></head><body>Hello world</body></html>"
+        data, homepage_calls = self._run_geo_audit_with_urllib3_script(
+            "https://example.com",
+            [(200, {"Content-Type": "text/html"}, html_ok)],
+        )
+        assert homepage_calls == [("GET", "/")]
+        assert data["receipt"]["attempts"] == 1
+        assert data["receipt"]["terminal_error"] is None
+
+    def test_audit_receipt_real_urllib3_plain_redirect(self):
+        """Real urllib3 retry loop with plain 302 -> 200 reports attempts=1 (redirects not counted) (#557)."""
+        html_ok = b"<html><head><title>Test</title></head><body>Hello world</body></html>"
+        data, homepage_calls = self._run_geo_audit_with_urllib3_script(
+            "https://example.com",
+            [
+                (302, {"Location": "/ok"}, b""),
+                (200, {"Content-Type": "text/html"}, html_ok),
+            ],
+        )
+        assert homepage_calls == [("GET", "/"), ("GET", "/ok")]
+        assert data["receipt"]["attempts"] == 1
+        assert data["receipt"]["terminal_error"] is None
+
+    def test_audit_receipt_real_urllib3_redirect_after_retries(self):
+        """Real urllib3 retry loop with 503, 503, 302 -> 200 reports highest single-hop attempts=3 (#557)."""
+        html_ok = b"<html><head><title>Test</title></head><body>Hello world</body></html>"
+        data, homepage_calls = self._run_geo_audit_with_urllib3_script(
+            "https://example.com/h1",
+            [
+                (503, {}, b"err1"),
+                (503, {}, b"err2"),
+                (302, {"Location": "/ok"}, b""),
+                (200, {"Content-Type": "text/html"}, html_ok),
+            ],
+        )
+        assert homepage_calls == [("GET", "/h1"), ("GET", "/h1"), ("GET", "/h1"), ("GET", "/ok")]
+        assert data["receipt"]["attempts"] == 3
+        assert data["receipt"]["terminal_error"] is None
+
+    def test_audit_receipt_real_urllib3_status_retries_exhausted(self):
+        """Real urllib3 retry loop exhausting 503 retries reports attempts=4 and terminal_error='http_error' (#557)."""
+        data, homepage_calls = self._run_geo_audit_with_urllib3_script(
+            "https://example.com",
+            [(503, {}, b"err")] * 4,
+        )
+        assert homepage_calls == [("GET", "/")] * 4
+        assert data["receipt"]["attempts"] == 4
+        assert data["receipt"]["terminal_error"] == "http_error"
+
+    @pytest.mark.parametrize(
+        ("raw_attempts", "expected"),
+        [
+            (1, 1),
+            (4, 4),
+            (16, 16),
+            (0, 1),
+            (-5, 1),
+            (17, 16),
+            (999, 16),
+            (True, 1),
+            (False, 1),
+            ("3", 1),
+            (None, 1),
+        ],
+    )
+    @patch("geo_optimizer.core.audit.get_audit_telemetry")
+    @patch("geo_optimizer.core.audit.run_full_audit")
+    def test_audit_receipt_sanitizes_attempts_to_1_16(self, mock_audit, mock_telem, raw_attempts, expected):
+        """geo_audit clamps receipt.attempts to an integer in 1..16 (#557)."""
+        from geo_optimizer.mcp.server import _sanitize_attempts
+
+        assert _sanitize_attempts(raw_attempts) == expected
+        mock_audit.return_value = _mock_audit_result()
+        mock_telem.return_value = {"fetch_errors": [], "attempts": raw_attempts}
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert isinstance(data["receipt"]["attempts"], int)
+        assert not isinstance(data["receipt"]["attempts"], bool)
+        assert data["receipt"]["attempts"] == expected
 
 
 # ============================================================================

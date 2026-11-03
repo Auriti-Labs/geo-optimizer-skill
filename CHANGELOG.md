@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- MCP server: `geo_audit` receipt includes the real HTTP `attempts` count extracted from `with_retry` and `urllib3` retry history, without altering the retry policy or HTTP limits. The value is the highest attempt count on any single hop of the homepage request: redirects are not counted, the async path always reports 1, and requests rejected before any HTTP call or served from the cache report 1 (#557).
+
 ---
 
 ## [4.31.0] — 2026-11-27
