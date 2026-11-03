@@ -65,7 +65,7 @@ def _normalize_url(url: str) -> str:
 
 
 @mcp.tool()
-def geo_audit(url: str, score_version: int = 2) -> str:
+def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -> str:
     """Run a complete GEO audit on a website.
 
     Uses rubric v2 by default (Google AI readiness) and supports rubric v1
@@ -77,6 +77,8 @@ def geo_audit(url: str, score_version: int = 2) -> str:
     Args:
         url: URL of the site to audit (e.g. https://example.com)
         score_version: Scoring rubric version: 2 (default) or 1 (legacy).
+        include_receipt: Optional boolean flag to attach an execution receipt
+            with completed stages and telemetry metrics (default False).
     """
     from geo_optimizer.utils.validators import validate_public_url
 
@@ -85,21 +87,67 @@ def geo_audit(url: str, score_version: int = 2) -> str:
     # Anti-SSRF validation
     safe, reason = validate_public_url(url)
     if not safe:
-        return json.dumps({"error": f"Unsafe URL: {reason}", "url": url})
-    from geo_optimizer.models.config import CATEGORY_MAX_BY_VERSION
+        err_payload = {"error": f"Unsafe URL: {reason}", "url": url}
+        if include_receipt:
+            err_payload["receipt"] = {
+                "url": url,
+                "stages_completed": [],
+                "stages_failed": ["validate_url"],
+                "terminal_error": f"Unsafe URL: {reason}",
+            }
+        return json.dumps(err_payload)
+    from geo_optimizer.models.config import AUDIT_STEPS, CATEGORY_MAX_BY_VERSION
 
     if isinstance(score_version, bool) or score_version not in CATEGORY_MAX_BY_VERSION:
-        return json.dumps({"error": "score_version must be 1 or 2", "url": url})
+        err_payload = {"error": "score_version must be 1 or 2", "url": url}
+        if include_receipt:
+            err_payload["receipt"] = {
+                "url": url,
+                "stages_completed": [],
+                "stages_failed": ["validate_score_version"],
+                "terminal_error": "score_version must be 1 or 2",
+            }
+        return json.dumps(err_payload)
+
+    # run_full_audit calls on_step when a stage starts, not when it ends
+    stages_started: list[str] = []
+
+    def on_step(stage: str) -> None:
+        stages_started.append(stage)
 
     try:
         from geo_optimizer.core.audit import run_full_audit
 
-        result = run_full_audit(url, score_version=score_version)
-        return _to_json(result)
+        result = run_full_audit(url, score_version=score_version, on_step=on_step if include_receipt else None)
+        if not include_receipt:
+            return _to_json(result)
+
+        data = asdict(result) if hasattr(result, "__dataclass_fields__") else dict(result)
+        data["receipt"] = {
+            "url": url,
+            "stages_completed": stages_started,
+            "stages_failed": [],
+            "duration_ms": getattr(result, "audit_duration_ms", 0),
+            "terminal_error": getattr(result, "error", None),
+        }
+        return json.dumps(data, indent=2, ensure_ascii=False, default=str)
     except Exception as e:
         # Fix #314: do not expose str(e) to the client — log internally
         logger.error("Error in geo_audit for %s: %s", url, e)
-        return json.dumps({"error": "Internal error during operation", "url": url})
+        err_payload = {"error": "Internal error during operation", "url": url}
+        if include_receipt:
+            # The stage that raised is the last one started; an error before any
+            # stage started is attributed to the first one.
+            failed_stage = stages_started[-1] if stages_started else AUDIT_STEPS[0]
+            stages_completed = stages_started[:-1]
+
+            err_payload["receipt"] = {
+                "url": url,
+                "stages_completed": stages_completed,
+                "stages_failed": [failed_stage],
+                "terminal_error": "Internal error during operation",
+            }
+        return json.dumps(err_payload)
 
 
 # ─── Tool 2: geo_fix ─────────────────────────────────────────────────────────
