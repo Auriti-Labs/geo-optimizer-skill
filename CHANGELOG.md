@@ -9,6 +9,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Fixed
 - Web demo / API: the root static mount (`/`) is now optional when `GEO_STATIC_DIR` does not exist on disk, avoiding an unhandled `RuntimeError` at startup/import when running as a headless API service (#680). An informative JSON response is served at `/` (HTTP 200) with links to `/docs` and `/health`.
+- `geo audit --no-plugins` had no effect: the audit core loaded and ran every installed `geo_optimizer.checks` plugin regardless. The flag now reaches the audit (single URL, `--sitemap` and `--max-pages`), which then neither loads nor runs plugins. API and MCP callers still load them by default.
 
 ## [4.19.9] — 2026-10-30
 

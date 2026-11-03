@@ -248,6 +248,7 @@ def audit(
                 max_urls=max_urls,
                 concurrency=concurrency,
                 score_version=score_version,
+                load_plugins=not no_plugins,
             )
             if output_format != "json":
                 click.echo("✅ Batch analysis complete.\n", err=True)
@@ -269,6 +270,8 @@ def audit(
                 audit_kwargs = {"project_config": project_config, "on_step": on_step}
                 if score_version != DEFAULT_SCORE_VERSION:
                     audit_kwargs["score_version"] = score_version
+                if no_plugins:
+                    audit_kwargs["load_plugins"] = False
                 if _use_async:
                     return asyncio.run(run_full_audit_async(url, **audit_kwargs))
                 return run_full_audit(url, use_cache=cache, **audit_kwargs)
