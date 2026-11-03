@@ -65,6 +65,8 @@ embedding = [
 llm = [
     "openai>=1.0.0,<4.0",
     "anthropic>=0.30.0,<3.0",
+    # 0.13.0 is the first release that works with httpx 0.28 (older ones pass the removed `proxies`)
+    "groq>=0.13.0,<2.0",
 ]
 dev = [
     "pytest>=7.0,<10.0",

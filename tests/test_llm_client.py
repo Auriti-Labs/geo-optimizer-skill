@@ -188,7 +188,7 @@ class TestQueryLLM:
         resp = llm_client.query_llm("test", provider="groq", api_key="fake_key")
         assert resp.error is not None
         assert "groq not installed" in resp.error
-        assert "[dev]" in resp.error, "Groq ImportError message should reference geo-optimizer-skill[dev]"
+        assert "[llm]" in resp.error, "Groq ImportError message should reference geo-optimizer-skill[llm]"
 
     def test_query_llm_openai_success_with_system(self, _mock_env, monkeypatch) -> None:
         """OpenAI success con system param (linee 90-107, 120-135, 124)."""
