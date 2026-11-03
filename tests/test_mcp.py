@@ -142,6 +142,84 @@ class TestGeoAuditTool:
         call_url = mock_audit.call_args[0][0]
         assert call_url.startswith("https://")
 
+    @patch("geo_optimizer.core.audit.run_full_audit")
+    def test_audit_receipt_default_disabled(self, mock_audit):
+        """geo_audit does not include receipt block by default."""
+        mock_audit.return_value = _mock_audit_result()
+        result = geo_audit("https://example.com")
+        data = json.loads(result)
+        assert "receipt" not in data
+
+    @patch("geo_optimizer.core.audit.run_full_audit")
+    def test_audit_include_receipt_enabled(self, mock_audit):
+        """geo_audit includes receipt with stages and metrics when requested (#557)."""
+
+        def _fake_run(url, score_version=2, on_step=None):
+            if on_step:
+                on_step("Fetching page, robots.txt, llms.txt and AI files")
+                on_step("Analyzing schema, meta tags and content")
+            res = _mock_audit_result()
+            res.audit_duration_ms = 350
+            return res
+
+        mock_audit.side_effect = _fake_run
+        result = geo_audit("https://example.com", include_receipt=True)
+        data = json.loads(result)
+        assert "receipt" in data
+        assert data["receipt"]["url"] == "https://example.com"
+        assert data["receipt"]["stages_completed"] == [
+            "Fetching page, robots.txt, llms.txt and AI files",
+            "Analyzing schema, meta tags and content",
+        ]
+        assert data["receipt"]["stages_failed"] == []
+        assert data["receipt"]["duration_ms"] == 350
+        assert data["receipt"]["terminal_error"] is None
+        assert "attempts" not in data["receipt"]
+
+    def test_audit_include_receipt_on_unsafe_url(self):
+        """geo_audit retains partial receipt on unsafe URL errors (#557)."""
+        result = geo_audit("http://169.254.169.254/metadata", include_receipt=True)
+        data = json.loads(result)
+        assert "error" in data
+        assert "receipt" in data
+        assert data["receipt"]["stages_failed"] == ["validate_url"]
+        assert data["receipt"]["terminal_error"] == data["error"]
+        assert "attempts" not in data["receipt"]
+
+    @patch("geo_optimizer.core.audit.run_full_audit")
+    def test_audit_include_receipt_on_exception(self, mock_audit):
+        """geo_audit retains receipt with completed and failed stage when run_full_audit raises (#557)."""
+        from geo_optimizer.models.config import AUDIT_STEPS
+
+        def _raising_run(url, score_version=2, on_step=None):
+            if on_step:
+                on_step(AUDIT_STEPS[0])
+            raise RuntimeError("Network failure during audit")
+
+        mock_audit.side_effect = _raising_run
+        result = geo_audit("https://example.com", include_receipt=True)
+        data = json.loads(result)
+        assert "error" in data
+        assert data["error"] == "Internal error during operation"
+        assert "receipt" in data
+        assert data["receipt"]["url"] == "https://example.com"
+        assert data["receipt"]["stages_completed"] == [AUDIT_STEPS[0]]
+        assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[1]]
+        assert data["receipt"]["terminal_error"] == "Internal error during operation"
+        assert "attempts" not in data["receipt"]
+
+    @patch("geo_optimizer.core.audit.run_full_audit")
+    def test_audit_include_receipt_on_immediate_exception(self, mock_audit):
+        """geo_audit reports first stage as failed if exception occurs before any stage completes (#557)."""
+        from geo_optimizer.models.config import AUDIT_STEPS
+
+        mock_audit.side_effect = RuntimeError("Immediate crash")
+        result = geo_audit("https://example.com", include_receipt=True)
+        data = json.loads(result)
+        assert "error" in data
+        assert data["receipt"]["stages_completed"] == []
+        assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[0]]
+
 
 # ============================================================================
 # TEST: geo_fix
