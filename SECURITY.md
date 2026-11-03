@@ -12,10 +12,11 @@ disclosing it publicly.
 
 Send a private report to the maintainer:
 
-- **Email:** `security@geoready.dev`
-- **GitHub:** use **Private vulnerability reporting** on this repository
-  (Settings → Security → Private vulnerability reporting → New draft
-  advisory), which is only visible to maintainers.
+- **Email:** `juan@geoready.dev`
+- **GitHub:** open the repository's **Security** tab and click
+  **Report a vulnerability**
+  (https://github.com/Auriti-Labs/geo-optimizer-skill/security/advisories/new).
+  The report is visible only to you and the maintainers.
 
 Include in your report:
 
