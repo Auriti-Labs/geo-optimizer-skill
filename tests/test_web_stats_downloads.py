@@ -152,3 +152,44 @@ def test_senza_cache_e_senza_upstream_resta_zero_ma_non_rompe(stats_client, monk
 
     assert body["pypi_downloads_month"] == 0
     assert "github_stars" in body
+
+
+@pytest.fixture
+def app_senza_stats_url(monkeypatch):
+    """Modulo ricaricato senza GEO_STATS_API_URL, per leggere il default reale."""
+    import importlib
+
+    monkeypatch.delenv("GEO_STATS_API_URL", raising=False)
+    monkeypatch.setenv("GEO_STATS_API_KEY", "chiave-presente")
+    modulo = importlib.reload(app_module)
+    yield modulo
+    monkeypatch.undo()
+    importlib.reload(app_module)
+
+
+def test_senza_stats_url_nessuna_chiamata_al_servizio_statistiche(app_senza_stats_url, monkeypatch):
+    """Un geo-web self-hosted non configurato non contatta nessun servizio esterno di statistiche."""
+    modulo = app_senza_stats_url
+    called: list[str] = []
+
+    def fake_urlopen(req, timeout=None):
+        url = req.full_url if hasattr(req, "full_url") else str(req)
+        called.append(url)
+        if "api.github.com" in url:
+            return _FakeResponse(GITHUB_PAYLOAD)
+        return _FakeResponse(OVERALL_PAYLOAD)
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr(
+        "geo_optimizer.utils.http.create_session_with_retry",
+        lambda *a, **k: pytest.fail("POST /increment senza GEO_STATS_API_URL"),
+    )
+
+    with TestClient(modulo.app) as client:
+        body = client.get("/api/stats").json()
+    modulo._increment_remote_stat("audits")
+
+    assert modulo._STATS_API_URL == ""
+    assert body["audits_run"] == 0
+    # Restano solo GitHub e PyPI, fuori scope di questo test.
+    assert all("api.github.com" in u or "pypistats.org" in u for u in called), called

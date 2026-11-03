@@ -79,4 +79,4 @@ class TestPerceptionCmd:
         )
         assert result.exit_code == 0
         assert out_file.exists()
-        assert "AI PERCEPTION SNAPSHOT" in out_file.read_text()
+        assert "AI PERCEPTION SNAPSHOT" in out_file.read_text(encoding="utf-8")
