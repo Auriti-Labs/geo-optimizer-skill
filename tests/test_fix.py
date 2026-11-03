@@ -11,6 +11,7 @@ from click.testing import CliRunner
 
 from geo_optimizer.cli.main import cli
 from geo_optimizer.core.fixer import (
+    generate_ai_discovery_fix,
     generate_content_rewrite_fix,
     generate_llms_fix,
     generate_meta_fix,
@@ -290,6 +291,61 @@ class TestGenerateSchemaFix:
         assert authoritative_matches >= 2, (
             f"Almeno 2 URL sameAs devono usare domini autorevoli, trovati: {authoritative_matches}"
         )
+
+    def test_faqpage_schema_in_inglese_senza_path_inventato(self):
+        """Lo schema FAQPage generato deve essere in inglese e non inventare /contatti."""
+        import json
+
+        result = _make_result(**{"meta.description_text": "Accounting for startups."})
+        fixes = generate_schema_fix(result, "https://example.com")
+
+        faq_fix = next(f for f in fixes if f.file_name == "schema-faqpage.jsonld")
+        schema = json.loads(faq_fix.content)
+        questions = [q["name"] for q in schema["mainEntity"]]
+
+        assert schema["@type"] == "FAQPage"
+        assert questions == ["What is example.com?", "How can I contact example.com?"]
+        assert schema["mainEntity"][0]["acceptedAnswer"]["text"] == "Accounting for startups."
+        assert "contatti" not in faq_fix.content
+        assert "Cos'" not in faq_fix.content
+
+
+# ============================================================================
+# TEST: generate_ai_discovery_fix
+# ============================================================================
+
+
+class TestGenerateAiDiscoveryFix:
+    def test_summary_lastmodified_e_una_data_reale(self):
+        """/ai/summary.json non deve contenere il placeholder {{ISO_DATE}}."""
+        import json
+        from datetime import date
+
+        fixes = generate_ai_discovery_fix(_make_result(), "https://example.com")
+
+        summary_fix = next(f for f in fixes if f.file_name == "ai/summary.json")
+        summary = json.loads(summary_fix.content)
+
+        assert "{{" not in summary_fix.content
+        date.fromisoformat(summary["lastModified"])
+
+    def test_faq_json_coerente_con_schema_faqpage(self):
+        """/ai/faq.json e lo schema FAQPage devono contenere le stesse domande."""
+        import json
+
+        result = _make_result()
+        faq_json = json.loads(
+            next(
+                f for f in generate_ai_discovery_fix(result, "https://example.com") if f.file_name == "ai/faq.json"
+            ).content
+        )
+        faq_schema = json.loads(
+            next(
+                f for f in generate_schema_fix(result, "https://example.com") if f.file_name == "schema-faqpage.jsonld"
+            ).content
+        )
+
+        assert [q["question"] for q in faq_json["faqs"]] == [q["name"] for q in faq_schema["mainEntity"]]
 
 
 # ============================================================================
