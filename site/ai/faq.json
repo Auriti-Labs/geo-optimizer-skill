@@ -2,19 +2,19 @@
   "faqs": [
     {
       "question": "What is GEO Optimizer?",
-      "answer": "GEO Optimizer is an open-source Python toolkit that audits websites for AI search engine visibility. It scores sites 0-100 based on 47 research-backed methods and generates fixes for robots.txt, llms.txt, JSON-LD schema, and meta tags. Install with: pip install geo-optimizer-skill"
+      "answer": "GEO Optimizer is an open-source Python toolkit that audits websites for AI search engine visibility. It scores sites 0-100 with deterministic rule checks and generates fixes for robots.txt, llms.txt, JSON-LD schema, and meta tags. Install with: pip install geo-optimizer-skill"
     },
     {
       "question": "How is the GEO score calculated?",
-      "answer": "The GEO score (0-100) is calculated across 8 categories: robots.txt AI bot access (18 points), llms.txt presence and quality (18), JSON-LD schema richness (16), meta tags (14), content quality (12), technical signals like lang and RSS (6), AI discovery endpoints (6), and brand & entity signals (10). Bands: 86-100 excellent, 68-85 good, 36-67 foundation, 0-35 critical."
+      "answer": "The default rubric (v2, since engine 4.19.0) scores 9 categories for 100 points: Google AI readiness 20, robots.txt AI bot access 14, JSON-LD schema 14, content 14, brand & entity 12, meta tags 11, llms.txt 6, signals 6, AI discovery 3. The legacy v1 rubric (8 categories) is still available with geo audit --score-version 1. Bands: 86-100 excellent, 68-85 good, 36-67 foundation, 0-35 critical."
     },
     {
-      "question": "What are the 47 GEO methods?",
-      "answer": "GEO Optimizer measures content citability using 47 methods based on Princeton KDD 2024, AutoGEO (arXiv:2510.11438, preprint), and SE Ranking 2025 research. Top methods by impact: Quotation Addition +41%, Statistics +33%, Fluency +29%, Cite Sources +27%, Answer-First +25%, Passage Density +23%. v4.1.0 added 5 RAG readiness checks: Answer Capsule Detection, Token Efficiency, Entity Resolution, Knowledge Graph Density, and Retrieval Trigger Patterns."
+      "question": "What are the 47 citability checks?",
+      "answer": "GEO Optimizer measures content citability with 47 checks. 9 of them are taken directly from the methods tested in the KDD 2024 GEO paper (arXiv:2311.09735). In that benchmark, quotation addition raised a source's position-adjusted visibility by about 41% over no optimization, and statistics addition by about 33% on the word-count metric. These are relative gains in a visibility metric under research conditions, not citation rates. The checks also include RAG readiness signals such as answer capsules, token efficiency and entity resolution."
     },
     {
       "question": "How do I use GEO Optimizer with Claude or Cursor?",
-      "answer": "GEO Optimizer includes an MCP server with 10 tools. Install with: pip install geo-optimizer-skill[mcp], then: claude mcp add geo-optimizer -- geo-mcp. You can then ask Claude to audit sites, generate fixes, and analyze citability directly."
+      "answer": "GEO Optimizer includes an MCP server with 12 tools. Install with: pip install geo-optimizer-skill[mcp], then: claude mcp add geo-optimizer -- geo-mcp. You can then ask Claude to audit sites, generate fixes, and analyze citability directly."
     },
     {
       "question": "Can I run GEO audits in CI/CD?",
