@@ -126,6 +126,23 @@ def create_session_with_retry(
     return session
 
 
+def get_response_attempts(response: object | None) -> int:
+    """Read the attempt count from a response's urllib3 retry history (#557).
+
+    Returns 1 if no retry history is available or on non-Response mocks.
+    """
+    if response is None:
+        return 1
+    raw = getattr(response, "raw", None)
+    if raw is not None:
+        retries = getattr(raw, "retries", None)
+        if retries is not None:
+            history = getattr(retries, "history", None)
+            if history:
+                return len(history) + 1
+    return 1
+
+
 def with_retry(max_retries: int = _MAX_RETRIES, backoff_base: int = _BACKOFF_BASE):
     """Decorator per retry con backoff esponenziale sui transient failures.
 

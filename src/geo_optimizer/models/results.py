@@ -1045,6 +1045,8 @@ class AuditResult:
     score_breakdown: dict[str, int] = field(default_factory=dict)
     # v4.0: connection error message (None = success)
     error: str | None = None
+    # v4.19.11: HTTP attempt count (1 + retries) for the primary request (#557)
+    attempts: int = 1
     # v4.2: CDN AI Crawler check (#225)
     cdn_check: CdnAiCrawlerResult = field(default_factory=CdnAiCrawlerResult)
     # v4.2: JS Rendering check (#226)
