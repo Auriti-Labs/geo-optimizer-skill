@@ -132,7 +132,17 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
         # An unreachable homepage or an HTTP error ends the audit early with
         # result.error set instead of raising.
         terminal_error = getattr(result, "error", None)
-        completed, failed = split_failed() if terminal_error else (stages_started, [])
+        if terminal_error:
+            completed, failed = split_failed()
+        else:
+            completed = list(stages_started)
+            failed = []
+            if getattr(result, "fetch_errors", None):
+                fetch_stage = AUDIT_STEPS[0]
+                if fetch_stage in completed:
+                    completed.remove(fetch_stage)
+                if fetch_stage not in failed:
+                    failed.append(fetch_stage)
         data = asdict(result) if hasattr(result, "__dataclass_fields__") else dict(result)
         data["receipt"] = {
             "url": url,

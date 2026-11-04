@@ -1045,6 +1045,8 @@ class AuditResult:
     score_breakdown: dict[str, int] = field(default_factory=dict)
     # v4.0: connection error message (None = success)
     error: str | None = None
+    # v4.19.11: Non-fatal fetch errors encountered during audit (#557)
+    fetch_errors: list[str] = field(default_factory=list)
     # v4.2: CDN AI Crawler check (#225)
     cdn_check: CdnAiCrawlerResult = field(default_factory=CdnAiCrawlerResult)
     # v4.2: JS Rendering check (#226)

@@ -976,13 +976,24 @@ def run_full_audit(
     ai_faq_url = urljoin(base_url, "/ai/faq.json")
     ai_service_url = urljoin(base_url, "/ai/service.json")
 
-    r_robots, _ = fetch_url(robots_url_full)
-    r_llms, _ = fetch_url(llms_url_full)
-    r_llms_full, _ = fetch_url(llms_full_url)
-    r_ai_txt, _ = fetch_url(ai_txt_url)
-    r_ai_summary, _ = fetch_url(ai_summary_url)
-    r_ai_faq, _ = fetch_url(ai_faq_url)
-    r_ai_service, _ = fetch_url(ai_service_url)
+    r_robots, err_robots = fetch_url(robots_url_full)
+    r_llms, err_llms = fetch_url(llms_url_full)
+    r_llms_full, err_llms_full = fetch_url(llms_full_url)
+    r_ai_txt, err_ai_txt = fetch_url(ai_txt_url)
+    r_ai_summary, err_ai_summary = fetch_url(ai_summary_url)
+    r_ai_faq, err_ai_faq = fetch_url(ai_faq_url)
+    r_ai_service, err_ai_service = fetch_url(ai_service_url)
+
+    aux_fetches = (
+        ("robots.txt", r_robots, err_robots),
+        ("llms.txt", r_llms, err_llms),
+        ("llms-full.txt", r_llms_full, err_llms_full),
+        (".well-known/ai.txt", r_ai_txt, err_ai_txt),
+        ("/ai/summary.json", r_ai_summary, err_ai_summary),
+        ("/ai/faq.json", r_ai_faq, err_ai_faq),
+        ("/ai/service.json", r_ai_service, err_ai_service),
+    )
+    fetch_errors = [f"{name}: {err}" for name, resp, err in aux_fetches if resp is None and err]
 
     _notify(on_step, AUDIT_STEPS[1])
     # Run all sub-audits using the pre-downloaded responses
@@ -1085,6 +1096,7 @@ def run_full_audit(
         score_version=score_version,
         load_plugins=load_plugins,
     )
+    result.fetch_errors = fetch_errors
 
     # gap #10: brand sentiment analysis — opt-in, requires project_config.brand_name
     _brand_name = getattr(project_config, "brand_name", None)
@@ -1168,14 +1180,25 @@ async def run_full_audit_async(
 
     # Extract responses
     r_home, err_home = responses.get(base_url, (None, "URL not requested"))
-    r_robots, _ = responses.get(robots_url, (None, None))
-    r_llms, _ = responses.get(llms_url, (None, None))
-    r_llms_full, _ = responses.get(llms_full_url, (None, None))
+    r_robots, err_robots = responses.get(robots_url, (None, None))
+    r_llms, err_llms = responses.get(llms_url, (None, None))
+    r_llms_full, err_llms_full = responses.get(llms_full_url, (None, None))
     # AI discovery responses
-    r_ai_txt, _ = responses.get(ai_txt_url, (None, None))
-    r_ai_summary, _ = responses.get(ai_summary_url, (None, None))
-    r_ai_faq, _ = responses.get(ai_faq_url, (None, None))
-    r_ai_service, _ = responses.get(ai_service_url, (None, None))
+    r_ai_txt, err_ai_txt = responses.get(ai_txt_url, (None, None))
+    r_ai_summary, err_ai_summary = responses.get(ai_summary_url, (None, None))
+    r_ai_faq, err_ai_faq = responses.get(ai_faq_url, (None, None))
+    r_ai_service, err_ai_service = responses.get(ai_service_url, (None, None))
+
+    aux_fetches_async = (
+        ("robots.txt", r_robots, err_robots),
+        ("llms.txt", r_llms, err_llms),
+        ("llms-full.txt", r_llms_full, err_llms_full),
+        (".well-known/ai.txt", r_ai_txt, err_ai_txt),
+        ("/ai/summary.json", r_ai_summary, err_ai_summary),
+        ("/ai/faq.json", r_ai_faq, err_ai_faq),
+        ("/ai/service.json", r_ai_service, err_ai_service),
+    )
+    fetch_errors_async = [f"{name}: {err}" for name, resp, err in aux_fetches_async if resp is None and err]
 
     if err_home or r_home is None:
         result = AuditResult(
@@ -1324,6 +1347,7 @@ async def run_full_audit_async(
         score_version=score_version,
         load_plugins=load_plugins,
     )
+    result.fetch_errors = fetch_errors_async
 
     # gap #10: brand sentiment analysis — opt-in, requires project_config.brand_name
     _brand_name = getattr(project_config, "brand_name", None)

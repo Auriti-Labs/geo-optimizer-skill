@@ -6,7 +6,7 @@ Richiede: pip install geo-optimizer-skill[mcp]
 """
 
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from urllib.parse import urlparse
 
 import pytest
@@ -246,6 +246,55 @@ class TestGeoAuditTool:
         assert "error" in data
         assert data["receipt"]["stages_completed"] == []
         assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[0]]
+
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_receipt_robots_timeout_marks_fetch_stage_failed(self, mock_fetch):
+        """robots.txt timeout marks fetch stage as failed in receipt while score is returned (#557)."""
+        from geo_optimizer.models.config import AUDIT_STEPS
+
+        def _fake_fetch(url, *args, **kwargs):
+            if "robots.txt" in url:
+                return None, "Timeout (10s) dopo retry esponenziale"
+            mock_resp = MagicMock()
+            mock_resp.status_code = 200
+            mock_resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
+            mock_resp.content = mock_resp.text.encode("utf-8")
+            mock_resp.headers = {"Content-Type": "text/html"}
+            return mock_resp, None
+
+        mock_fetch.side_effect = _fake_fetch
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert "receipt" in data
+        assert AUDIT_STEPS[0] in data["receipt"]["stages_failed"]
+        assert AUDIT_STEPS[0] not in data["receipt"]["stages_completed"]
+        assert data["receipt"]["terminal_error"] is None
+        assert "score" in data
+        assert isinstance(data["score"], int)
+
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_receipt_robots_404_is_normal_not_failed(self, mock_fetch):
+        """A 404 on robots.txt is a normal answer, not a fetch stage failure (#557)."""
+        from geo_optimizer.models.config import AUDIT_STEPS
+
+        def _fake_fetch(url, *args, **kwargs):
+            mock_resp = MagicMock()
+            if "robots.txt" in url:
+                mock_resp.status_code = 404
+                mock_resp.text = "Not Found"
+            else:
+                mock_resp.status_code = 200
+                mock_resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
+            mock_resp.content = mock_resp.text.encode("utf-8")
+            mock_resp.headers = {"Content-Type": "text/html"}
+            return mock_resp, None
+
+        mock_fetch.side_effect = _fake_fetch
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert "receipt" in data
+        assert data["receipt"]["stages_failed"] == []
+        assert AUDIT_STEPS[0] in data["receipt"]["stages_completed"]
+        assert "score" in data
+        assert isinstance(data["score"], int)
 
 
 # ============================================================================
