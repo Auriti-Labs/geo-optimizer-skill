@@ -24,7 +24,7 @@ const VERIFIABLE = [
   {
     claim: 'The whole engine is MIT licensed',
     detail:
-      'Not a trial, not an open core with the scoring behind a paywall. The audit engine that produces the score is the same code published on PyPI as geo-optimizer-skill and on GitHub, version 4.18.0.',
+      'Not a trial, not an open core with the scoring behind a paywall. The audit engine that produces the score is the same code published on PyPI as geo-optimizer-skill and on GitHub. The version running on the site is reported live at /health.',
     check: 'pip install geo-optimizer-skill && geo audit --url https://your-site.com',
   },
   {
@@ -36,7 +36,7 @@ const VERIFIABLE = [
   {
     claim: 'The rules are covered by tests you can run',
     detail:
-      '1,952 tests across 80 files, all mocked with no network access, so they run on your machine without touching our servers or yours.',
+      '2,361 tests across 110 files on engine 4.19.10 (counted with pytest --collect-only on 2026-11-04), all mocked with no network access, so they run on your machine without touching our servers or yours.',
     check: 'pip install -e ".[dev]" && pytest tests/ -v',
   },
   {

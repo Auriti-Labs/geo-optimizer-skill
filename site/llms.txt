@@ -1,13 +1,13 @@
 # GEO Optimizer
 
-> Open-source toolkit to audit, fix, and optimize websites for AI search engine visibility. Based on Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint) research. Scores websites 0-100 across 8 categories with 47 citability methods.
+> Open-source toolkit to audit, fix, and optimize websites for AI search engine visibility. Based on Princeton KDD 2024 and AutoGEO (arXiv:2510.11438, preprint) research. Scores websites 0-100 across 9 categories (default rubric v2) and runs 47 citability checks.
 
 The main documentation is available at: [GEO Optimizer Docs](https://geoready.dev/docs/)
 
 ## Getting Started
 
 - [Getting Started](https://geoready.dev/docs/getting-started/): Install the toolkit and run your first GEO audit in 5 minutes
-- [Scoring Rubric](https://geoready.dev/docs/scoring-rubric/): How the 0-100 score is calculated across 8 categories (robots, llms, schema, meta, content, signals, AI discovery)
+- [Scoring Rubric](https://geoready.dev/docs/scoring-rubric/): How the 0-100 score is calculated across 9 categories in the default v2 rubric (Google AI readiness, robots, schema, content, brand & entity, meta, llms, signals, AI discovery)
 
 ## CLI Commands
 
@@ -25,7 +25,7 @@ The main documentation is available at: [GEO Optimizer Docs](https://geoready.de
 ## Reference
 
 - [AI Bots Reference](https://geoready.dev/docs/ai-bots-reference/): 27 AI crawlers with 3-tier classification (training, search, user)
-- [47 GEO Methods](https://geoready.dev/docs/geo-methods/): Research-backed citability methods — Quotation +41%, Statistics +33%, Fluency +29%, Cite Sources +27%
+- [47 Citability Checks](https://geoready.dev/docs/geo-methods/): Content checks, 9 of them taken from the methods tested in the KDD 2024 GEO paper; the paper's gains (about 41% for quotation addition) are visibility-metric gains under research conditions, not citation rates
 - [Troubleshooting](https://geoready.dev/docs/troubleshooting/): Solutions to common installation and runtime problems
 
 ## Optional
