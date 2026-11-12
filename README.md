@@ -281,7 +281,7 @@ Treat AI visibility like test coverage. The GitHub Action scores your site, fail
 
 ```yaml
 # .github/workflows/geo.yml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.19.10
+- uses: Auriti-Labs/geo-optimizer-skill@v4.20.0
   with:
     url: https://yoursite.com
     min-score: 70        # fail the build below 70
@@ -471,7 +471,7 @@ Yes. *AI Search Engineering: A Technical Guide to Generative Engine Optimization
 
 ## Roadmap
 
-Focused release waves, not noisy patches: 96 releases since February 2026, currently **v4.19.10**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
+Focused release waves, not noisy patches: 97 releases since February 2026, currently **v4.20.0**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ---
 

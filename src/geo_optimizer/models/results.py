@@ -290,6 +290,10 @@ class CdnAiCrawlerResult:
     # bot_results: [{"bot": "GPTBot", "status": 200, "content_length": 12345,
     #                "blocked": False, "challenge_detected": False}]
     any_blocked: bool = False
+    # Site-level pattern over the 4 AI user agents: "none" (all pass), "targeted"
+    # (some blocked, some pass: likely a rule aimed at specific bots), "blanket"
+    # (all 4 blocked: likely a default bot-protection mode). "" when not checked.
+    block_pattern: str = ""
     cdn_detected: str = ""  # "cloudflare", "akamai", "aws", "" if none
     cdn_headers: dict[str, str] = field(default_factory=dict)
     error: str = ""  # fix #304: error message (unsafe URL, timeout, etc.)
@@ -1047,6 +1051,9 @@ class AuditResult:
     error: str | None = None
     # v4.2: CDN AI Crawler check (#225)
     cdn_check: CdnAiCrawlerResult = field(default_factory=CdnAiCrawlerResult)
+    # One entry per blocked bot, merging robots.txt and the HTTP check:
+    # [{"bot": "GPTBot", "mechanism": "robots_txt" | "http" | "both"}]
+    bot_blocks: list[dict[str, str]] = field(default_factory=list)
     # v4.2: JS Rendering check (#226)
     js_rendering: JsRenderingResult = field(default_factory=JsRenderingResult)
     # v4.3: Brand & Entity signals

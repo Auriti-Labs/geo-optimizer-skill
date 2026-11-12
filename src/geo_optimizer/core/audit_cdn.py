@@ -1,6 +1,39 @@
 from __future__ import annotations
 
-from geo_optimizer.models.results import CdnAiCrawlerResult
+from geo_optimizer.models.results import CdnAiCrawlerResult, RobotsResult
+
+# The 4 user agents that decide block_pattern. Googlebot and Applebot are also
+# requested, but a site that blocks AI bots while serving Google is the normal case.
+AI_UA_BOTS = ("GPTBot", "OAI-SearchBot", "PerplexityBot", "Claude-SearchBot")
+
+
+def _http_blocked(entry: dict) -> bool:
+    """A bot counts as blocked at HTTP level on a block status/size or a challenge page."""
+    return bool(entry["blocked"] or entry["challenge_detected"])
+
+
+def classify_block_pattern(bot_results: list[dict]) -> str:
+    """Return "none", "targeted" or "blanket" from the per-bot HTTP results of the AI UAs."""
+    blocked = [_http_blocked(b) for b in bot_results if b["bot"] in AI_UA_BOTS]
+    if not blocked or not any(blocked):
+        return "none"
+    return "blanket" if all(blocked) and len(blocked) == len(AI_UA_BOTS) else "targeted"
+
+
+def merge_block_mechanisms(robots: RobotsResult, cdn: CdnAiCrawlerResult) -> list[dict[str, str]]:
+    """List every blocked bot with the mechanism that blocks it.
+
+    robots_txt: Disallow in robots.txt only; http: refused by the HTTP check only;
+    both: blocked by each. Bots allowed by both checks are not listed.
+    """
+    by_robots = list(robots.bots_blocked)
+    by_http = [b["bot"] for b in cdn.bot_results if _http_blocked(b)] if cdn.checked else []
+    blocks = []
+    for bot in dict.fromkeys(by_robots + by_http):  # order-preserving union
+        in_robots, in_http = bot in by_robots, bot in by_http
+        mechanism = "both" if in_robots and in_http else "robots_txt" if in_robots else "http"
+        blocks.append({"bot": bot, "mechanism": mechanism})
+    return blocks
 
 
 def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
@@ -180,7 +213,8 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
             result.bot_results.append(bot_entry)
 
         result.checked = True
-        result.any_blocked = any(b["blocked"] or b["challenge_detected"] for b in result.bot_results)
+        result.any_blocked = any(_http_blocked(b) for b in result.bot_results)
+        result.block_pattern = classify_block_pattern(result.bot_results)
 
     except Exception:
         pass

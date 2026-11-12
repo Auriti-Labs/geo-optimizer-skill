@@ -7,16 +7,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.20.0] — 2026-11-12
+
 ### Added
 - MCP server: `geo_audit` accepts an optional `include_receipt: bool = False` flag to attach per-stage execution observability (`stages_completed`, `stages_failed`, `duration_ms`, `terminal_error`) to the returned JSON envelope without affecting the underlying retry policy or HTTP limits (#557, #685). A stage is reported as failed when the audit raises or when it stops early on an unreachable homepage or an HTTP error. Default output is unchanged.
 - Claude Code plugin and marketplace: `/plugin marketplace add Auriti-Labs/geo-optimizer-skill`, then `/plugin install geo-optimizer@geoready`. The plugin (`plugins/geo-optimizer/`) ships the GEO Optimizer skill and starts the `geo-mcp` server through `uvx` (needs uv); it does not install the `geo` CLI.
 - `scripts/build_ai_context.py` generates the preflight and agent-rules block of the six `ai-context/` files from SKILL.md, and keeps the plugin's copy of SKILL.md, its `plugin.json` version and its `.mcp.json` minimum version in sync; `--check` reports stale files and a test fails on drift.
+- `bot_blocks` in the audit result and in the JSON output: one entry per blocked AI bot with the `mechanism` that blocks it, `robots_txt` (a `Disallow` in robots.txt only), `http` (refused by the HTTP check only) or `both`. Bots allowed by both checks are not listed.
+- `cdn_check.block_pattern`: site-level classification of the HTTP check over the four AI user agents (GPTBot, OAI-SearchBot, PerplexityBot, Claude-SearchBot): `none` (all pass), `targeted` (some blocked, some pass: likely a rule aimed at specific bots) or `blanket` (all four blocked: likely a default bot-protection mode). Empty when the check did not run. Googlebot and Applebot are still requested but do not decide the pattern.
+- `run_timestamp` in the `geo audit --format json` output: the ISO timestamp of the run (same instant as `timestamp`), named explicitly for consumers that store many runs.
+- The text report prints the block pattern next to "AI crawlers blocked by CDN/WAF".
+- `tests/test_block_mechanism.py`: 9 tests for the pattern and the mechanism merge.
 
 ### Changed
 - `SECURITY.md`: reports go to juan@geoready.dev or to GitHub's private vulnerability reporting (Security tab, Report a vulnerability), which is now enabled. The previous address did not exist (#691).
+- The CDN check now sets `block_pattern` by comparing which of the four AI user agents are blocked. `any_blocked` and the existing `blocked` / `challenge_detected` rules are unchanged, so scores do not move.
 
 ### Fixed
 - `geo fix`: the generated `schema-faqpage.jsonld` was hardcoded in Italian ("Cos'è …?", "Come contattare …?") and pointed to a guessed `/contatti` URL on every site. It now uses the same English example Q&A as `/ai/faq.json`, with a contact answer that links the homepage instead of inventing a path. `/ai/summary.json` gets the generation date in `lastModified` instead of the literal `{{ISO_DATE}}` placeholder.
+- `tests/test_ai_context_sync.py::test_stale_block_is_detected` hardcoded the `4.19` minor and would fail at every minor bump; it now ages the block by rewriting the current `min_version` from `capabilities.json`.
 
 ## [4.19.10] — 2026-11-03
 

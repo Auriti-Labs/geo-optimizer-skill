@@ -56,8 +56,13 @@ def format_audit_json(result: AuditResult) -> str:
     data: dict[str, Any] = {
         "url": result.url,
         "timestamp": result.timestamp,
+        # Same instant as "timestamp" (set when this run's result was built),
+        # named explicitly for consumers that store many runs.
+        "run_timestamp": result.timestamp,
         "score": result.score,
         "band": result.band,
+        # Blocked AI bots and who blocks them: robots_txt, http or both
+        "bot_blocks": result.bot_blocks,
         # None on a successful audit; a message (e.g. "Connection failed",
         # "HTTP 503") when the site was unreachable — every check below is
         # then a default-empty AuditResult, not a real "everything failed"
@@ -411,7 +416,7 @@ def format_audit_text(result: AuditResult) -> str:
         lines.append("")
         lines.append(_section_header("9. CDN AI CRAWLER ACCESS"))
         if result.cdn_check.any_blocked:
-            lines.append("  ❌ AI crawlers blocked by CDN/WAF")
+            lines.append(f"  ❌ AI crawlers blocked by CDN/WAF (pattern: {result.cdn_check.block_pattern})")
             for bot_entry in result.cdn_check.bot_results:
                 icon = "✅" if not bot_entry["blocked"] and not bot_entry["challenge_detected"] else "❌"
                 lines.append(f"  {icon} {bot_entry['bot']}: HTTP {bot_entry['status']}")

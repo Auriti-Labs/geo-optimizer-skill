@@ -21,7 +21,7 @@ from geo_optimizer.core.audit_ai_discovery import (
     check_markdown_negotiation_async,
 )
 from geo_optimizer.core.audit_brand import audit_brand_entity  # noqa: F401
-from geo_optimizer.core.audit_cdn import audit_cdn_ai_crawler  # noqa: F401
+from geo_optimizer.core.audit_cdn import audit_cdn_ai_crawler, merge_block_mechanisms  # noqa: F401
 from geo_optimizer.core.audit_content import audit_content_quality  # noqa: F401
 from geo_optimizer.core.audit_google_ai import run_google_ai_checks
 from geo_optimizer.core.audit_js import audit_js_rendering  # noqa: F401
@@ -814,6 +814,7 @@ def _build_audit_result(
         ai_discovery=effective_ai_discovery,
         score_breakdown=breakdown,
         cdn_check=effective_cdn,
+        bot_blocks=merge_block_mechanisms(robots, effective_cdn),
         js_rendering=effective_js,
         brand_entity=effective_brand_entity,
         webmcp=effective_webmcp,
