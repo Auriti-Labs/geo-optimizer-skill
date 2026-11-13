@@ -214,7 +214,7 @@ def _score_schema(schema, w: dict = SCORING, meta=None, category_max: int | None
         possible = category_max - unavailable
         if possible > 0:
             # integer half-up: Python's round() is half-to-even and would score 3.5 -> 4 but 10.5 -> 10
-            return min(category_max, (s * category_max + possible // 2) // possible)
+            return int(min(category_max, (s * category_max + possible // 2) // possible))
     return int(s)
 
 
