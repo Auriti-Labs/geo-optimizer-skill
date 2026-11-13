@@ -512,7 +512,8 @@ class TestRunCitationCheckServpbase:
             )
 
         assert result.verdict == "invisible"
-        assert ("competitorx.com", 1) in result.top_cited_domains
+        # an organic ranker is not "cited instead of you"
+        assert result.top_cited_domains == []
 
     def test_query_error_recorded_and_skips_that_query(self):
         with patch("geo_optimizer.core.serp_provider.query_serpbase") as mock_q:

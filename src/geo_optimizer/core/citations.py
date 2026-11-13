@@ -195,7 +195,6 @@ def run_citation_check(
 
             source_domains = [normalize_domain(url) for url in response.citations]
             text_domains = _domains_in_text(response.text)
-            all_domains = source_domains + [d for d in text_domains if d not in source_domains]
 
             # A URL of the domain written in the answer names the site, so it counts as a brand mention
             # (never as a citation).
@@ -206,7 +205,8 @@ def run_citation_check(
                 q_cited += 1
             if domain in text_domains:
                 q_url += 1
-            for d in all_domains:
+            # Competitors are the domains the engine returned as sources, not URLs the model wrote.
+            for d in source_domains:
                 if d != domain:
                     other_domains[d] += 1
             for url in response.citations:
@@ -317,8 +317,6 @@ def _run_serpbase_citation_check(
             ai_overview_seen += 1
 
         organic_urls = [r.url for r in response.organic if r.url]
-        source_urls = organic_urls + list(response.ai_overview_sources)
-        all_domains = list(dict.fromkeys(normalize_domain(u) for u in source_urls if u))
         # Ranking in the organic list is not an AI citation: only AI Overview sources count as cited.
         organic = domain in {normalize_domain(u) for u in organic_urls}
 
@@ -330,7 +328,8 @@ def _run_serpbase_citation_check(
         mentioned_count += int(mentioned)
         cited_count += int(cited)
         organic_count += int(organic)
-        for d in all_domains:
+        # Only AI Overview sources count as "cited instead of you"; organic rankers are not citations.
+        for d in dict.fromkeys(normalize_domain(u) for u in response.ai_overview_sources if u):
             if d != domain:
                 other_domains[d] += 1
 
@@ -349,7 +348,7 @@ def _run_serpbase_citation_check(
                 domain_cited=cited,
                 ai_overview_source_cited=cited,
                 organic_result_present=organic,
-                cited_sources=source_urls[:10],
+                cited_sources=list(response.ai_overview_sources)[:10],
                 snippet=snippet,
             )
         )
