@@ -159,4 +159,8 @@ class TestSurfaces:
     def test_faq_recommendation_only_where_questions_are_shown_in_v4(self):
         assert any("FAQPage" in t for t in self._recs(_homepage(), 2))
         assert not any("FAQPage" in t for t in self._recs(_homepage(), 4))
-        assert any("FAQPage" in t for t in self._recs(_homepage(has_visible_faq=True), 4))
+        v4 = self._recs(_homepage(has_visible_faq=True), 4)
+        assert any("FAQPage" in t for t in v4)
+        # v4 does not promise a Google result for FAQ markup
+        assert any("Google shows FAQ rich results only for a few authoritative sites" in t for t in v4)
+        assert not any("Add FAQPage schema" in t for t in v4)
