@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- Rubric v3, opt-in with `geo audit --score-version 3` (and `score_version=3` in the Python API and MCP): robots.txt is scored as access, not as the presence of a file. A missing robots.txt and a wildcard-only permission are worth the same as an explicit permission (14 of 14); a file that allows only some AI bots keeps a partial score (11); a file that allows none scores 0 (v2 gave 3 for the file existing). A missing robots.txt is no longer a recommendation. Everything else is v2's, the default stays v2, and v2 numbers do not change. Snapshots with different score versions are not comparable, as before.
+
 ## [4.20.0] — 2026-11-12
 
 ### Added

@@ -76,7 +76,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
 
     Args:
         url: URL of the site to audit (e.g. https://example.com)
-        score_version: Scoring rubric version: 2 (default) or 1 (legacy).
+        score_version: Scoring rubric version: 2 (default), 3 (v2 with robots.txt scored as access) or 1 (legacy).
         include_receipt: Optional boolean flag to attach an execution receipt
             with completed stages and telemetry metrics (default False).
     """

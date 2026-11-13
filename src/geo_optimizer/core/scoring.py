@@ -119,10 +119,11 @@ def get_score_band(score: int) -> str:
 def _score_robots(robots, w: dict = SCORING, partial: int = ROBOTS_PARTIAL_SCORE) -> int:
     """Compute the robots.txt score."""
     if not robots.found:
-        return 0
+        # v3: no file means nothing restricts the crawlers; v1/v2 have no such key (0 points)
+        return w.get("robots_absent_ok", 0)
     s: int = w.get("robots_found", 0)
     if robots.citation_bots_ok:
-        if robots.citation_bots_explicit:
+        if robots.citation_bots_explicit or w.get("robots_wildcard_full", 0):
             # Full score: citation bots explicitly allowed
             s += w.get("robots_citation_ok", 0)
         else:

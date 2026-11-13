@@ -37,6 +37,20 @@ Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1`
 | `signals` | 6 | 6 |
 | `ai_discovery` | 6 | 3 |
 
+#### Rubric v3 (opt-in, `--score-version 3`)
+
+v3 is v2 with one change: `robots` scores access, not the presence of a file. The category budget is the same (14). v2 stays the default; history and regression checks compare only snapshots with the same score version.
+
+| robots.txt state | v2 | v3 |
+|------------------|----|----|
+| Missing (404): the protocol lets crawlers fetch everything | 0 | 14 |
+| Citation bots allowed only through the wildcard | 11 | 14 |
+| Citation bots allowed explicitly | 14 | 14 |
+| Only some AI bots allowed | 11 | 11 |
+| File present, no AI bot allowed | 3 | 0 |
+
+A missing robots.txt is no longer a recommendation in v3. Writing explicit rules remains a legitimate choice; it just earns no points of its own. On 1,244 sites audited with v2 in November 2026 (a self-selected sample), moving to v3 would have changed the band of 173 sites (14%) and raised the average from 66.9 to 70.0. Sites without a robots.txt were 45 of them and were mostly sites with few other signals in place.
+
 ### Google AI readiness - max 20 pts (v2)
 
 | Check | Points | One-line check | Source |

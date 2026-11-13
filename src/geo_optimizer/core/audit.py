@@ -108,6 +108,7 @@ def build_categorized_recommendations(
     multimodal: MultimodalResult | None = None,
     google_ai: GoogleAiReadinessResult | None = None,
     category_max: dict | None = None,
+    score_version: int = DEFAULT_SCORE_VERSION,
 ) -> list[CategorizedRecommendation]:
     """Build the prioritized recommendations as ``(category, text)`` pairs (gap #5).
 
@@ -211,7 +212,9 @@ def build_categorized_recommendations(
     # ── HIGH — robots(18pt), llms(18pt), meta title(5pt) ──────────────────
     # Fix #453: split robots recommendation — create vs update
     if not robots.found:
-        _h_robots.append(f"Create robots.txt with Allow rules for AI bots ({ROBOTS_KEY_BOTS_DISPLAY})")
+        # v3 scores access, not the file: a missing robots.txt restricts nothing, so it is no finding
+        if score_version < 3:
+            _h_robots.append(f"Create robots.txt with Allow rules for AI bots ({ROBOTS_KEY_BOTS_DISPLAY})")
     elif not robots.citation_bots_ok:
         _h_robots.append(f"Update robots.txt to include all AI bots ({ROBOTS_KEY_BOTS_DISPLAY})")
     # gap #8: Crawl-delay slows AI crawlers — flag when > 10s
@@ -483,6 +486,7 @@ def build_recommendations(
     multimodal: MultimodalResult | None = None,
     google_ai: GoogleAiReadinessResult | None = None,
     category_max: dict | None = None,
+    score_version: int = DEFAULT_SCORE_VERSION,
 ) -> list[str]:
     """Build the flat, prioritized list of recommendation texts (backward compatible API).
 
@@ -509,6 +513,7 @@ def build_recommendations(
             multimodal=multimodal,
             google_ai=google_ai,
             category_max=category_max,
+            score_version=score_version,
         )
     ]
 
@@ -738,6 +743,7 @@ def _build_audit_result(
         multimodal=effective_multimodal,
         google_ai=effective_google_ai,
         category_max=CATEGORY_MAX_BY_VERSION[score_version],
+        score_version=score_version,
     )
 
     # Fix #460: load entry_point plugins if not already loaded (API + MCP callers)
