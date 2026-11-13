@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Changed
+- `docs/json-contract.md`: documents the fields of the CLI JSON that the web API contract did not list (`run_timestamp`, `bot_blocks`, `cdn_check`, `cdn_check.block_pattern`, `checks.robots_txt.details.status_code`, `checks.schema_jsonld.details.has_visible_faq`) and says that the CLI JSON has no `schema_version`.
+
 ## [4.23.0] — 2026-11-13
 
 ### Added
