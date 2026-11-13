@@ -55,6 +55,23 @@ Always present with 9 categories in v2 (value `0` if audit not run):
 
 The `google_ai` object contains `points`, `max_points`, and `checks`. Each check has `id`, `status` (`pass`, `warn`, `fail`, or `manual`), `points`, `max_points`, `evidence`, `source_url`, and `evidence_level`.
 
+## Fields of the CLI JSON (`geo audit --format json`)
+
+The CLI JSON is not the web API contract above. It shares most keys (`url`, `timestamp`, `score`, `band`, `score_version`, `score_max`, `score_breakdown`, `recommendations`, `recommendations_by_category`, `http_status`, `page_size`, `error`, `google_ai`, `checks`), and it carries the fields below. It has no `schema_version` today: an adapter that needs to pin a contract version should pin `score_version` and the engine version (a separate issue is open for adding `schema_version` to the CLI JSON, because it touches the frozen contract test). These fields were checked against the engine at 4.23.0.
+
+| Key | Type | Notes |
+|-----|------|-------|
+| `run_timestamp` | `string` | ISO 8601 UTC time of the run. Same value as `timestamp`; named explicitly for consumers that store results over time. Not a field of the stored `AuditResult` dataclass, so it is absent from stored result JSON |
+| `bot_blocks` | `array` | One entry per blocked AI bot: `{"bot": "GPTBot", "mechanism": "robots_txt" \| "http" \| "both"}`. `robots_txt`: a `Disallow` in robots.txt only; `http`: refused by the HTTP check only; `both`: blocked by each. Bots allowed by both are not listed. Empty when nothing is blocked. Since 4.20.0 |
+| `cdn_check` | `object` | Present only when the HTTP check ran. `checked`, `browser_status`, `browser_content_length`, `bot_results` (per bot: `bot`, `status`, `content_length`, `blocked`, `challenge_detected`), `any_blocked`, `block_pattern`, `cdn_detected`, `cdn_headers`, `error` |
+| `cdn_check.block_pattern` | `string` | Site-level pattern over GPTBot, OAI-SearchBot, PerplexityBot and Claude-SearchBot: `none` (all pass), `targeted` (some blocked), `blanket` (all four blocked); `""` when not checked. Since 4.20.0 |
+| `checks.robots_txt.details.status_code` | `int` | HTTP status of the robots.txt fetch; `0` means no response (timeout, DNS or TLS failure). Since 4.22.0. A 4xx other than 429 is a missing robots.txt (crawlers may fetch everything, RFC 9309); a 5xx, 429 or no response means the rules could not be read. Rubric v3 and v4 score these cases differently |
+| `checks.schema_jsonld.details.has_visible_faq` | `bool` | The page shows at least two question headings or accordion summaries. Used by rubric v4 to decide whether FAQPage markup applies. Since 4.23.0 |
+
+`score_breakdown` keys and the meaning of `score_max` depend on `score_version` (1, 2, 3 or 4). Rubrics 3 and 4 have the same categories and maxima as 2; only the robots rules (3 and 4) and the schema applicability rule (4) differ, so scores from different `score_version` values are not comparable. The score measures readiness signals at one point in time; it is not a prediction of what an AI engine will answer.
+
+Whether the web API returns `bot_blocks` and `run_timestamp` is not covered by the v1 contract above: it was not verified.
+
 ## `recommendations_by_category`
 
 Additive field under the same `schema_version` (`1`). It carries the strings of `recommendations`, grouped by the category that produced them, so a consumer does not have to infer the category from the wording.
