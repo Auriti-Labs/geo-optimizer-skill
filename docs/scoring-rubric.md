@@ -43,7 +43,8 @@ v3 is v2 with one change: `robots` scores access, not the presence of a file. Th
 
 | robots.txt state | v2 | v3 |
 |------------------|----|----|
-| Missing (404): the protocol lets crawlers fetch everything | 0 | 14 |
+| Missing (404, other 4xx except 429): the protocol lets crawlers fetch everything | 0 | 14 |
+| Could not be read (5xx, 429, timeout, no response): crawlers assume a full block | 0 | 0 |
 | Citation bots allowed only through the wildcard | 11 | 14 |
 | Citation bots allowed explicitly | 14 | 14 |
 | File present but blocking no AI bot (empty, sitemap only) | 3 | 14 |

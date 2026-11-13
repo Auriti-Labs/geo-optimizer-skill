@@ -27,6 +27,7 @@ def audit_robots_txt(base_url: str, bots: dict | None = None) -> RobotsResult:
     r, err = fetch_url(robots_url)
 
     result = RobotsResult()
+    result.status_code = int(getattr(r, "status_code", 0) or 0) if r is not None else 0
 
     if err or not r:
         return result
@@ -91,6 +92,8 @@ def _audit_robots_from_response(r, bots: dict | None = None) -> RobotsResult:
               Allows passing extra bots from project_config.extra_bots.
     """
     result = RobotsResult()
+    # requests.Response is falsy for 4xx/5xx, so the status is read before the `not r` shortcut
+    result.status_code = int(getattr(r, "status_code", 0) or 0) if r is not None else 0
 
     if not r or r.status_code != 200:
         return result

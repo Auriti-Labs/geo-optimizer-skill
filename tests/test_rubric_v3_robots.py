@@ -28,11 +28,12 @@ def _score(robots: RobotsResult, version: int) -> int:
     return _score_robots(robots, SCORING_BY_VERSION[version], ROBOTS_PARTIAL_BY_VERSION[version])
 
 
-ABSENT = RobotsResult(found=False)
+ABSENT = RobotsResult(found=False, status_code=404)  # no robots.txt: crawlers may fetch everything
 WILDCARD = RobotsResult(found=True, bots_allowed=["GPTBot"], citation_bots_ok=True, citation_bots_explicit=False)
 EXPLICIT = RobotsResult(found=True, bots_allowed=["GPTBot"], citation_bots_ok=True, citation_bots_explicit=True)
 SOME = RobotsResult(found=True, bots_allowed=["GPTBot"], bots_blocked=["ClaudeBot"], citation_bots_ok=False)
 BLOCKED = RobotsResult(found=True, bots_blocked=["GPTBot", "ClaudeBot"], citation_bots_ok=False)
+UNREADABLE = RobotsResult(found=False, status_code=503)  # server error: crawlers assume a full block
 # a file with no rule for any AI bot (empty, or only a Sitemap line): every bot is "missing"
 NO_AI_RULES = RobotsResult(found=True, bots_missing=["GPTBot", "ClaudeBot"], citation_bots_ok=False)
 
@@ -60,6 +61,7 @@ class TestRobotsScore:
             (SOME, 11, 11),  # only some bots allowed: partial in both
             (BLOCKED, 3, 0),  # v2 paid 3 points for the file existing
             (NO_AI_RULES, 3, 14),  # restricts nothing, same as a missing file
+            (UNREADABLE, 0, 0),  # could not be read: no points in v3
         ],
     )
     def test_v2_unchanged_and_v3_scores_access(self, robots, v2, v3):
@@ -67,7 +69,7 @@ class TestRobotsScore:
         assert _score(robots, 3) == v3
 
     def test_v3_never_exceeds_the_category_maximum(self):
-        for robots in (ABSENT, WILDCARD, EXPLICIT, SOME, BLOCKED, NO_AI_RULES):
+        for robots in (ABSENT, WILDCARD, EXPLICIT, SOME, BLOCKED, NO_AI_RULES, UNREADABLE):
             assert _score(robots, 3) <= CATEGORY_MAX_BY_VERSION[3]["robots"]
 
 
@@ -138,3 +140,51 @@ class TestEndToEnd:
         fix = [FixItem(category="robots", description="d", content="c", file_name="robots.txt", action="create")]
         result = AuditResult(url="https://example.com", score=50, score_version=3, robots=ABSENT)
         assert _estimate_score_after(result, fix) == 50  # already full in v3: nothing to gain
+
+
+class TestUnreadableRobots:
+    """RFC 9309: a 4xx means no robots.txt (everything may be fetched); 5xx, 429 or no response means unknown."""
+
+    @pytest.mark.parametrize(
+        ("status", "v3"), [(404, 14), (410, 14), (403, 14), (401, 14), (429, 0), (500, 0), (503, 0), (0, 0)]
+    )
+    def test_missing_file_score_follows_the_status(self, status, v3):
+        robots = RobotsResult(found=False, status_code=status)
+        assert _score(robots, 3) == v3
+        assert _score(robots, 2) == 0  # v2 never gave points for a missing file
+
+    @pytest.mark.parametrize(("status", "found"), [(200, True), (404, False), (503, False), (429, False)])
+    def test_parser_records_the_status(self, status, found):
+        from unittest.mock import Mock
+
+        from geo_optimizer.core.audit_robots import _audit_robots_from_response
+
+        # requests.Response is falsy for 4xx/5xx: the status must survive that
+        response = Mock(status_code=status, text="User-agent: *\nAllow: /\n")
+        response.__bool__ = lambda self: status < 400
+        result = _audit_robots_from_response(response)
+        assert (result.status_code, result.found) == (status, found)
+
+    def test_no_response_at_all_is_status_zero(self):
+        from geo_optimizer.core.audit_robots import _audit_robots_from_response
+
+        assert _audit_robots_from_response(None).status_code == 0
+
+    def _recs(self, robots: RobotsResult) -> list[str]:
+        from geo_optimizer.core.audit import build_categorized_recommendations
+
+        recs = build_categorized_recommendations(
+            "https://example.com",
+            robots,
+            LlmsTxtResult(),
+            SchemaResult(),
+            MetaResult(),
+            ContentResult(),
+            score_version=3,
+        )
+        return [text for category, text in recs if category == "robots"]
+
+    def test_unreadable_robots_is_a_finding_in_v3_but_a_missing_one_is_not(self):
+        assert self._recs(ABSENT) == []
+        assert any("could not be read (HTTP 503)" in t for t in self._recs(UNREADABLE))
+        assert any("no response" in t for t in self._recs(RobotsResult(found=False, status_code=0)))

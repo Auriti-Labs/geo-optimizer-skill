@@ -26,6 +26,7 @@ from geo_optimizer.cli.scoring_helpers import (
     schema_score,
     signals_score,
 )
+from geo_optimizer.core.scoring import robots_unavailable
 from geo_optimizer.models.config import CITATION_BOTS_DISPLAY
 from geo_optimizer.models.results import AuditResult
 
@@ -192,11 +193,19 @@ def _level_for_score(category_score: int, max_score: int) -> str:
 def _robots_findings(result: AuditResult) -> list[dict]:
     findings = []
     if not result.robots.found:
-        if result.score_version >= 3:
+        if result.score_version >= 3 and robots_unavailable(result.robots):
             findings.append(
                 {
                     "level": "info",
                     "message": "robots.txt not found — crawlers may fetch everything (not penalized in rubric v3)",
+                }
+            )
+        elif result.score_version >= 3:
+            status = result.robots.status_code or "no response"
+            findings.append(
+                {
+                    "level": "error",
+                    "message": f"robots.txt could not be read (HTTP {status}) — crawlers treat this as a full block",
                 }
             )
         else:
