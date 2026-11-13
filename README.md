@@ -41,7 +41,7 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 ## What is GEO Optimizer?
 
-**GEO Optimizer audits how ready a website is for AI answer engines** — ChatGPT, Perplexity, Google AI Overviews, Gemini, and Claude: crawler access, structured data, content and discovery signals. It scores the site 0–100 and generates the fixes. It does not observe what those engines say about you. It is free, MIT-licensed, and runs as a CLI, a Python library, an [MCP server](#mcp-server), a [GitHub Action](#cicd--fail-the-build-when-ai-readiness-drops), or an [Astro integration](#astro-integration).
+**GEO Optimizer measures how visible a website is to AI answer engines** — ChatGPT, Perplexity, Google AI Overviews, Gemini, and Claude — scores it 0–100, and generates the fixes. It is free, MIT-licensed, and runs as a CLI, a Python library, an [MCP server](#mcp-server), a [GitHub Action](#cicd--fail-the-build-when-ai-readiness-drops), or an [Astro integration](#astro-integration).
 
 *Also called GEO, AI SEO, or LLM SEO — same problem: an answer engine gives one response and cites a handful of sources. Ranking on Google does not make you one of them. Being reachable, parseable, and quotable does.*
 
@@ -57,8 +57,8 @@ Two runs of `geo audit`, September 2026. `example.com` has no robots.txt, no `ll
 
 ```
 [█░░░░░░░░░░░░░░░░░░░] 8/100
-❌ CRITICAL — Core signals for AI
-   search are missing
+❌ CRITICAL — Site is not visible
+   to AI search engines
 
 📋 PRIORITY NEXT STEPS:
 1. Create robots.txt with Allow rules

@@ -10,8 +10,6 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Changed
 - `geo citations`: `domain_cited` and `domain_citation_rate` now count only sources the engine returned: the provider's structured citations (LLM providers) or the AI Overview sources (SerpBase). A URL the model wrote in its answer and a domain that only ranks in the organic results no longer count as a citation, so a check that used to report `strong` can now report a lower verdict.
 
-- `geo audit` text output: the `critical` band reads "Core signals for AI search are missing" instead of "Site is not visible to AI search engines". The score measures readiness signals, not observed visibility. README wording aligned.
-
 ### Added
 - `geo citations`: separate signals on each entry (`provider_source_cited`, `url_mentioned`, `organic_result_present`, `ai_overview_source_cited`) and on the result (`url_mention_rate`, `organic_presence_rate`), shown in the text output and the web API. They are reported next to the citation rate, never added to it.
 

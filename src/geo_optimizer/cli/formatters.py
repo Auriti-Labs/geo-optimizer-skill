@@ -606,7 +606,7 @@ def format_audit_text(result: AuditResult) -> str:
         "excellent": "🏆 EXCELLENT — Site is well optimized for AI search engines!",
         "good": "✅ GOOD — Core optimizations in place, fine-tune content and schema",
         "foundation": "⚠️  FOUNDATION — Core elements missing, implement priority fixes",
-        "critical": "❌ CRITICAL — Core signals for AI search are missing",
+        "critical": "❌ CRITICAL — Site is not visible to AI search engines",
     }
     lines.append(f"\n  {band_labels.get(result.band, result.band)}")
     # Fix #442: generazione dinamica delle bande da SCORE_BANDS (non hardcoded)
