@@ -104,6 +104,8 @@ Rubric v1 (legacy, 8 categories, `CATEGORY_MAX`, `geo audit --score-version 1`):
 Robots.txt 18, llms.txt 18, Schema JSON-LD 16, Meta Tags 14, Content 12, Brand & Entity 10,
 Signals 6, AI Discovery 6.
 
+Rubric v3 (opt-in, `--score-version 3`): v2 with `robots` scored as access (missing file, wildcard or no AI bot blocked: 14; some bots allowed: 11; all blocked: 0). Same category budget as v2.
+
 Score history only compares snapshots that share the same `score_version`.
 
 Score bands:

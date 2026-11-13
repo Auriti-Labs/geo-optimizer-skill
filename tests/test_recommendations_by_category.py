@@ -103,7 +103,8 @@ def test_build_recommendations_signature_is_unchanged() -> None:
     params = list(inspect.signature(build_recommendations).parameters)
     assert params == list(inspect.signature(build_categorized_recommendations).parameters)
     assert params[:6] == ["base_url", "robots", "llms", "schema", "meta", "content"]
-    assert params[-1] == "category_max"
+    # new keyword arguments are appended at the end, never inserted before an existing one
+    assert params[-2:] == ["category_max", "score_version"]
 
 
 # ─── Category mapping (documented in the builder docstring and the JSON contract) ──

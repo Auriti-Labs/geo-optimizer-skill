@@ -45,6 +45,10 @@ class RobotsResult:
     # True if citation bots are explicitly allowed (not just via wildcard — #111)
     citation_bots_explicit: bool = False
     sitemaps: list[str] = field(default_factory=list)
+    # HTTP status of the robots.txt fetch (0 = no response: timeout, DNS or TLS failure). Rubric v3
+    # needs it: a 4xx means "no robots.txt" (crawlers may fetch everything, RFC 9309), a 5xx, a 429
+    # or no response means the rules could not be read (crawlers assume a full block).
+    status_code: int = 0
 
 
 # ─── llms.txt ────────────────────────────────────────────────────────────────

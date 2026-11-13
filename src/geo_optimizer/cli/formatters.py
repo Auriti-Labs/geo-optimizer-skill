@@ -38,6 +38,7 @@ from geo_optimizer.cli.scoring_helpers import (
 from geo_optimizer.cli.scoring_helpers import (
     signals_score as _signals_score,
 )
+from geo_optimizer.core.scoring import robots_unavailable
 from geo_optimizer.models.config import SCORE_BANDS
 from geo_optimizer.models.results import (
     AnswerSnapshot,
@@ -262,7 +263,15 @@ def format_audit_text(result: AuditResult) -> str:
     lines.append("")
     lines.append(_section_header("1. ROBOTS.TXT — AI Bot Access"))
     if not result.robots.found:
-        lines.append("  ❌ robots.txt not found")
+        if result.score_version >= 3 and robots_unavailable(result.robots):
+            lines.append("  ℹ️  robots.txt not found — nothing restricts the crawlers (not penalized in rubric v3)")
+        elif result.score_version >= 3:
+            lines.append(
+                f"  ❌ robots.txt could not be read (HTTP {result.robots.status_code or 'no response'}) — "
+                "crawlers treat this as a full block"
+            )
+        else:
+            lines.append("  ❌ robots.txt not found")
     else:
         lines.append("  ✅ robots.txt found")
         for bot in result.robots.bots_allowed:

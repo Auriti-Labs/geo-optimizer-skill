@@ -116,18 +116,33 @@ def get_score_band(score: int) -> str:
     return "critical"
 
 
+def robots_unavailable(robots) -> bool:
+    """True when there is no robots.txt: a 4xx other than 429 (RFC 9309: crawlers may fetch everything).
+
+    A 5xx, a 429 or no response at all is different: the rules could not be read and crawlers assume
+    a full block until they can.
+    """
+    status = int(getattr(robots, "status_code", 0) or 0)
+    return not robots.found and 400 <= status < 500 and status != 429
+
+
 def _score_robots(robots, w: dict = SCORING, partial: int = ROBOTS_PARTIAL_SCORE) -> int:
     """Compute the robots.txt score."""
     if not robots.found:
-        return 0
+        # v3: a missing file (4xx) restricts nothing; an unreadable one (5xx, 429, no response) scores 0.
+        # v1/v2 have no such key (0 points).
+        return int(w.get("robots_absent_ok", 0)) if robots_unavailable(robots) else 0
     s: int = w.get("robots_found", 0)
     if robots.citation_bots_ok:
-        if robots.citation_bots_explicit:
+        if robots.citation_bots_explicit or w.get("robots_wildcard_full", 0):
             # Full score: citation bots explicitly allowed
             s += w.get("robots_citation_ok", 0)
         else:
             # Allowed only via wildcard: partial score
             s += partial
+    elif w.get("robots_wildcard_full", 0) and not robots.bots_blocked:
+        # v3: a file that blocks no AI bot (empty, sitemap-only) restricts nothing, like a missing one
+        s += w.get("robots_citation_ok", 0)
     elif robots.bots_allowed:
         s += partial
     return s
