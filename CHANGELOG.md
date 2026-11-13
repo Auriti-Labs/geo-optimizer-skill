@@ -8,6 +8,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ## [Unreleased]
 
 ### Added
+- Rubric v4, opt-in with `--score-version 4`: v3 plus schema points by page type. FAQPage counts only on a page that has the markup or shows at least two questions as headings or accordion summaries; Article counts only on a page with Article markup or `og:type` article. Points of a feature that does not apply leave the denominator and the schema category is rescaled to 14. "Add FAQPage schema" is advised only where the page shows questions and answers. New fields `SchemaResult.has_visible_faq` and `MetaResult.og_type`. Default stays v2.
 - Rubric v3, opt-in with `geo audit --score-version 3` (and `score_version=3` in the Python API and MCP): robots.txt is scored as access, not as the presence of a file. A missing robots.txt, a wildcard-only permission and a file that blocks no AI bot (empty, sitemap only) are worth the same as an explicit permission (14 of 14); a file that blocks some AI bots and allows others keeps a partial score (11); a file that blocks every AI bot scores 0 (v2 gave 3 for the file existing). A missing robots.txt is no longer a recommendation. Everything else is v2's, the default stays v2, and v2 numbers do not change. Snapshots with different score versions are not comparable, as before.
 
 ## [4.20.0] — 2026-11-12

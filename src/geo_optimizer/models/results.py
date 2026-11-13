@@ -125,6 +125,8 @@ class SchemaResult:
     schema_missing_fields: dict = field(default_factory=dict)
     incomplete_schema_types: list = field(default_factory=list)
     visible_match: bool = False
+    # v4: the page itself shows question-and-answer content (not only FAQPage markup)
+    has_visible_faq: bool = False
 
 
 # ─── Meta tags ───────────────────────────────────────────────────────────────
@@ -138,6 +140,7 @@ class MetaResult:
     has_og_title: bool = False
     has_og_description: bool = False
     has_og_image: bool = False
+    og_type: str = ""  # content of og:type, lower-cased (v4 page-type signal)
     title_text: str = ""
     description_text: str = ""
     description_length: int = 0

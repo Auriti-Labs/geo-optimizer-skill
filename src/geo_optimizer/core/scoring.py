@@ -10,6 +10,7 @@ from __future__ import annotations
 import logging
 
 from geo_optimizer.models.config import (
+    CATEGORY_MAX_BY_VERSION,
     CATEGORY_MAX_V2,
     CONTENT_MIN_WORDS,
     LLMS_DEPTH_HIGH_WORDS,
@@ -93,7 +94,7 @@ def compute_score_breakdown(
     breakdown = {
         "robots": _score_robots(robots, weights, ROBOTS_PARTIAL_BY_VERSION[version]),
         "llms": _score_llms(llms, weights),
-        "schema": _score_schema(schema, weights),
+        "schema": _score_schema(schema, weights, meta, CATEGORY_MAX_BY_VERSION[version]["schema"]),
         "meta": _score_meta(meta, weights, version=version),
         "content": _score_content(content, weights),
         "signals": _score_signals(signals, weights, version=version) if signals is not None else 0,
@@ -154,7 +155,18 @@ def _score_llms(llms, w: dict = SCORING) -> int:
     return s
 
 
-def _score_schema(schema, w: dict = SCORING) -> int:
+def _article_applies(schema, meta) -> bool:
+    """The page is an article: Article markup, or og:type article."""
+    og_type = getattr(meta, "og_type", "") if meta is not None else ""
+    return bool(schema.has_article or og_type.startswith("article"))
+
+
+def _faq_applies(schema) -> bool:
+    """FAQ markup applies when it is there or the page shows questions and answers."""
+    return bool(schema.has_faq or getattr(schema, "has_visible_faq", False))
+
+
+def _score_schema(schema, w: dict = SCORING, meta=None, category_max: int | None = None) -> int:
     """Compute the JSON-LD schema score.
 
     Schema richness (Growth Marshal Feb 2026): a schema with only @type + name + url
@@ -194,6 +206,14 @@ def _score_schema(schema, w: dict = SCORING) -> int:
 
     s += w.get("schema_sameas", 0) if schema.has_sameas else 0
     s += w.get("schema_visible_match", 0) if getattr(schema, "visible_match", False) else 0
+
+    if w.get("schema_applicability", 0) and category_max:
+        # v4: features that do not apply to this page leave the denominator; rescale to the category max
+        unavailable = 0 if _faq_applies(schema) else w.get("schema_faq", 0)
+        unavailable += 0 if _article_applies(schema, meta) else w.get("schema_article", 0)
+        possible = category_max - unavailable
+        if possible > 0:
+            return min(category_max, round(s * category_max / possible))
     return int(s)
 
 

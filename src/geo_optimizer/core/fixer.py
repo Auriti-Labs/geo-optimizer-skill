@@ -470,7 +470,7 @@ def _estimate_score_after(result: AuditResult, fixes: list[FixItem]) -> int:
     if "schema" in categories_fixed:
         if not result.schema.has_website:
             bonus += scoring["schema_website"]
-        if not result.schema.has_faq:
+        if not result.schema.has_faq and (result.score_version < 4 or result.schema.has_visible_faq):
             bonus += scoring["schema_faq"]
 
     if "meta" in categories_fixed:

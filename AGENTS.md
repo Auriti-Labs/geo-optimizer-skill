@@ -105,6 +105,7 @@ Robots.txt 18, llms.txt 18, Schema JSON-LD 16, Meta Tags 14, Content 12, Brand &
 Signals 6, AI Discovery 6.
 
 Rubric v3 (opt-in, `--score-version 3`): v2 with `robots` scored as access (missing file, wildcard or no AI bot blocked: 14; some bots allowed: 11; all blocked: 0). Same category budget as v2.
+Rubric v4 (opt-in, `--score-version 4`): v3 plus schema applicability: FAQPage points only on a page that shows questions and answers (or already has the markup), Article points only on an article page (Article markup or `og:type` article); points of a feature that does not apply leave the denominator and the category is rescaled to 14.
 
 Score history only compares snapshots that share the same `score_version`.
 

@@ -23,7 +23,7 @@ A negative-signal penalty is then subtracted: 1 point when one negative signal i
 
 ### Rubric versions
 
-Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1` for legacy comparisons and `--score-version 3` for the opt-in robots-as-access rubric (below); history deltas and regressions should compare snapshots with the same score version.
+Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1` for legacy comparisons `--score-version 3` for the opt-in robots-as-access rubric and `--score-version 4` for v3 plus schema by page type (both below); history deltas and regressions should compare snapshots with the same score version.
 
 | Category | v1 (legacy) | v2 |
 |----------|-------------|----|
@@ -51,6 +51,14 @@ v3 is v2 with one change: `robots` scores access, not the presence of a file. Th
 | File present and every AI bot blocked | 3 | 0 |
 
 A missing robots.txt is no longer a recommendation in v3. Writing explicit rules remains a legitimate choice; it just earns no points of its own. On 1,244 sites audited with v2 in November 2026 (a self-selected sample), the missing-file and wildcard changes alone would have changed the band of 173 sites (14%) and raised the average from 66.9 to 70.0; files with no rule for any AI bot (48 sites in the wider group) were not modelled and also rise. Sites without a robots.txt were 45 of them and were mostly sites with few other signals in place.
+
+#### Rubric v4 (opt-in, `--score-version 4`)
+
+v4 is v3 (robots as access) plus one rule for the schema category: FAQPage and Article points apply only to pages they fit. FAQPage applies when the page already has the markup or shows at least two questions as headings or accordion summaries. Article applies when the page has Article markup or `og:type` is `article`. The points of a feature that does not apply leave the denominator, and the category is rescaled to its 14 points, so a homepage with Organization and WebSite markup, a valid and rich schema and a visible name can reach 14 without FAQ or Article markup. If the feature applies and is missing, it still costs its points. Category budgets are v2's; v2 stays the default.
+
+Recommendations follow the same rule: "Add FAQPage schema" is advised only where the page shows questions and answers. Page type is read from `og:type`, Article markup and visible question headings only; a page type this does not recognise is treated as not an article.
+
+Estimate on 1,245 sites audited with v2 in November 2026 (self-selected sample; page type is not recorded there, so this assumes no page shows questions or is an article, which makes it an upper bound): average 66.9 (v2), 70.0 (v3), at most 72.2 (v4); the band would change for 173 sites with v3 and at most 302 with v4.
 
 ### Google AI readiness - max 20 pts (v2)
 

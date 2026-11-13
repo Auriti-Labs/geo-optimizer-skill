@@ -285,7 +285,8 @@ def build_categorized_recommendations(
         _m_schema.append("Add WebSite JSON-LD schema to homepage")
     if not schema.has_organization:
         _m_schema.append("Add Organization JSON-LD schema with name, url, and logo")
-    if not schema.has_faq:
+    # v4: FAQPage markup is advised only where the page shows questions and answers
+    if not schema.has_faq and (score_version < 4 or schema.has_visible_faq):
         _m_schema.append("Add FAQPage schema with site FAQs")
     # gap #3: schema completeness
     for schema_type, missing_fields in getattr(schema, "schema_missing_fields", {}).items():

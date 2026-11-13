@@ -23,11 +23,31 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 
+_MIN_VISIBLE_QUESTIONS = 2
+
+
+def _has_visible_faq(soup: BeautifulSoup) -> bool:
+    """True when the page shows at least two questions as headings or accordion summaries.
+
+    Deliberately simple (text ending in a question mark, 8 to 200 characters): it decides
+    whether FAQ markup applies to the page, not how good the FAQ is.
+    """
+    questions = 0
+    for node in soup.find_all(["h2", "h3", "h4", "summary", "dt"]):
+        text = node.get_text(" ", strip=True)
+        if 8 <= len(text) <= 200 and text.endswith("?"):
+            questions += 1
+            if questions >= _MIN_VISIBLE_QUESTIONS:
+                return True
+    return False
+
+
 def audit_schema(soup: BeautifulSoup | None, url: str) -> SchemaResult:
     """Check JSON-LD schema on homepage. Returns SchemaResult."""
     result = SchemaResult()
     if soup is None:
         return result
+    result.has_visible_faq = _has_visible_faq(soup)
 
     scripts = soup.find_all("script", attrs={"type": "application/ld+json"})
     if not scripts:
