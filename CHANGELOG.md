@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.21.0] — 2026-11-13
+
 ### Changed
 - `geo citations`: `domain_cited` and `domain_citation_rate` now count only sources the engine returned: the provider's structured citations (LLM providers) or the AI Overview sources (SerpBase). A URL the model wrote in its answer and a domain that only ranks in the organic results no longer count as a citation, so a check that used to report `strong` can now report a lower verdict. Of the LLM providers only Perplexity returns a citations list: with OpenAI, Anthropic, Groq, Gemini, DeepSeek or MiniMax a domain can no longer be `cited`, and the best verdict is `mentioned_only`.
 - `geo audit` text output: the `critical` band reads "Core signals for AI search are missing" instead of "Site is not visible to AI search engines". The score measures readiness signals, not observed visibility. README wording aligned.
