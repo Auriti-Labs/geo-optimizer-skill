@@ -108,7 +108,7 @@ The `checks` object contains both nested sub-dicts and flat alias keys.
 |-----|-----------|
 | `robots_txt` | `found`, `citation_bots_ok`, `citation_bots_explicit`, `bots_allowed`, `bots_blocked`, `bots_missing`, `bots_partial` |
 | `llms_txt` | `found`, `has_h1`, `has_description`, `has_sections`, `has_links`, `has_full`, `word_count` |
-| `schema_jsonld` | `found_types`, `has_website`, `has_faq`, `has_webapp`, `has_article`, `has_organization`, `has_sameas`, `any_schema_found`, `schema_richness_score`, `raw_schemas` |
+| `schema_jsonld` | `found_types`, `has_website`, `has_faq`, `has_visible_faq` (v4 applicability), `has_webapp`, `has_article`, `has_organization`, `has_sameas`, `any_schema_found`, `schema_richness_score`, `raw_schemas` |
 | `meta_tags` | `has_title`, `has_description`, `has_canonical`, `has_og_title`, `has_og_description`, `has_og_image`, `title_text`, `description_text`, `description_length`, `title_length`, `canonical_url` |
 | `content` | `has_h1`, `heading_count`, `has_numbers`, `has_links`, `word_count`, `h1_text`, `numbers_count`, `external_links_count`, `has_heading_hierarchy`, `has_lists_or_tables`, `has_front_loading` |
 | `signals` | `has_lang`, `has_rss`, `has_freshness` |

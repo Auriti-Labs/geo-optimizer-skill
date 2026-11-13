@@ -212,7 +212,7 @@ def generate_schema_fix(result: AuditResult, base_url: str) -> list[FixItem]:
         )
 
     # FAQPage schema — generate example FAQ structure if missing (#fix-faq-schema)
-    if not result.schema.has_faq:
+    if not result.schema.has_faq and (result.score_version < 4 or result.schema.has_visible_faq):
         faq_schema = copy.deepcopy(SCHEMA_TEMPLATES["faq"])
         faq_schema["mainEntity"] = [
             {

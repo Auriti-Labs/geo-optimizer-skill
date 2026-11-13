@@ -99,3 +99,64 @@ class TestDetection:
     def test_og_type_is_read_and_lowercased(self):
         page = self._soup('<head><meta property="og:type" content="Article"></head>')
         assert audit_meta_tags(page, "https://e.com").og_type == "article"
+
+
+class TestFalsePositivesAndRounding:
+    @staticmethod
+    def _faq(html: str) -> bool:
+        return audit_schema(BeautifulSoup(html, "html.parser"), "https://e.com").has_visible_faq
+
+    def test_blog_index_with_linked_question_titles_is_not_an_faq(self):
+        posts = "".join(f'<h2><a href="/p{i}">How do I fix problem number {i}?</a></h2>' for i in range(5))
+        assert self._faq(f"<body>{posts}</body>") is False
+
+    def test_questions_in_navigation_or_a_cookie_banner_are_not_an_faq(self):
+        nav = "<nav><dl><dt>Where is my invoice?</dt><dt>How do I log in?</dt></dl></nav>"
+        banner = '<div class="cookie-banner"><h2>Do you accept cookies?</h2><h3>Can we store a preference?</h3></div>'
+        assert self._faq(f"<body>{nav}</body>") is False
+        assert self._faq(f"<body>{banner}</body>") is False
+
+    def test_fullwidth_question_mark_is_recognised(self):
+        assert self._faq("<body><h2>送料はいくらですか？</h2><p>x</p><h2>返品はできますか？</h2></body>")
+        assert self._faq(
+            "<body><h2>What does shipping cost to Japan？</h2><h2>Can I return an item after a week？</h2></body>"
+        )
+
+    def test_rescale_rounds_half_up(self):
+        # earned 3 of 12 possible -> 3.5 -> 4; earned 9 of 12 -> 10.5 -> 11 (round() would give 10)
+        schema = SchemaResult(any_schema_found=True, has_organization=True, has_faq=True)  # 2 + 3 + 2 = 7, article n/a
+        assert _score(schema, 4) == (7 * 14 + 6) // 12
+        nine = SchemaResult(
+            any_schema_found=True, has_organization=True, has_website=True, has_faq=True, schema_richness_score=2
+        )  # 2+2+3+1+2 = 10 earned of 12 possible
+        assert _score(nine, 4) == (10 * 14 + 6) // 12
+
+
+class TestSurfaces:
+    def test_breakdown_through_compute_score_breakdown(self):
+        from geo_optimizer.core.scoring import compute_score_breakdown
+        from geo_optimizer.models.results import ContentResult, LlmsTxtResult, RobotsResult
+
+        args = {"robots": RobotsResult(), "llms": LlmsTxtResult(), "meta": MetaResult(), "content": ContentResult()}
+        assert compute_score_breakdown(schema=_homepage(), version=2, **args)["schema"] == 10
+        assert compute_score_breakdown(schema=_homepage(), version=4, **args)["schema"] == 14
+
+    def _recs(self, schema: SchemaResult, version: int) -> list[str]:
+        from geo_optimizer.core.audit import build_categorized_recommendations
+        from geo_optimizer.models.results import ContentResult, LlmsTxtResult, RobotsResult
+
+        recs = build_categorized_recommendations(
+            "https://example.com",
+            RobotsResult(),
+            LlmsTxtResult(),
+            schema,
+            MetaResult(),
+            ContentResult(),
+            score_version=version,
+        )
+        return [text for category, text in recs if category == "schema"]
+
+    def test_faq_recommendation_only_where_questions_are_shown_in_v4(self):
+        assert any("FAQPage" in t for t in self._recs(_homepage(), 2))
+        assert not any("FAQPage" in t for t in self._recs(_homepage(), 4))
+        assert any("FAQPage" in t for t in self._recs(_homepage(has_visible_faq=True), 4))

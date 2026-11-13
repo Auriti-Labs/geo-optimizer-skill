@@ -109,7 +109,9 @@ def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAc
             f"geo fix --url {weaker_url} --only llms",
         )
 
-    if stronger.schema.has_faq and not weaker.schema.has_faq:
+    # v4: FAQ markup is a gap only where the weaker page shows questions and answers
+    weaker_faq_applies = weaker.score_version < 4 or weaker.schema.has_visible_faq
+    if stronger.schema.has_faq and not weaker.schema.has_faq and weaker_faq_applies:
         add_action(
             "schema",
             "Add FAQPage schema",

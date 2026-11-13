@@ -247,7 +247,7 @@ def _schema_findings(result: AuditResult) -> list[dict]:
         findings.append({"level": "error", "message": "WebSite JSON-LD schema missing on homepage"})
     if not result.schema.has_organization:
         findings.append({"level": "warning", "message": "Organization JSON-LD schema missing"})
-    if not result.schema.has_faq:
+    if not result.schema.has_faq and (result.score_version < 4 or result.schema.has_visible_faq):
         findings.append({"level": "note", "message": "FAQPage schema not found — recommended for Q&A content"})
     return findings
 

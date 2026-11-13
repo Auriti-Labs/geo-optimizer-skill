@@ -23,7 +23,7 @@ A negative-signal penalty is then subtracted: 1 point when one negative signal i
 
 ### Rubric versions
 
-Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1` for legacy comparisons `--score-version 3` for the opt-in robots-as-access rubric and `--score-version 4` for v3 plus schema by page type (both below); history deltas and regressions should compare snapshots with the same score version.
+Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1` for legacy comparisons, `--score-version 3` for the opt-in robots-as-access rubric and `--score-version 4` for v3 plus schema by page type (both below); history deltas and regressions should compare snapshots with the same score version.
 
 | Category | v1 (legacy) | v2 |
 |----------|-------------|----|
@@ -58,7 +58,7 @@ v4 is v3 (robots as access) plus one rule for the schema category: FAQPage and A
 
 Recommendations follow the same rule: "Add FAQPage schema" is advised only where the page shows questions and answers. Page type is read from `og:type`, Article markup and visible question headings only; a page type this does not recognise is treated as not an article.
 
-Estimate on 1,245 sites audited with v2 in November 2026 (self-selected sample; page type is not recorded there, so this assumes no page shows questions or is an article, which makes it an upper bound): average 66.9 (v2), 70.0 (v3), at most 72.2 (v4); the band would change for 173 sites with v3 and at most 302 with v4.
+Rough estimate on about 1,245 sites audited with v2 in November 2026 (self-selected sample; page type is not recorded there, so this assumes no page shows questions or is an article, and it was not reproduced independently): average 66.9 (v2), 70.0 (v3), about 72 (v4); the band would change for 173 sites with v3 and about 300 with v4. Rescaling raises partial credit too (a schema worth 2 of 10 possible becomes 3 of 14).
 
 ### Google AI readiness - max 20 pts (v2)
 
