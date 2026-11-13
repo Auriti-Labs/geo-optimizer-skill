@@ -334,5 +334,6 @@ export const releaseCadence = [
   { version: 'v4.20.0', name: 'Block mechanism and block pattern (minor)', status: 'available' as RoadmapStatus },
   { version: 'v4.21.0', name: 'Citation sources separated from text URLs and organic results (minor)', status: 'available' as RoadmapStatus },
   { version: 'v4.22.0', name: 'Opt-in rubric v3: robots.txt scored as access (minor)', status: 'available' as RoadmapStatus },
+  { version: 'v4.23.0', name: 'Opt-in rubric v4: schema scored by page type (minor)', status: 'available' as RoadmapStatus },
   { version: 'v5.0.0', name: 'Black Archive', status: 'exploring' as RoadmapStatus },
 ];

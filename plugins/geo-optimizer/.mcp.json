@@ -4,7 +4,7 @@
       "command": "uvx",
       "args": [
         "--from",
-        "geo-optimizer-skill[mcp]>=4.22.0",
+        "geo-optimizer-skill[mcp]>=4.23.0",
         "geo-mcp"
       ]
     }
