@@ -1,7 +1,7 @@
 """
 GEO Optimizer — Generative Engine Optimization Toolkit
 
-Make websites visible and citable by AI search engines
+Audit and fix the technical signals AI search engines need to reach, parse and cite a website
 (ChatGPT, Perplexity, Claude, Gemini).
 
 Based on the Princeton KDD 2024 research paper (arxiv.org/abs/2311.09735).
@@ -21,7 +21,7 @@ from importlib.metadata import version as _pkg_version
 try:
     __version__ = _pkg_version("geo-optimizer-skill")
 except PackageNotFoundError:
-    __version__ = "4.20.0"
+    __version__ = "4.21.0"
 
 # ─── Public API ──────────────────────────────────────────────────────────────
 

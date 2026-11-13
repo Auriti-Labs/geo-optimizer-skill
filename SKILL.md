@@ -5,7 +5,7 @@ description: Audit and fix a website for AI search visibility (Generative Engine
 
 # GEO Optimizer
 
-> Make websites visible and citable by AI search engines (ChatGPT Search, Perplexity, Claude, Google AI Overviews). Implements the GEO audit framework plus a citability engine of 47 content checks, 9 of them taken directly from the methods tested in Princeton KDD 2024 research.
+> Audit and fix the technical signals that let AI search engines (ChatGPT Search, Perplexity, Claude, Google AI Overviews) reach, parse and cite a website. Implements the GEO audit framework plus a citability engine of 47 content checks, 9 of them taken directly from the methods tested in Princeton KDD 2024 research.
 
 ## Before you run anything
 
@@ -14,7 +14,7 @@ description: Audit and fix a website for AI search visibility (Generative Engine
 Every command below is the `geo` executable from the `geo-optimizer-skill` PyPI package. It is not a separate third-party tool. Check it before the first command:
 
 ```bash
-geo --version   # expect: geo-optimizer, version 4.20.0 or later
+geo --version   # expect: geo-optimizer, version 4.21.0 or later
 ```
 
 If `geo` is missing or older, do not guess an alternative and do not continue. Ask the user to install it (Python 3.10+):

@@ -22,7 +22,7 @@ Make this site citable by AI search engines (ChatGPT, Perplexity, Claude, Gemini
 Every command below is the `geo` executable from the `geo-optimizer-skill` PyPI package. It is not a separate third-party tool. Check it before the first command:
 
 ```bash
-geo --version   # expect: geo-optimizer, version 4.20.0 or later
+geo --version   # expect: geo-optimizer, version 4.21.0 or later
 ```
 
 If `geo` is missing or older, do not guess an alternative and do not continue. Ask the user to install it (Python 3.10+):

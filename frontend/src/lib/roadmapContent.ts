@@ -332,5 +332,6 @@ export const releaseCadence = [
   { version: 'v4.19.9', name: 'Report and PDF in the v3 design (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.19.10', name: 'Skill safety contract and --no-plugins fix (patch)', status: 'available' as RoadmapStatus },
   { version: 'v4.20.0', name: 'Block mechanism and block pattern (minor)', status: 'available' as RoadmapStatus },
+  { version: 'v4.21.0', name: 'Citation sources separated from text URLs and organic results (minor)', status: 'available' as RoadmapStatus },
   { version: 'v5.0.0', name: 'Black Archive', status: 'exploring' as RoadmapStatus },
 ];
