@@ -229,7 +229,7 @@ Two honest caveats, both built into the tool:
 | **Signals** | /6 | `<html lang>`, RSS/Atom feed, valid freshness |
 | **AI Discovery** | /3 | `ai.txt`, `summary.json`, and markdown negotiation |
 
-**Score bands:** 86–100 Excellent · 68–85 Good · 36–67 Foundation · 0–35 Critical. Rubric v2 is the default; use `geo audit --score-version 1` for legacy v1 comparisons and `--score-version 3` for the opt-in rubric that scores a missing robots.txt as full access. Every weight is in [`models/config.py`](src/geo_optimizer/models/config.py). Full rubric: [docs/scoring-rubric.md](docs/scoring-rubric.md).
+**Score bands:** 86–100 Excellent · 68–85 Good · 36–67 Foundation · 0–35 Critical. Rubric v2 is the default; use `geo audit --score-version 1` for legacy v1 comparisons, `--score-version 3` for the opt-in rubric that scores a missing robots.txt as full access, and `--score-version 4` for v3 plus schema points that apply by page type. Every weight is in [`models/config.py`](src/geo_optimizer/models/config.py). Full rubric: [docs/scoring-rubric.md](docs/scoring-rubric.md).
 
 <details>
 <summary><b>Beyond the score: 10 more checks</b></summary>

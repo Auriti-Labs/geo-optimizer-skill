@@ -291,8 +291,17 @@ def build_categorized_recommendations(
         _m_schema.append("Add WebSite JSON-LD schema to homepage")
     if not schema.has_organization:
         _m_schema.append("Add Organization JSON-LD schema with name, url, and logo")
-    if not schema.has_faq:
-        _m_schema.append("Add FAQPage schema with site FAQs")
+    # v4: FAQPage markup is advised only where the page shows questions and answers
+    if not schema.has_faq and (score_version < 4 or schema.has_visible_faq):
+        if score_version < 4:
+            _m_schema.append("Add FAQPage schema with site FAQs")
+        else:
+            # Google shows FAQ rich results only for a few authoritative sites (since August 2023),
+            # so v4 does not present this as a Google gain
+            _m_schema.append(
+                "This page shows questions and answers: consider FAQPage markup so other engines and tools "
+                "can read them (Google shows FAQ rich results only for a few authoritative sites)"
+            )
     # gap #3: schema completeness
     for schema_type, missing_fields in getattr(schema, "schema_missing_fields", {}).items():
         _m_schema.append(

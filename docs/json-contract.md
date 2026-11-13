@@ -16,7 +16,7 @@ Consumers must handle `schema_version` being absent (pre-v1 responses) by treati
 | `url` | `string` | Audited URL |
 | `timestamp` | `string` | ISO 8601 UTC |
 | `score` | `int` | 0–100 |
-| `score_version` | `int` | Scoring rubric version; `2` by default, `3` for the opt-in robots-as-access rubric, `1` for legacy audits |
+| `score_version` | `int` | Scoring rubric version; `2` by default, `3` for the opt-in robots-as-access rubric, `4` for v3 plus schema by page type, `1` for legacy audits |
 | `score_max` | `object` | Per-category maxima for the selected score version |
 | `band` | `string` | `critical` \| `foundation` \| `good` \| `excellent` |
 | `score_breakdown` | `object` | Per-category scores (see below) |
@@ -108,7 +108,7 @@ The `checks` object contains both nested sub-dicts and flat alias keys.
 |-----|-----------|
 | `robots_txt` | `found`, `citation_bots_ok`, `citation_bots_explicit`, `bots_allowed`, `bots_blocked`, `bots_missing`, `bots_partial` |
 | `llms_txt` | `found`, `has_h1`, `has_description`, `has_sections`, `has_links`, `has_full`, `word_count` |
-| `schema_jsonld` | `found_types`, `has_website`, `has_faq`, `has_webapp`, `has_article`, `has_organization`, `has_sameas`, `any_schema_found`, `schema_richness_score`, `raw_schemas` |
+| `schema_jsonld` | `found_types`, `has_website`, `has_faq`, `has_visible_faq` (v4 applicability), `has_webapp`, `has_article`, `has_organization`, `has_sameas`, `any_schema_found`, `schema_richness_score`, `raw_schemas` |
 | `meta_tags` | `has_title`, `has_description`, `has_canonical`, `has_og_title`, `has_og_description`, `has_og_image`, `title_text`, `description_text`, `description_length`, `title_length`, `canonical_url` |
 | `content` | `has_h1`, `heading_count`, `has_numbers`, `has_links`, `word_count`, `h1_text`, `numbers_count`, `external_links_count`, `has_heading_hierarchy`, `has_lists_or_tables`, `has_front_loading` |
 | `signals` | `has_lang`, `has_rss`, `has_freshness` |

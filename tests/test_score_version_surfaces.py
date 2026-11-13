@@ -367,8 +367,8 @@ def test_mcp_geo_audit_rejects_unknown_score_version():
 
     server = pytest.importorskip("geo_optimizer.mcp.server")
     with patch("geo_optimizer.utils.validators.validate_public_url", return_value=(True, "")):
-        for bad in (4, 0, True):
-            assert "score_version must be 1, 2 or 3" in server.geo_audit("https://x.test", score_version=bad)
+        for bad in (5, 0, True):
+            assert "score_version must be 1, 2, 3 or 4" in server.geo_audit("https://x.test", score_version=bad)
 
 
 def test_drift_ignores_snapshots_of_different_rubric_versions():

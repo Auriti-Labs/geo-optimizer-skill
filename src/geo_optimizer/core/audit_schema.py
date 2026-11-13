@@ -23,11 +23,50 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 
+_MIN_VISIBLE_QUESTIONS = 2
+_QUESTION_MARKS = ("?", "？")  # ASCII and fullwidth (CJK) question mark
+# Chrome that is not content: a heading inside it is a menu, a banner or a link list, not an FAQ
+_NON_CONTENT_TAGS = {"a", "nav", "header", "footer", "aside"}
+_NON_CONTENT_HINTS = ("cookie", "consent", "gdpr", "banner")
+
+
+def _is_question_content(node) -> bool:
+    """A question heading or summary that sits in the page content, not in a link or banner."""
+    if node.find("a") is not None:  # a post title on a listing page links to the post
+        return False
+    for parent in node.parents:
+        if getattr(parent, "name", None) in _NON_CONTENT_TAGS:
+            return False
+        attrs = getattr(parent, "attrs", None) or {}
+        marker = " ".join([str(attrs.get("id", "")), " ".join(attrs.get("class", []) or [])]).lower()
+        if any(hint in marker for hint in _NON_CONTENT_HINTS):
+            return False
+    return True
+
+
+def _has_visible_faq(soup: BeautifulSoup) -> bool:
+    """True when the page shows at least two questions as headings or accordion summaries.
+
+    Deliberately simple (text ending in a question mark, 8 to 200 characters, outside links,
+    navigation and cookie banners): it decides whether FAQ markup applies to the page, not how
+    good the FAQ is. Accordions built from buttons or divs are not recognised.
+    """
+    questions = 0
+    for node in soup.find_all(["h2", "h3", "h4", "summary", "dt"]):
+        text = node.get_text(" ", strip=True)
+        if 8 <= len(text) <= 200 and text.endswith(_QUESTION_MARKS) and _is_question_content(node):
+            questions += 1
+            if questions >= _MIN_VISIBLE_QUESTIONS:
+                return True
+    return False
+
+
 def audit_schema(soup: BeautifulSoup | None, url: str) -> SchemaResult:
     """Check JSON-LD schema on homepage. Returns SchemaResult."""
     result = SchemaResult()
     if soup is None:
         return result
+    result.has_visible_faq = _has_visible_faq(soup)
 
     scripts = soup.find_all("script", attrs={"type": "application/ld+json"})
     if not scripts:

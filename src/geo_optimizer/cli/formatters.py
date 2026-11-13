@@ -94,6 +94,7 @@ def format_audit_json(result: AuditResult) -> str:
                     "has_website": result.schema.has_website,
                     "has_webapp": result.schema.has_webapp,
                     "has_faq": result.schema.has_faq,
+                    "has_visible_faq": result.schema.has_visible_faq,
                     "found_types": result.schema.found_types,
                 },
             },
@@ -312,7 +313,7 @@ def format_audit_text(result: AuditResult) -> str:
             lines.append(f"  ✅ Schema {t} ✓")
         if not result.schema.has_website:
             lines.append("  ❌ WebSite schema missing")
-        if not result.schema.has_faq:
+        if not result.schema.has_faq and (result.score_version < 4 or result.schema.has_visible_faq):
             lines.append("  ⚠️  FAQPage schema missing")
 
     # Meta

@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- Rubric v4, opt-in with `--score-version 4`: v3 plus schema points by page type. FAQPage counts only on a page that has the markup or shows at least two questions as headings or accordion summaries; Article counts only on a page with Article markup or `og:type` article. Points of a feature that does not apply leave the denominator and the schema category is rescaled to 14. "Add FAQPage schema" is advised only where the page shows questions and answers. New fields `SchemaResult.has_visible_faq` and `MetaResult.og_type`. Default stays v2.
+
 ## [4.22.0] — 2026-11-13
 
 ### Added

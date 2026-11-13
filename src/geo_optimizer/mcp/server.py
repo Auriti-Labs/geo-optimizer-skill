@@ -76,7 +76,7 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
 
     Args:
         url: URL of the site to audit (e.g. https://example.com)
-        score_version: Scoring rubric version: 2 (default), 3 (v2 with robots.txt scored as access) or 1 (legacy).
+        score_version: Scoring rubric version: 2 (default), 3 (robots.txt scored as access), 4 (v3 plus schema by page type) or 1 (legacy).
         include_receipt: Optional boolean flag to attach an execution receipt
             with completed stages and telemetry metrics (default False).
     """
@@ -99,13 +99,13 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
     from geo_optimizer.models.config import AUDIT_STEPS, CATEGORY_MAX_BY_VERSION
 
     if isinstance(score_version, bool) or score_version not in CATEGORY_MAX_BY_VERSION:
-        err_payload = {"error": "score_version must be 1, 2 or 3", "url": url}
+        err_payload = {"error": "score_version must be 1, 2, 3 or 4", "url": url}
         if include_receipt:
             err_payload["receipt"] = {
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_score_version"],
-                "terminal_error": "score_version must be 1, 2 or 3",
+                "terminal_error": "score_version must be 1, 2, 3 or 4",
             }
         return json.dumps(err_payload)
 
