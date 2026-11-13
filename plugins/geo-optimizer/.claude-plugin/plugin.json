@@ -1,6 +1,6 @@
 {
   "name": "geo-optimizer",
-  "version": "4.22.0",
+  "version": "4.23.0",
   "description": "Audit and fix a website for AI search visibility (GEO): score it 0-100 with geo audit and fix robots.txt AI crawler rules, llms.txt, JSON-LD schema, meta tags and content citability.",
   "author": {
     "name": "Juan Camilo Auriti",
