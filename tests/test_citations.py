@@ -98,15 +98,27 @@ class TestRunCitationCheck:
 
         assert result.brand_mention_rate == 1.0
 
-    def test_domain_cited_in_text_for_parametric_providers(self):
-        """Providers without a citations list still count URLs in the answer text."""
+    def test_url_in_answer_text_is_not_a_citation(self):
+        """A URL the model wrote is tracked apart: it is not a source the provider returned."""
         with patch.object(citations_mod, "query_llm") as mock_q:
             mock_q.return_value = LLMResponse(
                 text="See https://www.acme.com/docs for details.", model="gpt-4o-mini", provider="openai"
             )
             result = run_citation_check("Acme", "acme.com", provider="openai", api_key="sk-test")
 
-        assert result.domain_citation_rate == 1.0
+        assert result.domain_citation_rate == 0.0
+        assert result.url_mention_rate == 1.0
+        entry = result.entries[0]
+        assert entry.url_mentioned and not entry.domain_cited and not entry.provider_source_cited
+
+    def test_provider_source_sets_provider_source_cited(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("Acme is one option.", citations=["https://acme.com/pricing"])
+            result = run_citation_check("Acme", "acme.com", provider="perplexity", api_key="pk-test")
+
+        entry = result.entries[0]
+        assert entry.provider_source_cited and entry.domain_cited and not entry.url_mentioned
+        assert result.url_mention_rate == 0.0
 
     def test_custom_queries_override_templates(self):
         with patch.object(citations_mod, "query_llm") as mock_q:
@@ -410,7 +422,8 @@ def _serp(organic=None, ai_overview_text="", ai_overview_sources=None, ai_overvi
 class TestRunCitationCheckServpbase:
     """run_citation_check(provider="serpbase", ...) — Google SERP + AI Overview (#527)."""
 
-    def test_domain_cited_via_organic_results(self):
+    def test_organic_result_is_not_an_ai_citation(self):
+        """Ranking organically is reported on its own field, not as a citation."""
         from geo_optimizer.core.serp_provider import SerpResult
 
         with patch("geo_optimizer.core.serp_provider.query_serpbase") as mock_q:
@@ -425,10 +438,13 @@ class TestRunCitationCheckServpbase:
             )
 
         assert result.checked and result.skipped_reason is None
-        assert result.domain_citation_rate == 1.0
+        assert result.domain_citation_rate == 0.0
+        assert result.organic_presence_rate == 1.0
         assert result.brand_mention_rate == 1.0
-        assert result.entries[0].platform == "google_serp"
-        assert result.entries[0].model == ""
+        entry = result.entries[0]
+        assert entry.organic_result_present and not entry.domain_cited and not entry.ai_overview_source_cited
+        assert entry.platform == "google_serp"
+        assert entry.model == ""
         assert result.runs_per_query == 1
         assert result.stable is False
 
@@ -447,6 +463,8 @@ class TestRunCitationCheckServpbase:
         assert result.domain_citation_rate == 1.0
         assert result.brand_mention_rate == 1.0
         assert result.entries[0].model == "ai_overview"
+        assert result.entries[0].ai_overview_source_cited
+        assert not result.entries[0].organic_result_present
 
     def test_invisible_when_neither_organic_nor_overview_mention_brand(self):
         from geo_optimizer.core.serp_provider import SerpResult
