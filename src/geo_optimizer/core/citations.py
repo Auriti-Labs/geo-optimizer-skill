@@ -197,7 +197,9 @@ def run_citation_check(
             text_domains = _domains_in_text(response.text)
             all_domains = source_domains + [d for d in text_domains if d not in source_domains]
 
-            if brand_matcher.search(response.text):
+            # A URL of the domain written in the answer names the site, so it counts as a brand mention
+            # (never as a citation).
+            if brand_matcher.search(response.text) or domain in text_domains:
                 q_mention += 1
             # A URL the model wrote is tracked apart: it is not a source the engine returned.
             if domain in source_domains:

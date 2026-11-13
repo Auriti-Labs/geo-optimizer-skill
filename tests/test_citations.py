@@ -110,6 +110,9 @@ class TestRunCitationCheck:
         assert result.url_mention_rate == 1.0
         entry = result.entries[0]
         assert entry.url_mentioned and not entry.domain_cited and not entry.provider_source_cited
+        # the URL names the site, so it is a brand mention even without the brand word
+        assert result.brand_mention_rate == 1.0
+        assert result.verdict == "mentioned_only"
 
     def test_provider_source_sets_provider_source_cited(self):
         with patch.object(citations_mod, "query_llm") as mock_q:
