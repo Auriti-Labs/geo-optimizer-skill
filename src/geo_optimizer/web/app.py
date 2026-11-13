@@ -1098,12 +1098,16 @@ async def citations_check(request: Request, body: CitationsCheckRequest):
         "queries_run": result.queries_run,
         "brand_mention_rate": result.brand_mention_rate,
         "domain_citation_rate": result.domain_citation_rate,
+        "url_mention_rate": result.url_mention_rate,
+        "organic_presence_rate": result.organic_presence_rate,
         "top_cited_domains": result.top_cited_domains,
         "entries": [
             {
                 "query": e.query,
                 "brand_mentioned": e.brand_mentioned,
                 "domain_cited": e.domain_cited,
+                "url_mentioned": e.url_mentioned,
+                "organic_result_present": e.organic_result_present,
                 "cited_sources": e.cited_sources[:3],
                 "snippet": e.snippet,
             }

@@ -41,7 +41,7 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 ## What is GEO Optimizer?
 
-**GEO Optimizer measures how visible a website is to AI answer engines** — ChatGPT, Perplexity, Google AI Overviews, Gemini, and Claude — scores it 0–100, and generates the fixes. It is free, MIT-licensed, and runs as a CLI, a Python library, an [MCP server](#mcp-server), a [GitHub Action](#cicd--fail-the-build-when-ai-readiness-drops), or an [Astro integration](#astro-integration).
+**GEO Optimizer audits how ready a website is for AI answer engines** — ChatGPT, Perplexity, Google AI Overviews, Gemini, and Claude: crawler access, structured data, content and discovery signals. It scores the site 0–100 and generates the fixes. It does not observe what those engines say about you. It is free, MIT-licensed, and runs as a CLI, a Python library, an [MCP server](#mcp-server), a [GitHub Action](#cicd--fail-the-build-when-ai-readiness-drops), or an [Astro integration](#astro-integration).
 
 *Also called GEO, AI SEO, or LLM SEO — same problem: an answer engine gives one response and cites a handful of sources. Ranking on Google does not make you one of them. Being reachable, parseable, and quotable does.*
 
@@ -57,8 +57,8 @@ Two runs of `geo audit`, September 2026. `example.com` has no robots.txt, no `ll
 
 ```
 [█░░░░░░░░░░░░░░░░░░░] 8/100
-❌ CRITICAL — Site is not visible
-   to AI search engines
+❌ CRITICAL — Core signals for AI
+   search are missing
 
 📋 PRIORITY NEXT STEPS:
 1. Create robots.txt with Allow rules
@@ -281,7 +281,7 @@ Treat AI visibility like test coverage. The GitHub Action scores your site, fail
 
 ```yaml
 # .github/workflows/geo.yml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.20.0
+- uses: Auriti-Labs/geo-optimizer-skill@v4.21.0
   with:
     url: https://yoursite.com
     min-score: 70        # fail the build below 70
@@ -423,7 +423,7 @@ GEO Optimizer scores **input-side readiness** — the signals that make a site r
 AEO is the practice of structuring a website so AI answer engines — ChatGPT, Perplexity, Google AI Overviews, Gemini, Claude — can find, understand, and cite it as the direct answer to a user's question. It is also called Generative Engine Optimization (GEO), AI SEO, LLM SEO, or AI Search Optimization.
 
 **How do I check if ChatGPT or Perplexity cites my website?**
-Run `geo citations --brand "Your Brand" --domain yoursite.com` with a Perplexity or OpenAI API key. It asks the engine customer-style questions and reports whether your brand is mentioned, whether your domain is cited as a source, and which competitors are cited instead. Perplexity returns real source URLs; OpenAI and Anthropic reveal what the model knows about your brand. No account needed for the [free web version](https://geoready.dev/tools/ai-citation-checker/?utm_source=github&utm_medium=readme&utm_campaign=faq).
+Run `geo citations --brand "Your Brand" --domain yoursite.com` with a Perplexity or OpenAI API key. It asks the engine customer-style questions and reports whether your brand is mentioned, whether your domain is cited as a source, and which competitors are cited instead. Perplexity returns real source URLs, so it is the only LLM provider that can report your domain as cited. OpenAI and Anthropic reveal what the model knows about your brand: a URL in their answer counts as a mention, never as a citation. No account needed for the [free web version](https://geoready.dev/tools/ai-citation-checker/?utm_source=github&utm_medium=readme&utm_campaign=faq).
 
 **How do I improve my site's GEO score?**
 Run `geo audit --url https://yoursite.com` and read the priority list, then `geo fix --url https://yoursite.com` to preview the robots.txt rules, `llms.txt`, JSON-LD schema and meta tags it would write (`--apply` writes them), and audit again. Start where the audit shows the most missing points: among the audited sites, the largest readiness gap is AI discovery files, and the median score is 59/100 (17 October 2026). To see your own list without installing anything, [run the free web audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=faq-start), or read the [free 160-page GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/?utm_source=github&utm_medium=readme&utm_campaign=faq-start).
@@ -471,7 +471,7 @@ Yes. *AI Search Engineering: A Technical Guide to Generative Engine Optimization
 
 ## Roadmap
 
-Focused release waves, not noisy patches: 97 releases since February 2026, currently **v4.20.0**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
+Focused release waves, not noisy patches: 98 releases since February 2026, currently **v4.21.0**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ---
 

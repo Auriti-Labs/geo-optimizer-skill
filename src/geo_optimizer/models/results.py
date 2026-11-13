@@ -829,7 +829,14 @@ class CitationCheckEntry:
     mention_runs: int = 0  # of `runs`, how many answers mentioned the brand
     citation_runs: int = 0  # of `runs`, how many answers cited the domain
     brand_mentioned: bool = False  # brand mentioned in at least one run
-    domain_cited: bool = False  # domain cited in at least one run
+    # Verified citation: the domain is among the sources the engine itself returned
+    # (provider citations list, or an AI Overview source). Alias of
+    # provider_source_cited / ai_overview_source_cited, whichever the platform reports.
+    domain_cited: bool = False
+    provider_source_cited: bool = False  # LLM path: domain in the provider's structured citations
+    url_mentioned: bool = False  # LLM path: a URL of the domain is written in the answer text (not a source)
+    organic_result_present: bool = False  # SERP path: domain among the organic results
+    ai_overview_source_cited: bool = False  # SERP path: domain among the AI Overview sources
     cited_sources: list[str] = field(default_factory=list)  # union of source URLs across runs
     snippet: str = ""
     error: str | None = None
@@ -848,7 +855,9 @@ class CitationCheckResult:
     runs_per_query: int = 1  # how many times each query was asked
     total_answers: int = 0  # queries_run x runs_per_query, minus failed calls
     brand_mention_rate: float = 0.0  # 0-1, share of answers mentioning the brand
-    domain_citation_rate: float = 0.0  # 0-1, share of answers citing the domain as a source
+    domain_citation_rate: float = 0.0  # 0-1, share of answers citing the domain as a verified source
+    url_mention_rate: float = 0.0  # 0-1, share of answers writing a URL of the domain in the text (LLM path)
+    organic_presence_rate: float = 0.0  # 0-1, share of queries with the domain in organic results (SERP path)
     brand_mention_rate_ci: tuple[float, float] = (0.0, 0.0)  # 95% Wilson interval
     domain_citation_rate_ci: tuple[float, float] = (0.0, 0.0)  # 95% Wilson interval
     stable: bool = False  # True when the CI does not straddle a verdict boundary (needs runs > 1)

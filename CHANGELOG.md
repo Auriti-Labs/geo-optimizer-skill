@@ -10,6 +10,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Added
 - Rubric v3, opt-in with `geo audit --score-version 3` (and `score_version=3` in the Python API and MCP): robots.txt is scored as access, not as the presence of a file. A missing robots.txt, a wildcard-only permission and a file that blocks no AI bot (empty, sitemap only) are worth the same as an explicit permission (14 of 14); a file that blocks some AI bots and allows others keeps a partial score (11); a file that blocks every AI bot scores 0 (v2 gave 3 for the file existing). A missing robots.txt is no longer a recommendation. Everything else is v2's, the default stays v2, and v2 numbers do not change. Snapshots with different score versions are not comparable, as before.
 
+## [4.21.0] — 2026-11-13
+
+### Changed
+- `geo citations`: `domain_cited` and `domain_citation_rate` now count only sources the engine returned: the provider's structured citations (LLM providers) or the AI Overview sources (SerpBase). A URL the model wrote in its answer and a domain that only ranks in the organic results no longer count as a citation, so a check that used to report `strong` can now report a lower verdict. Of the LLM providers only Perplexity returns a citations list: with OpenAI, Anthropic, Groq, Gemini, DeepSeek or MiniMax a domain can no longer be `cited`, and the best verdict is `mentioned_only`.
+- `geo audit` text output: the `critical` band reads "Core signals for AI search are missing" instead of "Site is not visible to AI search engines". The score measures readiness signals, not observed visibility. README wording aligned.
+
+### Added
+- `geo citations`: separate signals on each entry (`provider_source_cited`, `url_mentioned`, `organic_result_present`, `ai_overview_source_cited`) and on the result (`url_mention_rate`, `organic_presence_rate`), shown in the text output and the web API. They are reported next to the citation rate, never added to it. "Cited instead of you" and the SerpBase `cited_sources` follow the same rule: only the sources the engine returned (provider citations, AI Overview sources), not text URLs or organic results. A URL of the domain written in the answer text counts as a brand mention, not as a citation.
+
 ## [4.20.0] — 2026-11-12
 
 ### Added
