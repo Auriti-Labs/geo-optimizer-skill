@@ -21,7 +21,7 @@ from geo_optimizer.core.audit_ai_discovery import (
     check_markdown_negotiation_async,
 )
 from geo_optimizer.core.audit_brand import audit_brand_entity  # noqa: F401
-from geo_optimizer.core.audit_cdn import audit_cdn_ai_crawler  # noqa: F401
+from geo_optimizer.core.audit_cdn import audit_cdn_ai_crawler, merge_block_mechanisms  # noqa: F401
 from geo_optimizer.core.audit_content import audit_content_quality  # noqa: F401
 from geo_optimizer.core.audit_google_ai import run_google_ai_checks
 from geo_optimizer.core.audit_js import audit_js_rendering  # noqa: F401
@@ -44,6 +44,7 @@ from geo_optimizer.core.scoring import (  # noqa: F401 (re-exported for backward
     compute_geo_score,
     compute_score_breakdown,
     get_score_band,
+    robots_unavailable,
 )
 from geo_optimizer.models.config import (  # noqa: F401 (VALUABLE_SCHEMAS re-exported)
     ABOUT_LINK_PATTERNS,
@@ -108,6 +109,7 @@ def build_categorized_recommendations(
     multimodal: MultimodalResult | None = None,
     google_ai: GoogleAiReadinessResult | None = None,
     category_max: dict | None = None,
+    score_version: int = DEFAULT_SCORE_VERSION,
 ) -> list[CategorizedRecommendation]:
     """Build the prioritized recommendations as ``(category, text)`` pairs (gap #5).
 
@@ -211,7 +213,14 @@ def build_categorized_recommendations(
     # ── HIGH — robots(18pt), llms(18pt), meta title(5pt) ──────────────────
     # Fix #453: split robots recommendation — create vs update
     if not robots.found:
-        _h_robots.append(f"Create robots.txt with Allow rules for AI bots ({ROBOTS_KEY_BOTS_DISPLAY})")
+        if score_version < 3:
+            _h_robots.append(f"Create robots.txt with Allow rules for AI bots ({ROBOTS_KEY_BOTS_DISPLAY})")
+        elif not robots_unavailable(robots):
+            # v3 scores access: a missing robots.txt (4xx) is no finding, but one that cannot be read is
+            _h_robots.append(
+                f"robots.txt could not be read (HTTP {robots.status_code or 'no response'}): crawlers treat a "
+                "server error or timeout as a full block, so fix the response before anything else"
+            )
     elif not robots.citation_bots_ok:
         _h_robots.append(f"Update robots.txt to include all AI bots ({ROBOTS_KEY_BOTS_DISPLAY})")
     # gap #8: Crawl-delay slows AI crawlers — flag when > 10s
@@ -282,8 +291,17 @@ def build_categorized_recommendations(
         _m_schema.append("Add WebSite JSON-LD schema to homepage")
     if not schema.has_organization:
         _m_schema.append("Add Organization JSON-LD schema with name, url, and logo")
-    if not schema.has_faq:
-        _m_schema.append("Add FAQPage schema with site FAQs")
+    # v4: FAQPage markup is advised only where the page shows questions and answers
+    if not schema.has_faq and (score_version < 4 or schema.has_visible_faq):
+        if score_version < 4:
+            _m_schema.append("Add FAQPage schema with site FAQs")
+        else:
+            # Google shows FAQ rich results only for a few authoritative sites (since August 2023),
+            # so v4 does not present this as a Google gain
+            _m_schema.append(
+                "This page shows questions and answers: consider FAQPage markup so other engines and tools "
+                "can read them (Google shows FAQ rich results only for a few authoritative sites)"
+            )
     # gap #3: schema completeness
     for schema_type, missing_fields in getattr(schema, "schema_missing_fields", {}).items():
         _m_schema.append(
@@ -483,6 +501,7 @@ def build_recommendations(
     multimodal: MultimodalResult | None = None,
     google_ai: GoogleAiReadinessResult | None = None,
     category_max: dict | None = None,
+    score_version: int = DEFAULT_SCORE_VERSION,
 ) -> list[str]:
     """Build the flat, prioritized list of recommendation texts (backward compatible API).
 
@@ -509,6 +528,7 @@ def build_recommendations(
             multimodal=multimodal,
             google_ai=google_ai,
             category_max=category_max,
+            score_version=score_version,
         )
     ]
 
@@ -738,6 +758,7 @@ def _build_audit_result(
         multimodal=effective_multimodal,
         google_ai=effective_google_ai,
         category_max=CATEGORY_MAX_BY_VERSION[score_version],
+        score_version=score_version,
     )
 
     # Fix #460: load entry_point plugins if not already loaded (API + MCP callers)
@@ -814,6 +835,7 @@ def _build_audit_result(
         ai_discovery=effective_ai_discovery,
         score_breakdown=breakdown,
         cdn_check=effective_cdn,
+        bot_blocks=merge_block_mechanisms(robots, effective_cdn),
         js_rendering=effective_js,
         brand_entity=effective_brand_entity,
         webmcp=effective_webmcp,

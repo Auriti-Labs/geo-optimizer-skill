@@ -140,8 +140,8 @@ border:1px solid var(--c-border);padding:.25rem .6rem;border-radius:20px;transit
 {%- if page.url == "/" -%}
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-{"@type":"Question","name":"What is GEO Optimizer?","acceptedAnswer":{"@type":"Answer","text":"GEO Optimizer is an open-source Python toolkit that scores websites 0-100 for AI search visibility based on 47 research-backed methods. Install with pip install geo-optimizer-skill."}},
-{"@type":"Question","name":"How is the GEO score calculated?","acceptedAnswer":{"@type":"Answer","text":"The score is calculated across 8 categories: robots.txt (18pt), llms.txt (18pt), JSON-LD schema (16pt), meta tags (14pt), content quality (12pt), signals (6pt), AI discovery (6pt), brand & entity (10pt). Bands: 86-100 excellent, 68-85 good, 36-67 foundation, 0-35 critical."}},
+{"@type":"Question","name":"What is GEO Optimizer?","acceptedAnswer":{"@type":"Answer","text":"GEO Optimizer is an open-source Python toolkit that scores websites 0-100 for AI search visibility with deterministic rule checks. Install with pip install geo-optimizer-skill."}},
+{"@type":"Question","name":"How is the GEO score calculated?","acceptedAnswer":{"@type":"Answer","text":"The default rubric (v2, since engine 4.19.0) scores 9 categories for 100 points: Google AI readiness 20, robots.txt AI bot access 14, JSON-LD schema 14, content 14, brand & entity 12, meta tags 11, llms.txt 6, signals 6, AI discovery 3. The legacy v1 rubric (8 categories) is still available with geo audit --score-version 1. Bands: 86-100 excellent, 68-85 good, 36-67 foundation, 0-35 critical."}},
 {"@type":"Question","name":"Is GEO Optimizer free?","acceptedAnswer":{"@type":"Answer","text":"Yes, fully free and open-source under MIT License. No API keys required."}}
 ]}
 </script>
@@ -186,7 +186,7 @@ border:1px solid var(--c-border);padding:.25rem .6rem;border-radius:20px;transit
       <div class="side-group">
         <div class="side-label">Reference</div>
         <a href="{{ '/ai-bots-reference/' | relative_url }}" {% if page.url contains 'ai-bots' %}class="active"{% endif %}>AI Bots</a>
-        <a href="{{ '/geo-methods/' | relative_url }}" {% if page.url contains 'geo-methods' %}class="active"{% endif %}>42 Methods</a>
+        <a href="{{ '/geo-methods/' | relative_url }}" {% if page.url contains 'geo-methods' %}class="active"{% endif %}>47 Checks</a>
         <a href="{{ '/troubleshooting/' | relative_url }}" {% if page.url contains 'troubleshooting' %}class="active"{% endif %}>Troubleshooting</a>
       </div>
     </nav>

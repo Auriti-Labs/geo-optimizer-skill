@@ -32,7 +32,7 @@ geo fix --url https://yoursite.com --apply
 
 | Command | What it does |
 |---------|-------------|
-| [`geo audit`](geo-audit/) | Full audit — score 0-100, 8 categories, 7 output formats |
+| [`geo audit`](geo-audit/) | Full audit — score 0-100, 9 categories (rubric v2), 8 output formats |
 | [`geo fix`](geo-fix/) | Auto-generate robots.txt, llms.txt, schema, meta tags |
 | [`geo llms`](llms-txt/) | Generate `/llms.txt` from your sitemap |
 | [`geo schema`](schema-injector/) | Generate and inject JSON-LD structured data |
@@ -54,8 +54,8 @@ geo fix --url https://yoursite.com --apply
 | Page | Description |
 |------|-------------|
 | [AI Bots](ai-bots-reference/) | 27 AI crawlers across 3 tiers — training, search, user |
-| [47 GEO Methods](geo-methods/) | Research-backed citability methods with measured impact |
-| [Scoring Rubric](scoring-rubric/) | How the score is calculated: 8 categories, 100 points total |
+| [47 Citability Checks](geo-methods/) | Content checks, 9 of them taken from the methods tested in the KDD 2024 GEO paper |
+| [Scoring Rubric](scoring-rubric/) | How the score is calculated: 9 categories in the default v2 rubric, 100 points total |
 | [Troubleshooting](troubleshooting/) | Solutions to common issues |
 
 ---
@@ -69,7 +69,7 @@ result = audit("https://example.com")
 print(result.score)                   # 85
 print(result.band)                    # "good"
 print(result.citability.total_score)  # 72
-print(result.score_breakdown)         # {"robots": 18, "llms": 14, ...}
+print(result.score_breakdown)         # {"google_ai": 16, "robots": 14, ...}
 ```
 
 Async: `result = await audit_async("https://example.com")`

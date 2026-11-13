@@ -85,15 +85,29 @@ Security-sensitive behavior is non-negotiable:
 
 ## Audit and Scoring Model
 
-The GEO score totals 100 points across these categories:
-- Robots.txt: 18
-- llms.txt: 18
-- Schema JSON-LD: 16
-- Meta Tags: 14
-- Content: 12
+The GEO score totals 100 points. The rubric is versioned (`score_version`); the source of truth
+is `CATEGORY_MAX_BY_VERSION` / `SCORING_BY_VERSION` in `models/config.py`, and
+`DEFAULT_SCORE_VERSION` is 2 since engine 4.19.0.
+
+Rubric v2 (default, 9 categories, `CATEGORY_MAX_V2`):
+- Google AI readiness: 20
+- Robots.txt: 14
+- Schema JSON-LD: 14
+- Content: 14
+- Brand & Entity: 12
+- Meta Tags: 11
+- llms.txt: 6
 - Signals: 6
-- AI Discovery: 6
-- Brand & Entity: 10
+- AI Discovery: 3
+
+Rubric v1 (legacy, 8 categories, `CATEGORY_MAX`, `geo audit --score-version 1`):
+Robots.txt 18, llms.txt 18, Schema JSON-LD 16, Meta Tags 14, Content 12, Brand & Entity 10,
+Signals 6, AI Discovery 6.
+
+Rubric v3 (opt-in, `--score-version 3`): v2 with `robots` scored as access (missing file, wildcard or no AI bot blocked: 14; some bots allowed: 11; all blocked: 0). Same category budget as v2.
+Rubric v4 (opt-in, `--score-version 4`): v3 plus schema applicability: FAQPage points only on a page that shows questions and answers (or already has the markup), Article points only on an article page (Article markup or `og:type` article); points of a feature that does not apply leave the denominator and the category is rescaled to 14.
+
+Score history only compares snapshots that share the same `score_version`.
 
 Score bands:
 - `86-100`: excellent

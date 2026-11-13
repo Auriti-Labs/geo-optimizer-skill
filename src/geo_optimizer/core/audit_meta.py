@@ -54,6 +54,9 @@ def audit_meta_tags(soup: BeautifulSoup | None, url: str) -> MetaResult:
     og_title = soup.find("meta", attrs={"property": "og:title"})
     og_desc = soup.find("meta", attrs={"property": "og:description"})
     og_image = soup.find("meta", attrs={"property": "og:image"})
+    og_type = soup.find("meta", attrs={"property": "og:type"})
+    if og_type and og_type.get("content"):
+        result.og_type = str(og_type["content"]).strip().lower()
 
     if og_title and og_title.get("content"):
         result.has_og_title = True

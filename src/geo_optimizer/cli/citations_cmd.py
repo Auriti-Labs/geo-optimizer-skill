@@ -45,10 +45,15 @@ def _format_text(result) -> str:
             continue
         if multi:
             lines.append(f"   Brand mentioned: {entry.mention_runs}/{entry.runs} runs")
-            lines.append(f"   Domain cited:    {entry.citation_runs}/{entry.runs} runs")
+            lines.append(f"   Domain cited as source: {entry.citation_runs}/{entry.runs} runs")
         else:
             lines.append(f"   Brand mentioned: {'✅' if entry.brand_mentioned else '❌'}")
-            lines.append(f"   Domain cited:    {'✅' if entry.domain_cited else '❌'}")
+            lines.append(f"   Domain cited as source: {'✅' if entry.domain_cited else '❌'}")
+        # Signals that are not a verified citation, shown only when present.
+        if entry.url_mentioned:
+            lines.append("   URL written in the answer text (not a source)")
+        if entry.organic_result_present:
+            lines.append("   Domain in the organic results")
         if entry.cited_sources:
             shown = ", ".join(entry.cited_sources[:3])
             extra = len(entry.cited_sources) - 3
@@ -73,6 +78,10 @@ def _format_text(result) -> str:
         lines.append(f"Answers analyzed:     {result.queries_run}")
         lines.append(f"Brand mention rate:   {int(result.brand_mention_rate * 100)}%")
         lines.append(f"Domain citation rate: {int(result.domain_citation_rate * 100)}%")
+    if result.url_mention_rate:
+        lines.append(f"URL in answer text:   {int(result.url_mention_rate * 100)}% (not counted as citation)")
+    if result.organic_presence_rate:
+        lines.append(f"Organic presence:     {int(result.organic_presence_rate * 100)}% (not counted as citation)")
     if result.top_cited_domains:
         competitors = ", ".join(f"{d} ({n})" for d, n in result.top_cited_domains)
         lines.append(f"Cited instead of you: {competitors}")
@@ -91,7 +100,11 @@ def _format_text(result) -> str:
 
 @click.command(name="citations")
 @click.option("--brand", required=True, help="Brand name to look for in AI answers")
-@click.option("--domain", required=True, help="Your domain (e.g. example.com) to look for among cited sources")
+@click.option(
+    "--domain",
+    required=True,
+    help="Your domain (e.g. example.com) to look for among the sources the engine returns (Perplexity citations, AI Overview sources)",
+)
 @click.option("--topic", default="", help="Topic for the default queries (defaults to brand)")
 @click.option("--query", "queries", multiple=True, help="Custom query to ask (repeatable, overrides defaults)")
 @click.option(

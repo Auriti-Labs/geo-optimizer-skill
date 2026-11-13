@@ -1098,12 +1098,16 @@ async def citations_check(request: Request, body: CitationsCheckRequest):
         "queries_run": result.queries_run,
         "brand_mention_rate": result.brand_mention_rate,
         "domain_citation_rate": result.domain_citation_rate,
+        "url_mention_rate": result.url_mention_rate,
+        "organic_presence_rate": result.organic_presence_rate,
         "top_cited_domains": result.top_cited_domains,
         "entries": [
             {
                 "query": e.query,
                 "brand_mentioned": e.brand_mentioned,
                 "domain_cited": e.domain_cited,
+                "url_mentioned": e.url_mentioned,
+                "organic_result_present": e.organic_result_present,
                 "cited_sources": e.cited_sources[:3],
                 "snippet": e.snippet,
             }
@@ -1623,6 +1627,7 @@ def _audit_result_to_dict(result) -> dict:
             "has_og_title": result.meta.has_og_title,
             "has_og_description": result.meta.has_og_description,
             "has_og_image": result.meta.has_og_image,
+            "og_type": result.meta.og_type,
             "title_text": result.meta.title_text,
             "description_text": result.meta.description_text,
             "description_length": result.meta.description_length,
@@ -1742,6 +1747,7 @@ def _dict_to_audit_result(data: dict):
             has_og_title=m.get("has_og_title", False),
             has_og_description=m.get("has_og_description", False),
             has_og_image=m.get("has_og_image", False),
+            og_type=m.get("og_type", ""),
             title_text=m.get("title_text", ""),
             description_text=m.get("description_text", ""),
             description_length=m.get("description_length", 0),

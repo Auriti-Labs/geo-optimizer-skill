@@ -30,7 +30,9 @@ def _copy_sources(tmp_path: Path) -> None:
 def test_stale_block_is_detected(tmp_path):
     _copy_sources(tmp_path)
     target = tmp_path / "ai-context" / "cursor.mdc"
-    target.write_text(target.read_text(encoding="utf-8").replace("4.19", "4.18", 1), encoding="utf-8")
+    # Age the block by rewriting the current minimum version: no hardcoded number to bump at each release
+    version = json.loads((ROOT / "capabilities.json").read_text(encoding="utf-8"))["min_version"]
+    target.write_text(target.read_text(encoding="utf-8").replace(version, "0.0.1", 1), encoding="utf-8")
     assert build_ai_context.check(tmp_path) == ["ai-context/cursor.mdc"]
 
 

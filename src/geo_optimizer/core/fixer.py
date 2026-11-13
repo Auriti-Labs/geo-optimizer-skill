@@ -212,7 +212,7 @@ def generate_schema_fix(result: AuditResult, base_url: str) -> list[FixItem]:
         )
 
     # FAQPage schema — generate example FAQ structure if missing (#fix-faq-schema)
-    if not result.schema.has_faq:
+    if not result.schema.has_faq and (result.score_version < 4 or result.schema.has_visible_faq):
         faq_schema = copy.deepcopy(SCHEMA_TEMPLATES["faq"])
         faq_schema["mainEntity"] = [
             {
@@ -445,18 +445,15 @@ def _estimate_score_after(result: AuditResult, fixes: list[FixItem]) -> int:
     robots_partial = ROBOTS_PARTIAL_BY_VERSION[result.score_version]
 
     if "robots" in categories_fixed:
-        # Delta = maximum possible - current (fix #187, #203: inline to avoid core→cli import)
-        max_robots = scoring["robots_found"] + scoring["robots_citation_ok"]
-        current_robots = 0
-        if result.robots.found:
-            current_robots = scoring["robots_found"]
-            if result.robots.citation_bots_ok:
-                current_robots += (
-                    scoring["robots_citation_ok"] if result.robots.citation_bots_explicit else robots_partial
-                )
-            elif result.robots.bots_allowed:
-                current_robots += robots_partial
-        bonus += max_robots - current_robots
+        # Delta = maximum possible - current, from the same scorer the audit uses (fix #187)
+        from geo_optimizer.core.scoring import _score_robots
+        from geo_optimizer.models.config import CATEGORY_MAX_BY_VERSION
+
+        bonus += max(
+            0,
+            CATEGORY_MAX_BY_VERSION[result.score_version]["robots"]
+            - _score_robots(result.robots, scoring, robots_partial),
+        )
 
     if "llms" in categories_fixed and not result.llms.found:
         # Fix #420: include all llms SCORING keys (was missing blockquote, depth, full)
@@ -473,7 +470,7 @@ def _estimate_score_after(result: AuditResult, fixes: list[FixItem]) -> int:
     if "schema" in categories_fixed:
         if not result.schema.has_website:
             bonus += scoring["schema_website"]
-        if not result.schema.has_faq:
+        if not result.schema.has_faq and (result.score_version < 4 or result.schema.has_visible_faq):
             bonus += scoring["schema_faq"]
 
     if "meta" in categories_fixed:

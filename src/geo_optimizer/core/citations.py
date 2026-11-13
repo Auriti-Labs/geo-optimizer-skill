@@ -170,11 +170,13 @@ def run_citation_check(
     total_answers = 0
     mentioned_count = 0
     cited_count = 0
+    url_count = 0
 
     for query_text in query_list:
         q_answered = 0
         q_mention = 0
         q_cited = 0
+        q_url = 0
         q_sources: list[str] = []
         q_model = ""
         q_snippet = ""
@@ -193,13 +195,18 @@ def run_citation_check(
 
             source_domains = [normalize_domain(url) for url in response.citations]
             text_domains = _domains_in_text(response.text)
-            all_domains = source_domains + [d for d in text_domains if d not in source_domains]
 
-            if brand_matcher.search(response.text):
+            # A URL of the domain written in the answer names the site, so it counts as a brand mention
+            # (never as a citation).
+            if brand_matcher.search(response.text) or domain in text_domains:
                 q_mention += 1
-            if domain in all_domains:
+            # A URL the model wrote is tracked apart: it is not a source the engine returned.
+            if domain in source_domains:
                 q_cited += 1
-            for d in all_domains:
+            if domain in text_domains:
+                q_url += 1
+            # Competitors are the domains the engine returned as sources, not URLs the model wrote.
+            for d in source_domains:
                 if d != domain:
                     other_domains[d] += 1
             for url in response.citations:
@@ -216,6 +223,7 @@ def run_citation_check(
         total_answers += q_answered
         mentioned_count += q_mention
         cited_count += q_cited
+        url_count += q_url
 
         entries.append(
             CitationCheckEntry(
@@ -227,6 +235,8 @@ def run_citation_check(
                 citation_runs=q_cited,
                 brand_mentioned=q_mention > 0,
                 domain_cited=q_cited > 0,
+                provider_source_cited=q_cited > 0,
+                url_mentioned=q_url > 0,
                 cited_sources=q_sources,
                 snippet=q_snippet,
             )
@@ -261,6 +271,7 @@ def run_citation_check(
         total_answers=total_answers,
         brand_mention_rate=mention_rate,
         domain_citation_rate=citation_rate,
+        url_mention_rate=round(url_count / total_answers, 2),
         brand_mention_rate_ci=mention_ci,
         domain_citation_rate_ci=citation_ci,
         stable=stable,
@@ -293,6 +304,7 @@ def _run_serpbase_citation_check(
     queries_answered = 0
     mentioned_count = 0
     cited_count = 0
+    organic_count = 0
     ai_overview_seen = 0
 
     for query_text in query_list:
@@ -304,17 +316,20 @@ def _run_serpbase_citation_check(
         if response.ai_overview_present:
             ai_overview_seen += 1
 
-        source_urls = [r.url for r in response.organic if r.url] + list(response.ai_overview_sources)
-        all_domains = list(dict.fromkeys(normalize_domain(u) for u in source_urls if u))
+        organic_urls = [r.url for r in response.organic if r.url]
+        # Ranking in the organic list is not an AI citation: only AI Overview sources count as cited.
+        organic = domain in {normalize_domain(u) for u in organic_urls}
 
         haystack = " ".join([f"{r.title} {r.snippet}" for r in response.organic] + [response.ai_overview_text])
         mentioned = bool(brand_matcher.search(haystack))
-        cited = domain in all_domains
+        cited = domain in {normalize_domain(u) for u in response.ai_overview_sources if u}
 
         queries_answered += 1
         mentioned_count += int(mentioned)
         cited_count += int(cited)
-        for d in all_domains:
+        organic_count += int(organic)
+        # Only AI Overview sources count as "cited instead of you"; organic rankers are not citations.
+        for d in dict.fromkeys(normalize_domain(u) for u in response.ai_overview_sources if u):
             if d != domain:
                 other_domains[d] += 1
 
@@ -331,7 +346,9 @@ def _run_serpbase_citation_check(
                 citation_runs=int(cited),
                 brand_mentioned=mentioned,
                 domain_cited=cited,
-                cited_sources=source_urls[:10],
+                ai_overview_source_cited=cited,
+                organic_result_present=organic,
+                cited_sources=list(response.ai_overview_sources)[:10],
                 snippet=snippet,
             )
         )
@@ -366,6 +383,7 @@ def _run_serpbase_citation_check(
         total_answers=queries_answered,
         brand_mention_rate=mention_rate,
         domain_citation_rate=citation_rate,
+        organic_presence_rate=round(organic_count / queries_answered, 2),
         brand_mention_rate_ci=(mention_rate, mention_rate),
         domain_citation_rate_ci=(citation_rate, citation_rate),
         stable=False,

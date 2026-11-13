@@ -732,9 +732,39 @@ RECOMMENDATION_BLOCKERS_CATEGORY = "blockers"
 # the page.
 RECOMMENDATION_OTHER_CATEGORY = "other"
 
-SCORING_BY_VERSION = {1: SCORING, 2: SCORING_V2}
-CATEGORY_MAX_BY_VERSION = {1: CATEGORY_MAX, 2: CATEGORY_MAX_V2}
-ROBOTS_PARTIAL_BY_VERSION = {1: ROBOTS_PARTIAL_SCORE, 2: ROBOTS_PARTIAL_SCORE_V2}
+# Rubric v3 (opt-in with --score-version 3; the default stays v2). Only the robots category
+# changes: it scores access, not the presence of a file. A missing robots.txt (the protocol
+# lets crawlers fetch everything) and a wildcard Allow are worth the same as an explicit
+# permission, so the category is full unless AI bots are actually restricted. A file that
+# allows only some bots keeps a partial score; a file that allows none scores 0 (v2 gave 3
+# points just for the file existing). Every other weight is v2's.
+SCORING_V3 = {
+    **SCORING_V2,
+    "robots_found": 0,
+    "robots_citation_ok": 14,
+    "robots_absent_ok": 14,  # no robots.txt: nothing restricts the crawlers
+    "robots_wildcard_full": 1,  # wildcard-only permission counts as full, not partial
+}
+ROBOTS_PARTIAL_SCORE_V3 = 11
+CATEGORY_MAX_V3 = dict(CATEGORY_MAX_V2)
+
+# Rubric v4 (opt-in with --score-version 4; the default stays v2): v3's robots rules plus
+# schema points that apply only where they make sense. FAQPage counts only on a page that
+# shows questions and answers, Article only on a page that is an article (Article markup,
+# or og:type article). The points of a feature that does not apply leave the denominator and
+# the category is rescaled to its 14 points, so a homepage is not asked to add FAQ or
+# Article markup it has no content for.
+SCORING_V4 = {**SCORING_V3, "schema_applicability": 1}
+CATEGORY_MAX_V4 = dict(CATEGORY_MAX_V2)
+
+SCORING_BY_VERSION = {1: SCORING, 2: SCORING_V2, 3: SCORING_V3, 4: SCORING_V4}
+CATEGORY_MAX_BY_VERSION = {1: CATEGORY_MAX, 2: CATEGORY_MAX_V2, 3: CATEGORY_MAX_V3, 4: CATEGORY_MAX_V4}
+ROBOTS_PARTIAL_BY_VERSION = {
+    1: ROBOTS_PARTIAL_SCORE,
+    2: ROBOTS_PARTIAL_SCORE_V2,
+    3: ROBOTS_PARTIAL_SCORE_V3,
+    4: ROBOTS_PARTIAL_SCORE_V3,
+}
 DEFAULT_SCORE_VERSION = 2
 
 # ─── Google AI readiness (rubric v2) ─────────────────────────────────────────

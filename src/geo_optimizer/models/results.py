@@ -45,6 +45,10 @@ class RobotsResult:
     # True if citation bots are explicitly allowed (not just via wildcard — #111)
     citation_bots_explicit: bool = False
     sitemaps: list[str] = field(default_factory=list)
+    # HTTP status of the robots.txt fetch (0 = no response: timeout, DNS or TLS failure). Rubric v3
+    # needs it: a 4xx means "no robots.txt" (crawlers may fetch everything, RFC 9309), a 5xx, a 429
+    # or no response means the rules could not be read (crawlers assume a full block).
+    status_code: int = 0
 
 
 # ─── llms.txt ────────────────────────────────────────────────────────────────
@@ -125,6 +129,8 @@ class SchemaResult:
     schema_missing_fields: dict = field(default_factory=dict)
     incomplete_schema_types: list = field(default_factory=list)
     visible_match: bool = False
+    # v4: the page itself shows question-and-answer content (not only FAQPage markup)
+    has_visible_faq: bool = False
 
 
 # ─── Meta tags ───────────────────────────────────────────────────────────────
@@ -138,6 +144,7 @@ class MetaResult:
     has_og_title: bool = False
     has_og_description: bool = False
     has_og_image: bool = False
+    og_type: str = ""  # content of og:type, lower-cased (v4 page-type signal)
     title_text: str = ""
     description_text: str = ""
     description_length: int = 0
@@ -290,6 +297,10 @@ class CdnAiCrawlerResult:
     # bot_results: [{"bot": "GPTBot", "status": 200, "content_length": 12345,
     #                "blocked": False, "challenge_detected": False}]
     any_blocked: bool = False
+    # Site-level pattern over the 4 AI user agents: "none" (all pass), "targeted"
+    # (some blocked, some pass: likely a rule aimed at specific bots), "blanket"
+    # (all 4 blocked: likely a default bot-protection mode). "" when not checked.
+    block_pattern: str = ""
     cdn_detected: str = ""  # "cloudflare", "akamai", "aws", "" if none
     cdn_headers: dict[str, str] = field(default_factory=dict)
     error: str = ""  # fix #304: error message (unsafe URL, timeout, etc.)
@@ -825,7 +836,14 @@ class CitationCheckEntry:
     mention_runs: int = 0  # of `runs`, how many answers mentioned the brand
     citation_runs: int = 0  # of `runs`, how many answers cited the domain
     brand_mentioned: bool = False  # brand mentioned in at least one run
-    domain_cited: bool = False  # domain cited in at least one run
+    # Verified citation: the domain is among the sources the engine itself returned
+    # (provider citations list, or an AI Overview source). Alias of
+    # provider_source_cited / ai_overview_source_cited, whichever the platform reports.
+    domain_cited: bool = False
+    provider_source_cited: bool = False  # LLM path: domain in the provider's structured citations
+    url_mentioned: bool = False  # LLM path: a URL of the domain is written in the answer text (not a source)
+    organic_result_present: bool = False  # SERP path: domain among the organic results
+    ai_overview_source_cited: bool = False  # SERP path: domain among the AI Overview sources
     cited_sources: list[str] = field(default_factory=list)  # union of source URLs across runs
     snippet: str = ""
     error: str | None = None
@@ -844,7 +862,9 @@ class CitationCheckResult:
     runs_per_query: int = 1  # how many times each query was asked
     total_answers: int = 0  # queries_run x runs_per_query, minus failed calls
     brand_mention_rate: float = 0.0  # 0-1, share of answers mentioning the brand
-    domain_citation_rate: float = 0.0  # 0-1, share of answers citing the domain as a source
+    domain_citation_rate: float = 0.0  # 0-1, share of answers citing the domain as a verified source
+    url_mention_rate: float = 0.0  # 0-1, share of answers writing a URL of the domain in the text (LLM path)
+    organic_presence_rate: float = 0.0  # 0-1, share of queries with the domain in organic results (SERP path)
     brand_mention_rate_ci: tuple[float, float] = (0.0, 0.0)  # 95% Wilson interval
     domain_citation_rate_ci: tuple[float, float] = (0.0, 0.0)  # 95% Wilson interval
     stable: bool = False  # True when the CI does not straddle a verdict boundary (needs runs > 1)
@@ -1047,6 +1067,9 @@ class AuditResult:
     error: str | None = None
     # v4.2: CDN AI Crawler check (#225)
     cdn_check: CdnAiCrawlerResult = field(default_factory=CdnAiCrawlerResult)
+    # One entry per blocked bot, merging robots.txt and the HTTP check:
+    # [{"bot": "GPTBot", "mechanism": "robots_txt" | "http" | "both"}]
+    bot_blocks: list[dict[str, str]] = field(default_factory=list)
     # v4.2: JS Rendering check (#226)
     js_rendering: JsRenderingResult = field(default_factory=JsRenderingResult)
     # v4.3: Brand & Entity signals

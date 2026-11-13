@@ -26,6 +26,7 @@ from geo_optimizer.cli.scoring_helpers import (
     schema_score,
     signals_score,
 )
+from geo_optimizer.core.scoring import robots_unavailable
 from geo_optimizer.models.config import CITATION_BOTS_DISPLAY
 from geo_optimizer.models.results import AuditResult
 
@@ -192,7 +193,25 @@ def _level_for_score(category_score: int, max_score: int) -> str:
 def _robots_findings(result: AuditResult) -> list[dict]:
     findings = []
     if not result.robots.found:
-        findings.append({"level": "error", "message": "robots.txt not found — AI bots cannot determine access rules"})
+        if result.score_version >= 3 and robots_unavailable(result.robots):
+            findings.append(
+                {
+                    "level": "info",
+                    "message": "robots.txt not found — crawlers may fetch everything (not penalized in rubric v3)",
+                }
+            )
+        elif result.score_version >= 3:
+            status = result.robots.status_code or "no response"
+            findings.append(
+                {
+                    "level": "error",
+                    "message": f"robots.txt could not be read (HTTP {status}) — crawlers treat this as a full block",
+                }
+            )
+        else:
+            findings.append(
+                {"level": "error", "message": "robots.txt not found — AI bots cannot determine access rules"}
+            )
     elif result.robots.bots_blocked:
         findings.append(
             {
@@ -237,7 +256,7 @@ def _schema_findings(result: AuditResult) -> list[dict]:
         findings.append({"level": "error", "message": "WebSite JSON-LD schema missing on homepage"})
     if not result.schema.has_organization:
         findings.append({"level": "warning", "message": "Organization JSON-LD schema missing"})
-    if not result.schema.has_faq:
+    if not result.schema.has_faq and (result.score_version < 4 or result.schema.has_visible_faq):
         findings.append({"level": "note", "message": "FAQPage schema not found — recommended for Q&A content"})
     return findings
 
