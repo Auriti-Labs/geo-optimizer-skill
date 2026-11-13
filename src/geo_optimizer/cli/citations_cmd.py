@@ -100,7 +100,11 @@ def _format_text(result) -> str:
 
 @click.command(name="citations")
 @click.option("--brand", required=True, help="Brand name to look for in AI answers")
-@click.option("--domain", required=True, help="Your domain (e.g. example.com) to look for among cited sources")
+@click.option(
+    "--domain",
+    required=True,
+    help="Your domain (e.g. example.com) to look for among the sources the engine returns (Perplexity citations, AI Overview sources)",
+)
 @click.option("--topic", default="", help="Topic for the default queries (defaults to brand)")
 @click.option("--query", "queries", multiple=True, help="Custom query to ask (repeatable, overrides defaults)")
 @click.option(

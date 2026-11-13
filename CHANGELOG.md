@@ -8,7 +8,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ## [Unreleased]
 
 ### Changed
-- `geo citations`: `domain_cited` and `domain_citation_rate` now count only sources the engine returned: the provider's structured citations (LLM providers) or the AI Overview sources (SerpBase). A URL the model wrote in its answer and a domain that only ranks in the organic results no longer count as a citation, so a check that used to report `strong` can now report a lower verdict.
+- `geo citations`: `domain_cited` and `domain_citation_rate` now count only sources the engine returned: the provider's structured citations (LLM providers) or the AI Overview sources (SerpBase). A URL the model wrote in its answer and a domain that only ranks in the organic results no longer count as a citation, so a check that used to report `strong` can now report a lower verdict. Of the LLM providers only Perplexity returns a citations list: with OpenAI, Anthropic, Groq, Gemini, DeepSeek or MiniMax a domain can no longer be `cited`, and the best verdict is `mentioned_only`.
 
 ### Added
 - `geo citations`: separate signals on each entry (`provider_source_cited`, `url_mentioned`, `organic_result_present`, `ai_overview_source_cited`) and on the result (`url_mention_rate`, `organic_presence_rate`), shown in the text output and the web API. They are reported next to the citation rate, never added to it. A URL of the domain written in the answer text counts as a brand mention, not as a citation.

@@ -114,6 +114,20 @@ class TestRunCitationCheck:
         assert result.brand_mention_rate == 1.0
         assert result.verdict == "mentioned_only"
 
+    def test_url_mention_rate_over_several_runs(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.side_effect = [
+                LLMResponse(text="See https://acme.com/docs", model="m", provider="openai"),
+                LLMResponse(text="No link here.", model="m", provider="openai"),
+            ]
+            result = run_citation_check(
+                "Acme", "acme.com", queries=["best CRM"], provider="openai", api_key="sk-test", runs=2
+            )
+
+        assert result.total_answers == 2
+        assert result.url_mention_rate == 0.5
+        assert result.domain_citation_rate == 0.0
+
     def test_provider_source_sets_provider_source_cited(self):
         with patch.object(citations_mod, "query_llm") as mock_q:
             mock_q.return_value = _sonar_response("Acme is one option.", citations=["https://acme.com/pricing"])
@@ -450,6 +464,23 @@ class TestRunCitationCheckServpbase:
         assert entry.model == ""
         assert result.runs_per_query == 1
         assert result.stable is False
+
+    def test_organic_and_ai_overview_source_set_both_flags(self):
+        from geo_optimizer.core.serp_provider import SerpResult
+
+        with patch("geo_optimizer.core.serp_provider.query_serpbase") as mock_q:
+            mock_q.return_value = _serp(
+                organic=[SerpResult(title="Acme", url="https://acme.com/", snippet="x")],
+                ai_overview_present=True,
+                ai_overview_text="Acme is a CRM.",
+                ai_overview_sources=["https://www.acme.com/pricing"],
+            )
+            result = run_citation_check(
+                "Acme", "acme.com", queries=["best CRM"], provider="serpbase", api_key="sb-test"
+            )
+
+        entry = result.entries[0]
+        assert entry.organic_result_present and entry.ai_overview_source_cited and entry.domain_cited
 
     def test_domain_cited_via_ai_overview_source_only(self):
         """Brand/domain appear only inside the AI Overview, not the organic list."""
