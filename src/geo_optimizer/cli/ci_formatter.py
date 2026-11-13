@@ -192,7 +192,17 @@ def _level_for_score(category_score: int, max_score: int) -> str:
 def _robots_findings(result: AuditResult) -> list[dict]:
     findings = []
     if not result.robots.found:
-        findings.append({"level": "error", "message": "robots.txt not found — AI bots cannot determine access rules"})
+        if result.score_version >= 3:
+            findings.append(
+                {
+                    "level": "info",
+                    "message": "robots.txt not found — crawlers may fetch everything (not penalized in rubric v3)",
+                }
+            )
+        else:
+            findings.append(
+                {"level": "error", "message": "robots.txt not found — AI bots cannot determine access rules"}
+            )
     elif result.robots.bots_blocked:
         findings.append(
             {

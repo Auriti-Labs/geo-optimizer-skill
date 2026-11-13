@@ -99,13 +99,13 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
     from geo_optimizer.models.config import AUDIT_STEPS, CATEGORY_MAX_BY_VERSION
 
     if isinstance(score_version, bool) or score_version not in CATEGORY_MAX_BY_VERSION:
-        err_payload = {"error": "score_version must be 1 or 2", "url": url}
+        err_payload = {"error": "score_version must be 1, 2 or 3", "url": url}
         if include_receipt:
             err_payload["receipt"] = {
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_score_version"],
-                "terminal_error": "score_version must be 1 or 2",
+                "terminal_error": "score_version must be 1, 2 or 3",
             }
         return json.dumps(err_payload)
 

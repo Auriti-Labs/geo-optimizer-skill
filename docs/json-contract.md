@@ -16,7 +16,7 @@ Consumers must handle `schema_version` being absent (pre-v1 responses) by treati
 | `url` | `string` | Audited URL |
 | `timestamp` | `string` | ISO 8601 UTC |
 | `score` | `int` | 0–100 |
-| `score_version` | `int` | Scoring rubric version; `2` by default, `1` for legacy audits |
+| `score_version` | `int` | Scoring rubric version; `2` by default, `3` for the opt-in robots-as-access rubric, `1` for legacy audits |
 | `score_max` | `object` | Per-category maxima for the selected score version |
 | `band` | `string` | `critical` \| `foundation` \| `good` \| `excellent` |
 | `score_breakdown` | `object` | Per-category scores (see below) |

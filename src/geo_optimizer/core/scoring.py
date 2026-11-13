@@ -129,6 +129,9 @@ def _score_robots(robots, w: dict = SCORING, partial: int = ROBOTS_PARTIAL_SCORE
         else:
             # Allowed only via wildcard: partial score
             s += partial
+    elif w.get("robots_wildcard_full", 0) and not robots.bots_blocked:
+        # v3: a file that blocks no AI bot (empty, sitemap-only) restricts nothing, like a missing one
+        s += w.get("robots_citation_ok", 0)
     elif robots.bots_allowed:
         s += partial
     return s

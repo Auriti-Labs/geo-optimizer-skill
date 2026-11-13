@@ -262,7 +262,10 @@ def format_audit_text(result: AuditResult) -> str:
     lines.append("")
     lines.append(_section_header("1. ROBOTS.TXT — AI Bot Access"))
     if not result.robots.found:
-        lines.append("  ❌ robots.txt not found")
+        if result.score_version >= 3:
+            lines.append("  ℹ️  robots.txt not found — nothing restricts the crawlers (not penalized in rubric v3)")
+        else:
+            lines.append("  ❌ robots.txt not found")
     else:
         lines.append("  ✅ robots.txt found")
         for bot in result.robots.bots_allowed:

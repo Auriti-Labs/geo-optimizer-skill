@@ -23,7 +23,7 @@ A negative-signal penalty is then subtracted: 1 point when one negative signal i
 
 ### Rubric versions
 
-Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1` for legacy comparisons; history deltas and regressions should compare snapshots with the same score version.
+Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1` for legacy comparisons and `--score-version 3` for the opt-in robots-as-access rubric (below); history deltas and regressions should compare snapshots with the same score version.
 
 | Category | v1 (legacy) | v2 |
 |----------|-------------|----|
@@ -46,10 +46,11 @@ v3 is v2 with one change: `robots` scores access, not the presence of a file. Th
 | Missing (404): the protocol lets crawlers fetch everything | 0 | 14 |
 | Citation bots allowed only through the wildcard | 11 | 14 |
 | Citation bots allowed explicitly | 14 | 14 |
+| File present but blocking no AI bot (empty, sitemap only) | 3 | 14 |
 | Only some AI bots allowed | 11 | 11 |
-| File present, no AI bot allowed | 3 | 0 |
+| File present and every AI bot blocked | 3 | 0 |
 
-A missing robots.txt is no longer a recommendation in v3. Writing explicit rules remains a legitimate choice; it just earns no points of its own. On 1,244 sites audited with v2 in November 2026 (a self-selected sample), moving to v3 would have changed the band of 173 sites (14%) and raised the average from 66.9 to 70.0. Sites without a robots.txt were 45 of them and were mostly sites with few other signals in place.
+A missing robots.txt is no longer a recommendation in v3. Writing explicit rules remains a legitimate choice; it just earns no points of its own. On 1,244 sites audited with v2 in November 2026 (a self-selected sample), the missing-file and wildcard changes alone would have changed the band of 173 sites (14%) and raised the average from 66.9 to 70.0; files with no rule for any AI bot (48 sites in the wider group) were not modelled and also rise. Sites without a robots.txt were 45 of them and were mostly sites with few other signals in place.
 
 ### Google AI readiness - max 20 pts (v2)
 
