@@ -20,7 +20,6 @@ from geo_optimizer.cli.scoring_helpers import (
     brand_entity_score as _brand_entity_score,
 )
 from geo_optimizer.cli.scoring_helpers import categories, category_max, category_score
-from geo_optimizer.core.scoring import robots_unavailable
 from geo_optimizer.cli.scoring_helpers import (
     content_score as _content_score,
 )
@@ -39,6 +38,7 @@ from geo_optimizer.cli.scoring_helpers import (
 from geo_optimizer.cli.scoring_helpers import (
     signals_score as _signals_score,
 )
+from geo_optimizer.core.scoring import robots_unavailable
 from geo_optimizer.models.config import SCORE_BANDS
 from geo_optimizer.models.results import (
     AnswerSnapshot,
