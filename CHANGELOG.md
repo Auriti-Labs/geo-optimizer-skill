@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Changed
+- `geo audit` text output: the `critical` band reads "Core signals for AI search are missing" instead of "Site is not visible to AI search engines". The score measures readiness signals, not observed visibility. README wording aligned.
+
 ## [4.20.0] — 2026-11-12
 
 ### Added
