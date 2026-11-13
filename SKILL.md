@@ -5,7 +5,7 @@ description: Audit and fix a website for AI search visibility (Generative Engine
 
 # GEO Optimizer
 
-> Make websites visible and citable by AI search engines (ChatGPT Search, Perplexity, Claude, Google AI Overviews). Implements the GEO audit framework plus a citability engine of 47 content checks, 9 of them taken directly from the methods tested in Princeton KDD 2024 research.
+> Audit and fix the technical signals that let AI search engines (ChatGPT Search, Perplexity, Claude, Google AI Overviews) reach, parse and cite a website. Implements the GEO audit framework plus a citability engine of 47 content checks, 9 of them taken directly from the methods tested in Princeton KDD 2024 research.
 
 ## Before you run anything
 
