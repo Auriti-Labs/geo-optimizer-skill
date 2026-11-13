@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
   "package": "geo-optimizer-skill",
-  "min_version": "4.21.0",
+  "min_version": "4.22.0",
   "python": ">=3.10",
   "executables": [
     "geo",
