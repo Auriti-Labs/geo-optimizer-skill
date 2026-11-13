@@ -29,4 +29,4 @@ Logistic regression of `domain_cited_A` on `score / 10`, `ln_rank_1dp` and `log(
 
 ## Limits
 
-One engine (Perplexity Sonar), one date (17 October 2026), one model version. The question is built from each page's own headline, so the outcome measures whether a page is cited when the question names its own topic. The sample favours reachable, English-language sites that publish a sitemap. Observational data: no causal claim. The sampling, audit and API-call scripts are not published.
+One engine (Perplexity Sonar), one date (17 October 2026), one model version. The question is built from each page's own headline, so the outcome measures whether a page is cited when the question names its own topic. The sample favours reachable, English-language sites that publish a sitemap. Observational data: no causal claim. The sampling, audit and API-call scripts are in `scripts/` (originals of 2026-10-17 without the server paths and the key; the export step that produced `results.csv` was rewritten afterwards and checked against the published table; see `scripts/README.md`). The raw files with domains and headlines stay private.

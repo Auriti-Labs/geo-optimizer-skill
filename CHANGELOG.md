@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- `research/calibration-2026-10/scripts/`: the sampling, audit, query, export and analysis scripts of the October 2026 calibration study, without server paths or keys. The export step that wrote `results.csv` was rewritten and reproduces the published table row for row. The raw data with domains stays private.
+
 ### Changed
 - The website (`frontend/`, the Sanity scheduled-publish workflow, its SEO regression test and the `frontend-unit` CI job) moved to its own repository, Auriti-Labs/geoready-site. `Dockerfile.web` now builds the engine only; the site image installs this engine from PyPI at a pinned version. `integrations/astro-geoready` stays here for people who use it from the README.
 
