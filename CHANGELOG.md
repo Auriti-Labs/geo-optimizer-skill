@@ -11,6 +11,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - `research/calibration-2026-10/scripts/`: the sampling, audit, query, export and analysis scripts of the October 2026 calibration study, without server paths or keys. The export step that wrote `results.csv` was rewritten and reproduces the published table row for row. The raw data with domains stays private.
 
 ### Changed
+- MCP server: `geo_audit` receipt normalizes `terminal_error` to a stable set of error codes (`timeout`, `connection_failed`, `http_error`, `too_large`, `unsafe_url`, `invalid_argument`, `internal`) instead of arbitrary exception or HTTP error strings (#557).
 - The website (`frontend/`, the Sanity scheduled-publish workflow, its SEO regression test and the `frontend-unit` CI job) moved to its own repository, Auriti-Labs/geoready-site. `Dockerfile.web` now builds the engine only; the site image installs this engine from PyPI at a pinned version. `integrations/astro-geoready` stays here for people who use it from the README.
 
 ## [4.23.0] — 2026-11-13
