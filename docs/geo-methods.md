@@ -247,7 +247,7 @@ Each paragraph should pass the "citation test": could an AI engine quote this pa
 
 ### Phase 1 — Quick Wins (Days 1–3)
 
-Focus on the two highest-ROI methods first.
+Start with the two cheapest methods to apply. This is an editorial suggestion about effort, not a measured return.
 
 1. **Statistics** — Go through your top 5 pages. Find every vague claim ("many users", "significant improvement") and replace it with a specific number. Add the source and year.
 2. **Cite Sources** — Add 2–3 inline links to authoritative sources per page. Use `According to [Source](URL), ...` format.
@@ -263,26 +263,6 @@ Focus on the two highest-ROI methods first.
 
 7. **Easy-to-Understand** — Add inline definitions for technical terms. Build a glossary page.
 8. **Unique Words** — Final pass to remove repeated words and vary vocabulary.
-
----
-
-## Impact by Domain
-
-| Method | Finance | Health | Science | History | Media |
-|--------|---------|--------|---------|---------|-------|
-| Cite Sources | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
-| Statistics | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
-| Quotation Addition | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐ |
-| Authoritative Tone | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐ |
-| Fluency Optimization | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ |
-| Answer-First Structure | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ |
-| Passage Density | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
-| Easy-to-Understand | ⭐⭐ | ⭐⭐⭐ | ⭐ | ⭐ | ⭐⭐⭐ |
-| Technical Terms | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐ | ⭐ |
-| Unique Words | ⭐ | ⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ |
-| Keyword Stuffing | ❌ | ❌ | ❌ | ❌ | ❌ |
-
-⭐⭐⭐ High impact · ⭐⭐ Moderate · ⭐ Low · ❌ Avoid
 
 ---
 
