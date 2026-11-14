@@ -123,7 +123,7 @@ Each section shows what passed and what's missing:
 
 ## 5. What to Fix First
 
-Follow this priority order — each step has the highest ROI before moving to the next:
+Follow this priority order — an editorial order that starts with what blocks access, then what is cheapest to fix; it is not a measured return:
 
 1. **robots.txt** — Add all 27 AI bots. Takes 5 minutes. Affects whether bots can crawl you at all. → [AI Bots Reference](ai-bots-reference.md)
 2. **llms.txt** — Generate it from your sitemap. Takes 2 minutes. → [Generating llms.txt](llms-txt.md)
