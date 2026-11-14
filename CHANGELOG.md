@@ -9,6 +9,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Added
 - `research/calibration-2026-10/scripts/`: the sampling, audit, query, export and analysis scripts of the October 2026 calibration study, without server paths or keys. The export step that wrote `results.csv` was rewritten and reproduces the published table row for row. The raw data with domains stays private.
+- MCP server: `geo_audit` receipt includes the real HTTP `attempts` count extracted from urllib3 retry history, without altering the retry policy or HTTP limits (#557).
 
 ### Changed
 - MCP server: `geo_audit` receipt normalizes `terminal_error` to a stable set of error codes (`timeout`, `connection_failed`, `http_error`, `too_large`, `unsafe_url`, `invalid_argument`, `internal`) instead of arbitrary exception or HTTP error strings (#557).
