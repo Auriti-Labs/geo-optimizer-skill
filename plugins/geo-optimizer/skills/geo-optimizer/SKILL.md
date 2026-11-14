@@ -119,19 +119,19 @@ Structured data helps machines parse the page; it does not guarantee citation.
 
 ### Step 5 — Optimize content (Princeton GEO methods)
 
-Apply content improvements ordered by the effect reported in the paper's benchmark:
+Apply the content improvements below. The order is the paper's list of methods, not a ranking by effect. The paper states few per-method figures, and only for its own benchmark.
 
-| Priority | Method | Impact | Action |
-|----------|--------|--------|--------|
-| 🔴 1 | Cite Sources | +30–115% | Add authoritative external links |
-| 🔴 2 | Add Statistics | +40% | Include concrete numbers, percentages, dates |
-| 🟠 3 | Quotation Addition | +30–40% | Expert quotes: `"Text" — Name, Role, Org, Year` |
-| 🟠 4 | Authoritative Tone | +6–12% | Confident, expert framing |
-| 🟡 5 | Fluency Optimization | +15–30% | Clear, direct language |
-| 🟡 6 | Easy-to-Understand | +8–15% | Define terms, use analogies |
-| 🟢 7 | Technical Terms | +5–10% | Correct industry terminology |
-| 🟢 8 | Unique Words | +5–8% | Vary vocabulary deliberately |
-| ❌ 9 | Keyword Stuffing | ~0% ⚠️ | Do NOT apply — neutral to negative |
+| Method | Reported in the paper | Action |
+|--------|-----------------------|--------|
+| Cite Sources | +115.1% at source rank 5, −30.3% at rank 1 (Table 2) | Add authoritative external links |
+| Add Statistics | not stated | Include concrete numbers, percentages, dates |
+| Quotation Addition | about +41% on position-adjusted word count (Table 1 caption) | Expert quotes: `"Text" — Name, Role, Org, Year` |
+| Authoritative Tone | not stated | Confident, expert framing |
+| Fluency Optimization | not stated | Clear, direct language |
+| Easy-to-Understand | not stated | Define terms, use analogies |
+| Technical Terms | not stated | Correct industry terminology |
+| Unique Words | not stated | Vary vocabulary deliberately |
+| Keyword Stuffing | did not perform well | Do NOT apply |
 
 Source: Princeton KDD 2024 (GEO-bench, 10,000 queries; the authors also report tests on Perplexity.ai). The table lists the nine methods tested in the paper. Impact figures are relative changes in the paper's visibility metrics, not citation rates; effects varied by domain and engines have changed since. GEO Optimizer's citability score uses 47 content checks, 9 of which come from these methods. Related research: AutoGEO (arXiv preprint 2510.11438, 2025; no publication venue listed).
 
