@@ -305,6 +305,14 @@ claude mcp add geo-optimizer -- geo-mcp
 
 Then ask: *"audit my site and fix what's missing."*
 
+#### What runs where
+
+| Where | What it does | What it needs |
+|-------|--------------|---------------|
+| MCP server (`geo-mcp`) | Audits, content citability, crawler access, schema, comparison and fixes. It does not query answer engines, so it cannot tell you whether a live answer cites you. | Nothing beyond the install |
+| CLI `geo citations` | Sends questions to answer engines and reports mentions and cited sources. | Your own provider API key; the provider bills you |
+| [GeoReady](https://geoready.dev) (hosted service, separate from this package) | Scheduled monitoring, score history, alerts and several domains in one account. | An account |
+
 #### Claude Code plugin
 
 Installs the skill and the MCP server in one go, no files to copy:
