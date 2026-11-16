@@ -5,7 +5,7 @@ Draft published with the note on geoready.dev. These files let a reader check th
 ## Files
 
 - `PREREGISTRATION.md`: the analysis plan, written before the full run. Its SHA-256 is `441fcbb422964fdf2bf2b63eb02181ccbea9e7c5590d3e770399d567cd373ff8` (check with `sha256sum PREREGISTRATION.md`).
-- `results.csv`: one row per page (341 pages), in shuffled order. No domain, address or headline.
+- `results.csv`: withdrawn from the published tree on 2026-11-16 while we assess whether its rows can be tied back to individual sites. The aggregate results are in `analysis-results.txt`.
 - `analysis-results.txt`: the output of the pre-registered analysis (run on 2026-10-17 on the exact rank, four decimals).
 
 ## Columns of `results.csv`
