@@ -8,9 +8,11 @@ instead of printing — the CLI layer handles display and formatting.
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import logging
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
+from typing import Any
 from urllib.parse import urljoin
 
 # ─── Re-exports from split modules (backward compatibility, #402) ────────────
@@ -893,6 +895,46 @@ def _notify(on_step: Callable[[str], None] | None, step: str) -> None:
         on_step(step)
 
 
+def _extract_failed_auxiliary_fetches(
+    aux_fetches: Iterable[tuple[str, object | None, str | None]],
+) -> list[str]:
+    """Identify auxiliary files that failed to fetch (#557).
+
+    Returns a list of fixed file names (e.g. 'robots.txt') that either
+    timed out/failed at network level (resp is None with err), returned a 429
+    (Too Many Requests), or returned a 5xx server error.
+    404 and other 4xx responses (except 429) are expected when optional
+    files do not exist and are not considered fetch errors, consistent
+    with RFC 9309 and robots_unavailable().
+    """
+    failed: list[str] = []
+    for name, resp, err in aux_fetches:
+        if resp is None:
+            if err:
+                failed.append(name)
+        else:
+            status_code = getattr(resp, "status_code", None)
+            if status_code is not None and (status_code == 429 or status_code >= 500):
+                failed.append(name)
+    return failed
+
+
+_audit_telemetry: contextvars.ContextVar[dict[str, Any] | None] = contextvars.ContextVar(
+    "_audit_telemetry", default=None
+)
+
+
+def get_audit_telemetry() -> dict[str, Any]:
+    """Return execution telemetry from the most recent audit in current context (#557)."""
+    val = _audit_telemetry.get()
+    return dict(val) if val is not None else {}
+
+
+def reset_audit_telemetry() -> None:
+    """Reset execution telemetry for current context (#557)."""
+    _audit_telemetry.set({})
+
+
 def run_full_audit(
     url: str,
     use_cache: bool = False,
@@ -911,6 +953,7 @@ def run_full_audit(
         load_plugins: If False, installed ``geo_optimizer.checks`` plugins are neither loaded nor run.
     """
     _t0 = time.perf_counter()
+    _audit_telemetry.set({"fetch_errors": []})
     _notify(on_step, AUDIT_STEPS[0])
     from bs4 import BeautifulSoup
 
@@ -998,13 +1041,27 @@ def run_full_audit(
     ai_faq_url = urljoin(base_url, "/ai/faq.json")
     ai_service_url = urljoin(base_url, "/ai/service.json")
 
-    r_robots, _ = fetch_url(robots_url_full)
-    r_llms, _ = fetch_url(llms_url_full)
-    r_llms_full, _ = fetch_url(llms_full_url)
-    r_ai_txt, _ = fetch_url(ai_txt_url)
-    r_ai_summary, _ = fetch_url(ai_summary_url)
-    r_ai_faq, _ = fetch_url(ai_faq_url)
-    r_ai_service, _ = fetch_url(ai_service_url)
+    r_robots, err_robots = fetch_url(robots_url_full)
+    r_llms, err_llms = fetch_url(llms_url_full)
+    r_llms_full, err_llms_full = fetch_url(llms_full_url)
+    r_ai_txt, err_ai_txt = fetch_url(ai_txt_url)
+    r_ai_summary, err_ai_summary = fetch_url(ai_summary_url)
+    r_ai_faq, err_ai_faq = fetch_url(ai_faq_url)
+    r_ai_service, err_ai_service = fetch_url(ai_service_url)
+
+    aux_fetches = (
+        ("robots.txt", r_robots, err_robots),
+        ("llms.txt", r_llms, err_llms),
+        ("llms-full.txt", r_llms_full, err_llms_full),
+        (".well-known/ai.txt", r_ai_txt, err_ai_txt),
+        ("/ai/summary.json", r_ai_summary, err_ai_summary),
+        ("/ai/faq.json", r_ai_faq, err_ai_faq),
+        ("/ai/service.json", r_ai_service, err_ai_service),
+    )
+    fetch_errors = _extract_failed_auxiliary_fetches(aux_fetches)
+    telemetry = dict(_audit_telemetry.get() or {})
+    telemetry["fetch_errors"] = fetch_errors
+    _audit_telemetry.set(telemetry)
 
     _notify(on_step, AUDIT_STEPS[1])
     # Run all sub-audits using the pre-downloaded responses
@@ -1152,6 +1209,7 @@ async def run_full_audit_async(
     Requires: pip install geo-optimizer-skill[async]
     """
     _t0 = time.perf_counter()
+    _audit_telemetry.set({"fetch_errors": []})
     _notify(on_step, AUDIT_STEPS[0])
     from bs4 import BeautifulSoup
 
@@ -1190,14 +1248,28 @@ async def run_full_audit_async(
 
     # Extract responses
     r_home, err_home = responses.get(base_url, (None, "URL not requested"))
-    r_robots, _ = responses.get(robots_url, (None, None))
-    r_llms, _ = responses.get(llms_url, (None, None))
-    r_llms_full, _ = responses.get(llms_full_url, (None, None))
+    r_robots, err_robots = responses.get(robots_url, (None, None))
+    r_llms, err_llms = responses.get(llms_url, (None, None))
+    r_llms_full, err_llms_full = responses.get(llms_full_url, (None, None))
     # AI discovery responses
-    r_ai_txt, _ = responses.get(ai_txt_url, (None, None))
-    r_ai_summary, _ = responses.get(ai_summary_url, (None, None))
-    r_ai_faq, _ = responses.get(ai_faq_url, (None, None))
-    r_ai_service, _ = responses.get(ai_service_url, (None, None))
+    r_ai_txt, err_ai_txt = responses.get(ai_txt_url, (None, None))
+    r_ai_summary, err_ai_summary = responses.get(ai_summary_url, (None, None))
+    r_ai_faq, err_ai_faq = responses.get(ai_faq_url, (None, None))
+    r_ai_service, err_ai_service = responses.get(ai_service_url, (None, None))
+
+    aux_fetches_async = (
+        ("robots.txt", r_robots, err_robots),
+        ("llms.txt", r_llms, err_llms),
+        ("llms-full.txt", r_llms_full, err_llms_full),
+        (".well-known/ai.txt", r_ai_txt, err_ai_txt),
+        ("/ai/summary.json", r_ai_summary, err_ai_summary),
+        ("/ai/faq.json", r_ai_faq, err_ai_faq),
+        ("/ai/service.json", r_ai_service, err_ai_service),
+    )
+    fetch_errors_async = _extract_failed_auxiliary_fetches(aux_fetches_async)
+    telemetry_async = dict(_audit_telemetry.get() or {})
+    telemetry_async["fetch_errors"] = fetch_errors_async
+    _audit_telemetry.set(telemetry_async)
 
     if err_home or r_home is None:
         result = AuditResult(

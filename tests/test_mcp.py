@@ -6,7 +6,7 @@ Richiede: pip install geo-optimizer-skill[mcp]
 """
 
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from urllib.parse import urlparse
 
 import pytest
@@ -172,9 +172,11 @@ class TestGeoAuditTool:
             "Analyzing schema, meta tags and content",
         ]
         assert data["receipt"]["stages_failed"] == []
+        assert data["receipt"]["failed_fetches"] == []
         assert data["receipt"]["duration_ms"] == 350
         assert data["receipt"]["terminal_error"] is None
         assert "attempts" not in data["receipt"]
+        assert "fetch_errors" not in data
 
     @pytest.mark.parametrize(
         ("error", "http_status", "expected_code"),
@@ -291,6 +293,192 @@ class TestGeoAuditTool:
         assert "error" in data
         assert data["receipt"]["stages_completed"] == []
         assert data["receipt"]["stages_failed"] == [AUDIT_STEPS[0]]
+
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_receipt_robots_timeout_marks_fetch_stage_failed(self, mock_fetch):
+        """robots.txt timeout marks fetch stage as failed in receipt while score is returned (#557)."""
+        from geo_optimizer.models.config import AUDIT_STEPS
+
+        def _fake_fetch(url, *args, **kwargs):
+            if "robots.txt" in url:
+                return None, "Timeout (10s) dopo retry esponenziale"
+            mock_resp = MagicMock()
+            mock_resp.status_code = 200
+            mock_resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
+            mock_resp.content = mock_resp.text.encode("utf-8")
+            mock_resp.headers = {"Content-Type": "text/html"}
+            return mock_resp, None
+
+        mock_fetch.side_effect = _fake_fetch
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert "receipt" in data
+        assert AUDIT_STEPS[0] in data["receipt"]["stages_failed"]
+        assert AUDIT_STEPS[0] not in data["receipt"]["stages_completed"]
+        assert data["receipt"]["failed_fetches"] == ["robots.txt"]
+        assert data["receipt"]["terminal_error"] is None
+        assert "score" in data
+        assert isinstance(data["score"], int)
+
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_receipt_robots_404_is_normal_not_failed(self, mock_fetch):
+        """A 404 on robots.txt is a normal answer, not a fetch stage failure (#557)."""
+        from geo_optimizer.models.config import AUDIT_STEPS
+
+        def _fake_fetch(url, *args, **kwargs):
+            mock_resp = MagicMock()
+            if "robots.txt" in url:
+                mock_resp.status_code = 404
+                mock_resp.text = "Not Found"
+            else:
+                mock_resp.status_code = 200
+                mock_resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
+            mock_resp.content = mock_resp.text.encode("utf-8")
+            mock_resp.headers = {"Content-Type": "text/html"}
+            return mock_resp, None
+
+        mock_fetch.side_effect = _fake_fetch
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert "receipt" in data
+        assert data["receipt"]["stages_failed"] == []
+        assert data["receipt"]["failed_fetches"] == []
+        assert AUDIT_STEPS[0] in data["receipt"]["stages_completed"]
+        assert "score" in data
+        assert isinstance(data["score"], int)
+
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_receipt_robots_5xx_marks_fetch_stage_failed(self, mock_fetch):
+        """A 5xx status on robots.txt marks fetch stage as failed in receipt (#557)."""
+        from geo_optimizer.models.config import AUDIT_STEPS
+
+        def _fake_fetch(url, *args, **kwargs):
+            mock_resp = MagicMock()
+            if "robots.txt" in url:
+                mock_resp.status_code = 503
+                mock_resp.text = "Service Unavailable"
+            else:
+                mock_resp.status_code = 200
+                mock_resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
+            mock_resp.content = mock_resp.text.encode("utf-8")
+            mock_resp.headers = {"Content-Type": "text/html"}
+            return mock_resp, None
+
+        mock_fetch.side_effect = _fake_fetch
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert "receipt" in data
+        assert AUDIT_STEPS[0] in data["receipt"]["stages_failed"]
+        assert AUDIT_STEPS[0] not in data["receipt"]["stages_completed"]
+        assert data["receipt"]["failed_fetches"] == ["robots.txt"]
+        assert data["receipt"]["terminal_error"] is None
+        assert "score" in data
+        assert isinstance(data["score"], int)
+
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_receipt_robots_429_marks_fetch_stage_failed(self, mock_fetch):
+        """A 429 status on robots.txt marks fetch stage as failed in receipt (#557)."""
+        from geo_optimizer.models.config import AUDIT_STEPS
+
+        def _fake_fetch(url, *args, **kwargs):
+            mock_resp = MagicMock()
+            if "robots.txt" in url:
+                mock_resp.status_code = 429
+                mock_resp.text = "Too Many Requests"
+            else:
+                mock_resp.status_code = 200
+                mock_resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
+            mock_resp.content = mock_resp.text.encode("utf-8")
+            mock_resp.headers = {"Content-Type": "text/html"}
+            return mock_resp, None
+
+        mock_fetch.side_effect = _fake_fetch
+        data = json.loads(geo_audit("https://example.com", include_receipt=True))
+        assert "receipt" in data
+        assert AUDIT_STEPS[0] in data["receipt"]["stages_failed"]
+        assert AUDIT_STEPS[0] not in data["receipt"]["stages_completed"]
+        assert data["receipt"]["failed_fetches"] == ["robots.txt"]
+        assert data["receipt"]["terminal_error"] is None
+        assert "score" in data
+        assert isinstance(data["score"], int)
+
+    @patch("geo_optimizer.core.audit.fetch_url")
+    def test_audit_receipt_default_excludes_fetch_errors(self, mock_fetch):
+        """Default output (include_receipt=False) never contains fetch_errors (#557)."""
+
+        def _fake_fetch(url, *args, **kwargs):
+            mock_resp = MagicMock()
+            if "robots.txt" in url:
+                mock_resp.status_code = 500
+                mock_resp.text = "Error"
+            else:
+                mock_resp.status_code = 200
+                mock_resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
+            mock_resp.content = mock_resp.text.encode("utf-8")
+            mock_resp.headers = {"Content-Type": "text/html"}
+            return mock_resp, None
+
+        mock_fetch.side_effect = _fake_fetch
+        data = json.loads(geo_audit("https://example.com", include_receipt=False))
+        assert "fetch_errors" not in data
+        assert "receipt" not in data
+
+    def test_extract_failed_auxiliary_fetches(self):
+        """_extract_failed_auxiliary_fetches identifies failed auxiliary resources (#557)."""
+        from geo_optimizer.core.audit import _extract_failed_auxiliary_fetches
+
+        mock_500 = MagicMock(status_code=500)
+        mock_429 = MagicMock(status_code=429)
+        mock_404 = MagicMock(status_code=404)
+        mock_200 = MagicMock(status_code=200)
+
+        fetches = [
+            ("robots.txt", None, "Timeout (10s) dopo retry"),
+            ("llms.txt", mock_500, None),
+            ("llms-full.txt", mock_404, None),
+            (".well-known/ai.txt", mock_429, None),
+            ("/ai/summary.json", mock_200, None),
+            ("/ai/faq.json", None, None),
+        ]
+        failed = _extract_failed_auxiliary_fetches(fetches)
+        assert failed == ["robots.txt", "llms.txt", ".well-known/ai.txt"]
+
+    def test_audit_async_auxiliary_fetch_errors(self):
+        """run_full_audit_async reports failed auxiliary fetches via audit telemetry (#557)."""
+        import asyncio
+        from dataclasses import asdict
+        from unittest.mock import AsyncMock
+
+        pytest.importorskip("httpx")
+        from geo_optimizer.core.audit import get_audit_telemetry, run_full_audit_async
+
+        url = "https://example.com"
+        home = MagicMock(
+            status_code=200,
+            text="<html><head><title>Test</title></head><body>Hello</body></html>",
+            headers={"Content-Type": "text/html"},
+        )
+        home.content = home.text.encode()
+        err_robots = MagicMock(status_code=500, text="Internal Server Error", headers={})
+        err_ai = MagicMock(status_code=429, text="Too Many Requests", headers={})
+        responses = {
+            url: (home, None),
+            f"{url}/robots.txt": (err_robots, None),
+            f"{url}/llms.txt": (None, "Timeout"),
+            f"{url}/.well-known/ai.txt": (err_ai, None),
+        }
+
+        with (
+            patch("geo_optimizer.utils.http_async.fetch_urls_async", new=AsyncMock(return_value=responses)),
+            patch("geo_optimizer.core.audit.check_markdown_negotiation_async", new=AsyncMock(return_value=False)),
+            patch("geo_optimizer.core.audit.audit_cdn_ai_crawler", return_value=MagicMock()),
+        ):
+            async def _run():
+                res = await run_full_audit_async(url)
+                return res, get_audit_telemetry()
+
+            result, telemetry = asyncio.run(_run())
+            assert telemetry["fetch_errors"] == ["robots.txt", "llms.txt", ".well-known/ai.txt"]
+            # AuditResult dataclass itself has no fetch_errors field; asdict never leaks it (#557)
+            assert not hasattr(result, "fetch_errors")
+            assert "fetch_errors" not in asdict(result)
 
 
 # ============================================================================

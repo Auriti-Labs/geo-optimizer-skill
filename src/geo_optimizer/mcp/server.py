@@ -107,6 +107,10 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
             When enabled, receipt.terminal_error is one of: 'timeout',
             'connection_failed', 'http_error', 'too_large', 'unsafe_url',
             'invalid_argument', 'internal', or None on success.
+            stages_failed may include a fetch stage when auxiliary files (such as
+            robots.txt, llms.txt, or AI discovery endpoints) could not be fetched
+            (listed in failed_fetches), while terminal_error remains None and the
+            audit score is returned.
     """
     from geo_optimizer.utils.validators import validate_public_url
 
@@ -151,22 +155,39 @@ def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -
         return stages_started[:-1], [stages_started[-1]]
 
     try:
-        from geo_optimizer.core.audit import run_full_audit
+        from geo_optimizer.core.audit import get_audit_telemetry, reset_audit_telemetry, run_full_audit
+
+        if include_receipt:
+            reset_audit_telemetry()
 
         result = run_full_audit(url, score_version=score_version, on_step=on_step if include_receipt else None)
         if not include_receipt:
             return _to_json(result)
 
+        telemetry = get_audit_telemetry()
+        failed_fetches = list(telemetry.get("fetch_errors", []))
+
         # An unreachable homepage or an HTTP error ends the audit early with
         # result.error set instead of raising.
         raw_error = getattr(result, "error", None)
         terminal_error = _normalize_terminal_error(raw_error)
-        completed, failed = split_failed() if terminal_error else (stages_started, [])
+        if terminal_error:
+            completed, failed = split_failed()
+        else:
+            completed = list(stages_started)
+            failed = []
+            if failed_fetches:
+                fetch_stage = AUDIT_STEPS[0]
+                if fetch_stage in completed:
+                    completed.remove(fetch_stage)
+                if fetch_stage not in failed:
+                    failed.append(fetch_stage)
         data = asdict(result) if hasattr(result, "__dataclass_fields__") else dict(result)
         data["receipt"] = {
             "url": url,
             "stages_completed": completed,
             "stages_failed": failed,
+            "failed_fetches": failed_fetches,
             "duration_ms": getattr(result, "audit_duration_ms", 0),
             "terminal_error": terminal_error,
         }

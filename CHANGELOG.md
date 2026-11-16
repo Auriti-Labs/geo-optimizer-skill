@@ -9,6 +9,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Added
 - `research/calibration-2026-10/scripts/`: the sampling, audit, query, export and analysis scripts of the October 2026 calibration study, without server paths or keys. The export step that wrote `results.csv` was rewritten and reproduces the published table row for row. The raw data with domains stays private.
+- MCP server: `geo_audit` receipt includes `failed_fetches` and marks fetch stage as failed when auxiliary fetches (`robots.txt`, `llms.txt`, AI discovery endpoints) fail, return 429 or 5xx server errors, while still returning computed audit score and keeping `terminal_error` as `None` (#557).
 
 ### Changed
 - MCP server: `geo_audit` receipt normalizes `terminal_error` to a stable set of error codes (`timeout`, `connection_failed`, `http_error`, `too_large`, `unsafe_url`, `invalid_argument`, `internal`) instead of arbitrary exception or HTTP error strings (#557).
