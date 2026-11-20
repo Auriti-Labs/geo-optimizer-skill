@@ -15,6 +15,7 @@ Supports:
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 
 # Maximum byte limit for the robots.txt file (RFC 9309 §2.5)
@@ -124,7 +125,22 @@ def parse_robots_txt(content: str) -> dict[str, AgentRules]:
     return agent_rules
 
 
-def _is_path_allowed(path: str, rules: AgentRules) -> bool | None:
+def _rule_matches(rule_path: str, path: str, *, wildcards: bool) -> bool:
+    """Whether one Allow/Disallow value matches ``path``.
+
+    Default (``wildcards=False``): plain prefix match, the behaviour of rubrics v1 to v4, where ``*`` and
+    ``$`` are ordinary characters. With ``wildcards=True`` RFC 9309 §2.2.3 applies: ``*`` matches any run of
+    characters and a final ``$`` anchors the end of the path.
+    """
+    if not wildcards:
+        return path.startswith(rule_path) or rule_path == "/"
+    anchored = rule_path.endswith("$")
+    body = rule_path[:-1] if anchored else rule_path
+    pattern = ".*".join(re.escape(part) for part in body.split("*"))
+    return re.match(pattern + (r"\Z" if anchored else ""), path, re.DOTALL) is not None
+
+
+def _is_path_allowed(path: str, rules: AgentRules, *, wildcards: bool = False) -> bool | None:
     """
     Check if a path is allowed according to the longest-match rule (RFC 9309 §2.2.2).
 
@@ -134,6 +150,7 @@ def _is_path_allowed(path: str, rules: AgentRules) -> bool | None:
     Args:
         path: The path to check (e.g. "/public/page")
         rules: The agent's rules
+        wildcards: Apply RFC 9309 §2.2.3 (``*`` and ``$``); off by default for rubrics v1 to v4
 
     Returns:
         True if allowed, False if blocked, None if no rule matches
@@ -147,7 +164,7 @@ def _is_path_allowed(path: str, rules: AgentRules) -> bool | None:
             # Empty Disallow = allow everything (RFC compliant)
             continue
         # Fix #428: RFC 9309 §2.2.2 — wildcard * is NOT a metacharacter, only / is root
-        if path.startswith(disallow_path) or disallow_path == "/":
+        if _rule_matches(disallow_path, path, wildcards=wildcards):
             match_len = len(disallow_path)
             if match_len > best_length:
                 best_length = match_len
@@ -160,7 +177,7 @@ def _is_path_allowed(path: str, rules: AgentRules) -> bool | None:
     for allow_path in rules.allow:
         if not allow_path:
             continue
-        if path.startswith(allow_path) or allow_path == "/":
+        if _rule_matches(allow_path, path, wildcards=wildcards):
             match_len = len(allow_path)
             if match_len > best_length:
                 best_length = match_len
@@ -176,6 +193,9 @@ def classify_bot(
     bot: str,
     description: str,
     agent_rules: dict[str, AgentRules],
+    *,
+    page_path: str = "/",
+    wildcards: bool = False,
 ) -> BotStatus:
     """
     Classify a bot as allowed, blocked, partial, or missing based on robots.txt rules.
@@ -188,6 +208,9 @@ def classify_bot(
         bot: Bot name (e.g. "GPTBot")
         description: Bot description
         agent_rules: Parsed robots.txt rules
+        page_path: Path the bot is judged on. The default "/" keeps the root-only reading of rubrics v1 to v4;
+            another path (rubric v5) classifies the bot for that page: blocked or allowed, by longest match.
+        wildcards: Apply RFC 9309 §2.2.3 (``*`` and ``$``) to the rules; used with ``page_path``
 
     Returns:
         BotStatus with classification
@@ -208,6 +231,18 @@ def classify_bot(
         return BotStatus(bot=bot, description=description, status="missing")
 
     rules = agent_rules[found_agent]
+
+    if page_path != "/" or wildcards:
+        # Rubric v5: judge the bot on the page itself, with RFC 9309 matching.
+        decision = _is_path_allowed(page_path, rules, wildcards=wildcards)
+        return BotStatus(
+            bot=bot,
+            description=description,
+            status="blocked" if decision is False else "allowed",
+            matched_agent=found_agent,
+            disallow_paths=rules.disallow,
+            via_wildcard=via_wildcard,
+        )
 
     # Check if the bot is completely blocked (Disallow: / or /*)
     is_blocked_root = any(d in ("/", "/*") for d in rules.disallow)
