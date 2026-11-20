@@ -68,7 +68,10 @@ def _visible_strings(schema: dict) -> list[str]:
         for offer in offers if isinstance(offers, list) else [offers]:
             price = offer.get("price") if isinstance(offer, dict) else None
             if isinstance(price, (int, float)) and not isinstance(price, bool):
-                price = f"{price:g}"
+                try:
+                    price = f"{price:g}"
+                except (OverflowError, ValueError):  # a JSON integer of hundreds of digits does not fit a float
+                    price = None
             if isinstance(price, str) and price.strip():
                 found.append(price)
     return found
