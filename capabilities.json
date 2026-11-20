@@ -130,6 +130,14 @@
       ],
       "loads_plugins": false
     },
+    "align": {
+      "network": "target",
+      "api_keys": [],
+      "writes": [
+        "--output"
+      ],
+      "loads_plugins": false
+    },
     "authority": {
       "network": "target, including the sitemap's pages and sub-sitemaps",
       "api_keys": [],
