@@ -1606,3 +1606,30 @@ class LintResult:
         "Pattern checks on the page text (English and Italian), not a fact-check. A statistic, a badge or an absolute "
         "promise may be fine when the evidence sits elsewhere on the page or behind a link this check does not follow."
     )
+
+
+@dataclass
+class FanoutFamily:
+    """One family of sub-intents and how well the page covers it."""
+
+    family: str
+    status: str = "uncovered"  # covered | partial | uncovered, from the mean score of the family's queries
+    mean_score: float = 0.0
+    items: list[AlignItem] = field(default_factory=list)
+
+
+@dataclass
+class FanoutResult:
+    """Sub-intent coverage of one page for one seed topic. Fixed templates, lexical match; not what an engine issues."""
+
+    url: str = ""
+    error: str | None = None
+    seed: str = ""
+    families: list[FanoutFamily] = field(default_factory=list)
+    covered: int = 0
+    partial: int = 0
+    uncovered: int = 0
+    disclaimer: str = (
+        "The sub-intents are a fixed checklist of common commercial follow-ups, not the searches any engine really "
+        "issues, and coverage is a lexical match on the page text. Use it to find gaps, not to predict answers."
+    )
