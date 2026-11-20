@@ -183,3 +183,25 @@ class TestFullAuditPath:
     def test_v4_still_reads_the_root_only(self):
         result = self._audit("https://example.com/blog/", 4)
         assert "GPTBot" not in result.robots.bots_blocked and "GPTBot" in result.robots.bots_allowed
+
+
+class TestPriceMustStandAlone:
+    PRODUCT = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "Blue chair",
+        "offers": {"@type": "Offer", "price": "1"},
+    }
+
+    def test_one_is_not_visible_inside_another_number(self):
+        assert _page(self.PRODUCT, "<h1>Blue chair</h1><p>2019 items sold</p>").visible_match_strict is False
+        assert _page(self.PRODUCT, "<h1>Blue chair</h1><p>Price: 1 EUR</p>").visible_match_strict is True
+
+    def test_a_longer_decimal_is_not_the_price(self):
+        product = {**self.PRODUCT, "offers": {"@type": "Offer", "price": 89}}
+        assert _page(product, "<h1>Blue chair</h1><p>Only 89.5 today</p>").visible_match_strict is False
+        assert _page(product, "<h1>Blue chair</h1><p>Only 89. Today.</p>").visible_match_strict is True
+
+    def test_decimal_comma_spelling_is_accepted(self):
+        product = {**self.PRODUCT, "offers": {"@type": "Offer", "price": "19.90"}}
+        assert _page(product, "<h1>Blue chair</h1><p>19,90 €</p>").visible_match_strict is True
