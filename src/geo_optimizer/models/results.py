@@ -1579,3 +1579,29 @@ class AlignResult:
         "It is not what any AI system would answer, and it uses no language model. English plurals are matched; "
         "other languages match on exact words; text inside images, scripts and navigation is not read."
     )
+
+
+@dataclass
+class LintFinding:
+    """One sentence worth a second look."""
+
+    rule: str  # unsourced_statistic | unsupported_authority | duplicate_block | keyword_list | caveat_omitted
+    family: str  # authority_laundering | relevance_flooding | caveat_omission
+    excerpt: str = ""
+    why: str = ""
+
+
+@dataclass
+class LintResult:
+    """Epistemic lint of one page: heuristics, with false positives. A finding is a question, not a verdict."""
+
+    url: str = ""
+    error: str | None = None
+    blocks_checked: int = 0
+    findings: list[LintFinding] = field(default_factory=list)
+    counts: dict[str, int] = field(default_factory=dict)  # per rule, before the cap on listed findings
+    truncated: bool = False
+    disclaimer: str = (
+        "Pattern checks on the page text (English and Italian), not a fact-check. A statistic, a badge or an absolute "
+        "promise may be fine when the evidence sits elsewhere on the page or behind a link this check does not follow."
+    )
