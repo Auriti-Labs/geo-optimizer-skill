@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from typing import TYPE_CHECKING
 
 from geo_optimizer.models.config import (
@@ -44,25 +45,26 @@ def _is_question_content(node) -> bool:
     return True
 
 
-def _visible_strings(schema: dict) -> list[str]:
-    """Texts a schema declares that a visitor must also be able to read on the page.
+def _visible_strings(schema: dict) -> list[tuple[str, str]]:
+    """Texts a schema declares that a visitor must also be able to read on the page, as ``(text, kind)`` pairs
+    where kind is ``"text"`` or ``"price"``.
 
     ``name`` and ``headline`` of any schema; the question of every FAQPage entry; the price of a Product
     offer. Answers are not compared: their markup and whitespace differ from the declared text too often
     for an exact match to mean anything.
     """
-    found: list[str] = []
+    found: list[tuple[str, str]] = []
     for field in ("name", "headline"):
         value = schema.get(field)
         if isinstance(value, str) and len(value.strip()) >= AI_READINESS_SCHEMA_NAME_MIN_LEN:
-            found.append(value)
+            found.append((value, "text"))
     types = {t.lower() for t in jsonld_types(schema.get("@type"))}
     if "faqpage" in types:
         entities = schema.get("mainEntity")
         for item in entities if isinstance(entities, list) else [entities]:
             name = item.get("name") if isinstance(item, dict) else None
             if isinstance(name, str) and len(name.strip()) >= AI_READINESS_SCHEMA_NAME_MIN_LEN:
-                found.append(name)
+                found.append((name, "text"))
     if "product" in types:
         offers = schema.get("offers")
         for offer in offers if isinstance(offers, list) else [offers]:
@@ -73,8 +75,18 @@ def _visible_strings(schema: dict) -> list[str]:
                 except (OverflowError, ValueError):  # a JSON integer of hundreds of digits does not fit a float
                     price = None
             if isinstance(price, str) and price.strip():
-                found.append(price)
+                found.append((price.strip(), "price"))
     return found
+
+
+def _is_visible(text: str, kind: str, visible_text: str) -> bool:
+    """Whether ``text`` appears in the visible page text. A price must stand alone as a number: ``1`` is not
+    visible in "2019 items" and ``89`` is not visible in "89.5". ``19.90`` also matches ``19,90``."""
+    needle = text.strip().casefold()
+    if kind != "price":
+        return needle in visible_text
+    spellings = {needle, needle.replace(".", ",")}
+    return any(re.search(rf"(?<![\d.,]){re.escape(s)}(?!\d|[.,]\d)", visible_text) for s in spellings)
 
 
 def _visible_coverage(raw_schemas: list[dict], visible_text: str) -> bool:
@@ -89,7 +101,7 @@ def _visible_coverage(raw_schemas: list[dict], visible_text: str) -> bool:
         if not strings:
             continue
         checked += 1
-        if not all(text.strip().casefold() in visible_text for text in strings):
+        if not all(_is_visible(text, kind, visible_text) for text, kind in strings):
             return False
     return checked > 0
 
