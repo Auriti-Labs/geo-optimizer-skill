@@ -1218,3 +1218,17 @@ LINT_QUALIFIER_RE: str = (
     r"\bmay\b|\bmight\b|can vary|\bdepends?\b|\bup to\b|\btypically\b|\busually\b|results vary|terms apply"
     r"|conditions|limitations?|\bexcept\b|\bunless\b|\bif\b|dipende|fino a|condizioni|di solito|in genere"
 )
+
+# ─── geo fanout: commercial sub-intent families (fixed templates, no LLM, not mined from data) ───────────────
+# An answer engine often fans a buying question out into narrower searches. These families are a checklist of the
+# usual ones, written by hand: they are not what any engine really issues, and {t} is the seed topic.
+FANOUT_FAMILIES: dict[str, tuple[str, ...]] = {
+    "price": ("{t} price", "how much does {t} cost", "{t} pricing plans"),
+    "comparison": ("{t} vs alternatives", "best alternatives to {t}", "{t} compared"),
+    "reviews": ("{t} reviews", "is {t} worth it", "{t} pros and cons"),
+    "how_to": ("how to choose {t}", "how to get started with {t}", "{t} step by step"),
+    "fit": ("{t} for small business", "{t} for beginners", "who is {t} for"),
+    "trust": ("is {t} safe", "{t} guarantee", "{t} support and contact"),
+    "free_options": ("free {t}", "{t} free trial", "{t} open source"),
+}
+FANOUT_MAX_SEED_CHARS: int = 120
