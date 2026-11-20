@@ -463,6 +463,7 @@ _DOCS_PAGES = {
     "ai-context": "Using as AI Context",
     "geo-methods": "The 11 GEO Methods",
     "geo-perception": "AI Perception Snapshot",
+    "geo-align": "Prompt Alignment",
     "ai-bots-reference": "AI Bots Reference",
     "ci-cd": "CI/CD Integration",
     "scoring-rubric": "Scoring Rubric",
