@@ -818,9 +818,9 @@ def _build_negative_signals_card(result: AuditResult) -> Panel | None:
         ),
         ("Thin content", ns.is_thin_content, ""),
         (
-            "Broken links",
-            ns.has_broken_links,
-            f"{ns.broken_links_count} empty hrefs" if ns.broken_links_count else "",
+            "Empty links",
+            ns.has_empty_links,
+            f"{ns.empty_links_count} placeholder hrefs" if ns.empty_links_count else "",
         ),
         (
             "Keyword stuffing",
@@ -852,6 +852,25 @@ def _build_negative_signals_card(result: AuditResult) -> Panel | None:
             else:
                 line.append(f"✓ {label}", style=_COLORS["excellent"])
         content_parts.append(line)
+
+    # Broken link targets: a verdict only when the opt-in check ran. When it did not,
+    # the line says "not checked" — never "0 broken links". The scope is printed on
+    # both verdicts, so a run stopped by the cap never reads as a complete one.
+    line = Text("  ")
+    if ns.broken_links_count is None:
+        line.append("— Broken links", style=_COLORS["dim"])
+        line.append("  (not checked — run with --check-links)", style=_COLORS["dim"])
+    else:
+        scope = f"{ns.links_checked_count} internal link{'s' if ns.links_checked_count != 1 else ''} checked"
+        if ns.links_check_truncated:
+            scope += ", capped"
+        if ns.broken_links_count:
+            line.append("✗ Broken links", style=_COLORS["critical"])
+            line.append(f"  ({ns.broken_links_count} dead of {scope})", style=_COLORS["dim"])
+        else:
+            line.append("✓ Broken links", style=_COLORS["excellent"])
+            line.append(f"  ({scope})", style=_COLORS["dim"])
+    content_parts.append(line)
 
     t = Table(show_header=False, box=None, expand=True, padding=0)
     t.add_column(ratio=1)

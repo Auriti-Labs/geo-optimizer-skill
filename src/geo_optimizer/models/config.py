@@ -812,6 +812,16 @@ CONTENT_MIN_WORDS = 300
 # Negative-signals thresholds
 BOILERPLATE_RATIO_THRESHOLD: float = 0.6  # page flagged as boilerplate-heavy above this ratio
 MIXED_SIGNALS_WORD_THRESHOLD: int = 1000  # H1 promises depth but body is below this word count
+EMPTY_LINKS_THRESHOLD: int = 3  # more empty/placeholder hrefs than this flags has_empty_links
+
+# Internal link verification (opt-in: ``geo audit --check-links``).
+# The only negative-signals check that emits HTTP requests. Without the flag the
+# broken-link fields stay None — "not verified", which is not the same as zero.
+LINK_CHECK_MAX_REQUESTS: int = 25  # hard cap on internal links fetched per page
+LINK_CHECK_TIMEOUT_SECONDS: int = 5  # short timeout: a slow link is unverifiable, not broken
+LINK_CHECK_BROKEN_STATUS: tuple[int, ...] = (404, 410)  # only these count as broken
+LINK_CHECK_BROKEN_THRESHOLD: int = 0  # more broken links than this flags has_broken_links
+LINK_CHECK_SAMPLES_CAP: int = 10  # max broken URLs kept in the result for reporting
 
 # Negative-signals score penalties (gap #1 — applied in scoring.py)
 NEGATIVE_PENALTY_HIGH: int = 5  # severity == "high" (4+ signals): -5pt

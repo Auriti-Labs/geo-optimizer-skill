@@ -332,6 +332,8 @@ Return the Trust Stack Score for a website. Aggregates five trust layers: techni
 
 Check negative signals that reduce AI citation probability. Detects CTA overload, thin content, keyword stuffing, mixed signals, and other anti-citation patterns.
 
+Link targets are not fetched by this tool: `empty_links_count` counts hrefs that point nowhere in the markup (`href=""`, `#`, `javascript:void(0)`), while `broken_links_count` stays `null` (not verified). Use `geo audit --check-links` to verify internal link targets.
+
 | Argument | Type | Required | Description |
 |----------|------|----------|-------------|
 | `url` | string | yes | URL of the page to inspect |

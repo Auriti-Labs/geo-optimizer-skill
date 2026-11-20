@@ -942,6 +942,7 @@ def run_full_audit(
     on_step: Callable[[str], None] | None = None,
     score_version: int = DEFAULT_SCORE_VERSION,
     load_plugins: bool = True,
+    check_links: bool = False,
 ) -> AuditResult:
     """Run complete audit and return AuditResult with all sub-results, score, band, and recommendations.
 
@@ -951,6 +952,9 @@ def run_full_audit(
         project_config: Optional ProjectConfig — if it has extra_bots, merges them with AI_BOTS (fix #120).
         on_step: Optional callback called with the name of each phase (AUDIT_STEPS) as it starts.
         load_plugins: If False, installed ``geo_optimizer.checks`` plugins are neither loaded nor run.
+        check_links: If True, internal links are fetched to verify their targets
+            (extra HTTP requests, capped at LINK_CHECK_MAX_REQUESTS). Default False
+            leaves the broken-link fields unverified (``None``).
     """
     _t0 = time.perf_counter()
     _audit_telemetry.set({"fetch_errors": []})
@@ -1113,8 +1117,17 @@ def run_full_audit(
     # v4.3: WebMCP Readiness check (#233) — zero extra HTTP fetch (#535: ai_disc reused)
     webmcp_result = audit_webmcp_readiness(soup, r.text, schema, ai_disc)
 
-    # v4.3: Negative Signals detection — zero HTTP fetch
-    negative_signals_result = audit_negative_signals(soup, r.text, content, meta, schema, soup_clean=soup_clean)
+    # v4.3: Negative Signals detection — zero HTTP fetch unless --check-links
+    negative_signals_result = audit_negative_signals(
+        soup,
+        r.text,
+        content,
+        meta,
+        schema,
+        soup_clean=soup_clean,
+        base_url=base_url,
+        check_links=check_links,
+    )
 
     # v4.4: Prompt Injection Pattern Detection (#276) — zero HTTP fetch
     from geo_optimizer.core.injection_detector import audit_prompt_injection
@@ -1191,6 +1204,7 @@ async def run_full_audit_async(
     on_step: Callable[[str], None] | None = None,
     score_version: int = DEFAULT_SCORE_VERSION,
     load_plugins: bool = True,
+    check_links: bool = False,
 ) -> AuditResult:
     """Async variant of the full audit with parallel fetch (httpx).
 
@@ -1205,6 +1219,9 @@ async def run_full_audit_async(
         project_config: Optional ProjectConfig — if it has extra_bots, merges them with AI_BOTS.
         on_step: Optional callback called with the name of each phase (AUDIT_STEPS) as it starts.
         load_plugins: If False, installed ``geo_optimizer.checks`` plugins are neither loaded nor run.
+        check_links: If True, internal links are fetched to verify their targets.
+            The verification itself is synchronous (it reuses the anti-SSRF
+            ``fetch_url``), so it is not parallelised with the rest of the audit.
 
     Requires: pip install geo-optimizer-skill[async]
     """
@@ -1367,8 +1384,17 @@ async def run_full_audit_async(
     # v4.3: WebMCP Readiness check (#233) — zero extra HTTP fetch (#535: ai_disc reused)
     webmcp_result = audit_webmcp_readiness(soup, r_home.text, schema, ai_disc)
 
-    # v4.3: Negative Signals detection — zero HTTP fetch
-    negative_signals_result = audit_negative_signals(soup, r_home.text, content, meta, schema, soup_clean=soup_clean)
+    # v4.3: Negative Signals detection — zero HTTP fetch unless --check-links
+    negative_signals_result = audit_negative_signals(
+        soup,
+        r_home.text,
+        content,
+        meta,
+        schema,
+        soup_clean=soup_clean,
+        base_url=base_url,
+        check_links=check_links,
+    )
 
     # v4.4: Prompt Injection Pattern Detection (#276) — zero HTTP fetch
     from geo_optimizer.core.injection_detector import audit_prompt_injection

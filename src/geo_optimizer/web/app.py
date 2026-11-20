@@ -1906,6 +1906,19 @@ def _dict_to_audit_result(data: dict):
         from geo_optimizer.models.results import NegativeSignalsResult
 
         ns = data["negative_signals"]
+        # Payloads cached before the rename stored the empty-href count under
+        # ``broken_links_count``. Read them back as what they actually measured:
+        # no link target was ever verified in those runs.
+        if "empty_links_count" in ns:
+            empty_links_count = ns.get("empty_links_count", 0)
+            has_empty_links = ns.get("has_empty_links", False)
+            broken_links_count = ns.get("broken_links_count")
+            has_broken_links = ns.get("has_broken_links")
+        else:
+            empty_links_count = ns.get("broken_links_count", 0)
+            has_empty_links = ns.get("has_broken_links", False)
+            broken_links_count = None
+            has_broken_links = None
         result.negative_signals = NegativeSignalsResult(
             checked=ns.get("checked", True),
             cta_density_high=ns.get("cta_density_high", False),
@@ -1913,8 +1926,13 @@ def _dict_to_audit_result(data: dict):
             has_popup_signals=ns.get("has_popup_signals", False),
             popup_indicators=ns.get("popup_indicators", []),
             is_thin_content=ns.get("is_thin_content", False),
-            broken_links_count=ns.get("broken_links_count", 0),
-            has_broken_links=ns.get("has_broken_links", False),
+            empty_links_count=empty_links_count,
+            has_empty_links=has_empty_links,
+            broken_links_count=broken_links_count,
+            has_broken_links=has_broken_links,
+            broken_link_samples=ns.get("broken_link_samples", []),
+            links_checked_count=ns.get("links_checked_count", 0),
+            links_check_truncated=ns.get("links_check_truncated", False),
             has_keyword_stuffing=ns.get("has_keyword_stuffing", False),
             stuffed_word=ns.get("stuffed_word", ""),
             stuffed_density=ns.get("stuffed_density", 0.0),
