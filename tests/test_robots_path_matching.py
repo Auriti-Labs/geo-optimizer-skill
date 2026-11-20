@@ -123,3 +123,17 @@ def test_matcher_agrees_with_a_regex_reference():
     for rule in rules:
         for path in paths:
             assert _rule_matches(rule, path, wildcards=True) == reference(rule, path), (rule, path)
+
+
+def test_home_page_keeps_the_partial_status_in_v5():
+    """Disallow: / with a specific Allow is "partial" for the site, on the home page as before."""
+    parsed = _parsed("User-agent: GPTBot\nDisallow: /\nAllow: /public/\n")
+    assert classify_bot("GPTBot", "", parsed).status == "partial"
+    assert classify_bot("GPTBot", "", parsed, page_path="/", wildcards=True).status == "partial"
+    assert classify_bot("GPTBot", "", parsed, page_path="/public/a", wildcards=True).status == "allowed"
+    assert classify_bot("GPTBot", "", parsed, page_path="/private", wildcards=True).status == "blocked"
+
+
+def test_root_with_wildcards_uses_rfc_matching():
+    parsed = _parsed("User-agent: GPTBot\nDisallow: /*\n")
+    assert classify_bot("GPTBot", "", parsed, page_path="/", wildcards=True).status == "blocked"
