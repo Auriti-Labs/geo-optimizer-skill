@@ -265,9 +265,10 @@ async def fetch_url_async(
             client = _create_pinned_client(timeout)
 
         current_url = url
-        for _ in range(_MAX_REDIRECTS):
+        for hops in range(_MAX_REDIRECTS):
             async with client.stream("GET", current_url, headers=headers) as r:
                 if r.status_code not in _REDIRECT_STATUSES:
+                    r.redirect_hops = hops  # hops followed before this response; read by the audit
                     content_length = r.headers.get("content-length")
                     if content_length:
                         try:

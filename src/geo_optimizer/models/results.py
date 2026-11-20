@@ -1044,6 +1044,7 @@ class GoogleAiReadinessResult:
     points: int = 0
     max_points: int = 0
     final_url: str = ""
+    redirect_hops: int = 0  # redirects followed before the audited page; advisory only, never scored
     checks: list[ReadinessCheck] = field(default_factory=list)
 
 
