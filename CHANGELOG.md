@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- `geo lint --url URL`: deterministic epistemic lint of a page's claims (English and Italian). It lists a statistic with no source, date or sample beside it, a badge or superlative with no link, the same block repeated or a block that is only a long keyword list, and an absolute promise with no qualifier; sentences that ask, deny or soften the promise are not counted. A finding is a question, not a verdict; nothing is scored and no language model is used. Patterns and thresholds are constants in `models/config.py`.
+
 ## [4.24.0] — 2026-11-20
 
 ### Added

@@ -464,6 +464,7 @@ _DOCS_PAGES = {
     "geo-methods": "The 11 GEO Methods",
     "geo-perception": "AI Perception Snapshot",
     "geo-align": "Prompt Alignment",
+    "geo-lint": "Epistemic Lint",
     "ai-bots-reference": "AI Bots Reference",
     "ci-cd": "CI/CD Integration",
     "scoring-rubric": "Scoring Rubric",
