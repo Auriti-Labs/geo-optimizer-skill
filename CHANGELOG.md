@@ -9,9 +9,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Added
 - `research/calibration-2026-10/scripts/`: the sampling, audit, query, export and analysis scripts of the October 2026 calibration study, without server paths or keys. The export step that wrote `results.csv` was rewritten and reproduces the published table row for row. The raw data with domains stays private.
+- `geo audit --check-links`: opt-in check of internal link targets that answer 404 or 410. It goes through `fetch_url()` (anti-SSRF validation and DNS pinning), with its own timeout and a cap on the number of requests; the report states the scope, so a run stopped by the cap never reads as complete. Without the flag no link request is made.
+- Negative signals: `empty_links_count`, the number of placeholder hrefs (`""`, `#`, `javascript:void(0)`), reported on every audit with zero HTTP requests.
 - MCP server: `geo_audit` receipt includes `failed_fetches` and marks fetch stage as failed when auxiliary fetches (`robots.txt`, `llms.txt`, AI discovery endpoints) fail, return 429 or 5xx server errors, while still returning computed audit score and keeping `terminal_error` as `None` (#557).
 
 ### Changed
+- Negative signals no longer call placeholder hrefs "broken links": `broken_links_count` and `has_broken_links` are `None` (JSON `null`, "not checked" in the card) unless `--check-links` ran, because "not verified" is not "none found". An audit without the flag scores exactly as before. README, docs and the manifesto no longer claim a broken-link check that was never made. Cached payloads written before this change are read back as placeholder-href counts, with the broken-link fields unverified.
 - MCP server: `geo_audit` receipt normalizes `terminal_error` to a stable set of error codes (`timeout`, `connection_failed`, `http_error`, `too_large`, `unsafe_url`, `invalid_argument`, `internal`) instead of arbitrary exception or HTTP error strings (#557).
 - The website (`frontend/`, the Sanity scheduled-publish workflow, its SEO regression test and the `frontend-unit` CI job) moved to its own repository, Auriti-Labs/geoready-site. `Dockerfile.web` now builds the engine only; the site image installs this engine from PyPI at a pinned version. `integrations/astro-geoready` stays here for people who use it from the README.
 
