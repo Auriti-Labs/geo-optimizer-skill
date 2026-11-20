@@ -133,3 +133,16 @@ class TestRobotsOnThePage:
 def test_cli_accepts_score_version_5():
     out = CliRunner().invoke(cli, ["audit", "--help"])
     assert out.exit_code == 0 and "--score-version [1|2|3|4|5]" in out.output
+
+
+class TestHostileJsonLd:
+    def test_a_huge_integer_price_does_not_raise(self):
+        """json.loads accepts integers of thousands of digits; formatting one as a float used to overflow."""
+        html = (
+            "<html><body><h1>Widget thing</h1><script type='application/ld+json'>"
+            '{"@type":"Product","name":"Widget thing","offers":{"price":' + "1" + "0" * 400 + "}}"
+            "</script></body></html>"
+        )
+        result = audit_schema(BeautifulSoup(html, "html.parser"), "https://x.test/")
+        assert result.visible_match is True  # unchanged old behaviour
+        assert result.visible_match_strict is True  # the unusable price is skipped, the name still matches
