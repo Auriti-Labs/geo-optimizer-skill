@@ -6,6 +6,7 @@ v2 stays the default; v1 to v4 numbers must not change.
 from __future__ import annotations
 
 import json
+from unittest.mock import Mock, patch
 
 from bs4 import BeautifulSoup
 from click.testing import CliRunner
@@ -112,6 +113,11 @@ class _Response:
 class TestRobotsOnThePage:
     ROBOTS = "User-agent: GPTBot\nDisallow: /blog/\n\nUser-agent: ClaudeBot\nDisallow: /*.pdf$\n"
 
+    def test_judgement_keeps_the_requested_path_slash_scheme_and_params(self):
+        assert _robots_judgement("https://x.test/blog/", 5)["page_path"] == "/blog/"
+        assert _robots_judgement("x.test/blog/", 5)["page_path"] == "/blog/"  # no scheme typed
+        assert _robots_judgement("https://x.test/a;b=1?c=2", 5)["page_path"] == "/a;b=1?c=2"
+
     def test_judgement_kwargs_only_from_v5(self):
         assert _robots_judgement("https://x.test/blog/p", 4) == {}
         assert _robots_judgement("https://x.test/blog/p?a=1", 5) == {"page_path": "/blog/p?a=1", "wildcards": True}
@@ -146,3 +152,34 @@ class TestHostileJsonLd:
         result = audit_schema(BeautifulSoup(html, "html.parser"), "https://x.test/")
         assert result.visible_match is True  # unchanged old behaviour
         assert result.visible_match_strict is True  # the unusable price is skipped, the name still matches
+
+
+class TestFullAuditPath:
+    """run_full_audit with a stubbed network: the page path reaches the robots check."""
+
+    ROBOTS = "User-agent: GPTBot\nDisallow: /blog/\n"
+
+    def _audit(self, url: str, version: int):
+        from geo_optimizer.core.audit import run_full_audit
+
+        html = "<html lang='en'><head><title>Blog</title></head><body><h1>Blog</h1><p>Posts.</p></body></html>"
+
+        def fake_fetch(u, *args, **kwargs):
+            if u.endswith("/robots.txt"):
+                return Mock(status_code=200, text=self.ROBOTS, content=self.ROBOTS.encode(), headers={}), None
+            if u.rstrip("/").endswith("/blog"):
+                return Mock(status_code=200, text=html, content=html.encode(), headers={}), None
+            return None, "Not found"
+
+        with (
+            patch("geo_optimizer.core.audit.fetch_url", side_effect=fake_fetch),
+            patch("geo_optimizer.core.audit.check_markdown_negotiation", return_value=False),
+        ):
+            return run_full_audit(url, score_version=version)
+
+    def test_v5_blocks_the_bot_on_a_section_page_with_a_trailing_slash(self):
+        assert "GPTBot" in self._audit("https://example.com/blog/", 5).robots.bots_blocked
+
+    def test_v4_still_reads_the_root_only(self):
+        result = self._audit("https://example.com/blog/", 4)
+        assert "GPTBot" not in result.robots.bots_blocked and "GPTBot" in result.robots.bots_allowed
