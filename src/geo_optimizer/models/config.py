@@ -1184,3 +1184,37 @@ ALIGN_STOPWORDS: frozenset[str] = frozenset(
         "with",
     ]
 )
+
+# ─── geo lint: epistemic lint of page claims (deterministic heuristics, no LLM) ─────────────────────────────
+# Three families, all heuristics with false positives: a finding is a question to ask about the sentence, not a
+# verdict. Patterns are English and Italian. The numbers are judgments, kept here so they change in one place.
+LINT_MAX_FINDINGS: int = 50
+LINT_EXCERPT_CHARS: int = 160
+LINT_MIN_BLOCK_WORDS: int = 6
+LINT_DUPLICATE_BLOCKS_MIN: int = 3  # the same block this many times is relevance flooding
+LINT_KEYWORD_LIST_MIN_ITEMS: int = 20  # a block that is a list of this many short items
+LINT_KEYWORD_LIST_MAX_ITEM_WORDS: int = 4
+LINT_STATISTIC_RE: str = (
+    r"\b\d{1,3}(?:[.,]\d+)?\s?%|\b\d+(?:[.,]\d+)?\s?x\b|\b\d+(?:[.,]\d+)?\s+times\b"
+    r"|\b(?:increase|increased|reduce|reduced|grow|grew|boost|boosted|improve|improved|cut|aument\w+|riduc\w+|cresc\w+)"
+    r"\w*\s+(?:by\s+|del\s+|di\s+)?\d"
+)
+LINT_EVIDENCE_RE: str = (
+    r"\bsources?\b|according to|\bstudy\b|\bsurvey\b|\breport\b|\bn\s?=\s?\d|\bsample\b|respondents|research by"
+    r"|\b(?:19|20)\d{2}\b|\bsecondo\b|\bfonte\b|\bstudio\b|\bindagine\b|\bsondaggio\b|\bcampione\b"
+)
+LINT_AUTHORITY_RE: str = (
+    r"award[- ]winning|#\s?1\b|\bnumber one\b|best[- ]in[- ]class|world[- ]class|market leader|\bleading provider\b"
+    r"|trusted by \d|as seen (?:in|on)|\bcertified\b|premiat\w+|leader di mercato|il migliore"
+)
+LINT_ABSOLUTE_RE: str = (
+    r"\bguarantee[sd]?\b|100\s?%\s?(?:guarantee|safe|accurate|effective|secure|organic|success)"
+    r"|\balways (?:works?|delivers?|ranks?|wins?)\b|\bnever fails?\b|\brisk[- ]free\b|\bzero risk\b|\bno side effects\b"
+    r"|garantit\w+|senza rischi|funziona sempre"
+)
+# A sentence that denies or softens the promise is not a promise: "does not guarantee", "almost always".
+LINT_NEGATION_RE: str = r"\b(?:not|no|never|cannot|without|non|mai|nessuna|neither)\b|n't\b|\b(?:almost|nearly|quasi)\b"
+LINT_QUALIFIER_RE: str = (
+    r"\bmay\b|\bmight\b|can vary|\bdepends?\b|\bup to\b|\btypically\b|\busually\b|results vary|terms apply"
+    r"|conditions|limitations?|\bexcept\b|\bunless\b|\bif\b|dipende|fino a|condizioni|di solito|in genere"
+)
