@@ -15,7 +15,6 @@ Supports:
 from __future__ import annotations
 
 import logging
-import re
 from dataclasses import dataclass, field
 
 # Maximum byte limit for the robots.txt file (RFC 9309 §2.5)
@@ -136,8 +135,32 @@ def _rule_matches(rule_path: str, path: str, *, wildcards: bool) -> bool:
         return path.startswith(rule_path) or rule_path == "/"
     anchored = rule_path.endswith("$")
     body = rule_path[:-1] if anchored else rule_path
-    pattern = ".*".join(re.escape(part) for part in body.split("*"))
-    return re.match(pattern + (r"\Z" if anchored else ""), path, re.DOTALL) is not None
+    return _glob_matches(body.split("*"), path, anchored)
+
+
+def _glob_matches(parts: list[str], path: str, anchored: bool) -> bool:
+    """Match the pieces of a rule between its ``*`` against ``path``, without a regular expression.
+
+    The first piece must open the path; the middle pieces are found left to right (the leftmost find leaves the
+    most room for what follows); the last piece must close the path when the rule ends with ``$``, otherwise it
+    only has to occur after the previous piece. Cost: one ``str.find`` per piece. A regex built from the same
+    rule backtracks without bound on a hostile robots.txt such as ``/a*a*a*a*a*b``.
+    """
+    first, *rest = parts
+    if not path.startswith(first):
+        return False
+    pos = len(first)
+    if not rest:
+        return pos == len(path) if anchored else True
+    *middle, last = rest
+    for piece in middle:
+        found = path.find(piece, pos)
+        if found < 0:
+            return False
+        pos = found + len(piece)
+    if anchored:
+        return len(path) - len(last) >= pos and path.endswith(last)
+    return path.find(last, pos) >= 0
 
 
 def _is_path_allowed(path: str, rules: AgentRules, *, wildcards: bool = False) -> bool | None:

@@ -89,3 +89,37 @@ def test_wildcard_longest_match_with_allow():
     rules = _rules("User-agent: GPTBot\nDisallow: /*.pdf$\nAllow: /public/*.pdf$\n")
     assert _is_path_allowed("/a/x.pdf", rules, wildcards=True) is False
     assert _is_path_allowed("/public/x.pdf", rules, wildcards=True) is True
+
+
+# ── hostile and equivalence checks for the wildcard matcher ──────────────────
+
+
+def test_many_stars_do_not_backtrack():
+    """A regex built from this rule takes minutes on this path; the matcher answers at once."""
+    import time
+
+    rules = _rules("User-agent: GPTBot\nDisallow: /" + "a*" * 12 + "b\n")
+    started = time.perf_counter()
+    assert _is_path_allowed("/" + "a" * 5000, rules, wildcards=True) is None
+    assert time.perf_counter() - started < 1.0
+
+
+def test_matcher_agrees_with_a_regex_reference():
+    """Exhaustive over a small alphabet: the two-pointer matcher equals the regex it replaces."""
+    import itertools
+    import re
+
+    from geo_optimizer.utils.robots_parser import _rule_matches
+
+    def reference(rule: str, path: str) -> bool:
+        anchored = rule.endswith("$")
+        body = rule[:-1] if anchored else rule
+        pattern = ".*".join(re.escape(p) for p in body.split("*")) + (r"\Z" if anchored else "")
+        return re.match(pattern, path, re.DOTALL) is not None
+
+    rule_chars, path_chars = "ab*$", "ab"
+    rules = ["".join(c) for n in range(1, 6) for c in itertools.product(rule_chars, repeat=n)]
+    paths = ["".join(c) for n in range(0, 7) for c in itertools.product(path_chars, repeat=n)]
+    for rule in rules:
+        for path in paths:
+            assert _rule_matches(rule, path, wildcards=True) == reference(rule, path), (rule, path)
