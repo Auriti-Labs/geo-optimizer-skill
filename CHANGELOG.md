@@ -8,6 +8,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ## [Unreleased]
 
 ### Added
+- Rubric v5 (opt-in with `--score-version 5`; the default stays v2): v4 plus a robots check judged on the audited page with RFC 9309 wildcards (`*`, `$`), and a schema visibility point given only when every checkable schema is visible (names, headlines, FAQPage questions, product prices). Scores of v1 to v4 do not change. `classify_bot` takes optional `page_path` and `wildcards`; their defaults keep the root-only reading.
 - `research/calibration-2026-10/scripts/`: the sampling, audit, query, export and analysis scripts of the October 2026 calibration study, without server paths or keys. The export step that wrote `results.csv` was rewritten and reproduces the published table row for row. The raw data with domains stays private.
 - `geo audit --check-links`: opt-in check of internal link targets that answer 404 or 410. It goes through `fetch_url()` (anti-SSRF validation and DNS pinning), with its own timeout and a cap on the number of requests; the report states the scope, so a run stopped by the cap never reads as complete. Without the flag no link request is made.
 - Negative signals: `empty_links_count`, the number of placeholder hrefs (`""`, `#`, `javascript:void(0)`), reported on every audit with zero HTTP requests.
