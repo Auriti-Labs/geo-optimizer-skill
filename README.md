@@ -167,6 +167,7 @@ geo authority --sitemap https://yoursite.com/sitemap.xml   # topical authority: 
 geo logs --file access.log                                  # AI crawler activity from server logs
 geo access --url https://yoursite.com                       # browser vs AI-bot access simulation
 geo perception --url https://yoursite.com                   # what an AI would extract from the page
+geo align --url https://yoursite.com --prompts prompts.txt  # how much of each prompt the page text covers (lexical, no LLM)
 ```
 
 Guides for most commands live in [`docs/`](docs/). Provider setup for `geo citations` (Perplexity, OpenAI, Anthropic, Groq, Gemini, MiniMax, DeepSeek, and SerpBase for the real Google SERP + AI Overview): [docs/llm-providers.md](docs/llm-providers.md).
