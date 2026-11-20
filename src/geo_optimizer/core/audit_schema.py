@@ -44,6 +44,53 @@ def _is_question_content(node) -> bool:
     return True
 
 
+def _visible_strings(schema: dict) -> list[str]:
+    """Texts a schema declares that a visitor must also be able to read on the page.
+
+    ``name`` and ``headline`` of any schema; the question of every FAQPage entry; the price of a Product
+    offer. Answers are not compared: their markup and whitespace differ from the declared text too often
+    for an exact match to mean anything.
+    """
+    found: list[str] = []
+    for field in ("name", "headline"):
+        value = schema.get(field)
+        if isinstance(value, str) and len(value.strip()) >= AI_READINESS_SCHEMA_NAME_MIN_LEN:
+            found.append(value)
+    types = {t.lower() for t in jsonld_types(schema.get("@type"))}
+    if "faqpage" in types:
+        entities = schema.get("mainEntity")
+        for item in entities if isinstance(entities, list) else [entities]:
+            name = item.get("name") if isinstance(item, dict) else None
+            if isinstance(name, str) and len(name.strip()) >= AI_READINESS_SCHEMA_NAME_MIN_LEN:
+                found.append(name)
+    if "product" in types:
+        offers = schema.get("offers")
+        for offer in offers if isinstance(offers, list) else [offers]:
+            price = offer.get("price") if isinstance(offer, dict) else None
+            if isinstance(price, (int, float)) and not isinstance(price, bool):
+                price = f"{price:g}"
+            if isinstance(price, str) and price.strip():
+                found.append(price)
+    return found
+
+
+def _visible_coverage(raw_schemas: list[dict], visible_text: str) -> bool:
+    """True when at least one schema is checkable and EVERY checkable schema is fully visible on the page.
+
+    Rubric v4 and earlier give the point as soon as one name or headline matches (``any``). Here a page whose
+    FAQPage questions or product price do not appear in the text, next to a matching headline, does not pass.
+    """
+    checked = 0
+    for schema in raw_schemas:
+        strings = _visible_strings(schema)
+        if not strings:
+            continue
+        checked += 1
+        if not all(text.strip().casefold() in visible_text for text in strings):
+            return False
+    return checked > 0
+
+
 def _has_visible_faq(soup: BeautifulSoup) -> bool:
     """True when the page shows at least two questions as headings or accordion summaries.
 
@@ -164,6 +211,7 @@ def audit_schema(soup: BeautifulSoup | None, url: str) -> SchemaResult:
         for schema in result.raw_schemas
         for field in ("name", "headline")
     )
+    result.visible_match_strict = _visible_coverage(result.raw_schemas, visible_text)
 
     # Schema completeness (gap #3): check required fields per SCHEMA_ORG_REQUIRED
     for schema_obj in result.raw_schemas:

@@ -129,6 +129,7 @@ class SchemaResult:
     schema_missing_fields: dict = field(default_factory=dict)
     incomplete_schema_types: list = field(default_factory=list)
     visible_match: bool = False
+    visible_match_strict: bool = False  # rubric v5: every checkable schema, FAQ question and product price is visible
     # v4: the page itself shows question-and-answer content (not only FAQPage markup)
     has_visible_faq: bool = False
 

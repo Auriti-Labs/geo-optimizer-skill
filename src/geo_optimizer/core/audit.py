@@ -13,7 +13,7 @@ import logging
 import time
 from collections.abc import Callable, Iterable
 from typing import Any
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 # ─── Re-exports from split modules (backward compatibility, #402) ────────────
 from geo_optimizer.core.audit_ai_discovery import (
@@ -889,6 +889,15 @@ def _set_error_recommendations(result: AuditResult, recommendations: list[str]) 
     result.recommendations_by_category = {RECOMMENDATION_OTHER_CATEGORY: list(recommendations)}
 
 
+def _robots_judgement(url: str, score_version: int) -> dict:
+    """Keyword arguments that make the robots check page-aware: rubric v5 and later judge the bots on the
+    audited page, with RFC 9309 wildcard matching. Earlier rubrics get no arguments and read the root only."""
+    if score_version < 5:
+        return {}
+    parts = urlparse(url)
+    return {"page_path": (parts.path or "/") + (f"?{parts.query}" if parts.query else ""), "wildcards": True}
+
+
 def _notify(on_step: Callable[[str], None] | None, step: str) -> None:
     """Segnala l'inizio di una fase reale al chiamante (la CLI mostra il progresso)."""
     if on_step is not None:
@@ -1066,7 +1075,7 @@ def run_full_audit(
     _notify(on_step, AUDIT_STEPS[1])
     # Run all sub-audits using the pre-downloaded responses
     # Fix #120: pass effective_bots which includes any extra_bots from project_config
-    robots = _audit_robots_from_response(r_robots, bots=effective_bots)
+    robots = _audit_robots_from_response(r_robots, bots=effective_bots, **_robots_judgement(base_url, score_version))
     llms = _audit_llms_from_response(r_llms, r_full=r_llms_full, url=llms_url_full)
     schema = audit_schema(soup, base_url)
     meta = audit_meta_tags(soup, base_url)
@@ -1309,7 +1318,7 @@ async def run_full_audit_async(
 
     _notify(on_step, AUDIT_STEPS[1])
     # Sub-audit robots.txt (uses pre-fetched response with extra_bots)
-    robots = _audit_robots_from_response(r_robots, bots=effective_bots)
+    robots = _audit_robots_from_response(r_robots, bots=effective_bots, **_robots_judgement(base_url, score_version))
 
     # Sub-audit llms.txt (uses pre-fetched response). On a CDN/WAF 403/406 it
     # retries with a browser-like UA through the synchronous fetch_url: run it in
