@@ -7,7 +7,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
-## [4.24.0] — 2026-11-21
+## [4.24.0] — 2026-11-20
 
 ### Added
 - `geo align --url URL --prompts FILE` (or `--prompt TEXT`): deterministic prompt-to-content alignment. For each prompt, the share of its terms found together in one surface of the page (title, h1, meta description, a heading, a passage), weighted by prominence, with the terms that appear nowhere on the page listed. A Search Console or Bing CSV export with a query column is accepted. Lexical, offline once the page is fetched, no language model; it is a measure of your content against your own list, not what an AI system answers. The weights and band thresholds are constants in `models/config.py`.
