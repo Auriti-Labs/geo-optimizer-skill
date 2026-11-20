@@ -273,3 +273,26 @@ class TestRedirectValidationWithRealValidator:
 
         assert ok is False
         assert ips == []
+
+
+class TestRedirectHopCount:
+    """The final response carries how many redirects were followed (read by the audit, advisory only)."""
+
+    @staticmethod
+    def _hops(redirects: int) -> int:
+        hops = [Mock(status_code=301, headers={"Location": f"/step{i}"}) for i in range(redirects)]
+        final = Mock(status_code=200, headers={}, _content=b"ok")
+        with (
+            patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, _PUBLIC_IP)),
+            patch.object(http_mod, "_execute_request", side_effect=[*hops, final]),
+        ):
+            result, error = fetch_url("https://example.com/a")
+        assert error is None
+        return result.redirect_hops
+
+    def test_no_redirect_is_zero_hops(self):
+        assert self._hops(0) == 0
+
+    def test_each_redirect_is_one_hop(self):
+        assert self._hops(1) == 1
+        assert self._hops(3) == 3

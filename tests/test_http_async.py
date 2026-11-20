@@ -510,3 +510,22 @@ def test_fetch_urls_async_client_non_creabile_restituisce_errori(monkeypatch):
 
     assert set(results) == {"https://example.com/a", "https://example.com/b"}
     assert all(resp is None and "DNS pinning" in err for resp, err in results.values())
+
+
+def test_fetch_url_async_final_response_counts_the_redirects_followed():
+    def handler(request):
+        if request.url.path == "/start":
+            return httpx.Response(301, headers={"location": "/a"})
+        if request.url.path == "/a":
+            return httpx.Response(302, headers={"location": "/b"})
+        return httpx.Response(200, content=b"ok")
+
+    async def _run(path: str):
+        async with _client(handler) as client:
+            return await fetch_url_async(f"https://example.com{path}", client=client)
+
+    two, _ = asyncio.run(_run("/start"))
+    zero, _ = asyncio.run(_run("/b"))
+
+    assert two.redirect_hops == 2
+    assert zero.redirect_hops == 0

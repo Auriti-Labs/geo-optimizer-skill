@@ -408,6 +408,7 @@ def _fetch_with_manual_redirects(
                     session.headers.update(headers)
             continue
 
+        r.redirect_hops = redirect_count  # hops followed before this response; read by the audit
         # Final response: download body via streaming or from already-present buffer.
         # Real requests use r._content internally (bytes, or False while streaming).
         raw_content = getattr(r, "_content", False)  # noqa: SLF001

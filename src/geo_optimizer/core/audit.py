@@ -61,6 +61,7 @@ from geo_optimizer.models.config import (  # noqa: F401 (VALUABLE_SCHEMAS re-exp
     KEYWORD_STUFFING_THRESHOLD,
     RECOMMENDATION_BLOCKERS_CATEGORY,
     RECOMMENDATION_OTHER_CATEGORY,
+    REDIRECT_CHAIN_WARN_HOPS,
     ROBOTS_KEY_BOTS_DISPLAY,
     SCORE_BANDS,
     SCORING,
@@ -167,6 +168,11 @@ def build_categorized_recommendations(
         for check in google_ai.checks:
             if check.status in ("fail", "warn") and check.max_points:
                 _h_google_ai.append(f"[{check.id}] {check.evidence} — {check.source_url}")
+        if google_ai.redirect_hops >= REDIRECT_CHAIN_WARN_HOPS:
+            _h_google_ai.append(
+                f"The audited URL redirects {google_ai.redirect_hops} times before the page loads: link to the "
+                "final URL, so crawlers spend one request instead of a chain."
+            )
 
     # ── CRITICAL — blocking signals ─────────────────────────────────────────
     # gap #2: X-Robots-Tag: noindex via HTTP header
@@ -902,6 +908,12 @@ def _robots_judgement(url: str, score_version: int) -> dict:
     return {"page_path": (parts.path or "/") + (f"?{parts.query}" if parts.query else ""), "wildcards": True}
 
 
+def _redirect_hops(response: object) -> int:
+    """Redirects the fetch followed before ``response``; 0 when the response carries no count."""
+    hops = getattr(response, "redirect_hops", 0)
+    return hops if isinstance(hops, int) and not isinstance(hops, bool) else 0
+
+
 def _notify(on_step: Callable[[str], None] | None, step: str) -> None:
     """Segnala l'inizio di una fase reale al chiamante (la CLI mostra il progresso)."""
     if on_step is not None:
@@ -1109,6 +1121,7 @@ def run_full_audit(
         )
     else:
         google_ai_result = GoogleAiReadinessResult()
+    google_ai_result.redirect_hops = _redirect_hops(r)
     content = audit_content_quality(soup, base_url, soup_clean=soup_clean)
 
     # v4.1: AI discovery endpoints audit (usa risposte pre-scaricate)
@@ -1372,6 +1385,7 @@ async def run_full_audit_async(
         )
     else:
         google_ai_result = GoogleAiReadinessResult()
+    google_ai_result.redirect_hops = _redirect_hops(r_home)
     content = audit_content_quality(soup, base_url, soup_clean=soup_clean)
 
     # v4.1: AI discovery from pre-fetched responses
