@@ -61,6 +61,15 @@ Recommendations follow the same rule: FAQPage markup is suggested only where the
 
 Rough estimate on about 1,245 sites audited with v2 in November 2026 (self-selected sample; page type is not recorded there, so this assumes no page shows questions or is an article, and it was not reproduced independently): average 66.9 (v2), 70.0 (v3), about 72 (v4); the band would change for 173 sites with v3 and about 300 with v4. Rescaling raises partial credit too (a schema worth 2 of 10 possible becomes 3 of 14).
 
+#### Rubric v5 (opt-in, `--score-version 5`)
+
+v5 is v4 plus two checks that follow the audited page instead of the site.
+
+- **Robots.** Each AI bot is judged on the path of the audited URL, by longest match, with RFC 9309 wildcards (`*` matches any run of characters, a final `$` anchors the end). Earlier rubrics judge the root only, so `Disallow: /blog/` still reads as "allowed" there. Auditing `/blog/post` with v5 reports that bot as blocked.
+- **Schema visibility.** The visibility point is given only when every checkable schema is visible on the page: each `name` and `headline`, each FAQPage question, each product offer price. Earlier rubrics give it as soon as one name or headline matches. Answers are not compared. A page with no checkable schema does not earn the point.
+
+Scores can go down against v4 where a page blocks a bot on its own path or declares questions or prices it does not show. v2 stays the default and v1 to v4 numbers do not change; history compares only snapshots of the same version.
+
 ### Google AI readiness - max 20 pts (v2)
 
 | Check | Points | One-line check | Source |

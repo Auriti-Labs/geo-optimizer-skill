@@ -757,13 +757,27 @@ CATEGORY_MAX_V3 = dict(CATEGORY_MAX_V2)
 SCORING_V4 = {**SCORING_V3, "schema_applicability": 1}
 CATEGORY_MAX_V4 = dict(CATEGORY_MAX_V2)
 
-SCORING_BY_VERSION = {1: SCORING, 2: SCORING_V2, 3: SCORING_V3, 4: SCORING_V4}
-CATEGORY_MAX_BY_VERSION = {1: CATEGORY_MAX, 2: CATEGORY_MAX_V2, 3: CATEGORY_MAX_V3, 4: CATEGORY_MAX_V4}
+# Rubric v5 (opt-in with --score-version 5; the default stays v2): v4 plus two checks that follow the page
+# instead of the site. The robots check judges every bot on the audited page (longest match, RFC 9309
+# wildcards `*` and `$`), not on the root alone. The schema visibility point is given only when every
+# checkable schema is visible: names and headlines, each FAQPage question, each product price.
+SCORING_V5 = {**SCORING_V4, "schema_visible_strict": 1}
+CATEGORY_MAX_V5 = dict(CATEGORY_MAX_V2)
+
+SCORING_BY_VERSION = {1: SCORING, 2: SCORING_V2, 3: SCORING_V3, 4: SCORING_V4, 5: SCORING_V5}
+CATEGORY_MAX_BY_VERSION = {
+    1: CATEGORY_MAX,
+    2: CATEGORY_MAX_V2,
+    3: CATEGORY_MAX_V3,
+    4: CATEGORY_MAX_V4,
+    5: CATEGORY_MAX_V5,
+}
 ROBOTS_PARTIAL_BY_VERSION = {
     1: ROBOTS_PARTIAL_SCORE,
     2: ROBOTS_PARTIAL_SCORE_V2,
     3: ROBOTS_PARTIAL_SCORE_V3,
     4: ROBOTS_PARTIAL_SCORE_V3,
+    5: ROBOTS_PARTIAL_SCORE_V3,
 }
 DEFAULT_SCORE_VERSION = 2
 

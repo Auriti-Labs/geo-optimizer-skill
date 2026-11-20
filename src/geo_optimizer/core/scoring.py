@@ -216,7 +216,8 @@ def _score_schema(schema, w: dict = SCORING, meta=None, category_max: int | None
         s += min(1, schema_website) if "WebSite" in incomplete else schema_website
 
     s += w.get("schema_sameas", 0) if schema.has_sameas else 0
-    s += w.get("schema_visible_match", 0) if getattr(schema, "visible_match", False) else 0
+    visible = getattr(schema, "visible_match_strict" if w.get("schema_visible_strict") else "visible_match", False)
+    s += w.get("schema_visible_match", 0) if visible else 0
 
     if w.get("schema_applicability", 0) and category_max:
         # v4: features that do not apply to this page leave the denominator; rescale to the category max

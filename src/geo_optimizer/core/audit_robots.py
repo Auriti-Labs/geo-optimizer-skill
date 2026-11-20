@@ -83,13 +83,17 @@ def audit_robots_txt(base_url: str, bots: dict | None = None) -> RobotsResult:
     return result
 
 
-def _audit_robots_from_response(r, bots: dict | None = None) -> RobotsResult:
+def _audit_robots_from_response(
+    r, bots: dict | None = None, *, page_path: str = "/", wildcards: bool = False
+) -> RobotsResult:
     """Analyze robots.txt from an already-downloaded HTTP response.
 
     Args:
         r: HTTP response (or None if fetch failed).
         bots: Dictionary of bots to check. Default: AI_BOTS from config.
               Allows passing extra bots from project_config.extra_bots.
+        page_path: Path (and query) the bots are judged on. "/" keeps the root-only reading (rubrics v1-v4).
+        wildcards: Apply RFC 9309 wildcard matching (rubric v5).
     """
     result = RobotsResult()
     # requests.Response is falsy for 4xx/5xx, so the status is read before the `not r` shortcut
@@ -105,7 +109,7 @@ def _audit_robots_from_response(r, bots: dict | None = None) -> RobotsResult:
     agent_rules = parse_robots_txt(content)
 
     for bot, description in effective_bots.items():
-        bot_status = classify_bot(bot, description, agent_rules)
+        bot_status = classify_bot(bot, description, agent_rules, page_path=page_path, wildcards=wildcards)
 
         if bot_status.status == "missing":
             result.bots_missing.append(bot)
@@ -122,7 +126,7 @@ def _audit_robots_from_response(r, bots: dict | None = None) -> RobotsResult:
     # #111 — Distinguish explicit permission from wildcard fallback
     citation_explicit = []
     for bot in CITATION_BOTS:
-        bot_status = classify_bot(bot, "", agent_rules)
+        bot_status = classify_bot(bot, "", agent_rules, page_path=page_path, wildcards=wildcards)
         if bot_status.status in ("allowed", "partial") and not bot_status.via_wildcard:
             citation_explicit.append(bot)
     result.citation_bots_explicit = len(citation_explicit) == len(CITATION_BOTS)
