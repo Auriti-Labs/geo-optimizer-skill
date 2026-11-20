@@ -313,6 +313,18 @@ class TestCitationsCli:
         assert "AI Citation Check" in result.output
         assert "STRONG" in result.output
         assert "geoready.dev" in result.output
+        assert "Surface:" in result.output and "chat interface" in result.output
+
+    def test_cli_json_says_the_surface_is_api(self, monkeypatch):
+        import json
+
+        monkeypatch.setenv("PERPLEXITY_API_KEY", "pk-test")
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("answer", citations=["https://acme.com"])
+            result = CliRunner().invoke(
+                cli, ["citations", "--brand", "Acme", "--domain", "acme.com", "--format", "json"]
+            )
+        assert json.loads(result.output)["surface"] == "api"
 
     def test_cli_json_output(self, monkeypatch):
         import json

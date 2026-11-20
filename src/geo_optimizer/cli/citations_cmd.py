@@ -61,6 +61,7 @@ def _format_text(result) -> str:
 
     lines.append("")
     lines.append("-" * 60)
+    lines.append("Surface:              API (answers can differ from the chat interface people use)")
     if multi:
         lines.append(
             f"Answers analyzed:     {result.total_answers} ({result.queries_run} queries x {result.runs_per_query} runs)"
