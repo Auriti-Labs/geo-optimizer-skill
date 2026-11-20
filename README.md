@@ -45,7 +45,7 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 *Also called GEO, AI SEO, or LLM SEO — same problem: an answer engine gives one response and cites a handful of sources. Ranking on Google does not make you one of them. Being reachable, parseable and quotable are conditions for being cited, not a promise of it.*
 
-**17 CLI commands** · **9 scoring categories** · **27 AI crawlers checked** · **47 content checks** · **12 MCP tools** · **8 output formats** · **2,000+ tests**
+**18 CLI commands** · **9 scoring categories** · **27 AI crawlers checked** · **47 content checks** · **12 MCP tools** · **8 output formats** · **2,000+ tests**
 
 ### What a real audit looks like
 
@@ -123,7 +123,7 @@ geo citations --brand "Acme" --domain acme.com         # does AI cite you? (brin
 ```
 
 <details>
-<summary><b>All 17 commands</b></summary>
+<summary><b>All 18 commands</b></summary>
 
 ```bash
 # Audit a full sitemap and surface the weakest pages first
@@ -168,6 +168,7 @@ geo logs --file access.log                                  # AI crawler activit
 geo access --url https://yoursite.com                       # browser vs AI-bot access simulation
 geo perception --url https://yoursite.com                   # what an AI would extract from the page
 geo align --url https://yoursite.com --prompts prompts.txt  # how much of each prompt the page text covers (lexical, no LLM)
+geo lint --url https://yoursite.com                         # statistics without a source, promises without a caveat (heuristics)
 ```
 
 Guides for most commands live in [`docs/`](docs/). Provider setup for `geo citations` (Perplexity, OpenAI, Anthropic, Groq, Gemini, MiniMax, DeepSeek, and SerpBase for the real Google SERP + AI Overview): [docs/llm-providers.md](docs/llm-providers.md).
@@ -196,7 +197,7 @@ Same engine everywhere: the platform adds what a local CLI cannot — server-sid
 |---|---|---|---|
 | **Access** | MIT, runs locally | Web audit, no account | [Self-serve sign-up](https://app.geoready.dev/signup/?utm_source=github&utm_medium=readme&utm_campaign=comparison) |
 | **Best for** | Developers, CI/CD, automation | Quick checks, SEO specialists | Ongoing clients, multi-site portfolios |
-| **What you get** | Full engine, JSON output, all 17 commands | Single-URL score, [free tools](https://geoready.dev/tools/llms-txt-generator/?utm_source=github&utm_medium=readme&utm_campaign=comparison-tools) | Monitoring, score history, regression alerts, agency reporting |
+| **What you get** | Full engine, JSON output, all 18 commands | Single-URL score, [free tools](https://geoready.dev/tools/llms-txt-generator/?utm_source=github&utm_medium=readme&utm_campaign=comparison-tools) | Monitoring, score history, regression alerts, agency reporting |
 | **Price** | Free forever | Free forever | From $19/month — [pricing](https://geoready.dev/pricing/?utm_source=github&utm_medium=readme&utm_campaign=comparison-pricing) |
 
 </details>
