@@ -49,6 +49,7 @@ Any command you give `--output` also writes that file.
 | `logs` | None | None | None (reads the log file you name) |
 | `align` | Target (the one page) | None | `--output` writes the report; reads the prompt file you name |
 | `lint` | Target (the one page) | None | `--output` writes the report |
+| `fanout` | Target (the one page) | None | `--output` writes the report |
 | `citations` | The LLM or SERP API you configure (OpenAI, Anthropic, Groq, Perplexity, Gemini, DeepSeek, MiniMax, SerpBase) | Required, one of: `GEO_LLM_PROVIDER` + `GEO_LLM_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GROQ_API_KEY`, `PERPLEXITY_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`, `MINIMAX_API_KEY`; `SERPBASE_API_KEY` for `--provider serpbase` | None |
 
 `history`, `drift`, `track`, `monitor`, `audit --save-history`/`--regression` and every `geo-web` audit delete `tracking.db` records older than the retention window: 90 days, or `--retention-days N` on `audit`, `history`, `monitor` and `track`.
