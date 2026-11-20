@@ -465,6 +465,7 @@ _DOCS_PAGES = {
     "geo-perception": "AI Perception Snapshot",
     "geo-align": "Prompt Alignment",
     "geo-lint": "Epistemic Lint",
+    "geo-fanout": "Sub-intent Fanout",
     "ai-bots-reference": "AI Bots Reference",
     "ci-cd": "CI/CD Integration",
     "scoring-rubric": "Scoring Rubric",

@@ -8,6 +8,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ## [Unreleased]
 
 ### Added
+- `geo fanout --url URL --topic TOPIC`: which usual commercial follow-up questions a page speaks to. The topic is expanded with fixed templates into seven families (price, comparison, reviews, how to, fit, trust, free options); each query is scored on the words the template adds, only in a surface that also speaks of the topic, with the lexical measure of `geo align`. A hand-written checklist, not what an engine issues; no language model.
 - `geo lint --url URL`: deterministic epistemic lint of a page's claims (English and Italian). It lists a statistic with no source, date or sample beside it, a badge or superlative with no link, the same block repeated or a block that is only a long keyword list, and an absolute promise with no qualifier; sentences that ask, deny or soften the promise are not counted. A finding is a question, not a verdict; nothing is scored and no language model is used. Patterns and thresholds are constants in `models/config.py`.
 
 ### Changed
