@@ -238,7 +238,7 @@ Two honest caveats, both built into the tool:
 
 | Check | What it detects |
 |-------|-----------------|
-| **Negative Signals** | 8 anti-citation signals: CTA overload, popups, thin content, keyword stuffing, missing author, boilerplate ratio |
+| **Negative Signals** | 8 anti-citation signals: CTA overload, popups, thin content, empty/placeholder links, keyword stuffing, missing author, boilerplate ratio (`--check-links` also verifies that internal link targets resolve) |
 | **CDN Crawler Access** | Does Cloudflare/Akamai/Vercel block GPTBot, ClaudeBot, PerplexityBot? |
 | **JS Rendering** | Is content accessible without JavaScript? SPA framework detection |
 | **Prompt Injection Detection** | 8 manipulation patterns: hidden text, invisible Unicode, LLM instructions, HTML comment injection, monochrome text, micro-font, data-attr injection, aria-hidden abuse |

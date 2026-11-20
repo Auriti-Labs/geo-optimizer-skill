@@ -27,6 +27,7 @@ from geo_optimizer.core.llms_generator import discover_sitemap
 from geo_optimizer.models.config import (
     DEFAULT_HISTORY_RETENTION_DAYS,
     DEFAULT_SCORE_VERSION,
+    LINK_CHECK_MAX_REQUESTS,
     resolve_user_agent_override,
     set_user_agent_override,
 )
@@ -129,6 +130,13 @@ def _history_footer(history_result, history_entry) -> str:
     help="Minimum score threshold (0-100). Exit code 1 if score is below.",
 )
 @click.option(
+    "--check-links",
+    is_flag=True,
+    help=f"Verify that internal links resolve: SENDS UP TO {LINK_CHECK_MAX_REQUESTS} EXTRA HTTP REQUESTS "
+    "to the audited host (external links are never requested). Without this flag the broken-link "
+    "fields are reported as not verified, not as zero.",
+)
+@click.option(
     "--user-agent",
     default=None,
     help="Override the User-Agent sent when fetching the site (also via GEO_USER_AGENT). "
@@ -153,6 +161,7 @@ def audit(
     retention_days,
     history_db,
     threshold,
+    check_links,
     user_agent,
 ):
     """Audit a website's GEO (Generative Engine Optimization) readiness."""
@@ -197,6 +206,10 @@ def audit(
         raise click.UsageError("Use either '--url' or '--sitemap', not both")
     if max_pages and not url:
         raise click.UsageError("'--max-pages' needs '--url' (with '--sitemap' use '--max-urls')")
+    if check_links and (sitemap or max_pages):
+        # The request cap is per page: multiplying it by every sitemap URL is not
+        # a cost the user asked for by setting a single flag.
+        raise click.UsageError("'--check-links' audits one page: use it with '--url', not '--sitemap'/'--max-pages'")
     if max_pages:
         # Reuse the batch path: find the sitemap from the site, then audit N of its pages.
         sitemap = discover_sitemap(normalize_url_scheme(url))
@@ -272,6 +285,8 @@ def audit(
                     audit_kwargs["score_version"] = score_version
                 if no_plugins:
                     audit_kwargs["load_plugins"] = False
+                if check_links:
+                    audit_kwargs["check_links"] = True
                 if _use_async:
                     return asyncio.run(run_full_audit_async(url, **audit_kwargs))
                 return run_full_audit(url, use_cache=cache, **audit_kwargs)
