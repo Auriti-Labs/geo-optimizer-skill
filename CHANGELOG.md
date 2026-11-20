@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.24.0] — 2026-11-21
+
 ### Added
 - Rubric v5 (opt-in with `--score-version 5`; the default stays v2): v4 plus a robots check judged on the audited page with RFC 9309 wildcards (`*`, `$`), and a schema visibility point given only when every checkable schema is visible (names, headlines, FAQPage questions, product prices). Scores of v1 to v4 do not change. `classify_bot` takes optional `page_path` and `wildcards`; their defaults keep the root-only reading.
 - `research/calibration-2026-10/scripts/`: the sampling, audit, query, export and analysis scripts of the October 2026 calibration study, without server paths or keys. The export step that wrote `results.csv` was rewritten and reproduces the published table row for row. The raw data with domains stays private.
