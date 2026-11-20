@@ -881,6 +881,7 @@ class CitationCheckResult:
     stable: bool = False  # True when the CI does not straddle a verdict boundary (needs runs > 1)
     top_cited_domains: list[tuple[str, int]] = field(default_factory=list)  # (domain, count), own domain excluded
     verdict: str = ""  # strong | cited | mentioned_only | invisible
+    surface: str = "api"  # answers come from a provider API, which can differ from the chat interface people use
 
 
 # ─── Prompt Library (v4.7) ───────────────────────────────────────────────────
