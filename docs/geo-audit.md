@@ -27,7 +27,7 @@
 | **CDN Crawler Access** | Does Cloudflare/Akamai/Vercel block GPTBot, ClaudeBot, PerplexityBot? |
 | **JS Rendering** | Is content accessible without JavaScript? SPA framework detection |
 | **WebMCP Readiness** | Chrome WebMCP support: `registerTool()`, `toolname` attributes, `potentialAction` schema |
-| **Negative Signals** | 8 anti-citation signals: CTA overload, popups, thin content, keyword stuffing, missing author, boilerplate ratio |
+| **Negative Signals** | 8 anti-citation signals: CTA overload, popups, thin content, empty/placeholder links, keyword stuffing, missing author, boilerplate ratio |
 | **Prompt Injection Detection** | 8 manipulation patterns: hidden text, invisible Unicode, LLM instructions, HTML comment injection |
 | **Trust Stack Score** | 5-layer trust aggregation (Technical, Identity, Social, Academic, Consistency) — grade A-F |
 
@@ -89,8 +89,20 @@ geo audit --url https://yoursite.com --score-version 1
 | `--regression` | No | Exit with code `1` if the score dropped vs the previous saved snapshot |
 | `--retention-days` | No | Retention window for local snapshots (default: `90`) |
 | `--score-version` | No | Scoring rubric version: `2` (default), `3` (v2 with robots.txt scored as access, opt-in), `4` (v3 plus schema scored by page type, opt-in) or `1` (legacy) |
+| `--check-links` | No | Verify that internal links resolve. Sends up to 25 extra HTTP requests to the audited host; external links are never requested. Single page only (`--url`) |
 
 \* Use either `--url` or `--sitemap`.
+
+#### Empty links vs broken links
+
+Two different things, reported separately:
+
+- **Empty links** (`empty_links_count`, always computed): hrefs that point nowhere in
+  the markup — `href=""`, `#`, `javascript:void(0)`. No request is made.
+- **Broken links** (`broken_links_count`, only with `--check-links`): internal links
+  whose target answers `404`/`410`. Without the flag the field is `null`, meaning
+  *not verified* — which is not the same as zero. A `403`, `429`, `5xx` or a timeout
+  is treated as unverifiable and never counted as broken.
 
 ### Output Formats
 

@@ -468,9 +468,19 @@ class NegativeSignalsResult:
     # 3. Thin content
     is_thin_content: bool = False  # < 300 words with complex H1
 
-    # 4. Broken/empty internal links
-    broken_links_count: int = 0
-    has_broken_links: bool = False
+    # 4a. Empty/placeholder links — href="", "#", "javascript:void(0)".
+    # Zero HTTP requests: this says nothing about whether link targets resolve.
+    empty_links_count: int = 0
+    has_empty_links: bool = False
+
+    # 4b. Broken internal links — opt-in (``geo audit --check-links``), emits HTTP
+    # requests. ``None`` means "not verified", which is different from zero: only a
+    # run with the flag can report an integer here.
+    broken_links_count: int | None = None
+    has_broken_links: bool | None = None
+    broken_link_samples: list[str] = field(default_factory=list)
+    links_checked_count: int = 0  # internal links actually fetched
+    links_check_truncated: bool = False  # cap reached: more internal links were left unchecked
 
     # 5. Keyword stuffing
     has_keyword_stuffing: bool = False

@@ -624,8 +624,13 @@ def geo_trust_score(url: str) -> str:
 def geo_negative_signals(url: str) -> str:
     """Check negative signals that reduce AI citation probability.
 
-    Detects: CTA overload, popups, thin content, broken links, keyword stuffing,
-    missing author, high boilerplate, mixed signals. Severity: clean/low/medium/high.
+    Detects: CTA overload, popups, thin content, empty/placeholder links, keyword
+    stuffing, missing author, high boilerplate, mixed signals. Severity:
+    clean/low/medium/high.
+
+    Link targets are NOT fetched here: ``empty_links_count`` counts hrefs that
+    point nowhere in the markup, and ``broken_links_count`` stays null (not
+    verified). Use ``geo audit --check-links`` to verify internal link targets.
 
     Args:
         url: URL to check (e.g. https://example.com)

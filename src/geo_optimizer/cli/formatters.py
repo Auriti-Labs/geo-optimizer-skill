@@ -168,7 +168,16 @@ def format_audit_json(result: AuditResult) -> str:
             "cta_count": result.negative_signals.cta_count,
             "has_popup_signals": result.negative_signals.has_popup_signals,
             "is_thin_content": result.negative_signals.is_thin_content,
+            # Empty/placeholder hrefs — no request was made to any target
+            "empty_links_count": result.negative_signals.empty_links_count,
+            "has_empty_links": result.negative_signals.has_empty_links,
+            # Verified broken targets — null means "not verified" (no --check-links),
+            # which is deliberately not the same as 0
             "broken_links_count": result.negative_signals.broken_links_count,
+            "has_broken_links": result.negative_signals.has_broken_links,
+            "broken_link_samples": result.negative_signals.broken_link_samples,
+            "links_checked_count": result.negative_signals.links_checked_count,
+            "links_check_truncated": result.negative_signals.links_check_truncated,
             "has_keyword_stuffing": result.negative_signals.has_keyword_stuffing,
             "has_author_signal": result.negative_signals.has_author_signal,
             "boilerplate_ratio": result.negative_signals.boilerplate_ratio,

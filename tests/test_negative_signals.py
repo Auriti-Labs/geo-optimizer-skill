@@ -51,14 +51,17 @@ class TestNegativeSignals:
         )
         assert result.is_thin_content is True
 
-    def test_broken_links(self):
-        """Link vuoti → detected."""
+    def test_empty_links(self):
+        """Link vuoti → detected (nessuna verifica del target)."""
         links = "".join(['<a href="#">link</a><a href="javascript:void(0)">x</a>'] * 3)
         html = f"<html><body><main>{links}<p>Content</p></main></body></html>"
         soup = BeautifulSoup(html, "html.parser")
         result = audit_negative_signals(soup, html, _content(), _meta(), SchemaResult())
-        assert result.broken_links_count >= 4
-        assert result.has_broken_links is True
+        assert result.empty_links_count >= 4
+        assert result.has_empty_links is True
+        # Nessun target verificato: i campi broken_* restano "non verificati"
+        assert result.broken_links_count is None
+        assert result.has_broken_links is None
 
     def test_keyword_stuffing(self):
         """Parola ripetuta > 3% → stuffing detected."""

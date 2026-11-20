@@ -2,24 +2,131 @@
 
 Extracted from audit.py — separation of concerns.
 Based on UC Berkeley EMNLP 2024 and LLM-perspective analysis.
-Zero HTTP fetches — works only on already-available data.
+Zero HTTP fetches by default; the internal-link verification
+(``check_internal_links``) is opt-in and is the only part that hits the network.
 """
 
 from __future__ import annotations
 
 import re
 from collections import Counter
+from urllib.parse import urljoin, urlparse
 
 from geo_optimizer.models.config import (
     BOILERPLATE_RATIO_THRESHOLD,
     CONTENT_MIN_WORDS,
+    EMPTY_LINKS_THRESHOLD,
     KEYWORD_STUFFING_MIN_COUNT,
     KEYWORD_STUFFING_THRESHOLD,
+    LINK_CHECK_BROKEN_STATUS,
+    LINK_CHECK_BROKEN_THRESHOLD,
+    LINK_CHECK_MAX_REQUESTS,
+    LINK_CHECK_SAMPLES_CAP,
+    LINK_CHECK_TIMEOUT_SECONDS,
     MIXED_SIGNALS_WORD_THRESHOLD,
 )
 from geo_optimizer.models.results import ContentResult, MetaResult, NegativeSignalsResult, SchemaResult
 from geo_optimizer.utils.jsonld import schema_types as jsonld_types
 from geo_optimizer.utils.stopwords import brand_words, page_language, stop_words_for
+
+# Placeholder hrefs: present in the DOM but pointing nowhere. No request needed.
+EMPTY_HREFS = frozenset(
+    {
+        "",
+        "#",
+        "javascript:void(0)",
+        "javascript:;",
+        "javascript:void(0);",
+    }
+)
+
+# Schemes that are never fetched (not web resources).
+_NON_HTTP_SCHEMES = ("mailto:", "tel:", "sms:", "javascript:", "data:", "file:", "ftp:")
+
+
+def internal_link_targets(soup, base_url: str) -> list[str]:
+    """Absolute, de-duplicated same-host http(s) link targets found in ``soup``.
+
+    External hosts are excluded on purpose: ``check_internal_links`` must never
+    issue requests towards third-party sites. The page's own URL is dropped too
+    (it has just been fetched), and fragments are stripped so ``/a`` and
+    ``/a#top`` count as one target.
+
+    Args:
+        soup: BeautifulSoup of the page.
+        base_url: URL the page was fetched from — defines "internal".
+
+    Returns:
+        Ordered list of absolute URLs on the same host as ``base_url``.
+    """
+    if soup is None or not base_url:
+        return []
+
+    base_parsed = urlparse(base_url)
+    base_host = (base_parsed.hostname or "").lower()
+    if not base_host:
+        return []
+    self_url = base_parsed._replace(fragment="").geturl()
+
+    targets: list[str] = []
+    seen = {self_url, self_url.rstrip("/")}
+    for a_tag in soup.find_all("a", href=True):
+        href = a_tag["href"].strip()
+        if not href or href in EMPTY_HREFS or href.startswith("#"):
+            continue
+        if href.lower().startswith(_NON_HTTP_SCHEMES):
+            continue
+        absolute = urljoin(base_url, href)
+        parsed = urlparse(absolute)
+        if parsed.scheme not in ("http", "https"):
+            continue
+        # Same host only — a different hostname (including a different subdomain)
+        # is an external link and is left untouched.
+        if (parsed.hostname or "").lower() != base_host:
+            continue
+        absolute = parsed._replace(fragment="").geturl()
+        if absolute in seen or absolute.rstrip("/") in seen:
+            continue
+        seen.add(absolute)
+        targets.append(absolute)
+    return targets
+
+
+def check_internal_links(
+    soup,
+    base_url: str,
+    *,
+    max_checks: int = LINK_CHECK_MAX_REQUESTS,
+) -> tuple[int, list[str]]:
+    """Verify that internal links resolve, and return ``(broken_count, broken_urls)``.
+
+    THIS EMITS HTTP REQUESTS — call it only when the user opted in
+    (``geo audit --check-links``). Returns data, never prints.
+
+    Every URL goes through ``fetch_url()``, which validates it anti-SSRF with
+    ``resolve_and_validate_url()`` and pins the resolved IP. Only ``base_url``'s
+    own host is contacted. A 404/410 is broken; a 403/429/5xx, a timeout or a
+    rejected URL is *unverifiable* and is NOT counted as broken.
+
+    Args:
+        soup: BeautifulSoup of the page.
+        base_url: URL the page was fetched from.
+        max_checks: Hard cap on the number of requests.
+
+    Returns:
+        (number of broken links found, list of broken URLs)
+    """
+    from geo_optimizer.utils.http import fetch_url
+
+    broken: list[str] = []
+    for target in internal_link_targets(soup, base_url)[:max_checks]:
+        r, err = fetch_url(target, timeout=LINK_CHECK_TIMEOUT_SECONDS)
+        if r is None or err:
+            continue  # unverifiable (timeout, connection error, unsafe URL) — not broken
+        status = getattr(r, "status_code", None)
+        if status in LINK_CHECK_BROKEN_STATUS:
+            broken.append(target)
+    return len(broken), broken
 
 
 def audit_negative_signals(
@@ -29,11 +136,14 @@ def audit_negative_signals(
     meta_result: MetaResult,
     schema_result: SchemaResult,
     soup_clean=None,
+    *,
+    base_url: str | None = None,
+    check_links: bool = False,
 ) -> NegativeSignalsResult:
     """Detect negative signals that reduce AI citability.
 
     Based on UC Berkeley EMNLP 2024 and LLM-perspective analysis.
-    Zero HTTP fetches — works only on already-available data.
+    Zero HTTP fetches unless ``check_links`` is True (opt-in link verification).
 
     Args:
         soup: BeautifulSoup of the page.
@@ -45,6 +155,10 @@ def audit_negative_signals(
             removed. Used for all text extraction so stylesheet, inline-script
             and <noscript> fallback text never count as page copy (#537). Falls
             back to ``soup`` when not provided.
+        base_url: URL the page was fetched from. Required for ``check_links``.
+        check_links: If True, internal links are actually fetched and the
+            ``broken_links_*`` fields are populated. Default False leaves them
+            ``None`` — "not verified", not "zero broken links".
 
     Returns:
         NegativeSignalsResult with detected negative signals.
@@ -56,7 +170,7 @@ def audit_negative_signals(
     result.checked = True
 
     # Text extraction runs on the cleaned tree when available; DOM-structure
-    # checks (popups, broken links, author markup) stay on the raw ``soup``.
+    # checks (popups, empty links, author markup) stay on the raw ``soup``.
     text_soup = soup_clean if soup_clean is not None else soup
 
     # ── 1. CTA density (self-promotional) ───────────────────────
@@ -108,14 +222,28 @@ def audit_negative_signals(
         if any(p in h1 for p in complex_patterns) or content_result.heading_count >= 3:
             result.is_thin_content = True
 
-    # ── 4. Link rotti/vuoti ──────────────────────────────────────
-    broken_count = 0
+    # ── 4a. Link vuoti/placeholder (nessuna richiesta HTTP) ──────
+    # Counts hrefs that point nowhere in the markup itself. It does NOT verify
+    # that any target resolves: that is 4b, and it only runs on request.
+    empty_count = 0
     for a_tag in soup.find_all("a", href=True):
         href = a_tag["href"].strip()
-        if href in ("", "#", "javascript:void(0)", "javascript:;", "javascript:void(0);"):
-            broken_count += 1
-    result.broken_links_count = broken_count
-    result.has_broken_links = broken_count > 3
+        if href in EMPTY_HREFS:
+            empty_count += 1
+    result.empty_links_count = empty_count
+    result.has_empty_links = empty_count > EMPTY_LINKS_THRESHOLD
+
+    # ── 4b. Link interni rotti (opt-in, emette richieste HTTP) ───
+    # Left as None when not requested: "not verified" must stay distinguishable
+    # from "zero broken links".
+    if check_links and base_url:
+        candidates = internal_link_targets(soup, base_url)
+        broken_count, broken_urls = check_internal_links(soup, base_url, max_checks=LINK_CHECK_MAX_REQUESTS)
+        result.broken_links_count = broken_count
+        result.has_broken_links = broken_count > LINK_CHECK_BROKEN_THRESHOLD
+        result.broken_link_samples = broken_urls[:LINK_CHECK_SAMPLES_CAP]
+        result.links_checked_count = min(len(candidates), LINK_CHECK_MAX_REQUESTS)
+        result.links_check_truncated = len(candidates) > LINK_CHECK_MAX_REQUESTS
 
     # ── 5. Keyword stuffing ──────────────────────────────────────
     # Runs on `text` (from text_soup), so SSR'd CSS-in-JS <style> blocks and
@@ -206,7 +334,9 @@ def audit_negative_signals(
         result.cta_density_high,
         result.has_popup_signals,
         result.is_thin_content,
-        result.has_broken_links,
+        # Signal 4 stays one signal: placeholder hrefs, or a verified broken
+        # target when the opt-in check ran (None → False, nothing assumed).
+        result.has_empty_links or bool(result.has_broken_links),
         result.has_keyword_stuffing,
         not result.has_author_signal,  # missing author = negative signal
         result.boilerplate_high,
