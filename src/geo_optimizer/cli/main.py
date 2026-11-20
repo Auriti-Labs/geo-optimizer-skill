@@ -39,6 +39,7 @@ def cli(lang):
 
 # Import and register subcommands
 from geo_optimizer.cli.access_cmd import access  # noqa: E402
+from geo_optimizer.cli.align_cmd import align  # noqa: E402
 from geo_optimizer.cli.audit_cmd import audit  # noqa: E402
 from geo_optimizer.cli.authority_cmd import authority  # noqa: E402
 from geo_optimizer.cli.citations_cmd import citations  # noqa: E402
@@ -56,6 +57,7 @@ from geo_optimizer.cli.snapshots_cmd import snapshots  # noqa: E402
 from geo_optimizer.cli.track_cmd import track  # noqa: E402
 
 cli.add_command(access)
+cli.add_command(align)
 cli.add_command(audit)
 cli.add_command(authority)
 cli.add_command(citations)

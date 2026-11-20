@@ -1546,3 +1546,35 @@ class PerceptionSnapshot:
     trust_grade: str | None = None
     citability_grade: str | None = None
     disclaimer: str = "Simulated AI perception based on deterministic analysis. Not a real AI system output."
+
+
+@dataclass
+class AlignItem:
+    """Alignment of one prompt with the page."""
+
+    prompt: str
+    score: float = 0.0  # 0.0 to 1.0: share of the prompt's terms found in the best surface, weighted by surface
+    status: str = "uncovered"  # covered | partial | uncovered
+    surface: str = ""  # title | h1 | meta_description | heading | passage; "" when nothing matched
+    matched_terms: list[str] = field(default_factory=list)
+    missing_terms: list[str] = field(default_factory=list)
+    best_text: str = ""  # the heading or passage that matched best, truncated
+
+
+@dataclass
+class AlignResult:
+    """Deterministic prompt-to-content alignment of one page. A lexical measure, not what an AI system answers."""
+
+    url: str = ""
+    error: str | None = None
+    prompts: int = 0
+    covered: int = 0
+    partial: int = 0
+    uncovered: int = 0
+    mean_score: float = 0.0
+    items: list[AlignItem] = field(default_factory=list)
+    skipped_prompts: int = 0  # empty, too long, duplicate or over the cap
+    disclaimer: str = (
+        "Lexical match between your prompts and the page text (term coverage by surface). "
+        "It is not what any AI system would answer, and it uses no language model."
+    )

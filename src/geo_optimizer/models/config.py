@@ -1111,3 +1111,26 @@ TTR_THRESHOLD = 0.40
 
 # Front-loading: keyword density threshold in first 30% of content
 FRONT_LOADING_DENSITY_THRESHOLD = 0.05
+
+# ─── geo align: prompt-to-content alignment (deterministic, no LLM) ──────────
+# How much of a prompt a page surface covers is weighted by how prominent the surface is. The weights and the
+# band thresholds are judgments, not measurements; they are constants so they can be changed in one place.
+ALIGN_SURFACE_WEIGHTS: dict[str, float] = {
+    "title": 1.0,
+    "h1": 1.0,
+    "meta_description": 0.9,
+    "heading": 0.9,
+    "passage": 0.8,
+}
+ALIGN_COVERED_MIN: float = 0.75
+ALIGN_PARTIAL_MIN: float = 0.4
+ALIGN_MAX_PROMPTS: int = 200
+ALIGN_MAX_PROMPT_CHARS: int = 300
+ALIGN_MAX_PROMPT_FILE_BYTES: int = 1_000_000
+ALIGN_MIN_TOKEN_LEN: int = 2
+ALIGN_PASSAGE_MIN_WORDS: int = 8
+ALIGN_PASSAGE_MAX_WORDS: int = 120
+ALIGN_BEST_PASSAGE_CHARS: int = 240
+ALIGN_STOPWORDS: frozenset[str] = frozenset(
+    ["a", "about", "al", "alla", "alle", "an", "and", "are", "as", "at", "be", "by", "che", "con", "da", "dei", "del", "della", "delle", "di", "do", "does", "e", "for", "from", "how", "i", "il", "in", "is", "it", "la", "le", "lo", "of", "on", "or", "per", "the", "to", "un", "una", "what", "when", "where", "which", "who", "why", "with"]
+)
