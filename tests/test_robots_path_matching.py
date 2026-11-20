@@ -137,3 +137,23 @@ def test_home_page_keeps_the_partial_status_in_v5():
 def test_root_with_wildcards_uses_rfc_matching():
     parsed = _parsed("User-agent: GPTBot\nDisallow: /*\n")
     assert classify_bot("GPTBot", "", parsed, page_path="/", wildcards=True).status == "blocked"
+
+
+@pytest.mark.parametrize(
+    ("rule", "path", "expected"),
+    [
+        ("/caf%C3%A9", "/café", False),  # raw non-ASCII path against an escaped rule
+        ("/café", "/caf%C3%A9", False),  # and the other way round
+        ("/a%2fb", "/a%2Fb", False),  # hex case does not matter
+        ("/%7Euser", "/~user", False),  # an escaped unreserved character is the character
+        ("/a%2Fb", "/a/b", None),  # but %2F is not "/"
+    ],
+)
+def test_percent_encoding_is_normalised_with_wildcards(rule: str, path: str, expected):
+    rules = _rules(f"User-agent: GPTBot\nDisallow: {rule}\n")
+    assert _is_path_allowed(path, rules, wildcards=True) is expected
+
+
+def test_default_matching_does_not_normalise():
+    rules = _rules("User-agent: GPTBot\nDisallow: /caf%C3%A9\n")
+    assert _is_path_allowed("/café", rules) is None  # rubrics v1-v4 unchanged

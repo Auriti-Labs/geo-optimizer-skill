@@ -15,7 +15,9 @@ Supports:
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
+from urllib.parse import quote
 
 # Maximum byte limit for the robots.txt file (RFC 9309 §2.5)
 _MAX_ROBOTS_BYTES = 500 * 1024
@@ -124,15 +126,33 @@ def parse_robots_txt(content: str) -> dict[str, AgentRules]:
     return agent_rules
 
 
+_UNRESERVED = frozenset("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~")
+_PERCENT_ESCAPE = re.compile(r"%([0-9A-Fa-f]{2})")
+
+
+def _normalize_path(value: str) -> str:
+    """Bring a rule or a path to one spelling before comparing them (RFC 9309 §2.2.2): raw non-ASCII
+    characters become UTF-8 percent escapes, escape hex digits are upper case, and escapes of unreserved
+    characters are decoded. ``%2F`` stays encoded: it is not the same as ``/``."""
+    value = quote(value, safe="/%:@!$&'()*+,;=?-._~")
+
+    def _fix(match: re.Match[str]) -> str:
+        char = chr(int(match.group(1), 16))
+        return char if char in _UNRESERVED else "%" + match.group(1).upper()
+
+    return _PERCENT_ESCAPE.sub(_fix, value)
+
+
 def _rule_matches(rule_path: str, path: str, *, wildcards: bool) -> bool:
     """Whether one Allow/Disallow value matches ``path``.
 
     Default (``wildcards=False``): plain prefix match, the behaviour of rubrics v1 to v4, where ``*`` and
     ``$`` are ordinary characters. With ``wildcards=True`` RFC 9309 §2.2.3 applies: ``*`` matches any run of
-    characters and a final ``$`` anchors the end of the path.
+    characters and a final ``$`` anchors the end of the path; rule and path are percent-normalised first.
     """
     if not wildcards:
         return path.startswith(rule_path) or rule_path == "/"
+    rule_path, path = _normalize_path(rule_path), _normalize_path(path)
     anchored = rule_path.endswith("$")
     body = rule_path[:-1] if anchored else rule_path
     return _glob_matches(body.split("*"), path, anchored)
