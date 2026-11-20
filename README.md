@@ -33,7 +33,7 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 <img src="assets/tui-audit.svg" alt="geo audit terminal dashboard on geoready.dev: 94/100 Excellent, nine rubric v2 categories with per-category scores, extra checks and top fixes" width="800"/>
 
-[Quick Start](#quick-start) · [Free web audit, no account](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=nav) · [Docs](https://geoready.dev/docs/) · [The book](#the-book-behind-the-engine-ai-search-engineering) · [Changelog](CHANGELOG.md)
+[Quick Start](#quick-start) · [Free web audit, no account](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=nav) · [Docs](https://geoready.dev/docs/?utm_source=github&utm_medium=readme&utm_campaign=nav-docs) · [The book](#the-book-behind-the-engine-ai-search-engineering) · [Changelog](CHANGELOG.md)
 
 </div>
 
@@ -45,7 +45,7 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 *Also called GEO, AI SEO, or LLM SEO — same problem: an answer engine gives one response and cites a handful of sources. Ranking on Google does not make you one of them. Being reachable, parseable and quotable are conditions for being cited, not a promise of it.*
 
-**16 CLI commands** · **9 scoring categories** · **27 AI crawlers checked** · **47 content checks** · **12 MCP tools** · **8 output formats** · **2,000+ tests**
+**17 CLI commands** · **9 scoring categories** · **27 AI crawlers checked** · **47 content checks** · **12 MCP tools** · **8 output formats** · **2,000+ tests**
 
 ### What a real audit looks like
 
@@ -123,7 +123,7 @@ geo citations --brand "Acme" --domain acme.com         # does AI cite you? (brin
 ```
 
 <details>
-<summary><b>All 16 commands</b></summary>
+<summary><b>All 17 commands</b></summary>
 
 ```bash
 # Audit a full sitemap and surface the weakest pages first
@@ -192,12 +192,12 @@ Same engine everywhere: the platform adds what a local CLI cannot — server-sid
 <details>
 <summary><b>Open source vs hosted — the full comparison</b></summary>
 
-| | GEO Optimizer (this repo) | [geoready.dev](https://geoready.dev) Free | GeoReady Pro / Agency |
+| | GEO Optimizer (this repo) | [geoready.dev](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=comparison-head) Free | GeoReady Pro / Agency |
 |---|---|---|---|
 | **Access** | MIT, runs locally | Web audit, no account | [Self-serve sign-up](https://app.geoready.dev/signup/?utm_source=github&utm_medium=readme&utm_campaign=comparison) |
 | **Best for** | Developers, CI/CD, automation | Quick checks, SEO specialists | Ongoing clients, multi-site portfolios |
-| **What you get** | Full engine, JSON output, all 16 commands | Single-URL score, [free tools](https://geoready.dev/tools/llms-txt-generator/) | Monitoring, score history, regression alerts, agency reporting |
-| **Price** | Free forever | Free forever | From $19/month — [pricing](https://geoready.dev/pricing/) |
+| **What you get** | Full engine, JSON output, all 17 commands | Single-URL score, [free tools](https://geoready.dev/tools/llms-txt-generator/?utm_source=github&utm_medium=readme&utm_campaign=comparison-tools) | Monitoring, score history, regression alerts, agency reporting |
+| **Price** | Free forever | Free forever | From $19/month — [pricing](https://geoready.dev/pricing/?utm_source=github&utm_medium=readme&utm_campaign=comparison-pricing) |
 
 </details>
 
@@ -312,7 +312,7 @@ Then ask: *"audit my site and fix what's missing."*
 |-------|--------------|---------------|
 | MCP server (`geo-mcp`) | Audits, content citability, crawler access, schema, comparison and fixes. It does not query answer engines, so it cannot tell you whether a live answer cites you. | Nothing beyond the install |
 | CLI `geo citations` | Sends questions to answer engines and reports mentions and cited sources. | Your own provider API key; the provider bills you |
-| [GeoReady](https://geoready.dev) (hosted service, separate from this package) | Scheduled monitoring, score history, alerts and several domains in one account. | An account |
+| [GeoReady](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=limits) (hosted service, separate from this package) | Scheduled monitoring, score history, alerts and several domains in one account. | An account |
 
 #### Claude Code plugin
 
@@ -414,7 +414,7 @@ It treats GEO as an engineering discipline rather than a collection of tricks, o
 
 It covers how answer engines discover and use web content — keeping documented behaviour separate from research findings and inference — auditing crawler access, rendering, and entity signals, engineering content for extraction without "AI-friendly" formulas, and operational GEO workflows for teams and agencies. It is written for developers, technical SEOs, consultants, agencies, product teams, and site owners who want to know what can actually be measured, implemented, and defended in AI search — no guarantees, no invented ranking factors, no hype presented as fact. Full stage-by-stage map of the book against the engine:
 
-[**Paperback on Amazon**](https://www.amazon.it/dp/B0HJGLW5NP) · [**Kindle edition**](https://www.amazon.it/dp/B0H8K319JM) · [Book page](https://geoready.dev/book/) · [Free 160-page GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/?utm_source=github&utm_medium=readme&utm_campaign=book)
+[**Paperback on Amazon**](https://www.amazon.it/dp/B0HJGLW5NP) · [**Kindle edition**](https://www.amazon.it/dp/B0H8K319JM) · [Book page](https://geoready.dev/book/?utm_source=github&utm_medium=readme&utm_campaign=book-page) · [Free 160-page GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/?utm_source=github&utm_medium=readme&utm_campaign=book)
 
 ---
 
