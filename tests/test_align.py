@@ -170,3 +170,78 @@ class TestCli:
     def test_fetch_error_exits_1(self):
         out = self._run(["--url", "https://example.com", "--prompt", "roof"], fetch=(None, "Connection failed"))
         assert out.exit_code == 1
+
+
+class TestInputRobustness:
+    def test_a_line_over_the_csv_field_limit_is_read_as_a_line_not_a_crash(self):
+        prompts, skipped = parse_prompts("x" * 200_000 + "\nroof repair\n")
+        assert prompts == ["roof repair"] and skipped == 1  # the long line is over the prompt length limit
+
+    def test_command_line_prompts_are_added_after_a_csv_not_parsed_as_rows(self):
+        raw = "Page,Query\n/a,roof repair\n"
+        assert parse_prompts(raw, ("solar panels, cost and price",)) == (
+            ["roof repair", "solar panels, cost and price"],
+            0,
+        )
+
+    def test_byte_order_mark_does_not_hide_the_header(self):
+        assert parse_prompts("﻿Query,Clicks\nroof repair,10\nflat roof,3\n") == (["roof repair", "flat roof"], 0)
+
+    def test_italian_search_console_header(self):
+        assert parse_prompts("Query principali,Clic\nriparazione tetti,10\n")[0] == ["riparazione tetti"]
+
+    def test_utf8_sig_file_through_the_cli(self, tmp_path):
+        f = tmp_path / "q.csv"
+        f.write_bytes("﻿Query,Clicks\nroof repair leeds,10\n".encode())
+        with (
+            patch("geo_optimizer.cli.align_cmd.validate_public_url", return_value=(True, "")),
+            patch("geo_optimizer.core.align.fetch_url", return_value=(Mock(status_code=200, text=HTML), None)),
+        ):
+            out = CliRunner().invoke(
+                cli, ["align", "--url", "https://example.com", "--prompts", str(f), "--format", "json"]
+            )
+        assert out.exit_code == 0 and json.loads(out.output)["prompts"] == 1
+
+
+class TestSurfacesOnRealisticMarkup:
+    def _items(self, html: str, *prompts: str):
+        return align_prompts(list(prompts), extract_surfaces(BeautifulSoup(html, "html.parser")))
+
+    def test_text_kept_in_a_plain_div_is_read(self):
+        item = self._items(
+            "<body><div>Roof repair leeds cost guide for owners of older slate roofs</div></body>", "roof repair leeds"
+        )[0]
+        assert item.status == "covered" and item.surface == "passage"
+
+    def test_a_page_wrapped_in_a_form_is_still_read(self):
+        html = "<body><form><p>Roof repair in Leeds starts with a free survey of the damaged slates and flashing.</p></form></body>"
+        assert self._items(html, "roof repair leeds")[0].status != "uncovered"
+
+    def test_h4_headings_count(self):
+        item = self._items("<body><h4>Roof repair Leeds</h4></body>", "roof repair leeds")[0]
+        assert item.status == "covered" and item.surface == "heading"
+
+    def test_english_plurals_match(self):
+        item = self._items("<body><h2>Roof repair in Leeds</h2></body>", "roof repairs leeds")[0]
+        assert item.status == "covered" and item.missing_terms == []
+
+    def test_status_follows_the_rounded_score(self):
+        # 5 of 6 terms in a passage: 5/6 * 0.8 = 0.666..., shown as 0.67, partial
+        html = "<body><p>alpha beta gamma delta epsilon one two three four five</p></body>"
+        item = self._items(html, "alpha beta gamma delta epsilon zeta")[0]
+        assert item.score == 0.67 and item.status == "partial"
+
+    def test_deeply_nested_markup_costs_time_proportional_to_its_size(self):
+        import time
+
+        html = (
+            "<body>"
+            + "<ul><li>" * 4000
+            + "roof repair leeds today for local homes and shops"
+            + "</li></ul>" * 4000
+            + "</body>"
+        )
+        started = time.perf_counter()
+        items = self._items(html, "roof repair leeds")
+        assert time.perf_counter() - started < 5.0
+        assert items[0].status == "covered"

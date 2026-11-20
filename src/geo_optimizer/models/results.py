@@ -1576,5 +1576,6 @@ class AlignResult:
     skipped_prompts: int = 0  # empty, too long, duplicate or over the cap
     disclaimer: str = (
         "Lexical match between your prompts and the page text (term coverage by surface). "
-        "It is not what any AI system would answer, and it uses no language model."
+        "It is not what any AI system would answer, and it uses no language model. English plurals are matched; "
+        "other languages match on exact words; text inside images, scripts and navigation is not read."
     )

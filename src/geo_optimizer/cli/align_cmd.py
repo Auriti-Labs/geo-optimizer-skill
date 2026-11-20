@@ -49,9 +49,8 @@ def align(
         if prompts_file.stat().st_size > ALIGN_MAX_PROMPT_FILE_BYTES:
             click.echo(f"\n❌ Prompt file over {ALIGN_MAX_PROMPT_FILE_BYTES} bytes", err=True)
             sys.exit(1)
-        raw = prompts_file.read_text(encoding="utf-8", errors="replace")
-    raw = "\n".join([raw, *prompt_args])
-    prompts, skipped = parse_prompts(raw)
+        raw = prompts_file.read_text(encoding="utf-8-sig", errors="replace")
+    prompts, skipped = parse_prompts(raw, prompt_args)
     if not prompts:
         click.echo("\n❌ No prompts: pass --prompts FILE or --prompt TEXT", err=True)
         sys.exit(1)

@@ -14,7 +14,7 @@ import csv
 import io
 import re
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment, Doctype
 
 from geo_optimizer.models.config import (
     ALIGN_BEST_PASSAGE_CHARS,
@@ -33,8 +33,39 @@ from geo_optimizer.utils.http import fetch_url
 from geo_optimizer.utils.validators import normalize_url_scheme
 
 _WORD = re.compile(r"[^\W_]+", re.UNICODE)
-_NOISE_TAGS = ("script", "style", "noscript", "template", "nav", "footer", "aside", "form", "svg")
-_QUERY_HEADERS = {"query", "queries", "top queries", "prompt", "prompts", "grounding query", "grounding queries"}
+_NOISE_TAGS = ("script", "style", "noscript", "template", "nav", "footer", "aside", "svg")
+_HEADINGS = ("h1", "h2", "h3", "h4", "h5", "h6")
+_BLOCK_TAGS = frozenset(
+    {
+        "p",
+        "li",
+        "td",
+        "th",
+        "dd",
+        "dt",
+        "blockquote",
+        "div",
+        "section",
+        "article",
+        "main",
+        "pre",
+        "figcaption",
+        "summary",
+        *_HEADINGS,
+    }
+)
+_QUERY_HEADERS = {
+    "query",
+    "queries",
+    "top queries",
+    "query principali",
+    "prompt",
+    "prompts",
+    "grounding query",
+    "grounding queries",
+    "keyword",
+    "keywords",
+}
 
 
 def tokenize(text: str) -> list[str]:
@@ -46,18 +77,40 @@ def tokenize(text: str) -> list[str]:
     ]
 
 
-def parse_prompts(raw: str) -> tuple[list[str], int]:
-    """Read prompts from text: one per line (blank lines and ``#`` comments ignored), or a CSV whose header names
-    a query column (Search Console and Bing exports). Returns ``(prompts, skipped)``; duplicates, prompts over
-    ``ALIGN_MAX_PROMPT_CHARS`` and everything past ``ALIGN_MAX_PROMPTS`` count as skipped."""
-    lines = [ln.strip() for ln in raw.splitlines()]
-    candidates: list[str] = [ln for ln in lines if ln and not ln.startswith("#")]
-    first = next(csv.reader(io.StringIO(raw)), [])
-    column = next((i for i, name in enumerate(first) if name.strip().casefold() in _QUERY_HEADERS), None)
-    if column is not None:
+def _stem(token: str) -> str:
+    """Strip an English plural so that ``repairs`` and ``repair`` match. Other languages match on exact words."""
+    if len(token) > 4 and token.endswith("ies"):
+        return token[:-3] + "y"
+    if len(token) > 3 and token.endswith("s") and not token.endswith(("ss", "us", "is")):
+        return token[:-1]
+    return token
+
+
+def _csv_column(raw: str) -> list[str] | None:
+    """The query column of a CSV export, or None when ``raw`` is not a CSV with a recognised query header
+    (or when the CSV module refuses it: a field over 131072 characters, a NUL byte)."""
+    try:
         rows = csv.reader(io.StringIO(raw))
-        next(rows, None)
-        candidates = [row[column].strip() for row in rows if len(row) > column and row[column].strip()]
+        header = next(rows, [])
+        column = next((i for i, name in enumerate(header) if name.strip().casefold() in _QUERY_HEADERS), None)
+        if column is None:
+            return None
+        return [row[column].strip() for row in rows if len(row) > column and row[column].strip()]
+    except csv.Error:
+        return None
+
+
+def parse_prompts(raw: str, extra: tuple[str, ...] = ()) -> tuple[list[str], int]:
+    """Read prompts from text: one per line (blank lines and ``#`` comments ignored), or a CSV whose header names
+    a query column (Search Console and Bing exports, with or without a byte-order mark). ``extra`` prompts, for
+    example those given on the command line, are added after the file is read, never parsed as CSV rows.
+    Returns ``(prompts, skipped)``; duplicates, prompts over ``ALIGN_MAX_PROMPT_CHARS`` and everything past
+    ``ALIGN_MAX_PROMPTS`` count as skipped."""
+    raw = raw.lstrip("\ufeff")
+    candidates = _csv_column(raw)
+    if candidates is None:
+        candidates = [ln.strip() for ln in raw.splitlines() if ln.strip() and not ln.strip().startswith("#")]
+    candidates = [*candidates, *(e.strip() for e in extra if e.strip())]
     prompts: list[str] = []
     seen: set[str] = set()
     skipped = 0
@@ -72,8 +125,11 @@ def parse_prompts(raw: str) -> tuple[list[str], int]:
 
 
 def extract_surfaces(soup: BeautifulSoup) -> list[tuple[str, str]]:
-    """The page's text surfaces as ``(surface, text)``: title, meta description, h1, h2 and h3, and passages
-    (paragraphs, list items, table cells and definitions, long ones cut into windows)."""
+    """The page's text surfaces as ``(surface, text)``: title, meta description, h1, other headings, and passages.
+
+    Passages are the text of each block element (paragraph, list item, cell, division, quotation), found in a
+    single pass over the text nodes, each assigned to its nearest block ancestor: text kept in a plain ``div`` is
+    read, and deeply nested markup costs time proportional to its size. Long blocks are cut into windows."""
     surfaces: list[tuple[str, str]] = []
     if soup.title and soup.title.get_text(strip=True):
         surfaces.append(("title", soup.title.get_text(" ", strip=True)))
@@ -83,50 +139,58 @@ def extract_surfaces(soup: BeautifulSoup) -> list[tuple[str, str]]:
     body = soup.body or soup
     for tag in body(_NOISE_TAGS):
         tag.decompose()
-    for heading in body.find_all(["h1", "h2", "h3"]):
+    for heading in body.find_all(_HEADINGS):
         text = heading.get_text(" ", strip=True)
         if text:
             surfaces.append(("h1" if heading.name == "h1" else "heading", text))
-    for block in body.find_all(["p", "li", "td", "dd", "blockquote"]):
-        words = block.get_text(" ", strip=True).split()
+    blocks: dict[int, tuple[str, list[str]]] = {}
+    for node in body.find_all(string=True):
+        if isinstance(node, (Comment, Doctype)) or not node.strip():
+            continue
+        owner = node.parent
+        while owner is not None and owner is not body and owner.name not in _BLOCK_TAGS:
+            owner = owner.parent
+        name = getattr(owner, "name", "") or ""
+        blocks.setdefault(id(owner), (name, []))[1].append(str(node).strip())
+    step = max(1, ALIGN_PASSAGE_MAX_WORDS // 2)
+    for name, parts in blocks.values():
+        if name in _HEADINGS:  # already a heading surface
+            continue
+        words = " ".join(parts).split()
         if len(words) < ALIGN_PASSAGE_MIN_WORDS:
             continue
-        step = max(1, ALIGN_PASSAGE_MAX_WORDS // 2)
         for start in range(0, max(1, len(words) - step), step):
             surfaces.append(("passage", " ".join(words[start : start + ALIGN_PASSAGE_MAX_WORDS])))
     return surfaces
 
 
 def align_prompts(prompts: list[str], surfaces: list[tuple[str, str]]) -> list[AlignItem]:
-    """Score each prompt against the surfaces; items keep the order of ``prompts``."""
-    tokenised = [(surface, text, set(tokenize(text))) for surface, text in surfaces]
+    """Score each prompt against the surfaces; items keep the order of ``prompts``. Terms are compared by their
+    English-plural stem; ``matched_terms`` and ``missing_terms`` show the words as the prompt spells them."""
+    tokenised = [(surface, text, {_stem(t) for t in tokenize(text)}) for surface, text in surfaces]
     page_terms: set[str] = set().union(*(t for _, _, t in tokenised)) if tokenised else set()
     items: list[AlignItem] = []
     for prompt in prompts:
         terms = list(dict.fromkeys(tokenize(prompt)))
         if not terms:
             continue
+        stems = [_stem(t) for t in terms]
         best_score, best_surface, best_text, best_hits = 0.0, "", "", set()
         for surface, text, unit_terms in tokenised:
-            hits = unit_terms.intersection(terms)
-            score = len(hits) / len(terms) * ALIGN_SURFACE_WEIGHTS[surface]
+            hits = unit_terms.intersection(stems)
+            score = len(hits) / len(stems) * ALIGN_SURFACE_WEIGHTS[surface]
             if score > best_score:
                 best_score, best_surface, best_text, best_hits = score, surface, text, hits
-        status = (
-            "covered"
-            if best_score >= ALIGN_COVERED_MIN
-            else "partial"
-            if best_score >= ALIGN_PARTIAL_MIN
-            else "uncovered"
-        )
+        shown = round(best_score, 2)  # the status follows the number the report shows
+        status = "covered" if shown >= ALIGN_COVERED_MIN else "partial" if shown >= ALIGN_PARTIAL_MIN else "uncovered"
         items.append(
             AlignItem(
                 prompt=prompt,
-                score=round(best_score, 2),
+                score=shown,
                 status=status,
                 surface=best_surface,
-                matched_terms=[t for t in terms if t in best_hits],
-                missing_terms=[t for t in terms if t not in page_terms],
+                matched_terms=[t for t, st in zip(terms, stems, strict=True) if st in best_hits],
+                missing_terms=[t for t, st in zip(terms, stems, strict=True) if st not in page_terms],
                 best_text=best_text[:ALIGN_BEST_PASSAGE_CHARS],
             )
         )
