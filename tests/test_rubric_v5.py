@@ -205,3 +205,36 @@ class TestPriceMustStandAlone:
     def test_decimal_comma_spelling_is_accepted(self):
         product = {**self.PRODUCT, "offers": {"@type": "Offer", "price": "19.90"}}
         assert _page(product, "<h1>Blue chair</h1><p>19,90 €</p>").visible_match_strict is True
+
+
+class TestPriceSpellings:
+    """A product price is read from JSON as a number and matched against how people write it."""
+
+    def _strict(self, price, text: str) -> bool:
+        product = {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": "Blue chair",
+            "offers": {"@type": "Offer", "price": price},
+        }
+        return _page(product, f"<h1>Blue chair</h1><p>{text}</p>").visible_match_strict
+
+    def test_trailing_zero_decimals(self):
+        assert self._strict(19.9, "19.90 EUR") and self._strict(19.9, "19,90 €")
+
+    def test_six_digit_and_larger_prices_are_not_rounded(self):
+        assert self._strict(12999.99, "12999.99")
+        assert self._strict(1234567, "1234567 units")
+        assert self._strict(129999.5, "129,999.50")
+
+    def test_thousands_separators(self):
+        for text in ("1,089", "1.089", "1 089", "1'089", "1.089,00"):
+            assert self._strict(1089, text), text
+
+    def test_other_numbers_do_not_count(self):
+        assert not self._strict(89, "Only 89.5 today")
+        assert not self._strict(89, "Only 1,089 today")
+        assert not self._strict(5, "from 3,5 EUR")
+
+    def test_a_value_that_is_not_a_finite_number_is_skipped_not_matched(self):
+        assert self._strict(float("inf"), "any text")  # the name still matches; the price cannot be checked

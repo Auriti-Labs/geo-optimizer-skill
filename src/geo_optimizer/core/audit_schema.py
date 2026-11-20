@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import re
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from geo_optimizer.models.config import (
@@ -70,23 +71,55 @@ def _visible_strings(schema: dict) -> list[tuple[str, str]]:
         for offer in offers if isinstance(offers, list) else [offers]:
             price = offer.get("price") if isinstance(offer, dict) else None
             if isinstance(price, (int, float)) and not isinstance(price, bool):
-                try:
-                    price = f"{price:g}"
-                except (OverflowError, ValueError):  # a JSON integer of hundreds of digits does not fit a float
-                    price = None
+                price = _number_text(price)
             if isinstance(price, str) and price.strip():
                 found.append((price.strip(), "price"))
     return found
 
 
+def _number_text(value: int | float) -> str | None:
+    """A JSON number as plain decimal text, without exponent and without the six-digit rounding of ``%g``.
+    None for a value that is not a finite number (``nan``, ``inf``) or has more than 30 digits."""
+    try:
+        text = format(Decimal(repr(value)) if isinstance(value, float) else Decimal(value), "f")
+    except (ArithmeticError, ValueError):
+        return None
+    return text if len(text.replace("-", "").replace(".", "")) <= 30 and text.lstrip("-")[:1].isdigit() else None
+
+
+_GROUP_SEPARATORS = ("", ",", ".", " ", "\u00a0", "'")
+
+
+def _price_spellings(price: str) -> set[str]:
+    """The ways a visitor may see ``price`` written: with a ``.`` or ``,`` decimal mark, thousands grouped by a
+    comma, a dot, a space or an apostrophe, and with or without trailing zero decimals (``19.9`` as ``19.90``)."""
+    try:
+        number = Decimal(price.strip())
+    except (ArithmeticError, ValueError):
+        return {price.strip().casefold()}
+    whole, _, frac = format(number, "f").partition(".")
+    frac = frac.rstrip("0")
+    fractions = {frac, frac.ljust(2, "0")} if frac else {"", "00"}
+    spellings: set[str] = set()
+    for sep in _GROUP_SEPARATORS:
+        grouped = whole if not sep else f"{int(whole):,}".replace(",", sep) if whole.lstrip("-").isdigit() else whole
+        for decimal_mark in (".", ","):
+            if sep == decimal_mark:
+                continue
+            for f in fractions:
+                spellings.add(grouped + (decimal_mark + f if f else ""))
+    return spellings
+
+
 def _is_visible(text: str, kind: str, visible_text: str) -> bool:
     """Whether ``text`` appears in the visible page text. A price must stand alone as a number: ``1`` is not
-    visible in "2019 items" and ``89`` is not visible in "89.5". ``19.90`` also matches ``19,90``."""
+    visible in "2019 items" and ``89`` is not visible in "89.5", while ``1089`` is visible as "1,089" or
+    "1.089,00" and ``19.9`` as "19,90"."""
     needle = text.strip().casefold()
     if kind != "price":
         return needle in visible_text
-    spellings = {needle, needle.replace(".", ",")}
-    return any(re.search(rf"(?<![\d.,]){re.escape(s)}(?!\d|[.,]\d)", visible_text) for s in spellings)
+    spellings = "|".join(re.escape(s) for s in sorted(_price_spellings(needle), key=len, reverse=True))
+    return re.search(rf"(?<!\d)(?<!\d[.,' \u00a0])(?:{spellings})(?!\d|[.,]\d)", visible_text) is not None
 
 
 def _visible_coverage(raw_schemas: list[dict], visible_text: str) -> bool:
