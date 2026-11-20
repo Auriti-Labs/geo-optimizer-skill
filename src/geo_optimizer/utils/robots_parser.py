@@ -231,9 +231,10 @@ def classify_bot(
         bot: Bot name (e.g. "GPTBot")
         description: Bot description
         agent_rules: Parsed robots.txt rules
-        page_path: Path the bot is judged on. The default "/" keeps the root-only reading of rubrics v1 to v4;
-            another path (rubric v5) classifies the bot for that page: blocked or allowed, by longest match.
-        wildcards: Apply RFC 9309 §2.2.3 (``*`` and ``$``) to the rules; used with ``page_path``
+        page_path: Path the bot is judged on. The default "/" keeps the root reading of rubrics v1 to v4, including
+            the "partial" status; another path (rubric v5) classifies the bot for that page: blocked or allowed, by
+            longest match.
+        wildcards: Apply RFC 9309 §2.2.3 (``*`` and ``$``) to the rules
 
     Returns:
         BotStatus with classification
@@ -255,8 +256,9 @@ def classify_bot(
 
     rules = agent_rules[found_agent]
 
-    if page_path != "/" or wildcards:
-        # Rubric v5: judge the bot on the page itself, with RFC 9309 matching.
+    if page_path != "/":
+        # Rubric v5: judge the bot on the page itself, with RFC 9309 matching. "Partial" is a statement about the
+        # whole site (everything blocked except some paths), so it only exists for the root reading below.
         decision = _is_path_allowed(page_path, rules, wildcards=wildcards)
         return BotStatus(
             bot=bot,
@@ -303,7 +305,7 @@ def classify_bot(
     else:
         # Use longest-match to check the root path "/"
         # If "/" is allowed, the bot is "allowed"
-        decision = _is_path_allowed("/", rules)
+        decision = _is_path_allowed("/", rules, wildcards=wildcards)
         if decision is False:
             return BotStatus(
                 bot=bot,
