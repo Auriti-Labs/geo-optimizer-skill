@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.26.0] — 2026-11-21
+
 ### Changed
 - `geo citations` samples each query 8 times by default (it was once), so the report carries a 95% confidence interval. This multiplies the API calls of a run by 8: pass `--runs 1` for the old single, cheap sample. `--provider serpbase` is unaffected (it ignores `--runs`).
 
