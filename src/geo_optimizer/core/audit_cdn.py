@@ -94,19 +94,19 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
         "Chrome/120.0.0.0 Safari/537.36"
     )
 
-    # Challenge page indicators (Cloudflare, AWS WAF, etc.)
-    challenge_indicators = [
+    # Challenge page indicators (Cloudflare, AWS WAF, etc.). The first group is specific to a challenge or block
+    # page and counts whatever the size of the response. The second group is generic: "captcha" and "blocked" are
+    # ordinary words in markup and scripts (en.wikipedia.org carries "captcha" in its first 5000 characters and serves
+    # the full page), so they count only when the page was not delivered.
+    strong_indicators = [
         "cf-browser-verification",
         "challenge-platform",
         "just a moment",
         "checking your browser",
         "ray id",
-        "access denied",
         "bot detection",
-        "captcha",
-        "blocked",
-        "forbidden",
     ]
+    weak_indicators = ["access denied", "captcha", "blocked", "forbidden"]
 
     # CDN detection headers
     cdn_header_map = {
@@ -199,10 +199,9 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
 
                 # Check 2: Challenge/captcha page detection
                 body_lower = bot_r.text[:5000].lower()
-                if any(indicator in body_lower for indicator in challenge_indicators):
-                    # "blocked", "forbidden" or "captcha" also appear in ordinary markup and scripts (measured on
-                    # en.wikipedia.org: a 200 with the same 490 KB the browser got). A challenge replaces the page, so a
-                    # response that carries as much as the browser's is the page, not a challenge.
+                if any(indicator in body_lower for indicator in strong_indicators):
+                    bot_entry["challenge_detected"] = True
+                elif any(indicator in body_lower for indicator in weak_indicators):
                     bot_entry["challenge_detected"] = not _delivers_the_page(
                         bot_r.status_code,
                         bot_entry["content_length"],
