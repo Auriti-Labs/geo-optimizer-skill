@@ -262,3 +262,16 @@ class TestTariffsAreNotClaims:
         assert "unsourced_statistic" not in _rules(
             "<p>Payments may be retried up to 8 times within three days after the first failed payment is recorded.</p>"
         )
+
+
+class TestRepetitionOnlyCountsProse:
+    CARD = "Included at no additional cost for businesses on standard pricing and on every plan"
+
+    def test_table_cells_and_list_items_repeat_by_design(self):
+        cells = "".join(f"<td>{self.CARD}</td>" for _ in range(LINT_DUPLICATE_BLOCKS_MIN + 3))
+        items = "".join(f"<li>{self.CARD}</li>" for _ in range(LINT_DUPLICATE_BLOCKS_MIN + 3))
+        assert "duplicate_block" not in _rules(f"<table><tr>{cells}</tr></table>")
+        assert "duplicate_block" not in _rules(f"<ul>{items}</ul>")
+
+    def test_a_repeated_paragraph_still_counts(self):
+        assert "duplicate_block" in _rules(f"<p>{self.CARD}</p>" * LINT_DUPLICATE_BLOCKS_MIN)

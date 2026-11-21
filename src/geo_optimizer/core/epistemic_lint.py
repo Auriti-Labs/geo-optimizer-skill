@@ -66,8 +66,8 @@ _WHY = {
 }
 
 
-def text_blocks(soup: BeautifulSoup) -> list[tuple[str, bool]]:
-    """``(text, has_link)`` for each block of the page body, found in a single pass over the text nodes."""
+def text_blocks(soup: BeautifulSoup) -> list[tuple[str, bool, str]]:
+    """``(text, has_link, tag)`` for each block of the page body, found in a single pass over the text nodes."""
     body = soup.body or soup
     for tag in body(_NOISE_TAGS):
         tag.decompose()
@@ -77,10 +77,10 @@ def text_blocks(soup: BeautifulSoup) -> list[tuple[str, bool]]:
         if isinstance(node, (Comment, Doctype)) or not node.strip():
             continue
         owner, linked = resolver.resolve(node)
-        entry = blocks.setdefault(id(owner), [[], False])
+        entry = blocks.setdefault(id(owner), [[], False, getattr(owner, "name", "") or ""])
         entry[0].append(str(node).strip())
         entry[1] = entry[1] or linked
-    return [(" ".join(parts), linked) for parts, linked in blocks.values() if parts]
+    return [(" ".join(parts), linked, tag) for parts, linked, tag in blocks.values() if parts]
 
 
 def _excerpt(text: str, match: re.Match[str] | None = None) -> str:
@@ -105,14 +105,14 @@ def _promise(text: str) -> re.Match[str] | None:
     return None
 
 
-def lint_blocks(blocks: list[tuple[str, bool]]) -> list[LintFinding]:
+def lint_blocks(blocks: list[tuple[str, bool, str]]) -> list[LintFinding]:
     """Apply the three families to ``blocks``. A block's neighbours count as its context for evidence."""
     findings: list[LintFinding] = []
 
     def add(rule: str, text: str, match: re.Match[str] | None = None) -> None:
         findings.append(LintFinding(rule=rule, family=_FAMILY[rule], excerpt=_excerpt(text, match), why=_WHY[rule]))
 
-    for i, (text, linked) in enumerate(blocks):
+    for i, (text, linked, _tag) in enumerate(blocks):
         if len(text.split()) < LINT_MIN_BLOCK_WORDS:
             continue
         context = " ".join(b[0] for b in blocks[max(0, i - 1) : i + 2])
@@ -130,7 +130,11 @@ def lint_blocks(blocks: list[tuple[str, bool]]) -> list[LintFinding]:
             len(part.split()) <= LINT_KEYWORD_LIST_MAX_ITEM_WORDS for part in items
         ):
             add("keyword_list", text)
-    repeated = Counter(" ".join(t.casefold().split()) for t, _ in blocks if len(t.split()) >= LINT_MIN_BLOCK_WORDS)
+    # Only prose repeats: cards, table cells and list items repeat by design (a pricing table says the same thing in
+    # every plan column), and a repeated flood is a paragraph.
+    repeated = Counter(
+        " ".join(t.casefold().split()) for t, _, tag in blocks if tag == "p" and len(t.split()) >= LINT_MIN_BLOCK_WORDS
+    )
     for normal, count in repeated.items():
         if count >= LINT_DUPLICATE_BLOCKS_MIN:
             add("duplicate_block", f"{normal} (appears {count} times)")
