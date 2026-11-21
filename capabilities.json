@@ -146,6 +146,14 @@
       ],
       "loads_plugins": false
     },
+    "fidelity": {
+      "network": "target",
+      "api_keys": [],
+      "writes": [
+        "--output"
+      ],
+      "loads_plugins": false
+    },
     "lint": {
       "network": "target",
       "api_keys": [],

@@ -1674,3 +1674,38 @@ class FanoutResult:
         "The sub-intents are a fixed checklist of common commercial follow-ups, not the searches any engine really "
         "issues, and coverage is a lexical match on the page text. Use it to find gaps, not to predict answers."
     )
+
+
+# ─── geo fidelity ────────────────────────────────────────────────────────────
+
+
+@dataclass
+class FidelityClaim:
+    """One sentence of an AI answer and the cited page that carries most of its words."""
+
+    claim: str
+    status: str = "unsupported"  # supported | partial | unsupported (lexical, see FidelityResult.disclaimer)
+    score: float = 0.0  # 0.0 to 1.0, as in AlignItem
+    best_source: str = ""  # URL of the page with the best match, "" when nothing matched
+    missing_terms: list[str] = field(default_factory=list)  # claim terms found on none of the cited pages
+    missing_numbers: list[str] = field(default_factory=list)  # figures of the claim absent from the best page
+
+
+@dataclass
+class FidelityResult:
+    """Lexical check of an AI answer against the pages it cites. It does not establish that a claim is true."""
+
+    error: str | None = None
+    sources: list[str] = field(default_factory=list)  # pages that were read
+    unreachable_sources: list[str] = field(default_factory=list)
+    claims: list[FidelityClaim] = field(default_factory=list)
+    supported: int = 0
+    partial: int = 0
+    unsupported: int = 0
+    support_rate: float = 0.0  # supported / claims
+    skipped_sentences: int = 0  # too short, or over the cap
+    disclaimer: str = (
+        "Lexical check: the share of each sentence's words (and figures) found on the pages the answer cites. "
+        "It uses no language model and does not decide whether a claim is true or whether a page endorses it. "
+        "A sentence can share every word with a page and still contradict it; a paraphrase can share few."
+    )
