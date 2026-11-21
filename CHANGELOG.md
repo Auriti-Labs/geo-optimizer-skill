@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.25.0] — 2026-11-21
+
 ### Added
 - `geo logs --ip-ranges DIR` and `--fetch-ip-ranges`: each crawler visit that claims a bot name is checked by its source address against the ranges the vendor publishes (OpenAI GPTBot, OAI-SearchBot and ChatGPT-User; Google Googlebot; Perplexity PerplexityBot and Perplexity-User; Microsoft Bingbot). The report gives verified, outside the ranges and no-address counts per bot, and shows a bot with no published ranges as unverifiable. The log parser now keeps the client address. Without these options the output is unchanged. It is an address check, not an RFC 9421 signature check, which access logs cannot support; "outside the ranges" means a spoofed name or an address the vendor has not listed.
 - Rubric v6, opt-in with `--score-version 6` (the default stays v2): v5's weights plus an access gate. A page that AI crawlers cannot read (an answer other than HTTP 200 or 203, which already stops the audit at score 0 and is now named in the gate; a CDN blocking every AI crawler tested, `X-Robots-Tag: noindex`, every citation bot disallowed in robots.txt, or an empty application shell) is capped at 67, the top of the Foundation band; some restrictions only warn and never lower the score. The result has an `access_gate` field (`not_evaluated` before v6); the CLI JSON carries it only for v6, so v1 to v5 keep exactly their keys. v1 to v5 numbers do not change.
