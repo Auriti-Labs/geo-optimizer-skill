@@ -15,7 +15,7 @@ geo lint --url https://yoursite.com --format json --output lint.json
 |------|--------|-----------|
 | `unsourced_statistic` | authority without evidence | an outcome figure (a percentage, "3x", "N times faster", "increased by N%") appears and neither the block, a link in it, nor the blocks before and after mention a source, a study, a survey, a sample, a year. Prices, fees, rates, discounts and VAT are not outcome claims and are skipped |
 | `unsupported_authority` | authority without evidence | "award-winning", "#1", "market leader", "trusted by N", "certified" and similar, with no link in the block |
-| `duplicate_block` | repetition | the same block of text (six words or more) appears three times or more |
+| `duplicate_block` | repetition | the same paragraph (six words or more) appears five times or more. Cards, table cells and list items are not counted: they repeat by design |
 | `keyword_list` | repetition | a block is only a list of 20 or more short items |
 | `caveat_omitted` | promise without caveat | an asserted absolute promise ("guaranteed", "risk-free", "never fails", "always works") with no qualifier in the block ("up to", "unless", "depends", "conditions") |
 
