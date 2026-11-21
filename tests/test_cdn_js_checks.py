@@ -310,6 +310,34 @@ class TestCdnAiCrawlerCheck:
 
     @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
     @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_the_captcha_word_in_a_full_page_is_the_wikipedia_case(self, mock_session_factory, mock_validate):
+        """Measured: the only indicator in en.wikipedia.org's first 5000 characters is 'captcha'."""
+        page = "<html><script>mw.config.set({'wgCaptcha': 'captcha'});</script>" + "x" * 8000 + "</html>"
+        mock_session_factory.return_value = self._session(page, page)
+
+        result = audit_cdn_ai_crawler("https://example.com")
+
+        assert result.block_pattern == "none" and all(b["challenge_detected"] is False for b in result.bot_results)
+
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_challenge_specific_phrases_count_whatever_the_size(self, mock_session_factory, mock_validate):
+        """A WAF that serves its challenge to everyone, browser included, with HTTP 200 and a body of similar size.
+        Found by an independent review: size alone cannot tell this from the real page."""
+        cases = {
+            "same challenge for browser and bots": ("<html>Just a moment... " + "x" * 6000, None),
+            "challenge 83% of the real page": ("x" * 3000, "<html>Checking your browser " + "y" * 2450),
+            "challenge 147% of the real page": ("x" * 3000, "<html>cf-browser-verification " + "y" * 4350),
+            "challenge in place of an SPA shell": ("x" * 1200, "<html>challenge-platform " + "y" * 880),
+        }
+        for label, (browser, bot) in cases.items():
+            mock_session_factory.return_value = self._session(browser, bot or browser)
+            result = audit_cdn_ai_crawler("https://example.com")
+            assert result.block_pattern == "blanket", label
+            assert all(b["challenge_detected"] is True for b in result.bot_results), label
+
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_challenge_words_with_an_error_status_stay_a_block(self, mock_session_factory, mock_validate):
         page = "<html>Access denied. Forbidden. " + "x" * 8000 + "</html>"
         mock_session_factory.return_value = self._session("x" * 8040, page, bot_status=403)
