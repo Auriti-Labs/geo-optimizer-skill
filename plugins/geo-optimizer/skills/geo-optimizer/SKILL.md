@@ -46,7 +46,7 @@ Any command you give `--output` also writes that file.
 | `monitor`, `track` | Target | None | `~/.geo-optimizer/tracking.db`; `track --report` writes `geo-track-report.html` |
 | `history`, `drift` | None | None | `~/.geo-optimizer/tracking.db` |
 | `snapshots` | None | None | `~/.geo-optimizer/snapshots.db` |
-| `logs` | None | None | None (reads the log file you name) |
+| `logs` | None; `--fetch-ip-ranges` sends 7 GET requests for the vendors' published range files, no log data | None | None (reads the log file you name, and `--ip-ranges` folder) |
 | `align` | Target (the one page) | None | `--output` writes the report; reads the prompt file you name |
 | `lint` | Target (the one page) | None | `--output` writes the report |
 | `fanout` | Target (the one page) | None | `--output` writes the report |
