@@ -45,10 +45,26 @@ class TestGate:
         assert gate.status == "blocked" and "HTTP 403" in gate.reasons[0]
 
     def test_blanket_cdn_block_blocks_and_a_targeted_one_warns(self):
-        blanket = CdnAiCrawlerResult(checked=True, any_blocked=True, block_pattern="blanket")
-        targeted = CdnAiCrawlerResult(checked=True, any_blocked=True, block_pattern="targeted")
+        blanket = CdnAiCrawlerResult(checked=True, browser_status=200, any_blocked=True, block_pattern="blanket")
+        targeted = CdnAiCrawlerResult(
+            checked=True,
+            browser_status=200,
+            any_blocked=True,
+            block_pattern="targeted",
+            bot_results=[
+                {"bot": "GPTBot", "blocked": False, "challenge_detected": False},
+                {"bot": "Googlebot", "blocked": True, "challenge_detected": False},
+            ],
+        )
         assert evaluate_access_gate(_result(cdn_check=blanket)).status == "blocked"
-        assert evaluate_access_gate(_result(cdn_check=targeted)).status == "warn"
+        warn = evaluate_access_gate(_result(cdn_check=targeted))
+        assert warn.status == "warn" and warn.warnings == ["A CDN or firewall refuses some crawlers tested: Googlebot"]
+
+    def test_a_cdn_comparison_needs_a_browser_answer_to_compare_with(self):
+        # stackoverflow.com: the browser request got 403 as well, so "every AI crawler blocked" says nothing about AI
+        no_baseline = CdnAiCrawlerResult(checked=True, browser_status=403, any_blocked=True, block_pattern="blanket")
+        gate = evaluate_access_gate(_result(cdn_check=no_baseline))
+        assert gate.status == "pass" and gate.reasons == [] and gate.warnings == []
 
     def test_noindex_header_blocks(self):
         assert evaluate_access_gate(_result(meta=MetaResult(x_robots_noindex=True))).status == "blocked"
@@ -60,10 +76,24 @@ class TestGate:
         gate = evaluate_access_gate(_result(robots=some))
         assert gate.status == "warn" and "PerplexityBot" in gate.warnings[0]
 
-    def test_empty_script_shell_blocks_and_a_partial_one_warns(self):
-        empty = JsRenderingResult(checked=True, js_dependent=True, raw_word_count=JS_CRITICAL_WORDS - 1)
-        partial = JsRenderingResult(checked=True, js_dependent=True, raw_word_count=JS_CRITICAL_WORDS + 400)
-        assert evaluate_access_gate(_result(js_rendering=empty)).status == "blocked"
+    def test_an_empty_application_shell_blocks(self):
+        # excalidraw.com, measured: js_dependent, empty root, 1 word
+        shell = JsRenderingResult(checked=True, js_dependent=True, has_empty_root=True, raw_word_count=1)
+        gate = evaluate_access_gate(_result(js_rendering=shell))
+        assert gate.status == "blocked" and gate.reasons == [
+            "Empty application shell: 1 word in the raw HTML, the rest needs JavaScript"
+        ]
+
+    def test_a_tiny_static_page_only_warns(self):
+        # example.com, measured: js_dependent by the word thresholds, no empty root, 25 words
+        tiny = JsRenderingResult(checked=True, js_dependent=True, has_empty_root=False, raw_word_count=25)
+        gate = evaluate_access_gate(_result(js_rendering=tiny))
+        assert gate.status == "warn" and "25 words" in gate.warnings[0]
+
+    def test_a_shell_with_enough_words_only_warns(self):
+        partial = JsRenderingResult(
+            checked=True, js_dependent=True, has_empty_root=True, raw_word_count=JS_CRITICAL_WORDS + 150
+        )
         assert evaluate_access_gate(_result(js_rendering=partial)).status == "warn"
 
     def test_noai_warns(self):
