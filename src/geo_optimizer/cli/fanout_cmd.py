@@ -13,6 +13,7 @@ from pathlib import Path
 
 import click
 
+from geo_optimizer.core.align import tokenize
 from geo_optimizer.core.fanout import analyze_fanout
 from geo_optimizer.utils.validators import normalize_url_scheme, validate_public_url
 
@@ -32,8 +33,8 @@ def fanout(url: str, topic: str, output_format: str, output_file: str | None) ->
     The topic is expanded with fixed templates and each query is scored against the page text, as in ``geo align``.
     A family is as covered as the mean of its queries. A checklist for finding gaps, not a prediction.
     """
-    if not topic.strip():
-        click.echo("\n❌ --topic is empty", err=True)
+    if not tokenize(topic):
+        click.echo("\n❌ --topic has no searchable words (empty, or only words such as 'the' and 'how to')", err=True)
         sys.exit(1)
     safe, reason = validate_public_url(normalize_url_scheme(url))
     if not safe:

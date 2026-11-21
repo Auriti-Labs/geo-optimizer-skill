@@ -21,5 +21,7 @@ The surfaces and weights are those of `geo align` (title and h1 1.0, meta descri
 
 - It does not know whether the page answers the follow-up, only whether it uses the words near the topic.
 - The templates are English; other languages are not covered.
+- A topic with no searchable words (empty, or only words such as "the" and "how to") is refused: nothing would tie a query to the topic.
+- A topic that is itself a template word ("price", "free") loses that word from its family, which then has fewer queries.
 - Plurals are matched for English words only.
 - It does not discover sub-intents for your market; use `geo align` with your own list for that.
