@@ -659,6 +659,35 @@ class CrawledPage:
 
 
 @dataclass
+class BotVerification:
+    """What the published address ranges say about the visits that claimed one bot name."""
+
+    bot: str
+    hits: int = 0
+    verified: int = 0  # source address inside a range the vendor publishes for this bot
+    outside_ranges: int = 0  # claims the bot, source address outside every published range (spoofed, or not yet listed)
+    no_address: int = 0  # the log line carries no usable address
+    ranges_available: bool = False  # False: the vendor publishes no machine-readable ranges, nothing can be said
+
+
+@dataclass
+class IpVerification:
+    """Verification of crawler visits against the address ranges the vendors publish. Not a signature check."""
+
+    sources: list[dict] = field(default_factory=list)  # {"file"/"url", "bots", "creation_time", "prefixes"}
+    bots: list[BotVerification] = field(default_factory=list)
+    verified: int = 0
+    outside_ranges: int = 0
+    unverifiable: int = 0  # hits of bots with no published ranges, or without an address
+    note: str = (
+        "Checks the source address of each visit against the ranges the vendor publishes. Outside the ranges means a "
+        "spoofed name or an address the vendor has not listed (compare the publication dates above with your log "
+        "period). It does not check HTTP message signatures (RFC 9421), which standard access logs do not record, and "
+        "it cannot speak for a bot whose vendor publishes no ranges."
+    )
+
+
+@dataclass
 class LogAnalysisResult:
     """Server log analysis for AI crawler activity (#227)."""
 
@@ -670,6 +699,7 @@ class LogAnalysisResult:
     date_range_end: str = ""
     bots: list[BotStats] = field(default_factory=list)
     top_pages: list[CrawledPage] = field(default_factory=list)
+    verification: IpVerification | None = None  # only when address ranges were given
 
 
 # ─── Multi-Platform Citation Profile (v4.7) ─────────────────────────────────
