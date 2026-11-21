@@ -14,6 +14,10 @@ from geo_optimizer.models.config import ACCESS_GATE_SCORE_CAP, CITATION_BOTS, JS
 from geo_optimizer.models.results import AccessGate, AuditResult
 
 
+def _words(n: int) -> str:
+    return f"{n} word" if n == 1 else f"{n} words"
+
+
 def evaluate_access_gate(result: AuditResult) -> AccessGate:
     """The gate for ``result``: reasons that block, warnings that restrict, otherwise pass."""
     reasons: list[str] = []
@@ -21,10 +25,14 @@ def evaluate_access_gate(result: AuditResult) -> AccessGate:
 
     if result.http_status >= 400:
         reasons.append(f"The page answers HTTP {result.http_status}")
-    if result.cdn_check.checked and result.cdn_check.block_pattern == "blanket":
+    cdn = result.cdn_check
+    # The check compares the AI user agents with a browser request. Without a browser answer of 200 there is nothing
+    # to compare with (measured on stackoverflow.com: the browser got 403 too), so only a comparison counts.
+    if cdn.checked and cdn.browser_status in (200, 203) and cdn.block_pattern == "blanket":
         reasons.append("A CDN or firewall blocks every AI crawler tested")
-    elif result.cdn_check.checked and result.cdn_check.any_blocked:
-        warnings.append("A CDN or firewall blocks some AI crawlers")
+    elif cdn.checked and cdn.browser_status in (200, 203) and cdn.any_blocked:
+        refused = [b["bot"] for b in cdn.bot_results if b.get("blocked") or b.get("challenge_detected")]
+        warnings.append("A CDN or firewall refuses some crawlers tested: " + ", ".join(refused))
     if result.meta.x_robots_noindex:
         reasons.append("X-Robots-Tag: noindex")
     blocked_citation = sorted(CITATION_BOTS.intersection(result.robots.bots_blocked))
@@ -33,10 +41,14 @@ def evaluate_access_gate(result: AuditResult) -> AccessGate:
     elif blocked_citation:
         warnings.append("robots.txt disallows some citation bots: " + ", ".join(blocked_citation))
     js = result.js_rendering
-    if js.checked and js.js_dependent and js.raw_word_count < JS_CRITICAL_WORDS:
-        reasons.append(f"Script-dependent page with {js.raw_word_count} words in the raw HTML")
+    if js.checked and js.js_dependent and js.has_empty_root and js.raw_word_count < JS_CRITICAL_WORDS:
+        # An empty application root and almost no text: measured on excalidraw.com (1 word). A tiny static page
+        # such as example.com (25 words, no empty root) is not a script shell and only warns below.
+        reasons.append(
+            f"Empty application shell: {_words(js.raw_word_count)} in the raw HTML, the rest needs JavaScript"
+        )
     elif js.checked and js.js_dependent:
-        warnings.append("The page needs JavaScript to render part of its content")
+        warnings.append(f"Little readable text without JavaScript: {_words(js.raw_word_count)} in the raw HTML")
     if result.meta.has_noai:
         warnings.append("meta robots asks AI engines not to use the content (noai)")
 
