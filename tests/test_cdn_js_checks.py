@@ -264,6 +264,70 @@ class TestCdnAiCrawlerCheck:
         assert result.checked is True
         assert result.any_blocked is True
 
+    @staticmethod
+    def _session(browser_text: str, bot_text: str, bot_status: int = 200):
+        session = MagicMock()
+
+        def side_effect(url, **kwargs):
+            ua = kwargs.get("headers", {}).get("User-Agent", "")
+            resp = MagicMock()
+            resp.headers = {}
+            if "Mozilla/5.0 (Windows" in ua:
+                resp.status_code, resp.text = 200, browser_text
+            else:
+                resp.status_code, resp.text = bot_status, bot_text
+            return resp
+
+        session.get.side_effect = side_effect
+        return session
+
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_a_full_page_that_contains_challenge_words_is_not_a_challenge(self, mock_session_factory, mock_validate):
+        """Measured on en.wikipedia.org: every AI user agent got HTTP 200 and the same 490 KB as the browser, and the
+        words 'blocked' and 'forbidden' sit in ordinary markup. That is the page, not a challenge."""
+        page = "<html><script>var cfg = {'blocked': false, 'forbidden': []};</script>" + "x" * 8000 + "</html>"
+        mock_session_factory.return_value = self._session(page, page)
+
+        result = audit_cdn_ai_crawler("https://example.com")
+
+        assert result.checked is True
+        assert all(b["challenge_detected"] is False for b in result.bot_results)
+        assert result.any_blocked is False and result.block_pattern == "none"
+
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_a_small_challenge_page_in_place_of_the_page_is_still_a_challenge(
+        self, mock_session_factory, mock_validate
+    ):
+        challenge = "<html>Just a moment... Checking your browser before accessing the site.</html>"
+        mock_session_factory.return_value = self._session("x" * 8000, challenge)
+
+        result = audit_cdn_ai_crawler("https://example.com")
+
+        assert all(b["challenge_detected"] is True for b in result.bot_results)
+        assert result.block_pattern == "blanket"
+
+    @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
+    @patch("geo_optimizer.utils.http.create_session_with_retry")
+    def test_challenge_words_with_an_error_status_stay_a_block(self, mock_session_factory, mock_validate):
+        page = "<html>Access denied. Forbidden. " + "x" * 8000 + "</html>"
+        mock_session_factory.return_value = self._session("x" * 8040, page, bot_status=403)
+
+        result = audit_cdn_ai_crawler("https://example.com")
+
+        assert all(b["blocked"] is True and b["challenge_detected"] is True for b in result.bot_results)
+
+    def test_the_delivery_rule(self):
+        from geo_optimizer.core.audit_cdn import _delivers_the_page
+
+        assert _delivers_the_page(200, 1000, 200, 1000)
+        assert _delivers_the_page(200, 700, 200, 1000) and _delivers_the_page(200, 1500, 200, 1000)
+        assert not _delivers_the_page(200, 699, 200, 1000) and not _delivers_the_page(200, 1501, 200, 1000)
+        assert not _delivers_the_page(403, 1000, 200, 1000)  # an error status is never a delivery
+        assert not _delivers_the_page(200, 1000, 403, 1000)  # no baseline: the browser was refused too
+        assert not _delivers_the_page(200, 1000, 200, 0)
+
     @patch("geo_optimizer.utils.validators.resolve_and_validate_url", return_value=(True, None, ["93.184.216.34"]))
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_cdn_headers_detected(self, mock_session_factory, mock_validate):

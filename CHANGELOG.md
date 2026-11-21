@@ -15,6 +15,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Changed
 - `geo citations` says which surface the answers come from: a `surface` field (`"api"`) in the JSON and a line in the text report, because a provider API can answer differently from the chat interface people use.
 
+### Fixed
+- The CDN check no longer reports a challenge page when an AI user agent received HTTP 200 and about as much content as the browser (70% to 150% of its length). Words such as "blocked", "forbidden" or "captcha" in the first 5000 characters of an ordinary page set `challenge_detected`, so a page that was delivered in full (measured on en.wikipedia.org: 200 and 490 KB for GPTBot, OAI-SearchBot, PerplexityBot and Claude-SearchBot) produced `block_pattern: blanket` and the recommendation that the CDN blocks AI crawlers. An error status still counts as a block, and so does a small page in place of the real one. Googlebot and Applebot are still reported when the site answers them 403: that is the site refusing a spoofed crawler name, which the check cannot tell from a block.
+
 ## [4.24.0] — 2026-11-20
 
 ### Added

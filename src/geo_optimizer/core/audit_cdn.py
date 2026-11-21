@@ -12,6 +12,13 @@ def _http_blocked(entry: dict) -> bool:
     return bool(entry["blocked"] or entry["challenge_detected"])
 
 
+def _delivers_the_page(status: int, length: int, browser_status: int, browser_length: int) -> bool:
+    """True when a bot got HTTP 200 and about as many characters as the browser (70% to 150%)."""
+    if status != 200 or browser_status != 200 or browser_length <= 0:
+        return False
+    return 0.7 <= length / browser_length <= 1.5
+
+
 def classify_block_pattern(bot_results: list[dict]) -> str:
     """Return "none", "targeted" or "blanket" from the per-bot HTTP results of the AI UAs."""
     blocked = [_http_blocked(b) for b in bot_results if b["bot"] in AI_UA_BOTS]
@@ -193,7 +200,15 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
                 # Check 2: Challenge/captcha page detection
                 body_lower = bot_r.text[:5000].lower()
                 if any(indicator in body_lower for indicator in challenge_indicators):
-                    bot_entry["challenge_detected"] = True
+                    # "blocked", "forbidden" or "captcha" also appear in ordinary markup and scripts (measured on
+                    # en.wikipedia.org: a 200 with the same 490 KB the browser got). A challenge replaces the page, so a
+                    # response that carries as much as the browser's is the page, not a challenge.
+                    bot_entry["challenge_detected"] = not _delivers_the_page(
+                        bot_r.status_code,
+                        bot_entry["content_length"],
+                        result.browser_status,
+                        result.browser_content_length,
+                    )
 
                 # Check 3: Content-length mismatch (>70% difference → probable block)
                 if (
