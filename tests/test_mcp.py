@@ -221,7 +221,7 @@ class TestGeoAuditTool:
         result = geo_audit("https://example.com", score_version=99, include_receipt=True)
         data = json.loads(result)
         assert "error" in data
-        assert data["error"] == "score_version must be 1, 2, 3, 4 or 5"
+        assert data["error"] == "score_version must be 1, 2, 3, 4, 5 or 6"
         assert "receipt" in data
         assert data["receipt"]["stages_failed"] == ["validate_score_version"]
         assert data["receipt"]["terminal_error"] == "invalid_argument"
@@ -265,7 +265,7 @@ class TestGeoAuditTool:
             ("Unsafe URL: private IP", "unsafe_url"),
             ("Unsafe URL: Scheme http not allowed", "unsafe_url"),
             ("Redirect to unsafe URL: private IP", "unsafe_url"),
-            ("score_version must be 1, 2, 3, 4 or 5", "invalid_argument"),
+            ("score_version must be 1, 2, 3, 4, 5 or 6", "invalid_argument"),
             ("score_version must be 1, 2 or 3", "invalid_argument"),
             ("HTTP 400: invalid argument", "http_error"),
             ("Something unexpected", "internal"),

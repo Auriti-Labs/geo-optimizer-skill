@@ -138,7 +138,7 @@ class TestRobotsOnThePage:
 
 def test_cli_accepts_score_version_5():
     out = CliRunner().invoke(cli, ["audit", "--help"])
-    assert out.exit_code == 0 and "--score-version [1|2|3|4|5]" in out.output
+    assert out.exit_code == 0 and "--score-version [1|2|3|4|5|6]" in out.output
 
 
 class TestHostileJsonLd:

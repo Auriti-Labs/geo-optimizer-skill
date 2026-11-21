@@ -15,6 +15,8 @@ from collections.abc import Callable, Iterable
 from typing import Any
 from urllib.parse import urljoin, urlsplit
 
+from geo_optimizer.core.access_gate import apply_access_gate, gate_for_http_status
+
 # ─── Re-exports from split modules (backward compatibility, #402) ────────────
 from geo_optimizer.core.audit_ai_discovery import (
     _audit_ai_discovery_from_responses,
@@ -863,6 +865,9 @@ def _build_audit_result(
         score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
     )
 
+    if score_version >= 6:
+        apply_access_gate(result)
+
     # v4.7: Multi-Platform Citation Profile (#228) — computed post-construction
     if platform_citation is not None:
         result.platform_citation = platform_citation
@@ -1042,6 +1047,8 @@ def run_full_audit(
             score_version=score_version,
             score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
         )
+        if score_version >= 6:
+            result.access_gate = gate_for_http_status(r.status_code)
         _set_error_recommendations(
             result, [f"Site returned HTTP {r.status_code}. Check for Cloudflare/WAF blocks or server errors."]
         )
@@ -1334,6 +1341,8 @@ async def run_full_audit_async(
             score_version=score_version,
             score_max=dict(CATEGORY_MAX_BY_VERSION[score_version]),
         )
+        if score_version >= 6:
+            result.access_gate = gate_for_http_status(r_home.status_code)
         _set_error_recommendations(
             result, [f"Site returned HTTP {r_home.status_code}. Check for Cloudflare/WAF blocks or server errors."]
         )
