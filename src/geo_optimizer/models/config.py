@@ -1248,3 +1248,17 @@ FANOUT_FAMILIES: dict[str, tuple[str, ...]] = {
     "free_options": ("free {t}", "{t} free trial", "{t} open source"),
 }
 FANOUT_MAX_SEED_CHARS: int = 120
+
+# ─── geo logs --ip-ranges: address ranges the vendors publish (checked 2026-11-21, each answered HTTP 200 with
+# {"creationTime", "prefixes": [{"ipv4Prefix" | "ipv6Prefix"}]}). Anthropic and Apple publish no file of this kind that
+# was checked, so ClaudeBot and Applebot visits can only be reported as unverifiable. File name -> (URL, bots).
+CRAWLER_RANGE_SOURCES: dict[str, tuple[str, tuple[str, ...]]] = {
+    "gptbot.json": ("https://openai.com/gptbot.json", ("GPTBot",)),
+    "searchbot.json": ("https://openai.com/searchbot.json", ("OAI-SearchBot",)),
+    "chatgpt-user.json": ("https://openai.com/chatgpt-user.json", ("ChatGPT-User",)),
+    "googlebot.json": ("https://developers.google.com/static/search/apis/ipranges/googlebot.json", ("Googlebot",)),
+    "perplexitybot.json": ("https://www.perplexity.ai/perplexitybot.json", ("PerplexityBot",)),
+    "perplexity-user.json": ("https://www.perplexity.ai/perplexity-user.json", ("Perplexity-User",)),
+    "bingbot.json": ("https://www.bing.com/toolbox/bingbot.json", ("Bingbot",)),
+}
+CRAWLER_RANGES_MAX_BYTES: int = 2_000_000

@@ -12,6 +12,7 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from geo_optimizer.core.crawler_ips import verify_visits
 from geo_optimizer.models.config import AI_BOTS
 from geo_optimizer.models.results import BotStats, CrawledPage, LogAnalysisResult
 
@@ -20,6 +21,9 @@ from geo_optimizer.models.results import BotStats, CrawledPage, LogAnalysisResul
 _COMBINED_RE = re.compile(
     r'^[\d.:a-fA-F]+\s+\S+\s+\S+\s+\[([^\]]+)\]\s+"(\S+)\s+(\S+)\s+[^"]*"\s+(\d+)\s+\S+\s+"[^"]*"\s+"([^"]*)"'
 )
+
+_LEADING_ADDRESS_RE = re.compile(r"^([\d.:a-fA-F]+)\s")
+_JSON_ADDRESS_KEYS = ("remote_addr", "client_ip", "clientIp", "clientIP", "c-ip", "remote_ip", "ip", "ClientIP")
 
 _TOP_PAGES_LIMIT = 10
 _DEFAULT_MAX_LINES = 1_000_000
@@ -30,13 +34,22 @@ for bot_name in AI_BOTS:
     _BOT_UA_FRAGMENTS[bot_name.lower()] = bot_name
 
 
-def analyze_log_file(file_path: str | Path, *, max_lines: int = _DEFAULT_MAX_LINES) -> LogAnalysisResult:
+def analyze_log_file(
+    file_path: str | Path,
+    *,
+    max_lines: int = _DEFAULT_MAX_LINES,
+    ranges: dict | None = None,
+    range_sources: list[dict] | None = None,
+) -> LogAnalysisResult:
     """Analyze a server log file for AI crawler activity.
 
     Supports Apache/Nginx combined format and JSON lines format.
 
     Args:
         file_path: Path to the log file.
+        ranges: Published address ranges per bot (see ``core.crawler_ips``); when given, each crawler visit is
+            checked against them and the result carries a ``verification``.
+        range_sources: Where the ranges came from, recorded in the verification.
 
     Returns:
         LogAnalysisResult with bot stats and top crawled pages.
@@ -69,6 +82,7 @@ def analyze_log_file(file_path: str | Path, *, max_lines: int = _DEFAULT_MAX_LIN
     top_pages = _aggregate_pages(bot_visits)
 
     dates.sort()
+    verification = verify_visits(bot_visits, ranges, range_sources or []) if ranges is not None else None
     return LogAnalysisResult(
         checked=True,
         log_file=str(path),
@@ -78,6 +92,7 @@ def analyze_log_file(file_path: str | Path, *, max_lines: int = _DEFAULT_MAX_LIN
         date_range_end=dates[-1] if dates else "",
         bots=bots,
         top_pages=top_pages,
+        verification=verification,
     )
 
 
@@ -94,7 +109,9 @@ def _parse_line(line: str) -> dict | None:
     # Try combined format
     m = _COMBINED_RE.match(line)
     if m:
+        address = _LEADING_ADDRESS_RE.match(line)
         return {
+            "ip": address.group(1) if address else "",
             "date": m.group(1),
             "method": m.group(2),
             "path": m.group(3),
@@ -113,7 +130,9 @@ def _parse_json_line(line: str) -> dict | None:
     ua = obj.get("user_agent") or obj.get("userAgent") or obj.get("http_user_agent") or ""
     path = obj.get("path") or obj.get("uri") or obj.get("url") or ""
     date = obj.get("timestamp") or obj.get("time") or obj.get("date") or ""
+    address = next((str(obj[k]) for k in _JSON_ADDRESS_KEYS if obj.get(k)), "")
     return {
+        "ip": address,
         "date": str(date),
         "method": obj.get("method", ""),
         "path": str(path),
