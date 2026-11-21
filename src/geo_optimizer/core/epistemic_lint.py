@@ -32,6 +32,7 @@ from geo_optimizer.models.config import (
     LINT_STATISTIC_RE,
 )
 from geo_optimizer.models.results import LintFinding, LintResult
+from geo_optimizer.utils.html_blocks import BlockResolver
 from geo_optimizer.utils.http import fetch_url
 from geo_optimizer.utils.validators import normalize_url_scheme
 
@@ -42,7 +43,7 @@ _ABSOLUTE = re.compile(LINT_ABSOLUTE_RE, re.IGNORECASE)
 _QUALIFIER = re.compile(LINT_QUALIFIER_RE, re.IGNORECASE)
 _NEGATION = re.compile(LINT_NEGATION_RE, re.IGNORECASE)
 _SENTENCES = re.compile(r"(?<=[.!?])\s+")
-_NOISE_TAGS = ("script", "style", "noscript", "template", "nav", "footer", "aside", "svg")
+_NOISE_TAGS = ("script", "style", "noscript", "template", "nav", "footer", "aside", "svg", "pre", "code", "kbd", "samp")
 _BLOCK_TAGS = frozenset(
     {"p", "li", "td", "th", "dd", "dt", "blockquote", "div", "section", "article", "main", "figcaption", "summary"}
     | {"h1", "h2", "h3", "h4", "h5", "h6"}
@@ -68,15 +69,12 @@ def text_blocks(soup: BeautifulSoup) -> list[tuple[str, bool]]:
     body = soup.body or soup
     for tag in body(_NOISE_TAGS):
         tag.decompose()
+    resolver = BlockResolver(body, _BLOCK_TAGS)
     blocks: dict[int, list] = {}
     for node in body.find_all(string=True):
         if isinstance(node, (Comment, Doctype)) or not node.strip():
             continue
-        linked = False
-        owner = node.parent
-        while owner is not None and owner is not body and owner.name not in _BLOCK_TAGS:
-            linked = linked or owner.name == "a"
-            owner = owner.parent
+        owner, linked = resolver.resolve(node)
         entry = blocks.setdefault(id(owner), [[], False])
         entry[0].append(str(node).strip())
         entry[1] = entry[1] or linked
