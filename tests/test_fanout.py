@@ -76,7 +76,7 @@ class TestAnalyzeAndCli:
 
     def test_fetch_error(self):
         with patch("geo_optimizer.core.fanout.fetch_url", return_value=self._fetch("Timeout (10s)")):
-            assert analyze_fanout("https://example.com", "x").error == "Timeout (10s)"
+            assert analyze_fanout("https://example.com", "roofing").error == "Timeout (10s)"
 
     def _run(self, args, fetch=None):
         with (
@@ -98,16 +98,33 @@ class TestAnalyzeAndCli:
     def test_empty_topic_is_an_error(self):
         assert self._run(["--url", "https://example.com", "--topic", "  "]).exit_code == 1
 
+    def test_a_topic_of_only_stopwords_is_refused_before_fetching(self):
+        # Found by an independent review: seed "the" skipped the topic filter and scored words anywhere on the page.
+        for topic in ("the", "how to", "!!!", "a"):
+            with (
+                patch("geo_optimizer.cli.fanout_cmd.validate_public_url", return_value=(True, "")),
+                patch("geo_optimizer.core.fanout.fetch_url") as fetch,
+            ):
+                out = CliRunner().invoke(cli, ["fanout", "--url", "https://example.com", "--topic", topic])
+            assert out.exit_code == 1 and "no searchable words" in out.output and not fetch.called, topic
+
+    def test_the_core_refuses_it_too(self):
+        with patch("geo_optimizer.core.fanout.fetch_url", return_value=self._fetch()) as fetch:
+            result = analyze_fanout("https://example.com", "the")
+        assert result.error == "The topic has no searchable words" and result.families == [] and not fetch.called
+
     def test_unsafe_url_is_refused_before_fetching(self):
         with (
             patch("geo_optimizer.cli.fanout_cmd.validate_public_url", return_value=(False, "private address")),
             patch("geo_optimizer.core.fanout.fetch_url") as fetch,
         ):
-            out = CliRunner().invoke(cli, ["fanout", "--url", "http://10.0.0.1", "--topic", "x y"])
+            out = CliRunner().invoke(cli, ["fanout", "--url", "http://10.0.0.1", "--topic", "roofing"])
         assert out.exit_code == 1 and not fetch.called
 
     def test_fetch_error_exits_1(self):
         assert (
-            self._run(["--url", "https://example.com", "--topic", "x"], fetch=(None, "Connection failed")).exit_code
+            self._run(
+                ["--url", "https://example.com", "--topic", "roofing"], fetch=(None, "Connection failed")
+            ).exit_code
             == 1
         )

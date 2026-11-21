@@ -76,6 +76,10 @@ def analyze_fanout(url: str, seed: str) -> FanoutResult:
     """Fetch ``url`` (anti-SSRF checks included) and measure sub-intent coverage for ``seed``."""
     target = normalize_url_scheme(url)
     result = FanoutResult(url=target, seed=" ".join(seed.split())[:FANOUT_MAX_SEED_CHARS])
+    if not tokenize(result.seed):
+        # Without topic words nothing ties a query to the topic, and every added word would count anywhere on the page.
+        result.error = "The topic has no searchable words"
+        return result
     response, error = fetch_url(target)
     if error or response is None:
         result.error = error or "No response"
