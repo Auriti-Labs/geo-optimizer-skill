@@ -1206,8 +1206,7 @@ LINT_KEYWORD_LIST_MIN_ITEMS: int = 20  # a block that is a list of this many sho
 LINT_KEYWORD_LIST_MAX_ITEM_WORDS: int = 4
 LINT_STATISTIC_RE: str = (
     r"\b\d{1,3}(?:[.,]\d+)?\s?%|\b\d+(?:[.,]\d+)?\s?x\b|\b\d+(?:[.,]\d+)?\s+times\b"
-    r"|\b(?:increase|increased|reduce|reduced|grow|grew|boost|boosted|improve|improved|cut|aument\w+|riduc\w+|cresc\w+)"
-    r"\w*\s+(?:by\s+|del\s+|di\s+)?\d"
+    r"|\b(?:increase|reduce|grow|grew|boost|improve|cut|aument|riduc|cresc)\w*\s+(?:by\s+|del\s+|di\s+)?\d"
 )
 LINT_EVIDENCE_RE: str = (
     r"\bsources?\b|according to|\bstudy\b|\bsurvey\b|\breport\b|\bn\s?=\s?\d|\bsample\b|respondents|research by"

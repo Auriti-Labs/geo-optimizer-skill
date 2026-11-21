@@ -196,3 +196,40 @@ class TestPromiseIsAsserted:
         assert "caveat_omitted" in _rules(
             "<p>This method always works for every site, whatever the size, with no extra effort.</p>"
         )
+
+
+class TestHostileInput:
+    """Found by an independent review: two quadratic costs on hostile pages."""
+
+    def test_the_statistic_pattern_is_linear_on_a_very_long_word(self):
+        import re
+        import time
+
+        from geo_optimizer.models.config import LINT_STATISTIC_RE
+
+        pattern = re.compile(LINT_STATISTIC_RE, re.IGNORECASE)
+        for word in ("aument", "cresc", "riduc", "increase"):
+            started = time.perf_counter()
+            pattern.search(word + "a" * 200_000)
+            assert time.perf_counter() - started < 1.0, word  # 14 s at 40000 characters before
+
+    def test_deeply_nested_inline_markup_is_read_in_linear_time(self):
+        import time
+
+        html = "<body><p>" + "<span>word " * 20000 + "</span>" * 20000 + "</p></body>"
+        started = time.perf_counter()
+        blocks = text_blocks(BeautifulSoup(html, "html.parser"))
+        assert time.perf_counter() - started < 6.0  # parsing is most of it; 30 s before
+        assert len(blocks) == 1
+
+
+class TestNotAClaim:
+    def test_code_samples_are_not_read(self):
+        assert (
+            _rules("<pre>pow(38, -1, mod=97) 23 >>> 23 * 38 % 97 == 1 and the result is 23 percent exactly here</pre>")
+            == []
+        )
+        assert (
+            _rules("<p>Use <code>x % 97</code> to take the remainder of the division by ninety seven for the key.</p>")
+            == []
+        )

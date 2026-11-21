@@ -29,6 +29,7 @@ from geo_optimizer.models.config import (
     ALIGN_SURFACE_WEIGHTS,
 )
 from geo_optimizer.models.results import AlignItem, AlignResult
+from geo_optimizer.utils.html_blocks import BlockResolver
 from geo_optimizer.utils.http import fetch_url
 from geo_optimizer.utils.validators import normalize_url_scheme
 
@@ -143,13 +144,12 @@ def extract_surfaces(soup: BeautifulSoup) -> list[tuple[str, str]]:
         text = heading.get_text(" ", strip=True)
         if text:
             surfaces.append(("h1" if heading.name == "h1" else "heading", text))
+    resolver = BlockResolver(body, _BLOCK_TAGS)
     blocks: dict[int, tuple[str, list[str]]] = {}
     for node in body.find_all(string=True):
         if isinstance(node, (Comment, Doctype)) or not node.strip():
             continue
-        owner = node.parent
-        while owner is not None and owner is not body and owner.name not in _BLOCK_TAGS:
-            owner = owner.parent
+        owner, _ = resolver.resolve(node)
         name = getattr(owner, "name", "") or ""
         blocks.setdefault(id(owner), (name, []))[1].append(str(node).strip())
     step = max(1, ALIGN_PASSAGE_MAX_WORDS // 2)
