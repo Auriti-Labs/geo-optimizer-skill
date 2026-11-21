@@ -296,6 +296,36 @@ class TestCitationsCli:
         assert "95% CI" in result.output
         assert "Verdict stable" in result.output
 
+    def test_cli_samples_each_query_eight_times_by_default(self, monkeypatch):
+        monkeypatch.setenv("PERPLEXITY_API_KEY", "pk-test")
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("GeoReady leads.", citations=["https://geoready.dev"])
+            result = CliRunner().invoke(
+                cli, ["citations", "--brand", "GeoReady", "--domain", "geoready.dev", "--query", "best geo tool"]
+            )
+            assert result.exit_code == 0
+            assert mock_q.call_count == 8
+
+    def test_cli_runs_one_asks_once(self, monkeypatch):
+        monkeypatch.setenv("PERPLEXITY_API_KEY", "pk-test")
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("GeoReady leads.", citations=["https://geoready.dev"])
+            CliRunner().invoke(
+                cli,
+                [
+                    "citations",
+                    "--brand",
+                    "GeoReady",
+                    "--domain",
+                    "geoready.dev",
+                    "--query",
+                    "best geo tool",
+                    "--runs",
+                    "1",
+                ],
+            )
+            assert mock_q.call_count == 1
+
     def test_cli_runs_out_of_range_rejected(self, monkeypatch):
         monkeypatch.setenv("PERPLEXITY_API_KEY", "pk-test")
         runner = CliRunner()

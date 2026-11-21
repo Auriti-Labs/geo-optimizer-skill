@@ -144,7 +144,7 @@ geo monitor --domain yoursite.com
 
 # Ask real AI engines whether your brand is mentioned and your domain cited.
 # AI answers vary run to run — sample each query 5x for a confidence interval.
-geo citations --brand "YourBrand" --domain yoursite.com --topic "your product category" --runs 5
+geo citations --brand "YourBrand" --domain yoursite.com --topic "your product category"  # 8 samples per query by default; --runs 1 for one cheap sample
 
 # Save or query archived AI answer snapshots, and score citation quality in one
 geo snapshots --query "best GEO tool" --from 2026-03-01 --to 2026-03-30
@@ -214,7 +214,7 @@ Same engine everywhere: the platform adds what a local CLI cannot — server-sid
 
 Two honest caveats, both built into the tool:
 
-- **Answers are not deterministic.** The same question can cite different sources on each run. `--runs 5` samples every query five times and reports a confidence interval instead of a single yes/no.
+- **Answers are not deterministic.** The same question can cite different sources on each run. By default every query is sampled eight times and the report carries a confidence interval instead of a single yes/no; `--runs 1` asks once and costs an eighth.
 - **Not every API shows sources.** Perplexity Sonar returns the real source URLs. OpenAI, Anthropic, and Groq only reveal what the model already knows about your brand. Google AI Overviews is a SERP feature, not a model, so `--provider serpbase` observes the real Google results page instead.
 
 ---

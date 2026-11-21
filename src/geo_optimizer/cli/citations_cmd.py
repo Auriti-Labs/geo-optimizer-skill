@@ -94,7 +94,7 @@ def _format_text(result) -> str:
         lines.append("AI answers are non-deterministic. Track citations over time with alerts → https://geoready.dev")
     else:
         lines.append(
-            "One-shot check — a single sample. Re-run with --runs 5 for a confidence interval, or track over time → https://geoready.dev"
+            "One-shot check — a single sample. Re-run with --runs 8 for a confidence interval, or track over time → https://geoready.dev"
         )
     return "\n".join(lines)
 
@@ -111,9 +111,9 @@ def _format_text(result) -> str:
 @click.option(
     "--runs",
     type=click.IntRange(1, 20),
-    default=1,
+    default=8,
     show_default=True,
-    help="Ask each query this many times. AI answers vary run to run; >1 gives a confidence interval. Costs runs x queries API calls.",
+    help="Ask each query this many times. AI answers vary run to run; >1 gives a confidence interval. Costs runs x queries API calls (use --runs 1 for a single, cheap sample). Ignored with --provider serpbase.",
 )
 @click.option(
     "--provider",
@@ -143,13 +143,13 @@ def citations(brand, domain, topic, queries, runs, provider, output_format, outp
     the model knows your brand.
 
     AI answers are non-deterministic — the same question returns different
-    sources run to run. Pass --runs 5 to sample each query multiple times and
-    get a 95% confidence interval on the citation rate instead of one coin flip.
+    sources run to run. Each query is sampled 8 times by default (--runs 1 for one cheap sample), which
+    gives a 95% confidence interval on the citation rate instead of one coin flip.
 
     \b
     Examples:
       geo citations --brand "GeoReady" --domain geoready.dev --topic "GEO audit tools"
-      geo citations --brand "Acme" --domain acme.com --query "best CRM for startups" --runs 5
+      geo citations --brand "Acme" --domain acme.com --query "best CRM for startups" --runs 3
       geo citations --brand "Acme" --domain acme.com --provider serpbase  # Google SERP + AI Overview
     """
     resolved_provider, resolved_key = resolve_provider(provider)
