@@ -1205,8 +1205,15 @@ LINT_DUPLICATE_BLOCKS_MIN: int = 3  # the same block this many times is relevanc
 LINT_KEYWORD_LIST_MIN_ITEMS: int = 20  # a block that is a list of this many short items
 LINT_KEYWORD_LIST_MAX_ITEM_WORDS: int = 4
 LINT_STATISTIC_RE: str = (
-    r"\b\d{1,3}(?:[.,]\d+)?\s?%|\b\d+(?:[.,]\d+)?\s?x\b|\b\d+(?:[.,]\d+)?\s+times\b"
-    r"|\b(?:increase|reduce|grow|grew|boost|improve|cut|aument|riduc|cresc)\w*\s+(?:by\s+|del\s+|di\s+)?\d"
+    r"\b\d{1,3}(?:[.,]\d+)?\s?%|\b\d+(?:[.,]\d+)?\s?x\b"
+    r"|\b\d+(?:[.,]\d+)?\s+times\s+(?:faster|slower|more|less|higher|lower|better|worse|greater|bigger|smaller|as)\b"
+    r"|\b(?:increase|reduce|grow|grew|boost|improve|cut|aument|riduc|cresc)\w*\s+(?:by\s+|del\s+|di\s+)?"
+    r"\d[\d.,]*\s?(?:%|x\b|times\b|percent\b|per cent\b|volte\b|punti\b)"
+)
+# A percentage in a price, fee, rate or discount is a tariff, not an outcome claim that needs a source.
+LINT_PRICING_CONTEXT_RE: str = (
+    r"[€$£]|\b(?:usd|eur|gbp|cents?)\b|\b(?:fees?|rates?|commissions?|cashback|back on|tax|vat|iva|discounts?|sconto"
+    r"|save|off|interest|apr|tariff\w*|commissione)\b"
 )
 LINT_EVIDENCE_RE: str = (
     r"\bsources?\b|according to|\bstudy\b|\bsurvey\b|\breport\b|\bn\s?=\s?\d|\bsample\b|respondents|research by"
