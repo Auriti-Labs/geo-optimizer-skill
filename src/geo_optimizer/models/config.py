@@ -764,13 +764,22 @@ CATEGORY_MAX_V4 = dict(CATEGORY_MAX_V2)
 SCORING_V5 = {**SCORING_V4, "schema_visible_strict": 1}
 CATEGORY_MAX_V5 = dict(CATEGORY_MAX_V2)
 
-SCORING_BY_VERSION = {1: SCORING, 2: SCORING_V2, 3: SCORING_V3, 4: SCORING_V4, 5: SCORING_V5}
+# Rubric v6 (opt-in with --score-version 6; the default stays v2): v5's weights, plus an access gate. A page that AI
+# crawlers cannot read does not earn a Good or Excellent band however well its markup is written: when the gate
+# is BLOCKED the score is capped at ACCESS_GATE_SCORE_CAP, the top of the Foundation band. The gate reads signals
+# the audit already has; it adds no request.
+SCORING_V6 = dict(SCORING_V5)
+CATEGORY_MAX_V6 = dict(CATEGORY_MAX_V2)
+ACCESS_GATE_SCORE_CAP: int = 67
+
+SCORING_BY_VERSION = {1: SCORING, 2: SCORING_V2, 3: SCORING_V3, 4: SCORING_V4, 5: SCORING_V5, 6: SCORING_V6}
 CATEGORY_MAX_BY_VERSION = {
     1: CATEGORY_MAX,
     2: CATEGORY_MAX_V2,
     3: CATEGORY_MAX_V3,
     4: CATEGORY_MAX_V4,
     5: CATEGORY_MAX_V5,
+    6: CATEGORY_MAX_V6,
 }
 ROBOTS_PARTIAL_BY_VERSION = {
     1: ROBOTS_PARTIAL_SCORE,
@@ -778,6 +787,7 @@ ROBOTS_PARTIAL_BY_VERSION = {
     3: ROBOTS_PARTIAL_SCORE_V3,
     4: ROBOTS_PARTIAL_SCORE_V3,
     5: ROBOTS_PARTIAL_SCORE_V3,
+    6: ROBOTS_PARTIAL_SCORE_V3,
 }
 DEFAULT_SCORE_VERSION = 2
 

@@ -628,6 +628,14 @@ def format_audit_text(result: AuditResult) -> str:
         "critical": "❌ CRITICAL — Core signals for AI search are missing",
     }
     lines.append(f"\n  {band_labels.get(result.band, result.band)}")
+    gate = getattr(result, "access_gate", None)
+    if gate is not None and gate.status == "blocked":
+        capped = f"; score capped at {result.score} (was {gate.score_before_cap})" if gate.score_before_cap else ""
+        lines.append(f"\n  ⛔ ACCESS GATE: BLOCKED{capped}")
+        lines.extend(f"     - {reason}" for reason in gate.reasons)
+    elif gate is not None and gate.status == "warn":
+        lines.append("\n  ⚠️  ACCESS GATE: warnings")
+        lines.extend(f"     - {warning}" for warning in gate.warnings)
     # Fix #442: generazione dinamica delle bande da SCORE_BANDS (non hardcoded)
     _band_order = ["critical", "foundation", "good", "excellent"]
     _band_parts = [f"{SCORE_BANDS[b][0]}–{SCORE_BANDS[b][1]} = {b}" for b in _band_order if b in SCORE_BANDS]

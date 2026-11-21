@@ -1053,6 +1053,16 @@ class GoogleAiReadinessResult:
 
 
 @dataclass
+class AccessGate:
+    """Whether AI crawlers can read the page at all (rubric v6). ``not_evaluated`` for earlier rubrics."""
+
+    status: str = "not_evaluated"  # not_evaluated | pass | warn | blocked
+    reasons: list[str] = field(default_factory=list)  # why it is blocked
+    warnings: list[str] = field(default_factory=list)  # restrictions that do not block every crawler
+    score_before_cap: int | None = None  # set only when the cap lowered the score
+
+
+@dataclass
 class AuditResult:
     url: str
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -1120,6 +1130,7 @@ class AuditResult:
     # v4.19: Google AI readiness + rubric versionata
     google_ai: GoogleAiReadinessResult = field(default_factory=GoogleAiReadinessResult)
     score_version: int = 1
+    access_gate: AccessGate = field(default_factory=AccessGate)  # rubric v6; "not_evaluated" before
     score_max: dict[str, int] = field(default_factory=dict)
     # Same strings as ``recommendations``, grouped by the category that produced them.
     # Keys are the ``score_breakdown`` categories of the active rubric plus the non-scored

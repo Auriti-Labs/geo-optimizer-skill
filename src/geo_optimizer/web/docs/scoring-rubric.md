@@ -70,6 +70,14 @@ v5 is v4 plus two checks that follow the audited page instead of the site.
 
 Scores can go down against v4 where a page blocks a bot on its own path or declares questions or prices it does not show. v2 stays the default and v1 to v4 numbers do not change; history compares only snapshots of the same version.
 
+#### Rubric v6 (opt-in, `--score-version 6`)
+
+v6 has v5's weights and adds an **access gate**: a page that AI crawlers cannot read does not earn a Good or Excellent band however well its markup is written. The gate reads signals the audit already has and adds no request.
+
+It is `blocked` when the page answers anything but HTTP 200 or 203 (the audit stops at that first request and scores 0, and the gate says why); a CDN or firewall blocks every AI crawler tested; `X-Robots-Tag: noindex` is set; robots.txt disallows every citation bot; or the page needs JavaScript and has fewer than 50 words in its raw HTML (`JS_CRITICAL_WORDS`). When it is blocked the score is capped at 67, the top of the Foundation band, and the report says what the score was before the cap. It is `warn` when a restriction does not block every crawler (some citation bots disallowed, a targeted CDN block, partly script-rendered content, `noai`), and `pass` otherwise. A warning never lowers the score.
+
+The result carries `access_gate` with `status`, `reasons`, `warnings` and `score_before_cap` (`not_evaluated` before v6). The cap is a judgment, a constant in `models/config.py`. v2 stays the default and v1 to v5 numbers do not change.
+
 ### Google AI readiness - max 20 pts (v2)
 
 | Check | Points | One-line check | Source |

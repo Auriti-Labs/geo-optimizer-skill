@@ -108,10 +108,10 @@ def _history_footer(history_result, history_entry) -> str:
 @click.option("--concurrency", default=5, type=int, show_default=True, help="Concurrent page audits in sitemap mode")
 @click.option(
     "--score-version",
-    type=click.Choice(["1", "2", "3", "4", "5"]),
+    type=click.Choice(["1", "2", "3", "4", "5", "6"]),
     default=str(DEFAULT_SCORE_VERSION),
     show_default=True,
-    help="Scoring rubric: 2 (Google AI readiness, default), 3 (v2 with robots.txt scored as access, opt-in), 4 (v3 plus schema scored by page type, opt-in), 5 (v4 plus robots judged on the page and a stricter schema visibility check, opt-in) or 1 (legacy, to compare with old history)",
+    help="Scoring rubric: 2 (Google AI readiness, default), 3 (v2 with robots.txt scored as access, opt-in), 4 (v3 plus schema scored by page type, opt-in), 5 (v4 plus robots judged on the page and a stricter schema visibility check, opt-in), 6 (v5 plus an access gate that caps the score of a page AI crawlers cannot read, opt-in) or 1 (legacy, to compare with old history)",
 )
 @click.option("--save-history", is_flag=True, help="Save the audit result in local GEO history")
 @click.option("--regression", is_flag=True, help="Exit with code 1 if score regressed vs the previous saved snapshot")
