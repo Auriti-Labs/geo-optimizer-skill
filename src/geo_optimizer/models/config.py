@@ -1262,3 +1262,9 @@ CRAWLER_RANGE_SOURCES: dict[str, tuple[str, tuple[str, ...]]] = {
     "bingbot.json": ("https://www.bing.com/toolbox/bingbot.json", ("Bingbot",)),
 }
 CRAWLER_RANGES_MAX_BYTES: int = 2_000_000
+
+# ─── geo fidelity: does a cited page carry the words of the claim next to its link ───
+FIDELITY_MAX_SOURCES: int = 10
+FIDELITY_MAX_CLAIMS: int = 40
+FIDELITY_MIN_CLAIM_WORDS: int = 5
+FIDELITY_MAX_ANSWER_CHARS: int = 20_000

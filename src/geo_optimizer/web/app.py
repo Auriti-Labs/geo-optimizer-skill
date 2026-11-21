@@ -466,6 +466,7 @@ _DOCS_PAGES = {
     "geo-align": "Prompt Alignment",
     "geo-lint": "Epistemic Lint",
     "geo-fanout": "Sub-intent Fanout",
+    "geo-fidelity": "Citation Fidelity",
     "ai-bots-reference": "AI Bots Reference",
     "ci-cd": "CI/CD Integration",
     "scoring-rubric": "Scoring Rubric",
