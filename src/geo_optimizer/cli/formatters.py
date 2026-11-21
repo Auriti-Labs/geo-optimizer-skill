@@ -244,6 +244,9 @@ def format_audit_json(result: AuditResult) -> str:
     if result.audit_duration_ms is not None:
         data["audit_duration_ms"] = result.audit_duration_ms
 
+    # Rubric v6 only: v1 to v5 keep exactly the keys they had.
+    if result.access_gate.status != "not_evaluated":
+        data["access_gate"] = asdict(result.access_gate)
     return json.dumps(data, indent=2)
 
 

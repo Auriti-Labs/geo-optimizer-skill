@@ -190,3 +190,27 @@ class TestPageThatAnswersAnError:
         with patch("geo_optimizer.core.audit.fetch_url", return_value=(None, "Timeout (10s)")):
             result = run_full_audit("https://down.example", score_version=6)
         assert result.access_gate.status == "not_evaluated"
+
+
+class TestJsonOutput:
+    """Found by an independent review: the CLI JSON dropped the gate, so a capped score came without its reason."""
+
+    def _json(self, **kw) -> dict:
+        import json
+
+        from geo_optimizer.cli.formatters import format_audit_json
+
+        return json.loads(format_audit_json(_result(**kw)))
+
+    def test_v6_json_carries_the_gate_and_the_cap(self):
+        r = _result(score=93, band="excellent", http_status=200, meta=MetaResult(x_robots_noindex=True))
+        apply_access_gate(r)
+        import json
+
+        from geo_optimizer.cli.formatters import format_audit_json
+
+        gate = json.loads(format_audit_json(r))["access_gate"]
+        assert gate["status"] == "blocked" and gate["score_before_cap"] == 93 and "noindex" in gate["reasons"][0]
+
+    def test_v5_json_keeps_exactly_its_keys(self):
+        assert "access_gate" not in self._json(score_version=5)
