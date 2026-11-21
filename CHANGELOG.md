@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Changed
+- `geo citations` samples each query 8 times by default (it was once), so the report carries a 95% confidence interval. This multiplies the API calls of a run by 8: pass `--runs 1` for the old single, cheap sample. `--provider serpbase` is unaffected (it ignores `--runs`).
+
 ### Added
 - `geo fidelity --answer FILE --source URL`: checks each sentence of an AI answer against the pages it cites. Lexical, no language model: the share of the sentence's words and figures found on the best cited page, with the words and figures found on none. It does not decide whether a claim is true.
 
