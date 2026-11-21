@@ -108,7 +108,7 @@
       "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "logs": {
-      "network": "none",
+      "network": "none; with --fetch-ip-ranges, the 7 vendor range files",
       "api_keys": [],
       "writes": [],
       "loads_plugins": false
