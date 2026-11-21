@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- `geo fidelity --answer FILE --source URL`: checks each sentence of an AI answer against the pages it cites. Lexical, no language model: the share of the sentence's words and figures found on the best cited page, with the words and figures found on none. It does not decide whether a claim is true.
+
 ## [4.25.0] — 2026-11-21
 
 ### Added
