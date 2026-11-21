@@ -233,3 +233,32 @@ class TestNotAClaim:
             _rules("<p>Use <code>x % 97</code> to take the remainder of the division by ninety seven for the key.</p>")
             == []
         )
+
+
+class TestTariffsAreNotClaims:
+    """Measured on shopify.com/pricing: 39 findings, nearly all fee rates such as '1.5% + €0.25'."""
+
+    def test_fees_rates_and_discounts_are_not_statistics(self):
+        for text in (
+            "Online standard card rates 1.5% + €0.25 EUR for every transaction made by your customers here",
+            "The fee is 2.9% + 30 cents per transaction on every successful card payment we process for you",
+            "Save up to 20% with yearly billing compared with paying month by month for the same plan",
+            "Prices include VAT at 22% where it applies to the customers of your shop in the country",
+        ):
+            assert "unsourced_statistic" not in _rules(f"<p>{text}</p>"), text
+
+    def test_outcome_claims_are_still_flagged(self):
+        for text in (
+            "Get the checkout that converts 15% better on average than other platforms in the market today",
+            "Enable your customers to check out in seconds, 3x faster than non-Link customers on every device",
+            "Our customers reduced support tickets by 38% in the first quarter after switching over to us",
+        ):
+            assert "unsourced_statistic" in _rules(f"<p>{text}</p>"), text
+
+    def test_counts_are_not_statistics(self):
+        assert "unsourced_statistic" not in _rules(
+            "<p>When you add members over the available paid seats, your count of paid seats will increase by 1 each time.</p>"
+        )
+        assert "unsourced_statistic" not in _rules(
+            "<p>Payments may be retried up to 8 times within three days after the first failed payment is recorded.</p>"
+        )

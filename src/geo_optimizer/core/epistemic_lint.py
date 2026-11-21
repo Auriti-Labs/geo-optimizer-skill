@@ -28,6 +28,7 @@ from geo_optimizer.models.config import (
     LINT_MAX_FINDINGS,
     LINT_MIN_BLOCK_WORDS,
     LINT_NEGATION_RE,
+    LINT_PRICING_CONTEXT_RE,
     LINT_QUALIFIER_RE,
     LINT_STATISTIC_RE,
 )
@@ -37,6 +38,7 @@ from geo_optimizer.utils.http import fetch_url
 from geo_optimizer.utils.validators import normalize_url_scheme
 
 _STATISTIC = re.compile(LINT_STATISTIC_RE, re.IGNORECASE)
+_PRICING = re.compile(LINT_PRICING_CONTEXT_RE, re.IGNORECASE)
 _EVIDENCE = re.compile(LINT_EVIDENCE_RE, re.IGNORECASE)
 _AUTHORITY = re.compile(LINT_AUTHORITY_RE, re.IGNORECASE)
 _ABSOLUTE = re.compile(LINT_ABSOLUTE_RE, re.IGNORECASE)
@@ -115,7 +117,7 @@ def lint_blocks(blocks: list[tuple[str, bool]]) -> list[LintFinding]:
             continue
         context = " ".join(b[0] for b in blocks[max(0, i - 1) : i + 2])
         stat = _STATISTIC.search(text)
-        if stat and not linked and not _EVIDENCE.search(context):
+        if stat and not linked and not _PRICING.search(text) and not _EVIDENCE.search(context):
             add("unsourced_statistic", text, stat)
         authority = _AUTHORITY.search(text)
         if authority and not linked:
