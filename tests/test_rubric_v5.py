@@ -297,6 +297,10 @@ class TestDefaultAuditIsStrict:
 def test_the_mcp_tool_defaults_to_the_engine_default():
     import inspect
 
+    import pytest
+
+    # The release workflow installs only the dev extra: skip when the optional mcp package is absent.
+    pytest.importorskip("mcp", reason="mcp non installato (pip install geo-optimizer-skill[mcp])")
     from geo_optimizer.mcp.server import geo_audit
 
     assert inspect.signature(geo_audit).parameters["score_version"].default == DEFAULT_SCORE_VERSION

@@ -7,6 +7,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.27.1] — 2026-11-24
+
+### Fixed
+- The release workflow runs the tests with only the `dev` extra, and one test of the 4.27.0 default-rubric change needed the optional `mcp` package, so the 4.27.0 tag was never published to PyPI. The test now skips when `mcp` is absent. 4.27.0 exists as a Git tag only; everything in it ships in 4.27.1.
+
 ## [4.27.0] — 2026-11-24
 
 ### Changed
