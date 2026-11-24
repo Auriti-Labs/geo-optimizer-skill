@@ -87,7 +87,7 @@ geo audit --url https://yoursite.com --score-version 1
 | `--save-history` | No | Save the URL audit in local history (`~/.geo-optimizer/tracking.db`) |
 | `--regression` | No | Exit with code `1` if the score dropped vs the previous saved snapshot |
 | `--retention-days` | No | Retention window for local snapshots (default: `90`) |
-| `--score-version` | No | Scoring rubric version: `2` (default) or `1` (legacy) |
+| `--score-version` | No | Scoring rubric version: `5` (default), `2` (the default until 4.26.0) or `1` (legacy) |
 
 \* Use either `--url` or `--sitemap`.
 
@@ -173,7 +173,7 @@ Each section in the output maps to one of the 9 scoring categories:
 
 ## GEO Score Breakdown
 
-The score is the sum of all points earned across **9 categories**, capped at 100. Rubric v2 is the default; use `--score-version 1` for legacy comparisons.
+The score is the sum of all points earned across **9 categories**, capped at 100. Rubric v5 is the default (v2 until 4.26.0); use `--score-version 2` for the old default, `--score-version 1` for legacy comparisons.
 
 | Category | Max Points | How it's scored |
 |----------|-----------|-----------------|

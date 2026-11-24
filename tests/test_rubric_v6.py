@@ -27,8 +27,8 @@ def _result(**kw) -> AuditResult:
 
 
 class TestVersionTable:
-    def test_default_stays_v2_and_v6_has_v5_weights(self):
-        assert DEFAULT_SCORE_VERSION == 2
+    def test_default_is_v5_and_v6_has_v5_weights(self):
+        assert DEFAULT_SCORE_VERSION == 5
         assert SCORING_BY_VERSION[6] == SCORING_BY_VERSION[5]
         assert CATEGORY_MAX_BY_VERSION[6] == CATEGORY_MAX_BY_VERSION[5]
 

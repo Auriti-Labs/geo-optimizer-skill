@@ -36,8 +36,8 @@ def _homepage(**extra) -> SchemaResult:
 
 
 class TestVersionTable:
-    def test_default_stays_v2(self):
-        assert DEFAULT_SCORE_VERSION == 2
+    def test_default_is_v5(self):
+        assert DEFAULT_SCORE_VERSION == 5
 
     def test_v4_only_adds_applicability_to_v3(self):
         v3, v4 = SCORING_BY_VERSION[3], SCORING_BY_VERSION[4]

@@ -31,8 +31,8 @@ def _page(jsonld: dict, body: str) -> SchemaResult:
 
 
 class TestVersionTable:
-    def test_default_stays_v2(self):
-        assert DEFAULT_SCORE_VERSION == 2
+    def test_default_is_v5(self):
+        assert DEFAULT_SCORE_VERSION == 5
 
     def test_v5_is_v4_with_the_strict_switch(self):
         v4, v5 = SCORING_BY_VERSION[4], SCORING_BY_VERSION[5]
@@ -238,3 +238,28 @@ class TestPriceSpellings:
 
     def test_a_value_that_is_not_a_finite_number_is_skipped_not_matched(self):
         assert self._strict(float("inf"), "any text")  # the name still matches; the price cannot be checked
+
+
+class TestDefaultIsV5:
+    def test_an_audit_without_a_version_uses_v5(self):
+        from geo_optimizer.core.audit import run_full_audit
+
+        html = "<html lang='en'><head><title>T</title></head><body><h1>T</h1><p>x</p></body></html>"
+        resp = Mock(status_code=200, text=html, content=html.encode(), headers={})
+        with (
+            patch("geo_optimizer.core.audit.fetch_url", return_value=(resp, None)),
+            patch("geo_optimizer.core.audit.check_markdown_negotiation", return_value=False),
+        ):
+            assert run_full_audit("https://example.com").score_version == 5
+
+    def test_the_default_is_strict_about_a_faq_question_that_is_not_on_the_page(self):
+        schema = _page(
+            {
+                "@type": "FAQPage",
+                "name": "Shop",
+                "mainEntity": [{"@type": "Question", "name": "Hidden question here?"}],
+            },
+            "<h1>Shop</h1><p>Welcome.</p>",
+        )
+        assert schema.visible_match is True  # the loose check v2 used
+        assert schema.visible_match_strict is False  # the one the default now applies

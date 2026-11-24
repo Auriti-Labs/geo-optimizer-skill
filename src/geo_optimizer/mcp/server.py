@@ -39,6 +39,8 @@ from urllib.parse import urlparse
 
 from mcp.server.fastmcp import FastMCP
 
+from geo_optimizer.models.config import DEFAULT_SCORE_VERSION
+
 logger = logging.getLogger(__name__)
 
 mcp = FastMCP("geo-optimizer")
@@ -90,11 +92,11 @@ def _normalize_terminal_error(err: str | None) -> str | None:
 
 
 @mcp.tool()
-def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -> str:
+def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_receipt: bool = False) -> str:
     """Run a complete GEO audit on a website.
 
-    Uses rubric v2 by default (Google AI readiness) and supports rubric v1
-    for legacy comparisons. Rubric v2 analyzes Google AI Search readiness,
+    Uses rubric v5 by default (v2 plus robots as access, schema by page type and
+    a strict schema visibility check) and supports v1 to v6. Rubric v2 analyzes Google AI Search readiness,
     robots.txt, JSON-LD schema, content, brand and entity signals, SEO meta
     tags, llms.txt, technical signals, and AI discovery endpoints.
     Returns score 0-100 with details and recommendations.

@@ -78,7 +78,7 @@ Run a complete GEO audit on a website. Analyzes 7 areas: robots.txt, llms.txt, J
   "url": "https://example.com",
   "score": 72,
   "band": "good",
-  "score_version": 2,
+  "score_version": 5,
   "score_max": {
     "google_ai": 20,
     "robots": 14,

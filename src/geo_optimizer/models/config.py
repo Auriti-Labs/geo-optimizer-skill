@@ -789,7 +789,7 @@ ROBOTS_PARTIAL_BY_VERSION = {
     5: ROBOTS_PARTIAL_SCORE_V3,
     6: ROBOTS_PARTIAL_SCORE_V3,
 }
-DEFAULT_SCORE_VERSION = 2
+DEFAULT_SCORE_VERSION = 5
 
 # ─── Google AI readiness (rubric v2) ─────────────────────────────────────────
 # Fonti ufficiali per ogni check G-*: mostrate in report, SARIF helpUri e skill.

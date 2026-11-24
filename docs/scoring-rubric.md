@@ -23,7 +23,7 @@ A negative-signal penalty is then subtracted: 1 point when one negative signal i
 
 ### Rubric versions
 
-Rubric v2 is the default (`score_version: 2`). Use `geo audit --score-version 1` for legacy comparisons, `--score-version 3` for the opt-in robots-as-access rubric and `--score-version 4` for v3 plus schema by page type (both below); history deltas and regressions should compare snapshots with the same score version.
+Rubric v5 is the default (`score_version: 5`); v2 was the default until 4.26.0, so history deltas never compare across that change. Use `geo audit --score-version 2` for the old default, `--score-version 1` for legacy comparisons, `--score-version 3` for the opt-in robots-as-access rubric and `--score-version 4` for v3 plus schema by page type (both below); history deltas and regressions should compare snapshots with the same score version.
 
 | Category | v1 (legacy) | v2 |
 |----------|-------------|----|
