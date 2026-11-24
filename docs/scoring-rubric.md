@@ -55,7 +55,7 @@ A missing robots.txt is no longer a recommendation in v3. Writing explicit rules
 
 #### Rubric v4 (opt-in, `--score-version 4`)
 
-v4 is v3 (robots as access) plus one rule for the schema category: FAQPage and Article points apply only to pages they fit. FAQPage applies when the page already has the markup or shows at least two questions as headings or accordion summaries. Article applies when the page has Article markup or `og:type` is `article`. The points of a feature that does not apply leave the denominator, and the category is rescaled to its 14 points, so a homepage with Organization and WebSite markup, a valid and rich schema and a visible name can reach 14 without FAQ or Article markup. If the feature applies and is missing, it still costs its points. Category budgets are v2's; v2 stays the default.
+v4 is v3 (robots as access) plus one rule for the schema category: FAQPage and Article points apply only to pages they fit. FAQPage applies when the page already has the markup or shows at least two questions as headings or accordion summaries. Article applies when the page has Article markup or `og:type` is `article`. The points of a feature that does not apply leave the denominator, and the category is rescaled to its 14 points, so a homepage with Organization and WebSite markup, a valid and rich schema and a visible name can reach 14 without FAQ or Article markup. If the feature applies and is missing, it still costs its points. Category budgets are v2's.
 
 Recommendations follow the same rule: FAQPage markup is suggested only where the page shows questions and answers, and v4 words it without a Google promise (Google shows FAQ rich results only for a few authoritative sites, and says AI Overviews and AI Mode need no special markup). Page type is read from `og:type`, Article markup and visible question headings only; a page type this does not recognise is treated as not an article.
 
@@ -76,7 +76,7 @@ v6 has v5's weights and adds an **access gate**: a page that AI crawlers cannot 
 
 It is `blocked` when the page answers anything but HTTP 200 or 203 (the audit stops at that first request and scores 0, and the gate says why); a CDN or firewall blocks every AI crawler tested; `X-Robots-Tag: noindex` is set; robots.txt disallows every citation bot; or the page is an empty application shell: an empty root element, the audit's script-dependence flag, and fewer than 50 words in its raw HTML (`JS_CRITICAL_WORDS`). When it is blocked the score is capped at 67, the top of the Foundation band, and the report says what the score was before the cap. It is `warn` when a restriction does not block every crawler (some citation bots disallowed, a targeted CDN block, little text without JavaScript, `noai`), and `pass` otherwise. A warning never lowers the score.
 
-The result carries `access_gate` with `status`, `reasons`, `warnings` and `score_before_cap` (`not_evaluated` before v6). The cap is a judgment, a constant in `models/config.py`. v2 stays the default and v1 to v5 numbers do not change.
+The result carries `access_gate` with `status`, `reasons`, `warnings` and `score_before_cap` (`not_evaluated` before v6). The cap is a judgment, a constant in `models/config.py`. v6 is opt-in (the default is v5), and v1 to v5 numbers do not change.
 
 ### Google AI readiness - max 20 pts (v2)
 
