@@ -153,7 +153,7 @@ Generates robots.txt entries, llms.txt, JSON-LD schema, meta tags, and AI discov
 
 ## Scoring
 
-9 categories, 100 points total in rubric v2:
+9 categories, 100 points total (the maxima are the same in rubrics v2 to v6; v5 is the default):
 
 | Category | What it measures | Points (v2) |
 |----------|------------------|-------------|

@@ -103,7 +103,7 @@ def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_rece
 
     Args:
         url: URL of the site to audit (e.g. https://example.com)
-        score_version: Scoring rubric version: 2 (default), 3 (robots.txt scored as access), 4 (v3 plus schema by page type), 5 (v4 plus robots judged on the page and a stricter schema visibility check), 6 (v5 plus an access gate that caps the score of a page AI crawlers cannot read) or 1 (legacy).
+        score_version: Scoring rubric version: 5 (default; v4 plus robots judged on the page and a stricter schema visibility check), 2 (the default until 4.26.0), 3 (robots.txt scored as access), 4 (v3 plus schema by page type), 6 (v5 plus an access gate that caps the score of a page AI crawlers cannot read) or 1 (legacy).
         include_receipt: Optional boolean flag to attach an execution receipt
             with completed stages and telemetry metrics (default False).
             When enabled, receipt.terminal_error is one of: 'timeout',

@@ -263,3 +263,47 @@ class TestDefaultIsV5:
         )
         assert schema.visible_match is True  # the loose check v2 used
         assert schema.visible_match_strict is False  # the one the default now applies
+
+
+class TestDefaultAuditIsStrict:
+    """End to end: the audit without a version loses the visibility point that v4 still gives."""
+
+    HTML = (
+        "<html lang='en'><head><title>Shop</title>"
+        '<script type="application/ld+json">'
+        '{"@type": "FAQPage", "name": "Shop", "mainEntity": '
+        '[{"@type": "Question", "name": "Hidden question here?", '
+        '"acceptedAnswer": {"@type": "Answer", "text": "Hidden answer."}}]}'
+        "</script></head><body><h1>Shop</h1><p>Welcome.</p></body></html>"
+    )
+
+    def _audit(self, **kwargs):
+        from geo_optimizer.core.audit import run_full_audit
+
+        resp = Mock(status_code=200, text=self.HTML, content=self.HTML.encode(), headers={})
+        with (
+            patch("geo_optimizer.core.audit.fetch_url", return_value=(resp, None)),
+            patch("geo_optimizer.core.audit.check_markdown_negotiation", return_value=False),
+        ):
+            return run_full_audit("https://example.com", **kwargs)
+
+    def test_default_takes_the_visibility_point_away_where_v4_gives_it(self):
+        default, v4 = self._audit(), self._audit(score_version=4)
+        assert v4.schema.visible_match is True and default.schema.visible_match_strict is False
+        assert default.score_version == 5
+        assert default.score_breakdown["schema"] < v4.score_breakdown["schema"]
+
+
+def test_the_mcp_tool_defaults_to_the_engine_default():
+    import inspect
+
+    from geo_optimizer.mcp.server import geo_audit
+
+    assert inspect.signature(geo_audit).parameters["score_version"].default == DEFAULT_SCORE_VERSION
+
+
+def test_the_cli_option_defaults_to_the_engine_default():
+    from geo_optimizer.cli.audit_cmd import audit
+
+    option = next(p for p in audit.params if p.name == "score_version")
+    assert option.default == str(DEFAULT_SCORE_VERSION)

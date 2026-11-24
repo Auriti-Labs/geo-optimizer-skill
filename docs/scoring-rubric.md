@@ -23,7 +23,7 @@ A negative-signal penalty is then subtracted: 1 point when one negative signal i
 
 ### Rubric versions
 
-Rubric v5 is the default (`score_version: 5`); v2 was the default until 4.26.0, so history deltas never compare across that change. Use `geo audit --score-version 2` for the old default, `--score-version 1` for legacy comparisons, `--score-version 3` for the opt-in robots-as-access rubric and `--score-version 4` for v3 plus schema by page type (both below); history deltas and regressions should compare snapshots with the same score version.
+Rubric v5 is the default (`score_version: 5`); v2 was the default until 4.26.0, so history deltas never compare across that change. Use `geo audit --score-version 2` for the old default, `--score-version 1` for legacy comparisons, `--score-version 3` for the opt-in robots-as-access rubric and `--score-version 4` for v3 plus schema by page type, `--score-version 5` (the default) for v4 plus a page-aware robots check and strict schema visibility, `--score-version 6` for v5 plus an access gate (all below); history deltas and regressions should compare snapshots with the same score version.
 
 | Category | v1 (legacy) | v2 |
 |----------|-------------|----|
@@ -61,7 +61,7 @@ Recommendations follow the same rule: FAQPage markup is suggested only where the
 
 Rough estimate on about 1,245 sites audited with v2 in November 2026 (self-selected sample; page type is not recorded there, so this assumes no page shows questions or is an article, and it was not reproduced independently): average 66.9 (v2), 70.0 (v3), about 72 (v4); the band would change for 173 sites with v3 and about 300 with v4. Rescaling raises partial credit too (a schema worth 2 of 10 possible becomes 3 of 14).
 
-#### Rubric v5 (opt-in, `--score-version 5`)
+#### Rubric v5 (the default, `--score-version 5`)
 
 v5 is v4 plus two checks that follow the audited page instead of the site.
 

@@ -87,7 +87,7 @@ geo audit --url https://yoursite.com --score-version 1
 | `--save-history` | No | Save the URL audit in local history (`~/.geo-optimizer/tracking.db`) |
 | `--regression` | No | Exit with code `1` if the score dropped vs the previous saved snapshot |
 | `--retention-days` | No | Retention window for local snapshots (default: `90`) |
-| `--score-version` | No | Scoring rubric version: `5` (default), `2` (the default until 4.26.0) or `1` (legacy) |
+| `--score-version` | No | Scoring rubric version: `5` (default), `2` (the default until 4.26.0) `6` (v5 plus an access gate, opt-in) or `1` (legacy) |
 
 \* Use either `--url` or `--sitemap`.
 

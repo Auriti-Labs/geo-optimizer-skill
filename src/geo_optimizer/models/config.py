@@ -732,7 +732,7 @@ RECOMMENDATION_BLOCKERS_CATEGORY = "blockers"
 # the page.
 RECOMMENDATION_OTHER_CATEGORY = "other"
 
-# Rubric v3 (opt-in with --score-version 3; the default stays v2). Only the robots category
+# Rubric v3 (opt-in with --score-version 3; v2 was the default until 4.26.0). Only the robots category
 # changes: it scores access, not the presence of a file. A missing robots.txt (the protocol
 # lets crawlers fetch everything) and a wildcard Allow are worth the same as an explicit
 # permission, so the category is full unless AI bots are actually restricted. A file that
@@ -748,7 +748,7 @@ SCORING_V3 = {
 ROBOTS_PARTIAL_SCORE_V3 = 11
 CATEGORY_MAX_V3 = dict(CATEGORY_MAX_V2)
 
-# Rubric v4 (opt-in with --score-version 4; the default stays v2): v3's robots rules plus
+# Rubric v4 (opt-in with --score-version 4; v2 was the default until 4.26.0): v3's robots rules plus
 # schema points that apply only where they make sense. FAQPage counts only on a page that
 # shows questions and answers, Article only on a page that is an article (Article markup,
 # or og:type article). The points of a feature that does not apply leave the denominator and
@@ -757,14 +757,14 @@ CATEGORY_MAX_V3 = dict(CATEGORY_MAX_V2)
 SCORING_V4 = {**SCORING_V3, "schema_applicability": 1}
 CATEGORY_MAX_V4 = dict(CATEGORY_MAX_V2)
 
-# Rubric v5 (opt-in with --score-version 5; the default stays v2): v4 plus two checks that follow the page
+# Rubric v5 (the default since 4.27.0; v2 until 4.26.0): v4 plus two checks that follow the page
 # instead of the site. The robots check judges every bot on the audited page (longest match, RFC 9309
 # wildcards `*` and `$`), not on the root alone. The schema visibility point is given only when every
 # checkable schema is visible: names and headlines, each FAQPage question, each product price.
 SCORING_V5 = {**SCORING_V4, "schema_visible_strict": 1}
 CATEGORY_MAX_V5 = dict(CATEGORY_MAX_V2)
 
-# Rubric v6 (opt-in with --score-version 6; the default stays v2): v5's weights, plus an access gate. A page that AI
+# Rubric v6 (opt-in with --score-version 6; the default is v5): v5's weights, plus an access gate. A page that AI
 # crawlers cannot read does not earn a Good or Excellent band however well its markup is written: when the gate
 # is BLOCKED the score is capped at ACCESS_GATE_SCORE_CAP, the top of the Foundation band. The gate reads signals
 # the audit already has; it adds no request.

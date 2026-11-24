@@ -12,4 +12,4 @@ Top methods (Princeton KDD 2024): Cite Sources +115%, Add Statistics +40%, Fluen
 
 Always start with audit. Generate ready-to-paste code. Prioritize by impact %.
 
-Rubric v2 maxima: `google_ai` 20, `robots` 14, `schema` 14, `content` 14, `brand_entity` 12, `meta` 11, `llms` 6, `signals` 6, `ai_discovery` 3. JSON includes `score_version` and `score_max`; use `--score-version 1` for legacy.
+Rubric maxima (the same in v2 to v6; v5 is the default): `google_ai` 20, `robots` 14, `schema` 14, `content` 14, `brand_entity` 12, `meta` 11, `llms` 6, `signals` 6, `ai_discovery` 3. JSON includes `score_version` and `score_max`; use `--score-version 1` for legacy.
