@@ -8,7 +8,7 @@
 
 **GEO Optimizer** is the open-source engine behind **[GeoReady](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=entity)**, the hosted AI visibility audit at geoready.dev. Run it here from the terminal, or in the browser on geoready.dev.
 
-One command scores any website 0–100 on whether **ChatGPT, Perplexity, Gemini, Claude, and Google AI Overviews** can crawl it, understand it, and cite it — then tells you exactly what to fix.
+One command scores any website 0–100 on how ready it is for **ChatGPT, Perplexity, Gemini, Claude, and Google AI Overviews** to crawl and read it, then tells you exactly what to fix. The score measures technical readiness, not whether an engine will cite you.
 
 [![PyPI](https://img.shields.io/pypi/v/geo-optimizer-skill?style=flat-square&color=3b82f6)](https://pypi.org/project/geo-optimizer-skill/)
 [![Downloads/month](https://static.pepy.tech/badge/geo-optimizer-skill/month)](https://pepy.tech/project/geo-optimizer-skill)
@@ -490,7 +490,7 @@ Focused release waves, not noisy patches: 105 releases since February 2026, curr
 ## Contributing
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/geo-optimizer-skill.git
+git clone https://github.com/Auriti-Labs/geo-optimizer-skill.git
 cd geo-optimizer-skill && pip install -e ".[dev]"
 pytest tests/ -v   # 2,000+ tests, HTTP mocked
 ```

@@ -204,10 +204,10 @@ The score is the sum of all points earned across **9 categories**, capped at 100
 
 | Score | Label | Meaning |
 |-------|-------|---------|
-| 86-100 | Excellent | Fully optimized for AI citation engines |
-| 68-85 | Good | Well-optimized, minor gaps remain |
-| 36-67 | Foundation | Partially visible — key signals missing |
-| 0-35 | Critical | AI engines cannot reliably discover or cite you |
+| 86-100 | Excellent | Most readiness checks pass, few gaps remain |
+| 68-85 | Good | Solid technical readiness, some gaps remain |
+| 36-67 | Foundation | Partial readiness: key signals are missing |
+| 0-35 | Critical | Core signals for AI search are missing |
 
 ---
 
