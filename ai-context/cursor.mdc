@@ -103,9 +103,9 @@ Never skip the audit step — score determines priority.
 
 Run audit: `geo audit --url https://yoursite.com`
 
-The v2 audit checks: Google AI readiness, robots.txt, JSON-LD schema, content, brand and entity, meta tags, llms.txt, signals, and AI discovery.
+The audit checks: Google AI readiness, robots.txt, JSON-LD schema, content, brand and entity, meta tags, llms.txt, signals, and AI discovery.
 
-Rubric v2 maxima: `google_ai` 20 · `robots` 14 · `schema` 14 · `content` 14 · `brand_entity` 12 · `meta` 11 · `llms` 6 · `signals` 6 · `ai_discovery` 3. `llms.txt` is ignored by Google Search. JSON has `score_version` and `score_max`; use `--score-version 1` for legacy.
+Rubric maxima (the same in v2 to v6; v5 is the default): `google_ai` 20 · `robots` 14 · `schema` 14 · `content` 14 · `brand_entity` 12 · `meta` 11 · `llms` 6 · `signals` 6 · `ai_discovery` 3. `llms.txt` is ignored by Google Search. JSON has `score_version` and `score_max`; use `--score-version 1` for legacy.
 
 ## Scripts
 

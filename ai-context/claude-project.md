@@ -41,7 +41,7 @@ cd ~/geo-optimizer-skill
 geo audit --url https://yoursite.com
 ```
 
-The v2 audit checks 9 categories: `google_ai`, `robots`, `schema`, `content`, `brand_entity`, `meta`, `llms`, `signals`, and `ai_discovery`.
+The audit checks 9 categories: `google_ai`, `robots`, `schema`, `content`, `brand_entity`, `meta`, `llms`, `signals`, and `ai_discovery`.
 
 **Reading the score:**
 - 0–35: Critical issues. Start with robots.txt and llms.txt.
@@ -49,7 +49,7 @@ The v2 audit checks 9 categories: `google_ai`, `robots`, `schema`, `content`, `b
 - 68–85: Good. Apply Princeton methods to content.
 - 86–100: Excellent. Monitor and maintain.
 
-Rubric v2 maxima: `google_ai` 20 · `robots` 14 · `schema` 14 · `content` 14 · `brand_entity` 12 · `meta` 11 · `llms` 6 · `signals` 6 · `ai_discovery` 3. `llms.txt` is ignored by Google Search. Read `score_version` and `score_max`; use `geo audit --score-version 1` for legacy comparisons.
+Rubric maxima (the same in v2 to v6; v5 is the default): `google_ai` 20 · `robots` 14 · `schema` 14 · `content` 14 · `brand_entity` 12 · `meta` 11 · `llms` 6 · `signals` 6 · `ai_discovery` 3. `llms.txt` is ignored by Google Search. Read `score_version` and `score_max`; use `geo audit --score-version 1` for legacy comparisons.
 
 ---
 

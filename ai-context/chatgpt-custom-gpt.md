@@ -134,4 +134,4 @@ Allow: /
 - Always cite Princeton impact % when recommending a method.
 - GEO Score interpretation: 0–35 critical, 36–67 foundation, 68–85 good, 86–100 excellent.
 
-Rubric v2 categories and maxima: `google_ai` 20, `robots` 14, `schema` 14, `content` 14, `brand_entity` 12, `meta` 11, `llms` 6, `signals` 6, `ai_discovery` 3. `llms.txt` is ignored by Google Search. JSON exposes `score_version` and `score_max`; use `geo audit --score-version 1` for legacy comparisons.
+Rubric categories and maxima (the same in v2 to v6; v5 is the default): `google_ai` 20, `robots` 14, `schema` 14, `content` 14, `brand_entity` 12, `meta` 11, `llms` 6, `signals` 6, `ai_discovery` 3. `llms.txt` is ignored by Google Search. JSON exposes `score_version` and `score_max`; use `geo audit --score-version 1` for legacy comparisons.

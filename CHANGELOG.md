@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Changed
+- **Breaking for scores:** the default rubric is now v5 (it was v2): `DEFAULT_SCORE_VERSION`, `geo audit`, the web API and the MCP `geo_audit` tool. This closes a known inconsistency of v2, where the schema visibility point was given when a single schema's name or headline was visible, even if FAQPage questions or product prices were not on the page. Scores change for every site: robots.txt is scored as access (v3), FAQPage and Article points apply by page type (v4), robots is judged on the audited page and schema visibility is strict (v5; the page `<title>` counts as visible text there, so a `WebPage.name` equal to the title no longer fails). History, diff and drift compare only snapshots with the same `score_version`, so the first audit after the change starts a new series. Pass `--score-version 2` (or `score_version=2`) for the old numbers; v1 to v6 are unchanged. The access gate of v6 stays opt-in.
+
 ## [4.26.0] — 2026-11-21
 
 ### Changed

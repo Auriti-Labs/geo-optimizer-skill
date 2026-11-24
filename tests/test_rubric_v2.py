@@ -128,7 +128,7 @@ def test_v2_canonical_moves_out_of_meta_and_llms_shrinks():
 
 @patch("geo_optimizer.core.audit.fetch_url", return_value=(None, "Connection failed"))
 def test_unreachable_site_has_empty_google_ai(_):
-    result = run_full_audit("https://unreachable.test")
+    result = run_full_audit("https://unreachable.test", score_version=2)
     assert result.error
     assert result.score == 0
     assert result.google_ai.checked is False
@@ -143,7 +143,7 @@ def _successful_response(url: str = "https://example.com") -> Mock:
     return Mock(status_code=200, text=html, content=html.encode(), headers={}, url=url)
 
 
-def test_default_v2_success_path_sync_and_async():
+def test_v2_success_path_sync_and_async():
     response = _successful_response()
     async_responses = {
         "https://example.com": (response, None),
@@ -153,7 +153,7 @@ def test_default_v2_success_path_sync_and_async():
         patch("geo_optimizer.core.audit.check_markdown_negotiation", return_value=False),
         patch("geo_optimizer.core.audit.audit_cdn_ai_crawler", return_value=CdnAiCrawlerResult()),
     ):
-        sync_result = run_full_audit("https://example.com")
+        sync_result = run_full_audit("https://example.com", score_version=2)
 
     with (
         patch("geo_optimizer.utils.http_async.fetch_urls_async", new=AsyncMock(return_value=async_responses)),
@@ -161,7 +161,7 @@ def test_default_v2_success_path_sync_and_async():
         # mock mirato: to_thread esegue anche altro lavoro (parsing llms.txt)
         patch("geo_optimizer.core.audit.audit_cdn_ai_crawler", return_value=CdnAiCrawlerResult()),
     ):
-        async_result = asyncio.run(run_full_audit_async("https://example.com"))
+        async_result = asyncio.run(run_full_audit_async("https://example.com", score_version=2))
 
     for result in (sync_result, async_result):
         assert result.google_ai.checked is True
@@ -210,6 +210,7 @@ def test_recommendation_recoverable_points_use_v2_category_max():
         ContentResult(),
         score_breakdown={"robots": 9, "llms": 0, "meta": 0},
         category_max=CATEGORY_MAX_V2,
+        score_version=2,
     )
 
     title_index = next(i for i, item in enumerate(recommendations) if "<title>" in item)

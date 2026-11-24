@@ -1479,6 +1479,7 @@ class TestBuildRecommendations:
             SchemaResult(),
             MetaResult(),
             ContentResult(),
+            score_version=2,  # legacy rubric: FAQPage advised on every page
         )
         assert len(recs) > 0
         assert any("robots.txt" in r for r in recs)

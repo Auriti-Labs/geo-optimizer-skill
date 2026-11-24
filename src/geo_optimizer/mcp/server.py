@@ -39,6 +39,8 @@ from urllib.parse import urlparse
 
 from mcp.server.fastmcp import FastMCP
 
+from geo_optimizer.models.config import DEFAULT_SCORE_VERSION
+
 logger = logging.getLogger(__name__)
 
 mcp = FastMCP("geo-optimizer")
@@ -90,18 +92,18 @@ def _normalize_terminal_error(err: str | None) -> str | None:
 
 
 @mcp.tool()
-def geo_audit(url: str, score_version: int = 2, include_receipt: bool = False) -> str:
+def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_receipt: bool = False) -> str:
     """Run a complete GEO audit on a website.
 
-    Uses rubric v2 by default (Google AI readiness) and supports rubric v1
-    for legacy comparisons. Rubric v2 analyzes Google AI Search readiness,
+    Uses rubric v5 by default (v2 plus robots as access, schema by page type and
+    a strict schema visibility check) and supports v1 to v6. Rubric v2 analyzes Google AI Search readiness,
     robots.txt, JSON-LD schema, content, brand and entity signals, SEO meta
     tags, llms.txt, technical signals, and AI discovery endpoints.
     Returns score 0-100 with details and recommendations.
 
     Args:
         url: URL of the site to audit (e.g. https://example.com)
-        score_version: Scoring rubric version: 2 (default), 3 (robots.txt scored as access), 4 (v3 plus schema by page type), 5 (v4 plus robots judged on the page and a stricter schema visibility check), 6 (v5 plus an access gate that caps the score of a page AI crawlers cannot read) or 1 (legacy).
+        score_version: Scoring rubric version: 5 (default; v4 plus robots judged on the page and a stricter schema visibility check), 2 (the default until 4.26.0), 3 (robots.txt scored as access), 4 (v3 plus schema by page type), 6 (v5 plus an access gate that caps the score of a page AI crawlers cannot read) or 1 (legacy).
         include_receipt: Optional boolean flag to attach an execution receipt
             with completed stages and telemetry metrics (default False).
             When enabled, receipt.terminal_error is one of: 'timeout',

@@ -259,7 +259,11 @@ def audit_schema(soup: BeautifulSoup | None, url: str) -> SchemaResult:
         for schema in result.raw_schemas
         for field in ("name", "headline")
     )
-    result.visible_match_strict = _visible_coverage(result.raw_schemas, visible_text)
+    # Il <title> sta in <head>, fuori da body: un WebPage.name uguale al titolo è il caso più comune
+    # e il titolo è contenuto che l'utente vede (scheda del browser, risultato di ricerca). Conta come
+    # visibile solo per il controllo stretto: il lasco (v2-v4) resta invariato.
+    title_text = soup.title.get_text(" ", strip=True).casefold() if soup.title else ""
+    result.visible_match_strict = _visible_coverage(result.raw_schemas, f"{visible_text} {title_text}")
 
     # Schema completeness (gap #3): check required fields per SCHEMA_ORG_REQUIRED
     for schema_obj in result.raw_schemas:

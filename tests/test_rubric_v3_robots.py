@@ -39,8 +39,8 @@ NO_AI_RULES = RobotsResult(found=True, bots_missing=["GPTBot", "ClaudeBot"], cit
 
 
 class TestVersionTable:
-    def test_default_stays_v2(self):
-        assert DEFAULT_SCORE_VERSION == 2
+    def test_default_is_v5(self):
+        assert DEFAULT_SCORE_VERSION == 5
 
     def test_v3_keeps_the_v2_category_budget(self):
         assert CATEGORY_MAX_BY_VERSION[3] == CATEGORY_MAX_BY_VERSION[2]

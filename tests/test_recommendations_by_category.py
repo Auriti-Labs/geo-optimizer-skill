@@ -72,15 +72,15 @@ def _assert_contract(
 @pytest.mark.parametrize("name", sorted(sc.scenarios()))
 def test_builder_scenarios_flat_list_matches_pre_change_golden(name: str) -> None:
     """(d) Direct builder scenarios: the flat list is identical to the old implementation's output."""
-    assert build_recommendations(**sc.scenarios()[name]) == _GOLDEN_SCENARIOS[name]
+    assert build_recommendations(**sc.scenarios()[name], score_version=2) == _GOLDEN_SCENARIOS[name]
 
 
 @pytest.mark.parametrize("name", sorted(sc.scenarios()))
 def test_builder_scenarios_pairs_agree_with_flat_list_and_contract(name: str) -> None:
     """(a)(b) Flat list == texts of the categorised pairs; grouped view honours the contract."""
     kwargs = sc.scenarios()[name]
-    pairs = build_categorized_recommendations(**kwargs)
-    flat = build_recommendations(**kwargs)
+    pairs = build_categorized_recommendations(**kwargs, score_version=2)
+    flat = build_recommendations(**kwargs, score_version=2)
     grouped = group_recommendations_by_category(pairs)
 
     assert [text for _, text in pairs] == flat
