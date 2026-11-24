@@ -128,6 +128,46 @@ class TestRunCitationCheck:
         assert result.url_mention_rate == 0.5
         assert result.domain_citation_rate == 0.0
 
+    def test_answers_without_sources_are_counted(self):
+        """An answer that returns no source at all is reported apart, with its share of all answers."""
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.side_effect = [
+                _sonar_response("Acme is a CRM.", citations=["https://acme.com/a", "https://other.com/x"]),
+                _sonar_response("Acme is a CRM."),
+                _sonar_response("Acme is a CRM.", citations=[]),
+                _sonar_response("Nothing relevant.", citations=["https://other.com/y"]),
+            ]
+            result = run_citation_check(
+                "Acme", "acme.com", queries=["best CRM"], provider="perplexity", api_key="pplx-test", runs=4
+            )
+
+        assert result.total_answers == 4
+        assert result.answers_without_sources == 2
+        assert result.no_citation_answer_rate == 0.5
+        # The existing numbers do not move.
+        assert result.domain_citation_rate == 0.25
+        assert result.brand_mention_rate == 0.75
+
+    def test_no_answer_without_sources_reads_zero(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("Acme.", citations=["https://acme.com"])
+            result = run_citation_check("Acme", "acme.com", queries=["q"], provider="perplexity", api_key="k", runs=2)
+
+        assert result.answers_without_sources == 0
+        assert result.no_citation_answer_rate == 0.0
+
+    def test_failed_calls_are_not_answers_without_sources(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.side_effect = [
+                LLMResponse(text="", model="m", provider="perplexity", error="timeout"),
+                _sonar_response("Acme.", citations=[]),
+            ]
+            result = run_citation_check("Acme", "acme.com", queries=["q"], provider="perplexity", api_key="k", runs=2)
+
+        assert result.total_answers == 1
+        assert result.answers_without_sources == 1
+        assert result.no_citation_answer_rate == 1.0
+
     def test_provider_source_sets_provider_source_cited(self):
         with patch.object(citations_mod, "query_llm") as mock_q:
             mock_q.return_value = _sonar_response("Acme is one option.", citations=["https://acme.com/pricing"])

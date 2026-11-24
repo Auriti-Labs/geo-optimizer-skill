@@ -171,12 +171,14 @@ def run_citation_check(
     mentioned_count = 0
     cited_count = 0
     url_count = 0
+    no_source_count = 0
 
     for query_text in query_list:
         q_answered = 0
         q_mention = 0
         q_cited = 0
         q_url = 0
+        q_no_source = 0
         q_sources: list[str] = []
         q_model = ""
         q_snippet = ""
@@ -194,6 +196,8 @@ def run_citation_check(
                 q_snippet = response.text[:_SNIPPET_LEN]
 
             source_domains = [normalize_domain(url) for url in response.citations]
+            if not response.citations:
+                q_no_source += 1
             text_domains = _domains_in_text(response.text)
 
             # A URL of the domain written in the answer names the site, so it counts as a brand mention
@@ -224,6 +228,7 @@ def run_citation_check(
         mentioned_count += q_mention
         cited_count += q_cited
         url_count += q_url
+        no_source_count += q_no_source
 
         entries.append(
             CitationCheckEntry(
@@ -272,6 +277,8 @@ def run_citation_check(
         brand_mention_rate=mention_rate,
         domain_citation_rate=citation_rate,
         url_mention_rate=round(url_count / total_answers, 2),
+        answers_without_sources=no_source_count,
+        no_citation_answer_rate=round(no_source_count / total_answers, 2),
         brand_mention_rate_ci=mention_ci,
         domain_citation_rate_ci=citation_ci,
         stable=stable,
