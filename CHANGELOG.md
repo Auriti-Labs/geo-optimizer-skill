@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.28.0] — 2026-11-24
+
 ### Added
 - `GEO_NO_PLUGINS=1` keeps installed `geo_optimizer.checks` plugins from loading in the callers that have no flag (`fix`, `monitor`, `track`, `diff`, `perception`, the MCP tools and `geo-web`). Unset, behaviour is unchanged: plugins still load by default.
 
