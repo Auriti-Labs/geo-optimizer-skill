@@ -7,6 +7,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- `GEO_NO_PLUGINS=1` keeps installed `geo_optimizer.checks` plugins from loading in the callers that have no flag (`fix`, `monitor`, `track`, `diff`, `perception`, the MCP tools and `geo-web`). Unset, behaviour is unchanged: plugins still load by default.
+
+### Changed
+- `docs/llms-txt.md` (and its copy in the web docs) no longer says `llms.txt` increases the probability of being cited: it is described as a proposed convention, in line with `SKILL.md`.
+- `SKILL.md` no longer carries a command count (it said 16, the CLI has 20), and a test now checks that the README count matches the CLI.
+
+### Fixed
+- The comment above the RAG anchor pattern said "10-40 words" while the pattern matches 30 to 200 characters.
+
 ## [4.27.1] — 2026-11-24
 
 ### Fixed

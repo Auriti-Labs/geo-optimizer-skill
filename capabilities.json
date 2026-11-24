@@ -40,7 +40,7 @@
       "writes": [
         "./geo-fixes/ or --output-dir, only with --apply"
       ],
-      "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out",
+      "loads_plugins": "installed geo_optimizer.checks entry points unless GEO_NO_PLUGINS=1",
       "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "llms": {
@@ -66,7 +66,7 @@
         "--output",
         "~/.geo-cache (--cache)"
       ],
-      "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out",
+      "loads_plugins": "installed geo_optimizer.checks entry points unless GEO_NO_PLUGINS=1",
       "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "history": {
@@ -92,7 +92,7 @@
         "--output",
         "~/.geo-cache (--cache)"
       ],
-      "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out",
+      "loads_plugins": "installed geo_optimizer.checks entry points unless GEO_NO_PLUGINS=1",
       "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "track": {
@@ -104,7 +104,7 @@
         "--output",
         "~/.geo-cache (--cache)"
       ],
-      "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out",
+      "loads_plugins": "installed geo_optimizer.checks entry points unless GEO_NO_PLUGINS=1",
       "reads_config": ".geo-optimizer.yml or .yaml in the working directory (when PyYAML is installed), unless --config <file>"
     },
     "logs": {
@@ -203,7 +203,7 @@
         "--output",
         "~/.geo-cache (--cache)"
       ],
-      "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out"
+      "loads_plugins": "installed geo_optimizer.checks entry points unless GEO_NO_PLUGINS=1"
     }
   },
   "mcp_tools": {
@@ -243,6 +243,6 @@
       "a temporary .log file in the system temp directory (log upload)"
     ],
     "spawns_processes": "only with --reload (uvicorn's reloader process)",
-    "loads_plugins": "installed geo_optimizer.checks entry points, no opt-out"
+    "loads_plugins": "installed geo_optimizer.checks entry points unless GEO_NO_PLUGINS=1"
   }
 }

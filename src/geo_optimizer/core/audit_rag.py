@@ -42,7 +42,7 @@ _DEFINITION_RE = re.compile(
     re.MULTILINE,
 )
 
-# Anchor sentence: a self-contained factual statement (ends with period, 10-40 words)
+# Anchor sentence: a self-contained factual statement (ends with a period, 30-200 characters)
 _ANCHOR_RE = re.compile(rf"(?<=[.!?]\s)[{_UPPER}][^.!?]{{30,200}}[.!?]")
 
 

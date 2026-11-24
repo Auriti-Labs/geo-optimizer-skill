@@ -15,6 +15,7 @@ The check must implement the ``AuditCheck`` Protocol.
 from __future__ import annotations
 
 import logging
+import os
 import threading
 from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
@@ -125,6 +126,11 @@ class CheckRegistry:
 
         Fix #18: loading inside the lock to prevent race conditions.
         """
+        # Opt-out for callers that have no flag (MCP tools, geo-web, fix, monitor, track, diff,
+        # perception): GEO_NO_PLUGINS=1 keeps third-party entry points from being imported.
+        if os.environ.get("GEO_NO_PLUGINS", "").strip().lower() in {"1", "true", "yes", "on"}:
+            return 0
+
         with cls._lock:
             if cls._loaded_entry_points:
                 return 0
