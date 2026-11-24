@@ -307,3 +307,29 @@ def test_the_cli_option_defaults_to_the_engine_default():
 
     option = next(p for p in audit.params if p.name == "score_version")
     assert option.default == str(DEFAULT_SCORE_VERSION)
+
+
+class TestTitleCountsAsVisibleForStrict:
+    """Un WebPage.name uguale al <title> (in <head>) non deve far fallire il controllo stretto."""
+
+    @staticmethod
+    def _html(title: str, body: str, jsonld: dict) -> SchemaResult:
+        html = (
+            f"<html><head><title>{title}</title></head><body>{body}"
+            f'<script type="application/ld+json">{json.dumps(jsonld)}</script></body></html>'
+        )
+        return audit_schema(BeautifulSoup(html, "html.parser"), "https://x.test/")
+
+    PAGE = {"@context": "https://schema.org", "@type": "WebPage", "name": "Acme Pricing Plans"}
+
+    def test_name_equal_to_title_passes_strict(self):
+        r = self._html("Acme Pricing Plans", "<h1>Plans</h1>", self.PAGE)
+        assert r.visible_match_strict is True
+
+    def test_loose_check_is_unchanged(self):
+        r = self._html("Acme Pricing Plans", "<h1>Plans</h1>", self.PAGE)
+        assert r.visible_match is False  # v1-v4: solo il body, come prima
+
+    def test_name_in_neither_title_nor_body_still_fails(self):
+        r = self._html("Something else", "<h1>Plans</h1>", self.PAGE)
+        assert r.visible_match_strict is False
