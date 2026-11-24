@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- `geo citations` reports `answers_without_sources` and `no_citation_answer_rate`: how many answers returned no source at all, and their share of all answers (LLM providers; the SERP path leaves them at 0). They sit beside the existing rates in the JSON result and the web API; the rates, intervals, verdicts and the 0-100 score are unchanged, and the text output is unchanged.
+
 ## [4.28.0] — 2026-11-24
 
 ### Added
