@@ -117,7 +117,7 @@ font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" role
 <text x="{X0}" y="60" font-size="13" fill="{MUTED}">Share of sites per band, one latest audit per domain</text>
 {rows}
 <text x="{X0}" y="294" font-size="12" fill="{MUTED}">Source: GeoReady benchmark, {day}. Scheduled re-audits excluded.</text>
-<text x="{X0}" y="311" font-size="12" fill="{MUTED}">Engine 4.13 to 4.19 (rubric v1 up to 4.18, v2 from 4.19).</text>
+<text x="{X0}" y="311" font-size="12" fill="{MUTED}">Engine 4.13 to 4.26 (rubric v1 up to 4.18, v2 from 4.19).</text>
 <text x="{X0}" y="328" font-size="12" fill="{MUTED}">Self-selected sample: directional, not a census of the web.</text>
 <text x="{X0}" y="350" font-size="13" font-weight="700" fill="{TEAL}">Check which band your site is in: geoready.dev</text>
 </svg>
