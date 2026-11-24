@@ -21,7 +21,7 @@ from importlib.metadata import version as _pkg_version
 try:
     __version__ = _pkg_version("geo-optimizer-skill")
 except PackageNotFoundError:
-    __version__ = "4.27.1"
+    __version__ = "4.28.0"
 
 # ─── Public API ──────────────────────────────────────────────────────────────
 
