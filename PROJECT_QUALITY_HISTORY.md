@@ -1,6 +1,6 @@
-# Quality Scoring Rubric
+# Project Quality History
 
-This document defines the stable, public criteria used to score `geo-optimizer-skill` quality across versions.
+This file records the internal quality assessment of `geo-optimizer-skill` across versions. It is not the GEO Score: the 0–100 score is defined in [docs/scoring-rubric.md](docs/scoring-rubric.md).
 
 **Purpose:** Provide transparency and consistency in version-to-version quality assessment.
 

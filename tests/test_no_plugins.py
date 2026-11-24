@@ -99,3 +99,22 @@ def test_cli_no_plugins_reaches_the_sitemap_batch(mock_batch, _validate):
     mock_batch.side_effect = RuntimeError("stop")
     CliRunner().invoke(cli, ["audit", "--sitemap", "https://example.com/sitemap.xml", "--no-plugins"])
     assert mock_batch.call_args.kwargs["load_plugins"] is False
+
+
+def test_env_opt_out_keeps_entry_points_from_loading(monkeypatch):
+    """Callers without a flag (MCP tools, geo-web, fix, monitor...) can still refuse plugins."""
+    from unittest.mock import MagicMock
+
+    entry_point = MagicMock()
+    entry_point.name = "fake_plugin"
+    entry_point.load.return_value = _FakePlugin
+    with patch("importlib.metadata.entry_points", return_value=[entry_point]):
+        monkeypatch.setenv("GEO_NO_PLUGINS", "1")
+        assert CheckRegistry.load_entry_points() == 0
+        entry_point.load.assert_not_called()
+        assert CheckRegistry.names() == []
+
+        # Unset: same entry point loads, and the opt-out did not mark the registry as loaded.
+        monkeypatch.delenv("GEO_NO_PLUGINS")
+        assert CheckRegistry.load_entry_points() == 1
+        assert CheckRegistry.names() == ["fake_plugin"]

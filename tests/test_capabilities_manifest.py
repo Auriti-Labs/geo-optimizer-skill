@@ -65,3 +65,15 @@ def test_manifest_executables_match_project_scripts():
     tomllib = pytest.importorskip("tomllib")  # Python 3.11+
     scripts = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["scripts"]
     assert set(MANIFEST["executables"]) == set(scripts)
+
+
+def test_readme_command_count_matches_the_cli():
+    """README says "All N commands": the number is derived from the CLI, not typed by hand."""
+    import re
+
+    text = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert f"All {len(cli.commands)} commands" in text
+    stale = [n for n in re.findall(r"all (\d+) commands", text, flags=re.IGNORECASE) if int(n) != len(cli.commands)]
+    assert not stale
+    skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+    assert not re.search(r"\ball \d+\b", skill)  # SKILL.md names no command count that could drift

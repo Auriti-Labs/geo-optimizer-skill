@@ -20,7 +20,7 @@ A well-structured `llms.txt` helps AI crawlers:
 
 ## Why It Matters
 
-AI crawlers (Perplexity, Claude, ChatGPT Search) use `llms.txt` as a trust and structure signal. Sites without it are treated as generic; sites with it are indexed more accurately. When a user asks an AI a question your site answers, having a well-structured `llms.txt` increases the probability of being cited.
+`llms.txt` is a proposed convention: a short, structured Markdown file that gives AI agents a clear map of your site. No AI search engine has said it reads the file: Google's [AI optimization guide](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) says Google Search ignores it, and public studies of server logs and citations (Ahrefs, SE Ranking) found no link between having one and being cited. Treat it as low-cost hygiene for agents and coding assistants, not as a way to be cited. GEO Optimizer checks it for that reason and says so in its report.
 
 ---
 

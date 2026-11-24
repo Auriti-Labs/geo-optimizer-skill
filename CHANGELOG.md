@@ -7,6 +7,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- `GEO_NO_PLUGINS=1` keeps installed `geo_optimizer.checks` plugins from loading in the callers that have no flag (`fix`, `monitor`, `track`, `diff`, `perception`, the MCP tools and `geo-web`). Unset, behaviour is unchanged: plugins still load by default.
+
+### Changed
+- `docs/llms-txt.md` (and its copy in the web docs) no longer says `llms.txt` increases the probability of being cited: it is described as a proposed convention, in line with `SKILL.md`.
+- `SKILL.md` no longer carries a command count (it said 16, the CLI has 20), and a test now checks that the README count matches the CLI.
+
+### Fixed
+- The README opening promised a score for whether engines "can crawl it, understand it, and cite it"; it now says the score measures technical readiness, not whether an engine will cite the site. The contributing clone URL named `YOUR_USERNAME` instead of `Auriti-Labs`.
+- The band meanings in `docs/scoring-rubric.md` and `docs/geo-audit.md` (and their web copies) claimed "Fully optimized for AI citation engines" and "AI engines cannot reliably discover or cite you". They now describe readiness only. Band names and thresholds are unchanged.
+- `SCORING_RUBRIC.md` was the internal project-quality rubric, not the GEO Score; it is now `PROJECT_QUALITY_HISTORY.md` and points to `docs/scoring-rubric.md` for the score.
+- The comment above the RAG anchor pattern said "10-40 words" while the pattern matches 30 to 200 characters.
+
 ## [4.27.1] — 2026-11-24
 
 ### Fixed

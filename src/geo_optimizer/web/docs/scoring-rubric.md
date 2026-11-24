@@ -8,10 +8,10 @@ How the GEO Score (0–100) is computed. Based on the Princeton KDD 2024 researc
 
 | Band | Range | Meaning |
 |------|-------|---------|
-| **Excellent** | 86–100 | Fully optimized for AI citation engines |
-| **Good** | 68–85 | Well-optimized, minor gaps remain |
-| **Foundation** | 36–67 | Partially visible — key signals missing |
-| **Critical** | 0–35 | AI engines cannot reliably discover or cite you |
+| **Excellent** | 86–100 | Most readiness checks pass, few gaps remain |
+| **Good** | 68–85 | Solid technical readiness, some gaps remain |
+| **Foundation** | 36–67 | Partial readiness: key signals are missing |
+| **Critical** | 0–35 | Core signals for AI search are missing |
 
 ---
 
