@@ -8,6 +8,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ## [Unreleased]
 
 ### Changed
+- Third-party check plugins (`geo_optimizer.checks` entry points) are now opt-in in the MCP server and in `geo-web`: set `GEO_ENABLE_PLUGINS=1` in the server's environment to load them. Both servers can be exposed to other people or to AI agents, so importing code from installed packages should be a decision by the operator. The `geo` CLI and the Python API are unchanged (plugins load by default, `--no-plugins` and `GEO_NO_PLUGINS=1` still turn them off, and `GEO_NO_PLUGINS=1` wins over `GEO_ENABLE_PLUGINS=1`).
+
+### Changed
 - `docs/json-contract.md`: documents the fields of the CLI JSON that the web API contract did not list (`run_timestamp`, `bot_blocks`, `cdn_check`, `cdn_check.block_pattern`, `checks.robots_txt.details.status_code`, `checks.schema_jsonld.details.has_visible_faq`) and says that the CLI JSON has no `schema_version`.
 
 ## [4.29.1] — 2026-11-25

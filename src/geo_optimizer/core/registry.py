@@ -57,6 +57,17 @@ class AuditCheck(Protocol):
     def run(self, url: str, soup: Any = None, **kwargs: Any) -> CheckResult: ...
 
 
+def server_plugins_enabled() -> bool:
+    """Tell the MCP server and geo-web whether to run third-party check plugins.
+
+    These two entry points can be exposed to other people or to AI agents, so plugins are
+    opt-in there: set ``GEO_ENABLE_PLUGINS=1`` in the server's environment to load them.
+    ``GEO_NO_PLUGINS=1`` still wins (see ``CheckRegistry.load_entry_points``). The CLI and the
+    Python API keep loading plugins by default.
+    """
+    return os.environ.get("GEO_ENABLE_PLUGINS", "").strip().lower() in {"1", "true", "yes", "on"}
+
+
 class CheckRegistry:
     """Central registry for GEO checks (built-in + plugin).
 
