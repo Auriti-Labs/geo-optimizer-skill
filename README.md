@@ -31,7 +31,7 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 *The browser audit on geoready.dev: paste a URL, read the score, the nine category results and the free fixes. Live run on geoready.dev itself, 17 October 2026.*
 
-<img src="assets/tui-audit.svg" alt="geo audit terminal dashboard on geoready.dev: 94/100 Excellent, nine rubric v2 categories with per-category scores, extra checks and top fixes" width="800"/>
+<img src="assets/tui-audit.svg" alt="geo audit terminal dashboard on geoready.dev: 94/100 Excellent, nine categories with per-category scores, extra checks and top fixes" width="800"/>
 
 [Quick Start](#quick-start) · [Free web audit, no account](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=nav) · [Docs](https://geoready.dev/docs/?utm_source=github&utm_medium=readme&utm_campaign=nav-docs) · [The book](#the-book-behind-the-engine-ai-search-engineering) · [Changelog](CHANGELOG.md)
 
