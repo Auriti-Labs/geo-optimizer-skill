@@ -29,7 +29,7 @@ because the answers of an AI engine change from day to day.
 ## What is not published
 
 `sample.jsonl`, `audits.jsonl` and `study.jsonl` contain domains, page addresses, headlines and the questions built
-from them, so they stay private. Only the aggregate table `results.csv` is published.
+from them, so they stay private. The per-page table `results.csv` was published until 2026-11-16 and is withdrawn pending a re-identification review.
 
 ## One thing to know about `export_results.py`
 
