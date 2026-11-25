@@ -400,7 +400,7 @@ The full reasoning behind each signal and weight is written up in the book below
 **AI Search Engineering — A Technical Guide to Generative Engine Optimization (GEO), AI Citations, and Agent-Ready Websites**
 Juan Camilo Auriti · 992 pages · English · 10 September 2026 · ISBN 979-8172934568
 
-**The book explains the reasoning; this engine runs it.** The scoring weights, the eight signal categories, and the evidence classification described in print are rubric v1, still implemented in this repository and available with `--score-version 1`. Rubric v2 adds a Google AI readiness category built on Google's own documentation; rubric v5 is the default since 4.27.0.
+**The book explains the reasoning; this engine runs it.** The scoring weights, the eight signal categories, and the evidence classification described in print are rubric v1, still implemented in this repository and available with `--score-version 1`. Rubric v2 adds a Google AI readiness category built on Google's own documentation; rubric v5 is the default since 4.27.1.
 
 It treats GEO as an engineering discipline rather than a collection of tricks, organized around the path a page travels before it can be cited. Each stage maps to something you can run here:
 

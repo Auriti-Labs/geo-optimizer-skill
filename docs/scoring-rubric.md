@@ -68,7 +68,7 @@ v5 is v4 plus two checks that follow the audited page instead of the site.
 - **Robots.** Each AI bot is judged on the path of the audited URL, by longest match, with RFC 9309 wildcards (`*` matches any run of characters, a final `$` anchors the end). Earlier rubrics judge the root only, so `Disallow: /blog/` still reads as "allowed" there. Auditing `/blog/post` with v5 reports that bot as blocked.
 - **Schema visibility.** The visibility point is given only when every checkable schema is visible on the page: each `name` and `headline`, each FAQPage question, each product offer price. Earlier rubrics give it as soon as one name or headline matches. Answers are not compared. A page with no checkable schema does not earn the point.
 
-Scores can go down against v4 where a page blocks a bot on its own path or declares questions or prices it does not show. v5 is the default since 4.27.0; `--score-version 1` to `4` give the earlier numbers unchanged, and history compares only snapshots of the same version.
+Scores can go down against v4 where a page blocks a bot on its own path or declares questions or prices it does not show. v5 is the default since 4.27.1; `--score-version 1` to `4` give the earlier numbers unchanged, and history compares only snapshots of the same version.
 
 #### Rubric v6 (opt-in, `--score-version 6`)
 
