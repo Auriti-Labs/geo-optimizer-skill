@@ -233,7 +233,7 @@ Two honest caveats, both built into the tool:
 | **Signals** | /6 | `<html lang>`, RSS/Atom feed, valid freshness |
 | **AI Discovery** | /3 | `ai.txt`, `summary.json`, and markdown negotiation |
 
-**Score bands:** 86–100 Excellent · 68–85 Good · 36–67 Foundation · 0–35 Critical. Rubric v5 is the default (v2 until 4.26.0, so a score from before it is not comparable with one after); use `--score-version 2` for the old default, `--score-version 1` for legacy v1 comparisons, `--score-version 3` for the rubric that scores a missing robots.txt as full access, `--score-version 4` for v3 plus schema points that apply by page type, `--score-version 5` (the default) for v4 plus a robots check judged on the audited page and a stricter schema visibility check, and `--score-version 6` (opt-in) for v5 plus an access gate that caps the score of a page AI crawlers cannot read. Every weight is in [`models/config.py`](src/geo_optimizer/models/config.py). Full rubric: [docs/scoring-rubric.md](docs/scoring-rubric.md).
+**Score bands:** 86–100 Excellent · 68–85 Good · 36–67 Foundation · 0–35 Critical. Rubric v5 is the default (v2 until 4.26.x, so a score from before it is not comparable with one after); use `--score-version 2` for the old default, `--score-version 1` for legacy v1 comparisons, `--score-version 3` for the rubric that scores a missing robots.txt as full access, `--score-version 4` for v3 plus schema points that apply by page type, `--score-version 5` (the default) for v4 plus a robots check judged on the audited page and a stricter schema visibility check, and `--score-version 6` (opt-in) for v5 plus an access gate that caps the score of a page AI crawlers cannot read. Every weight is in [`models/config.py`](src/geo_optimizer/models/config.py). Full rubric: [docs/scoring-rubric.md](docs/scoring-rubric.md).
 
 <details>
 <summary><b>Beyond the score: 10 more checks</b></summary>
@@ -400,7 +400,7 @@ The full reasoning behind each signal and weight is written up in the book below
 **AI Search Engineering — A Technical Guide to Generative Engine Optimization (GEO), AI Citations, and Agent-Ready Websites**
 Juan Camilo Auriti · 992 pages · English · 10 September 2026 · ISBN 979-8172934568
 
-**The book explains the reasoning; this engine runs it.** The scoring weights, the eight signal categories, and the evidence classification described in print are rubric v1, still implemented in this repository and available with `--score-version 1`. Rubric v2, the default, adds a Google AI readiness category built on Google's own documentation.
+**The book explains the reasoning; this engine runs it.** The scoring weights, the eight signal categories, and the evidence classification described in print are rubric v1, still implemented in this repository and available with `--score-version 1`. Rubric v2 adds a Google AI readiness category built on Google's own documentation; rubric v5 is the default since 4.27.0.
 
 It treats GEO as an engineering discipline rather than a collection of tricks, organized around the path a page travels before it can be cited. Each stage maps to something you can run here:
 
