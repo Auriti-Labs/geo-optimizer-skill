@@ -40,6 +40,7 @@ from geo_optimizer.core.llms_generator import (
     fetch_sitemap,
     generate_llms_txt,
 )
+from geo_optimizer.core.registry import server_plugins_enabled
 from geo_optimizer.core.telemetry import (
     _telemetry,
     geo_audit_run,
@@ -1223,7 +1224,7 @@ async def audit_pdf(
             from geo_optimizer.core.audit import run_full_audit
 
             audit_result = await asyncio.wait_for(
-                asyncio.to_thread(run_full_audit, url),
+                asyncio.to_thread(run_full_audit, url, load_plugins=server_plugins_enabled()),
                 timeout=_AUDIT_TIMEOUT_S,
             )
             data = _audit_result_to_dict(audit_result)
@@ -1295,7 +1296,7 @@ async def badge(
             # Run in separate thread to avoid blocking the event loop
             # Bounded wait to avoid blocking the event loop (fix #82)
             result = await asyncio.wait_for(
-                asyncio.to_thread(run_full_audit, url),
+                asyncio.to_thread(run_full_audit, url, load_plugins=server_plugins_enabled()),
                 timeout=_AUDIT_TIMEOUT_S,
             )
             data = _audit_result_to_dict(result)
@@ -1388,7 +1389,7 @@ async def badge_endpoint(
             from geo_optimizer.core.audit import run_full_audit
 
             result = await asyncio.wait_for(
-                asyncio.to_thread(run_full_audit, url),
+                asyncio.to_thread(run_full_audit, url, load_plugins=server_plugins_enabled()),
                 timeout=_AUDIT_TIMEOUT_S,
             )
             data = _audit_result_to_dict(result)
@@ -1475,7 +1476,7 @@ async def _run_audit(url: str) -> JSONResponse:
 
         # Run in a separate thread with a bounded wait to avoid blocking the event loop (fix #82)
         result = await asyncio.wait_for(
-            asyncio.to_thread(run_full_audit, url),
+            asyncio.to_thread(run_full_audit, url, load_plugins=server_plugins_enabled()),
             timeout=_AUDIT_TIMEOUT_S,
         )
     except asyncio.TimeoutError as exc:
@@ -2414,8 +2415,8 @@ async def gap_analysis(request: Request, body: GapAnalysisRequest):
         from geo_optimizer.core.gap_analysis import build_gap_analysis
 
         # Full audit for both
-        result1 = await asyncio.to_thread(run_full_audit, url1)
-        result2 = await asyncio.to_thread(run_full_audit, url2)
+        result1 = await asyncio.to_thread(run_full_audit, url1, load_plugins=server_plugins_enabled())
+        result2 = await asyncio.to_thread(run_full_audit, url2, load_plugins=server_plugins_enabled())
         result = build_gap_analysis(result1, result2)
     except Exception as exc:
         logger.error("Gap analysis error: %s", exc)

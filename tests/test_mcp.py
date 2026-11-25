@@ -154,7 +154,7 @@ class TestGeoAuditTool:
     def test_audit_include_receipt_enabled(self, mock_audit):
         """geo_audit includes receipt with stages and metrics when requested (#557)."""
 
-        def _fake_run(url, score_version=2, on_step=None):
+        def _fake_run(url, score_version=2, on_step=None, load_plugins=True):
             if on_step:
                 on_step("Fetching page, robots.txt, llms.txt and AI files")
                 on_step("Analyzing schema, meta tags and content")
@@ -192,7 +192,7 @@ class TestGeoAuditTool:
         """An unreachable or erroring homepage fails the fetch stage with a normalized code (#557)."""
         from geo_optimizer.models.config import AUDIT_STEPS
 
-        def _early_return(url, score_version=2, on_step=None):
+        def _early_return(url, score_version=2, on_step=None, load_plugins=True):
             if on_step:
                 on_step(AUDIT_STEPS[0])
             res = _mock_audit_result()
@@ -234,7 +234,7 @@ class TestGeoAuditTool:
         """
         from geo_optimizer.models.config import AUDIT_STEPS
 
-        def _raising_run(url, score_version=2, on_step=None):
+        def _raising_run(url, score_version=2, on_step=None, load_plugins=True):
             if on_step:
                 on_step(AUDIT_STEPS[0])
                 on_step(AUDIT_STEPS[1])

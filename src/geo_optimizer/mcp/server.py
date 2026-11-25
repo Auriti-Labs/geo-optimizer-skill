@@ -39,6 +39,7 @@ from urllib.parse import urlparse
 
 from mcp.server.fastmcp import FastMCP
 
+from geo_optimizer.core.registry import server_plugins_enabled
 from geo_optimizer.models.config import DEFAULT_SCORE_VERSION
 
 logger = logging.getLogger(__name__)
@@ -162,7 +163,12 @@ def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_rece
         if include_receipt:
             reset_audit_telemetry()
 
-        result = run_full_audit(url, score_version=score_version, on_step=on_step if include_receipt else None)
+        result = run_full_audit(
+            url,
+            score_version=score_version,
+            on_step=on_step if include_receipt else None,
+            load_plugins=server_plugins_enabled(),
+        )
         if not include_receipt:
             return _to_json(result)
 
@@ -420,7 +426,7 @@ def geo_compare(urls: str) -> str:
         try:
             from geo_optimizer.core.audit import run_full_audit
 
-            result = run_full_audit(u)
+            result = run_full_audit(u, load_plugins=server_plugins_enabled())
             results.append(
                 {
                     "url": u,
@@ -594,7 +600,7 @@ def geo_trust_score(url: str) -> str:
     try:
         from geo_optimizer.core.audit import run_full_audit
 
-        result = run_full_audit(url, use_cache=True)
+        result = run_full_audit(url, use_cache=True, load_plugins=server_plugins_enabled())
         ts = result.trust_stack
         return json.dumps(
             {
@@ -647,7 +653,7 @@ def geo_negative_signals(url: str) -> str:
     try:
         from geo_optimizer.core.audit import run_full_audit
 
-        result = run_full_audit(url, use_cache=True)
+        result = run_full_audit(url, use_cache=True, load_plugins=server_plugins_enabled())
         return _to_json(result.negative_signals)
     except Exception as e:
         logger.error("Error in geo_negative_signals for %s: %s", url, e)

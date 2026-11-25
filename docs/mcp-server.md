@@ -433,4 +433,4 @@ Claude will call the `geo_audit` tool, parse the results, and give you prioritiz
 
 All URL inputs are validated against SSRF attacks before making any HTTP requests. Private IPs, localhost, and internal network addresses are rejected. HTTP response size is capped at 10 MB, and each fetch stops after a total time limit of 60 seconds.
 
-Third-party checks installed through the `geo_optimizer.checks` entry point load by default. Set `GEO_NO_PLUGINS=1` in the server's environment to keep them from being imported.
+Third-party checks installed through the `geo_optimizer.checks` entry point do not load in the MCP server. Set `GEO_ENABLE_PLUGINS=1` in the server's environment to load them; `GEO_NO_PLUGINS=1` still wins if both are set. The `geo` CLI and the Python API keep loading plugins by default.
