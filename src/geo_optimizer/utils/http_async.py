@@ -22,13 +22,14 @@ from __future__ import annotations
 import asyncio
 import contextvars
 import logging
+import time
 from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Any
 from urllib.parse import urljoin
 
 from geo_optimizer.models.config import get_headers
-from geo_optimizer.utils.http import MAX_RESPONSE_SIZE
+from geo_optimizer.utils.http import _DEADLINE_ERROR, MAX_RESPONSE_SIZE, TOTAL_DEADLINE_SECONDS
 
 _logger = logging.getLogger(__name__)
 
@@ -192,7 +193,7 @@ def _pin_host(url: str, ips: list[str] | None) -> None:
     _pinned_hosts.set(MappingProxyType(pins))
 
 
-async def _read_limited(response, max_size: int) -> str | None:
+async def _read_limited(response, max_size: int, deadline: float | None = None) -> str | None:
     """Legge il body in streaming fermandosi oltre ``max_size``.
 
     Il conteggio avviene sui byte decodificati (dopo gzip/br), quindi vale
@@ -208,6 +209,8 @@ async def _read_limited(response, max_size: int) -> str | None:
     chunks: list[bytes] = []
     total = 0
     async for chunk in response.aiter_bytes():
+        if deadline is not None and time.monotonic() > deadline:
+            return _DEADLINE_ERROR
         total += len(chunk)
         if total > max_size:
             return f"Response too large: >{max_size} bytes (max: {max_size})"
@@ -223,6 +226,7 @@ async def fetch_url_async(
     timeout: int = 10,
     max_size: int = MAX_RESPONSE_SIZE,
     headers: dict[str, str] | None = None,
+    total_timeout: float | None = None,
 ) -> tuple[object | None, str | None]:
     """Async fetch of a URL with httpx.
 
@@ -241,11 +245,15 @@ async def fetch_url_async(
         timeout: Timeout in seconds.
         max_size: Maximum response size in bytes.
         headers: Optional per-request headers.
+        total_timeout: Total seconds the whole fetch may take, redirects and body included
+            (default: TOTAL_DEADLINE_SECONDS).
 
     Returns:
         Tuple (response, error_msg) — response is None on error.
     """
     from geo_optimizer.utils.validators import resolve_and_validate_url
+
+    deadline = time.monotonic() + (TOTAL_DEADLINE_SECONDS if total_timeout is None else total_timeout)
 
     # Fix #414: use resolve_and_validate_url for DNS pinning (prevents TOCTOU rebinding)
     ok, reason, pinned_ips = resolve_and_validate_url(url)
@@ -265,7 +273,9 @@ async def fetch_url_async(
             client = _create_pinned_client(timeout)
 
         current_url = url
-        for hops in range(_MAX_REDIRECTS):
+        for hops in range(_MAX_REDIRECTS + 1):  # same count as the sync client: 10 redirects, then the response
+            if time.monotonic() > deadline:
+                return None, _DEADLINE_ERROR
             async with client.stream("GET", current_url, headers=headers) as r:
                 if r.status_code not in _REDIRECT_STATUSES:
                     r.redirect_hops = hops  # hops followed before this response; read by the audit
@@ -277,7 +287,7 @@ async def fetch_url_async(
                         except (ValueError, TypeError):
                             pass
 
-                    error = await _read_limited(r, max_size)
+                    error = await _read_limited(r, max_size, deadline)
                     if error:
                         return None, error
                     return r, None

@@ -36,6 +36,11 @@ MAX_RESPONSE_SIZE = 10 * 1024 * 1024
 # Maximum number of redirects to follow manually (anti-infinite loop)
 _MAX_REDIRECTS = 10
 
+# Total time one fetch may take, redirects and body included. The per-request timeout alone does not stop a
+# server that answers every read in time but sends the body a few bytes at a time.
+TOTAL_DEADLINE_SECONDS = 60.0
+_DEADLINE_ERROR = "Total time limit exceeded"
+
 # Chunk size for streaming (8 KB)
 _CHUNK_SIZE = 8192
 
@@ -224,7 +229,9 @@ class _PinnedIPAdapter(HTTPAdapter):
             return super().send(request, *args, **kwargs)
 
 
-def _stream_response(response: requests.Response, max_size: int) -> tuple[bytes | None, str | None]:
+def _stream_response(
+    response: requests.Response, max_size: int, deadline: float | None = None
+) -> tuple[bytes | None, str | None]:
     """Read the body in streaming while checking the size limit.
 
     Prevents DoS: downloads the body in chunks, stops if it exceeds max_size.
@@ -240,6 +247,8 @@ def _stream_response(response: requests.Response, max_size: int) -> tuple[bytes 
     total = 0
 
     for chunk in response.iter_content(chunk_size=_CHUNK_SIZE):
+        if deadline is not None and time.monotonic() > deadline:
+            return None, _DEADLINE_ERROR
         if chunk:
             total += len(chunk)
             if total > max_size:
@@ -268,7 +277,11 @@ def _guess_encoding(response: requests.Response, content: bytes) -> str:
 
 
 def fetch_url(
-    url: str, timeout: int = 10, max_size: int = MAX_RESPONSE_SIZE, headers: dict | None = None
+    url: str,
+    timeout: int = 10,
+    max_size: int = MAX_RESPONSE_SIZE,
+    headers: dict | None = None,
+    total_timeout: float | None = None,
 ) -> tuple[requests.Response | None, str | None]:
     """
     Fetch a URL with automatic retry on transient failures.
@@ -285,6 +298,8 @@ def fetch_url(
         headers: Optional header overrides for this request (e.g. a browser-like
             User-Agent). These are merged on top of the default headers, never
             bypassing anti-SSRF protections.
+        total_timeout: Total seconds the whole fetch may take, redirects and body included
+            (default: TOTAL_DEADLINE_SECONDS).
 
     Returns:
         tuple: (response, error_msg) where response is None on failure
@@ -298,7 +313,8 @@ def fetch_url(
         return None, f"Unsafe URL: {err}"
 
     # Phase 2: Fetch with DNS pinning + manual redirect + streaming
-    return _fetch_with_manual_redirects(url, timeout, max_size, pinned_ips, headers)
+    budget = TOTAL_DEADLINE_SECONDS if total_timeout is None else total_timeout
+    return _fetch_with_manual_redirects(url, timeout, max_size, pinned_ips, headers, time.monotonic() + budget)
 
 
 def _fetch_with_manual_redirects(
@@ -307,6 +323,7 @@ def _fetch_with_manual_redirects(
     max_size: int,
     pinned_ips: list[str],
     headers: dict | None = None,
+    deadline: float | None = None,
 ) -> tuple[requests.Response | None, str | None]:
     """Perform the fetch with manual redirect and SSRF revalidation on each hop.
 
@@ -345,6 +362,8 @@ def _fetch_with_manual_redirects(
         session.headers.update(headers)
 
     while redirect_count <= _MAX_REDIRECTS:
+        if deadline is not None and time.monotonic() > deadline:
+            return None, _DEADLINE_ERROR
         try:
             # stream=True: il body non viene scaricato immediatamente in RAM
             r = _execute_request(session, current_url, timeout)
@@ -434,7 +453,7 @@ def _fetch_with_manual_redirects(
         # Body errors (truncated chunked body, corrupt gzip, read timeout) surface
         # here, after the request has returned: report them instead of raising.
         try:
-            content, err = _stream_response(r, max_size)
+            content, err = _stream_response(r, max_size, deadline)
         except requests.exceptions.RequestException as e:
             r.close()
             _logger.warning("Error while reading response body from %s: %s", current_url, e)

@@ -15,7 +15,7 @@ How the GEO Score (0–100) is computed. Based on the Princeton KDD 2024 researc
 
 ---
 
-## Categories and Weights (v2 default)
+## Categories and Weights (v2 to v6)
 
 The total score is the sum of all points earned across **9 categories**, capped at 100.
 
@@ -39,7 +39,7 @@ Rubric v5 is the default (`score_version: 5`); v2 was the default until 4.26.0, 
 
 #### Rubric v3 (opt-in, `--score-version 3`)
 
-v3 is v2 with one change: `robots` scores access, not the presence of a file. The category budget is the same (14). v2 stays the default; history and regression checks compare only snapshots with the same score version.
+v3 is v2 with one change: `robots` scores access, not the presence of a file. The category budget is the same (14). v3 was opt-in until v5 became the default, and v5 includes this change; history and regression checks compare only snapshots with the same score version.
 
 | robots.txt state | v2 | v3 |
 |------------------|----|----|
@@ -55,7 +55,7 @@ A missing robots.txt is no longer a recommendation in v3. Writing explicit rules
 
 #### Rubric v4 (opt-in, `--score-version 4`)
 
-v4 is v3 (robots as access) plus one rule for the schema category: FAQPage and Article points apply only to pages they fit. FAQPage applies when the page already has the markup or shows at least two questions as headings or accordion summaries. Article applies when the page has Article markup or `og:type` is `article`. The points of a feature that does not apply leave the denominator, and the category is rescaled to its 14 points, so a homepage with Organization and WebSite markup, a valid and rich schema and a visible name can reach 14 without FAQ or Article markup. If the feature applies and is missing, it still costs its points. Category budgets are v2's; v2 stays the default.
+v4 is v3 (robots as access) plus one rule for the schema category: FAQPage and Article points apply only to pages they fit. FAQPage applies when the page already has the markup or shows at least two questions as headings or accordion summaries. Article applies when the page has Article markup or `og:type` is `article`. The points of a feature that does not apply leave the denominator, and the category is rescaled to its 14 points, so a homepage with Organization and WebSite markup, a valid and rich schema and a visible name can reach 14 without FAQ or Article markup. If the feature applies and is missing, it still costs its points. Category budgets are v2's.
 
 Recommendations follow the same rule: FAQPage markup is suggested only where the page shows questions and answers, and v4 words it without a Google promise (Google shows FAQ rich results only for a few authoritative sites, and says AI Overviews and AI Mode need no special markup). Page type is read from `og:type`, Article markup and visible question headings only; a page type this does not recognise is treated as not an article.
 
@@ -68,7 +68,7 @@ v5 is v4 plus two checks that follow the audited page instead of the site.
 - **Robots.** Each AI bot is judged on the path of the audited URL, by longest match, with RFC 9309 wildcards (`*` matches any run of characters, a final `$` anchors the end). Earlier rubrics judge the root only, so `Disallow: /blog/` still reads as "allowed" there. Auditing `/blog/post` with v5 reports that bot as blocked.
 - **Schema visibility.** The visibility point is given only when every checkable schema is visible on the page: each `name` and `headline`, each FAQPage question, each product offer price. Earlier rubrics give it as soon as one name or headline matches. Answers are not compared. A page with no checkable schema does not earn the point.
 
-Scores can go down against v4 where a page blocks a bot on its own path or declares questions or prices it does not show. v2 stays the default and v1 to v4 numbers do not change; history compares only snapshots of the same version.
+Scores can go down against v4 where a page blocks a bot on its own path or declares questions or prices it does not show. v5 is the default since 4.27.0; `--score-version 1` to `4` give the earlier numbers unchanged, and history compares only snapshots of the same version.
 
 #### Rubric v6 (opt-in, `--score-version 6`)
 
@@ -76,7 +76,7 @@ v6 has v5's weights and adds an **access gate**: a page that AI crawlers cannot 
 
 It is `blocked` when the page answers anything but HTTP 200 or 203 (the audit stops at that first request and scores 0, and the gate says why); a CDN or firewall blocks every AI crawler tested; `X-Robots-Tag: noindex` is set; robots.txt disallows every citation bot; or the page is an empty application shell: an empty root element, the audit's script-dependence flag, and fewer than 50 words in its raw HTML (`JS_CRITICAL_WORDS`). When it is blocked the score is capped at 67, the top of the Foundation band, and the report says what the score was before the cap. It is `warn` when a restriction does not block every crawler (some citation bots disallowed, a targeted CDN block, little text without JavaScript, `noai`), and `pass` otherwise. A warning never lowers the score.
 
-The result carries `access_gate` with `status`, `reasons`, `warnings` and `score_before_cap` (`not_evaluated` before v6). The cap is a judgment, a constant in `models/config.py`. v2 stays the default and v1 to v5 numbers do not change.
+The result carries `access_gate` with `status`, `reasons`, `warnings` and `score_before_cap` (`not_evaluated` before v6). The cap is a judgment, a constant in `models/config.py`. v6 is opt-in (the default is v5), and v1 to v5 numbers do not change.
 
 ### Google AI readiness - max 20 pts (v2)
 
