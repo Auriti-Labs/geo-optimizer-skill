@@ -7,12 +7,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.29.0] — 2026-11-25
+
+### Added
+- `geo citations` reports `answers_without_sources` and `no_citation_answer_rate`: how many answers returned no source at all, and their share of all answers (LLM providers; the SERP path leaves them at 0). They sit beside the existing rates in the JSON result and the web API; the rates, intervals, verdicts and the 0-100 score are unchanged, and the text output is unchanged.
+
 ### Changed
 - `fetch_url` and `fetch_url_async` stop a fetch after a total time limit (`total_timeout`, default 60 s for redirects and body together). The per-request timeout alone did not stop a server that answers each read in time but drips the body a few bytes at a time. The error is `Total time limit exceeded`.
 - The async client followed at most 9 redirects and the sync client 10; both now follow 10.
 
-### Added
-- `geo citations` reports `answers_without_sources` and `no_citation_answer_rate`: how many answers returned no source at all, and their share of all answers (LLM providers; the SERP path leaves them at 0). They sit beside the existing rates in the JSON result and the web API; the rates, intervals, verdicts and the 0-100 score are unchanged, and the text output is unchanged.
+### Fixed
+- The scoring rubric doc (and its web copy) said in five places that v2 stays the default, after 4.27.0 made v5 the default: the section heading and the v3, v4, v5 and v6 notes.
 
 ## [4.28.0] — 2026-11-24
 
