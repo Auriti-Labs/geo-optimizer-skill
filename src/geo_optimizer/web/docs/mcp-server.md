@@ -59,15 +59,17 @@ python -m geo_optimizer.mcp.server
 
 ---
 
-## Tools (10)
+## Tools (12)
 
 ### 1. `geo_audit`
 
-Run a complete GEO audit on a website. Analyzes 7 areas: robots.txt, llms.txt, JSON-LD schema, SEO meta tags, content quality, signals, and AI discovery. Returns a score 0–100 with detailed breakdown and recommendations.
+Run a complete GEO audit on a website. Analyzes nine categories: Google AI readiness, robots.txt, JSON-LD schema, content, brand and entity signals, SEO meta tags, llms.txt, technical signals, and AI discovery. Returns a score 0–100 with detailed breakdown and recommendations. It scores technical readiness from the page and its files; it does not query ChatGPT, Perplexity or any other AI engine, so it says nothing about whether the site is cited.
 
 | Argument | Type | Required | Description |
 |----------|------|----------|-------------|
 | `url` | string | yes | URL of the site to audit |
+| `score_version` | integer | no | Rubric version, 1 to 6. Default 5. Scores from different versions are not comparable |
+| `include_receipt` | boolean | no | Attach an execution receipt with the completed stages. Default false |
 
 **Example output (abbreviated):**
 
@@ -425,4 +427,6 @@ Claude will call the `geo_audit` tool, parse the results, and give you prioritiz
 
 ## Security
 
-All URL inputs are validated against SSRF attacks before making any HTTP requests. Private IPs, localhost, and internal network addresses are rejected. HTTP response size is capped at 10 MB.
+All URL inputs are validated against SSRF attacks before making any HTTP requests. Private IPs, localhost, and internal network addresses are rejected. HTTP response size is capped at 10 MB, and each fetch stops after a total time limit of 60 seconds.
+
+Third-party checks installed through the `geo_optimizer.checks` entry point load by default. Set `GEO_NO_PLUGINS=1` in the server's environment to keep them from being imported.
