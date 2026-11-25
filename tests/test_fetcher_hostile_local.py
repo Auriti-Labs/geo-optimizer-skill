@@ -15,10 +15,12 @@ the size cap after decoding (gzip) or have no length (chunked).
 
 from __future__ import annotations
 
+import asyncio
 import gzip
 import re
 import socket
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
@@ -30,6 +32,7 @@ from geo_optimizer.utils.validators import _check_ip_blocked
 PUBLIC_IP = "93.184.216.34"
 NUMERIC_HOST = re.compile(r"^[0-9a-fA-Fx.:\[\]]+$")
 MB = 1024 * 1024
+_REAL_SLEEP = time.sleep  # the fixture silences time.sleep process-wide to skip retry backoff
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -56,6 +59,24 @@ class _Handler(BaseHTTPRequestHandler):
             self._send(302, b"", {"Location": f"http://127.0.0.1:{self.port}/secret"})
         elif self.path == "/loop":
             self._send(302, b"", {"Location": "/loop"})
+        elif self.path.startswith("/chain/"):
+            left = int(self.path.rsplit("/", 1)[1])
+            if left <= 0:
+                self._send(200, b"end")
+            else:
+                self._send(302, b"", {"Location": f"/chain/{left - 1}"})
+        elif self.path == "/drip":
+            self.send_response(200)
+            self.send_header("Transfer-Encoding", "chunked")
+            self.end_headers()
+            try:
+                for _ in range(40):  # a byte every 0.1 s for about 4 s, well under the per-read timeout
+                    self.wfile.write(b"1\r\nx\r\n")
+                    self.wfile.flush()
+                    _REAL_SLEEP(0.1)
+                self.wfile.write(b"0\r\n\r\n")
+            except (BrokenPipeError, ConnectionResetError):
+                pass
         else:
             self._send(200, b"ok")
 
@@ -204,3 +225,67 @@ def test_chunked_body_without_length_is_capped(server):
 
     assert response is None
     assert error is not None and "too large" in error.lower()
+
+
+# ─── Total time limit, redirect parity, async validator, proxy ───────────────
+
+
+def test_a_slow_drip_body_hits_the_total_time_limit(server):
+    """Each read is fast, so the per-read timeout never fires: only a total limit stops the response."""
+    started = time.monotonic()
+    response, error = fetch_url(f"http://wild.test:{server.port}/drip", timeout=5, total_timeout=1.0)
+
+    assert response is None
+    assert error is not None and "time limit" in error.lower()
+    assert time.monotonic() - started < 3.0
+
+
+def test_async_slow_drip_body_hits_the_total_time_limit(server):
+    pytest.importorskip("httpx")
+    from geo_optimizer.utils.http_async import fetch_url_async
+
+    started = time.monotonic()
+    response, error = asyncio.run(fetch_url_async(f"http://wild.test:{server.port}/drip", timeout=5, total_timeout=1.0))
+
+    assert response is None
+    assert error is not None and "time limit" in error.lower()
+    assert time.monotonic() - started < 3.0
+
+
+def test_sync_and_async_follow_the_same_number_of_redirects(server):
+    """Ten redirects are followed and an eleventh is refused, in both clients."""
+    pytest.importorskip("httpx")
+    from geo_optimizer.utils.http_async import fetch_url_async
+
+    base = f"http://wild.test:{server.port}"
+    for url, expected_ok in ((f"{base}/chain/10", True), (f"{base}/chain/11", False)):
+        sync_response, sync_error = fetch_url(url, timeout=3)
+        async_response, async_error = asyncio.run(fetch_url_async(url, timeout=3))
+        assert (sync_response is not None) is expected_ok, (url, sync_error)
+        assert (async_response is not None) is expected_ok, (url, async_error)
+        if not expected_ok:
+            assert "redirects" in str(sync_error).lower() and "redirects" in str(async_error).lower()
+
+
+@pytest.mark.parametrize(
+    "template", ["http://127.0.0.1:{p}/", "http://[::ffff:127.0.0.1]:{p}/", "http://2130706433:{p}/"]
+)
+def test_async_client_refuses_loopback_with_the_real_validator(server, template):
+    pytest.importorskip("httpx")
+    from geo_optimizer.utils.http_async import fetch_url_async
+
+    response, error = asyncio.run(fetch_url_async(template.format(p=server.port), timeout=2))
+
+    assert response is None and error is not None
+    assert not any(ip.startswith("127.") for ip in server.connects), server.connects
+
+
+def test_validation_runs_before_any_proxy_is_used(server, monkeypatch):
+    """With HTTP_PROXY set the request would go to the proxy; a private target is refused before that."""
+    monkeypatch.setenv("HTTP_PROXY", f"http://127.0.0.1:{server.port}")
+    monkeypatch.setenv("http_proxy", f"http://127.0.0.1:{server.port}")
+
+    response, error = fetch_url(f"http://127.0.0.1:{server.port}/", timeout=2)
+
+    assert response is None and error is not None
+    assert server.connects == [] and server.hits == []
