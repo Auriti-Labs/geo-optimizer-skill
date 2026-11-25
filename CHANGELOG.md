@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Fixed
+- README: the book paragraph and the band note no longer call rubric v2 the default (v5 has been since 4.27.0). The package description no longer says the tool checks whether engines cite a site; it audits readiness and samples citations.
+
 ## [4.29.0] — 2026-11-25
 
 ### Added
