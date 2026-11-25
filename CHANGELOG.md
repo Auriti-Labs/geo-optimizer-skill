@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.29.1] — 2026-11-25
+
 ### Fixed
 - README: the book paragraph and the band note no longer call rubric v2 the default (v5 has been since 4.27.0). The package description no longer says the tool checks whether engines cite a site; it audits readiness and samples citations.
 
@@ -43,6 +45,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - The release workflow runs the tests with only the `dev` extra, and one test of the 4.27.0 default-rubric change needed the optional `mcp` package, so the 4.27.0 tag was never published to PyPI. The test now skips when `mcp` is absent. 4.27.0 exists as a Git tag only; everything in it ships in 4.27.1.
 
 ## [4.27.0] — 2026-11-24
+
+> Note: the 4.27.0 tag and its GHCR image exist, but this version was never published on PyPI (the publish run failed on a test that needed an optional extra). Use 4.27.1, which has the same changes.
 
 ### Changed
 - **Breaking for scores:** the default rubric is now v5 (it was v2): `DEFAULT_SCORE_VERSION`, `geo audit`, the web API and the MCP `geo_audit` tool. This closes a known inconsistency of v2, where the schema visibility point was given when a single schema's name or headline was visible, even if FAQPage questions or product prices were not on the page. Scores change for every site: robots.txt is scored as access (v3), FAQPage and Article points apply by page type (v4), robots is judged on the audited page and schema visibility is strict (v5; the page `<title>` counts as visible text there, so a `WebPage.name` equal to the title no longer fails). History, diff and drift compare only snapshots with the same `score_version`, so the first audit after the change starts a new series. Pass `--score-version 2` (or `score_version=2`) for the old numbers; v1 to v6 are unchanged. The access gate of v6 stays opt-in.
