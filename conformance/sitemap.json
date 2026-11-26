@@ -1,0 +1,174 @@
+{
+  "rule": "sitemap-lastmod",
+  "description": "Is a sitemap lastmod a valid W3C datetime (YYYY, YYYY-MM, YYYY-MM-DD, or with time and zone). JS only: the Python engine has no sitemap build check.",
+  "cases": [
+    {
+      "name": "full date",
+      "input": {
+        "value": "2026-11-26"
+      },
+      "expect": {
+        "valid": true
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "date and time with Z",
+      "input": {
+        "value": "2026-11-26T10:00:00Z"
+      },
+      "expect": {
+        "valid": true
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "date and time with offset",
+      "input": {
+        "value": "2026-11-26T10:00:00+01:00"
+      },
+      "expect": {
+        "valid": true
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "year and month",
+      "input": {
+        "value": "2026-11"
+      },
+      "expect": {
+        "valid": true
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "year only",
+      "input": {
+        "value": "2026"
+      },
+      "expect": {
+        "valid": true
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "leap day",
+      "input": {
+        "value": "2028-02-29"
+      },
+      "expect": {
+        "valid": true
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "day-first format",
+      "input": {
+        "value": "26/11/2026"
+      },
+      "expect": {
+        "valid": false
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "month 13",
+      "input": {
+        "value": "2026-13-01"
+      },
+      "expect": {
+        "valid": false
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "30 February",
+      "input": {
+        "value": "2026-02-30"
+      },
+      "expect": {
+        "valid": false
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "29 February in a non-leap year",
+      "input": {
+        "value": "2026-02-29"
+      },
+      "expect": {
+        "valid": false
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "words",
+      "input": {
+        "value": "yesterday"
+      },
+      "expect": {
+        "valid": false
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "space instead of T",
+      "input": {
+        "value": "2026-11-26 10:00:00"
+      },
+      "expect": {
+        "valid": false
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "time without zone",
+      "input": {
+        "value": "2026-11-26T10:00:00"
+      },
+      "expect": {
+        "valid": false
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "hour out of range",
+      "input": {
+        "value": "2026-11-26T99:99:99Z"
+      },
+      "expect": {
+        "valid": false
+      },
+      "engines": [
+        "js"
+      ]
+    }
+  ]
+}

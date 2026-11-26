@@ -1,0 +1,49 @@
+{
+  "rule": "sitemap-indexable",
+  "description": "Which sitemap URLs point at a page that answers 4xx/5xx or is marked noindex. Pages absent from the build are not judged. JS only.",
+  "cases": [
+    {
+      "name": "healthy pages are not flagged",
+      "input": {
+        "xml": "<urlset><url><loc>https://example.com/</loc></url><url><loc>https://example.com/a</loc></url></urlset>",
+        "pages": [
+          { "url": "https://example.com/", "status": 200, "html": "<html><head></head></html>" },
+          { "url": "https://example.com/a", "status": 200, "html": "<html><head><meta name=\"robots\" content=\"index,follow\"></head></html>" }
+        ]
+      },
+      "expect": { "flagged": [] },
+      "engines": ["js"]
+    },
+    {
+      "name": "a 404 and a noindex page are flagged",
+      "input": {
+        "xml": "<urlset><url><loc>https://example.com/gone</loc></url><url><loc>https://example.com/hidden</loc></url><url><loc>https://example.com/ok</loc></url></urlset>",
+        "pages": [
+          { "url": "https://example.com/gone", "status": 404, "html": "" },
+          { "url": "https://example.com/hidden", "status": 200, "html": "<html><head><meta name=\"robots\" content=\"NOINDEX, nofollow\"></head></html>" },
+          { "url": "https://example.com/ok", "status": 200, "html": "<html></html>" }
+        ]
+      },
+      "expect": { "flagged": ["https://example.com/gone", "https://example.com/hidden"] },
+      "engines": ["js"]
+    },
+    {
+      "name": "a 500 is flagged, a URL missing from the build is not",
+      "input": {
+        "xml": "<urlset><url><loc>https://example.com/err</loc></url><url><loc>https://example.com/not-built</loc></url></urlset>",
+        "pages": [{ "url": "https://example.com/err", "status": 500, "html": "" }]
+      },
+      "expect": { "flagged": ["https://example.com/err"] },
+      "engines": ["js"]
+    },
+    {
+      "name": "XML entities in loc are decoded before matching",
+      "input": {
+        "xml": "<urlset><url><loc>https://example.com/p?a=1&amp;b=2</loc></url></urlset>",
+        "pages": [{ "url": "https://example.com/p?a=1&b=2", "status": 404, "html": "" }]
+      },
+      "expect": { "flagged": ["https://example.com/p?a=1&b=2"] },
+      "engines": ["js"]
+    }
+  ]
+}
