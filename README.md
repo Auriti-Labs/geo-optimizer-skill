@@ -363,11 +363,16 @@ result.recommendations          # list of prioritized fixes
 
 ### Astro Integration
 
-Generates `llms.txt`, `/.well-known/ai.txt`, and `/ai/summary.json` from your built routes at build time, and never overwrites hand-curated files. geoready.dev builds with it. Not yet published to npm — copy [`integrations/astro-geoready/`](integrations/astro-geoready/) to `integrations/astro-geoready/` in your project root:
+Generates `llms.txt`, `/.well-known/ai.txt`, and `/ai/summary.json` from your built routes at build time, and never overwrites hand-curated files. geoready.dev builds with it. Install it from npm:
+
+```bash
+npm install astro-geoready
+```
 
 ```js
 // astro.config.mjs
-import geoReady from './integrations/astro-geoready/index.mjs';
+import { defineConfig } from 'astro/config';
+import geoReady from 'astro-geoready';
 export default defineConfig({
   site: 'https://yoursite.com',
   integrations: [geoReady({ siteName: 'Your Site' })],
