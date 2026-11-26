@@ -7,6 +7,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.30.3] — 2026-11-26
+
+### Security
+- The composite GitHub Action no longer interpolates its inputs into shell scripts. `url`, `format`, `output-file`, `min-score` and `threshold` now reach the scripts as environment variables and are validated first (format whitelist, safe output-file name, integer thresholds). Before this, a crafted input value could run commands in the caller's runner.
+
+### Fixed
+- The Action's `fail-on-warning` read a temporary file that an earlier step had already deleted, so it always counted zero and never failed. It now fails when the audit returns any recommendation.
+- The score threshold compares numbers, so a decimal score no longer breaks the check. The temporary report file is removed in a final step that runs even when an earlier step fails.
+
+### Added
+- Action input `max-recommendations`: fail only when the audit returns more recommendations than the limit. `fail-on-warning` remains as a shortcut for a limit of zero.
+- Action input `version`: pin the `geo-optimizer-skill` version the Action installs.
+
+### Changed
+- The README example audit shows engine 4.30.2 on rubric v5 (example.com 36/100, geoready.dev 94/100) instead of a September run.
+- The CI/CD docs say which of the two composite actions is the one published in the Marketplace.
+
 ## [4.30.2] — 2026-11-26
 
 ### Fixed
