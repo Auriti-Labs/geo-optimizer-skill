@@ -49,41 +49,41 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 ### What a real audit looks like
 
-Two runs of `geo audit`, September 2026. `example.com` has no robots.txt, no `llms.txt`, and no structured data. `geoready.dev` is built with this engine's own [Astro integration](#astro-integration). Excerpts, condensed from the full text output.
+Two runs of `geo audit` (engine 4.30.2, rubric v5), 26 November 2026. `example.com` has no robots.txt, no `llms.txt`, and no structured data. `geoready.dev` is built with this engine's own [Astro integration](#astro-integration). Excerpts, condensed from the full text output.
 
 <table>
 <tr><th>example.com</th><th>geoready.dev</th></tr>
 <tr><td>
 
 ```
-[█░░░░░░░░░░░░░░░░░░░] 8/100
-❌ CRITICAL — Core signals for AI
-   search are missing
+[███████░░░░░░░░░░░░░] 36/100
+⚠️  FOUNDATION — Core elements
+   missing, implement priority fixes
 
 📋 PRIORITY NEXT STEPS:
-1. Create robots.txt with Allow rules
-   for AI bots (GPTBot, ClaudeBot,
-   PerplexityBot)
-2. Create /llms.txt for AI indexing
-3. Add WebSite JSON-LD schema
-4. Add Organization JSON-LD schema
-5. Add FAQPage schema with site FAQs
+1. [G-CANONICAL] No rel=canonical
+2. [G-DATES] No valid publication
+   or update date found
+3. [G-BYLINE] No author found
+4. Create /llms.txt for AI indexing
+5. Add WebSite and Organization
+   JSON-LD schema
 ```
 
 </td><td>
 
 ```
-[██████████████████░░] 91/100
+[██████████████████░░] 94/100
 🏆 EXCELLENT
 
-✅ 27/27 AI crawlers allowed
-✅ llms.txt found (~3554 words)
-✅ 7 schema types
+✅ All critical citation bots allowed
+✅ llms.txt found (~4382 words)
+✅ 8 schema types
 ✅ 0 prompt-injection patterns
 ✅ 1/4 Knowledge Graph pillars
-⚠️  No dateModified signal
-   (Wikipedia, Wikidata, LinkedIn,
-   Crunchbase)
+📋 3 next steps, e.g. more sameAs
+   links (Wikipedia, Wikidata,
+   LinkedIn, Crunchbase)
 ```
 
 </td></tr>
