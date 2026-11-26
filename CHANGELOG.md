@@ -7,6 +7,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.30.2] — 2026-11-26
+
+### Fixed
+- `fetch_url()` reports timeout and connection failures in English ("Timeout (10s) after exponential retry", "Connection failed after exponential retry") instead of Italian. The messages reach API clients and reports as they are, and the product surfaces are English-only. The MCP error classifier matches the substrings "timeout" and "connection", so its behaviour is unchanged.
+
 ## [4.30.1] — 2026-11-26
 
 > Note: the 4.30.0 tag and its GHCR image exist, but this version was never published on PyPI (the publish run failed on a test that needed the optional web extra, which that workflow does not install). Use 4.30.1, which has the same changes.
