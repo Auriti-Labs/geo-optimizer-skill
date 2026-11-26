@@ -183,7 +183,7 @@ class TestGeoAuditTool:
         [
             ("Connection failed", 0, "connection_failed"),
             ("HTTP 403", 403, "http_error"),
-            ("Timeout (10s) dopo retry esponenziale", 0, "timeout"),
+            ("Timeout (10s) after exponential retry", 0, "timeout"),
             ("Response too large: 12000000 bytes (max: 5000000)", 0, "too_large"),
         ],
     )
@@ -257,7 +257,7 @@ class TestGeoAuditTool:
         [
             (None, None),
             ("", None),
-            ("Timeout (10s) dopo retry esponenziale", "timeout"),
+            ("Timeout (10s) after exponential retry", "timeout"),
             ("Connection failed", "connection_failed"),
             ("HTTP 500", "http_error"),
             ("Too many redirects (max: 5)", "http_error"),
@@ -301,7 +301,7 @@ class TestGeoAuditTool:
 
         def _fake_fetch(url, *args, **kwargs):
             if "robots.txt" in url:
-                return None, "Timeout (10s) dopo retry esponenziale"
+                return None, "Timeout (10s) after exponential retry"
             mock_resp = MagicMock()
             mock_resp.status_code = 200
             mock_resp.text = "<html><head><title>Test</title></head><body>Hello world</body></html>"
@@ -430,7 +430,7 @@ class TestGeoAuditTool:
         mock_200 = MagicMock(status_code=200)
 
         fetches = [
-            ("robots.txt", None, "Timeout (10s) dopo retry"),
+            ("robots.txt", None, "Timeout (10s) after retry"),
             ("llms.txt", mock_500, None),
             ("llms-full.txt", mock_404, None),
             (".well-known/ai.txt", mock_429, None),

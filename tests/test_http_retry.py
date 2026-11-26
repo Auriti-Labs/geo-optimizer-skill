@@ -261,7 +261,7 @@ class TestFetchUrlRetryIntegration:
 
         assert resp is None
         assert "Timeout" in err
-        assert "retry esponenziale" in err
+        assert "exponential retry" in err
         assert mock_session.get.call_count == 4
 
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
