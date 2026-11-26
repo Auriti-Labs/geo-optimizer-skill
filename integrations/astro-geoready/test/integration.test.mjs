@@ -126,3 +126,14 @@ test('respects maxPerSection and aiDiscovery flag', async () => {
   await assert.rejects(readFile(path.join(dir, 'ai', 'summary.json'), 'utf-8'));
   await mkdir(dir, { recursive: true }); // keep tmp dir valid for cleanup tools
 });
+
+test('llms.txt has no attribution line by default and adds it only on request', async () => {
+  const plain = await runBuild({ siteName: 'Example' });
+  const withoutLine = await readFile(path.join(plain, 'llms.txt'), 'utf-8');
+  assert.doesNotMatch(withoutLine, /Generated at build time/);
+  assert.doesNotMatch(withoutLine, /geoready\.dev/);
+
+  const credited = await runBuild({ siteName: 'Example', attribution: true });
+  const withLine = await readFile(path.join(credited, 'llms.txt'), 'utf-8');
+  assert.match(withLine, /Generated at build time by astro-geoready/);
+});
