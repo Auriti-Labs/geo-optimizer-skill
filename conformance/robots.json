@@ -1,0 +1,276 @@
+{
+  "rule": "robots-ai-bots",
+  "description": "Is a bot blocked on a path by robots.txt (RFC 9309: group of the bot or *, longest match, Allow wins ties, * and $ in rules). Paths other than / on purpose: the Python engine reads / as a site-wide 'partial' status.",
+  "cases": [
+    {
+      "name": "empty file blocks nobody",
+      "input": {
+        "robots": "",
+        "bot": "OAI-SearchBot",
+        "path": "/blog"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "wildcard group with Disallow: /",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /",
+        "bot": "OAI-SearchBot",
+        "path": "/blog"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "named group blocks only that bot",
+      "input": {
+        "robots": "User-agent: OAI-SearchBot\nDisallow: /\n\nUser-agent: *\nAllow: /",
+        "bot": "OAI-SearchBot",
+        "path": "/blog"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "named group leaves the other bots alone",
+      "input": {
+        "robots": "User-agent: OAI-SearchBot\nDisallow: /\n\nUser-agent: *\nAllow: /",
+        "bot": "PerplexityBot",
+        "path": "/blog"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "longest match: Allow beats shorter Disallow",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /private\nAllow: /private/public",
+        "bot": "PerplexityBot",
+        "path": "/private/public/x"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "longest match: path outside the Allow stays blocked",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /private\nAllow: /private/public",
+        "bot": "PerplexityBot",
+        "path": "/private/x"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "tie between Allow and Disallow: Allow wins",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /a\nAllow: /a",
+        "bot": "Claude-SearchBot",
+        "path": "/a/b"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "wildcard with end anchor matches the file",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /*.pdf$",
+        "bot": "Claude-SearchBot",
+        "path": "/doc/file.pdf"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "end anchor does not match a longer path",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /*.pdf$",
+        "bot": "Claude-SearchBot",
+        "path": "/doc/file.pdf.html"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "agent names are case-insensitive",
+      "input": {
+        "robots": "User-agent: claude-searchbot\nDisallow: /x",
+        "bot": "Claude-SearchBot",
+        "path": "/x"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "stacked User-agent lines share the rules",
+      "input": {
+        "robots": "User-agent: GPTBot\nUser-agent: PerplexityBot\nDisallow: /",
+        "bot": "PerplexityBot",
+        "path": "/a"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "empty Disallow allows everything",
+      "input": {
+        "robots": "User-agent: *\nDisallow:",
+        "bot": "OAI-SearchBot",
+        "path": "/a"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "a specific group overrides the wildcard group",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /\n\nUser-agent: PerplexityBot\nAllow: /",
+        "bot": "PerplexityBot",
+        "path": "/a"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "comments and CRLF line ends are ignored",
+      "input": {
+        "robots": "# note\r\nUser-agent: * # all\r\nDisallow: /x # no\r\n",
+        "bot": "OAI-SearchBot",
+        "path": "/x/y"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "percent-encoded rule matches the raw non-ASCII path",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /caf%C3%A9",
+        "bot": "OAI-SearchBot",
+        "path": "/café"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "escape of an unreserved character matches the plain character",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /%7Euser",
+        "bot": "OAI-SearchBot",
+        "path": "/~user"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "escaped slash is not a slash",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /a%2Fb",
+        "bot": "OAI-SearchBot",
+        "path": "/a/b"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "rule with many wildcards that cannot match answers at once",
+      "input": {
+        "robots": "User-agent: *\nDisallow: /a*a*a*a*a*a*a*a*a*a*a*a*a*a*b",
+        "bot": "OAI-SearchBot",
+        "path": "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    }
+  ]
+}

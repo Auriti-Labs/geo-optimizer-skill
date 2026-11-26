@@ -1,0 +1,15 @@
+{
+  "rule": "jsonld-valid",
+  "description": "Is a JSON-LD block syntactically valid JSON. Syntax only: schema.org semantics stay with the Python engine.",
+  "cases": [
+    { "name": "object", "input": { "block": "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"name\":\"Acme\"}" }, "expect": { "valid": true }, "engines": ["python", "js"] },
+    { "name": "array of objects", "input": { "block": "[{\"@type\":\"Thing\"},{\"@type\":\"Person\"}]" }, "expect": { "valid": true }, "engines": ["python", "js"] },
+    { "name": "graph with surrounding whitespace", "input": { "block": "\n  {\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"WebSite\"}]}\n" }, "expect": { "valid": true }, "engines": ["python", "js"] },
+    { "name": "trailing comma", "input": { "block": "{\"@type\":\"Thing\",}" }, "expect": { "valid": false }, "engines": ["python", "js"] },
+    { "name": "single quotes", "input": { "block": "{'@type':'Thing'}" }, "expect": { "valid": false }, "engines": ["python", "js"] },
+    { "name": "unquoted key", "input": { "block": "{@type: \"Thing\"}" }, "expect": { "valid": false }, "engines": ["python", "js"] },
+    { "name": "empty block", "input": { "block": "" }, "expect": { "valid": false }, "engines": ["python", "js"] },
+    { "name": "whitespace only", "input": { "block": "   \n  " }, "expect": { "valid": false }, "engines": ["python", "js"] },
+    { "name": "truncated", "input": { "block": "{\"@type\":\"Thing\"" }, "expect": { "valid": false }, "engines": ["python", "js"] }
+  ]
+}
