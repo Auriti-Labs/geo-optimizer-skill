@@ -1,8 +1,9 @@
 /**
  * astro-geoready — make an Astro site GEO-ready at build time.
  *
- * Generates the text scaffolding AI engines use to discover and understand a
- * site, straight from the route list Astro already knows — no HTTP, no crawl:
+ * Generates optional text files that describe a site to AI tools and agents,
+ * straight from the route list Astro already knows — no HTTP, no crawl. They
+ * are not a ranking or citation factor: no AI vendor documents reading them:
  *
  *   /llms.txt                 Markdown index of your pages, grouped by section
  *   /.well-known/ai.txt       AI crawler welcome file
@@ -13,9 +14,9 @@
  * Existing files are never overwritten (your hand-curated llms.txt wins);
  * pass `overwrite: true` to regenerate on every build.
  *
- * Companion to the GEO Optimizer audit engine — the same files this
- * integration emits are the ones `geo audit` scores under llms.txt (18 pts)
- * and AI Discovery (6 pts). https://github.com/Auriti-Labs/geo-optimizer-skill
+ * Companion to the GEO Optimizer audit engine — `geo audit` checks for the
+ * same files this integration emits.
+ * https://github.com/Auriti-Labs/geo-optimizer-skill
  */
 
 import { existsSync } from 'node:fs';
