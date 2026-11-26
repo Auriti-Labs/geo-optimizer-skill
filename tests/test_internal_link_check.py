@@ -134,7 +134,7 @@ def test_404_counts_as_broken_and_403_does_not():
 def test_unreachable_link_is_not_counted_as_broken():
     """Timeout / connection error = non verificabile, non rotto."""
     body = '<a href="/timeout">x</a>'
-    with patch("geo_optimizer.utils.http.fetch_url", return_value=(None, "Timeout (5s) dopo retry esponenziale")):
+    with patch("geo_optimizer.utils.http.fetch_url", return_value=(None, "Timeout (5s) after exponential retry")):
         count, broken = check_internal_links(_soup(body), BASE)
     assert count == 0
     assert broken == []

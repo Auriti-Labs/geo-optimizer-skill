@@ -368,13 +368,13 @@ def _fetch_with_manual_redirects(
             # stream=True: il body non viene scaricato immediatamente in RAM
             r = _execute_request(session, current_url, timeout)
         except requests.exceptions.Timeout as e:
-            _logger.warning("Timeout per %s dopo retry esponenziale: %s", current_url, e)
-            return None, f"Timeout ({timeout}s) dopo retry esponenziale"
+            _logger.warning("Timeout for %s after exponential retry: %s", current_url, e)
+            return None, f"Timeout ({timeout}s) after exponential retry"
         except requests.exceptions.ConnectionError as e:
-            _logger.warning("ConnectionError per %s dopo retry esponenziale: %s", current_url, e)
-            return None, "Connection failed dopo retry esponenziale"
+            _logger.warning("ConnectionError for %s after exponential retry: %s", current_url, e)
+            return None, "Connection failed after exponential retry"
         except Exception as e:
-            _logger.warning("Unexpected fetch error per %s: %s", current_url, e)
+            _logger.warning("Unexpected fetch error for %s: %s", current_url, e)
             return None, "Unexpected error during fetch"
 
         # Check Content-Length before downloading the body
