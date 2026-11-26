@@ -7,11 +7,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
-### Changed
-- Third-party check plugins (`geo_optimizer.checks` entry points) are now opt-in in the MCP server and in `geo-web`: set `GEO_ENABLE_PLUGINS=1` in the server's environment to load them. Both servers can be exposed to other people or to AI agents, so importing code from installed packages should be a decision by the operator. The `geo` CLI and the Python API are unchanged (plugins load by default, `--no-plugins` and `GEO_NO_PLUGINS=1` still turn them off, and `GEO_NO_PLUGINS=1` wins over `GEO_ENABLE_PLUGINS=1`).
+## [4.30.0] — 2026-11-26
 
 ### Changed
+- Third-party check plugins (`geo_optimizer.checks` entry points) are now opt-in in the MCP server and in `geo-web`: set `GEO_ENABLE_PLUGINS=1` in the server's environment to load them. Both servers can be exposed to other people or to AI agents, so importing code from installed packages should be a decision by the operator. The `geo` CLI and the Python API are unchanged (plugins load by default, `--no-plugins` and `GEO_NO_PLUGINS=1` still turn them off, and `GEO_NO_PLUGINS=1` wins over `GEO_ENABLE_PLUGINS=1`).
 - `docs/json-contract.md`: documents the fields of the CLI JSON that the web API contract did not list (`run_timestamp`, `bot_blocks`, `cdn_check`, `cdn_check.block_pattern`, `checks.robots_txt.details.status_code`, `checks.schema_jsonld.details.has_visible_faq`) and says that the CLI JSON has no `schema_version`.
+- `docs/mcp-server.md` (and the copy bundled with `geo-web`): describes the nine categories, the `score_version` and `include_receipt` arguments, the 12 tools, the 60 s fetch limit and the plugin setting.
+- README and `docs/scoring-rubric.md` say that rubric v5 is the default since 4.27.1, the first published version (4.27.0 was never published to PyPI); the alt text of the terminal screenshot no longer names a rubric version.
+- `research/calibration-2026-10`: the per-page `results.csv` is withdrawn from the repository while the study assesses whether rows can be tied back to individual sites; the aggregate results and the scripts remain.
 
 ## [4.29.1] — 2026-11-25
 
