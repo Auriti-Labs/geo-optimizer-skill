@@ -40,9 +40,13 @@ inputs:
     required: false
     default: "geo-report"
   fail-on-warning:
-    description: "Fail the step when the audit returns any recommendation"
+    description: "Shortcut for max-recommendations: 0. Fail the step when the audit returns any recommendation."
     required: false
     default: "false"
+  max-recommendations:
+    description: "Fail the step when the audit returns more than this many recommendations. 0 disables the check (unless fail-on-warning is true)."
+    required: false
+    default: "0"
   version:
     description: "geo-optimizer-skill version to install (e.g. 4.30.2). Default: latest."
     required: false
@@ -70,6 +74,7 @@ runs:
         IN_OUTPUT_FILE: ${{ inputs.output-file }}
         IN_MIN_SCORE: ${{ inputs.min-score }}
         IN_THRESHOLD: ${{ inputs.threshold }}
+        IN_MAX_RECS: ${{ inputs.max-recommendations }}
         IN_VERSION: ${{ inputs.version }}
       run: |
         case "$IN_FORMAT" in
@@ -86,6 +91,10 @@ runs:
             exit 1
           fi
         done
+        if ! printf '%s' "$IN_MAX_RECS" | grep -qE '^[0-9]{1,4}$'; then
+          echo "::error::max-recommendations must be a non-negative integer (got '$IN_MAX_RECS')."
+          exit 1
+        fi
         if [ -n "$IN_VERSION" ] && ! printf '%s' "$IN_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+[a-z0-9.]*$'; then
           echo "::error::Invalid version '$IN_VERSION'. Expected X.Y.Z[suffix]."
           exit 1
@@ -186,16 +195,21 @@ runs:
         fi
         echo "✅ GEO score ${GEO_SCORE} meets minimum score ${MIN_SCORE}"
 
-    # 9. Fallisce se l'audit ha restituito raccomandazioni (se abilitato)
-    - name: Check warnings
-      if: inputs.fail-on-warning == 'true'
+    # 9. Fallisce se le raccomandazioni superano il limite (se abilitato)
+    - name: Check recommendations
+      if: inputs.fail-on-warning == 'true' || inputs.max-recommendations != '0'
       shell: bash
+      env:
+        IN_MAX_RECS: ${{ inputs.max-recommendations }}
       run: |
         COUNT=$(python3 -c "import json; d=json.load(open('geo-score-tmp.json')); print(len(d.get('recommendations', [])))")
-        if [ "$COUNT" -gt 0 ]; then
-          echo "::error::Found ${COUNT} recommendations (fail-on-warning is enabled)"
+        # Con fail-on-warning senza limite esplicito il limite e 0 (nessuna raccomandazione)
+        LIMIT="$IN_MAX_RECS"
+        if [ "$COUNT" -gt "$LIMIT" ]; then
+          echo "::error::Found ${COUNT} recommendations, more than the allowed ${LIMIT}"
           exit 1
         fi
+        echo "✅ ${COUNT} recommendations (allowed: ${LIMIT})"
 
     # 10. Pulizia del file temporaneo, anche se un passo precedente e fallito
     - name: Remove temporary file
