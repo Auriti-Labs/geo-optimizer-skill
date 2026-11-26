@@ -31,7 +31,8 @@ That's it. The action installs Python, installs `geo-optimizer-skill`, runs the 
 | `threshold` | ❌ | `0` | Deprecated alias for `min-score`. |
 | `format` | ❌ | `json` | Output format: `json`, `sarif`, `junit`, `text` |
 | `output-file` | ❌ | `geo-report` | Base name for the output file (no extension) |
-| `fail-on-warning` | ❌ | `false` | Fail on warnings too |
+| `fail-on-warning` | ❌ | `false` | Fail the step when the audit returns any recommendation |
+| `version` | ❌ | latest | Pin the `geo-optimizer-skill` version to install (e.g. `4.30.2`) |
 
 ## Outputs
 
