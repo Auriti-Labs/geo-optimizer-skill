@@ -74,6 +74,8 @@ runs:
       run: |
         # Esegui audit e salva report JSON
         REPORT_FILE="geo-audit-report.json"
+        # Un report rimasto da un'esecuzione precedente non deve mascherare un audit fallito
+        rm -f "$REPORT_FILE"
         geo audit --url "$GEO_URL" --format json --output "$REPORT_FILE" || true
 
         if [ ! -f "$REPORT_FILE" ]; then
@@ -196,11 +198,29 @@ runs:
         SCORE="$GEO_SCORE"
         MIN_SCORE="$GEO_MIN_SCORE"
 
-        if [ "$MIN_SCORE" -gt 0 ] 2>/dev/null; then
-          if [ "$SCORE" -lt "$MIN_SCORE" ] 2>/dev/null; then
-            echo "::error::GEO Score $SCORE is below minimum threshold $MIN_SCORE"
-            exit 1
-          else
-            echo "::notice::GEO Score $SCORE meets minimum threshold $MIN_SCORE ✅"
-          fi
+        if ! printf '%s' "$MIN_SCORE" | grep -qE '^[0-9]{1,3}$' || [ "$((10#$MIN_SCORE))" -gt 100 ]; then
+          echo "::error::min-score must be an integer between 0 and 100 (got '$MIN_SCORE')."
+          exit 1
+        fi
+
+        if [ "$((10#$MIN_SCORE))" -gt 0 ]; then
+          # Codici di uscita distinti: 0 soglia rispettata, 1 sotto soglia, 2 score non valido.
+          RC=0
+          python3 - "$SCORE" "$MIN_SCORE" <<'PY' || RC=$?
+        import math
+        import sys
+
+        try:
+            score = float(sys.argv[1])
+        except ValueError:
+            sys.exit(2)
+        if not math.isfinite(score) or not 0 <= score <= 100:
+            sys.exit(2)
+        sys.exit(1 if score < float(sys.argv[2]) else 0)
+        PY
+          case "$RC" in
+            0) echo "::notice::GEO Score $SCORE meets minimum threshold $MIN_SCORE ✅" ;;
+            1) echo "::error::GEO Score $SCORE is below minimum threshold $MIN_SCORE"; exit 1 ;;
+            *) echo "::error::GEO Score '$SCORE' is not a number between 0 and 100: cannot check the threshold"; exit 1 ;;
+          esac
         fi
