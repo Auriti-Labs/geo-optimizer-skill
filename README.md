@@ -89,7 +89,7 @@ Two runs of `geo audit` (engine 4.30.2, rubric v5), 26 November 2026. `example.c
 </td></tr>
 </table>
 
-Across 3,200+ sites audited through [GeoReady](https://geoready.dev/state-of-geo/?utm_source=github&utm_medium=readme&utm_campaign=benchmark) (latest audit per domain, as of 24 November 2026), the median score is **65/100**, 61% publish an `llms.txt` and 79% ship JSON-LD structured data. 48% of them land in the Foundation band (36–67), 39% in Good, 9% in Critical and 4% in Excellent. Scores mix rubric v1 (engine 4.13 to 4.18) and v2 (4.19 and later). The sample is self-selected (people who chose to audit their site), so treat it as directional, not a census of the web.
+Across 3,200+ sites audited through [GeoReady](https://geoready.dev/state-of-geo/?utm_source=github&utm_medium=readme&utm_campaign=benchmark) (latest audit per domain, as of 24 November 2026), the median score is **65/100**, 61% publish an `llms.txt` and 79% ship JSON-LD structured data. 48% of them land in the Foundation band (36–67), 39% in Good, 9% in Critical and 4% in Excellent. Scores mix rubric v1 (engine 4.13 to 4.18) and v2 (4.19 and later), so comparing them with a v5 score is approximate. The sample is self-selected (people who chose to audit their site), so treat it as directional, not a census of the web.
 
 <img src="assets/benchmark.svg" alt="Chart of 3,200+ audited sites: median GEO score 65 out of 100, average 61.5, 61% publish an llms.txt file, 79% ship JSON-LD structured data. Self-selected sample, 24 November 2026." width="800"/>
 
@@ -285,7 +285,7 @@ Treat AI visibility like test coverage. The GitHub Action scores your site, fail
 
 ```yaml
 # .github/workflows/geo.yml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.30.3
+- uses: Auriti-Labs/geo-optimizer-skill@v4.30.4
   with:
     url: https://yoursite.com
     min-score: 70        # fail the build below 70
@@ -443,7 +443,7 @@ AEO is the practice of structuring a website so AI answer engines — ChatGPT, P
 Run `geo citations --brand "Your Brand" --domain yoursite.com` with a Perplexity or OpenAI API key. It asks the engine customer-style questions and reports whether your brand is mentioned, whether your domain is cited as a source, and which competitors are cited instead. Perplexity returns real source URLs, so it is the only LLM provider that can report your domain as cited. OpenAI and Anthropic reveal what the model knows about your brand: a URL in their answer counts as a mention, never as a citation. No account needed for the [free web version](https://geoready.dev/tools/ai-citation-checker/?utm_source=github&utm_medium=readme&utm_campaign=faq).
 
 **How do I improve my site's GEO score?**
-Run `geo audit --url https://yoursite.com` and read the priority list, then `geo fix --url https://yoursite.com` to preview the robots.txt rules, `llms.txt`, JSON-LD schema and meta tags it would write (`--apply` writes them), and audit again. Start where the audit shows the most missing points: among the audited sites, the largest readiness gap is AI discovery files, and the median score is 59/100 (17 October 2026). To see your own list without installing anything, [run the free web audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=faq-start), or read the [free 160-page GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/?utm_source=github&utm_medium=readme&utm_campaign=faq-start).
+Run `geo audit --url https://yoursite.com` and read the priority list, then `geo fix --url https://yoursite.com` to preview the robots.txt rules, `llms.txt`, JSON-LD schema and meta tags it would write (`--apply` writes them), and audit again. Start where the audit shows the most missing points: among the audited sites, the median score is 65/100 (24 November 2026, see the benchmark above). To see your own list without installing anything, [run the free web audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=faq-start), or read the [free 160-page GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/?utm_source=github&utm_medium=readme&utm_campaign=faq-start).
 
 **Does GEO Optimizer guarantee that AI engines will cite my site?**
 No. It measures the signals that make a site reachable, parseable, and quotable, and it tells you which ones are missing. Whether an engine cites you also depends on the question, the competition, and the engine itself — and answers change from run to run, which is why `geo citations` has `--runs`.
@@ -488,7 +488,7 @@ Yes. *AI Search Engineering: A Technical Guide to Generative Engine Optimization
 
 ## Roadmap
 
-Focused release waves, not noisy patches: 108 releases since February 2026, currently **v4.30.3**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
+Focused release waves, not noisy patches: 109 releases since February 2026, currently **v4.30.4**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "name": "astro-geoready",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Make your Astro site GEO-ready at build time: generates llms.txt and AI discovery files (ai.txt, ai/summary.json) from your built routes.",
   "type": "module",
   "main": "./index.mjs",
@@ -41,6 +41,6 @@
     "astro": ">=4.0.0"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   }
 }

@@ -7,6 +7,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.30.4] — 2026-11-26
+
+### Fixed
+- The GitHub Action no longer reports a threshold as met when the score is not a valid number. `min-score` and `threshold` must be integers between 0 and 100 (999 was accepted). The check uses distinct exit codes: 0 met, 1 below, 2 score not finite or not numeric (NaN, text, out of range), and the step fails in both failing cases.
+- The legacy composite action (`.github/actions/geo-audit`) had the same flaw with a decimal score (69.5 against 70 passed) and now applies the same check. It also removes a report left over from an earlier run before auditing, so a failed audit cannot be masked by a stale file.
+
+### Changed
+- The Action describes its score as an AI search readiness score, not a citability score.
+- The README FAQ and the benchmark paragraph use the 24 November median (65/100) and say that scores of different rubric versions are only roughly comparable.
+- Node.js 22 is the minimum for the npm packages in `integrations/` (Node 20 reached end of life on 30 April 2026), and the CI runs them on Node 22 and 24. `astro-geoready` goes to 0.2.0 for that reason.
+
+### Added
+- `conformance/` and `integrations/core`: a dependency-free JS core with five build checks (robots.txt and the AI search bots, sitemap pages that are noindex or answer 4xx/5xx, canonical, JSON-LD syntax, sitemap `lastmod`), tested against the same cases as the Python engine. The package is private and not published.
+
 ## [4.30.3] — 2026-11-26
 
 ### Security

@@ -31,7 +31,7 @@ It scores nothing and judges nothing beyond these five verifiable defects. `llms
 - URL comparison uses the WHATWG parser: `:443`, `/a/../b` and non-ASCII paths compare equal here, while the Python engine reports a warning.
 - Duplicate `User-agent` groups that differ only in case are merged (RFC 9309); the Python engine reads the first one.
 - Pages answering 4xx/5xx are reported by `sitemap-indexable` only; their canonical and JSON-LD are not judged.
-- Not published: the package is `private` until the API settles (0.x, Node >= 20).
+- Not published: the package is `private` until the API settles (0.x, Node >= 22).
 
 ## Conformance
 
