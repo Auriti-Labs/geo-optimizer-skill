@@ -47,6 +47,8 @@ def test_mcp_geo_audit_does_not_load_plugins_by_default(monkeypatch):
 
 def test_web_audit_does_not_load_plugins_by_default(monkeypatch):
     """POST /api/audit runs the engine with load_plugins=False unless the operator opted in."""
+    pytest.importorskip("starlette")
+    pytest.importorskip("fastapi")
     from starlette.testclient import TestClient
 
     from geo_optimizer.web.app import _audit_cache, _rate_limit_store, app

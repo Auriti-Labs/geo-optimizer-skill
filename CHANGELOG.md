@@ -7,6 +7,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+## [4.30.1] — 2026-11-26
+
+> Note: the 4.30.0 tag and its GHCR image exist, but this version was never published on PyPI (the publish run failed on a test that needed the optional web extra, which that workflow does not install). Use 4.30.1, which has the same changes.
+
+### Fixed
+- `tests/test_server_plugins_opt_in.py`: the geo-web test is skipped when `starlette` or `fastapi` is not installed, like the MCP one, so the publish workflow (`pip install -e ".[dev]"`) can run the suite.
+
 ## [4.30.0] — 2026-11-26
 
 ### Changed
