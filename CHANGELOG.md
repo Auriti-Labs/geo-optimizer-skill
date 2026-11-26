@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Fixed
+- `GET /ai/faq.json` in `geo-web` said the score is calculated "across 9 rubric v2 categories" and that the toolkit scores "based on 47 research-backed methods". It now names rubric v5 as the default (v2 has the same maxima) and says the toolkit audits how ready a site is for AI answer engines; only 9 of the 47 content checks come from a controlled study. The docs index (and its copy bundled with `geo-web`) says nine categories, rubric v5 by default.
+
 ## [4.30.1] — 2026-11-26
 
 > Note: the 4.30.0 tag and its GHCR image exist, but this version was never published on PyPI (the publish run failed on a test that needed the optional web extra, which that workflow does not install). Use 4.30.1, which has the same changes.

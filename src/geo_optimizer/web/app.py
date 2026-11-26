@@ -2184,15 +2184,14 @@ async def ai_faq():
             {
                 "question": "What is GEO Optimizer?",
                 "answer": (
-                    "An open-source toolkit that audits websites for AI"
-                    " search visibility, scoring 0-100 based on 47"
-                    " research-backed methods."
+                    "An open-source toolkit that audits how ready a website is for AI answer engines, scoring it 0-100."
                 ),
             },
             {
                 "question": "How is the score calculated?",
                 "answer": (
-                    "Across 9 rubric v2 categories: Google AI readiness (20pt),"
+                    "Across 9 categories (rubric v5, the default; v2 has the same"
+                    " maxima): Google AI readiness (20pt),"
                     " robots.txt (14pt), schema (14pt), content (14pt),"
                     " brand & entity (12pt), meta (11pt), llms.txt (6pt),"
                     " signals (6pt), and AI discovery (3pt)."
