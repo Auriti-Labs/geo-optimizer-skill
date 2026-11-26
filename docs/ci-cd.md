@@ -22,6 +22,8 @@ jobs:
 
 That's it. The action installs Python, installs `geo-optimizer-skill`, runs the audit, and reports the score.
 
+> The repository also keeps a second composite action at `.github/actions/geo-audit`, used by earlier workflows (`uses: Auriti-Labs/geo-optimizer-skill/.github/actions/geo-audit@<tag>`). New workflows should use the root action shown above, which is the one published in the Marketplace.
+
 ## Inputs
 
 | Input | Required | Default | Description |
@@ -31,7 +33,9 @@ That's it. The action installs Python, installs `geo-optimizer-skill`, runs the 
 | `threshold` | ❌ | `0` | Deprecated alias for `min-score`. |
 | `format` | ❌ | `json` | Output format: `json`, `sarif`, `junit`, `text` |
 | `output-file` | ❌ | `geo-report` | Base name for the output file (no extension) |
-| `fail-on-warning` | ❌ | `false` | Fail on warnings too |
+| `fail-on-warning` | ❌ | `false` | Shortcut for `max-recommendations: 0`: fail when the audit returns any recommendation |
+| `max-recommendations` | ❌ | `0` | Fail when the audit returns more than this many recommendations. `0` disables the check |
+| `version` | ❌ | latest | Pin the `geo-optimizer-skill` version to install (e.g. `4.30.2`) |
 
 ## Outputs
 
