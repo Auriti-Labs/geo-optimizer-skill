@@ -11,7 +11,9 @@ updates:
 
   # Aggiornamenti GitHub Actions
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/.github/actions/geo-audit"
     schedule:
       interval: "weekly"
     labels:

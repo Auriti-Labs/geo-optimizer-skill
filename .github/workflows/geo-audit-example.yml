@@ -39,15 +39,15 @@ jobs:
           echo "|--------|-------|" >> "$GITHUB_STEP_SUMMARY"
           echo "| Score | **${{ steps.geo.outputs.score }}**/100 |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Band | \`${{ steps.geo.outputs.band }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Report | \`${{ steps.geo.outputs.report }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Report | \`${{ steps.geo.outputs.report-path }}\` |" >> "$GITHUB_STEP_SUMMARY"
 
       # Upload report as artifact (skip if audit produced no report)
       - name: Upload report
-        if: steps.geo.outputs.report != ''
+        if: steps.geo.outputs.report-path != ''
         uses: actions/upload-artifact@v7
         with:
           name: geo-report
-          path: ${{ steps.geo.outputs.report }}
+          path: ${{ steps.geo.outputs.report-path }}
           retention-days: 30
 
   # SARIF example — visible in GitHub Security tab

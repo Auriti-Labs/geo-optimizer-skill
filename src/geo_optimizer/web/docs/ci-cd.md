@@ -155,7 +155,7 @@ The action runs on all GitHub-hosted runners:
 - ✅ `macos-latest`
 - ✅ `windows-latest`
 
-Python 3.9+ is supported.
+Python 3.10+ is supported.
 
 ---
 
