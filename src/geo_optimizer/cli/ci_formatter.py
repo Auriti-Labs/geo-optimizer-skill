@@ -239,7 +239,7 @@ def _robots_findings(result: AuditResult) -> list[dict]:
 def _llms_findings(result: AuditResult) -> list[dict]:
     findings = []
     if not result.llms.found:
-        findings.append({"level": "error", "message": "llms.txt not found — essential for AI search indexing"})
+        findings.append({"level": "error", "message": "llms.txt not found — optional guide for compatible tools"})
     else:
         if not result.llms.has_h1:
             findings.append({"level": "warning", "message": "llms.txt missing H1 header"})
