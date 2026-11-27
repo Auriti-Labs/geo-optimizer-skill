@@ -38,8 +38,17 @@ export function isValidLastmod(value) {
   if (typeof value !== 'string' || !W3C.test(value)) return false;
   const [y, mo, d] = value.slice(0, 10).split('-').map(Number);
   if (mo !== undefined && (mo < 1 || mo > 12)) return false;
-  if (d !== undefined && (d < 1 || d > new Date(Date.UTC(y, mo, 0)).getUTCDate())) return false;
+  if (d !== undefined && (d < 1 || d > daysInMonth(y, mo))) return false;
   const time = value.match(/T(\d{2}):(\d{2})(?::(\d{2}))?/);
   if (time && (Number(time[1]) > 23 || Number(time[2]) > 59 || Number(time[3] ?? 0) > 59)) return false;
+  // Il fuso `+hh:mm` deve essere un orario reale: `+99:99` e `+01:60` non lo sono.
+  const zone = value.match(/[+-](\d{2}):(\d{2})$/);
+  if (zone && (Number(zone[1]) > 23 || Number(zone[2]) > 59)) return false;
   return true;
+}
+
+// Date.UTC mappa gli anni 0-99 al 1900: il calendario si calcola a mano.
+function daysInMonth(year, month) {
+  if (month === 2) return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0 ? 29 : 28;
+  return [4, 6, 9, 11].includes(month) ? 30 : 31;
 }
