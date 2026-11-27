@@ -35,7 +35,8 @@ number of invalid blocks, `{"invalid": n}`, the only quantity both engines repor
 both engines do the same way.
 
 The block cases (`input.block`) still run Python through `json.loads` directly, not through the audit path. That is
-why the block case `empty block` passes for Python while the audit itself skips an empty block (D2).
+why the block case `empty block` passes for Python while the audit itself skips an empty block.
+The page-level audit of both engines skips such a block (the former D2, closed).
 
 ## Self-checks
 
@@ -58,7 +59,7 @@ case moves to both engines once the other engine is fixed.
 | ID | Cases | Divergence | Normative reference | Owner | Closing criterion |
 |----|-------|------------|---------------------|-------|-------------------|
 | D1 | `NaN is not JSON`, `Infinity is not JSON`, `-Infinity is not JSON`, `page: NaN inside a block`, `page: Infinity inside a block` (`js`) | Python's `json.loads` accepts `NaN`, `Infinity` and `-Infinity`: the block runner says valid and the audit counts no parse error. | RFC 8259 §6 (not permitted number values); JSON-LD 1.1 requires a JSON document | Python engine: `utils/jsonld.py` (`iter_jsonld_objects`) | Python rejects these constants (e.g. `parse_constant` that raises) in the audit path and the block runner; the five cases list `python` too. |
-| D2 | `page: an empty block is reported`, `page: a whitespace-only block is reported` (`js`) | Python skips an empty or whitespace-only `ld+json` script without counting it; JS reports `Empty JSON-LD block`. | RFC 8259 §2: an empty text is not a JSON document | Python engine: `utils/jsonld.py` | A decision that an empty block is a defect (JS behaviour) or deliberately ignored; then one engine is aligned and the cases list both. |
 | D3 | `page: the type value is matched case-insensitively`, `page: a type value with parameters is still JSON-LD` (`js`) | Python finds scripts with an exact `type="application/ld+json"` match, so `Application/LD+JSON` or `application/ld+json; charset=utf-8` is never read. | RFC 2045, RFC 6838 (case-insensitive names, parameters) | Python engine: `utils/jsonld.py`, `core/audit_schema.py` | Python matches the media type essence case-insensitively, ignoring parameters; both cases list `python` too. |
 | D4 | `page: an HTML comment inside a script is literal text` (`python`) | JS removes every `<!-- -->` from the page before extracting, script bodies included, so it validates a body that is not what the page carries. | HTML Living Standard (script content is raw text) | JS core: `integrations/core/src/html.js` (`withoutComments` in `jsonLdBlocks`) | JS strips comments only outside script bodies; the case lists `js` too. |
 | D5 | none (a fixture over 512 KiB is not kept in the repo) | Python skips a script body larger than `SCHEMA_JSONLD_MAX_BYTES` (512 KiB, counted in characters) without counting it; JS validates it whatever its size. Observed: a 600 KB invalid block gives Python 0, JS 1. | none: a resource limit, not a format rule | Both: `models/config.py` and the JS core | A shared size limit (or a documented "not judged" outcome) in both engines, with a generated case. |
+| D6 | `noindex inside a template is not a directive …` (`js`, in `canonical.json`) | Python's `html.parser` reads the content of a `<template>` as live markup, so a `noindex` meta inside it counts as a directive; JS ignores `<template>` content. | HTML Standard (template contents are an inert document fragment) | Python engine: the robots-meta readers (candidates `core/audit.py`, `core/audit_google_ai.py`; not yet traced) | Python ignores `<template>` content; the case lists `python` too. |
