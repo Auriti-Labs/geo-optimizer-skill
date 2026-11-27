@@ -251,7 +251,10 @@
       },
       "engines": [
         "js"
-      ]
+      ],
+      "divergence": "D6",
+      "note": "Python's html.parser reads the content of a template as live markup, so a noindex meta inside it counts as a directive.",
+      "reason": "HTML Standard: template contents are an inert document fragment."
     }
   ]
 }

@@ -160,33 +160,11 @@ runs:
     - name: Extract score and band
       id: extract
       shell: bash
+      env:
+        GEO_ACTION_PATH: ${{ github.action_path }}
       run: |
         RC=0
-        python3 - geo-score-tmp.json "$GITHUB_OUTPUT" <<'PY' || RC=$?
-        import json
-        import math
-        import re
-        import sys
-
-        try:
-            with open(sys.argv[1], encoding="utf-8") as handle:
-                data = json.load(handle)
-        except (OSError, ValueError):
-            sys.exit(2)
-        if not isinstance(data, dict) or data.get("error"):
-            sys.exit(2)
-        score = data.get("score")
-        if isinstance(score, bool) or not isinstance(score, (int, float)):
-            sys.exit(2)
-        if not math.isfinite(score) or not 0 <= score <= 100:
-            sys.exit(2)
-        band = str(data.get("band") or "unknown")
-        if not re.fullmatch(r"[A-Za-z0-9_-]{1,32}", band):
-            band = "unknown"
-        with open(sys.argv[2], "a", encoding="utf-8") as out:
-            out.write(f"score={score}\nband={band}\n")
-        print(f"::notice::GEO Score: {score}/100 ({band})")
-        PY
+        python3 -I "$GEO_ACTION_PATH/scripts/action_audit.py" extract --notice -- geo-score-tmp.json "$GITHUB_OUTPUT" || RC=$?
         if [ "$RC" -ne 0 ]; then
           echo "::error::The audit did not return a valid result (missing file, error field, or score not a number between 0 and 100)."
           exit 1
@@ -204,6 +182,7 @@ runs:
     - name: Check score threshold
       shell: bash
       env:
+        GEO_ACTION_PATH: ${{ github.action_path }}
         GEO_SCORE: ${{ steps.extract.outputs.score }}
         IN_MIN_SCORE: ${{ inputs.min-score }}
         IN_THRESHOLD: ${{ inputs.threshold }}
@@ -218,18 +197,7 @@ runs:
         # Codici di uscita distinti: 0 soglia rispettata, 1 sotto soglia, 2 score non valido.
         # Uno score non numerico, NaN o infinito non deve mai risultare "soglia rispettata".
         RC=0
-        python3 - "$GEO_SCORE" "$MIN_SCORE" <<'PY' || RC=$?
-        import math
-        import sys
-
-        try:
-            score = float(sys.argv[1])
-        except ValueError:
-            sys.exit(2)
-        if not math.isfinite(score) or not 0 <= score <= 100:
-            sys.exit(2)
-        sys.exit(1 if score < float(sys.argv[2]) else 0)
-        PY
+        python3 -I "$GEO_ACTION_PATH/scripts/action_audit.py" threshold -- "$GEO_SCORE" "$MIN_SCORE" || RC=$?
         case "$RC" in
           0) echo "✅ GEO score ${GEO_SCORE} meets minimum score ${MIN_SCORE}" ;;
           1) echo "::error::GEO score ${GEO_SCORE} is below minimum score ${MIN_SCORE}"; exit 1 ;;
