@@ -19,8 +19,11 @@ const EXPECTED_FILES = {
 };
 const ENGINES = new Set(['python', 'js']);
 
+// `robots` è una stringa, oppure una lista di `{text, repeat}` da concatenare (fixture oltre il tetto di 500 KiB).
+const robotsText = (robots) => (Array.isArray(robots) ? robots.map(({ text, repeat }) => text.repeat(repeat)).join('') : robots);
+
 const runners = {
-  'robots-ai-bots': (i) => ({ blocked: isBlocked(i.robots, i.bot, i.path) }),
+  'robots-ai-bots': (i) => ({ blocked: isBlocked(robotsText(i.robots), i.bot, i.path) }),
   canonical: (i) => ({ status: canonicalStatus(i.html, i.url).status }),
   // Con `html` il caso passa per il percorso reale (jsonLdBlocks + jsonLdStatus via checkJsonLd).
   'jsonld-valid': (i) =>

@@ -90,6 +90,27 @@ jobs:
         run: npm pack --dry-run
         working-directory: integrations/astro-geoready
 
+      - name: Check the geo-core package contents
+        run: |
+          npm pack --dry-run --json > pack.json
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const [pack] = Object.values(JSON.parse(readFileSync("pack.json", "utf8")));
+            const actual = pack.files.map((f) => f.path).sort();
+            const expected = [
+              "README.md", "package.json",
+              "src/html.js", "src/index.js", "src/robots.js", "src/rules.js", "src/sitemap.js",
+            ];
+            const missing = expected.filter((f) => !actual.includes(f));
+            const unexpected = actual.filter((f) => !expected.includes(f) && !/^src\/[a-z-]+\.js$/.test(f));
+            if (missing.length || unexpected.length) {
+              console.error("geo-core tarball mismatch", { missing, unexpected });
+              process.exit(1);
+            }
+          '
+          rm pack.json
+        working-directory: integrations/core
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
