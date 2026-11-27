@@ -65,7 +65,8 @@ Two runs of `geo audit` (engine 4.30.2, rubric v5), 26 November 2026. `example.c
 2. [G-DATES] No valid publication
    or update date found
 3. [G-BYLINE] No author found
-4. Create /llms.txt for AI indexing
+4. Publish an optional /llms.txt
+   guide for compatible tools
 5. Add WebSite and Organization
    JSON-LD schema
 ```
@@ -89,13 +90,13 @@ Two runs of `geo audit` (engine 4.30.2, rubric v5), 26 November 2026. `example.c
 </td></tr>
 </table>
 
-Across 3,200+ sites audited through [GeoReady](https://geoready.dev/state-of-geo/?utm_source=github&utm_medium=readme&utm_campaign=benchmark) (latest audit per domain, as of 24 November 2026), the median score is **65/100**, 61% publish an `llms.txt` and 79% ship JSON-LD structured data. 48% of them land in the Foundation band (36–67), 39% in Good, 9% in Critical and 4% in Excellent. Scores mix rubric v1 (engine 4.13 to 4.18) and v2 (4.19 and later), so comparing them with a v5 score is approximate. The sample is self-selected (people who chose to audit their site), so treat it as directional, not a census of the web.
+Across 3,200+ sites audited through [GeoReady](https://geoready.dev/state-of-geo/?utm_source=github&utm_medium=readme&utm_campaign=benchmark) (latest audit per domain, as of 24 November 2026), the median score is **65/100**, 61% publish an `llms.txt` and 79% ship JSON-LD structured data. 48% of them land in the Foundation band (36–67), 39% in Good, 9% in Critical and 4% in Excellent. This historical benchmark combines audits performed with rubric v1 (engine 4.13 to 4.18) and v2 (4.19 and later). Scores obtained with rubric v5 are not directly comparable. Use the historical distribution as descriptive context, not as a percentile or performance benchmark for a current audit. The sample is self-selected (people who chose to audit their site), so treat it as directional, not a census of the web.
 
 <img src="assets/benchmark.svg" alt="Chart of 3,200+ audited sites: median GEO score 65 out of 100, average 61.5, 61% publish an llms.txt file, 79% ship JSON-LD structured data. Self-selected sample, 24 November 2026." width="800"/>
 
 <img src="assets/benchmark-bands.svg" alt="Chart of how 3,214 audited sites split across the GEO score bands: Foundation 47.9%, Good 38.9%, Critical 8.9%, Excellent 4.4%. Latest audit per domain, 24 November 2026; self-selected sample." width="800"/>
 
-**Where does your site land?** [Run the free audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=benchmark-chart) and compare your score with the median, or run `geo audit` above.
+**Where does your site land?** [Run the free audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=benchmark-chart) or run `geo audit` above.
 
 ### Then it writes the fixes
 

@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Changed
+- The llms.txt recommendation and the text, CI and MCP docs no longer claim that llms.txt is essential for or improves AI indexing: it now reads "Publish an optional /llms.txt guide for compatible tools". The README benchmark states that historical v1/v2 scores are not directly comparable with a rubric v5 score. No score, rubric or recommendation count changes.
+
 ### Added
 - Release preflight: the publish workflow fails when the tag does not match the `pyproject.toml` version, and installs the built wheel (alone, with `[web]`, with `[mcp]`) and the sdist in clean environments before publishing. The CI checks the `astro-geoready` package contents with `npm pack --dry-run`, and a new test keeps the version (pyproject, `__init__` fallback, latest CHANGELOG release, `capabilities.json`) and the headline counts in README, SKILL.md and docs in line with the code.
 
