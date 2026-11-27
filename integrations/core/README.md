@@ -61,7 +61,7 @@ listed here is internal.
 | `robots-ai-bots` | `error`, one finding per blocked bot | never |
 | `sitemap-indexable` | `error` (4xx/5xx or `noindex`) | always (the `<loc>`) |
 | `canonical` | `error` when missing or conflicting (status `fail`); `warn` when relative, with `noindex`, not a valid URL, or pointing to another URL (status `warn`) | always (the page URL) |
-| `jsonld-valid` | `error`, one finding per invalid or empty block | always (the page URL) |
+| `jsonld-valid` | `error`, one finding per invalid block (an empty or whitespace-only block is skipped, as in the Python engine) | always (the page URL) |
 | `sitemap-lastmod` | `warn`: one finding for all entries without `lastmod`, one per invalid value | missing: never; invalid: the `<loc>` |
 
 ### Summary
