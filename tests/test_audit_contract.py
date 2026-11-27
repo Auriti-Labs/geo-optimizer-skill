@@ -191,6 +191,30 @@ def test_web_api_has_schema_version():
     assert data["schema_version"] == 1
 
 
+def test_cli_json_has_schema_version():
+    """`geo audit --format json` carries schema_version, pinned to the frozen fixture (no FastAPI needed)."""
+    from geo_optimizer.cli.formatters import format_audit_json
+
+    fixture = json.loads(_FIXTURE_PATH.read_text())
+
+    data = json.loads(format_audit_json(_make_minimal_audit_result()))
+
+    assert "schema_version" in data, "schema_version missing from CLI JSON"
+    assert data["schema_version"] == fixture["_contract_version"] == 1
+
+
+def test_cli_and_web_api_share_schema_version():
+    """The CLI JSON and the web API report the same contract version."""
+    from geo_optimizer.cli.formatters import format_audit_json
+
+    result = _make_minimal_audit_result()
+
+    cli_data = json.loads(format_audit_json(result))
+    web_data = _call_audit_result_to_dict(result)
+
+    assert cli_data["schema_version"] == web_data["schema_version"]
+
+
 def test_web_api_required_top_level_keys():
     """Web API must include all required top-level keys from fixture contract."""
     fixture = json.loads(_FIXTURE_PATH.read_text())

@@ -47,7 +47,7 @@ from geo_optimizer.core.telemetry import (
     geo_badge_generated,
     geo_score_improved,
 )
-from geo_optimizer.models.config import CATEGORY_MAX
+from geo_optimizer.models.config import CATEGORY_MAX, JSON_SCHEMA_VERSION
 from geo_optimizer.models.results import SitemapUrl
 
 logger = logging.getLogger(__name__)
@@ -1567,7 +1567,7 @@ def _audit_result_to_dict(result) -> dict:
     base = dataclasses.asdict(result)
 
     # JSON contract version — consumers must handle missing (default 0 = pre-v1)
-    base["schema_version"] = 1
+    base["schema_version"] = JSON_SCHEMA_VERSION
 
     # Additive field: recommendations grouped by producing category (+ "other"). Same strings as
     # base["recommendations"]; an empty dict means the category is unknown (legacy cached result).

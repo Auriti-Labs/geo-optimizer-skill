@@ -1,18 +1,18 @@
-# JSON Contract v1 — GEO Optimizer Web API
+# JSON Contract v1 — GEO Optimizer Web API and CLI
 
 ## Overview
 
-The `POST /api/audit` and `GET /api/audit` endpoints return a stable JSON contract versioned via `schema_version`.
+The `POST /api/audit` and `GET /api/audit` endpoints, and `geo audit --format json`, return a stable JSON contract versioned via `schema_version`. The web API and the CLI share one version number (`JSON_SCHEMA_VERSION` in `geo_optimizer/models/config.py`).
 
 **Current version:** `1`
 
-Consumers must handle `schema_version` being absent (pre-v1 responses) by treating it as `0`.
+Consumers must handle `schema_version` being absent (pre-v1 responses, and CLI output before the release that added it) by treating it as `0`.
 
 ## Top-level keys
 
 | Key | Type | Notes |
 |-----|------|-------|
-| `schema_version` | `int` | `1` — added in v4.11 |
+| `schema_version` | `int` | `1` — added to the web API in v4.11 and to `geo audit --format json` in the first release after 4.30.4 |
 | `url` | `string` | Audited URL |
 | `timestamp` | `string` | ISO 8601 UTC |
 | `score` | `int` | 0–100 |
@@ -57,7 +57,7 @@ The `google_ai` object contains `points`, `max_points`, and `checks`. Each check
 
 ## Fields of the CLI JSON (`geo audit --format json`)
 
-The CLI JSON is not the web API contract above. It shares most keys (`url`, `timestamp`, `score`, `band`, `score_version`, `score_max`, `score_breakdown`, `recommendations`, `recommendations_by_category`, `http_status`, `page_size`, `error`, `google_ai`, `checks`), and it carries the fields below. It has no `schema_version` today: an adapter that needs to pin a contract version should pin `score_version` and the engine version (a separate issue is open for adding `schema_version` to the CLI JSON, because it touches the frozen contract test). These fields were checked against the engine at 4.23.0.
+The CLI JSON is not the web API contract above. It shares most keys (`schema_version`, `url`, `timestamp`, `score`, `band`, `score_version`, `score_max`, `score_breakdown`, `recommendations`, `recommendations_by_category`, `http_status`, `page_size`, `error`, `google_ai`, `checks`), and it carries the fields below. `schema_version` has the same value and meaning as in the web API: an adapter pins it to detect a breaking change of the contract, and pins `score_version` separately for the rubric. It covers the single-URL output only: `geo audit --sitemap --format json` (batch) and the other commands' JSON do not carry it. `geo track --format json` embeds the audit object, so it appears under its `audit` key. These fields were checked against the engine at 4.23.0.
 
 | Key | Type | Notes |
 |-----|------|-------|
