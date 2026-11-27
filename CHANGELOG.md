@@ -7,6 +7,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Fixed
+- Both composite Actions fail when the audit is not valid, with or without a threshold: a failed CLI, a missing or unparsable report, an `error` field, or a score that is missing, boolean, not finite or outside 0-100 now stops the step instead of defaulting to a score of 0. The band is restricted to a safe token before it is written to the step output.
+- `robots.txt`: a `Sitemap`, `Host` or unknown record between two `User-agent` lines no longer splits the group, in the Python engine and in the JS core (RFC 9309). Before, the first agent got no rules and could be reported as allowed.
+- `@auriti-labs/geo-core` (private): robots rules are evaluated against the page path including its query string; `lastmod` offsets such as `+99:99` and `+01:60` are rejected; a `<meta name="robots">` written inside a `<script>`, `<style>`, `<template>`, `<textarea>` or `<title>` is no longer read as a directive.
+
 ## [4.30.4] — 2026-11-26
 
 ### Fixed
