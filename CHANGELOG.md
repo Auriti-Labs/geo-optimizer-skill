@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Added
+- Release preflight: the publish workflow fails when the tag does not match the `pyproject.toml` version, and installs the built wheel (alone, with `[web]`, with `[mcp]`) and the sdist in clean environments before publishing. The CI checks the `astro-geoready` package contents with `npm pack --dry-run`, and a new test keeps the version (pyproject, `__init__` fallback, latest CHANGELOG release, `capabilities.json`) and the headline counts in README, SKILL.md and docs in line with the code.
+
 ## [4.30.4] — 2026-11-26
 
 ### Fixed
