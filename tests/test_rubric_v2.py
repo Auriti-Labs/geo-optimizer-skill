@@ -214,7 +214,7 @@ def test_recommendation_recoverable_points_use_v2_category_max():
     )
 
     title_index = next(i for i, item in enumerate(recommendations) if "<title>" in item)
-    llms_index = next(i for i, item in enumerate(recommendations) if "Create /llms.txt" in item)
+    llms_index = next(i for i, item in enumerate(recommendations) if "optional /llms.txt" in item)
     robots_index = next(i for i, item in enumerate(recommendations) if "Create robots.txt" in item)
     assert title_index < llms_index < robots_index
     assert CATEGORY_MAX_V2["llms"] == 6

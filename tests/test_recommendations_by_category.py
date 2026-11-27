@@ -132,7 +132,7 @@ def test_worst_case_mapping_per_recommendation() -> None:
     assert _category_of(pairs, "[G-INDEX]") == "google_ai"
     assert _category_of(pairs, "Update robots.txt") == "robots"
     assert _category_of(pairs, "Crawl-delay") == "robots"
-    assert _category_of(pairs, "Create /llms.txt") == "llms"
+    assert _category_of(pairs, "optional /llms.txt") == "llms"
     assert _category_of(pairs, "<title>") == "meta"
     assert _category_of(pairs, "canonical") == "meta"
     assert _category_of(pairs, "Open Graph") == "meta"
