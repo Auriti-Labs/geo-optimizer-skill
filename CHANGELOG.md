@@ -31,6 +31,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - `@auriti-labs/geo-core` (private): `checkSite` takes `maxHtmlBytes` (default 10 MiB, like the Python `MAX_RESPONSE_SIZE`); a larger page is not read and yields an `input-limit` error finding instead of being truncated. The README now states that an invalid page URL is evaluated against `/` for robots.txt.
 
 ### Added
+- `geo audit --format json` now emits `schema_version`, with the same value and meaning as the web API (`1`, one shared constant `JSON_SCHEMA_VERSION` in `config.py`); the contract test and `docs/json-contract.md` cover it (#709).
 - The CI checks the `@auriti-labs/geo-core` (private) package contents with `npm pack --dry-run`, failing on a missing file or on any file outside `src/*.js`.
 - Release preflight: the publish workflow fails when the tag does not match the `pyproject.toml` version, and installs the built wheel (alone, with `[web]`, with `[mcp]`) and the sdist in clean environments before publishing. The CI checks the `astro-geoready` package contents with `npm pack --dry-run`, and a new test keeps the version (pyproject, `__init__` fallback, latest CHANGELOG release, `capabilities.json`) and the headline counts in README, SKILL.md and docs in line with the code.
 

@@ -68,6 +68,13 @@ MAX_SUB_SITEMAPS: int = 10
 # Total URL limit extracted from all sitemaps — fix #124 (sitemap bomb)
 MAX_TOTAL_URLS: int = 10_000
 
+# ─── JSON contract ───────────────────────────────────────────────────────────
+
+# Version of the audit JSON contract (docs/json-contract.md). One value for both the web API
+# (`POST|GET /api/audit`) and `geo audit --format json`: bump it only for a breaking change,
+# additive keys keep the current version.
+JSON_SCHEMA_VERSION: int = 1
+
 # ─── Local history / tracking ────────────────────────────────────────────────
 
 # Performance budget: warn if a single-page audit exceeds this threshold (#290)

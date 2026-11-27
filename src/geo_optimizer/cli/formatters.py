@@ -39,7 +39,7 @@ from geo_optimizer.cli.scoring_helpers import (
     signals_score as _signals_score,
 )
 from geo_optimizer.core.scoring import robots_unavailable
-from geo_optimizer.models.config import SCORE_BANDS
+from geo_optimizer.models.config import JSON_SCHEMA_VERSION, SCORE_BANDS
 from geo_optimizer.models.results import (
     AnswerSnapshot,
     AnswerSnapshotArchive,
@@ -55,6 +55,8 @@ from geo_optimizer.models.results import (
 def format_audit_json(result: AuditResult) -> str:
     """Format AuditResult as JSON string."""
     data: dict[str, Any] = {
+        # Same contract version as the web API (docs/json-contract.md); consumers pin this key
+        "schema_version": JSON_SCHEMA_VERSION,
         "url": result.url,
         "timestamp": result.timestamp,
         # Same instant as "timestamp" (set when this run's result was built),
