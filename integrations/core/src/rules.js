@@ -1,6 +1,7 @@
 // Le cinque regole del verificatore di build. Ognuna ha evidenza documentata dal vendor o da Google;
 // niente punteggi, niente giudizi: solo difetti verificabili su file e pagine.
 import { canonicals, jsonLdBlocks, robotsDirectives } from './html.js';
+import { DEFAULT_MAX_HTML_BYTES, exceedsUtf8Bytes } from './limits.js';
 import { isBlocked } from './robots.js';
 import { isValidLastmod, parseSitemap } from './sitemap.js';
 
@@ -107,9 +108,15 @@ export function checkSitemapLastmod(entries) {
 
 /**
  * Verifica un sito già costruito.
- * @param {{robotsTxt?: string|null, sitemapXml?: string|null, pages: {url: string, status?: number, html?: string}[]}} input
+ * `maxHtmlBytes` (default 10 MiB, come MAX_RESPONSE_SIZE del motore Python) è il tetto dell'HTML di una singola pagina,
+ * in byte UTF-8: una pagina oltre il tetto non viene letta e produce un finding `input-limit` (error), così non
+ * passa per pulita né viene giudicata su un troncamento. `Infinity` toglie il tetto.
+ * @param {{robotsTxt?: string|null, sitemapXml?: string|null, pages: {url: string, status?: number, html?: string}[], maxHtmlBytes?: number}} input
  */
-export function checkSite({ robotsTxt = null, sitemapXml = null, pages = [] }) {
+export function checkSite({ robotsTxt = null, sitemapXml = null, pages = [], maxHtmlBytes = DEFAULT_MAX_HTML_BYTES }) {
+  if (typeof maxHtmlBytes !== 'number' || !(maxHtmlBytes > 0)) {
+    throw new RangeError('maxHtmlBytes must be a positive number of bytes (Infinity for no limit)');
+  }
   const sitemap = sitemapXml == null ? { index: false, entries: [] } : parseSitemap(sitemapXml);
   const paths = pages.map((p) => {
     try {
@@ -121,10 +128,14 @@ export function checkSite({ robotsTxt = null, sitemapXml = null, pages = [] }) {
     }
   });
   // Una pagina che risponde 4xx/5xx non ha un canonical né un JSON-LD da giudicare: la segnala la regola sitemap.
-  const live = pages.filter((p) => !(p.status >= 400));
+  const reachable = pages.filter((p) => !(p.status >= 400));
+  const oversized = new Set(reachable.filter((p) => exceedsUtf8Bytes(p.html ?? '', maxHtmlBytes)));
+  const live = reachable.filter((p) => !oversized.has(p));
   const findings = [
     ...checkRobotsAiBots(robotsTxt, paths.length ? paths : ['/']),
-    ...checkSitemapIndexable(sitemap.entries, pages),
+    // Una pagina troppo grande resta nella sitemap (status invariato) ma il suo HTML non viene letto.
+    ...checkSitemapIndexable(sitemap.entries, pages.map((p) => (oversized.has(p) ? { ...p, html: '' } : p))),
+    ...[...oversized].map((p) => finding('input-limit', 'error', `Page HTML is larger than ${maxHtmlBytes} bytes and was not checked`, p.url)),
     ...live.flatMap((p) => [...checkCanonical(p), ...checkJsonLd(p)]),
     // Un sitemapindex non si segue: le sue voci sono altre sitemap, non pagine, quindi niente giudizio sul lastmod.
     ...(sitemapXml == null || sitemap.index ? [] : checkSitemapLastmod(sitemap.entries)),

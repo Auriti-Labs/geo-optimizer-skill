@@ -1,13 +1,21 @@
 // robots.txt secondo RFC 9309: gruppi per User-agent, longest match, Allow vince a parità.
 // Specchio di geo_optimizer.utils.robots_parser (con wildcards=True). Zero dipendenze.
 
-const MAX_BYTES = 500 * 1024;
+import { MAX_ROBOTS_BYTES } from './limits.js';
+
+// Come Python: il tetto è in byte UTF-8, si tronca la sequenza di byte e si decodifica con sostituzione, così un
+// carattere multibyte tagliato a metà diventa U+FFFD invece di restare spezzato (o di essere scartato).
+function truncateToBytes(text, maxBytes) {
+  if (text.length * 3 <= maxBytes) return text; // anche tutto 3 byte per unità starebbe nel tetto
+  const bytes = new TextEncoder().encode(text);
+  return bytes.length > maxBytes ? new TextDecoder('utf-8', { ignoreBOM: true }).decode(bytes.subarray(0, maxBytes)) : text;
+}
 
 /** @returns {Map<string, {allow: string[], disallow: string[]}>} regole per agente (minuscolo). */
 export function parseRobots(content) {
   let text = String(content ?? '');
-  if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
-  if (text.length > MAX_BYTES) text = text.slice(0, MAX_BYTES);
+  text = text.replace(/^\uFEFF+/, ''); // come Python lstrip("\ufeff"): via tutti i BOM iniziali, prima del tetto in byte
+  text = truncateToBytes(text, MAX_ROBOTS_BYTES);
 
   const groups = new Map();
   let agents = [];
