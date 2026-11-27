@@ -15,12 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: Auriti-Labs/geo-optimizer-skill@v4.30.1
+      - uses: Auriti-Labs/geo-optimizer-skill@v4.30.4
         with:
           url: https://yoursite.com
 ```
 
 That's it. The action installs Python, installs `geo-optimizer-skill`, runs the audit, and reports the score.
+
+> The repository also keeps a second composite action at `.github/actions/geo-audit`, used by earlier workflows (`uses: Auriti-Labs/geo-optimizer-skill/.github/actions/geo-audit@<tag>`). New workflows should use the root action shown above, which is the one published in the Marketplace.
 
 ## Inputs
 
@@ -31,7 +33,9 @@ That's it. The action installs Python, installs `geo-optimizer-skill`, runs the 
 | `threshold` | ❌ | `0` | Deprecated alias for `min-score`. |
 | `format` | ❌ | `json` | Output format: `json`, `sarif`, `junit`, `text` |
 | `output-file` | ❌ | `geo-report` | Base name for the output file (no extension) |
-| `fail-on-warning` | ❌ | `false` | Fail on warnings too |
+| `fail-on-warning` | ❌ | `false` | Shortcut for `max-recommendations: 0`: fail when the audit returns any recommendation |
+| `max-recommendations` | ❌ | `0` | Fail when the audit returns more than this many recommendations. `0` disables the check |
+| `version` | ❌ | latest | Pin the `geo-optimizer-skill` version to install (e.g. `4.30.2`) |
 
 ## Outputs
 
@@ -46,13 +50,15 @@ That's it. The action installs Python, installs `geo-optimizer-skill`, runs the 
 ### Enforce a minimum score
 
 ```yaml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.30.1
+- uses: Auriti-Labs/geo-optimizer-skill@v4.30.4
   with:
     url: https://yoursite.com
     min-score: 70
 ```
 
 The step fails if the score drops below 70.
+
+Independently of `min-score`, the step also fails when the audit itself fails or returns no valid score (missing report, an `error` field, or a score that is not a number between 0 and 100). A broken audit is never reported as a pass.
 
 ### Detect regressions against the previous snapshot
 
@@ -69,7 +75,7 @@ The step fails if the score drops below 70.
 ### SARIF upload (GitHub Security tab)
 
 ```yaml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.30.1
+- uses: Auriti-Labs/geo-optimizer-skill@v4.30.4
   with:
     url: https://yoursite.com
     format: sarif
@@ -82,7 +88,7 @@ When `format: sarif`, results automatically appear in the **Security** tab of yo
 ### Post results as a PR comment
 
 ```yaml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.30.1
+- uses: Auriti-Labs/geo-optimizer-skill@v4.30.4
   id: geo
   with:
     url: https://yoursite.com
@@ -105,7 +111,7 @@ When `format: sarif`, results automatically appear in the **Security** tab of yo
 ### JUnit output (for CI dashboards)
 
 ```yaml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.30.1
+- uses: Auriti-Labs/geo-optimizer-skill@v4.30.4
   with:
     url: https://yoursite.com
     format: junit
@@ -130,7 +136,7 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: Auriti-Labs/geo-optimizer-skill@v4.30.1
+      - uses: Auriti-Labs/geo-optimizer-skill@v4.30.4
         id: geo
         with:
           url: https://yoursite.com

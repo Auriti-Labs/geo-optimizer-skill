@@ -9,6 +9,55 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ### Fixed
 - `GET /ai/faq.json` in `geo-web` said the score is calculated "across 9 rubric v2 categories" and that the toolkit scores "based on 47 research-backed methods". It now names rubric v5 as the default (v2 has the same maxima) and says the toolkit audits how ready a site is for AI answer engines; only 9 of the 47 content checks come from a controlled study. The docs index (and its copy bundled with `geo-web`) says nine categories, rubric v5 by default.
+- Both composite Actions fail when the audit is not valid, with or without a threshold: a failed CLI, a missing or unparsable report, an `error` field, or a score that is missing, boolean, not finite or outside 0-100 now stops the step instead of defaulting to a score of 0. The band is restricted to a safe token before it is written to the step output.
+- `robots.txt`: a `Sitemap`, `Host` or unknown record between two `User-agent` lines no longer splits the group, in the Python engine and in the JS core (RFC 9309). Before, the first agent got no rules and could be reported as allowed.
+- `@auriti-labs/geo-core` (private): robots rules are evaluated against the page path including its query string; `lastmod` offsets such as `+99:99` and `+01:60` are rejected; a `<meta name="robots">` written inside a `<script>`, `<style>`, `<template>`, `<textarea>` or `<title>` is no longer read as a directive.
+
+### Changed
+- `conformance/`: both runners now fail on a missing rule file, a file with no cases, a case with a missing, empty or unknown `engines` value, and fewer cases run than declared. New JSON-LD page cases go through each engine's real extraction path, and five known Python/JS divergences (NaN/Infinity, empty blocks, `type` matching, comments in scripts, oversized blocks) are recorded in `conformance/README.md`. `integrations/core/README.md` documents the public contract of the private JS core and why a canonical pointing elsewhere stays a `warn`.
+
+- `geo citations` adds `source_observation_status` (`observed` | `not_supported` | `error`) to the JSON result and the web API. Only Perplexity Sonar returns the sources it used, so for every other LLM provider the status is `not_supported` too. Compatibility: on the SERP path and for providers that return no sources (`not_supported`), and when every LLM call failed (`error`), `answers_without_sources` and `no_citation_answer_rate` are now `null` instead of `0`/`0.0`, which read as "every answer had sources". The key names are unchanged and the measured values on the LLM path do not move; readers that do arithmetic on the two keys must handle `null`.
+
+- The llms.txt recommendation and the text, CI and MCP docs no longer claim that llms.txt is essential for or improves AI indexing: it now reads "Publish an optional /llms.txt guide for compatible tools". The README benchmark states that historical v1/v2 scores are not directly comparable with a rubric v5 score. No score, rubric or recommendation count changes.
+
+### Added
+- Release preflight: the publish workflow fails when the tag does not match the `pyproject.toml` version, and installs the built wheel (alone, with `[web]`, with `[mcp]`) and the sdist in clean environments before publishing. The CI checks the `astro-geoready` package contents with `npm pack --dry-run`, and a new test keeps the version (pyproject, `__init__` fallback, latest CHANGELOG release, `capabilities.json`) and the headline counts in README, SKILL.md and docs in line with the code.
+
+## [4.30.4] — 2026-11-26
+
+### Fixed
+- The GitHub Action no longer reports a threshold as met when the score is not a valid number. `min-score` and `threshold` must be integers between 0 and 100 (999 was accepted). The check uses distinct exit codes: 0 met, 1 below, 2 score not finite or not numeric (NaN, text, out of range), and the step fails in both failing cases.
+- The legacy composite action (`.github/actions/geo-audit`) had the same flaw with a decimal score (69.5 against 70 passed) and now applies the same check. It also removes a report left over from an earlier run before auditing, so a failed audit cannot be masked by a stale file.
+
+### Changed
+- The Action describes its score as an AI search readiness score, not a citability score.
+- The README FAQ and the benchmark paragraph use the 24 November median (65/100) and say that scores of different rubric versions are only roughly comparable.
+- Node.js 22 is the minimum for the npm packages in `integrations/` (Node 20 reached end of life on 30 April 2026), and the CI runs them on Node 22 and 24. `astro-geoready` goes to 0.2.0 for that reason.
+
+### Added
+- `conformance/` and `integrations/core`: a dependency-free JS core with five build checks (robots.txt and the AI search bots, sitemap pages that are noindex or answer 4xx/5xx, canonical, JSON-LD syntax, sitemap `lastmod`), tested against the same cases as the Python engine. The package is private and not published.
+
+## [4.30.3] — 2026-11-26
+
+### Security
+- The composite GitHub Action no longer interpolates its inputs into shell scripts. `url`, `format`, `output-file`, `min-score` and `threshold` now reach the scripts as environment variables and are validated first (format whitelist, safe output-file name, integer thresholds). Before this, a crafted input value could run commands in the caller's runner.
+
+### Fixed
+- The Action's `fail-on-warning` read a temporary file that an earlier step had already deleted, so it always counted zero and never failed. It now fails when the audit returns any recommendation.
+- The score threshold compares numbers, so a decimal score no longer breaks the check. The temporary report file is removed in a final step that runs even when an earlier step fails.
+
+### Added
+- Action input `max-recommendations`: fail only when the audit returns more recommendations than the limit. `fail-on-warning` remains as a shortcut for a limit of zero.
+- Action input `version`: pin the `geo-optimizer-skill` version the Action installs.
+
+### Changed
+- The README example audit shows engine 4.30.2 on rubric v5 (example.com 36/100, geoready.dev 94/100) instead of a September run.
+- The CI/CD docs say which of the two composite actions is the one published in the Marketplace.
+
+## [4.30.2] — 2026-11-26
+
+### Fixed
+- `fetch_url()` reports timeout and connection failures in English ("Timeout (10s) after exponential retry", "Connection failed after exponential retry") instead of Italian. The messages reach API clients and reports as they are, and the product surfaces are English-only. The MCP error classifier matches the substrings "timeout" and "connection", so its behaviour is unchanged.
 
 ## [4.30.1] — 2026-11-26
 

@@ -62,7 +62,7 @@ class TestErrorStatusIsReportedAsSuch:
         """The fix must not swallow the case the branch was actually for."""
         with patch(
             "geo_optimizer.core.audit.fetch_url",
-            return_value=(None, "Connection failed dopo retry esponenziale: timeout"),
+            return_value=(None, "Connection failed after exponential retry: timeout"),
         ):
             result = run_full_audit("https://unreachable.example")
 

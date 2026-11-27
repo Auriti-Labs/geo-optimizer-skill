@@ -130,7 +130,7 @@ Add this to every page that is a **tool/calculator/app**.
 
 ## 3. FAQPage — Questions and Answers
 
-**GEO impact: high** — AI engines use these schemas to answer questions.
+**What it does:** describes questions and answers in a machine-readable form. Google states that no special schema markup is needed to appear in AI Overviews or AI Mode, and no study shows that this markup raises AI citations; treat it as a clear description of the page, not as a visibility lever.
 
 ```html
 <script type="application/ld+json">

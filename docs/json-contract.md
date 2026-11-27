@@ -159,3 +159,15 @@ Added in v1 for platform consumers (analytics dashboard, gate service):
 - **analytics_dashboard** — reads `checks.robots_citation_ok`, `checks.llms_found`, `checks.llms_full` for percentage metrics
 - **gate_service** — reads `checks` sub-keys via `CATEGORY_KEY_MAP` to filter locked categories
 - **geoready-platform** — reads all top-level keys via `json.loads(result_json).get(key, default)`
+
+## `geo citations` JSON (`source_observation_status`)
+
+`source_observation_status` says whether the check could observe the sources of the answers:
+
+| Value | Meaning | `answers_without_sources` / `no_citation_answer_rate` |
+|-------|---------|-------------------------------------------------------|
+| `observed` | Perplexity Sonar returned at least one valid answer | numbers; the rate is over the valid answers (failed calls are not "answers without sources") |
+| `not_supported` | the path or provider does not expose sources (Google SERP, or an LLM other than Perplexity), or the check did not run | `null` |
+| `error` | an LLM provider was queried and every call failed | `null` |
+
+Readers must treat the two fields as nullable. `source_observation_status` is additive; the other keys are unchanged.

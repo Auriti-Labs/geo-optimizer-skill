@@ -1,0 +1,257 @@
+{
+  "rule": "canonical",
+  "description": "Status of the canonical link for a page: pass | warn | fail. Same outcomes as the G-CANONICAL check of the Python engine.",
+  "cases": [
+    {
+      "name": "no canonical",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><title>x</title></head><body></body></html>"
+      },
+      "expect": {
+        "status": "fail"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "absolute canonical matching the URL",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><link rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "trailing slash is not a difference",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><link rel=\"canonical\" href=\"https://example.com/blog/post/\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "host case is not a difference",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><link rel=\"canonical\" href=\"https://EXAMPLE.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "canonical points to another page",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><link rel=\"canonical\" href=\"https://example.com/other\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "warn"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "relative canonical",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><link rel=\"canonical\" href=\"/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "warn"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "two different canonicals",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><link rel=\"canonical\" href=\"https://example.com/a\"><link rel=\"canonical\" href=\"https://example.com/b\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "fail"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "the same canonical twice is one canonical",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><link rel=\"canonical\" href=\"https://example.com/blog/post\"><link rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "canonical in the body does not count",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head></head><body><link rel=\"canonical\" href=\"https://example.com/blog/post\"></body></html>"
+      },
+      "expect": {
+        "status": "fail"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "canonical together with noindex",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><meta name=\"robots\" content=\"noindex, follow\"><link rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "warn"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "single-quoted attributes",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><link href='https://example.com/blog/post' rel='canonical'></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "canonical inside an HTML comment does not count",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><!-- <link rel=\"canonical\" href=\"https://example.com/blog/post\"> --></head><body></body></html>"
+      },
+      "expect": {
+        "status": "fail"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "</head> inside a script string does not end the head",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><script>var s=\"</head>\";</script><link rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "> inside an attribute value does not cut the tag",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><link data-x=\"a>b\" rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "canonical that is not a valid URL",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><link rel=\"canonical\" href=\"https://\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "warn"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "noindex written inside a script string is not a directive",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><script>const x = '<meta name=\"robots\" content=\"noindex\">';</script><link rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "noindex written inside a style comment is not a directive",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><style>/* <meta name=\"robots\" content=\"noindex\"> */</style><link rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "noindex inside a template is not a directive (Python html.parser reads template content as live markup, a known divergence)",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><template><meta name=\"robots\" content=\"noindex\"></template><link rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "js"
+      ]
+    }
+  ]
+}

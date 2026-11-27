@@ -242,7 +242,7 @@ def build_categorized_recommendations(
         )
     if not llms.found:
         _h_llms.append(
-            f"Create /llms.txt for AI indexing: geo llms --base-url {base_url}. "
+            f"Publish an optional /llms.txt guide for compatible tools: geo llms --base-url {base_url}. "
             "Note: llms.txt is an organizational signal, not a proven ranking factor. "
             "It helps structure content for AI systems."
         )
@@ -259,7 +259,7 @@ def build_categorized_recommendations(
         if llms.links_count < 3:
             _m_llms.append(
                 f"llms.txt has only {llms.links_count} links. "
-                "Add more markdown links to key pages for better AI indexing coverage."
+                "Add more markdown links to your key pages so the guide covers them."
             )
         if hasattr(llms, "validation_warnings"):
             for warning in llms.validation_warnings:

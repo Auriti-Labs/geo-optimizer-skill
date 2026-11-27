@@ -1,0 +1,27 @@
+{
+  "name": "@auriti-labs/geo-core",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Dependency-free build checks for AI search visibility: robots.txt, sitemap, canonical and JSON-LD. Shares conformance fixtures with the Python engine.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "license": "MIT",
+  "author": "Auriti Labs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Auriti-Labs/geo-optimizer-skill.git",
+    "directory": "integrations/core"
+  }
+}

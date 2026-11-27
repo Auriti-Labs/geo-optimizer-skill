@@ -1,15 +1,18 @@
 # GitHub Action Composita per GEO Optimizer Skill
 # Esegue un audit GEO completo su qualsiasi URL direttamente nella CI/CD pipeline.
 #
-# Utilizzo:
-#   - uses: Auriti-Labs/geo-optimizer-skill@v4.14.0
+# Utilizzo (sostituire <tag> con l'ultima release, es. v4.30.2):
+#   - uses: Auriti-Labs/geo-optimizer-skill@<tag>
 #     with:
 #       url: https://mysite.com
 #       min-score: 70
 #       format: sarif
+#
+# Sicurezza: gli input NON vengono mai interpolati nello script shell. Passano
+# da variabili d'ambiente e vengono validati prima dell'uso.
 
 name: "GEO Optimizer Audit"
-description: "Run a full GEO audit on any URL and get a citability score (0-100) for AI search engines."
+description: "Audit a website's technical readiness for AI search and generate actionable recommendations."
 author: "Auriti Labs"
 
 branding:
@@ -37,13 +40,21 @@ inputs:
     required: false
     default: "geo-report"
   fail-on-warning:
-    description: "Fail the step on warnings too"
+    description: "Shortcut for max-recommendations: 0. Fail the step when the audit returns any recommendation."
     required: false
     default: "false"
+  max-recommendations:
+    description: "Fail the step when the audit returns more than this many recommendations. 0 disables the check (unless fail-on-warning is true)."
+    required: false
+    default: "0"
+  version:
+    description: "geo-optimizer-skill version to install (e.g. 4.30.2). Default: latest."
+    required: false
+    default: ""
 
 outputs:
   score:
-    description: "GEO citability score (0-100)"
+    description: "AI search readiness score (0-100)"
     value: ${{ steps.extract.outputs.score }}
   band:
     description: "Score band: critical, foundation, good, or excellent"
@@ -55,62 +66,133 @@ outputs:
 runs:
   using: "composite"
   steps:
-    # 1. Setup Python
+    # 1. Valida gli input prima di usarli
+    - name: Validate inputs
+      shell: bash
+      env:
+        IN_FORMAT: ${{ inputs.format }}
+        IN_OUTPUT_FILE: ${{ inputs.output-file }}
+        IN_MIN_SCORE: ${{ inputs.min-score }}
+        IN_THRESHOLD: ${{ inputs.threshold }}
+        IN_MAX_RECS: ${{ inputs.max-recommendations }}
+        IN_VERSION: ${{ inputs.version }}
+      run: |
+        case "$IN_FORMAT" in
+          json|sarif|junit|text) ;;
+          *) echo "::error::Invalid format '$IN_FORMAT'. Use json, sarif, junit or text."; exit 1 ;;
+        esac
+        if ! printf '%s' "$IN_OUTPUT_FILE" | grep -qE '^[A-Za-z0-9._-]+$'; then
+          echo "::error::Invalid output-file '$IN_OUTPUT_FILE'. Use letters, digits, dot, dash and underscore only."
+          exit 1
+        fi
+        for v in "$IN_MIN_SCORE" "$IN_THRESHOLD"; do
+          if ! printf '%s' "$v" | grep -qE '^[0-9]{1,3}$' || [ "$((10#$v))" -gt 100 ]; then
+            echo "::error::min-score and threshold must be integers between 0 and 100 (got '$v')."
+            exit 1
+          fi
+        done
+        if ! printf '%s' "$IN_MAX_RECS" | grep -qE '^[0-9]{1,4}$'; then
+          echo "::error::max-recommendations must be a non-negative integer (got '$IN_MAX_RECS')."
+          exit 1
+        fi
+        if [ -n "$IN_VERSION" ] && ! printf '%s' "$IN_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+[a-z0-9.]*$'; then
+          echo "::error::Invalid version '$IN_VERSION'. Expected X.Y.Z[suffix]."
+          exit 1
+        fi
+
+    # 2. Setup Python
     - name: Setup Python
       uses: actions/setup-python@v7
       with:
         python-version: "3.12"
 
-    # 2. Installa geo-optimizer-skill
+    # 3. Installa geo-optimizer-skill (versione fissata se richiesta)
     - name: Install geo-optimizer-skill
       shell: bash
-      run: pip install geo-optimizer-skill
+      env:
+        IN_VERSION: ${{ inputs.version }}
+      run: |
+        if [ -n "$IN_VERSION" ]; then
+          pip install "geo-optimizer-skill==$IN_VERSION"
+        else
+          pip install geo-optimizer-skill
+        fi
 
-    # 3. Determina estensione del file in base al formato
+    # 4. Determina estensione del file in base al formato
     - name: Determine file extension
       id: ext
       shell: bash
+      env:
+        IN_FORMAT: ${{ inputs.format }}
       run: |
-        # Mappa formato → estensione
-        case "${{ inputs.format }}" in
+        case "$IN_FORMAT" in
           sarif) echo "ext=sarif" >> "$GITHUB_OUTPUT" ;;
           junit) echo "ext=xml" >> "$GITHUB_OUTPUT" ;;
           text)  echo "ext=txt" >> "$GITHUB_OUTPUT" ;;
           *)     echo "ext=json" >> "$GITHUB_OUTPUT" ;;
         esac
 
-    # 4. Esegui l'audit GEO
+    # 5. Esegui l'audit GEO
     - name: Run GEO audit
       id: audit
       shell: bash
+      env:
+        IN_URL: ${{ inputs.url }}
+        IN_FORMAT: ${{ inputs.format }}
+        IN_OUTPUT_FILE: ${{ inputs.output-file }}
+        IN_EXT: ${{ steps.ext.outputs.ext }}
       run: |
-        REPORT_PATH="${{ inputs.output-file }}.${{ steps.ext.outputs.ext }}"
+        REPORT_PATH="${IN_OUTPUT_FILE}.${IN_EXT}"
         echo "report_path=${REPORT_PATH}" >> "$GITHUB_OUTPUT"
 
-        # Fix #38: genera sempre JSON prima (singolo audit), poi converti se serve
-        geo audit --url "${{ inputs.url }}" --format json --output geo-score-tmp.json
+        # Genera sempre JSON prima (singolo audit), poi converti se serve
+        geo audit --url "$IN_URL" --format json --output geo-score-tmp.json
 
         # Se il formato richiesto non e JSON, genera anche il report nel formato voluto
-        if [ "${{ inputs.format }}" != "json" ]; then
-          geo audit --url "${{ inputs.url }}" --format "${{ inputs.format }}" --output "${REPORT_PATH}" --cache
+        if [ "$IN_FORMAT" != "json" ]; then
+          geo audit --url "$IN_URL" --format "$IN_FORMAT" --output "$REPORT_PATH" --cache
         else
-          cp geo-score-tmp.json "${REPORT_PATH}"
+          cp geo-score-tmp.json "$REPORT_PATH"
         fi
 
-    # 5. Estrai score e band dal JSON
+    # 6. Estrai score e band dal JSON (il file temporaneo resta fino al passo finale).
+    # Un audit non valido fallisce sempre, anche con soglia 0: mai uno score di ripiego.
     - name: Extract score and band
       id: extract
       shell: bash
       run: |
-        SCORE=$(python3 -c "import json; d=json.load(open('geo-score-tmp.json')); print(d.get('score', 0))")
-        BAND=$(python3 -c "import json; d=json.load(open('geo-score-tmp.json')); print(d.get('band', 'critical'))")
-        echo "score=${SCORE}" >> "$GITHUB_OUTPUT"
-        echo "band=${BAND}" >> "$GITHUB_OUTPUT"
-        echo "::notice::GEO Score: ${SCORE}/100 (${BAND})"
-        # Pulizia file temporaneo
-        rm -f geo-score-tmp.json
+        RC=0
+        python3 - geo-score-tmp.json "$GITHUB_OUTPUT" <<'PY' || RC=$?
+        import json
+        import math
+        import re
+        import sys
 
-    # 6. Upload SARIF (solo se formato sarif)
+        try:
+            with open(sys.argv[1], encoding="utf-8") as handle:
+                data = json.load(handle)
+        except (OSError, ValueError):
+            sys.exit(2)
+        if not isinstance(data, dict) or data.get("error"):
+            sys.exit(2)
+        score = data.get("score")
+        if isinstance(score, bool) or not isinstance(score, (int, float)):
+            sys.exit(2)
+        if not math.isfinite(score) or not 0 <= score <= 100:
+            sys.exit(2)
+        band = str(data.get("band") or "unknown")
+        if not re.fullmatch(r"[A-Za-z0-9_-]{1,32}", band):
+            band = "unknown"
+        with open(sys.argv[2], "a", encoding="utf-8") as out:
+            out.write(f"score={score}\nband={band}\n")
+        print(f"::notice::GEO Score: {score}/100 ({band})")
+        PY
+        if [ "$RC" -ne 0 ]; then
+          echo "::error::The audit did not return a valid result (missing file, error field, or score not a number between 0 and 100)."
+          exit 1
+        fi
+
+    # 7. Upload SARIF (solo se formato sarif)
     - name: Upload SARIF results
       if: inputs.format == 'sarif'
       uses: github/codeql-action/upload-sarif@v4
@@ -118,38 +200,60 @@ runs:
         sarif_file: ${{ steps.audit.outputs.report_path }}
       continue-on-error: true
 
-    # 7. Controlla soglia score
+    # 8. Controlla soglia score (confronto numerico anche con punteggi decimali)
     - name: Check score threshold
       shell: bash
+      env:
+        GEO_SCORE: ${{ steps.extract.outputs.score }}
+        IN_MIN_SCORE: ${{ inputs.min-score }}
+        IN_THRESHOLD: ${{ inputs.threshold }}
       run: |
-        SCORE=${{ steps.extract.outputs.score }}
-        MIN_SCORE="${{ inputs.min-score }}"
-        if [ "${MIN_SCORE}" = "0" ] && [ "${{ inputs.threshold }}" != "0" ]; then
-          MIN_SCORE="${{ inputs.threshold }}"
+        MIN_SCORE="$IN_MIN_SCORE"
+        if [ "$MIN_SCORE" = "0" ] && [ "$IN_THRESHOLD" != "0" ]; then
+          MIN_SCORE="$IN_THRESHOLD"
         fi
-        if [ "${MIN_SCORE}" = "0" ]; then
+        if [ "$MIN_SCORE" = "0" ]; then
           exit 0
         fi
-        if [ "${SCORE}" -lt "${MIN_SCORE}" ]; then
-          echo "::error::GEO score ${SCORE} is below minimum score ${MIN_SCORE}"
-          exit 1
-        fi
-        echo "✅ GEO score ${SCORE} meets minimum score ${MIN_SCORE}"
+        # Codici di uscita distinti: 0 soglia rispettata, 1 sotto soglia, 2 score non valido.
+        # Uno score non numerico, NaN o infinito non deve mai risultare "soglia rispettata".
+        RC=0
+        python3 - "$GEO_SCORE" "$MIN_SCORE" <<'PY' || RC=$?
+        import math
+        import sys
 
-    # 8. Controlla warning (se abilitato)
-    - name: Check warnings
-      if: inputs.fail-on-warning == 'true'
+        try:
+            score = float(sys.argv[1])
+        except ValueError:
+            sys.exit(2)
+        if not math.isfinite(score) or not 0 <= score <= 100:
+            sys.exit(2)
+        sys.exit(1 if score < float(sys.argv[2]) else 0)
+        PY
+        case "$RC" in
+          0) echo "✅ GEO score ${GEO_SCORE} meets minimum score ${MIN_SCORE}" ;;
+          1) echo "::error::GEO score ${GEO_SCORE} is below minimum score ${MIN_SCORE}"; exit 1 ;;
+          *) echo "::error::GEO score '${GEO_SCORE}' is not a number between 0 and 100: cannot check the threshold"; exit 1 ;;
+        esac
+
+    # 9. Fallisce se le raccomandazioni superano il limite (se abilitato)
+    - name: Check recommendations
+      if: inputs.fail-on-warning == 'true' || inputs.max-recommendations != '0'
       shell: bash
+      env:
+        IN_MAX_RECS: ${{ inputs.max-recommendations }}
       run: |
-        # Conta i warning dal report JSON
-        WARNINGS=$(python3 -c "
-        import json
-        d = json.load(open('${{ steps.audit.outputs.report_path }}' if '${{ inputs.format }}' == 'json' else 'geo-score-tmp.json'))
-        checks = d.get('checks', [])
-        warns = [c for c in checks if c.get('severity') == 'warning' and c.get('passed') is False]
-        print(len(warns))
-        " 2>/dev/null || echo "0")
-        if [ "${WARNINGS}" -gt 0 ]; then
-          echo "::error::Found ${WARNINGS} warnings (fail-on-warning is enabled)"
+        COUNT=$(python3 -c "import json; d=json.load(open('geo-score-tmp.json')); print(len(d.get('recommendations', [])))")
+        # Con fail-on-warning senza limite esplicito il limite e 0 (nessuna raccomandazione)
+        LIMIT="$IN_MAX_RECS"
+        if [ "$COUNT" -gt "$LIMIT" ]; then
+          echo "::error::Found ${COUNT} recommendations, more than the allowed ${LIMIT}"
           exit 1
         fi
+        echo "✅ ${COUNT} recommendations (allowed: ${LIMIT})"
+
+    # 10. Pulizia del file temporaneo, anche se un passo precedente e fallito
+    - name: Remove temporary file
+      if: always()
+      shell: bash
+      run: rm -f geo-score-tmp.json

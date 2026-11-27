@@ -906,10 +906,16 @@ class CitationCheckResult:
     domain_citation_rate: float = 0.0  # 0-1, share of answers citing the domain as a verified source
     url_mention_rate: float = 0.0  # 0-1, share of answers writing a URL of the domain in the text (LLM path)
     organic_presence_rate: float = 0.0  # 0-1, share of queries with the domain in organic results (SERP path)
-    # LLM path: answers that returned no source at all. A rate over all answers, so a reader can tell
-    # "not cited" from "the engine cited nobody" (SERP path: not measured, stays 0).
-    answers_without_sources: int = 0
-    no_citation_answer_rate: float = 0.0
+    # Whether the run could observe the sources of each answer:
+    #   observed      -> LLM path with at least one valid answer; the two fields below are measured
+    #   not_supported -> SERP path (or no check run): sources per answer are not observed
+    #   error         -> LLM path where every call failed: nothing was measured
+    source_observation_status: str = "not_supported"
+    # LLM path: answers that returned no source at all, and their share of the valid answers (failed
+    # calls are not counted), so a reader can tell "not cited" from "the engine cited nobody".
+    # None when source_observation_status is not "observed": not measured, never a zero.
+    answers_without_sources: int | None = None
+    no_citation_answer_rate: float | None = None
     brand_mention_rate_ci: tuple[float, float] = (0.0, 0.0)  # 95% Wilson interval
     domain_citation_rate_ci: tuple[float, float] = (0.0, 0.0)  # 95% Wilson interval
     stable: bool = False  # True when the CI does not straddle a verdict boundary (needs runs > 1)

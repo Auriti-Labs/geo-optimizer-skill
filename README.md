@@ -49,53 +49,54 @@ uvx --from geo-optimizer-skill geo audit --url https://yoursite.com
 
 ### What a real audit looks like
 
-Two runs of `geo audit`, September 2026. `example.com` has no robots.txt, no `llms.txt`, and no structured data. `geoready.dev` is built with this engine's own [Astro integration](#astro-integration). Excerpts, condensed from the full text output.
+Two runs of `geo audit` (engine 4.30.2, rubric v5), 26 November 2026. `example.com` has no robots.txt, no `llms.txt`, and no structured data. `geoready.dev` is built with this engine's own [Astro integration](#astro-integration). Excerpts, condensed from the full text output.
 
 <table>
 <tr><th>example.com</th><th>geoready.dev</th></tr>
 <tr><td>
 
 ```
-[█░░░░░░░░░░░░░░░░░░░] 8/100
-❌ CRITICAL — Core signals for AI
-   search are missing
+[███████░░░░░░░░░░░░░] 36/100
+⚠️  FOUNDATION — Core elements
+   missing, implement priority fixes
 
 📋 PRIORITY NEXT STEPS:
-1. Create robots.txt with Allow rules
-   for AI bots (GPTBot, ClaudeBot,
-   PerplexityBot)
-2. Create /llms.txt for AI indexing
-3. Add WebSite JSON-LD schema
-4. Add Organization JSON-LD schema
-5. Add FAQPage schema with site FAQs
+1. [G-CANONICAL] No rel=canonical
+2. [G-DATES] No valid publication
+   or update date found
+3. [G-BYLINE] No author found
+4. Publish an optional /llms.txt
+   guide for compatible tools
+5. Add WebSite and Organization
+   JSON-LD schema
 ```
 
 </td><td>
 
 ```
-[██████████████████░░] 91/100
+[██████████████████░░] 94/100
 🏆 EXCELLENT
 
-✅ 27/27 AI crawlers allowed
-✅ llms.txt found (~3554 words)
-✅ 7 schema types
+✅ All critical citation bots allowed
+✅ llms.txt found (~4382 words)
+✅ 8 schema types
 ✅ 0 prompt-injection patterns
 ✅ 1/4 Knowledge Graph pillars
-⚠️  No dateModified signal
-   (Wikipedia, Wikidata, LinkedIn,
-   Crunchbase)
+📋 3 next steps, e.g. more sameAs
+   links (Wikipedia, Wikidata,
+   LinkedIn, Crunchbase)
 ```
 
 </td></tr>
 </table>
 
-Across 3,200+ sites audited through [GeoReady](https://geoready.dev/state-of-geo/?utm_source=github&utm_medium=readme&utm_campaign=benchmark) (latest audit per domain, as of 24 November 2026), the median score is **65/100**, 61% publish an `llms.txt` and 79% ship JSON-LD structured data. 48% of them land in the Foundation band (36–67), 39% in Good, 9% in Critical and 4% in Excellent. Scores mix rubric v1 (engine 4.13 to 4.18) and v2 (4.19 and later). The sample is self-selected (people who chose to audit their site), so treat it as directional, not a census of the web.
+Across 3,200+ sites audited through [GeoReady](https://geoready.dev/state-of-geo/?utm_source=github&utm_medium=readme&utm_campaign=benchmark) (latest audit per domain, as of 24 November 2026), the median score is **65/100**, 61% publish an `llms.txt` and 79% ship JSON-LD structured data. 48% of them land in the Foundation band (36–67), 39% in Good, 9% in Critical and 4% in Excellent. This historical benchmark combines audits performed with rubric v1 (engine 4.13 to 4.18) and v2 (4.19 and later). Scores obtained with rubric v5 are not directly comparable. Use the historical distribution as descriptive context, not as a percentile or performance benchmark for a current audit. The sample is self-selected (people who chose to audit their site), so treat it as directional, not a census of the web.
 
 <img src="assets/benchmark.svg" alt="Chart of 3,200+ audited sites: median GEO score 65 out of 100, average 61.5, 61% publish an llms.txt file, 79% ship JSON-LD structured data. Self-selected sample, 24 November 2026." width="800"/>
 
 <img src="assets/benchmark-bands.svg" alt="Chart of how 3,214 audited sites split across the GEO score bands: Foundation 47.9%, Good 38.9%, Critical 8.9%, Excellent 4.4%. Latest audit per domain, 24 November 2026; self-selected sample." width="800"/>
 
-**Where does your site land?** [Run the free audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=benchmark-chart) and compare your score with the median, or run `geo audit` above.
+**Where does your site land?** [Run the free audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=benchmark-chart) or run `geo audit` above.
 
 ### Then it writes the fixes
 
@@ -285,7 +286,7 @@ Treat AI visibility like test coverage. The GitHub Action scores your site, fail
 
 ```yaml
 # .github/workflows/geo.yml
-- uses: Auriti-Labs/geo-optimizer-skill@v4.30.1
+- uses: Auriti-Labs/geo-optimizer-skill@v4.30.4
   with:
     url: https://yoursite.com
     min-score: 70        # fail the build below 70
@@ -363,11 +364,16 @@ result.recommendations          # list of prioritized fixes
 
 ### Astro Integration
 
-Generates `llms.txt`, `/.well-known/ai.txt`, and `/ai/summary.json` from your built routes at build time, and never overwrites hand-curated files. geoready.dev builds with it. Not yet published to npm — copy [`integrations/astro-geoready/`](integrations/astro-geoready/) to `integrations/astro-geoready/` in your project root:
+Generates `llms.txt`, `/.well-known/ai.txt`, and `/ai/summary.json` from your built routes at build time, and never overwrites hand-curated files. geoready.dev builds with it. Install it from npm:
+
+```bash
+npm install astro-geoready
+```
 
 ```js
 // astro.config.mjs
-import geoReady from './integrations/astro-geoready/index.mjs';
+import { defineConfig } from 'astro/config';
+import geoReady from 'astro-geoready';
 export default defineConfig({
   site: 'https://yoursite.com',
   integrations: [geoReady({ siteName: 'Your Site' })],
@@ -438,7 +444,7 @@ AEO is the practice of structuring a website so AI answer engines — ChatGPT, P
 Run `geo citations --brand "Your Brand" --domain yoursite.com` with a Perplexity or OpenAI API key. It asks the engine customer-style questions and reports whether your brand is mentioned, whether your domain is cited as a source, and which competitors are cited instead. Perplexity returns real source URLs, so it is the only LLM provider that can report your domain as cited. OpenAI and Anthropic reveal what the model knows about your brand: a URL in their answer counts as a mention, never as a citation. No account needed for the [free web version](https://geoready.dev/tools/ai-citation-checker/?utm_source=github&utm_medium=readme&utm_campaign=faq).
 
 **How do I improve my site's GEO score?**
-Run `geo audit --url https://yoursite.com` and read the priority list, then `geo fix --url https://yoursite.com` to preview the robots.txt rules, `llms.txt`, JSON-LD schema and meta tags it would write (`--apply` writes them), and audit again. Start where the audit shows the most missing points: among the audited sites, the largest readiness gap is AI discovery files, and the median score is 59/100 (17 October 2026). To see your own list without installing anything, [run the free web audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=faq-start), or read the [free 160-page GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/?utm_source=github&utm_medium=readme&utm_campaign=faq-start).
+Run `geo audit --url https://yoursite.com` and read the priority list, then `geo fix --url https://yoursite.com` to preview the robots.txt rules, `llms.txt`, JSON-LD schema and meta tags it would write (`--apply` writes them), and audit again. Start where the audit shows the most missing points: among the audited sites, the median score is 65/100 (24 November 2026, see the benchmark above). To see your own list without installing anything, [run the free web audit](https://geoready.dev/?utm_source=github&utm_medium=readme&utm_campaign=faq-start), or read the [free 160-page GEO Readiness Manual](https://geoready.dev/geo-readiness-manual/?utm_source=github&utm_medium=readme&utm_campaign=faq-start).
 
 **Does GEO Optimizer guarantee that AI engines will cite my site?**
 No. It measures the signals that make a site reachable, parseable, and quotable, and it tells you which ones are missing. Whether an engine cites you also depends on the question, the competition, and the engine itself — and answers change from run to run, which is why `geo citations` has `--runs`.
@@ -483,7 +489,7 @@ Yes. *AI Search Engineering: A Technical Guide to Generative Engine Optimization
 
 ## Roadmap
 
-Focused release waves, not noisy patches: 107 releases since February 2026, currently **v4.30.1**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
+Focused release waves, not noisy patches: 109 releases since February 2026, currently **v4.30.4**. Next up is the v5.0 cycle — signal architecture, retrieval surface analysis, and scoring recalibration. Calendar and direction: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ---
 
