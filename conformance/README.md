@@ -24,7 +24,7 @@ cd integrations/core && npm test
 Rules for adding a case: one behaviour per case, a name that states it, and no case that only one engine can pass,
 unless it is a known divergence (below). If the two engines disagree on a case, that is a finding: fix the engine that
 is wrong, never the expectation to match the engine. For `robots.json` use paths other than `/` (the Python engine
-reads `/` as a site-wide status).
+reads `/` as a site-wide status). A `robots` input may be a list of `{text, repeat}` parts that the runner joins: the byte-limit cases (500 KiB, counted in UTF-8 bytes in both engines) use it so the file does not carry the text.
 
 ## Page cases for JSON-LD
 
