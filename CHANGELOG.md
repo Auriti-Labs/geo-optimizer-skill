@@ -21,6 +21,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - `@auriti-labs/geo-core` (private): robots.txt drops every leading BOM (U+FEFF) before the byte limit, as the Python engine does, instead of only the first; conformance cases cover a single BOM, a double BOM and 200000 BOMs ahead of a rule (they would otherwise eat the limit).
 
 ### Changed
+- `publish.yml` pins every third-party Action to a full commit SHA (with the tag kept as a comment); Dependabot keeps the pins up to date. `pypa/gh-action-pypi-publish` is pinned to the current commit of its moving `release/v1` branch (v1.14.3).
 - Both composite Actions validate the audit through one shared script, `scripts/action_audit.py`, instead of two inline copies: the score and band extraction from the JSON report and the threshold comparison. Inputs, outputs, step messages and the Job Summary are unchanged, and so is each Action's behaviour on a valid, invalid or stale report.
 - `conformance/`: both runners now fail on a missing rule file, a file with no cases, a case with a missing, empty or unknown `engines` value, and fewer cases run than declared. New JSON-LD page cases go through each engine's real extraction path, and five known Python/JS divergences (NaN/Infinity, empty blocks, `type` matching, comments in scripts, oversized blocks) are recorded in `conformance/README.md`. `integrations/core/README.md` documents the public contract of the private JS core and why a canonical pointing elsewhere stays a `warn`.
 
@@ -30,6 +31,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 - `@auriti-labs/geo-core` (private): `checkSite` takes `maxHtmlBytes` (default 10 MiB, like the Python `MAX_RESPONSE_SIZE`); a larger page is not read and yields an `input-limit` error finding instead of being truncated. The README now states that an invalid page URL is evaluated against `/` for robots.txt.
 
 ### Added
+- The CI checks the `@auriti-labs/geo-core` (private) package contents with `npm pack --dry-run`, failing on a missing file or on any file outside `src/*.js`.
 - Release preflight: the publish workflow fails when the tag does not match the `pyproject.toml` version, and installs the built wheel (alone, with `[web]`, with `[mcp]`) and the sdist in clean environments before publishing. The CI checks the `astro-geoready` package contents with `npm pack --dry-run`, and a new test keeps the version (pyproject, `__init__` fallback, latest CHANGELOG release, `capabilities.json`) and the headline counts in README, SKILL.md and docs in line with the code.
 
 ## [4.30.4] — 2026-11-26
