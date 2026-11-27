@@ -12,7 +12,7 @@ Consumers must handle `schema_version` being absent (pre-v1 responses, and CLI o
 
 | Key | Type | Notes |
 |-----|------|-------|
-| `schema_version` | `int` | `1` — added to the web API in v4.11 and to `geo audit --format json` in the first release after 4.30.4 |
+| `schema_version` | `int` | `1` — added to the web API in v4.11 and to `geo audit --format json` in v4.31.0 |
 | `url` | `string` | Audited URL |
 | `timestamp` | `string` | ISO 8601 UTC |
 | `score` | `int` | 0–100 |
