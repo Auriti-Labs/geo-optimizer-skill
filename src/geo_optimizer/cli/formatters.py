@@ -303,7 +303,7 @@ def format_audit_text(result: AuditResult) -> str:
         llms_label += " (Other AI agents · not used by Google Search)"
     lines.append(_section_header(llms_label))
     if not result.llms.found:
-        lines.append("  ❌ llms.txt not found — essential for AI indexing!")
+        lines.append("  ❌ llms.txt not found — optional guide for compatible tools")
     else:
         lines.append(f"  ✅ llms.txt found (~{result.llms.word_count} words)")
         if result.llms.has_h1:
