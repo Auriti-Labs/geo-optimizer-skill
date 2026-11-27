@@ -25,6 +25,7 @@ It scores nothing and judges nothing beyond these five verifiable defects. `llms
 ## Limits
 
 - HTML is read with regular expressions, on well-formed pages. The Python engine uses a real parser.
+- Text written inside `<script>`, `<style>`, `<template>`, `<textarea>` and `<title>` is not read as markup, so a `<meta name=robots>` inside a script string is not a directive. Python's `html.parser` still reads `<template>` content as live markup (case kept as JS-only in `conformance/canonical.json`).
 - JSON-LD is checked for syntax only; schema.org semantics stay with the Python engine.
 - A sitemap index is recognised, not followed.
 - `noindex` is read from `<meta name=robots|googlebot|bingbot>` only (`none` counts); `X-Robots-Tag` headers are not seen. Python ignores `bingbot`, JS counts it.
