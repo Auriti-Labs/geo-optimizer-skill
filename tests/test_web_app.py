@@ -767,9 +767,9 @@ def test_ai_faq_json_punteggi_coerenti_con_config(client):
     risposta = score_faq["answer"]
 
     # Categorie e massimi devono coincidere con la rubric di default (CATEGORY_MAX_V2)
-    from geo_optimizer.models.config import CATEGORY_MAX_V2
+    from geo_optimizer.models.config import CATEGORY_MAX_V2, DEFAULT_SCORE_VERSION
 
-    assert f"{len(CATEGORY_MAX_V2)} rubric v2 categories" in risposta, risposta
+    assert f"{len(CATEGORY_MAX_V2)} categories (rubric v{DEFAULT_SCORE_VERSION}" in risposta, risposta
     labels = {
         "google_ai": "Google AI readiness",
         "robots": "robots.txt",

@@ -8,6 +8,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ## [Unreleased]
 
 ### Fixed
+- `GET /ai/faq.json` in `geo-web` said the score is calculated "across 9 rubric v2 categories" and that the toolkit scores "based on 47 research-backed methods". It now names rubric v5 as the default (v2 has the same maxima) and says the toolkit audits how ready a site is for AI answer engines; only 9 of the 47 content checks come from a controlled study. The docs index (and its copy bundled with `geo-web`) says nine categories, rubric v5 by default.
 - `.github/actions/geo-audit` now uploads SARIF with `github/codeql-action/upload-sarif@v4`, like the root action.
 - Dependabot also watches `.github/actions/geo-audit` for github-actions updates.
 - `geo-audit-example.yml` reads the `report-path` output (the root action has no `report` output), so the step summary and the artifact upload get the report path.
