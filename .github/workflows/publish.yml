@@ -44,6 +44,17 @@ jobs:
           python-version: '3.12'
           cache: pip
 
+      - name: Check the tag matches the pyproject version
+        shell: bash
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match pyproject.toml version ${version}"
+            exit 1
+          fi
+          echo "Tag ${GITHUB_REF_NAME} matches pyproject.toml version ${version}"
+
       - name: Install build tools
         run: pip install build
 
@@ -59,9 +70,63 @@ jobs:
           name: dist
           path: dist/
 
+  # Job smoke: installa gli archivi appena costruiti in venv pulite, fuori dal checkout
+  smoke:
+    name: Smoke-install the built archives
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+
+      - name: Install the wheel and the sdist in clean venvs
+        shell: bash
+        run: |
+          set -euo pipefail
+          wheels=("$PWD"/dist/*.whl)
+          sdists=("$PWD"/dist/*.tar.gz)
+          if [ "${#wheels[@]}" -ne 1 ] || [ "${#sdists[@]}" -ne 1 ]; then
+            echo "::error::expected exactly one wheel and one sdist in dist/"
+            ls -l dist/
+            exit 1
+          fi
+          wheel="${wheels[0]}"
+          sdist="${sdists[0]}"
+          cd "$RUNNER_TEMP"
+
+          # base: the wheel alone, the CLI entry point must start
+          python -m venv venv-base
+          venv-base/bin/pip install --quiet "$wheel"
+          venv-base/bin/geo --version
+
+          # sdist: built from source once, same check
+          python -m venv venv-sdist
+          venv-sdist/bin/pip install --quiet "$sdist"
+          venv-sdist/bin/geo --version
+
+          # web extra: the geo-web entry point and the FastAPI app it serves
+          python -m venv venv-web
+          venv-web/bin/pip install --quiet "${wheel}[web]"
+          venv-web/bin/python -c "import geo_optimizer.web.cli, geo_optimizer.web.app; print('web ok', geo_optimizer.web.app.app.title)"
+          venv-web/bin/geo-web --help > /dev/null
+
+          # mcp extra: the geo-mcp entry point module (imports mcp.server.fastmcp)
+          python -m venv venv-mcp
+          venv-mcp/bin/pip install --quiet "${wheel}[mcp]"
+          venv-mcp/bin/python -c "from geo_optimizer.mcp.server import main, mcp; print('mcp ok', mcp.name)"
+
   publish:
     name: Publish to PyPI
-    needs: [ci, build]
+    needs: [ci, build, smoke]
     runs-on: ubuntu-latest
     environment:
       name: pypi

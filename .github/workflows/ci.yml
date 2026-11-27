@@ -86,6 +86,10 @@ jobs:
         run: npm test
         working-directory: integrations/astro-geoready
 
+      - name: Check the astro-geoready package contents
+        run: npm pack --dry-run
+        working-directory: integrations/astro-geoready
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
