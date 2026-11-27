@@ -77,3 +77,16 @@ test('a sitemap with a namespace prefix is read', () => {
   });
   assert.deepEqual(r.findings.map((f) => f.rule), ['sitemap-lastmod']);
 });
+
+test('a robots rule on a query string is checked against the page URL with its query', () => {
+  const r = checkSite({
+    robotsTxt: 'User-agent: PerplexityBot\nDisallow: /search?private=1\n',
+    pages: [page('https://example.com/search?private=1')],
+  });
+  assert.deepEqual(r.findings.map((f) => f.rule), ['robots-ai-bots']);
+  const clean = checkSite({
+    robotsTxt: 'User-agent: PerplexityBot\nDisallow: /search?private=1\n',
+    pages: [page('https://example.com/search')],
+  });
+  assert.equal(clean.findings.length, 0);
+});
