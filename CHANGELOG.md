@@ -8,6 +8,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ## [Unreleased]
 
 ### Changed
+- `geo citations` adds `source_observation_status` (`observed` | `not_supported` | `error`) to the JSON result and the web API. Only Perplexity Sonar returns the sources it used, so for every other LLM provider the status is `not_supported` too. Compatibility: on the SERP path and for providers that return no sources (`not_supported`), and when every LLM call failed (`error`), `answers_without_sources` and `no_citation_answer_rate` are now `null` instead of `0`/`0.0`, which read as "every answer had sources". The key names are unchanged and the measured values on the LLM path do not move; readers that do arithmetic on the two keys must handle `null`.
+
 - The llms.txt recommendation and the text, CI and MCP docs no longer claim that llms.txt is essential for or improves AI indexing: it now reads "Publish an optional /llms.txt guide for compatible tools". The README benchmark states that historical v1/v2 scores are not directly comparable with a rubric v5 score. No score, rubric or recommendation count changes.
 
 ### Added
