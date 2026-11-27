@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Changed
+- `conformance/`: both runners now fail on a missing rule file, a file with no cases, a case with a missing, empty or unknown `engines` value, and fewer cases run than declared. New JSON-LD page cases go through each engine's real extraction path, and five known Python/JS divergences (NaN/Infinity, empty blocks, `type` matching, comments in scripts, oversized blocks) are recorded in `conformance/README.md`. `integrations/core/README.md` documents the public contract of the private JS core and why a canonical pointing elsewhere stays a `warn`.
+
 ## [4.30.4] — 2026-11-26
 
 ### Fixed
