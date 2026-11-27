@@ -86,6 +86,8 @@ export function jsonLdStatus(block) {
 export function checkJsonLd(page) {
   const out = [];
   for (const block of jsonLdBlocks(page.html ?? '')) {
+    // Come il motore Python (iter_jsonld_objects): un blocco vuoto o di soli spazi non conta come blocco.
+    if (!block.trim()) continue;
     const r = jsonLdStatus(block);
     if (!r.valid) out.push(finding('jsonld-valid', 'error', r.message, page.url));
   }
