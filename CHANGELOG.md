@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 
 ## [Unreleased]
 
+### Changed
+- The llms.txt recommendation and the text, CI and MCP docs no longer claim that llms.txt is essential for or improves AI indexing: it now reads "Publish an optional /llms.txt guide for compatible tools". The README benchmark states that historical v1/v2 scores are not directly comparable with a rubric v5 score. No score, rubric or recommendation count changes.
+
 ## [4.30.4] — 2026-11-26
 
 ### Fixed
