@@ -1,6 +1,6 @@
 {
   "rule": "robots-ai-bots",
-  "description": "Is a bot blocked on a path by robots.txt (RFC 9309: group of the bot or *, longest match, Allow wins ties, * and $ in rules). Paths other than / on purpose: the Python engine reads / as a site-wide 'partial' status.",
+  "description": "Is a bot blocked on a path by robots.txt (RFC 9309: group of the bot or *, longest match, Allow wins ties, * and $ in rules). Paths other than / on purpose: the Python engine reads / as a site-wide 'partial' status. The byte limit is 500 KiB (512000 bytes of UTF-8, RFC 9309 §2.5): a case may give `robots` as a list of `{text, repeat}` parts, joined by the runner, so the file does not carry 500 KiB of text.",
   "cases": [
     {
       "name": "empty file blocks nobody",
@@ -326,6 +326,208 @@
       },
       "expect": {
         "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "limit is in UTF-8 bytes: a rule past 512000 bytes is ignored although the text has fewer characters",
+      "input": {
+        "robots": [
+          {
+            "text": "User-agent: *\n",
+            "repeat": 1
+          },
+          {
+            "text": "#ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé\n",
+            "repeat": 3000
+          },
+          {
+            "text": "Disallow: /late\n",
+            "repeat": 1
+          }
+        ],
+        "bot": "OAI-SearchBot",
+        "path": "/late"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "a rule before the byte limit is still read when multibyte text follows",
+      "input": {
+        "robots": [
+          {
+            "text": "User-agent: *\nDisallow: /early\n",
+            "repeat": 1
+          },
+          {
+            "text": "#ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé\n",
+            "repeat": 3000
+          }
+        ],
+        "bot": "OAI-SearchBot",
+        "path": "/early"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "a rule ending exactly at the byte limit is kept",
+      "input": {
+        "robots": [
+          {
+            "text": "User-agent: *\n",
+            "repeat": 1
+          },
+          {
+            "text": "#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+            "repeat": 5069
+          },
+          {
+            "text": "#ab\n",
+            "repeat": 1
+          },
+          {
+            "text": "Disallow: /é",
+            "repeat": 1
+          }
+        ],
+        "bot": "OAI-SearchBot",
+        "path": "/é"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "a character cut by the byte limit is replaced, not dropped",
+      "input": {
+        "robots": [
+          {
+            "text": "User-agent: *\n",
+            "repeat": 1
+          },
+          {
+            "text": "#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+            "repeat": 5069
+          },
+          {
+            "text": "#a\n",
+            "repeat": 1
+          },
+          {
+            "text": "Disallow: /éé\n",
+            "repeat": 1
+          }
+        ],
+        "bot": "OAI-SearchBot",
+        "path": "/éé"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "limit applies to ASCII text too",
+      "input": {
+        "robots": [
+          {
+            "text": "User-agent: *\n",
+            "repeat": 1
+          },
+          {
+            "text": "#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+            "repeat": 5069
+          },
+          {
+            "text": "#aaaaaaaaaaaaaaaaaaaa\n",
+            "repeat": 1
+          },
+          {
+            "text": "Disallow: /late\n",
+            "repeat": 1
+          }
+        ],
+        "bot": "OAI-SearchBot",
+        "path": "/late"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "a single leading BOM is ignored",
+      "input": {
+        "robots": "﻿User-agent: *\nDisallow: /x\n",
+        "bot": "OAI-SearchBot",
+        "path": "/x"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "every leading BOM is ignored, not just the first",
+      "input": {
+        "robots": "﻿﻿User-agent: *\nDisallow: /x\n",
+        "bot": "OAI-SearchBot",
+        "path": "/x"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "leading BOMs do not count towards the byte limit: a rule after 200000 of them is still read",
+      "input": {
+        "robots": [
+          {
+            "text": "﻿",
+            "repeat": 200000
+          },
+          {
+            "text": "User-agent: *\nDisallow: /x\n",
+            "repeat": 1
+          }
+        ],
+        "bot": "OAI-SearchBot",
+        "path": "/x"
+      },
+      "expect": {
+        "blocked": true
       },
       "engines": [
         "python",

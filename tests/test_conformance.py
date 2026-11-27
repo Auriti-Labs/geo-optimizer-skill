@@ -50,8 +50,15 @@ def _cases():
                 yield pytest.param(suite["rule"], case, id=f"{suite['rule']}: {case['name']}")
 
 
+def _robots_text(robots):
+    """`robots` is a string, or a list of `{text, repeat}` parts to join (fixtures over the 500 KiB limit)."""
+    if isinstance(robots, list):
+        return "".join(part["text"] * part["repeat"] for part in robots)
+    return robots
+
+
 def _robots(inp):
-    rules = parse_robots_txt(inp["robots"])
+    rules = parse_robots_txt(_robots_text(inp["robots"]))
     status = classify_bot(inp["bot"], "", rules, page_path=inp["path"], wildcards=True).status
     return {"blocked": status == "blocked"}
 

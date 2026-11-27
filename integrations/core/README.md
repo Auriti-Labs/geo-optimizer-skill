@@ -32,6 +32,9 @@ It scores nothing and judges nothing beyond these five verifiable defects. `llms
 - URL comparison uses the WHATWG parser: `:443`, `/a/../b` and non-ASCII paths compare equal here, while the Python engine reports a warning.
 - Duplicate `User-agent` groups that differ only in case are merged (RFC 9309); the Python engine reads the first one.
 - Pages answering 4xx/5xx are reported by `sitemap-indexable` only; their canonical and JSON-LD are not judged.
+- robots.txt is read up to 500 KiB, counted in UTF-8 bytes as in the Python engine (RFC 9309 §2.5). Longer content is cut at the byte limit and decoded with replacement, so a multibyte character split by the cut becomes U+FFFD instead of being dropped.
+- The HTML of a page is read up to `maxHtmlBytes` (default 10 MiB in UTF-8 bytes, the `MAX_RESPONSE_SIZE` of the Python engine). A larger page is not truncated and not read: it gets an `input-limit` finding (see the contract). The option is JS only; `Infinity` removes the limit.
+- A page `url` that is not a valid URL is evaluated against the path `/` for robots.txt (`checkSite`). This is intentional: one malformed URL must not abort the check of the whole site, and `/` is the least specific path.
 - Not published: the package is `private` until the API settles (0.x, Node >= 22).
 
 ## Conformance
@@ -49,7 +52,7 @@ listed here is internal.
 { rule, severity, message, url? }
 ```
 
-- `rule`: one of the five stable IDs below.
+- `rule`: one of the five stable IDs below, or `input-limit` (not a check of the site: the input exceeded a limit and was not read).
 - `severity`: `'error'` or `'warn'`. There is no other level.
 - `message`: English text for people. Its wording is not part of the contract; match on `rule` and `severity`.
 - `url`: present only when the finding is about one URL, and only when that URL is a non-empty string. It is the
@@ -63,6 +66,7 @@ listed here is internal.
 | `canonical` | `error` when missing or conflicting (status `fail`); `warn` when relative, with `noindex`, not a valid URL, or pointing to another URL (status `warn`) | always (the page URL) |
 | `jsonld-valid` | `error`, one finding per invalid block (an empty or whitespace-only block is skipped, as in the Python engine) | always (the page URL) |
 | `sitemap-lastmod` | `warn`: one finding for all entries without `lastmod`, one per invalid value | missing: never; invalid: the `<loc>` |
+| `input-limit` | `error`, one finding per page (status below 400) whose HTML is larger than `maxHtmlBytes`; the page is skipped by `canonical`, `jsonld-valid` and the `noindex` reading of `sitemap-indexable` | always (the page URL) |
 
 ### Summary
 
@@ -74,7 +78,7 @@ included).
 
 | Export | Returns |
 |--------|---------|
-| `checkSite({ robotsTxt?, sitemapXml?, pages })` | `{ findings, summary }`. robots is checked on the path of every page (`/` when there are none); canonical and JSON-LD only on pages whose `status` is not >= 400; `lastmod` only for a `urlset`, not a sitemap index |
+| `checkSite({ robotsTxt?, sitemapXml?, pages, maxHtmlBytes? })` | `{ findings, summary }`; throws `RangeError` when `maxHtmlBytes` is not a positive number. robots is checked on the path of every page (`/` when there are none); canonical and JSON-LD only on pages whose `status` is not >= 400; `lastmod` only for a `urlset`, not a sitemap index |
 | `checkRobotsAiBots(robotsTxt, paths = ['/'])` | findings; `[]` when `robotsTxt` is `null` or `undefined` |
 | `checkSitemapIndexable(entries, pages)` | findings for entries matching a page (after `normUrl`) with `status >= 400` or `noindex` |
 | `checkCanonical(page)` | `[]` on pass, otherwise one finding |
@@ -82,6 +86,7 @@ included).
 | `checkJsonLd(page)` | one finding per invalid block |
 | `jsonLdStatus(block)` | `{ valid: true }` or `{ valid: false, message }` |
 | `checkSitemapLastmod(entries)` | findings as in the table above |
+| `DEFAULT_MAX_HTML_BYTES`, `MAX_ROBOTS_BYTES` | `10 * 1024 * 1024` and `500 * 1024` |
 | `AI_SEARCH_BOTS` | `['OAI-SearchBot', 'Claude-SearchBot', 'PerplexityBot']` |
 | `normUrl(url)` | lower-case scheme and host, no trailing slash except on the root path, query kept, fragment dropped; throws on an invalid URL |
 | `isBlocked(robotsTxt, bot, path)` | `true` when the bot's group (else `*`) disallows `path` (RFC 9309, longest match, Allow wins a tie) |
@@ -113,7 +118,7 @@ A caller that wants to tell the two apart has to do it before calling the core, 
 A canonical that points to another URL is reported as `canonical` with severity `warn`, never `error`. It is counted
 in `summary.warnings`, not in `summary.errors`, so a caller that fails a build on errors does not fail on it.
 
-There is no per-page exception mechanism: `checkSite` takes `robotsTxt`, `sitemapXml` and `pages` and nothing else,
+There is no per-page exception mechanism: `checkSite` takes `robotsTxt`, `sitemapXml`, `pages` and the size limit `maxHtmlBytes`, nothing else,
 so a page cannot be marked as "canonical elsewhere on purpose". The reason is that pointing elsewhere is often
 deliberate (a paginated or filtered view, a syndicated copy, a print version), so the core cannot tell a mistake
 from a choice. Making it a `warn` keeps such pages from breaking a build without an exception list, and the API is

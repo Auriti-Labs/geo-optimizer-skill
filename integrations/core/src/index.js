@@ -2,3 +2,4 @@ export { AI_SEARCH_BOTS, canonicalStatus, checkCanonical, checkJsonLd, checkRobo
 export { isBlocked, parseRobots } from './robots.js';
 export { isValidLastmod, parseSitemap } from './sitemap.js';
 export { canonicals, jsonLdBlocks, robotsDirectives } from './html.js';
+export { DEFAULT_MAX_HTML_BYTES, MAX_ROBOTS_BYTES } from './limits.js';
