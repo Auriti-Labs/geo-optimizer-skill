@@ -8,6 +8,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ## [Unreleased]
 
 ### Fixed
+- `.github/actions/geo-audit` now uploads SARIF with `github/codeql-action/upload-sarif@v4`, like the root action.
+- Dependabot also watches `.github/actions/geo-audit` for github-actions updates.
+- `geo-audit-example.yml` reads the `report-path` output (the root action has no `report` output), so the step summary and the artifact upload get the report path.
+- `src/geo_optimizer/web/docs/ci-cd.md` now says Python 3.10+, matching `docs/ci-cd.md` and `requires-python`.
 - Both composite Actions fail when the audit is not valid, with or without a threshold: a failed CLI, a missing or unparsable report, an `error` field, or a score that is missing, boolean, not finite or outside 0-100 now stops the step instead of defaulting to a score of 0. The band is restricted to a safe token before it is written to the step output.
 - `robots.txt`: a `Sitemap`, `Host` or unknown record between two `User-agent` lines no longer splits the group, in the Python engine and in the JS core (RFC 9309). Before, the first agent got no rules and could be reported as allowed.
 - `@auriti-labs/geo-core` (private): robots rules are evaluated against the page path including its query string; `lastmod` offsets such as `+99:99` and `+01:60` are rejected; a `<meta name="robots">` written inside a `<script>`, `<style>`, `<template>`, `<textarea>` or `<title>` is no longer read as a directive.
