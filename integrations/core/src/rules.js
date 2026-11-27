@@ -111,7 +111,9 @@ export function checkSite({ robotsTxt = null, sitemapXml = null, pages = [] }) {
   const sitemap = sitemapXml == null ? { index: false, entries: [] } : parseSitemap(sitemapXml);
   const paths = pages.map((p) => {
     try {
-      return new URL(p.url).pathname || '/';
+      // La query fa parte della regola robots (`Disallow: /search?q=`): va valutata insieme al percorso.
+      const url = new URL(p.url);
+      return `${url.pathname || '/'}${url.search}`;
     } catch {
       return '/';
     }

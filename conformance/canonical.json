@@ -211,6 +211,47 @@
         "python",
         "js"
       ]
+    },
+    {
+      "name": "noindex written inside a script string is not a directive",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><script>const x = '<meta name=\"robots\" content=\"noindex\">';</script><link rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "noindex written inside a style comment is not a directive",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><style>/* <meta name=\"robots\" content=\"noindex\"> */</style><link rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "noindex inside a template is not a directive (Python html.parser reads template content as live markup, a known divergence)",
+      "input": {
+        "url": "https://example.com/blog/post",
+        "html": "<html><head><template><meta name=\"robots\" content=\"noindex\"></template><link rel=\"canonical\" href=\"https://example.com/blog/post\"></head><body></body></html>"
+      },
+      "expect": {
+        "status": "pass"
+      },
+      "engines": [
+        "js"
+      ]
     }
   ]
 }

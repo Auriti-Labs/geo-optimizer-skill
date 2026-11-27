@@ -155,16 +155,42 @@ runs:
           cp geo-score-tmp.json "$REPORT_PATH"
         fi
 
-    # 6. Estrai score e band dal JSON (il file temporaneo resta fino al passo finale)
+    # 6. Estrai score e band dal JSON (il file temporaneo resta fino al passo finale).
+    # Un audit non valido fallisce sempre, anche con soglia 0: mai uno score di ripiego.
     - name: Extract score and band
       id: extract
       shell: bash
       run: |
-        SCORE=$(python3 -c "import json; d=json.load(open('geo-score-tmp.json')); print(d.get('score', 0))")
-        BAND=$(python3 -c "import json; d=json.load(open('geo-score-tmp.json')); print(d.get('band', 'critical'))")
-        echo "score=${SCORE}" >> "$GITHUB_OUTPUT"
-        echo "band=${BAND}" >> "$GITHUB_OUTPUT"
-        echo "::notice::GEO Score: ${SCORE}/100 (${BAND})"
+        RC=0
+        python3 - geo-score-tmp.json "$GITHUB_OUTPUT" <<'PY' || RC=$?
+        import json
+        import math
+        import re
+        import sys
+
+        try:
+            with open(sys.argv[1], encoding="utf-8") as handle:
+                data = json.load(handle)
+        except (OSError, ValueError):
+            sys.exit(2)
+        if not isinstance(data, dict) or data.get("error"):
+            sys.exit(2)
+        score = data.get("score")
+        if isinstance(score, bool) or not isinstance(score, (int, float)):
+            sys.exit(2)
+        if not math.isfinite(score) or not 0 <= score <= 100:
+            sys.exit(2)
+        band = str(data.get("band") or "unknown")
+        if not re.fullmatch(r"[A-Za-z0-9_-]{1,32}", band):
+            band = "unknown"
+        with open(sys.argv[2], "a", encoding="utf-8") as out:
+            out.write(f"score={score}\nband={band}\n")
+        print(f"::notice::GEO Score: {score}/100 ({band})")
+        PY
+        if [ "$RC" -ne 0 ]; then
+          echo "::error::The audit did not return a valid result (missing file, error field, or score not a number between 0 and 100)."
+          exit 1
+        fi
 
     # 7. Upload SARIF (solo se formato sarif)
     - name: Upload SARIF results

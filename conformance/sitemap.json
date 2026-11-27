@@ -169,6 +169,54 @@
       "engines": [
         "js"
       ]
+    },
+    {
+      "name": "offset hours out of range",
+      "input": {
+        "value": "2026-11-26T10:00:00+99:99"
+      },
+      "expect": {
+        "valid": false
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "offset minutes out of range",
+      "input": {
+        "value": "2026-11-26T10:00:00+01:60"
+      },
+      "expect": {
+        "valid": false
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "offset at the upper limit",
+      "input": {
+        "value": "2026-11-26T10:00:00-23:59"
+      },
+      "expect": {
+        "valid": true
+      },
+      "engines": [
+        "js"
+      ]
+    },
+    {
+      "name": "leap day in a year below 100",
+      "input": {
+        "value": "0004-02-29"
+      },
+      "expect": {
+        "valid": true
+      },
+      "engines": [
+        "js"
+      ]
     }
   ]
 }

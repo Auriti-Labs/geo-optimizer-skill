@@ -58,6 +58,8 @@ That's it. The action installs Python, installs `geo-optimizer-skill`, runs the 
 
 The step fails if the score drops below 70.
 
+Independently of `min-score`, the step also fails when the audit itself fails or returns no valid score (missing report, an `error` field, or a score that is not a number between 0 and 100). A broken audit is never reported as a pass.
+
 ### Detect regressions against the previous snapshot
 
 ```yaml

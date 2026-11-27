@@ -17,9 +17,14 @@ const TAG = (name) => new RegExp(`<${name}\\b(?:[^>"']|"[^"]*"|'[^']*')*>`, 'gi'
 
 const withoutComments = (html) => html.replace(/<!--[\s\S]*?-->/g, '');
 
-// Il <head> si cerca senza commenti e senza il corpo degli script, che possono contenere `</head>` o un <link>.
+// Il contenuto di questi elementi è testo, non markup: un `<meta>` o un `<link>` scritto lì dentro non è attivo.
+const INERT = /<(script|style|template|textarea|title)\b(?:[^>"']|"[^"]*"|'[^']*')*>[\s\S]*?<\/\1\s*>/gi;
+
+const activeMarkup = (html) => withoutComments(html).replace(INERT, '');
+
+// Il <head> si cerca senza commenti e senza il corpo degli elementi inerti, che possono contenere `</head>` o un <link>.
 function headOf(html) {
-  const clean = withoutComments(html).replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '');
+  const clean = activeMarkup(html);
   const close = clean.search(/<\/head\s*>/i);
   return close >= 0 ? clean.slice(0, close) : clean;
 }
@@ -38,7 +43,7 @@ export function canonicals(html) {
 /** Direttive di <meta name="robots|googlebot|bingbot">, minuscole e senza spazi. */
 export function robotsDirectives(html) {
   const out = new Set();
-  for (const m of withoutComments(String(html)).matchAll(TAG('meta'))) {
+  for (const m of activeMarkup(String(html)).matchAll(TAG('meta'))) {
     const a = attributes(m[0]);
     if (!['robots', 'googlebot', 'bingbot'].includes((a.name || '').toLowerCase())) continue;
     for (const d of (a.content || '').split(',')) {
