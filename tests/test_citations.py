@@ -621,3 +621,166 @@ class TestRunCitationCheckServpbase:
 
         assert mock_q.call_count == 1  # one query in query_list, runs=5 ignored
         assert result.runs_per_query == 1
+
+
+class TestSourceObservationStatus:
+    """source_observation_status tells a measured zero apart from "not observed" (E02)."""
+
+    def test_measured_zero_with_sources_is_observed(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("Acme.", citations=["https://acme.com"])
+            result = run_citation_check("Acme", "acme.com", queries=["q"], provider="perplexity", api_key="k", runs=2)
+
+        assert result.source_observation_status == "observed"
+        assert result.answers_without_sources == 0
+        assert result.no_citation_answer_rate == 0.0
+
+    def test_all_answers_without_sources(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("Acme.", citations=[])
+            result = run_citation_check("Acme", "acme.com", queries=["q"], provider="perplexity", api_key="k", runs=3)
+
+        assert result.source_observation_status == "observed"
+        assert result.answers_without_sources == 3
+        assert result.no_citation_answer_rate == 1.0
+
+    def test_mixed_answers(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.side_effect = [
+                _sonar_response("Acme.", citations=["https://acme.com"]),
+                _sonar_response("Acme.", citations=[]),
+                _sonar_response("Acme.", citations=["https://other.com"]),
+                _sonar_response("Acme.", citations=[]),
+            ]
+            result = run_citation_check("Acme", "acme.com", queries=["q"], provider="perplexity", api_key="k", runs=4)
+
+        assert result.source_observation_status == "observed"
+        assert result.answers_without_sources == 2
+        assert result.no_citation_answer_rate == 0.5
+
+    def test_partial_errors_are_observed_over_valid_answers(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.side_effect = [
+                LLMResponse(text="", model="m", provider="perplexity", error="timeout"),
+                LLMResponse(text="", model="m", provider="perplexity", error="timeout"),
+                _sonar_response("Acme.", citations=[]),
+                _sonar_response("Acme.", citations=["https://acme.com"]),
+            ]
+            result = run_citation_check("Acme", "acme.com", queries=["q"], provider="perplexity", api_key="k", runs=4)
+
+        assert result.source_observation_status == "observed"
+        assert result.total_answers == 2
+        assert result.answers_without_sources == 1
+        assert result.no_citation_answer_rate == 0.5
+
+    def test_total_errors_are_error_and_none(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = LLMResponse(text="", model="m", provider="perplexity", error="timeout")
+            result = run_citation_check("Acme", "acme.com", queries=["q"], provider="perplexity", api_key="k", runs=2)
+
+        assert result.skipped_reason
+        assert result.source_observation_status == "error"
+        assert result.answers_without_sources is None
+        assert result.no_citation_answer_rate is None
+
+    def test_serp_path_is_not_supported_and_none(self):
+        with patch("geo_optimizer.core.serp_provider.query_serpbase") as mock_q:
+            mock_q.return_value = _serp()
+            result = run_citation_check("Acme", "acme.com", queries=["q1", "q2"], provider="serpbase", api_key="sb")
+
+        assert result.skipped_reason is None
+        assert result.total_answers == 2
+        assert result.source_observation_status == "not_supported"
+        assert result.answers_without_sources is None
+        assert result.no_citation_answer_rate is None
+
+    def test_serp_path_total_errors_is_not_supported_and_none(self):
+        with patch("geo_optimizer.core.serp_provider.query_serpbase") as mock_q:
+            mock_q.return_value = _serp(error="HTTP 500")
+            result = run_citation_check("Acme", "acme.com", queries=["q"], provider="serpbase", api_key="sb")
+
+        assert result.skipped_reason
+        assert result.source_observation_status == "not_supported"
+        assert result.answers_without_sources is None
+        assert result.no_citation_answer_rate is None
+
+    def test_cli_json_serp_has_status_and_nulls(self, monkeypatch):
+        import json
+
+        monkeypatch.setenv("SERPBASE_API_KEY", "sb-test")
+        with patch("geo_optimizer.core.serp_provider.query_serpbase") as mock_q:
+            mock_q.return_value = _serp()
+            out = CliRunner().invoke(
+                cli,
+                ["citations", "--brand", "Acme", "--domain", "acme.com", "--query", "q", "--provider", "serpbase"]
+                + ["--format", "json"],
+            )
+
+        assert out.exit_code == 0, out.output
+        data = json.loads(out.output)
+        assert data["source_observation_status"] == "not_supported"
+        # Old readers still find both keys, now null instead of a misleading 0.
+        assert "answers_without_sources" in data and data["answers_without_sources"] is None
+        assert "no_citation_answer_rate" in data and data["no_citation_answer_rate"] is None
+
+    def test_cli_json_llm_has_status_and_values(self, monkeypatch):
+        import json
+
+        monkeypatch.setenv("PERPLEXITY_API_KEY", "pk-test")
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = _sonar_response("Acme.", citations=[])
+            out = CliRunner().invoke(
+                cli,
+                ["citations", "--brand", "Acme", "--domain", "acme.com", "--query", "q", "--runs", "2"]
+                + ["--format", "json"],
+            )
+
+        assert out.exit_code == 0, out.output
+        data = json.loads(out.output)
+        assert data["source_observation_status"] == "observed"
+        assert data["answers_without_sources"] == 2
+        assert data["no_citation_answer_rate"] == 1.0
+
+    def test_web_json_has_status_and_nulls(self, monkeypatch):
+        import os
+
+        import pytest
+
+        pytest.importorskip("fastapi")
+        pytest.importorskip("httpx")
+        os.environ.setdefault("GEO_STATS_API_URL", "")
+        from starlette.testclient import TestClient
+
+        import geo_optimizer.web.app as web_app
+        from geo_optimizer.models.results import CitationCheckResult
+
+        monkeypatch.setattr(web_app, "_rate_limit_store", {})
+        monkeypatch.setattr(web_app, "_citations_day", "")
+        monkeypatch.setattr(web_app, "_citations_count", 0)
+        monkeypatch.setenv("PERPLEXITY_API_KEY", "pk-test")
+        fake = CitationCheckResult(checked=True, brand="Acme", domain="acme.com", queries_run=1, verdict="invisible")
+        client = TestClient(web_app.app, raise_server_exceptions=False)
+        with patch("geo_optimizer.core.citations.run_citation_check", return_value=fake):
+            resp = client.post("/api/citations", json={"brand": "Acme", "domain": "acme.com"})
+
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["source_observation_status"] == "not_supported"
+        assert "answers_without_sources" in data and data["answers_without_sources"] is None
+        assert "no_citation_answer_rate" in data and data["no_citation_answer_rate"] is None
+
+
+class TestProviderWithoutSources:
+    """Only Perplexity returns its sources: for any other provider "no sources" is not an observation (E02)."""
+
+    def test_non_perplexity_provider_is_not_supported_and_has_no_numbers(self):
+        with patch.object(citations_mod, "query_llm") as mock_q:
+            mock_q.return_value = LLMResponse(text="Acme is a CRM.", model="gpt-4o-mini", provider="openai")
+            result = run_citation_check("Acme", "acme.com", queries=["q"], provider="openai", api_key="sk-test")
+
+        assert result.total_answers == 1
+        assert result.source_observation_status == "not_supported"
+        assert result.answers_without_sources is None
+        assert result.no_citation_answer_rate is None
+        # the mention and citation metrics are unaffected
+        assert result.brand_mention_rate == 1.0
