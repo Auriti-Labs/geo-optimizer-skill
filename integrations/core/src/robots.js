@@ -27,8 +27,10 @@ export function parseRobots(content) {
       lastWasAgent = true;
       continue;
     }
-    lastWasAgent = false;
+    // Sitemap, Host e chiavi sconosciute non sono membri di un gruppo: non interrompono i User-agent impilati.
+    if (key === 'crawl-delay') lastWasAgent = false;
     if (key !== 'allow' && key !== 'disallow') continue;
+    lastWasAgent = false;
     for (const name of agents) groups.get(name)[key].push(value);
   }
   return groups;

@@ -56,7 +56,7 @@ def parse_robots_txt(content: str) -> dict[str, AgentRules]:
     - Removes BOM UTF-8 if present (§ encoding)
     - Truncates to 500KB before parsing (RFC 9309 §2.5)
     - Consecutive User-agent lines share the same rule block
-    - Non-agent directives break the stacking group
+    - Only Allow, Disallow and Crawl-delay end the stacking group; Sitemap and unknown records are ignored
     - Allow and Disallow are both tracked
 
     Args:
@@ -120,8 +120,8 @@ def parse_robots_txt(content: str) -> dict[str, AgentRules]:
             except ValueError:
                 pass
             last_was_agent = False
-        else:
-            last_was_agent = False
+        # Any other record (Sitemap, Host, unknown keys) is not a group member and must not
+        # interrupt a run of User-agent lines (RFC 9309 §2.2.1: unknown records are ignored).
 
     return agent_rules
 

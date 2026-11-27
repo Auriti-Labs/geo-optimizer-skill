@@ -271,6 +271,66 @@
         "python",
         "js"
       ]
+    },
+    {
+      "name": "a Sitemap line between two User-agent lines does not split the group (OAI-SearchBot)",
+      "input": {
+        "robots": "User-agent: OAI-SearchBot\nSitemap: https://example.com/sitemap.xml\nUser-agent: PerplexityBot\nDisallow: /private\n",
+        "bot": "OAI-SearchBot",
+        "path": "/private"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "a Sitemap line between two User-agent lines does not split the group (PerplexityBot)",
+      "input": {
+        "robots": "User-agent: OAI-SearchBot\nSitemap: https://example.com/sitemap.xml\nUser-agent: PerplexityBot\nDisallow: /private\n",
+        "bot": "PerplexityBot",
+        "path": "/private"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "an unknown record between two User-agent lines does not split the group",
+      "input": {
+        "robots": "User-agent: OAI-SearchBot\nHost: example.com\nUser-agent: Claude-SearchBot\nDisallow: /private\n",
+        "bot": "OAI-SearchBot",
+        "path": "/private"
+      },
+      "expect": {
+        "blocked": true
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
+    },
+    {
+      "name": "a Sitemap line after the rules does not affect a later group",
+      "input": {
+        "robots": "User-agent: OAI-SearchBot\nDisallow: /private\nSitemap: https://example.com/sitemap.xml\nUser-agent: Claude-SearchBot\nAllow: /\n",
+        "bot": "Claude-SearchBot",
+        "path": "/private"
+      },
+      "expect": {
+        "blocked": false
+      },
+      "engines": [
+        "python",
+        "js"
+      ]
     }
   ]
 }
