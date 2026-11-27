@@ -89,6 +89,13 @@ def _normalize_terminal_error(err: str | None) -> str | None:
     return "internal"
 
 
+def _sanitize_attempts(raw: object) -> int:
+    """Clamp observed receipt attempts to an integer in the range 1..16 (#557)."""
+    if isinstance(raw, bool) or not isinstance(raw, int):
+        return 1
+    return max(1, min(16, raw))
+
+
 # ─── Tool 1: geo_audit ───────────────────────────────────────────────────────
 
 
@@ -114,6 +121,14 @@ def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_rece
             robots.txt, llms.txt, or AI discovery endpoints) could not be fetched
             (listed in failed_fetches), while terminal_error remains None and the
             audit score is returned.
+            The receipt also includes 'attempts', representing the observed
+            HTTP attempts made for the main page (homepage) request on the
+            sync path (transient retries and status retries; the async path
+            always reports 1). The value is the highest attempt count reached
+            on any single hop, not the total number of requests: each redirect
+            hop starts a new session, so redirects are not counted. It is 1
+            when the request is rejected before any HTTP call (unsafe URL, DNS
+            failure) or served from the cache.
     """
     from geo_optimizer.utils.validators import validate_public_url
 
@@ -128,6 +143,7 @@ def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_rece
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_url"],
+                "attempts": 1,
                 "terminal_error": "unsafe_url",
             }
         return json.dumps(err_payload)
@@ -140,6 +156,7 @@ def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_rece
                 "url": url,
                 "stages_completed": [],
                 "stages_failed": ["validate_score_version"],
+                "attempts": 1,
                 "terminal_error": "invalid_argument",
             }
         return json.dumps(err_payload)
@@ -157,9 +174,13 @@ def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_rece
             return [], [AUDIT_STEPS[0]]
         return stages_started[:-1], [stages_started[-1]]
 
+    get_audit_telemetry_fn = None
+    reset_audit_telemetry_fn = None
     try:
         from geo_optimizer.core.audit import get_audit_telemetry, reset_audit_telemetry, run_full_audit
 
+        get_audit_telemetry_fn = get_audit_telemetry
+        reset_audit_telemetry_fn = reset_audit_telemetry
         if include_receipt:
             reset_audit_telemetry()
 
@@ -174,6 +195,7 @@ def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_rece
 
         telemetry = get_audit_telemetry()
         failed_fetches = list(telemetry.get("fetch_errors", []))
+        attempts = _sanitize_attempts(telemetry.get("attempts", 1))
 
         # An unreachable homepage or an HTTP error ends the audit early with
         # result.error set instead of raising.
@@ -196,6 +218,7 @@ def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_rece
             "stages_completed": completed,
             "stages_failed": failed,
             "failed_fetches": failed_fetches,
+            "attempts": attempts,
             "duration_ms": getattr(result, "audit_duration_ms", 0),
             "terminal_error": terminal_error,
         }
@@ -205,14 +228,19 @@ def geo_audit(url: str, score_version: int = DEFAULT_SCORE_VERSION, include_rece
         logger.error("Error in geo_audit for %s: %s", url, e)
         err_payload = {"error": "Internal error during operation", "url": url}
         if include_receipt:
+            telemetry = get_audit_telemetry_fn() if get_audit_telemetry_fn is not None else {}
             completed, failed = split_failed()
             err_payload["receipt"] = {
                 "url": url,
                 "stages_completed": completed,
                 "stages_failed": failed,
+                "attempts": _sanitize_attempts(telemetry.get("attempts", 1)),
                 "terminal_error": "internal",
             }
         return json.dumps(err_payload)
+    finally:
+        if include_receipt and reset_audit_telemetry_fn is not None:
+            reset_audit_telemetry_fn()
 
 
 # ─── Tool 2: geo_fix ─────────────────────────────────────────────────────────

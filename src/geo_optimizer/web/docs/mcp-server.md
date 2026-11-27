@@ -71,6 +71,8 @@ Run a complete GEO audit on a website. Analyzes nine categories: Google AI readi
 | `score_version` | integer | no | Rubric version, 1 to 6. Default 5. Scores from different versions are not comparable |
 | `include_receipt` | boolean | no | Attach an execution receipt with the completed stages. Default false |
 
+When `include_receipt` is `true`, the response attaches a `receipt` object with `url`, `stages_completed`, `stages_failed`, `failed_fetches`, `attempts`, `duration_ms`, and `terminal_error`. `attempts` is an integer in `1..16` reporting the highest observed HTTP attempt count reached on any single hop of the homepage request on the sync path (transient retries and status retries; redirects are not counted, the async path always reports `1`, and requests rejected before any HTTP call or served from the cache report `1`).
+
 **Example output (abbreviated):**
 
 ```json
