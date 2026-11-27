@@ -108,7 +108,7 @@ Run a complete GEO audit on a website. Analyzes nine categories: Google AI readi
     "checks": []
   },
   "recommendations": [
-    "Add llms-full.txt for comprehensive AI indexing",
+    "Add an optional llms-full.txt for compatible tools",
     "Add FAQPage schema for better AI extraction"
   ]
 }

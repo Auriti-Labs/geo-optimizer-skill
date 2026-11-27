@@ -1105,6 +1105,7 @@ async def citations_check(request: Request, body: CitationsCheckRequest):
         "domain_citation_rate": result.domain_citation_rate,
         "url_mention_rate": result.url_mention_rate,
         "organic_presence_rate": result.organic_presence_rate,
+        "source_observation_status": result.source_observation_status,
         "answers_without_sources": result.answers_without_sources,
         "no_citation_answer_rate": result.no_citation_answer_rate,
         "top_cited_domains": result.top_cited_domains,

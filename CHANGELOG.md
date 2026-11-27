@@ -10,6 +10,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · [SemVer](https://semv
 ### Changed
 - `conformance/`: both runners now fail on a missing rule file, a file with no cases, a case with a missing, empty or unknown `engines` value, and fewer cases run than declared. New JSON-LD page cases go through each engine's real extraction path, and five known Python/JS divergences (NaN/Infinity, empty blocks, `type` matching, comments in scripts, oversized blocks) are recorded in `conformance/README.md`. `integrations/core/README.md` documents the public contract of the private JS core and why a canonical pointing elsewhere stays a `warn`.
 
+- `geo citations` adds `source_observation_status` (`observed` | `not_supported` | `error`) to the JSON result and the web API. Only Perplexity Sonar returns the sources it used, so for every other LLM provider the status is `not_supported` too. Compatibility: on the SERP path and for providers that return no sources (`not_supported`), and when every LLM call failed (`error`), `answers_without_sources` and `no_citation_answer_rate` are now `null` instead of `0`/`0.0`, which read as "every answer had sources". The key names are unchanged and the measured values on the LLM path do not move; readers that do arithmetic on the two keys must handle `null`.
+
+- The llms.txt recommendation and the text, CI and MCP docs no longer claim that llms.txt is essential for or improves AI indexing: it now reads "Publish an optional /llms.txt guide for compatible tools". The README benchmark states that historical v1/v2 scores are not directly comparable with a rubric v5 score. No score, rubric or recommendation count changes.
+
+### Added
+- Release preflight: the publish workflow fails when the tag does not match the `pyproject.toml` version, and installs the built wheel (alone, with `[web]`, with `[mcp]`) and the sdist in clean environments before publishing. The CI checks the `astro-geoready` package contents with `npm pack --dry-run`, and a new test keeps the version (pyproject, `__init__` fallback, latest CHANGELOG release, `capabilities.json`) and the headline counts in README, SKILL.md and docs in line with the code.
+
 ## [4.30.4] — 2026-11-26
 
 ### Fixed

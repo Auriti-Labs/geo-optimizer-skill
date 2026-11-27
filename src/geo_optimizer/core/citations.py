@@ -256,7 +256,12 @@ def run_citation_check(
             domain=domain,
             entries=entries,
             runs_per_query=runs,
+            source_observation_status="error",
         )
+
+    # Only Perplexity Sonar returns the sources it used; for the other providers "no sources" is a limit of
+    # the provider, not something observed about the answer.
+    sources_observable = provider == "perplexity"
 
     mention_rate = round(mentioned_count / total_answers, 2)
     citation_rate = round(cited_count / total_answers, 2)
@@ -277,8 +282,9 @@ def run_citation_check(
         brand_mention_rate=mention_rate,
         domain_citation_rate=citation_rate,
         url_mention_rate=round(url_count / total_answers, 2),
-        answers_without_sources=no_source_count,
-        no_citation_answer_rate=round(no_source_count / total_answers, 2),
+        source_observation_status="observed" if sources_observable else "not_supported",
+        answers_without_sources=no_source_count if sources_observable else None,
+        no_citation_answer_rate=round(no_source_count / total_answers, 2) if sources_observable else None,
         brand_mention_rate_ci=mention_ci,
         domain_citation_rate_ci=citation_ci,
         stable=stable,
@@ -375,6 +381,7 @@ def _run_serpbase_citation_check(
             domain=domain,
             entries=entries,
             runs_per_query=1,
+            source_observation_status="not_supported",
         )
 
     mention_rate = round(mentioned_count / queries_answered, 2)
@@ -391,6 +398,10 @@ def _run_serpbase_citation_check(
         brand_mention_rate=mention_rate,
         domain_citation_rate=citation_rate,
         organic_presence_rate=round(organic_count / queries_answered, 2),
+        # A SERP snapshot does not say which answer came without sources: not measured, not zero.
+        source_observation_status="not_supported",
+        answers_without_sources=None,
+        no_citation_answer_rate=None,
         brand_mention_rate_ci=(mention_rate, mention_rate),
         domain_citation_rate_ci=(citation_rate, citation_rate),
         stable=False,
